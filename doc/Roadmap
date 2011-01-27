@@ -1,0 +1,45 @@
+Purpose of this document
+------------------------
+This document gives a broad view of the plan for future development of the
+project. There is no time schedule associated with releases. It happens when it
+happens :-)
+
+In addition to this roadmap document, there is a TODO list that contains minor
+features and technical stuff, ideas for which come up on-the-fly. If something
+on the TODO list becomes important, it is possible to move it from there to
+this roadmap.
+
+
+The roadmap
+-----------
+Since this project is still in the inception phase, the following list is merely
+an unsorted collection of ideas:
+
+Requirements
+- pass
+- resign
+- highlight last move with square/triangle/... symbol
+- scoring
+- Artwork
+  - Application icon
+  - Stones
+  - Board
+- build and include a Go engine
+- GTP protocol
+
+Ideas:
+- Play sound when opponent (or myself?) plays
+- Undo
+- Let two computer players play against each other
+- Change board size
+- Handicap
+- Komi (what is this if not handicap?)
+- Ruleset
+- Time-based play
+- Byo yomi (what is this exactly? "x minutes for y moves")
+- Reassign players (e.g. let's see what the computer does with my position)
+- Show/hide Labels
+- Show move numbers (inside stones)
+
+Not to be included:
+- Network play -> Refer to the excellent Tetsuki

@@ -1,0 +1,47 @@
+Table of Contents
+-----------------
+1. What is it?
+2. Usage
+3. Changes in this release
+4. License and source code
+5. Platforms
+6. Limitations of dgsmonX
+7. Special Thanks
+
+
+What is it?
+-----------
+TODO see dgsmonX
+
+
+Changes in this release
+-----------------------
+This is "Little Go" 0.1, the first no-frills version suitable for public release.
+
+For more details see the ChangeLog document.
+
+
+License and source code
+-----------------------
+dgsmonX is licensed under the Apache License (2.0). You should have received a
+copy of the license along with the "Little Go" application bundle or the source
+distribution (see the file LICENSE inside the application bundle or source
+distribution, or start the application and choose the "Help:Apache License"
+menu item). If not, see <http://www.apache.org/licenses/>.
+
+The source code for "Little Go" can be downloaded from its homepage
+http://www.herzbube.ch/littlego. You will get the source files ready for
+building with Xcode. Once the project's git repository becomes available online,
+you may also get the project's source code from there.
+
+
+Platforms
+---------
+"Little Go" is available both for the iPhone and the iPad.
+
+The minimum requirement for running this version of "Little Go" is iOS 4.
+
+
+Special Thanks
+--------------
+TODO

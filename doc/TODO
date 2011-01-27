@@ -1,0 +1,37 @@
+Purpose of this document
+------------------------
+This document contains a list of minor features and technical stuff that should
+be implemented when time permits it. The TODO list is updated frequently as new
+ideas crop up during programming.
+
+For a broader view of how the project will develop over time, you should see
+the Roadmap document.
+
+
+Priority 1 (important)
+----------------------
+- Document reviews before the release
+  - INSTALL file
+  - Create the NOTICE file
+  - Add Copyright notice to the head of each source file
+  - MANUAL file
+  - README file
+    - Under "License and source code" check whether the place to find the
+      license in the running application is still correct
+    - Under "Platforms" check the minimum requirements for iOS
+  - README.developer file
+  - ReleaseSteps file
+- Contacts
+  - Fuego team: Do they object to my using their source code
+  - Sente: Do they intend to release a version of their Goban for free? If so
+    I am all willing to retire my app
+
+
+Priority 2 (nice to have)
+-------------------------
+No items yet
+
+
+Priority 3 (not important)
+-------------------------
+No items yet
