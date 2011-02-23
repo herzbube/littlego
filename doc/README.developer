@@ -52,7 +52,7 @@ ChangeLog
   This document should not duplicate SCM log messages. Its entries should be
   rather high-level so that it can be used as a source for release notes, e.g.
   to populate the "Changes in this release" section in the README document.
-  Examples for things that might be included into the ChangeLog:
+  Examples for things that should be included in the ChangeLog:
   - Fixes for distinct bugs, with or without a bug report in the bug tracker
   - New features, with or without a bug report in the bug tracker
   - Other "big" changes that are noticable by the users of the software
@@ -277,3 +277,31 @@ cleanup during application shutdown.
 [10] ADC Home > Reference Library > Guides > Cocoa > Networking > URL Loading System
 [11] ADC Home > Reference Library > Guides > Cocoa > User Experience > Application Menu and Pop-up List Programming Topics for Cocoa
 [12] ADC Home > Reference Library > Guides > Cocoa > Resource Management > Resource Programming Guide > Nib Files
+
+
+
+
+
+
+
+3rdparty software
+-----------------
+Before the first Xcode build of the project is possible, 3rdparty software must
+be downloaded and built.
+
+./script/get-and-build-3rdparty-software.sh
+
+
+Project setup so that it properly uses 3rdparty software
+--------------------------------------------------------
+TODO. The following is only a rough sketch...
+
+if it's a framework:
+* add new group "3rdparty" to project
+* add framework reference to project (right-click on "3rdparty" -> Add -> Existing Frameworks... -> Add Other
+* right-click on build target -> Get Info -> "Build" tab -> Property "Framework Search Paths" (both configurations) -> change absolute to relative path (remove prefix "$(SRCROOT)/")
+
+if it's a library:
+* ???
+* possibly interesting link: http://wiki.remobjects.com/wiki/Linking_Custom_Static_Libraries_from_your_iPhone_Xcode_Projects
+

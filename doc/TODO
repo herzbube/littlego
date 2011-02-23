@@ -10,6 +10,22 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Find out how to manage user input on a 19x19 board
+  - Research in FreeGoban
+    GobanGameDocument.nib
+    - File's Owner = GobanGameDocument
+      - Outlet grid = GobanView
+    - Top-level Element is an NSWindow
+    - embedded is a GobanView (GobanGameDocument.grid)
+      - takes care of labels
+    - embedded is a GobanBoardView
+      - paints the background
+      - seems not to be referenced from anywhere else
+    - embedded is a GobanMatrix (GobanGameDocument.grid.matrix)
+      - matrix contains 19x19 NSButtonCell
+      - employs the mode NSTrackModeMatrix
+      - sent actions: playStone -> File's Owner
+- Find out how GTP works together with Fuego
 - Document reviews before the release
   - INSTALL file
   - Create the NOTICE file
@@ -23,8 +39,6 @@ Priority 1 (important)
   - ReleaseSteps file
 - Contacts
   - Fuego team: Do they object to my using their source code
-  - Sente: Do they intend to release a version of their Goban for free? If so
-    I am all willing to retire my app
 
 
 Priority 2 (nice to have)

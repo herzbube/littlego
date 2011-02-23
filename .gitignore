@@ -1,0 +1,9 @@
+# Build products
+build/
+# Xcode files
+Little Go.xcodeproj/*.pbxuser
+Little Go.xcodeproj/*.mode1v3
+# Other files
+3rdparty/
+.DS_Store
+

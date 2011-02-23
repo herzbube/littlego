@@ -21,17 +21,38 @@ Requirements
 - highlight last move with square/triangle/... symbol
 - scoring
 - Artwork
-  - Application icon
-  - Stones
-  - Board
+  - Application icon: Section of a go board with a couple of stones -> possibly use a well-known position
+  - Stones: Black = circle with a flare in one corner. White = circle with a shadow in the opposite corner
+  - Board -> A plain color should do (Tetsuki also uses this)
+- Media
+  - Sound for placing a stone
 - build and include a Go engine
 - GTP protocol
+- tabs
+  - Play
+  - Archive
+  - Settings
+  - Help (?)
+  - About
+
+GUI notes
+- From the templates available in Xcode, the "Tab Bar Application" template seems to match best. Tetsuki uses this, for instance
+- Not sure
+  - Utility Application (the Stocks example is horrible)
+  - View-based Application (single view for the UI)
+  - Window-based Application (to implement my own view hierarchy)
+- Definitely not suitable:
+  - Navigation-based Application (e.g. Contacts)
+  - OpenGL ES Application
+  - Split View–based Application (e.g. iPad Mail, but I'm not using a master-detail arrangement)
+
 
 Ideas:
+- Save/load .sgf & allow transfer of these files
 - Play sound when opponent (or myself?) plays
 - Undo
 - Let two computer players play against each other
-- Change board size
+- Various board sizes (9x9, 11x11, 13x13, 19x19)
 - Handicap
 - Komi (what is this if not handicap?)
 - Ruleset
@@ -40,6 +61,10 @@ Ideas:
 - Reassign players (e.g. let's see what the computer does with my position)
 - Show/hide Labels
 - Show move numbers (inside stones)
+- Let the user change strength of the computer opponent
+- Hint
+
 
 Not to be included:
 - Network play -> Refer to the excellent Tetsuki
+
