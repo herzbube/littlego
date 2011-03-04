@@ -294,14 +294,272 @@ be downloaded and built.
 
 Project setup so that it properly uses 3rdparty software
 --------------------------------------------------------
-TODO. The following is only a rough sketch...
+- Other linker flags (OTHER_LDFLAGS) = -lfuego -lboost_system -lboost_thread -lboost_filesystem
+  Note: If a future version of Fuego requires additional Boost libraries, they must be added here
+- Header Search Paths (HEADER_SEARCH_PATHS, -I) = ./3rdparty/install$(SDKROOT)/include
+- Library Search Paths (LIBRARY_SEARCH_PATHS, -L) = ./3rdparty/install$(SDKROOT)/lib
+- Preprocessor Macros = NDEBUG
+  Note: This macro is required because the project links against a release build of Fuego.
 
-if it's a framework:
-* add new group "3rdparty" to project
-* add framework reference to project (right-click on "3rdparty" -> Add -> Existing Frameworks... -> Add Other
-* right-click on build target -> Get Info -> "Build" tab -> Property "Framework Search Paths" (both configurations) -> change absolute to relative path (remove prefix "$(SRCROOT)/")
+Future improvements
+- Build both a debug and a release version of 3rdparty libraries; use the build variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS
+- Research wether the build variable $(EFFECTIVE_PLATFORM_NAME) exists and what values it may take, especially if there are different
+  values for iPhoneOS and iPhoneSimulator builds (suspected values are iphoneos and iphonesimulator). A list of all official build
+  variables is this: http://developer.apple.com/library/mac/#documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
+- Check out the following article to see whether it would make sense to add more visible references to external libraries to the Xcode
+  project: http://wiki.remobjects.com/wiki/Linking_Custom_Static_Libraries_from_your_iPhone_Xcode_Projects
+- Fix build scripts so that configure-based projects can store multiple platform builds, so that distclean before a build becomes an option
+  instead of a requirement (Boost already supports this)
+- Check to see if it makes sense (and is feasible) to create a single universal library for Boost in the same way as it is done for Fuego
+- Check to see if there is a better way to create the single universal library for Fuego than the current clunky way. Possible requires libtool support.
+- Check to see whether the compiler options -mmacosx-version-min and -miphoneos-version-min may replace usage of the environment variables
+  MACOSX_DEPLOYMENT_TARGET and IPHONEOS_DEPLOYMENT_TARGET (note: from studying an Xcode compilation command it appears that the iPhoneSimulator
+  platform uses -mmacosx-version-min, or MACOSX_DEPLOYMENT_TARGET)
+- bjam clean does not work
+- Fix the following issue: IPHONE_SIMULATOR_BASESDK_VERSION at the moment (with
+  Xcode 3.2.5) cannot be 4.2, must be 4.1, because with 4.2 there are problems
+  with symbols in 3rdparty libraries. The symptom is that the application
+  crashes with the following output in the debug console:
+    Detected an attempt to call a symbol in system libraries that is not present on the iPhone:
+    pthread_cond_wait$UNIX2003 called from function _ZN5boost18condition_variable4waitERNS_11unique_lockINS_5mutexEEE in image Little Go.
+    If you are encountering this problem running a simulator binary within gdb, make sure you 'set start-with-shell off' first.
+- Find a way in Xcode how to specify different base SDKs for the iPhone (Device)
+  and the iPhoneSimulator builds. Without this, 1) it's impossible to reference
+  such builds of 3rdparty libs in an elegant way; and 2) linking a 4.2 simulator
+  Xcode build against a 4.1 simulator 3rdparty build is a mismatch that is
+  asking for trouble
 
-if it's a library:
-* ???
-* possibly interesting link: http://wiki.remobjects.com/wiki/Linking_Custom_Static_Libraries_from_your_iPhone_Xcode_Projects
 
+Compilation command
+-------------------
+The following lines represent the command to compile a single .cpp file in
+Debug configuration for the iPhoneSimulator platform:
+
+/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2
+-x c++
+-arch i386
+-fmessage-length=0
+-pipe
+-Wno-trigraphs
+-fpascal-strings
+-fasm-blocks
+-O0
+-Wreturn-type
+-Wunused-variable
+-DNDEBUG
+-isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk
+-fexceptions
+-fvisibility=hidden
+-fvisibility-inlines-hidden
+-mmacosx-version-min=10.6
+-gdwarf-2
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40200
+-iquote "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-generated-files.hmap"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-own-target-headers.hmap"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-all-target-headers.hmap"
+-iquote "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-project-headers.hmap"
+-F/Users/patrick/Documents/dev/littlego/build/Debug-iphonesimulator
+-I/Users/patrick/Documents/dev/littlego/build/Debug-iphonesimulator/include
+-I3rdparty/install/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk/include
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/DerivedSources/i386"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/DerivedSources"
+-include /var/folders/K+/K+NmKFX-FA4IgmDBY9aGdk+++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/Little_Go_Prefix-gatqaltedfwqgcbkvwvyfnixuhqh/Little_Go_Prefix.pch
+-c /Users/patrick/Documents/dev/littlego/src/MyClass.cpp
+-o "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Objects-normal/i386/MyClass.o"
+
+Discussion of options not used in 3rdparty builds:
+-x c++
+  The language of the source file. No need to set this, so far I am happy with the default language selection of the compiler
+-fmessage-length=0
+  Error messages are not line-wrapped. No need to set this, has no influence on the code produced
+-Wno-trigraphs
+  A warning. No need to set this, has no influence on the code produced
+-fpascal-strings
+  APPLE ONLY. Allow Pascal-style string literals. No need to set this, this is arcane and as far as I'm concerned have no influence on the code produced
+-fasm-blocks
+  APPLE ONLY. Allow assembly code within a C/C++ file. No need to set this, this is arcane and as far as I'm concerned have no influence on the code produced
+-O0
+  Optimization. This is set differently for 3rdparty libraries by design
+-Wreturn-type
+  A warning. No need to set this, has no influence on the code produced
+-Wunused-variable
+  A warning. No need to set this, has no influence on the code produced
+-fexceptions
+  Enable exception handling. No need to set this, is already enabled by default for languages like C++ that support exceptions.
+-mmacosx-version-min=10.6
+  Same as MACOSX_DEPLOYMENT_TARGET
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40200
+  No need to set this, iOS target version for 3rdparty libraries is defined via IPHONE_DEPLOYMENT_TARGET
+-iquote /some/include/path
+  Specifies that this include path is searched for includes that were specified with quotes, but not for those specified with angle brackets (<>)
+  No need to set this, has no influence on the code produced
+
+
+Fuego build/installation issues
+-------------------------------
+Build
+- Need to specify configure flag --with-boost-libdir, otherwise configure
+  aborts with a linker error
+
+Installation
+- "make install" only copies the executables (fuego, fuego_test), but not the
+  libraries nor the headers
+  - Modify Makefile.am in each library sub-directory so that it has the
+    following entries:
+
+    nobase_pkginclude_HEADERS - install headers under <prefix>/include/fuego
+                                (because of pkginclude instead of include), and
+                                keep sub-directories (because of nobase), such
+                                as <prefix>/include/fuego/gtpengine
+    lib_LIBRARIES             - install libraries under <prefix>/lib
+
+  - These entries replace the current entries
+
+    noinst_HEADERS
+    noinst_LIBRARIES
+
+  - Affected files:
+
+    go/Makefile.am
+    gouct/Makefile.am
+    gtpengine/Makefile.am
+    simpleplayers/Makefile.am
+    smartgame/Makefile.am
+
+  - Alternative: Modify fuegomain/Makefile.am so that it builds a single
+    unified library. Open questions:
+    - Do I need to add Boost libraries to the Fuego library with
+      libfuego_a_LIBADD (to reflect what is done for the Fuego main binary)?
+    - If so, how do I specify the location of the Boost libraries? If I want to
+      use libfuego_a_LDFLAGS, Automake complains that it does not know a
+      library with the canonical name libfuego_a.
+
+  - Caveat: nobase in nobase_pkginclude_HEADERS does not seem to have the
+    desired effect; sub-directories are not kept, instead all headers are
+    installed under include/fuego. I have tried the following combinations,
+    but could not get it to work as desired:
+
+      pkginclude_HEADERS     -> installs into include/fuego/*
+      nobase_include_HEADERS -> installs into include/*
+      nobase_dist_HEADERS    -> installs into include/*
+
+  - How to give back these things to the Fuego project? It must be done as an
+    optional feature that can be turned on via a configure flag.
+    - For the single unified library, an EXTRA_LIBRARIES option in Makefile.am
+      could be the solution. This would also require some autoconf hacking.
+    - For the headers, the solution is not so obvious. Still have to research
+      this. An excellent site is http://www.freesoftwaremagazine.com/books/agaal/automatically_writing_makefiles_with_autotools
+
+Changes to the Fuego source code
+--------------------------------
+1) FuegoUtil::FuegoMain()
+- Create a new function FuegoUtil::FuegoMain(int argc, char** argv) in
+  FuegoUtil.cpp and FuegoUtil.h
+- Move the implementation in main(int argc, char** argv) from FuegoMain.cpp to
+  this new function in FuegoUtil.cpp
+- Also move the other support functions from FuegoMain.cpp to FuegoUtil.cpp
+- Invoke FuegoUtil::FuegoMain() from main()
+
+2) Add 2 new command line options "--input-pipe /path/to/pipe" and
+   "--output-pipe /path/to/pipe"
+- Basic option support requires modification to ParseOptions() and introduction
+  of two new global variables
+- Actual usage of the specified pipes requires modification to FuegoMain().
+- Additional option support to check for mutually exclusive options
+  (--input-file and --input-pipe) requires addition of a new function
+  MutuallyExclusiveOptions() which is invoked from ParseOptions()
+
+3) Remove usage of exit() in Help()
+- ParseOptions() must be modified to return a value that indicates to its
+  caller (FuegoMain()) whether the program should continue running or whether
+  it should be terminated
+
+Fuego Patch
+-----------
+The changes to the Fuego build system (Makefile.am files) and source code
+can be nailed down with a patch.
+
+Creation of the patch file:
+  diff -ruN fuego-1.0-original fuego-1.0-new >fuego.patch
+
+Application of the patch file:
+  patch -p1 fuego.patch
+
+
+Project settings
+----------------
+Include search path
+- Open Info inspector for the target
+- HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
+- This allows to write code such as this
+  #include <fuego/GtpInputStream.h>
+
+Library search path
+- Open Info inspector for the target
+- LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
+
+Library link
+- Open Info inspector for the target
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options
+
+
+Working with Fuego
+------------------
+1) Create an instance of a local GTP client
+2) Set up the Fuego environment
+3) Create an instance of FuegoMainEngine
+4) Get instances of GtpInputStream and GtpOutputStream from the client and
+   provide them to the engine. This establishes the communication channel
+   between client and engine.
+5) Client sends GTP commands to the engine in response to user activities
+6) Client receives GTP responses from the engine and updates the GUI
+   accordingly.
+
+What needs to be implemented so that this works:
+- Create some sort of stream controllers that simulate std::cin and std::cout
+  behaviour, especially blocking so that the engine does not stop reading
+  commands from GtpInputStream
+- Implement a proper GTP client that speaks GTP
+
+
+Stream controllers
+------------------
+Analysis of how GtpInputStream works together with its std::istream:
+- Uses getline() to read an entire line
+- Uses fail() to determine if the stream is in a good state
+
+Analysis of how existing stdlib stream classes work:
+- stringstream
+  - Is attached to a string instance
+  - getline() reads the entire string from the stream
+  - After the first invocation of getline(), the stream's flags look like this:
+    - good is true
+    - fail, bad, eof are false
+  - If getline() is invoked again on the stream, it returns an empty string
+  - After the second invocation of getline(), the stream's flags look like this:
+    - fail, eof are true
+    - good, bad are false
+  - Research needed
+    - How does getline() behave if the string contains newline-separated
+      substrings?
+    - How can new input be added to the stream? Since the input string is
+      copied when the stream is created, manipulation of the input string
+      object will have no effect. Probably the str() method needs to be called
+- fstream
+  - Is attached to a named pipe created by mkfifo()
+  - When the fstream object is created, it blocks until data provider opens
+    the pipe from the other side; if the pipe is already open, no blocking
+    occurs when the fstream object is created
+  - getline() blocks as long as the pipe is open and there is no input
+  - getline() returns as soon as the data providers either writes a newline to
+    the pipe, or closes the pipe
+  - After a successful read by getline(), the stream's flags look like this:
+    - good is true
+    - fail, bad, eof are false
+  - After a failed read by getline(), because the pipe was closed, the stream's
+    flags look like this:
+    - fail, eof are true
+    - good, bad are false
+- Conclusion: fstream in conjunction with named pipe seems to be the way to go
+- Analysis done on Mac OS X
+- Analysed behaviour needs to be verified for iPhoneSimulator and iOS

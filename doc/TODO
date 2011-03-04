@@ -10,6 +10,19 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Fix build system
+  - build-fuego.sh must apply the patch
+  - Create three successive patches as outlined by the section
+    "Changes to the Fuego source code" in README.developer
+  - build-fuego.sh (or someone else) must create a symbolic link if the
+    iPhoneSimulator base SDK version is different from the iPhoneOS base SDK
+    version. This is *NOT* necessary if a way can be found how to specify these
+    different base SDKs to Xcode. At the moment, it seems that both base SDKs
+    always have the same value.
+
+    ls -l ~/Documents/dev/littlego/3rdparty/install/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/
+    drwxr-xr-x  6 patrick  staff  204  1 Mär 01:32 iPhoneSimulator4.1.sdk
+    lrwxr-xr-x  1 patrick  staff   22  1 Mär 01:35 iPhoneSimulator4.2.sdk -> iPhoneSimulator4.1.sdk
 - Find out how to manage user input on a 19x19 board
   - Research in FreeGoban
     GobanGameDocument.nib
@@ -38,7 +51,14 @@ Priority 1 (important)
   - README.developer file
   - ReleaseSteps file
 - Contacts
-  - Fuego team: Do they object to my using their source code
+  - Fuego team (on fuego-devel): Do they object to my using their source code?
+    Answers to date: Only one developer spoke up, saying that he has no general
+    objections as long as the spirit of the LGPL is in place.
+- Give back to Fuego
+  - information about how to build for iPhone
+  - fix for the configure problem
+  - improvements to the Autoconf/Automake configuration, i.e. optional creation
+    of a unified library and optional installation of headers
 
 
 Priority 2 (nice to have)

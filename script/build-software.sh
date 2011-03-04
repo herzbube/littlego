@@ -612,7 +612,11 @@ INSTALL_STEPS()
 
 # Basic information about this script
 SCRIPT_NAME="$(basename $0)"
-SCRIPT_DIR="$(pwd)/$(dirname $0)"
+SCRIPT_DIR="$(dirname $0)"
+case "$SCRIPT_DIR" in
+  /*) ;;
+  *)  SCRIPT_DIR="$(pwd)/$SCRIPT_DIR" ;;
+esac
 USAGE_LINE="$SCRIPT_NAME [-h] [-d|-b] [-cq] <software>"
 
 # Remaining variables and resources

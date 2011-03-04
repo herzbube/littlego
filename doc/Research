@@ -125,3 +125,84 @@ research.
   good enough solution, where an exhaustive search is impractical)
 - MCTS publications: http://webdocs.cs.ualberta.ca/~mmueller/mcts.html
 - Computer Go page: http://senseis.xmp.net/?ComputerGo
+
+
+GTP - Go Text Protocol
+----------------------
+The reference is here: http://www.lysator.liu.se/~gunnar/gtp/
+
+Apparently there are two versions of GTP:
+- GTP version 1: Although superseded by GTP version 2, this protocol version
+  may still have some relevance because it is implemented by the ubiquitous
+  GNU Go. Version 3.0.0 of GNU Go actually has the reference implementation of
+  GTP version 1, which at the same time serves as the protocol specification
+  since there is no other good documentation.
+- GTP version 2: The current protocol version. The specification still has
+  "draft" status, but since there have been no changes since 2002, it's pretty
+  safe to assume that version 2 of the protocol is stable. In theory, GNU Go
+  3.4 has the reference implementation of GTP version 2. Whether this is true
+  in practice has still to be verified.
+
+A simple GTP session might consist of the following commands:
+
+  protocol_version
+  name
+  version
+  boardsize 9
+  clear_board
+  showboard
+  quit
+
+With Fuego, this looks like this:
+
+  protocol_version
+  = 2
+
+  name
+  = Fuego
+
+  version
+  = 1.0
+
+  boardsize 9
+  =
+
+  clear_board
+  =
+
+  showboard
+  =
+    A B C D E F G H J
+  9 . . . . . . . . . 9
+  8 . . . . . . . . . 8
+  7 . . + . . . + . . 7
+  6 . . . . . . . . . 6
+  5 . . . . . . . . . 5
+  4 . . . . . . . . . 4
+  3 . . + . . . + . . 3
+  2 . . . . . . . . . 2
+  1 . . . . . . . . . 1  B to play
+    A B C D E F G H J
+
+  quit
+  =
+
+Fuego installs two executables:
+- fuego (FuegoMain application): This is the GTP interface to GoUctPlayer, a
+  Monte-Carlo tree search Go player.
+- fuego_test (FuegoTest application): GTP interface to a GTP engine with test
+  commands. The --player argument tells the application to use a player with
+  the specified behaviour.
+
+Attaching to a GTP interface involves the following steps:
+- Launch the desired executable in the background
+- Attach to the process' input and output streams
+- Write to the input stream to give commands to the GTP engine
+- Read from the input stream to get the GTP engine's answers
+- Unfortunately, on iOS it is not possible to spawn a process in the background
+  as it used to be possible with NSTask on Mac OS X
+- For this reason, it is not possible to include the Fuego executable with the
+  application, launch the program in the background and attach to its standard
+  input and output streams
+- Instead, I assume that all this needs to be "simulated" by spawning a thread
+

@@ -73,6 +73,8 @@ COPY_MISSING_HEADERS()
   for HEADER_FILE in $HEADER_FILES; do
     cp "$IPHONE_SIMULATOR_BASESDK_DIR/usr/include/$HEADER_FILE" .
   done
+
+  return 0
 }
 
 # +------------------------------------------------------------------------
@@ -133,6 +135,7 @@ using darwin : gcc~$MACOSX_PREFIX
    : <target-os>darwin
    ;
 EOF
+
   return 0
 }
 
@@ -165,6 +168,11 @@ BOOTSTRAP_BOOST()
     return 1
   fi
   "./$BOOTSTRAP_SCRIPT" "--with-libraries=$BOOST_LIBS_COMMA"
+  if test $? -ne 0; then
+    return 1
+  fi
+
+  return 0
 }
 
 # +------------------------------------------------------------------------
@@ -226,12 +234,12 @@ RUN_BJAM()
 
   typeset CLEAN_BJAMFLAG
   if test "$CLEAN_BUILD" = "1"; then
-    CLEAN_BJAMFLAG="-clean"
+    CLEAN_BJAMFLAG="--clean"
   fi
 
   case "$BJAM_OPERATION" in
     build)
-      BJAM_OPERATION=""
+      BJAM_OPERATION=""   # might also be "release" or "debug"
       BJAM_OPERATION_VERB="Building"
       ;;
     install)

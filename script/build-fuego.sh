@@ -47,9 +47,69 @@ FUEGO_IPHONE_SIMULATOR_CONFIGUREFLAGS="--with-boost-libdir=$IPHONE_SIMULATOR_PRE
 FUEGO_MACOSX_CONFIGUREFLAGS="--with-boost-libdir=$MACOSX_PREFIXDIR/lib"
 
 # +------------------------------------------------------------------------
+# | Creates a single unified static library with the merged content from all
+# | the other static libraries found in the current directory and its
+# | sub-directories.
+# +------------------------------------------------------------------------
+# | Arguments:
+# |  * Full path to the installation base directory (the "prefix" directory)
+# +------------------------------------------------------------------------
+# | Return values:
+# |  * 0: No error
+# |  * 1: Error
+# +------------------------------------------------------------------------
+BUILD_AND_INSTALL_SINGLE_LIB()
+{
+  typeset PREFIX_DIR="$1"
+  typeset SINGLELIB_TEMPDIR="singlelib-tempdir"
+  typeset SINGLELIB_NAME="libfuego.a"
+
+  echo "Creating single unified library..."
+
+  mkdir "$SINGLELIB_TEMPDIR"
+  if test $? -ne 0; then
+    echo "Could not create temporary directory"
+    return 1
+  fi
+  cd "$SINGLELIB_TEMPDIR"
+  find ../ -name libfuego\*.a | xargs -n 1 ar x 
+  if test $? -ne 0; then
+    echo "Error extracting content from other static libraries"
+    return 1
+  fi
+  ar cru "$SINGLELIB_NAME" *.o
+  if test $? -ne 0; then
+    echo "Error merging content from other static libraries"
+    return 1
+  fi
+  ranlib "$SINGLELIB_NAME"
+  if test $? -ne 0; then
+    echo "Error running ranlib on unified library"
+    return 1
+  fi
+  cp "$SINGLELIB_NAME" "$PREFIX_DIR/lib"
+  if test $? -ne 0; then
+    echo "Error installing unified library"
+    return 1
+  fi
+  cd ..
+  rm -rf "$SINGLELIB_TEMPDIR"
+
+  return 0
+}
+
+# +------------------------------------------------------------------------
 # | Backend function that is invoked once for each architecture.
 # +------------------------------------------------------------------------
 # | Arguments:
+# |  * Name that describes the architecture to be built. This name is used for
+# |    messages displayed to the user
+# |  * Full path to the C++ compiler
+# |  * Full path to the C compiler
+# |  * List of compiler flags
+# |  * List of linker flags
+# |  * List of configure flags
+# |  * Full path to the installation base directory (the "prefix" directory)
 # +------------------------------------------------------------------------
 # | Return values:
 # |  * 0: No error
@@ -63,6 +123,7 @@ BUILD_ARCHITECTURE()
   typeset ARCH_CPPFLAGS="$4"
   typeset ARCH_LDFLAGS="$5"
   typeset ARCH_CONFIGUREFLAGS="$6"
+  typeset ARCH_PREFIXDIR="$7"
 
   export CXX="$ARCH_CXX"
   export CC="$ARCH_CC"
@@ -88,6 +149,10 @@ BUILD_ARCHITECTURE()
   # Must install immediately, otherwise the next build will overwrite the
   # results of this build
   make install
+  if test $? -ne 0; then
+    return 1
+  fi
+  BUILD_AND_INSTALL_SINGLE_LIB "$ARCH_PREFIXDIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -121,7 +186,8 @@ BUILD_STEPS_SOFTWARE()
     "$IPHONEOS_CC" \
     "$IPHONEOS_ARCH_CPPFLAGS $COMMON_CPPFLAGS $FUEGO_COMMON_CPPFLAGS $IPHONEOS_CPPFLAGS $FUEGO_IPHONEOS_CPPFLAGS" \
     "$IPHONEOS_ARCH_CPPFLAGS $COMMON_LDFLAGS $FUEGO_COMMON_LDFLAGS $IPHONEOS_LDFLAGS $FUEGO_IPHONEOS_LDFLAGS" \
-    "--prefix=$IPHONEOS_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $IPHONEOS_CONFIGUREFLAGS $FUEGO_IPHONEOS_CONFIGUREFLAGS"
+    "--prefix=$IPHONEOS_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $IPHONEOS_CONFIGUREFLAGS $FUEGO_IPHONEOS_CONFIGUREFLAGS" \
+    "$IPHONEOS_PREFIXDIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -132,7 +198,8 @@ BUILD_STEPS_SOFTWARE()
     "$IPHONE_SIMULATOR_CC" \
     "$IPHONE_SIMULATOR_ARCH_CPPFLAGS $COMMON_CPPFLAGS $FUEGO_COMMON_CPPFLAGS $IPHONE_SIMULATOR_CPPFLAGS $FUEGO_IPHONE_SIMULATOR_CPPFLAGS" \
     "$IPHONE_SIMULATOR_ARCH_CPPFLAGS $COMMON_LDFLAGS $FUEGO_COMMON_LDFLAGS $IPHONE_SIMULATOR_LDFLAGS $FUEGO_IPHONE_SIMULATOR_LDFLAGS" \
-    "--prefix=$IPHONE_SIMULATOR_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $IPHONE_SIMULATOR_CONFIGUREFLAGS $FUEGO_IPHONE_SIMULATOR_CONFIGUREFLAGS"
+    "--prefix=$IPHONE_SIMULATOR_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $IPHONE_SIMULATOR_CONFIGUREFLAGS $FUEGO_IPHONE_SIMULATOR_CONFIGUREFLAGS" \
+    "$IPHONE_SIMULATOR_PREFIXDIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -143,7 +210,8 @@ BUILD_STEPS_SOFTWARE()
     "$MACOSX_CC" \
     "$MACOSX_ARCH_CPPFLAGS $COMMON_CPPFLAGS $FUEGO_COMMON_CPPFLAGS $MACOSX_CPPFLAGS $FUEGO_MACOSX_CPPFLAGS" \
     "$MACOSX_ARCH_CPPFLAGS $COMMON_LDFLAGS $FUEGO_COMMON_LDFLAGS $MACOSX_LDFLAGS $FUEGO_MACOSX_LDFLAGS" \
-    "--prefix=$MACOSX_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $MACOSX_CONFIGUREFLAGS $FUEGO_MACOSX_CONFIGUREFLAGS"
+    "--prefix=$MACOSX_PREFIXDIR $COMMON_CONFIGUREFLAGS $FUEGO_COMMON_CONFIGUREFLAGS $MACOSX_CONFIGUREFLAGS $FUEGO_MACOSX_CONFIGUREFLAGS" \
+    "$MACOSX_PREFIXDIR"
   if test $? -ne 0; then
     return 1
   fi

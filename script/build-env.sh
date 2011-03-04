@@ -37,7 +37,7 @@
 # you should not need to change anything in these other sections.
 # ----------------------------------------------------------------------
 IPHONEOS_BASESDK_VERSION=4.2
-IPHONE_SIMULATOR_BASESDK_VERSION=4.2
+IPHONE_SIMULATOR_BASESDK_VERSION=4.1
 MACOSX_BASESDK_VERSION=10.6  # If you use 10.4u, set deployment target separately
 
 # Deployment target variables must be exported because they are actually
@@ -78,7 +78,7 @@ MACOSX_LDFLAGS=""
 BJAM_TOOLSET=darwin
 COMMON_BJAMFLAGS="toolset=$BJAM_TOOLSET link=static"
 IPHONEOS_BJAMFLAGS="architecture=arm target-os=iphone macosx-version=iphone-$IPHONEOS_BASESDK_VERSION"
-IPHONE_SIMULATOR_BJAMFLAGS="architecture=x86 target-os=iphone macosx-version=iphone-$IPHONEOS_BASESDK_VERSION"
+IPHONE_SIMULATOR_BJAMFLAGS="architecture=x86 target-os=iphone macosx-version=iphonesim-$IPHONE_SIMULATOR_BASESDK_VERSION"
 MACOSX_BJAMFLAGS="architecture=x86 target-os=darwin"
 
 # Settings for builds based on configure/make
@@ -120,7 +120,8 @@ if test -z "$SOFTWARE_NAME"; then
 fi
 DOWNLOAD_DIR="$BUILD_BASEDIR/src/$SOFTWARE_NAME"  # source archives are downloaded here
 SRC_BASEDIR="$DOWNLOAD_DIR"                       # sources are extracted and built here
-PREFIX_BASEDIR="$BUILD_BASEDIR/install"           # build results are installed here; platform-specific prefixes are defined later on
+PREFIX_BASEDIR="$BUILD_BASEDIR/install"           # build results are installed here; platform-specific prefixes
+                                                  # are constructed later on by adding the base SDK path
 
 # ----------------------------------------------------------------------
 # All platforms
@@ -136,7 +137,7 @@ IPHONEOS_BASESDK_DIR="$IPHONEOS_PLATFORMDIR/Developer/SDKs/${IPHONEOS_PREFIX}${I
 IPHONEOS_BINDIR="$IPHONEOS_PLATFORMDIR/Developer/usr/bin"
 IPHONEOS_CC="$IPHONEOS_BINDIR/gcc-$IPHONEOS_GCC_VERSION"
 IPHONEOS_CXX="$IPHONEOS_BINDIR/g++-$IPHONEOS_GCC_VERSION"
-IPHONEOS_PREFIXDIR="$PREFIX_BASEDIR/install-$IPHONEOS_PREFIX"
+IPHONEOS_PREFIXDIR="${PREFIX_BASEDIR}${IPHONEOS_BASESDK_DIR}"
 
 # ----------------------------------------------------------------------
 # iPhone Simulator platform
@@ -147,7 +148,7 @@ IPHONE_SIMULATOR_BASESDK_DIR="$IPHONE_SIMULATOR_PLATFORMDIR/Developer/SDKs/${IPH
 IPHONE_SIMULATOR_BINDIR="$IPHONE_SIMULATOR_PLATFORMDIR/Developer/usr/bin"
 IPHONE_SIMULATOR_CC="$IPHONE_SIMULATOR_BINDIR/gcc-$IPHONE_SIMULATOR_GCC_VERSION"
 IPHONE_SIMULATOR_CXX="$IPHONE_SIMULATOR_BINDIR/g++-$IPHONE_SIMULATOR_GCC_VERSION"
-IPHONE_SIMULATOR_PREFIXDIR="$PREFIX_BASEDIR/install-$IPHONE_SIMULATOR_PREFIX"
+IPHONE_SIMULATOR_PREFIXDIR="${PREFIX_BASEDIR}${IPHONE_SIMULATOR_BASESDK_DIR}"
 
 # ----------------------------------------------------------------------
 # Mac OS X platform
@@ -158,7 +159,7 @@ MACOSX_BASESDK_DIR="$MACOSX_PLATFORMDIR/Developer/SDKs/${MACOSX_PREFIX}${MACOSX_
 MACOSX_BINDIR="$MACOSX_PLATFORMDIR/Developer/usr/bin"
 MACOSX_CC="$MACOSX_BINDIR/gcc-$MACOSX_GCC_VERSION"
 MACOSX_CXX="$MACOSX_BINDIR/g++-$MACOSX_GCC_VERSION"
-MACOSX_PREFIXDIR="$PREFIX_BASEDIR/install-$MACOSX_PREFIX"
+MACOSX_PREFIXDIR="${PREFIX_BASEDIR}${MACOSX_BASESDK_DIR}"
 
 # +------------------------------------------------------------------------
 # | Converts a space-separated list of architectures to a series of compiler
