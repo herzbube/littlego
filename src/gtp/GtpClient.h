@@ -14,22 +14,23 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-#import <UIKit/UIKit.h>
 
-#include <string>
-
-@class GtpClient;
-@class GtpEngine;
+// System includes
+#include <fstream>   // ifstream and ofstream
 
 
-@interface FirstViewController : UIViewController {
-  UITextView* textView;
-  NSArray* m_commandSequence;
-  int m_iNextCommand;
+@interface GtpClient : NSObject
+{
+@private
+  std::ofstream m_commandStream;
+  std::ifstream m_responseStream;
+  NSThread* m_thread;
 }
 
-@property(nonatomic, retain) IBOutlet UITextView* textView;
-@property(assign) GtpClient* client;  // todo check if this should be retain
-@property(assign) GtpEngine* engine;  // todo check if this should be retain
++ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
+- (void) setCommand:(NSString*)newValue;
+
+@property(retain) id responseReceiver;   // todo: should be private
+@property(getter=shouldExit, setter=exit) bool shouldExit;
 
 @end

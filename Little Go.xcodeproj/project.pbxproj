@@ -10,6 +10,8 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
+		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
+		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CDEC283212F477360069F5B7 /* FirstViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDEC282D12F477360069F5B7 /* FirstViewController.mm */; };
 		CDEC283312F477360069F5B7 /* Little_GoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283012F477360069F5B7 /* Little_GoAppDelegate.m */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
@@ -25,6 +27,10 @@
 		288765070DF74369002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
+		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
+		CD1087881323D83F00E83543 /* GtpClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpClient.h; sourceTree = "<group>"; };
+		CD1087A31324344C00E83543 /* GtpEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngine.h; sourceTree = "<group>"; };
+		CD1087A41324344C00E83543 /* GtpEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpEngine.mm; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -99,6 +105,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		CD1087861323D83F00E83543 /* gtp */ = {
+			isa = PBXGroup;
+			children = (
+				CD1087881323D83F00E83543 /* GtpClient.h */,
+				CD1087871323D83F00E83543 /* GtpClient.mm */,
+				CD1087A31324344C00E83543 /* GtpEngine.h */,
+				CD1087A41324344C00E83543 /* GtpEngine.mm */,
+			);
+			path = gtp;
+			sourceTree = "<group>";
+		};
 		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +126,7 @@
 		CDEC282B12F477360069F5B7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CD1087861323D83F00E83543 /* gtp */,
 				CDEC282C12F477360069F5B7 /* FirstViewController.h */,
 				CDEC282D12F477360069F5B7 /* FirstViewController.mm */,
 				CDEC282E12F477360069F5B7 /* Little_Go_Prefix.pch */,
@@ -223,6 +241,8 @@
 				CDEC283212F477360069F5B7 /* FirstViewController.mm in Sources */,
 				CDEC283312F477360069F5B7 /* Little_GoAppDelegate.m in Sources */,
 				CDEC283412F477360069F5B7 /* main.m in Sources */,
+				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
+				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,22 +14,13 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-#import <UIKit/UIKit.h>
 
-#include <string>
-
-@class GtpClient;
-@class GtpEngine;
-
-
-@interface FirstViewController : UIViewController {
-  UITextView* textView;
-  NSArray* m_commandSequence;
-  int m_iNextCommand;
+@interface GtpEngine : NSObject
+{
+@private
+  NSThread* m_thread;
 }
 
-@property(nonatomic, retain) IBOutlet UITextView* textView;
-@property(assign) GtpClient* client;  // todo check if this should be retain
-@property(assign) GtpEngine* engine;  // todo check if this should be retain
++ (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
 
 @end
