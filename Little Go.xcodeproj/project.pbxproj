@@ -23,6 +23,8 @@
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765070DF74369002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -35,7 +37,6 @@
 		CDEC283112F477360069F5B7 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		CDEC287D12F477E70069F5B7 /* INSTALL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
-		CDEC287E12F477E70069F5B7 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CDEC287F12F477E70069F5B7 /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CDEC288012F477E70069F5B7 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
@@ -75,6 +76,8 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
+				CD1087701323D07800E83543 /* LICENSE */,
+				CD1087711323D07800E83543 /* NOTICE */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
@@ -121,7 +124,6 @@
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CDEC287D12F477E70069F5B7 /* INSTALL */,
-				CDEC287E12F477E70069F5B7 /* LICENSE */,
 				CDEC287F12F477E70069F5B7 /* MANUAL */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,

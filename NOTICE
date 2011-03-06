@@ -1,0 +1,12 @@
+Little Go
+Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+
+This product uses the Go engine and computer player provided by the Fuego
+library. Minor modifications have been made to the Fuego build process, and the
+Fuego source code, to be able to build and use Fuego as a static library. The
+original Fuego software is available from
+  http://fuego.sourceforge.net/
+
+Fuego, and by inheritance this product, make use of various facilities provided
+by the Boost library. The original Boost software is available from
+  http://www.boost.org/

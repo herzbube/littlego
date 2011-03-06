@@ -1,2 +1,6 @@
+Fri March 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- proof of concept: create an instance of Fuego and communicate with that
+  instance by sending commands and receiving responses
+
 Thu Jan 27 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - created project
