@@ -14,7 +14,15 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-    #import <UIKit/UIKit.h>
-#endif
+#import <UIKit/UIKit.h>
+
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate, UITabBarControllerDelegate>
+{
+  UIWindow *window;
+  UITabBarController *tabBarController;
+}
+
+@property (nonatomic, retain) IBOutlet UIWindow* window;
+@property (nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+
+@end
