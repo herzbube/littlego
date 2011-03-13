@@ -206,3 +206,172 @@ Attaching to a GTP interface involves the following steps:
   input and output streams
 - Instead, I assume that all this needs to be "simulated" by spawning a thread
 
+
+Fuego
+-----
+This section contains basic research about what services Fuego can provide.
+
+A list of all GTP commands known by Fuego 1.0 (obtained with GTP command
+"list_commands") follows. Those commands marked with an asterisk are described
+in the GTP 2.0 specification.
+
+all_move_values
+autobook_additive_cover
+autobook_close
+autobook_counts
+autobook_cover
+autobook_expand
+autobook_export
+autobook_import
+autobook_load_disabled_lines
+autobook_mainline
+autobook_merge
+autobook_open
+autobook_param
+autobook_priority
+autobook_refresh
+autobook_save
+autobook_scores
+autobook_state_info
+autobook_truncate_by_depth
+boardsize (*)
+book_add
+book_clear
+book_delete
+book_info
+book_load
+book_moves
+book_position
+book_save
+book_save_as
+clear_board (*)
+cputime
+cputime_reset
+echo
+echo_err
+final_score (*)
+final_status_list (*)
+fixed_handicap (*)
+fuego-license
+genmove (*)
+get_komi
+get_random_seed
+gg-undo
+go_board
+go_clock
+go_param
+go_param_rules
+go_param_timecontrol
+go_player_board
+go_point_info
+go_point_numbers
+go_rules
+go_safe
+go_safe_dame_static
+go_safe_gfx
+go_safe_winner
+go_sentinel_file
+go_set_info
+gogui-analyze_commands
+gogui-interrupt
+gogui-play_sequence
+gogui-setup
+gogui-setup_player
+is_legal
+kgs-genmove_cleanup
+kgs-time_settings
+known_command (*)
+komi (*)
+list_commands (*)
+list_stones
+loadsgf (*)
+name (*)
+pid
+place_free_handicap (*)
+play (*)
+protocol_version (*)
+quiet
+quit (*)
+reg_genmove (*)
+reg_genmove_toplay
+savesgf
+set_free_handicap (*)
+set_random_seed
+sg_compare_float
+sg_compare_int
+sg_debugger
+sg_exec
+sg_param
+showboard (*)
+time_lastmove
+time_left (*)
+time_settings (*)
+uct_bounds
+uct_default_policy
+uct_estimator_stat
+uct_gfx
+uct_max_memory
+uct_moves
+uct_param_globalsearch
+uct_param_player
+uct_param_policy
+uct_param_rootfilter
+uct_param_search
+uct_patterns
+uct_policy_moves
+uct_prior_knowledge
+uct_rave_values
+uct_root_filter
+uct_savegames
+uct_savetree
+uct_score
+uct_sequence
+uct_stat_player
+uct_stat_player_clear
+uct_stat_policy
+uct_stat_policy_clear
+uct_stat_search
+uct_stat_territory
+uct_value
+uct_value_black
+undo (*)
+version (*)
+
+Working with .sgf files:
+- The GTP commands "loadsgf" and "savesgf" are useful for this. The argument
+  these commands take is a path to the .sgf file to save or load. Due to the
+  limitations of the GTP protocol, the filename cannot include spaces, hash
+  signs (#), or control characters.
+- If coding is involved, the classes SgGameReader and SgGameWriter in the
+  SmartGo library will be useful
+
+Determine if stones are captured as the result of a move, and which stones:
+- The GTP command "list_stones" enumerates the positions that the specified
+  player has stones on. If compared with the current board situation in
+  Little Go, any differences indicate which stones have been captured.
+- Although the GTP specification does not recommend it, the result of GTP
+  command "showboard" could also be used to find any differences with the
+  current board situation in Little Go.
+- Implementing this myself should also be not too hard: Code an algorithm that
+  finds finds out how many liberties a stone or a group has, then examine the
+  four neighbours of the stone that was just placed.
+
+Scoring
+- Possibly useful GTP commands: final_score (GoUctCommands::CmdFinalScore),
+  final_status_list (GoUctCommands::CmdFinalStatusList),
+  uct_score (GoUctCommands::CmdScore)
+
+Two computer players:
+- The "genmove" GTP command has an argument that allows to specify the color
+  to generate a move for
+- This can be leveraged to effectively let Fuego play against itself
+
+Recommend a move
+- The "reg_genmove" GTP command generates a move, but does not play it
+
+Other useful stuff
+- The "go_point_info" GTP command allows to query Fuego about various properties
+  of the specified point. One of the properties is whether the point would be a
+  legal move for either black or white
+- The "is_legal" GTP command allows to query Fuego whether it would be legal for
+  the specified player to play on the specified point

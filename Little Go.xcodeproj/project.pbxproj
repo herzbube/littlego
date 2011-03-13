@@ -12,12 +12,22 @@
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
-		CDEC283212F477360069F5B7 /* FirstViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDEC282D12F477360069F5B7 /* FirstViewController.mm */; };
-		CDEC283312F477360069F5B7 /* Little_GoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283012F477360069F5B7 /* Little_GoAppDelegate.m */; };
+		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
+		CD108815132559EA00E83543 /* GtpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108814132559EA00E83543 /* GtpResponse.m */; };
+		CD10881913255A4000E83543 /* GoBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881813255A4000E83543 /* GoBoard.m */; };
+		CD10881C13255A4700E83543 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
+		CD10881F13255A6100E83543 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
+		CD10882213255A6B00E83543 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
+		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
+		CD10885E1326CCEB00E83543 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD10885D1326CCEB00E83543 /* DebugViewController.mm */; };
+		CD1088611326CD2400E83543 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
+		CD1088631326CDAA00E83543 /* PlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD1088621326CDAA00E83543 /* PlayView.xib */; };
+		CD10887D1326D2C100E83543 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
+		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
+		CDEC283312F477360069F5B7 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283012F477360069F5B7 /* ApplicationDelegate.m */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
-		CDEC28AA12F4A2BB0069F5B7 /* FirstView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* FirstView.xib */; };
+		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
-		CDEC28AC12F4A2BB0069F5B7 /* SecondView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A912F4A2BB0069F5B7 /* SecondView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,15 +41,36 @@
 		CD1087881323D83F00E83543 /* GtpClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpClient.h; sourceTree = "<group>"; };
 		CD1087A31324344C00E83543 /* GtpEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngine.h; sourceTree = "<group>"; };
 		CD1087A41324344C00E83543 /* GtpEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpEngine.mm; sourceTree = "<group>"; };
+		CD108810132559DE00E83543 /* GtpCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommand.h; sourceTree = "<group>"; };
+		CD108811132559DE00E83543 /* GtpCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommand.m; sourceTree = "<group>"; };
+		CD108813132559EA00E83543 /* GtpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpResponse.h; sourceTree = "<group>"; };
+		CD108814132559EA00E83543 /* GtpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpResponse.m; sourceTree = "<group>"; };
+		CD10881713255A4000E83543 /* GoBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoard.h; sourceTree = "<group>"; };
+		CD10881813255A4000E83543 /* GoBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoard.m; sourceTree = "<group>"; };
+		CD10881A13255A4700E83543 /* GoGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGame.h; sourceTree = "<group>"; };
+		CD10881B13255A4700E83543 /* GoGame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGame.m; sourceTree = "<group>"; };
+		CD10881D13255A6100E83543 /* GoMove.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMove.h; sourceTree = "<group>"; };
+		CD10881E13255A6100E83543 /* GoMove.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMove.m; sourceTree = "<group>"; };
+		CD10882013255A6B00E83543 /* GoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayer.h; sourceTree = "<group>"; };
+		CD10882113255A6B00E83543 /* GoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayer.m; sourceTree = "<group>"; };
+		CD10882313255AA600E83543 /* GoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPoint.h; sourceTree = "<group>"; };
+		CD10882413255AA600E83543 /* GoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPoint.m; sourceTree = "<group>"; };
+		CD10885C1326CCEB00E83543 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
+		CD10885D1326CCEB00E83543 /* DebugViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
+		CD10885F1326CD2400E83543 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
+		CD1088601326CD2400E83543 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
+		CD1088621326CDAA00E83543 /* PlayView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
+		CD10887B1326D2C100E83543 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
+		CD10887C1326D2C100E83543 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
+		CDA264AA132CF7EF00FAFC51 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		CDA264AB132CF7EF00FAFC51 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
 		CDE3F58F13117EFE00EC16CC /* build-env.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-env.sh"; sourceTree = "<group>"; };
-		CDEC282C12F477360069F5B7 /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		CDEC282D12F477360069F5B7 /* FirstViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FirstViewController.mm; sourceTree = "<group>"; };
-		CDEC282E12F477360069F5B7 /* Little_Go_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Little_Go_Prefix.pch; sourceTree = "<group>"; };
-		CDEC282F12F477360069F5B7 /* Little_GoAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Little_GoAppDelegate.h; sourceTree = "<group>"; };
-		CDEC283012F477360069F5B7 /* Little_GoAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Little_GoAppDelegate.m; sourceTree = "<group>"; };
+		CDEC282E12F477360069F5B7 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
+		CDEC283012F477360069F5B7 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationDelegate.m; sourceTree = "<group>"; };
 		CDEC283112F477360069F5B7 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		CDEC287D12F477E70069F5B7 /* INSTALL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
@@ -50,10 +81,9 @@
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
 		CDEC288412F477E70069F5B7 /* Roadmap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Roadmap; sourceTree = "<group>"; };
 		CDEC288512F477E70069F5B7 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
-		CDEC28A712F4A2BB0069F5B7 /* FirstView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FirstView.xib; sourceTree = "<group>"; };
+		CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DebugView.xib; sourceTree = "<group>"; };
 		CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		CDEC28A912F4A2BB0069F5B7 /* SecondView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SecondView.xib; sourceTree = "<group>"; };
-		CDEC28AD12F4A3500069F5B7 /* Little_Go-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Little_Go-Info.plist"; sourceTree = "<group>"; };
+		CDEC28AD12F4A3500069F5B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "get-and-build-3rdparty-software.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,8 +142,56 @@
 				CD1087871323D83F00E83543 /* GtpClient.mm */,
 				CD1087A31324344C00E83543 /* GtpEngine.h */,
 				CD1087A41324344C00E83543 /* GtpEngine.mm */,
+				CD108810132559DE00E83543 /* GtpCommand.h */,
+				CD108811132559DE00E83543 /* GtpCommand.m */,
+				CD108813132559EA00E83543 /* GtpResponse.h */,
+				CD108814132559EA00E83543 /* GtpResponse.m */,
 			);
 			path = gtp;
+			sourceTree = "<group>";
+		};
+		CD10881613255A1A00E83543 /* go */ = {
+			isa = PBXGroup;
+			children = (
+				CD10881713255A4000E83543 /* GoBoard.h */,
+				CD10881813255A4000E83543 /* GoBoard.m */,
+				CD10881A13255A4700E83543 /* GoGame.h */,
+				CD10881B13255A4700E83543 /* GoGame.m */,
+				CD10881D13255A6100E83543 /* GoMove.h */,
+				CD10881E13255A6100E83543 /* GoMove.m */,
+				CD10882013255A6B00E83543 /* GoPlayer.h */,
+				CD10882113255A6B00E83543 /* GoPlayer.m */,
+				CD10882313255AA600E83543 /* GoPoint.h */,
+				CD10882413255AA600E83543 /* GoPoint.m */,
+			);
+			path = go;
+			sourceTree = "<group>";
+		};
+		CD1088551326CBB300E83543 /* debug */ = {
+			isa = PBXGroup;
+			children = (
+				CD10885C1326CCEB00E83543 /* DebugViewController.h */,
+				CD10885D1326CCEB00E83543 /* DebugViewController.mm */,
+			);
+			path = debug;
+			sourceTree = "<group>";
+		};
+		CD1088561326CBB300E83543 /* play */ = {
+			isa = PBXGroup;
+			children = (
+				CD10885F1326CD2400E83543 /* PlayViewController.h */,
+				CD1088601326CD2400E83543 /* PlayViewController.m */,
+				CD10887B1326D2C100E83543 /* PlayView.h */,
+				CD10887C1326D2C100E83543 /* PlayView.m */,
+			);
+			path = play;
+			sourceTree = "<group>";
+		};
+		CD1088571326CBB300E83543 /* settings */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = settings;
 			sourceTree = "<group>";
 		};
 		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
@@ -126,12 +204,16 @@
 		CDEC282B12F477360069F5B7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CD1088561326CBB300E83543 /* play */,
+				CD1088571326CBB300E83543 /* settings */,
+				CD1088551326CBB300E83543 /* debug */,
+				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
-				CDEC282C12F477360069F5B7 /* FirstViewController.h */,
-				CDEC282D12F477360069F5B7 /* FirstViewController.mm */,
-				CDEC282E12F477360069F5B7 /* Little_Go_Prefix.pch */,
-				CDEC282F12F477360069F5B7 /* Little_GoAppDelegate.h */,
-				CDEC283012F477360069F5B7 /* Little_GoAppDelegate.m */,
+				CDA264AA132CF7EF00FAFC51 /* Constants.h */,
+				CDA264AB132CF7EF00FAFC51 /* Constants.m */,
+				CDEC282E12F477360069F5B7 /* Prefix.pch */,
+				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
+				CDEC283012F477360069F5B7 /* ApplicationDelegate.m */,
 				CDEC283112F477360069F5B7 /* main.m */,
 			);
 			path = src;
@@ -156,10 +238,10 @@
 		CDEC28A612F4A2BB0069F5B7 /* resource */ = {
 			isa = PBXGroup;
 			children = (
-				CDEC28AD12F4A3500069F5B7 /* Little_Go-Info.plist */,
-				CDEC28A712F4A2BB0069F5B7 /* FirstView.xib */,
+				CD1088621326CDAA00E83543 /* PlayView.xib */,
+				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
+				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
-				CDEC28A912F4A2BB0069F5B7 /* SecondView.xib */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -225,9 +307,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDEC28AA12F4A2BB0069F5B7 /* FirstView.xib in Resources */,
+				CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */,
 				CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */,
-				CDEC28AC12F4A2BB0069F5B7 /* SecondView.xib in Resources */,
+				CD1088631326CDAA00E83543 /* PlayView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,11 +320,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDEC283212F477360069F5B7 /* FirstViewController.mm in Sources */,
-				CDEC283312F477360069F5B7 /* Little_GoAppDelegate.m in Sources */,
+				CDEC283312F477360069F5B7 /* ApplicationDelegate.m in Sources */,
 				CDEC283412F477360069F5B7 /* main.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
+				CD108812132559DE00E83543 /* GtpCommand.m in Sources */,
+				CD108815132559EA00E83543 /* GtpResponse.m in Sources */,
+				CD10881913255A4000E83543 /* GoBoard.m in Sources */,
+				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
+				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
+				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
+				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
+				CD10885E1326CCEB00E83543 /* DebugViewController.mm in Sources */,
+				CD1088611326CD2400E83543 /* PlayViewController.m in Sources */,
+				CD10887D1326D2C100E83543 /* PlayView.m in Sources */,
+				CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,10 +349,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = src/Little_Go_Prefix.pch;
+				GCC_PREFIX_HEADER = src/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
-				INFOPLIST_FILE = "resource/Little_Go-Info.plist";
+				INFOPLIST_FILE = resource/Info.plist;
 				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-lfuego",
@@ -279,10 +371,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = src/Little_Go_Prefix.pch;
+				GCC_PREFIX_HEADER = src/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
-				INFOPLIST_FILE = "resource/Little_Go-Info.plist";
+				INFOPLIST_FILE = resource/Info.plist;
 				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-lfuego",

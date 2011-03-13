@@ -59,11 +59,47 @@ Priority 1 (important)
   - fix for the configure problem
   - improvements to the Autoconf/Automake configuration, i.e. optional creation
     of a unified library and optional installation of headers
+- Set up Doxygen (see README.developer)
 
 
 Priority 2 (nice to have)
 -------------------------
-No items yet
+Future improvements to the 3rdparty build process:
+- Build both a debug and a release version of 3rdparty libraries; use the build
+  variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS
+- Research wether the build variable $(EFFECTIVE_PLATFORM_NAME) exists and what
+  values it may take, especially if there are different values for iPhoneOS and
+  iPhoneSimulator builds (suspected values are iphoneos and iphonesimulator).
+  A list of all official build variables is this:
+  http://developer.apple.com/library/mac/#documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
+- Check out the following article to see whether it would make sense to add
+  more visible references to external libraries to the Xcode project:
+  http://wiki.remobjects.com/wiki/Linking_Custom_Static_Libraries_from_your_iPhone_Xcode_Projects
+- Fix build scripts so that configure-based projects can store multiple
+  platform builds, so that distclean before a build becomes an option instead
+  of a requirement (Boost already supports this)
+- Check to see if it makes sense (and is feasible) to create a single universal
+  library for Boost in the same way as it is done for Fuego
+- Check to see if there is a better way to create the single universal library
+  for Fuego than the current clunky way. Possible requires libtool support.
+- Check to see whether the compiler options -mmacosx-version-min and
+  -miphoneos-version-min may replace usage of the environment variables
+  MACOSX_DEPLOYMENT_TARGET and IPHONEOS_DEPLOYMENT_TARGET (note: from studying
+  an Xcode compilation command it appears that the iPhoneSimulator platform
+  uses -mmacosx-version-min, or MACOSX_DEPLOYMENT_TARGET)
+- bjam clean does not work
+- Fix the following issue: IPHONE_SIMULATOR_BASESDK_VERSION at the moment (with
+  Xcode 3.2.5) cannot be 4.2, must be 4.1, because with 4.2 there are problems
+  with symbols in 3rdparty libraries. The symptom is that the application
+  crashes with the following output in the debug console:
+    Detected an attempt to call a symbol in system libraries that is not present on the iPhone:
+    pthread_cond_wait$UNIX2003 called from function _ZN5boost18condition_variable4waitERNS_11unique_lockINS_5mutexEEE in image Little Go.
+    If you are encountering this problem running a simulator binary within gdb, make sure you 'set start-with-shell off' first.
+- Find a way in Xcode how to specify different base SDKs for the iPhone (Device)
+  and the iPhoneSimulator builds. Without this, 1) it's impossible to reference
+  such builds of 3rdparty libs in an elegant way; and 2) linking a 4.2 simulator
+  Xcode build against a 4.1 simulator 3rdparty build is a mismatch that is
+  asking for trouble
 
 
 Priority 3 (not important)
