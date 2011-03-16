@@ -15,6 +15,7 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #import "GoBoard.h"
 #import "GoPoint.h"
 
@@ -32,7 +33,10 @@
 {
   GoBoard* board = [[GoBoard alloc] init];
   if (board)
+  {
     board.size = size;
+    [board autorelease];
+  }
   return board;
 }
 

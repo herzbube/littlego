@@ -14,10 +14,18 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// Project includes
 #import "GtpResponse.h"
 
 @implementation GtpResponse
 
 @synthesize response;
+
+- (void) dealloc
+{
+  self.response = nil;
+  [super dealloc];
+}
 
 @end

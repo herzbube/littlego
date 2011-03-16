@@ -15,10 +15,12 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
 @class GoBoard;
 @class GoPlayer;
 @class GoMove;
 @class GoPoint;
+
 
 @interface GoGame : NSObject
 {

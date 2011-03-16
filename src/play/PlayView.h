@@ -14,8 +14,11 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// System includes
 #import <UIKit/UIKit.h>
 
+// Forward declarations
 @class GoMove;
 
 // TODO things to document:

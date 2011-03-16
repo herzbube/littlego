@@ -22,8 +22,6 @@
 #import "../go/GoMove.h"
 #import "../go/GoPoint.h"
 
-@class GoPoint;
-
 
 @interface PlayView(Private)
 /// @name UINibLoadingAdditions category
@@ -123,8 +121,12 @@ static PlayView* sharedView = nil;
   self.lineLength = 0;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
+  self.viewBackgroundColor = nil;
+  self.boardColor = nil;
+  self.lineColor = nil;
+  self.starPointColor = nil;
   [super dealloc];
 }
 

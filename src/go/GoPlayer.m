@@ -14,7 +14,10 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// Project includes
 #import "GoPlayer.h"
+
 
 @implementation GoPlayer
 
@@ -24,14 +27,23 @@
 
 + (GoPlayer*) blackPlayer
 {
-  return [[GoPlayer alloc] init];
+  GoPlayer* player = [[GoPlayer alloc] init];
+  if (player)
+  {
+    player.black = true;
+    [player autorelease];
+  }
+  return player;
 }
 
 + (GoPlayer*) whitePlayer
 {
   GoPlayer* player = [[GoPlayer alloc] init];
   if (player)
+  {
     player.black = false;
+    [player autorelease];
+  }
   return player;
 }
 
@@ -47,6 +59,12 @@
   self.name = @"Fuego";
 
   return self;
+}
+
+- (void) dealloc
+{
+  self.name = nil;
+  [super dealloc];
 }
 
 @end

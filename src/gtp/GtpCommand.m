@@ -14,10 +14,13 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// Project includes
 #import "GtpCommand.h"
 #import "GtpClient.h"
 #import "GtpResponse.h"
 #import "../ApplicationDelegate.h"
+
 
 @implementation GtpCommand
 
@@ -29,7 +32,10 @@
 {
   GtpCommand* cmd = [[GtpCommand alloc] init];
   if (cmd)
+  {
     cmd.command = command;
+    [cmd autorelease];
+  }
   return cmd;
 }
 
@@ -45,6 +51,14 @@
   self.response = [[GtpResponse alloc] init];
 
   return self;
+}
+
+- (void) dealloc
+{
+  self.command = nil;
+  self.client = nil;  // not strictly necessary since we don't retain it
+  self.response = nil;
+  [super dealloc];
 }
 
 @end

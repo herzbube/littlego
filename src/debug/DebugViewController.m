@@ -20,4 +20,10 @@
 
 @synthesize textView;
 
+- (void) dealloc
+{
+  self.textView = nil;
+  [super dealloc];
+}
+
 @end

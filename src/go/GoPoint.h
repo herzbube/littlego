@@ -15,7 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
 @class GoMove;
+
 
 @interface GoPoint : NSObject
 {
@@ -28,6 +30,8 @@
 @property(retain) NSString* vertexX;
 @property(retain) NSString* vertexY;
 @property(readonly) NSString* vertex;
-@property(retain) GoMove* move;
+// TODO: Check if this back-reference is really necessary or could be solved
+// differently.
+@property(assign) GoMove* move;  // do not retain, otherwise there would be a retain cycle
 
 @end

@@ -31,7 +31,6 @@ static std::ifstream responseStream;
 
 
 @interface GtpClient(Private)
-
 /// @name Initialization and deallocation
 //@{
 - (id) initWithPipes:(NSArray*)pipes responseReceiver:(id)aReceiver;
@@ -46,6 +45,16 @@ static std::ifstream responseStream;
 @synthesize responseReceiver;
 @synthesize shouldExit;
 
+// -----------------------------------------------------------------------------
+/// @brief xxx
+// -----------------------------------------------------------------------------
++ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
+{
+  // Create copies so that the objects can be safely used by the thread when
+  // it starts
+  NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
+  return [[[GtpClient alloc] initWithPipes:pipes responseReceiver:aReceiver] autorelease];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpClient object.
@@ -58,7 +67,7 @@ static std::ifstream responseStream;
   self = [super init];
   if (! self)
     return nil;
-  
+
   self.responseReceiver = aReceiver;
   self.shouldExit = false;
 
@@ -79,18 +88,8 @@ static std::ifstream responseStream;
 - (void) dealloc
 {
   // TODO implement stuff
+  [m_thread release];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief xxx
-// -----------------------------------------------------------------------------
-+ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
-{
-  // Create copies so that the objects can be safely used by the thread when
-  // it starts
-  NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
-  return [[GtpClient alloc] initWithPipes:pipes responseReceiver:aReceiver];
 }
 
 // -----------------------------------------------------------------------------
@@ -99,7 +98,7 @@ static std::ifstream responseStream;
 - (void) mainLoop:(NSArray*)pipes
 {
   // Create an autorelease pool as the very first thing in this thread
-  NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+  NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
 
   // Stream to write commands for the GTP engine
   NSString* inputPipePath = [pipes objectAtIndex:0];
@@ -116,15 +115,18 @@ static std::ifstream responseStream;
   NSTimer* distantFutureTimer = [[NSTimer alloc] initWithFireDate:distantFuture
                                                          interval:1.0
                                                            target:self
-                                                         selector:@selector(setClientThread:)   // pseudo selector
+                                                         selector:@selector(dealloc:)   // pseudo selector
                                                          userInfo:nil
                                                           repeats:NO];
   [[NSRunLoop currentRunLoop] addTimer:distantFutureTimer forMode:NSDefaultRunLoopMode];
+  [distantFutureTimer autorelease];
 
   while (true)
   {
+    NSAutoreleasePool* loopPool = [[NSAutoreleasePool alloc] init];
     bool hasInputSources = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                                                     beforeDate:distantFuture];
+    [loopPool drain];
     if (! hasInputSources)  // always true, see timer input source above
       break;
     if (self.shouldExit)
@@ -132,7 +134,7 @@ static std::ifstream responseStream;
   }
 
   // Deallocate the autorelease pool as the very last thing in this thread
-  [pool release];
+  [mainPool drain];
 }
 
 // -----------------------------------------------------------------------------

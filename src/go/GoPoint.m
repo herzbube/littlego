@@ -28,7 +28,11 @@
 + (GoPoint*) pointFromVertex:(NSString*)vertex
 {
   assert(vertex != nil);
-  assert([vertex length] == 2);
+  if (! vertex)
+    return nil;
+  assert([vertex length] >= 2);
+  if ([vertex length] < 2)
+    return nil;
   GoPoint* point = [[GoPoint alloc] init];
   if (point)
   {
@@ -38,6 +42,7 @@
     unichar charA = [@"A" characterAtIndex:0];
     point.numVertexX = charVertex - charA + 1;  // +1 because vertex is not zero-based
     point.numVertexY = [point.vertexY intValue];
+    [point autorelease];
   }
   return point;
 }
@@ -56,6 +61,14 @@
   self.move = nil;
 
   return self;
+}
+
+- (void) dealloc
+{
+  self.vertexX = nil;
+  self.vertexY = nil;
+  self.move = nil;  // not strictly necessary since we don't retain it
+  [super dealloc];
 }
 
 - (NSString*) vertex

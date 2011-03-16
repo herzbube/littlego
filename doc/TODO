@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Test application shutdown to see whether there are no memory leaks
 - Add opening books to resources
 - Fix build system
   - build-fuego.sh must apply the patch

@@ -15,21 +15,29 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #include "../Constants.h"
 
+// Forward declarations
 @class GoPoint;
+
 
 @interface GoMove : NSObject
 {
 }
 
-+ (GoMove*) newMove:(enum GoMoveType)type after:(GoMove*)move;
-- (GoMove*) init:(enum GoMoveType)type;
++ (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move;
+- (GoMove*) init:(enum GoMoveType)initType;
 
 @property enum GoMoveType type;
 @property(retain) GoPoint* point;
 @property(getter=isBlack) bool black;
-@property(retain) GoMove* previous;   // TODO check for retain cycle
-@property(retain) GoMove* next;       // TODO check for retain cycle
+// TODO: Check if previous and next properties should be made read-only to
+// the public, because otherwise anyone invoking the setters would also have
+// to take care of the double-linked list, similarly to how it is done in the
+// convenience constructor move:after:(). Alternatively, setters could be
+// implemented that can handle double-linking.
+@property(assign) GoMove* previous;       // do not retain, otherwise there would be a retain cycle
+@property(retain) GoMove* next;   // retain here, making us the parent, and next the child
 
 @end

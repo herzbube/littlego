@@ -18,7 +18,9 @@
 // This file is #import'ed from pure Objective-C implementations, therefore it
 // must not contain any C++ syntax.
 
+// Forward declarations
 @class GtpCommand;
+
 
 @interface GtpClient : NSObject
 {
@@ -31,7 +33,7 @@
 - (void) submit:(GtpCommand*)command;
 - (NSString*) generateMove:(bool)forBlack;
 
-@property(retain) id responseReceiver;   // todo: should be private
+@property(assign) id responseReceiver;   // do not retain to prevent possible retain cycle
 @property(getter=shouldExit, setter=exit) bool shouldExit;
 
 @end

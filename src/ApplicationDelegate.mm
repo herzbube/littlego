@@ -137,6 +137,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   [tabBarController release];
   [window release];
+  self.gtpClient = nil;
+  self.gtpEngine = nil;
   [super dealloc];
 }
 

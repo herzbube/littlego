@@ -15,7 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
 @class GoPoint;
+
 
 @interface GoBoard : NSObject
 {

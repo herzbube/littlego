@@ -34,6 +34,17 @@
 @implementation GtpEngine
 
 // -----------------------------------------------------------------------------
+/// @brief xxx
+// -----------------------------------------------------------------------------
++ (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe
+{
+  // Create copies so that the objects can be safely used by the thread when
+  // it starts
+  NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
+  return [[[GtpEngine alloc] initWithPipes:pipes] autorelease];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a GtpEngine object.
 ///
 /// @note This is the designated initializer of GtpEngine.
@@ -62,18 +73,8 @@
 - (void) dealloc
 {
   // TODO implement stuff
+  [m_thread release];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief xxx
-// -----------------------------------------------------------------------------
-+ (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe
-{
-  // Create copies so that the objects can be safely used by the thread when
-  // it starts
-  NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
-  return [[GtpEngine alloc] initWithPipes:pipes];
 }
 
 // -----------------------------------------------------------------------------
@@ -82,7 +83,7 @@
 - (void) mainLoop:(NSArray*)pipes
 {
   // Create an autorelease pool as the very first thing in this thread
-  NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+  NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
 
   // Pipe to read commands from the GTP client
   NSString* inputPipePath = [pipes objectAtIndex:0];
@@ -115,6 +116,8 @@
 
   try
   {
+    // No need to create an autorelease pool, no Objective-C stuff is happening
+    // in here...
     FuegoMainUtil::FuegoMain(argc, argv);
   }
   catch(std::exception& e)
@@ -125,7 +128,7 @@
   }
 
   // Deallocate the autorelease pool as the very last thing in this thread
-  [pool release];
+  [mainPool release];
 }
 
 @end

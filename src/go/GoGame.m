@@ -15,6 +15,7 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #import "GoGame.h"
 #import "GoBoard.h"
 #import "GoPlayer.h"
@@ -23,6 +24,7 @@
 #import "../gtp/GtpClient.h"
 #import "../play/PlayView.h"
 #import "../ApplicationDelegate.h"
+
 
 @implementation GoGame
 
@@ -39,6 +41,7 @@
   static GoGame* sharedGame = nil;
   @synchronized(self)
   {
+    // TODO: We are the owner of sharedGame, but we never release the object
     if (! sharedGame)
       sharedGame = [[GoGame alloc] init];
     return sharedGame;
@@ -63,10 +66,20 @@
   return self;
 }
 
+- (void) dealloc
+{
+  self.board = nil;
+  self.playerBlack = nil;
+  self.playerWhite = nil;
+  self.firstMove = nil;
+  self.lastMove = nil;
+  [super dealloc];
+}
+
 - (void) move:(enum GoMoveType)type atPoint:(GoPoint*)point;
 {
   GoMove* move = nil;
-  move = [GoMove newMove:type after:self.lastMove];
+  move = [GoMove move:type after:self.lastMove];
   if (PlayMove == type && ! point)
   {
     NSString* vertex = [[[ApplicationDelegate sharedDelegate] gtpClient] generateMove:move.isBlack];

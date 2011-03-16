@@ -14,8 +14,11 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// Project includes
 #import "PlayViewController.h"
 #import "../go/GoGame.h"
+
 
 /// @brief This category declares private methods for the DebugViewController
 /// class. 
@@ -36,6 +39,7 @@
 @synthesize playView;
 @synthesize activityIndicator;
 
+
 static PlayViewController* sharedController = nil;
 + (PlayViewController*) sharedController
 {
@@ -44,6 +48,13 @@ static PlayViewController* sharedController = nil;
     assert(sharedController != nil);
     return sharedController;
   }
+}
+
+- (void) dealloc
+{
+  self.playView = nil;
+  self.activityIndicator = nil;
+  [super dealloc];
 }
 
 /*

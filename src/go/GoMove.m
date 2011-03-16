@@ -14,7 +14,11 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// Project includes
 #import "GoMove.h"
+#import "GoPoint.h"
+
 
 @implementation GoMove
 
@@ -24,22 +28,27 @@
 @synthesize previous;
 @synthesize next;
 
-+ (GoMove*) newMove:(enum GoMoveType)type after:(GoMove*)move
++ (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move
 {
   GoMove* newMove = [[GoMove alloc] init:type];
   if (newMove)
-    newMove.previous = move;  // also sets playMove's black property
+  {
+    newMove.previous = move;
+    move.next = newMove;  // set reference to self
+    newMove.black = ! move.isBlack;
+    [newMove autorelease];
+  }
   return newMove;
 }
 
-- (GoMove*) init:(enum GoMoveType)xtype
+- (GoMove*) init:(enum GoMoveType)initType
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.type = xtype;
+  self.type = initType;
   self.black = true;
   self.point = nil;
   self.previous = nil;
@@ -48,34 +57,25 @@
   return self;
 }
 
-// also updates the next pointer of the old and new previous, and the black
-// property of this move (alternate color of the new previous if it is not nil,
-// black otherwise)
-- (void) setPrevious:(GoMove*)newValue
+- (void) dealloc
 {
-  @synchronized(self)
+  if (self.point)
   {
-    if (previous == newValue)
-      return;
-    if (previous)
-    {
-      previous.next = nil;
-      [previous release];
-      previous = nil;
-    }
-    if (newValue)
-    {
-      newValue.next = self;
-      [newValue retain];
-      previous = newValue;
-      self.black = ! newValue.black;
-    }
-    else
-    {
-      self.black = true;
-    }
-
+    // Check if there is a reference to self; currently there is no guarantee
+    // that this is the case - any number of moves may use the same point, but
+    // the point references back to only one move: usually this should be the
+    // last of the moves that use the point
+    if (self == self.point.move)
+      self.point.move = nil;  // remove reference to self
+    self.point = nil;
   }
+  self.previous = nil;  // not strictly necessary since we don't retain it
+  if (self.next)
+  {
+    self.next.previous = nil;  // remove reference to self
+    self.next = nil;
+  }
+  [super dealloc];
 }
 
 @end
