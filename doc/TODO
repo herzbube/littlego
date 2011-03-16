@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Add opening books to resources
 - Fix build system
   - build-fuego.sh must apply the patch
   - Create three successive patches as outlined by the section

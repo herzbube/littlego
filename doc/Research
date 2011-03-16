@@ -13,7 +13,8 @@ Aya
 - The program is labelled as "free software"
 - The most recent version from 2008 is made available for download without
   source and for the Windows platform only
-- Maybe the author could be persuaded to let me port the program to Mac OS X / iOS under a closed-source agreement
+- Maybe the author could be persuaded to let me port the program to
+  Mac OS X / iOS under a closed-source agreement?
 
 NeuroGo
 - http://webdocs.cs.ualberta.ca/~emarkus/neurogo/
@@ -22,13 +23,16 @@ NeuroGo
 Fuego
 - http://fuego.sourceforge.net/
 - A library/framework for programming Go games, including a Go engine
-- Released under LGPL v3, which unfortunately includes the redistribution clause(s) from the GPL v3
-- This looks so promising that I might write to the developers (fuego-devel) with an inquiry as to whether they think I could include the library
+- Released under LGPL v3, which unfortunately includes the redistribution
+  clause(s) from the GPL v3
+- This looks so promising that I might write to the developers (fuego-devel)
+  with an inquiry as to whether they think I could include the library
 
 SmartGo
 - http://www.smartgo.com/en/index.htm
 - Commercial product
-- Already offers the iPhone applications "SmartGo" and "SmartGo Pro"; both apps cost money
+- Already offers the iPhone applications "SmartGo" and "SmartGo Pro"; both apps
+  cost money
 
 Steenvreter, Magog and Migos
 - http://erikvanderwerf.tengen.nl/
@@ -40,7 +44,8 @@ Explorer
 - Program is freeware
 - Googling for "Explorer.sit.hqx" leads to the following download location
   ftp://ftp.icsi.berkeley.edu/pub/theory/mmueller/Explorer.sit.hqx
-- The archive expands to a binary and a "Read me" file that explains that this is shareware
+- The archive expands to a binary and a "Read me" file that explains that this
+  is shareware
 - The source code effectively is not available
 
 Indigo
@@ -59,7 +64,8 @@ Pachi
 Moyoman
 - http://www.moyoman.org/
 - Player program written in Java
-- Not very far developed, and also not actively developed anymore (last release is 2004)
+- Not very far developed, and also not actively developed anymore (last release
+  is 2004)
 - Licensed under the Apache License 2.0
 
 
@@ -98,14 +104,11 @@ The actual licenses:
 - http://www.gnu.org/copyleft/lesser.html
 
 Articles about the LGPL and iPhone apps:
-- This one believes it's possible, although it's not in the spirit of the license
+- This one believes it's possible, although it's not in the spirit of the
+  license
   http://huyzing.com/2009/08/24/compatibility-between-the-iphone-app-store-and-the-lgpl/
 - This one believes it's not possible because of the $99/year cost
   http://loufranco.com/blog/files/lgpl-and-the-iphone.html
-
-General research terms:
-- gpl itunes
-- lgpl itunes
 
 
 Programming my own Go engine
@@ -125,6 +128,8 @@ research.
   good enough solution, where an exhaustive search is impractical)
 - MCTS publications: http://webdocs.cs.ualberta.ca/~mmueller/mcts.html
 - Computer Go page: http://senseis.xmp.net/?ComputerGo
+
+Research stopped for the moment because I haved decided to use Fuego.
 
 
 GTP - Go Text Protocol

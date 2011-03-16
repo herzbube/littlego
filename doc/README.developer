@@ -86,8 +86,35 @@ script/get-and-build-3rdparty-software.sh
   are required to build and run Little Go.
 
 
-Build system configuration
---------------------------
+3rdparty software
+-----------------
+Before the first Xcode build of the project is possible, 3rdparty software must
+be downloaded and built. Hopefully, the convenience script does all this for
+you if you run it on the command line from the project root folder:
+
+  ./script/get-and-build-3rdparty-software.sh
+
+A short overview of what the script does:
+- Invoke build-software.sh for each 3rdparty software package, in the correct
+  order of dependencies
+- build-software.sh first invokes build-env.sh to obtain general build settings;
+  build-env.sh reflects the Xcode build environment such as base SDK, or
+  deployment target. If the Xcode build environment changes, build-env.sh also
+  needs to be modified
+- build-software.sh then invokes the package-specific build script (e.g.
+  build-fuego.sh) to obtain information specific to that package. Besides build
+  settings this also includes the location where the package sources can be
+  downloaded
+- build-software.sh then proceeds with a number of fixed steps: download and
+  extract the package sources, execute pre-build steps (e.g. configure), run the
+  actual build (e.g. make), execute post-build steps, and finally install the
+  build software
+- All this occurs within the project top-level folder "3rdparty", which is
+  automatically created by the build scripts
+
+
+Xcode build system configuration
+--------------------------------
 Important configuration settings in Xcode:
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
@@ -127,17 +154,46 @@ documentation is to source code:
 Implementation notes
 --------------------
 - Error handling: TODO
-- Thread synchronization: TODO
 - Memory management: Uses retain/release, there is no garbage collection on iOS.
-- Communication with Fuego: Usually this is done by running Fuego in a separate
-  process and then attaching an output and an input stream to that process'
-  stdin and stdout. Since iOS does not allow to launch other processes, a
-  different solution is required. What works very nicely is to run the Fuego
+- Communication with Fuego: On PC platforms this is done by running Fuego in a
+  separate process and then attaching an output and an input stream to that
+  process' stdin and stdout. Since iOS does not allow to launch other processes,
+  a different solution is required. What works very nicely is to run the Fuego
   engine in a secondary thread and to let it attach its input/output streams to
   a pair of named pipes. The Fuego client also runs in a secondary thread and
   attaches two complementary streams to the same pair of named pipes.
   Synchronization between the two threads is achieved through the pipes'
   blocking behaviour.
+- Thread architecture
+  - Main thread: Reacts to user input; submits commands to the GTP client;
+    is notified asynchronously by the GTP client after a command has been
+    processed; updates the GUI with information obtained from the response to
+    the command.
+  - GTP client secondary thread: Reacts to commands submitted by the main
+    thread; sends the commands to the GTP engine via file stream which is
+    attached to a named pipe NP1; wakes up when it receives the response from
+    the GTP engine via file stream which is attached to another named pipe NP2;
+    notifies the main thread of the response.
+  - GTP engine secondary thread: Reacts to commands received from the GTP
+    client via file stream which is attached to named pipe NP1; processes the
+    command, then sends the response back to the GTP client via file stream
+    which is attached to a named pipe NP2.
+  - Communication between main thread and GTP client secondary thread is
+    routed through the GtpCommand class; synchronization occurs with the help
+    of the NSObject method performSelector:onThread:withObject:waitUntilDone:().
+    There is only one instance of GtpClient, which can be obtained from a
+    well-known location; this makes it easy for GtpCommand to submit itself.
+    When the response to the command is ready, GtpCommand invokes a callback
+    method that the creator of the GtpCommand instance has previously specified.
+  - Communication between GTP client and GTP engine secondary threads is routed
+    through named pipes; synchronization occurs via the file streams' blocking
+    read behaviour.
+  - Because of file streams' blocking reads, communication between GTP client
+    and GTP engine is essentially synchronous. As a consequence, the main thread
+    will be blocked if it wants to submit a command to the GTP client while the
+    client is still waiting for the response to a previous command. For this
+    reason, all GUI elements that trigger a GTP command should be disabled
+    while a command is being processed.
 
 
 Coding guidelines
@@ -179,8 +235,8 @@ The Doxygen configuration file is located in
   doxygen/Doxyfile
 
 Notes about the configuration:
-- Doxygen recursively searches for *.h and *.m files, starting from the project
-  base directory.
+- Doxygen recursively searches for *.h and *.m files in the project top-level
+  folder "src".
 - Private methods declared in categories in the .m files are not included in
   the documentation process. Change this by setting EXTRACT_LOCAL_METHODS = YES
   inside Doxyfile.
@@ -194,8 +250,8 @@ iOS topics covered in this project
 ----------------------------------
 Little Go uses declared properties, some of them generated, others added
 manually. Although declared properties are a language feature introduced to
-Objective-C quite some time ago, this is still a new topic for me. Details can
-be found in [1].
+Objective-C quite some time ago, this is still a new topic for me, which is why
+I mention it here. Details can be found in [1].
 
 The Fuego engine runs in a secondary thread, and communication with the engine
 also occurs within a secondary thread. Basic understanding of how threading and
@@ -220,15 +276,6 @@ information about drawing in Quartz is in [7].
 [5]  iOS Reference Library > Guides > Resource Programming Guide
 [6]  iOS Reference Library > Guides > Drawing and Printing Guide for iOS
 [7]  iOS Reference Library > Guides > Quartz 2D Programming Guide
-
-
-3rdparty software
------------------
-Before the first Xcode build of the project is possible, 3rdparty software must
-be downloaded and built. Hopefully, the convenience script does all this for
-you if you run it on the command line from the project root folder:
-
-  ./script/get-and-build-3rdparty-software.sh
 
 
 Compilation command
