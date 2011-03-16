@@ -12,60 +12,96 @@ this roadmap.
 
 The roadmap
 -----------
-Since this project is still in the inception phase, the following list is merely
-an unsorted collection of ideas:
+Version 1.x
+- Play view
+  - Time-based play
+  - Extended scoring (e.g. break down according to territory, captured,
+    surrounded, Komi; also allow manual selection of dead groups)
+  - Mark territories
+  - Mark groups of stones according to threat level; a basic implementation
+    might simply count liberties and color-code the group accordingly
+  - Replay game (manual, or automatic with delay)
+- Settings view
+  - Player statistics (number of games played, possibly strength)
+- Archive view
+  - Send .sgf files via email
+- About view
+  - "Help" section
+- New game properties
+  - Handicap
+  - Komi
+- Let users play against each other via network (Bonjour via Wi-Fi)
+- Artwork & media
+  - Stones
+  - Board
 
-Requirements
-- pass
-- resign
-- highlight last move with square/triangle/... symbol
-- scoring
-- Artwork
-  - Application icon: Section of a go board with a couple of stones -> possibly use a well-known position
-  - Stones: Black = circle with a flare in one corner. White = circle with a shadow in the opposite corner
-  - Board -> A plain color should do (Tetsuki also uses this)
-- Media
+Version 0.7
+- Artwork & media
+  - Application icon
+- Publish app
+
+Version 0.6
+- Play view
+  - Coordinate labels
+  - Display move numbers
+  - Suggest move
+
+Version 0.5
+- iPad version
+- React to device orientation changes
+
+Version 0.4
+- Debug view
+  - Send arbitrary commands to GTP engine
+  - View application log
+  - Make application log available in iTunes
+
+Version 0.3
+- Archive view
+  - Save current game to .sgf
+  - Load existing game from .sgf
+  - Manage saved games
+  - Provide access to .sgf files from iTunes
+
+Version 0.2
+- Play view
+  - New game
+  - Undo
+  - Highlight last move
+  - Two computer players can play against each other
+- Settings view
+  - Manage players
+  - Computer players with different strengths
+  - Sounds / no sounds / vibrate
+- New game properties
+  - Board size (9x9, 11x11, 13x13, 19x19)
+- Artwork & media
   - Sound for placing a stone
-- build and include a Go engine
-- GTP protocol
-- tabs
-  - Play
-  - Archive
-  - Settings
-  - Debug
-  - Help (?)
-  - About
 
-GUI notes
-- From the templates available in Xcode, the "Tab Bar Application" template seems to match best. Tetsuki uses this, for instance
-- Not sure
-  - Utility Application (the Stocks example is horrible)
-  - View-based Application (single view for the UI)
-  - Window-based Application (to implement my own view hierarchy)
-- Definitely not suitable:
-  - Navigation-based Application (e.g. Contacts)
-  - OpenGL ES Application
-  - Split View–based Application (e.g. iPad Mail, but I'm not using a master-detail arrangement)
-
-
-Ideas:
-- Save/load .sgf & allow transfer of these files
-- Play sound when opponent (or myself?) plays
-- Undo
-- Let two computer players play against each other
-- Various board sizes (9x9, 11x11, 13x13, 19x19)
-- Handicap
-- Komi (what is this if not handicap?)
-- Ruleset
-- Time-based play
-- Byo yomi (what is this exactly? "x minutes for y moves")
-- Reassign players (e.g. let's see what the computer does with my position)
-- Show/hide Labels
-- Show move numbers (inside stones)
-- Let the user change strength of the computer opponent
-- Hint
-- Let users play against each other via network
-
-Not to be included:
-- Network play -> Refer to the excellent Tetsuki
-
+Version 0.1
+- Play view
+  - Fixed board size 19
+  - Cross-hair feature to set stones
+  - Pass
+  - Resign
+  - Play for me
+  - Basic scoring
+  - Status line
+- Settings view
+  - No settings
+- Archive view
+  - No archive
+- About view
+  - Copyright & Credits
+  - Display of LICENSE
+  - Display of NOTICE
+  - Where to get the sources
+  - "Looking for Artwork" note
+- Debug view
+  - Log commands, responses, and std::cout
+- Artwork & media
+  - Use icons for toolbar buttons on Play view
+- Technical
+  - Remove all memory leaks
+  - Complete Doxygen documentation
+  - Contribute changes back to Fuego project
