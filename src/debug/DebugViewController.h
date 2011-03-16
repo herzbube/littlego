@@ -19,8 +19,6 @@
 @interface DebugViewController : UIViewController
 {
   UITextView* textView;
-  NSArray* m_commandSequence;
-  int m_iNextCommand;
 }
 
 @property(nonatomic, retain) IBOutlet UITextView* textView;
