@@ -17,7 +17,10 @@
 
 // Project includes
 #import "PlayView.h"
+#import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoMove.h"
+#import "../go/GoPoint.h"
 
 @class GoPoint;
 
@@ -34,14 +37,17 @@
 - (void) drawGrid;
 - (void) drawStarPoints;
 - (void) drawStones;
+- (void) drawStone:(bool)black point:(GoPoint*)point;
+- (void) drawStone:(bool)black vertexX:(int)vertexX vertexY:(int)vertexY;
+- (void) drawStone:(bool)black coordinates:(CGPoint)coordinates;
 - (void) drawSymbols;
 - (void) drawLabels;
-- (CGPoint) coordinateFromPoint:(GoPoint*)point;
+- (CGPoint) coordinatesFromPoint:(GoPoint*)point;
+- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
 @end
 
 @implementation PlayView
 
-@synthesize board;
 @synthesize viewBackgroundColor;
 @synthesize boardColor;
 @synthesize boardOuterMarginPercentage;
@@ -51,6 +57,7 @@
 @synthesize normalLineWidth;
 @synthesize starPointColor;
 @synthesize starPointRadius;
+@synthesize stoneRadiusPercentage;
 @synthesize previousDrawRect;
 @synthesize portrait;
 @synthesize boardSize;
@@ -63,6 +70,16 @@
 @synthesize pointDistance;
 @synthesize lineLength;
 
+
+static PlayView* sharedView = nil;
++ (PlayView*) sharedView;
+{
+  @synchronized(self)
+  {
+    assert(sharedView != nil);
+    return sharedView;
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
@@ -77,9 +94,7 @@
 {
   [super awakeFromNib];
 
-  // TODO: In the future, the GoBoard instance will be created elsewhere.
-  // Obtaining a reference here will then become a timing issue!!!
-  self.board = [[GoBoard alloc] init];
+  sharedView = self;
 
   // Dark gray
   //  self.viewBackgroundColor = [UIColor colorWithRed:0.25 green:0.25 blue:0.25 alpha: 1.0];
@@ -93,6 +108,7 @@
   self.normalLineWidth = 1;
   self.starPointColor = [UIColor blackColor];
   self.starPointRadius = 3;
+  self.stoneRadiusPercentage = 0.95;  // percentage of pointDistance
 
   self.previousDrawRect = CGRectNull;
   self.portrait = true;
@@ -153,8 +169,8 @@
   // subsequent point distance calculation, the final line length calculation
   // must be based on the point distance
   int lineLengthApproximation = self.boardSize - (self.boardInnerMargin * 2);
-  self.pointDistance = floor(lineLengthApproximation / (self.board.size - 1));
-  self.lineLength = self.pointDistance * (self.board.size - 1);
+  self.pointDistance = floor(lineLengthApproximation / ([GoGame sharedGame].board.size - 1));
+  self.lineLength = self.pointDistance * ([GoGame sharedGame].board.size - 1);
   // Don't use padding here, rounding errors mighth cause improper positioning
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
@@ -187,7 +203,7 @@
     int lineStartPointX = self.topLeftPointX;
     int lineStartPointY = self.topLeftPointY;
     bool drawHorizontalLine = (0 == lineDirection) ? true : false;
-    for (int lineCounter = 0; lineCounter < self.board.size; ++lineCounter)
+    for (int lineCounter = 0; lineCounter < [GoGame sharedGame].board.size; ++lineCounter)
     {
       CGContextBeginPath(context);
       CGContextMoveToPoint(context, lineStartPointX + gHalfPixel, lineStartPointY + gHalfPixel);
@@ -201,7 +217,7 @@
         CGContextAddLineToPoint(context, lineStartPointX + gHalfPixel, lineStartPointY + lineLength + gHalfPixel);
         lineStartPointX += self.pointDistance;
       }
-      if (0 == lineCounter || (self.board.size - 1) == lineCounter)
+      if (0 == lineCounter || ([GoGame sharedGame].board.size - 1) == lineCounter)
         CGContextSetLineWidth(context, self.boundingLineWidth);
       else
         CGContextSetLineWidth(context, self.normalLineWidth);
@@ -214,7 +230,7 @@
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, self.starPointColor.CGColor);
-  
+
   // TODO: Move definition of star points to somewhere else (e.g. GoBoard).
   // Note that Goban.app draws the following hoshi:
   // - 15x15, 17x17, 19x19 boards: 9 hoshi - 4 corner on the 4th line,
@@ -261,6 +277,49 @@
 //  blackStoneImageRect.origin.x = hoshiWithBlackStone.x - (blackStoneImageRect.size.width / 2);
 //  blackStoneImageRect.origin.y = hoshiWithBlackStone.y - (blackStoneImageRect.size.height / 2);
 //  CGContextDrawImage(context, blackStoneImageRect, [blackStoneImageObj CGImage]);
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    GoMove* move = point.move;
+    if (! move)
+      continue;
+    enum GoMoveType type = move.type;
+    if (type != PlayMove)
+      continue;
+//    if (! move || move.type != PlayMove)
+//      continue;
+    [self drawStone:move.black point:point];
+  }
+}
+
+- (void) drawStone:(bool)black point:(GoPoint*)point
+{
+  [self drawStone:black vertexX:point.numVertexX vertexY:point.numVertexY];
+}
+
+- (void) drawStone:(bool)black vertexX:(int)vertexX vertexY:(int)vertexY
+{
+  [self drawStone:black coordinates:[self coordinatesFromVertexX:vertexX vertexY:vertexY]];
+}
+
+- (void) drawStone:(bool)black coordinates:(CGPoint)coordinates
+{
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  UIColor* stoneColor;
+  if (black)
+    stoneColor = [UIColor blackColor];
+  else
+    stoneColor = [UIColor whiteColor];
+	CGContextSetFillColorWithColor(context, stoneColor.CGColor);
+
+  const int startRadius = 0;
+  const int endRadius = 2 * M_PI;
+  const int clockwise = 0;
+  int stoneRadius = floor(self.pointDistance / 2 * self.stoneRadiusPercentage);
+  CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, stoneRadius, startRadius, endRadius, clockwise);
+  CGContextFillPath(context);
 }
 
 - (void) drawSymbols
@@ -271,9 +330,20 @@
 {
 }
 
-- (CGPoint) coordinateFromPoint:(GoPoint*)point
+- (CGPoint) coordinatesFromPoint:(GoPoint*)point
 {
-  return CGPointMake(0, 0);
+  return [self coordinatesFromVertexX:point.numVertexX vertexY:point.numVertexY];
+}
+
+- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
+{
+  return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
+                     self.topLeftPointY + (self.pointDistance * (vertexY - 1)));
+}
+
+- (void) drawMove:(GoMove*)move
+{
+  [self setNeedsDisplay];
 }
 
 @end

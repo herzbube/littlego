@@ -15,8 +15,21 @@
 // -----------------------------------------------------------------------------
 
 
+#include "../Constants.h"
+
+@class GoPoint;
+
 @interface GoMove : NSObject
 {
 }
+
++ (GoMove*) newMove:(enum GoMoveType)type after:(GoMove*)move;
+- (GoMove*) init:(enum GoMoveType)type;
+
+@property enum GoMoveType type;
+@property(retain) GoPoint* point;
+@property(getter=isBlack) bool black;
+@property(retain) GoMove* previous;   // TODO check for retain cycle
+@property(retain) GoMove* next;       // TODO check for retain cycle
 
 @end

@@ -15,11 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
+@class GoPoint;
+
 @interface GoBoard : NSObject
 {
+@private
+  NSMutableDictionary* m_points;
 }
 
-- (id) init;
++ (GoBoard*) boardWithSize:(int)size;
+- (GoPoint*) pointWithVertex:(NSString*)vertex;
+- (NSEnumerator*) pointEnumerator;
 
 @property int size;
 

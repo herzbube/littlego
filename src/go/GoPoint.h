@@ -15,8 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+@class GoMove;
+
 @interface GoPoint : NSObject
 {
 }
+
++ (GoPoint*) pointFromVertex:(NSString*)vertex;
+
+@property int numVertexX;
+@property int numVertexY;
+@property(retain) NSString* vertexX;
+@property(retain) NSString* vertexY;
+@property(readonly) NSString* vertex;
+@property(retain) GoMove* move;
 
 @end

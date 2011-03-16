@@ -19,4 +19,6 @@
 {
 }
 
+@property(retain) NSString* response;
+
 @end

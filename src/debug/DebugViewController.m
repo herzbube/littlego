@@ -16,20 +16,14 @@
 
 #import "DebugViewController.h"
 #import "../gtp/GtpClient.h"
-#import "../gtp/GtpEngine.h"
-
-#include <string>
-#include <vector>
-#include <iostream>  // for cout
-#include <sys/stat.h>  // for mkfifo
+#import "../ApplicationDelegate.h"
 
 
 /// @brief This category declares private methods for the DebugViewController
 /// class. 
 @interface DebugViewController(Private)
-- (void) setResponse:(NSString*)nsResponse;
-- (void) setCommand:(NSString*)nsCommand;
 - (void) nextCommand:(id)anObject;
+- (void) setResponse:(NSString*)nsResponse;
 - (void) exitClient;
 - (void) exitEngine;
 @end
@@ -38,8 +32,6 @@
 @implementation DebugViewController
 
 @synthesize textView;
-@synthesize client;
-@synthesize engine;
 
 
 /*
@@ -65,57 +57,11 @@
   [textView setFont:[UIFont fontWithName:@"CourierNewPSMT" size:10]];
   [textView setText:@"Press the button to send commands..."];
 
-  mode_t pipeMode = S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH;
-  NSString* tempDir = NSTemporaryDirectory();
-  NSString* inputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"inputPipe", nil]];
-  NSString* outputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"outputPipe", nil]];
-  std::vector<std::string> pipeList;
-  pipeList.push_back([inputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-  pipeList.push_back([outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-  std::vector<std::string>::const_iterator it = pipeList.begin();
-  for (; it != pipeList.end(); ++it)
-  {
-    std::string pipePath = *it;
-    std::cout << "Creating input pipe " << pipePath << std::endl;
-    int status = mkfifo(pipePath.c_str(), pipeMode);
-    if (status == 0)
-      std::cout << "Success!" << std::endl;
-    else
-    {
-      std::cout << "Failure! Reason = ";
-      switch (errno)
-      {
-        case EACCES:
-          std::cout << "EACCES" << std::endl;
-          break;
-        case EEXIST:
-          std::cout << "EEXIST" << std::endl;
-          break;
-        case ELOOP:
-          std::cout << "ELOOP" << std::endl;
-          break;
-        case ENOENT:
-          std::cout << "ENOENT" << std::endl;
-          break;
-        case EROFS:
-          std::cout << "EROFS" << std::endl;
-          break;
-        default:
-          std::cout << "Some other result: " << status << std::endl;
-          break;
-      }
-    }
-  }
-
   m_iNextCommand = 0;
   m_commandSequence = [NSArray arrayWithObjects:@"protocol_version",
                        @"name", @"version", @"boardsize 9", @"clear_board",
                        @"showboard", @"quit", nil];
   [m_commandSequence retain];
-  
-
-  self.client = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath responseReceiver:self];
-  self.engine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
 }
 
 - (void) setResponse:(NSString*)nsResponse
@@ -134,7 +80,7 @@
   else
     nsCommand = (NSString*)[m_commandSequence objectAtIndex:m_iNextCommand];
   m_iNextCommand++;
-  [self.client setCommand:nsCommand];
+  [[[ApplicationDelegate sharedDelegate] gtpClient] setGtpCommand:nsCommand];
 }
 
 /*

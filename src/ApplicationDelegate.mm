@@ -14,25 +14,54 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+// Project includes
 #import "ApplicationDelegate.h"
+#import "gtp/GtpClient.h"
+#import "gtp/GtpEngine.h"
+#import "go/GoGame.h"
+
+// System includes
+#include <string>
+#include <vector>
+#include <iostream>  // for cout
+#include <sys/stat.h>  // for mkfifo
+
+
+@interface ApplicationDelegate(Private)
+- (void) setupFuego;
+@end
 
 
 @implementation ApplicationDelegate
 
 @synthesize window;
 @synthesize tabBarController;
+@synthesize gtpClient;
+@synthesize gtpEngine;
 
+
+static ApplicationDelegate* sharedDelegate = nil;
++ (ApplicationDelegate*) sharedDelegate
+{
+  @synchronized(self)
+  {
+    assert(sharedDelegate =! nil);
+    return sharedDelegate;
+  }
+}
 
 #pragma mark -
 #pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
-  // Override point for customization after application launch.
+  sharedDelegate = self;
 
   // Add the tab bar controller's view to the window and display.
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
+
+  [self setupFuego];
 
   return YES;
 }
@@ -104,12 +133,59 @@
      */
 }
 
-
 - (void) dealloc
 {
   [tabBarController release];
   [window release];
   [super dealloc];
+}
+
+- (void) setupFuego
+{
+  mode_t pipeMode = S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH;
+  NSString* tempDir = NSTemporaryDirectory();
+  NSString* inputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"inputPipe", nil]];
+  NSString* outputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"outputPipe", nil]];
+  std::vector<std::string> pipeList;
+  pipeList.push_back([inputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+  pipeList.push_back([outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+  std::vector<std::string>::const_iterator it = pipeList.begin();
+  for (; it != pipeList.end(); ++it)
+  {
+    std::string pipePath = *it;
+    std::cout << "Creating input pipe " << pipePath << std::endl;
+    int status = mkfifo(pipePath.c_str(), pipeMode);
+    if (status == 0)
+      std::cout << "Success!" << std::endl;
+    else
+    {
+      std::cout << "Failure! Reason = ";
+      switch (errno)
+      {
+        case EACCES:
+          std::cout << "EACCES" << std::endl;
+          break;
+        case EEXIST:
+          std::cout << "EEXIST" << std::endl;
+          break;
+        case ELOOP:
+          std::cout << "ELOOP" << std::endl;
+          break;
+        case ENOENT:
+          std::cout << "ENOENT" << std::endl;
+          break;
+        case EROFS:
+          std::cout << "EROFS" << std::endl;
+          break;
+        default:
+          std::cout << "Some other result: " << status << std::endl;
+          break;
+      }
+    }
+  }
+
+  self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath responseReceiver:[GoGame sharedGame]];
+  self.gtpEngine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
 }
 
 @end

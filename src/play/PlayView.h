@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class GoBoard;
+@class GoMove;
 
 // TODO things to document:
 // - calculate only with integer types, use half pixel "translation"; do not
@@ -28,7 +28,8 @@
 {
 }
 
-@property(retain) GoBoard* board;
++ (PlayView*) sharedView;
+- (void) drawMove:(GoMove*)move;
 
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
@@ -39,6 +40,7 @@
 @property int normalLineWidth;
 @property(retain) UIColor* starPointColor;
 @property int starPointRadius;
+@property float stoneRadiusPercentage;
 
 @property CGRect previousDrawRect;
 @property bool portrait;

@@ -15,7 +15,36 @@
 // -----------------------------------------------------------------------------
 
 #import "GtpCommand.h"
+#import "GtpClient.h"
+#import "GtpResponse.h"
+#import "../ApplicationDelegate.h"
 
 @implementation GtpCommand
+
+@synthesize command;
+@synthesize client;
+@synthesize response;
+
++ (GtpCommand*) command:(NSString*)command
+{
+  GtpCommand* cmd = [[GtpCommand alloc] init];
+  if (cmd)
+    cmd.command = command;
+  return cmd;
+}
+
+- (GtpCommand*) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.command = nil;
+  self.client = [ApplicationDelegate sharedDelegate].gtpClient;
+  self.response = [[GtpResponse alloc] init];
+
+  return self;
+}
 
 @end

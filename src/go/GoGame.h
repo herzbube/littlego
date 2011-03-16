@@ -15,8 +15,25 @@
 // -----------------------------------------------------------------------------
 
 
+@class GoBoard;
+@class GoPlayer;
+@class GoMove;
+@class GoPoint;
+
 @interface GoGame : NSObject
 {
 }
+
++ (GoGame*) sharedGame;
+- (void) move:(enum GoMoveType)type atPoint:(GoPoint*)point;
+- (void) setGtpEngineResponse:(NSString*)response;
+
+@property(retain) GoBoard* board;
+@property(retain) GoPlayer* playerBlack;
+@property(retain) GoPlayer* playerWhite;
+@property(getter=hasStarted) bool started;
+@property(getter=hasEnded) bool ended;
+@property(retain) GoMove* firstMove;
+@property(retain) GoMove* lastMove;
 
 @end

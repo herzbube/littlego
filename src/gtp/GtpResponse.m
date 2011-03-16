@@ -18,4 +18,6 @@
 
 @implementation GtpResponse
 
+@synthesize response;
+
 @end

@@ -19,4 +19,11 @@
 {
 }
 
++ (GoPlayer*) blackPlayer;
++ (GoPlayer*) whitePlayer;
+
+@property(getter=isBlack) bool black;
+@property(getter=isHuman) bool human;
+@property(retain) NSString* name;
+
 @end

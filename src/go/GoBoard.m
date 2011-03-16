@@ -16,6 +16,8 @@
 
 
 #import "GoBoard.h"
+#import "GoPoint.h"
+
 
 @interface GoBoard(Private)
 - (void) dealloc;
@@ -26,6 +28,14 @@
 
 @synthesize size;
 
++ (GoBoard*) boardWithSize:(int)size
+{
+  GoBoard* board = [[GoBoard alloc] init];
+  if (board)
+    board.size = size;
+  return board;
+}
+
 - (id) init
 {
   // Call designated initializer of superclass (NSObject)
@@ -33,7 +43,8 @@
   if (! self)
     return nil;
 
-  self.size = 19;
+  self.size = 0;
+  m_points = [[NSMutableDictionary dictionary] retain];
 
   return self;
 }
@@ -43,7 +54,26 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [m_points release];
   [super dealloc];
+}
+
+- (GoPoint*) pointWithVertex:(NSString*)vertex
+{
+  GoPoint* point = [m_points objectForKey:vertex];
+  if (! point)
+  {
+    point = [GoPoint pointFromVertex:vertex];
+    [m_points setObject:point forKey:vertex];
+  }
+  return point;
+}
+
+- (NSEnumerator*) pointEnumerator
+{
+  // The value array including the enumerator will be destroyed as soon as
+  // the current execution path finishes
+  return [[m_points allValues] objectEnumerator];
 }
 
 @end

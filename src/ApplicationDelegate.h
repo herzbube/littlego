@@ -16,13 +16,20 @@
 
 #import <UIKit/UIKit.h>
 
+@class GtpClient;
+@class GtpEngine;
+
 @interface ApplicationDelegate : NSObject <UIApplicationDelegate, UITabBarControllerDelegate>
 {
   UIWindow *window;
   UITabBarController *tabBarController;
 }
 
++ (ApplicationDelegate*) sharedDelegate;
+
 @property (nonatomic, retain) IBOutlet UIWindow* window;
 @property (nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+@property(assign) GtpClient* gtpClient;  // todo check if this should be retain
+@property(assign) GtpEngine* gtpEngine;  // todo check if this should be retain
 
 @end

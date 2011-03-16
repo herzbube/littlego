@@ -15,20 +15,21 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#include <fstream>   // ifstream and ofstream
+// This file is #import'ed from pure Objective-C implementations, therefore it
+// must not contain any C++ syntax.
 
+@class GtpCommand;
 
 @interface GtpClient : NSObject
 {
 @private
-  std::ofstream m_commandStream;
-  std::ifstream m_responseStream;
   NSThread* m_thread;
 }
 
 + (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
-- (void) setCommand:(NSString*)newValue;
+- (void) setGtpCommand:(NSString*)newValue;
+- (void) submit:(GtpCommand*)command;
+- (NSString*) generateMove:(bool)forBlack;
 
 @property(retain) id responseReceiver;   // todo: should be private
 @property(getter=shouldExit, setter=exit) bool shouldExit;

@@ -16,9 +16,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class GtpClient;
-@class GtpEngine;
-
 @interface DebugViewController : UIViewController
 {
   UITextView* textView;
@@ -27,7 +24,5 @@
 }
 
 @property(nonatomic, retain) IBOutlet UITextView* textView;
-@property(assign) GtpClient* client;  // todo check if this should be retain
-@property(assign) GtpEngine* engine;  // todo check if this should be retain
 
 @end

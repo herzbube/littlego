@@ -15,17 +15,36 @@
 // -----------------------------------------------------------------------------
 
 #import "PlayViewController.h"
-
+#import "../go/GoGame.h"
 
 /// @brief This category declares private methods for the DebugViewController
 /// class. 
 @interface PlayViewController(Private)
+/// @name Action methods for toolbar items
+//@{
+- (void) play:(id)sender;
+- (void) pass:(id)sender;
+- (void) resign:(id)sender;
+- (void) undo:(id)sender;
+- (void) new:(id)sender;
+//@}
 @end
 
 
 @implementation PlayViewController
 
 @synthesize playView;
+@synthesize activityIndicator;
+
+static PlayViewController* sharedController = nil;
++ (PlayViewController*) sharedController
+{
+  @synchronized(self)
+  {
+    assert(sharedController != nil);
+    return sharedController;
+  }
+}
 
 /*
 // The designated initializer. Override to perform setup that is required before the view is loaded.
@@ -45,8 +64,10 @@
 */
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewDidLoad
+{
+  sharedController = self;
+  [super viewDidLoad];
 }
 
 /*
@@ -67,6 +88,49 @@
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+}
+
+- (void) play:(id)sender
+{
+  // TODO should initiate this sequence
+  // - determine the GoPoint that the player selected
+  // - create a GoMove object using the GoPoint
+  // - submit the GoMove to GoPlayer, or let GoMove submit itself
+  // - GoPlayer does some stuff, then updates the GoGame
+  // Not yet clear:
+  // - what about GoBoard? does this have any state relating to the game?
+  //   probably not
+  // - who generates and submits the GtpCommand? it is desirable that there be
+  //   a single interface to the GtpClient
+  [self startActivityIndicator];
+  [[GoGame sharedGame] move:PlayMove atPoint:nil];
+  [self stopActivityIndicator];
+}
+
+- (void) pass:(id)sender
+{
+}
+
+- (void) resign:(id)sender
+{
+}
+
+- (void) undo:(id)sender
+{
+}
+
+- (void) new:(id)sender
+{
+}
+
+- (void) startActivityIndicator
+{
+  [self.activityIndicator startAnimating];
+}
+
+- (void) stopActivityIndicator
+{
+  [self.activityIndicator stopAnimating];
 }
 
 @end

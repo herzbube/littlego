@@ -16,3 +16,10 @@
 
 
 extern const float gHalfPixel;
+
+enum GoMoveType
+{
+  PlayMove,
+  PassMove,
+  ResignMove
+};

@@ -10,6 +10,22 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Preferences on the "Settings" view
+  - Board size
+  - Manage players
+  - Assign players to colors (let two computer players play against each other)
+- Controls on the "Play" view
+  - New game
+  - Pass
+  - Undo
+  - Resign
+  - "Play for me"
+  - Switch colors
+  - Save game
+  - Score
+- Controls on the "Archive" view
+  - Load game
+  - Implement an organizer
 - Fix build system
   - build-fuego.sh must apply the patch
   - Create three successive patches as outlined by the section

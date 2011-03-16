@@ -18,4 +18,35 @@
 
 @implementation GoPlayer
 
+@synthesize black;
+@synthesize human;
+@synthesize name;
+
++ (GoPlayer*) blackPlayer
+{
+  return [[GoPlayer alloc] init];
+}
+
++ (GoPlayer*) whitePlayer
+{
+  GoPlayer* player = [[GoPlayer alloc] init];
+  if (player)
+    player.black = false;
+  return player;
+}
+
+- (GoPlayer*) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.black = true;
+  self.human = false;
+  self.name = @"Fuego";
+
+  return self;
+}
+
 @end
