@@ -33,27 +33,27 @@ static std::ifstream responseStream;
 @interface GtpClient(Private)
 /// @name Initialization and deallocation
 //@{
-- (id) initWithPipes:(NSArray*)pipes responseReceiver:(id)aReceiver;
+- (id) initWithPipes:(NSArray*)pipes;
 - (void) dealloc;
 //@}
 - (void) processCommand:(GtpCommand*)command;
+- (void) receive:(GtpResponse*)response;
 @end
 
 
 @implementation GtpClient
 
-@synthesize responseReceiver;
 @synthesize shouldExit;
 
 // -----------------------------------------------------------------------------
 /// @brief xxx
 // -----------------------------------------------------------------------------
-+ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
++ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
 {
   // Create copies so that the objects can be safely used by the thread when
   // it starts
   NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
-  return [[[GtpClient alloc] initWithPipes:pipes responseReceiver:aReceiver] autorelease];
+  return [[[GtpClient alloc] initWithPipes:pipes] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -61,14 +61,13 @@ static std::ifstream responseStream;
 ///
 /// @note This is the designated initializer of GtpClient.
 // -----------------------------------------------------------------------------
-- (id) initWithPipes:(NSArray*)pipes responseReceiver:(id)aReceiver
+- (id) initWithPipes:(NSArray*)pipes
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.responseReceiver = aReceiver;
   self.shouldExit = false;
 
   // Create and start the thread
@@ -137,13 +136,13 @@ static std::ifstream responseStream;
   [mainPool drain];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief xxx      executes on the client thread
-// -----------------------------------------------------------------------------
 - (void) processCommand:(GtpCommand*)command
 {
+  // Undo retain message sent to the command object by submit:()
+  [command autorelease];
+
   // Send the command to the engine
-  if (nil == command || nil == command.command || 0 == [command.command length])
+  if (nil == command.command || 0 == [command.command length])
     return;
   const char* pchCommand = [command.command cStringUsingEncoding:[NSString defaultCStringEncoding]];
   commandStream << pchCommand << std::endl;  // this wakes up the engine
@@ -164,9 +163,12 @@ static std::ifstream responseStream;
   // Notify the main thread of the response
   NSString* nsResponse = [NSString stringWithCString:fullResponse.c_str() 
                                             encoding:[NSString defaultCStringEncoding]];
-  command.response.response = nsResponse;
-  // TODO remove the following
-  [self.responseReceiver performSelectorOnMainThread:@selector(setGtpEngineResponse:) withObject:nsResponse waitUntilDone:NO];
+  GtpResponse* response = [GtpResponse response:nsResponse];
+  response.command = command;
+  // Retain to make sure that object is still alive when the it "arrives" in
+  // the main thread
+  [response retain];
+  [self performSelectorOnMainThread:@selector(receive:) withObject:response waitUntilDone:NO];
 
   if (NSOrderedSame == [command.command compare:@"quit"])
   {
@@ -176,35 +178,23 @@ static std::ifstream responseStream;
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief xxx      executes on the main thread, returns immediately
-// -----------------------------------------------------------------------------
-- (void) setGtpCommand:(NSString*)command
-{
-  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:[GtpCommand command:command] waitUntilDone:NO];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief xxx      executes on the main thread, waits until command is processed
-// -----------------------------------------------------------------------------
 - (void) submit:(GtpCommand*)command
 {
-  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:YES];
+  // Synchronously notify observers
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpCommandSubmittedNotification object:command];
+  // Retain to make sure that object is still alive when the it "arrives" in
+  // the secondary thread
+  [command retain];
+  // Trigger secondary thread
+  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:NO];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief xxx      executes on the main thread, waits until command is processed
-// -----------------------------------------------------------------------------
-- (NSString*) generateMove:(bool)forBlack
+- (void) receive:(GtpResponse*)response
 {
-  NSString* commandString = @"genmove ";
-  if (forBlack)
-    commandString = [commandString stringByAppendingString:@"B"];
-  else
-    commandString = [commandString stringByAppendingString:@"W"];
-  GtpCommand* command = [GtpCommand command:commandString];
-  [self submit:command];
-  return [command.response.response substringFromIndex:2];
+  // Undo retain message sent to the command object by processCommand:()
+  [response autorelease];
+  // Synchronously notify observers
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseReceivedNotification object:response];
 }
 
 @end

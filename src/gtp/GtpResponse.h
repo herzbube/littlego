@@ -15,10 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class GtpCommand;
+
+
 @interface GtpResponse : NSObject
 {
 }
 
++ (GtpResponse*) response:(NSString*)response;
+
 @property(retain) NSString* response;
+@property(retain) GtpCommand* command;
 
 @end

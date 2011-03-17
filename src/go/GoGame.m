@@ -21,10 +21,16 @@
 #import "GoPlayer.h"
 #import "GoMove.h"
 #import "GoPoint.h"
-#import "../gtp/GtpClient.h"
+#import "../gtp/GtpCommand.h"
+#import "../gtp/GtpResponse.h"
 #import "../play/PlayView.h"
 #import "../ApplicationDelegate.h"
 
+
+@interface GoGame(Private)
+- (void) generateMove;
+- (void) gtpResponseReceived:(NSNotification*)notification;
+@end
 
 @implementation GoGame
 
@@ -63,6 +69,11 @@
   self.firstMove = nil;
   self.lastMove = nil;
 
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(gtpResponseReceived:)
+                                               name:gtpResponseReceivedNotification
+                                             object:nil];
+
   return self;
 }
 
@@ -76,20 +87,11 @@
   [super dealloc];
 }
 
-- (void) move:(enum GoMoveType)type atPoint:(GoPoint*)point;
+- (void) play:(GoPoint*)point
 {
-  GoMove* move = nil;
-  move = [GoMove move:type after:self.lastMove];
-  if (PlayMove == type && ! point)
-  {
-    NSString* vertex = [[[ApplicationDelegate sharedDelegate] gtpClient] generateMove:move.isBlack];
-    point = [self.board pointWithVertex:vertex];
-  }
-  if (point)
-  {
-    move.point = point;
-    point.move = move;
-  }
+  GoMove* move = [GoMove move:PlayMove after:self.lastMove];
+  move.point = point;
+  point.move = move;
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -100,11 +102,55 @@
   // TODO: What about self.ended?
 
   [[PlayView sharedView] drawMove:move];
+
+  // todo invoke generateMove() if it is the computer player's turn
 }
 
-- (void) setGtpEngineResponse:(NSString*)response
+- (void) playForMe
 {
-  // TODO probably remove this
+  [self generateMove];
+}
+
+- (void) pass
+{
+  // not yet implementend
+}
+
+- (void) undo
+{
+  // not yet implementend
+}
+
+- (void) resign
+{
+  // not yet implementend
+}
+
+- (void) generateMove
+{
+  bool playForBlack = true;
+  if (self.lastMove)
+    playForBlack = ! self.lastMove.isBlack;
+
+  NSString* commandString = @"genmove ";
+  if (playForBlack)
+    commandString = [commandString stringByAppendingString:@"B"];
+  else
+    commandString = [commandString stringByAppendingString:@"W"];
+
+  GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+}
+
+- (void) gtpResponseReceived:(NSNotification*)notification
+{
+  GtpResponse* response = (GtpResponse*)[notification object];
+
+  // todo check if it's the response for a genmove
+
+  NSString* vertex = [response.response substringFromIndex:2];
+  GoPoint* point = [self.board pointWithVertex:vertex];
+  [self play:point];
 }
 
 @end

@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="34"/>
+			<integer value="19"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -54,28 +54,28 @@
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="13472839">
-								<string key="IBUITitle">Play</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="104394266"/>
+								<int key="IBUISystemItemIdentifier">17</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="996233630">
-								<string key="IBUITitle">Pass</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="104394266"/>
+								<int key="IBUISystemItemIdentifier">18</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="79972887">
-								<string key="IBUITitle">Resign</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="104394266"/>
+								<int key="IBUISystemItemIdentifier">14</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="238866228">
-								<string key="IBUITitle">Undo</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="104394266"/>
+								<int key="IBUISystemItemIdentifier">21</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="52498183">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -83,10 +83,10 @@
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="530427242">
-								<string key="IBUITitle">New</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="104394266"/>
+								<int key="IBUISystemItemIdentifier">7</int>
 							</object>
 						</object>
 					</object>
@@ -345,6 +345,7 @@
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstResponder</string>
+					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">

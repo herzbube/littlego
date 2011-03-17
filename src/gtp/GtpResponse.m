@@ -18,13 +18,41 @@
 // Project includes
 #import "GtpResponse.h"
 
+
 @implementation GtpResponse
 
 @synthesize response;
+@synthesize command;
+
++ (GtpResponse*) response:(NSString*)response
+{
+  GtpResponse* resp = [[GtpResponse alloc] init];
+  if (resp)
+  {
+    resp.response = response;
+    resp.command = nil;
+    [resp autorelease];
+  }
+  return resp;
+}
+
+- (GtpResponse*) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.response = nil;
+  self.command = nil;
+
+  return self;
+}
 
 - (void) dealloc
 {
   self.response = nil;
+  self.command = nil;
   [super dealloc];
 }
 

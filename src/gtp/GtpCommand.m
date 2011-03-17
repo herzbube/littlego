@@ -18,15 +18,12 @@
 // Project includes
 #import "GtpCommand.h"
 #import "GtpClient.h"
-#import "GtpResponse.h"
 #import "../ApplicationDelegate.h"
 
 
 @implementation GtpCommand
 
 @synthesize command;
-@synthesize client;
-@synthesize response;
 
 + (GtpCommand*) command:(NSString*)command
 {
@@ -47,8 +44,6 @@
     return nil;
 
   self.command = nil;
-  self.client = [ApplicationDelegate sharedDelegate].gtpClient;
-  self.response = [[GtpResponse alloc] init];
 
   return self;
 }
@@ -56,9 +51,16 @@
 - (void) dealloc
 {
   self.command = nil;
-  self.client = nil;  // not strictly necessary since we don't retain it
-  self.response = nil;
   [super dealloc];
+}
+
+// Pure convenience method so that clients do not need to know GtpClient
+// (and ApplicationDelegate, which is required to obtain the GtpClient
+// instance).
+- (void) submit
+{
+  GtpClient* client = [ApplicationDelegate sharedDelegate].gtpClient;
+  [client submit:self];
 }
 
 @end

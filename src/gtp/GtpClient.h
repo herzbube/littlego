@@ -28,12 +28,9 @@
   NSThread* m_thread;
 }
 
-+ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe responseReceiver:(id)aReceiver;
-- (void) setGtpCommand:(NSString*)newValue;
++ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
 - (void) submit:(GtpCommand*)command;
-- (NSString*) generateMove:(bool)forBlack;
 
-@property(assign) id responseReceiver;   // do not retain to prevent possible retain cycle
 @property(getter=shouldExit, setter=exit) bool shouldExit;
 
 @end

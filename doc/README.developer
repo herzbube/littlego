@@ -178,13 +178,13 @@ Implementation notes
     client via file stream which is attached to named pipe NP1; processes the
     command, then sends the response back to the GTP client via file stream
     which is attached to a named pipe NP2.
-  - Communication between main thread and GTP client secondary thread is
-    routed through the GtpCommand class; synchronization occurs with the help
+  - Communication between main thread and GTP client secondary thread happens
+    entirely within the GtpClient class; synchronization occurs with the help
     of the NSObject method performSelector:onThread:withObject:waitUntilDone:().
-    There is only one instance of GtpClient, which can be obtained from a
-    well-known location; this makes it easy for GtpCommand to submit itself.
-    When the response to the command is ready, GtpCommand invokes a callback
-    method that the creator of the GtpCommand instance has previously specified.
+    When the response to the command is ready, GtpClient posts a notification
+    to the global notification center. The notification is delivered in the
+    main thread context, which allows arbitrary observers to react to the event
+    without having to care about threading issues.
   - Communication between GTP client and GTP engine secondary threads is routed
     through named pipes; synchronization occurs via the file streams' blocking
     read behaviour.

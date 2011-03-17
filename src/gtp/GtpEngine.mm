@@ -93,19 +93,20 @@
   NSString* outputPipePath = [pipes objectAtIndex:1];
   const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
+  NSString* bookFile = [[NSBundle mainBundle] pathForResource:@"book" ofType:@"dat"];
+
   char programName[255];
   char inputPipeParameterName[255];
   char inputPipeParameterValue[255];
   char outputPipeParameterName[255];
   char outputPipeParameterValue[255];
-  char noBookParameterName[255];
-  sprintf(programName, "fuego");
+  // TODO: fix this hack!!!
+  sprintf(programName, "%s", [bookFile cStringUsingEncoding:[NSString defaultCStringEncoding]]);
   sprintf(inputPipeParameterName, "--input-pipe");
   sprintf(inputPipeParameterValue, "%s", pchInputPipePath);
   sprintf(outputPipeParameterName, "--output-pipe");
   sprintf(outputPipeParameterValue, "%s", pchOutputPipePath);
-  sprintf(noBookParameterName, "--nobook");
-  int argc = 6;
+  int argc = 5;
   char* argv[argc];
   argv[0] = programName;
   argv[1] = inputPipeParameterName;

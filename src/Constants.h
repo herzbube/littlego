@@ -23,3 +23,19 @@ enum GoMoveType
   PassMove,
   ResignMove
 };
+
+// -----------------------------------------------------------------------------
+/// @name Notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent when a command is submitted to the GTP engine. The GtpCommand
+/// instance that is submitted is associated with the notification.
+extern NSString* gtpCommandSubmittedNotification;
+/// @brief Is sent when a response is received from the GTP engine. The
+/// GtpResponse instance that was received is associated with the notification.
+extern NSString* gtpResponseReceivedNotification;
+/// @brief Is sent to indicate that the GTP engine is no longer idle.
+extern NSString* gtpEngineRunningNotification;
+/// @brief Is sent to indicate that the GTP engine is idle.
+extern NSString* gtpEngineIdleNotification;
+//@}

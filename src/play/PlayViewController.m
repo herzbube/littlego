@@ -114,7 +114,7 @@ static PlayViewController* sharedController = nil;
   // - who generates and submits the GtpCommand? it is desirable that there be
   //   a single interface to the GtpClient
   [self startActivityIndicator];
-  [[GoGame sharedGame] move:PlayMove atPoint:nil];
+  [[GoGame sharedGame] playForMe];
   [self stopActivityIndicator];
 }
 

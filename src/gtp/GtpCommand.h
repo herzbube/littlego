@@ -15,19 +15,13 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GtpClient;
-@class GtpResponse;
-
-
 @interface GtpCommand : NSObject
 {
 }
 
 + (GtpCommand*) command:(NSString*)command;
+- (void) submit;
 
 @property(retain) NSString* command;
-@property(assign) GtpClient* client;
-@property(retain) GtpResponse* response;
 
 @end

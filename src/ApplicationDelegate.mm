@@ -186,7 +186,7 @@ static ApplicationDelegate* sharedDelegate = nil;
     }
   }
 
-  self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath responseReceiver:[GoGame sharedGame]];
+  self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath];
   self.gtpEngine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
 }
 

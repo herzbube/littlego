@@ -27,8 +27,11 @@
 }
 
 + (GoGame*) sharedGame;
-- (void) move:(enum GoMoveType)type atPoint:(GoPoint*)point;
-- (void) setGtpEngineResponse:(NSString*)response;
+- (void) play:(GoPoint*)point;
+- (void) playForMe;
+- (void) pass;
+- (void) undo;
+- (void) resign;
 
 @property(retain) GoBoard* board;
 @property(retain) GoPlayer* playerBlack;

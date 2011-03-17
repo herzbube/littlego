@@ -16,3 +16,8 @@
 
 
 const float gHalfPixel = 0.5;
+
+NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";
+NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";
+NSString* gtpEngineRunningNotification = @"GtpEngineRunning";
+NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
