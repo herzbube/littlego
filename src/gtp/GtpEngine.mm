@@ -113,7 +113,6 @@
   argv[2] = inputPipeParameterValue;
   argv[3] = outputPipeParameterName;
   argv[4] = outputPipeParameterValue;
-  argv[5] = noBookParameterName;
 
   try
   {
