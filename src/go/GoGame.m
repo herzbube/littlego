@@ -23,13 +23,27 @@
 #import "GoPoint.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
-#import "../play/PlayView.h"
 #import "../ApplicationDelegate.h"
 
 
 @interface GoGame(Private)
-- (void) generateMove;
+// Setters needed for posting notifications to notify our observers
+- (void) setStarted:(bool)newValue;
+- (void) setEnded:(bool)newValue;
+- (void) setFirstMove:(GoMove*)newValue;
+- (void) setLastMove:(GoMove*)newValue;
+// Submit GTP commands
+- (void) submitPlay:(NSString*)vertex;
+- (void) submitGenMove;
+- (void) submitResign;
+- (void) updatePlay:(GoPoint*)point;
+// Update state
+- (void) updateGenMove;
+- (void) updatePass;
+- (void) updateResign;
+// Others and helpers
 - (void) gtpResponseReceived:(NSNotification*)notification;
+- (NSString*) colorStringForMoveAfter:(GoMove*)move;
 @end
 
 @implementation GoGame
@@ -87,33 +101,70 @@
   [super dealloc];
 }
 
+- (void) setStarted:(bool)newValue
+{
+  @synchronized(self)
+  {
+    if (started == newValue)
+      return;
+    started = newValue;
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
+}
+
+- (void) setEnded:(bool)newValue
+{
+  @synchronized(self)
+  {
+    if (ended == newValue)
+      return;
+    ended = newValue;
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
+}
+
+- (void) setFirstMove:(GoMove*)newValue
+{
+  @synchronized(self)
+  {
+    if (firstMove == newValue)
+      return;
+    [firstMove release];
+    firstMove = [newValue retain];
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameFirstMoveChanged object:self];
+}
+
+- (void) setLastMove:(GoMove*)newValue
+{
+  @synchronized(self)
+  {
+    if (lastMove == newValue)
+      return;
+    [lastMove release];
+    lastMove = [newValue retain];
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameLastMoveChanged object:self];
+}
+
 - (void) play:(GoPoint*)point
 {
-  GoMove* move = [GoMove move:PlayMove after:self.lastMove];
-  move.point = point;
-  point.move = move;
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-
-  if (! self.hasStarted)
-    self.started = true;
-  // TODO: What about self.ended?
-
-  [[PlayView sharedView] drawMove:move];
-
-  // todo invoke generateMove() if it is the computer player's turn
+  [self submitPlay:[point vertex]];
+  [self updatePlay:point];
+  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
 }
 
 - (void) playForMe
 {
-  [self generateMove];
+  [self submitGenMove];
+  [self updateGenMove];
 }
 
 - (void) pass
 {
-  // not yet implementend
+  [self submitPlay:@"pass"];
+  [self updatePass];
+  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
 }
 
 - (void) undo
@@ -123,34 +174,128 @@
 
 - (void) resign
 {
-  // not yet implementend
+  [self submitResign];
+  [self updateResign];
 }
 
-- (void) generateMove
+- (void) submitPlay:(NSString*)vertex
 {
-  bool playForBlack = true;
-  if (self.lastMove)
-    playForBlack = ! self.lastMove.isBlack;
-
-  NSString* commandString = @"genmove ";
-  if (playForBlack)
-    commandString = [commandString stringByAppendingString:@"B"];
-  else
-    commandString = [commandString stringByAppendingString:@"W"];
-
+  NSString* commandString = @"play ";
+  commandString = [commandString stringByAppendingString:
+                   [self colorStringForMoveAfter:self.lastMove]];
+  commandString = [commandString stringByAppendingString:@" "];
+  commandString = [commandString stringByAppendingString:vertex];
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
+}
+
+- (void) submitGenMove
+{
+  NSString* commandString = @"genmove ";
+  commandString = [commandString stringByAppendingString:
+                   [self colorStringForMoveAfter:self.lastMove]];
+  GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+}
+
+- (void) submitResign
+{
+  GtpCommand* command = [GtpCommand command:@"resign"];
+  [command submit];
+}
+
+// updates both state in this model, and view; does not care about GTP
+- (void) updatePlay:(GoPoint*)point
+{
+  GoMove* move = [GoMove move:PlayMove after:self.lastMove];
+  move.point = point;
+  point.move = move;
+
+  if (! self.hasStarted)
+    self.started = true;
+  // TODO: What about self.ended?
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+
+  // TODO: captured stones: GoPoints need to be updated; view needs to be updated
+}
+
+// updates both state in this model, and view; does not care about GTP
+- (void) updateGenMove
+{
+  // todo: at the moment there is no need to update the model state - something
+  // will happen when the response from the gtp engine comes in; check if this
+  // is still ok before making the next release
+
+  // todo: update view (status line = "pondering..." or something)
+}
+
+// updates both state in this model, and view; does not care about GTP
+- (void) updatePass
+{
+  GoMove* move = [GoMove move:PassMove after:self.lastMove];
+
+  if (! self.hasStarted)
+    self.started = true;
+  // TODO: What about self.ended?
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+}
+
+// updates both state in this model, and view; does not care about GTP
+- (void) updateResign
+{
+  GoMove* move = [GoMove move:ResignMove after:self.lastMove];
+
+  if (! self.hasStarted)
+    self.started = true;
+  // TODO: What about self.ended?
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
 }
 
 - (void) gtpResponseReceived:(NSNotification*)notification
 {
   GtpResponse* response = (GtpResponse*)[notification object];
+  if (! response.status)
+    return;
+  NSString* commandString = response.command.command;
+  if ([commandString hasPrefix:@"genmove"])
+  {
+    NSString* responseString = response.response;
+    if (NSOrderedSame == [responseString compare:@"pass"])
+      [self updatePass];
+    else if (NSOrderedSame == [responseString compare:@"resign"])
+      [self updateResign];
+    else
+    {
+      GoPoint* point = [self.board pointWithVertex:responseString];
+      if (point)
+        [self updatePlay:point];
+      else
+        ;  // TODO vertex was invalid; do something...
+    }
+    // todo invoke submitGenMove() if it is the computer player's turn
+    // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+  }
+}
 
-  // todo check if it's the response for a genmove
-
-  NSString* vertex = [response.response substringFromIndex:2];
-  GoPoint* point = [self.board pointWithVertex:vertex];
-  [self play:point];
+- (NSString*) colorStringForMoveAfter:(GoMove*)move
+{
+  // TODO what about a GoColor class?
+  bool playForBlack = true;
+  if (self.lastMove)
+    playForBlack = ! self.lastMove.isBlack;
+  if (playForBlack)
+    return @"B";
+  else
+    return @"W";
 }
 
 @end

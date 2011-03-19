@@ -42,6 +42,10 @@
 - (void) drawLabels;
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
+// Notification responders
+- (void) goGameStateChanged:(NSNotification*)notification;
+- (void) goGameFirstMoveChanged:(NSNotification*)notification;
+- (void) goGameLastMoveChanged:(NSNotification*)notification;
 @end
 
 @implementation PlayView
@@ -69,16 +73,6 @@
 @synthesize lineLength;
 
 
-static PlayView* sharedView = nil;
-+ (PlayView*) sharedView;
-{
-  @synchronized(self)
-  {
-    assert(sharedView != nil);
-    return sharedView;
-  }
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
 /// from PlayView.xib
@@ -91,8 +85,6 @@ static PlayView* sharedView = nil;
 - (void) awakeFromNib
 {
   [super awakeFromNib];
-
-  sharedView = self;
 
   // Dark gray
   //  self.viewBackgroundColor = [UIColor colorWithRed:0.25 green:0.25 blue:0.25 alpha: 1.0];
@@ -119,6 +111,11 @@ static PlayView* sharedView = nil;
   self.topLeftPointY = 0;
   self.pointDistance = 0;
   self.lineLength = 0;
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(goGameFirstMoveChanged:) name:goGameFirstMoveChanged object:nil];
+  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
 }
 
 - (void) dealloc
@@ -290,8 +287,6 @@ static PlayView* sharedView = nil;
     enum GoMoveType type = move.type;
     if (type != PlayMove)
       continue;
-//    if (! move || move.type != PlayMove)
-//      continue;
     [self drawStone:move.black point:point];
   }
 }
@@ -343,9 +338,22 @@ static PlayView* sharedView = nil;
                      self.topLeftPointY + (self.pointDistance * (vertexY - 1)));
 }
 
-- (void) drawMove:(GoMove*)move
+- (void) goGameStateChanged:(NSNotification*)notification
 {
+  // TODO do we need this?
+}
+
+- (void) goGameFirstMoveChanged:(NSNotification*)notification
+{
+  // TODO check if it's possible to update only a rectangle
   [self setNeedsDisplay];
 }
+
+- (void) goGameLastMoveChanged:(NSNotification*)notification
+{
+  // TODO check if it's possible to update only a rectangle
+  [self setNeedsDisplay];
+}
+
 
 @end

@@ -31,9 +31,6 @@
 {
 }
 
-+ (PlayView*) sharedView;
-- (void) drawMove:(GoMove*)move;
-
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
 @property float boardOuterMarginPercentage;

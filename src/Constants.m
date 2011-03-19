@@ -17,7 +17,12 @@
 
 const float gHalfPixel = 0.5;
 
+// GTP notifications
 NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";
 NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";
 NSString* gtpEngineRunningNotification = @"GtpEngineRunning";
 NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
+// GoGame notifications
+NSString* goGameStateChanged = @"GoGameStateChanged";
+NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
+NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";

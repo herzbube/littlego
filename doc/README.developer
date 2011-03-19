@@ -151,8 +151,8 @@ documentation is to source code:
   controller.
 
 
-Implementation notes
---------------------
+Architecture and implementation notes
+-------------------------------------
 - Error handling: TODO
 - Memory management: Uses retain/release, there is no garbage collection on iOS.
 - Communication with Fuego: On PC platforms this is done by running Fuego in a
@@ -194,6 +194,18 @@ Implementation notes
     client is still waiting for the response to a previous command. For this
     reason, all GUI elements that trigger a GTP command should be disabled
     while a command is being processed.
+- MVC design pattern considerations
+  - GoGame is the master model for PlayView and PlayViewController. These
+    classes implement the traditional MVC design pattern where the view
+    (PlayView) is a direct observer of the model (GoGame).
+  - I make a note of this because coming from Cocoa one might expect the Cocoa
+    variation of MVC where model and view are completely separate and all
+    communication goes through the controller. IMO this doesn't make sense here
+    because iOS does not support Cocoa bindings. In other words, the system
+    frameworks do not provide any pre-fabricated controllers, and I myself do
+    not want to spend the time required to implement the overhead necessary for
+    a complete separation of model and view. Re-usability is not a key design
+    of this project.
 
 
 Coding guidelines

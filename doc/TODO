@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Add NSLog; possibly replace asserts; definitely where abort criteria are met
 - Test application shutdown to see whether there are no memory leaks
 - Add opening books to resources
 - Fix build system

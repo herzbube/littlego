@@ -19,6 +19,9 @@
 #import "GtpResponse.h"
 
 
+@interface GtpResponse(Private)
+@end
+
 @implementation GtpResponse
 
 @synthesize response;
@@ -54,6 +57,28 @@
   self.response = nil;
   self.command = nil;
   [super dealloc];
+}
+
+- (NSString*) response
+{
+  @synchronized(self)
+  {
+    if (! response)
+      return nil;
+    NSString* responseWithoutStatus = [response substringFromIndex:2];
+    return [[responseWithoutStatus retain] autorelease];
+  }
+}
+
+- (bool) status
+{
+  if (! response)
+    return false;
+  NSString* statusString = [response substringWithRange:NSMakeRange(0, 1)];
+  if (NSOrderedSame == [statusString compare:@"="])
+    return true;
+  else
+    return false;
 }
 
 @end

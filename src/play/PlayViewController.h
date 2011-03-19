@@ -26,11 +26,6 @@
 {
 }
 
-+ (PlayViewController*) sharedController;
-- (void) startActivityIndicator;
-- (void) stopActivityIndicator;
-
 @property(nonatomic, retain) IBOutlet PlayView* playView;
-@property(nonatomic, retain) IBOutlet id activityIndicator;
 
 @end

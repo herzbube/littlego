@@ -30,8 +30,9 @@
   assert(vertex != nil);
   if (! vertex)
     return nil;
-  assert([vertex length] >= 2);
-  if ([vertex length] < 2)
+  NSUInteger vertexLength = [vertex length];
+  assert(vertexLength >= 2 && vertexLength <= 3);
+  if (vertexLength < 2 || vertexLength > 3)
     return nil;
   GoPoint* point = [[GoPoint alloc] init];
   if (point)

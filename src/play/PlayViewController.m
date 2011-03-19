@@ -25,10 +25,10 @@
 @interface PlayViewController(Private)
 /// @name Action methods for toolbar items
 //@{
-- (void) play:(id)sender;
+- (void) playForMe:(id)sender;
 - (void) pass:(id)sender;
-- (void) resign:(id)sender;
 - (void) undo:(id)sender;
+- (void) resign:(id)sender;
 - (void) new:(id)sender;
 //@}
 @end
@@ -37,111 +37,41 @@
 @implementation PlayViewController
 
 @synthesize playView;
-@synthesize activityIndicator;
-
-
-static PlayViewController* sharedController = nil;
-+ (PlayViewController*) sharedController
-{
-  @synchronized(self)
-  {
-    assert(sharedController != nil);
-    return sharedController;
-  }
-}
 
 - (void) dealloc
 {
   self.playView = nil;
-  self.activityIndicator = nil;
   [super dealloc];
 }
 
-/*
-// The designated initializer. Override to perform setup that is required before the view is loaded.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
-
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
+- (void) viewDidUnload
 {
-  sharedController = self;
-  [super viewDidLoad];
+  self.playView = nil;
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
-- (void) play:(id)sender
+- (void) playForMe:(id)sender
 {
-  // TODO should initiate this sequence
-  // - determine the GoPoint that the player selected
-  // - create a GoMove object using the GoPoint
-  // - submit the GoMove to GoPlayer, or let GoMove submit itself
-  // - GoPlayer does some stuff, then updates the GoGame
-  // Not yet clear:
-  // - what about GoBoard? does this have any state relating to the game?
-  //   probably not
-  // - who generates and submits the GtpCommand? it is desirable that there be
-  //   a single interface to the GtpClient
-  [self startActivityIndicator];
   [[GoGame sharedGame] playForMe];
-  [self stopActivityIndicator];
 }
 
 - (void) pass:(id)sender
 {
-}
-
-- (void) resign:(id)sender
-{
+  [[GoGame sharedGame] pass];
 }
 
 - (void) undo:(id)sender
 {
+  [[GoGame sharedGame] undo];
+}
+
+- (void) resign:(id)sender
+{
+  [[GoGame sharedGame] resign];
 }
 
 - (void) new:(id)sender
 {
-}
-
-- (void) startActivityIndicator
-{
-  [self.activityIndicator startAnimating];
-}
-
-- (void) stopActivityIndicator
-{
-  [self.activityIndicator stopAnimating];
+  // TODO implement this
 }
 
 @end

@@ -27,5 +27,6 @@
 
 @property(retain) NSString* response;
 @property(retain) GtpCommand* command;
+@property(readonly) bool status;
 
 @end

@@ -22,6 +22,8 @@
 @class GoPoint;
 
 
+// GoGame takes the role of a model in an MVC pattern that includes, for
+// instance, the view and controller on the Play tab
 @interface GoGame : NSObject
 {
 }
