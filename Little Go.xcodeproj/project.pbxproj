@@ -26,6 +26,8 @@
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
+		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
+		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
@@ -67,6 +69,10 @@
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CDA264AA132CF7EF00FAFC51 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		CDA264AB132CF7EF00FAFC51 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
+		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
+		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
+		CDBB039A133573CC007C1C3E /* GoVertex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertex.m; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -157,6 +163,8 @@
 			children = (
 				CD10881713255A4000E83543 /* GoBoard.h */,
 				CD10881813255A4000E83543 /* GoBoard.m */,
+				CDBB0359133537C8007C1C3E /* GoBoardRegion.h */,
+				CDBB035A133537C8007C1C3E /* GoBoardRegion.m */,
 				CD10881A13255A4700E83543 /* GoGame.h */,
 				CD10881B13255A4700E83543 /* GoGame.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
@@ -165,6 +173,8 @@
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
 				CD10882413255AA600E83543 /* GoPoint.m */,
+				CDBB0399133573CC007C1C3E /* GoVertex.h */,
+				CDBB039A133573CC007C1C3E /* GoVertex.m */,
 			);
 			path = go;
 			sourceTree = "<group>";
@@ -339,6 +349,8 @@
 				CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */,
 				CD78034D132FE6D300E7843F /* DebugViewController.m in Sources */,
 				CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */,
+				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
+				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

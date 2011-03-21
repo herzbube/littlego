@@ -21,6 +21,7 @@
 #import "../go/GoBoard.h"
 #import "../go/GoMove.h"
 #import "../go/GoPoint.h"
+#import "../go/GoVertex.h"
 
 
 @interface PlayView(Private)
@@ -35,7 +36,6 @@
 - (void) drawGrid;
 - (void) drawStarPoints;
 - (void) drawStones;
-- (void) drawStone:(bool)black point:(GoPoint*)point;
 - (void) drawStone:(bool)black vertexX:(int)vertexX vertexY:(int)vertexY;
 - (void) drawStone:(bool)black coordinates:(CGPoint)coordinates;
 - (void) drawSymbols;
@@ -281,19 +281,16 @@
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
-    GoMove* move = point.move;
-    if (! move)
-      continue;
-    enum GoMoveType type = move.type;
-    if (type != PlayMove)
-      continue;
-    [self drawStone:move.black point:point];
+    if (point.hasStone)
+    {
+      struct GoVertexNumeric numericVertex = point.vertex.numeric;
+      [self drawStone:point.blackStone vertexX:numericVertex.x vertexY:numericVertex.y];
+    }
+    else
+    {
+//      [self drawEmpty:point];
+    }
   }
-}
-
-- (void) drawStone:(bool)black point:(GoPoint*)point
-{
-  [self drawStone:black vertexX:point.numVertexX vertexY:point.numVertexY];
 }
 
 - (void) drawStone:(bool)black vertexX:(int)vertexX vertexY:(int)vertexY
@@ -327,13 +324,30 @@
 {
 }
 
+- (void) drawEmpty:(GoPoint*)point
+{
+  struct GoVertexNumeric numericVertex = point.vertex.numeric;
+  CGPoint coordinates = [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
+  CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextSetFillColorWithColor(context, [[point.region color] CGColor]);
+  
+  const int startRadius = 0;
+  const int endRadius = 2 * M_PI;
+  const int clockwise = 0;
+  int circleRadius = floor(self.pointDistance / 2 * self.stoneRadiusPercentage / 2);
+  CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, circleRadius, startRadius, endRadius, clockwise);
+  CGContextFillPath(context);
+}
+
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point
 {
-  return [self coordinatesFromVertexX:point.numVertexX vertexY:point.numVertexY];
+  struct GoVertexNumeric numericVertex = point.vertex.numeric;
+  return [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
 }
 
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
 {
+  // TODO fix this - the origin for vertexes is at the bottom-left corner!!!
   return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
                      self.topLeftPointY + (self.pointDistance * (vertexY - 1)));
 }

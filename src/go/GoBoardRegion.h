@@ -16,31 +16,25 @@
 
 
 // Forward declarations
-@class GoBoard;
-@class GoPlayer;
-@class GoMove;
 @class GoPoint;
 
 
-// GoGame takes the role of a model in an MVC pattern that includes, for
-// instance, the view and controller on the Play tab
-@interface GoGame : NSObject
+@interface GoBoardRegion : NSObject
 {
 }
 
-+ (GoGame*) sharedGame;
-- (void) play:(GoPoint*)point;
-- (void) playForMe;
-- (void) pass;
-- (void) undo;
-- (void) resign;
++ (GoBoardRegion*) regionWithPoints:(NSArray*)points;
++ (GoBoardRegion*) regionWithPoint:(GoPoint*)point;
+- (int) size;
+- (bool) hasPoint:(GoPoint*)point;
+- (void) addPoint:(GoPoint*)point;
+- (void) removePoint:(GoPoint*)point;
+- (void) joinRegion:(GoBoardRegion*)region;
+- (bool) isStoneGroup;
+- (bool) hasBlackStones;
+- (int) liberties;
 
-@property(retain) GoBoard* board;
-@property(retain) GoPlayer* playerBlack;
-@property(retain) GoPlayer* playerWhite;
-@property(retain) GoMove* firstMove;
-@property(retain) GoMove* lastMove;
-@property enum GoGameState state;
-@property int boardSize;
+@property(assign) NSArray* points;
+@property(retain) UIColor* color;
 
 @end

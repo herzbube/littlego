@@ -17,8 +17,9 @@
 
 // Project includes
 #import "GoBoard.h"
+#import "GoBoardRegion.h"
 #import "GoPoint.h"
-
+#import "GoVertex.h"
 
 @interface GoBoard(Private)
 - (void) dealloc;
@@ -29,14 +30,11 @@
 
 @synthesize size;
 
-+ (GoBoard*) boardWithSize:(int)size
++ (GoBoard*) board
 {
   GoBoard* board = [[GoBoard alloc] init];
   if (board)
-  {
-    board.size = size;
     [board autorelease];
-  }
   return board;
 }
 
@@ -48,36 +46,109 @@
     return nil;
 
   self.size = 0;
-  m_points = [[NSMutableDictionary dictionary] retain];
+  m_vertexDict = [[NSMutableDictionary dictionary] retain];
 
   return self;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DGSMonXServer object.
-// -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [m_points release];
+  [m_vertexDict release];
   [super dealloc];
 }
 
-- (GoPoint*) pointWithVertex:(NSString*)vertex
+- (void) setSize:(int)newValue
 {
-  GoPoint* point = [m_points objectForKey:vertex];
-  if (! point)
+  @synchronized(self)
   {
-    point = [GoPoint pointFromVertex:vertex];
-    [m_points setObject:point forKey:vertex];
+    if (size == newValue)
+      return;
+    size = newValue;
+    [m_vertexDict removeAllObjects];
+    GoPoint* point = [self pointAtVertex:@"A1"];
+    GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
+    point.region = region;
+    for (; point = point.next; point != nil)
+    {
+      point.region = region;
+      [region addPoint:point];
+    }
   }
-  return point;
 }
 
 - (NSEnumerator*) pointEnumerator
 {
   // The value array including the enumerator will be destroyed as soon as
   // the current execution path finishes
-  return [[m_points allValues] objectEnumerator];
+  return [[m_vertexDict allValues] objectEnumerator];
+}
+
+- (GoPoint*) pointAtVertex:(NSString*)vertex
+{
+  GoPoint* point = [m_vertexDict objectForKey:vertex];
+  if (! point)
+  {
+    point = [GoPoint pointAtVertex:[GoVertex vertexFromString:vertex]];
+    [m_vertexDict setObject:point forKey:vertex];
+  }
+  return point;
+}
+
+// this is the helper being called by GoPoint properties
+// left/right/above/below/next
+// direction "next" and previous are mainly intended for iteration over all
+// the points of the board; next = moves to the right and then up; previous =
+// moves the left and down
+- (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction
+{
+  struct GoVertexNumeric numericVertex = point.vertex.numeric;
+  switch (direction)
+  {
+    case LeftDirection:
+      numericVertex.x--;
+      if (numericVertex.x < 1)
+        return nil;
+      break;
+    case RightDirection:
+      numericVertex.x++;
+      if (numericVertex.x > self.size)
+        return nil;
+      break;
+    case UpDirection:
+      numericVertex.y++;
+      if (numericVertex.y > self.size)
+        return nil;
+      break;
+    case DownDirection:
+      numericVertex.y--;
+      if (numericVertex.y < 1)
+        return nil;
+      break;
+    case NextDirection:
+      numericVertex.x++;
+      if (numericVertex.x > self.size)
+      {
+        numericVertex.x = 1;
+        numericVertex.y++;
+        if (numericVertex.y > self.size)
+          return nil;
+      }
+      break;
+    case PreviousDirection:
+      numericVertex.x--;
+      if (numericVertex.x < 1)
+      {
+        numericVertex.x = self.size;
+        numericVertex.y--;
+        if (numericVertex.y < 1)
+          return nil;
+      }
+      break;
+    default:
+      return nil;
+  }
+  GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
+  return [self pointAtVertex:vertex.string];
 }
 
 @end

@@ -15,34 +15,33 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #import "GoPoint.h"
+#import "GoGame.h"
+#import "GoBoard.h"
+
 
 @implementation GoPoint
 
-@synthesize numVertexX;
-@synthesize numVertexY;
-@synthesize vertexX;
-@synthesize vertexY;
-@synthesize move;
+@synthesize vertex;
+@synthesize left;
+@synthesize right;
+@synthesize above;
+@synthesize below;
+@synthesize neighbours;
+@synthesize next;
+@synthesize previous;
+@synthesize starPoint;
+@synthesize stoneState;
+@synthesize region;
 
-+ (GoPoint*) pointFromVertex:(NSString*)vertex
+
++ (GoPoint*) pointAtVertex:(GoVertex*)vertex
 {
-  assert(vertex != nil);
-  if (! vertex)
-    return nil;
-  NSUInteger vertexLength = [vertex length];
-  assert(vertexLength >= 2 && vertexLength <= 3);
-  if (vertexLength < 2 || vertexLength > 3)
-    return nil;
   GoPoint* point = [[GoPoint alloc] init];
   if (point)
   {
-    point.vertexX = [vertex substringWithRange:NSMakeRange(0, 1)];
-    point.vertexY = [vertex substringFromIndex:1];
-    unichar charVertex = [point.vertexX characterAtIndex:0];
-    unichar charA = [@"A" characterAtIndex:0];
-    point.numVertexX = charVertex - charA + 1;  // +1 because vertex is not zero-based
-    point.numVertexY = [point.vertexY intValue];
+    point.vertex = vertex;
     [point autorelease];
   }
   return point;
@@ -55,26 +54,120 @@
   if (! self)
     return nil;
 
-  self.numVertexX = 1;
-  self.numVertexY = 1;
-  self.vertexX = @"A";
-  self.vertexY = @"1";
-  self.move = nil;
+  self.vertex = nil;
+  self.starPoint = false;
+  self.stoneState = NoStone;
+  left = nil;
+  right = nil;
+  above = nil;
+  below = nil;
+  next = nil;
+  previous = nil;
+  neighbours = nil;
 
   return self;
 }
 
 - (void) dealloc
 {
-  self.vertexX = nil;
-  self.vertexY = nil;
-  self.move = nil;  // not strictly necessary since we don't retain it
+  self.vertex = nil;
+  [neighbours release];
   [super dealloc];
 }
 
-- (NSString*) vertex
+- (GoPoint*) left
 {
-  return [self.vertexX stringByAppendingString:self.vertexY];
+  if (! left)
+    left = [[GoGame sharedGame].board neighbourOf:self inDirection:LeftDirection];
+  return left;
+}
+
+- (GoPoint*) right
+{
+  if (! right)
+    right = [[GoGame sharedGame].board neighbourOf:self inDirection:RightDirection];
+  return right;
+}
+
+- (GoPoint*) above
+{
+  if (! above)
+    above = [[GoGame sharedGame].board neighbourOf:self inDirection:UpDirection];
+  return above;
+}
+
+- (GoPoint*) below
+{
+  if (! below)
+    below = [[GoGame sharedGame].board neighbourOf:self inDirection:DownDirection];
+  return below;
+}
+
+- (NSArray*) neighbours
+{
+  if (! neighbours)
+  {
+    neighbours = [[NSMutableArray arrayWithCapacity:0] retain];
+    if (self.left)
+      [(NSMutableArray*)neighbours addObject:self.left];
+    if (self.right)
+      [(NSMutableArray*)neighbours addObject:self.right];
+    if (self.above)
+      [(NSMutableArray*)neighbours addObject:self.above];
+    if (self.below)
+      [(NSMutableArray*)neighbours addObject:self.below];
+  }
+  return neighbours;
+}
+
+- (GoPoint*) next
+{
+  if (! next)
+    next = [[GoGame sharedGame].board neighbourOf:self inDirection:NextDirection];
+  return next;
+}
+
+- (GoPoint*) previous
+{
+  if (! previous)
+    previous = [[GoGame sharedGame].board neighbourOf:self inDirection:PreviousDirection];
+  return previous;
+}
+
+- (void) setStoneState:(enum GoStoneState)newValue
+{
+  @synchronized(self)
+  {
+    if (stoneState == newValue)
+      return;
+    stoneState = newValue;
+  }
+}
+
+- (bool) hasStone
+{
+  return (NoStone != self.stoneState);
+}
+
+- (bool) blackStone
+{
+  return (BlackStone == self.stoneState);
+}
+
+- (int) liberties
+{
+  if ([self hasStone])
+    return [self.region liberties];
+  else
+  {
+    int liberties = 0;
+    for (GoPoint* neighbour in self.neighbours)
+    {
+      if (! [neighbour hasStone])
+        liberties++;
+    }
+    return liberties;
+  }
 }
 
 @end

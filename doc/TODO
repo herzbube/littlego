@@ -10,9 +10,18 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Code cleanup
+  - Remove @synchronized where possible and make properties non-atomic
+  - Use class extensions instead of categories named "Private"
+  - Review properties to see if any can be declared readonly in the public
+    interface, then re-declared rewrite in the private class extension
 - Add NSLog; possibly replace asserts; definitely where abort criteria are met
-- Test application shutdown to see whether there are no memory leaks
-- Add opening books to resources
+- Testing
+  - Test application shutdown to see whether there are no memory leaks
+  - Add unit tests (oh, the pain!)
+- Find a way to add the opening book to the project resources without
+  depending on a fixed path (a fixed path will break if the project is
+  compiled on a newer base SDK)
 - Fix build system
   - build-fuego.sh must apply the patch
   - Create three successive patches as outlined by the section
@@ -66,6 +75,9 @@ Priority 1 (important)
     used via hacking argv[0]; 2) ABS_TOP_SRCDIR/book: no good since we don't
     have the sources; 3) DATADIR/PACKAGE: no good since we don't know the
     folder in advance
+  - Building against a release build of Fuego requires that the project needs
+    to set the NDEBUG preprocessor macro, even if the project wants to make
+    a debug build; this effectively prevents the use of assert()
 - Set up Doxygen (see README.developer)
 
 
@@ -73,7 +85,10 @@ Priority 2 (nice to have)
 -------------------------
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build
-  variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS
+  variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS. This is important
+  so that Little Go no longer needs to set the preprocessor macro NDEBUG in
+  a debug build (with NDEBUG set, assert() does not work; possibly there are
+  other effects as well)
 - Research wether the build variable $(EFFECTIVE_PLATFORM_NAME) exists and what
   values it may take, especially if there are different values for iPhoneOS and
   iPhoneSimulator builds (suspected values are iphoneos and iphonesimulator).

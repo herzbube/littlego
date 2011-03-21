@@ -16,22 +16,29 @@
 
 
 // Forward declarations
-@class GoMove;
+@class GoVertex;
+@class GoBoardRegion;
 
 
 @interface GoPoint : NSObject
 {
 }
 
-+ (GoPoint*) pointFromVertex:(NSString*)vertex;
++ (GoPoint*) pointAtVertex:(GoVertex*)vertex;
+- (bool) hasStone;
+- (bool) blackStone;
+- (int) liberties;
 
-@property int numVertexX;
-@property int numVertexY;
-@property(retain) NSString* vertexX;
-@property(retain) NSString* vertexY;
-@property(readonly) NSString* vertex;
-// TODO: Check if this back-reference is really necessary or could be solved
-// differently.
-@property(assign) GoMove* move;  // do not retain, otherwise there would be a retain cycle
+@property(retain) GoVertex* vertex;
+@property(readonly) GoPoint* left;
+@property(readonly) GoPoint* right;
+@property(readonly) GoPoint* above;
+@property(readonly) GoPoint* below;
+@property(readonly) NSArray* neighbours;
+@property(readonly) GoPoint* next;
+@property(readonly) GoPoint* previous;
+@property(getter=isStarPoint) bool starPoint;
+@property enum GoStoneState stoneState;
+@property(retain) GoBoardRegion* region;
 
 @end

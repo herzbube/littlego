@@ -21,6 +21,7 @@
 #import "GoPlayer.h"
 #import "GoMove.h"
 #import "GoPoint.h"
+#import "GoVertex.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../ApplicationDelegate.h"
@@ -33,14 +34,15 @@
 - (void) setFirstMove:(GoMove*)newValue;
 - (void) setLastMove:(GoMove*)newValue;
 // Submit GTP commands
-- (void) submitPlay:(NSString*)vertex;
+- (void) submitPlayMove:(NSString*)vertex;
+- (void) submitPassMove;
+- (void) submitResignMove;
 - (void) submitGenMove;
-- (void) submitResign;
-- (void) updatePlay:(GoPoint*)point;
 // Update state
+- (void) updatePlayMove:(GoPoint*)point;
+- (void) updatePassMove;
+- (void) updateResignMove;
 - (void) updateGenMove;
-- (void) updatePass;
-- (void) updateResign;
 // Others and helpers
 - (void) gtpResponseReceived:(NSNotification*)notification;
 - (NSString*) colorStringForMoveAfter:(GoMove*)move;
@@ -51,10 +53,10 @@
 @synthesize board;
 @synthesize playerBlack;
 @synthesize playerWhite;
-@synthesize started;
-@synthesize ended;
 @synthesize firstMove;
 @synthesize lastMove;
+@synthesize state;
+@synthesize boardSize;
 
 + (GoGame*) sharedGame;
 {
@@ -63,7 +65,10 @@
   {
     // TODO: We are the owner of sharedGame, but we never release the object
     if (! sharedGame)
+    {
       sharedGame = [[GoGame alloc] init];
+      sharedGame.boardSize = 19;
+    }
     return sharedGame;
   }
 }
@@ -75,13 +80,12 @@
   if (! self)
     return nil;
 
-  self.board = [GoBoard boardWithSize:19];
+  self.board = [GoBoard board];
   self.playerBlack = [GoPlayer blackPlayer];
   self.playerWhite = [GoPlayer whitePlayer];
-  self.started = false;
-  self.ended = false;
   self.firstMove = nil;
   self.lastMove = nil;
+  self.state = GameHasNotYetStarted;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpResponseReceived:)
@@ -99,28 +103,6 @@
   self.firstMove = nil;
   self.lastMove = nil;
   [super dealloc];
-}
-
-- (void) setStarted:(bool)newValue
-{
-  @synchronized(self)
-  {
-    if (started == newValue)
-      return;
-    started = newValue;
-  }
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
-}
-
-- (void) setEnded:(bool)newValue
-{
-  @synchronized(self)
-  {
-    if (ended == newValue)
-      return;
-    ended = newValue;
-  }
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
 }
 
 - (void) setFirstMove:(GoMove*)newValue
@@ -147,11 +129,43 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameLastMoveChanged object:self];
 }
 
+- (void) setState:(enum GoGameState)newValue
+{
+  @synchronized(self)
+  {
+    if (state == newValue)
+      return;
+    state = newValue;
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
+}
+
+- (void) setBoardSize:(int)newValue
+{
+  @synchronized(self)
+  {
+    board.size = newValue;
+  }
+}
+
 - (void) play:(GoPoint*)point
 {
-  [self submitPlay:[point vertex]];
-  [self updatePlay:point];
+  [self submitPlayMove:point.vertex.string];
+  [self updatePlayMove:point];
   // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+}
+
+- (void) pass
+{
+  [self submitPassMove];
+  [self updatePassMove];
+  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+}
+
+- (void) resign
+{
+  [self submitResignMove];
+  [self updateResignMove];
 }
 
 - (void) playForMe
@@ -160,25 +174,22 @@
   [self updateGenMove];
 }
 
-- (void) pass
-{
-  [self submitPlay:@"pass"];
-  [self updatePass];
-  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
-}
-
 - (void) undo
 {
   // not yet implementend
 }
 
-- (void) resign
+- (bool) hasStarted
 {
-  [self submitResign];
-  [self updateResign];
+  return (GameHasStarted == self.state);
 }
 
-- (void) submitPlay:(NSString*)vertex
+- (bool) hasEnded
+{
+  return (GameHasEnded == self.state);
+}
+
+- (void) submitPlayMove:(NSString*)vertex
 {
   NSString* commandString = @"play ";
   commandString = [commandString stringByAppendingString:
@@ -186,6 +197,17 @@
   commandString = [commandString stringByAppendingString:@" "];
   commandString = [commandString stringByAppendingString:vertex];
   GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+}
+
+- (void) submitPassMove
+{
+  [self submitPlayMove:@"pass"];
+}
+
+- (void) submitResignMove
+{
+  GtpCommand* command = [GtpCommand command:@"resign"];
   [command submit];
 }
 
@@ -198,22 +220,15 @@
   [command submit];
 }
 
-- (void) submitResign
-{
-  GtpCommand* command = [GtpCommand command:@"resign"];
-  [command submit];
-}
-
 // updates both state in this model, and view; does not care about GTP
-- (void) updatePlay:(GoPoint*)point
+- (void) updatePlayMove:(GoPoint*)point
 {
   GoMove* move = [GoMove move:PlayMove after:self.lastMove];
   move.point = point;
-  point.move = move;
-
-  if (! self.hasStarted)
-    self.started = true;
-  // TODO: What about self.ended?
+  
+  // Game state must change before any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasStarted;
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -223,41 +238,41 @@
 }
 
 // updates both state in this model, and view; does not care about GTP
+- (void) updatePassMove
+{
+  GoMove* move = [GoMove move:PassMove after:self.lastMove];
+
+  // Game state must change before any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasStarted;
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+}
+
+// updates both state in this model, and view; does not care about GTP
+- (void) updateResignMove
+{
+  GoMove* move = [GoMove move:ResignMove after:self.lastMove];
+
+  // Game state must change before any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasEnded;
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+}
+
+// updates both state in this model, and view; does not care about GTP
 - (void) updateGenMove
 {
   // todo: at the moment there is no need to update the model state - something
   // will happen when the response from the gtp engine comes in; check if this
   // is still ok before making the next release
-
+  
   // todo: update view (status line = "pondering..." or something)
-}
-
-// updates both state in this model, and view; does not care about GTP
-- (void) updatePass
-{
-  GoMove* move = [GoMove move:PassMove after:self.lastMove];
-
-  if (! self.hasStarted)
-    self.started = true;
-  // TODO: What about self.ended?
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-}
-
-// updates both state in this model, and view; does not care about GTP
-- (void) updateResign
-{
-  GoMove* move = [GoMove move:ResignMove after:self.lastMove];
-
-  if (! self.hasStarted)
-    self.started = true;
-  // TODO: What about self.ended?
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
 }
 
 - (void) gtpResponseReceived:(NSNotification*)notification
@@ -270,14 +285,14 @@
   {
     NSString* responseString = response.response;
     if (NSOrderedSame == [responseString compare:@"pass"])
-      [self updatePass];
+      [self updatePassMove];
     else if (NSOrderedSame == [responseString compare:@"resign"])
-      [self updateResign];
+      [self updateResignMove];
     else
     {
-      GoPoint* point = [self.board pointWithVertex:responseString];
+      GoPoint* point = [self.board pointAtVertex:responseString];
       if (point)
-        [self updatePlay:point];
+        [self updatePlayMove:point];
       else
         ;  // TODO vertex was invalid; do something...
     }

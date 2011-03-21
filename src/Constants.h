@@ -24,6 +24,30 @@ enum GoMoveType
   ResignMove
 };
 
+enum GoStoneState
+{
+  NoStone,
+  BlackStone,
+  WhiteStone
+};
+
+enum GoGameState
+{
+  GameHasNotYetStarted,
+  GameHasStarted,
+  GameHasEnded
+};
+
+enum GoBoardDirection
+{
+  LeftDirection,
+  RightDirection,
+  UpDirection,
+  DownDirection,
+  NextDirection,
+  PreviousDirection
+};
+
 // -----------------------------------------------------------------------------
 /// @name GTP notifications
 // -----------------------------------------------------------------------------

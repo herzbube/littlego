@@ -25,10 +25,11 @@
 @interface PlayViewController(Private)
 /// @name Action methods for toolbar items
 //@{
-- (void) playForMe:(id)sender;
+- (void) play:(id)sender;
 - (void) pass:(id)sender;
-- (void) undo:(id)sender;
 - (void) resign:(id)sender;
+- (void) playForMe:(id)sender;
+- (void) undo:(id)sender;
 - (void) new:(id)sender;
 //@}
 @end
@@ -49,9 +50,10 @@
   self.playView = nil;
 }
 
-- (void) playForMe:(id)sender
+- (void) play:(id)sender
 {
-  [[GoGame sharedGame] playForMe];
+  // todo before actual playing, ask GoGame whether the move would be legal
+  // -> GoGame queries Fuego with the "is_legal" GTP command
 }
 
 - (void) pass:(id)sender
@@ -59,14 +61,20 @@
   [[GoGame sharedGame] pass];
 }
 
+- (void) resign:(id)sender
+{
+  // TODO ask user for confirmation because this action cannot be undone
+  [[GoGame sharedGame] resign];
+}
+
+- (void) playForMe:(id)sender
+{
+  [[GoGame sharedGame] playForMe];
+}
+
 - (void) undo:(id)sender
 {
   [[GoGame sharedGame] undo];
-}
-
-- (void) resign:(id)sender
-{
-  [[GoGame sharedGame] resign];
 }
 
 - (void) new:(id)sender

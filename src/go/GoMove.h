@@ -30,7 +30,7 @@
 - (GoMove*) init:(enum GoMoveType)initType;
 
 @property enum GoMoveType type;
-@property(retain) GoPoint* point;
+@property(assign) GoPoint* point;
 @property(getter=isBlack) bool black;
 // TODO: Check if previous and next properties should be made read-only to
 // the public, because otherwise anyone invoking the setters would also have

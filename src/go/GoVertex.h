@@ -15,32 +15,29 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GoBoard;
-@class GoPlayer;
-@class GoMove;
-@class GoPoint;
+// Helper to bind numeric compounds together
+struct GoVertexNumeric
+{
+  int x;
+  int y;
+};
 
-
-// GoGame takes the role of a model in an MVC pattern that includes, for
-// instance, the view and controller on the Play tab
-@interface GoGame : NSObject
+// immutable object
+//
+// vertexes are given as strings such as "C13"; "A1" is in the lower-left
+// corner; the letter axis is horizontal, the number axis is vertical; the
+// letter "I" is not used; a numeric vertex is a conversion of the compounds
+// of a string vertex into numeric values, the number axis conversion is 1:1,
+// letters are converted so that A=1, B=2, etc. The gap caused by the unused
+// letter "I" is closed, i.e. H=8, J=9
+@interface GoVertex : NSObject
 {
 }
 
-+ (GoGame*) sharedGame;
-- (void) play:(GoPoint*)point;
-- (void) playForMe;
-- (void) pass;
-- (void) undo;
-- (void) resign;
++ (GoVertex*) vertexFromNumeric:(struct GoVertexNumeric)numericValue;
++ (GoVertex*) vertexFromString:(NSString*)stringValue;
 
-@property(retain) GoBoard* board;
-@property(retain) GoPlayer* playerBlack;
-@property(retain) GoPlayer* playerWhite;
-@property(retain) GoMove* firstMove;
-@property(retain) GoMove* lastMove;
-@property enum GoGameState state;
-@property int boardSize;
+@property(readonly) NSString* string;
+@property(readonly) struct GoVertexNumeric numeric;
 
 @end

@@ -22,12 +22,13 @@
 @interface GoBoard : NSObject
 {
 @private
-  NSMutableDictionary* m_points;
+  NSMutableDictionary* m_vertexDict;
 }
 
-+ (GoBoard*) boardWithSize:(int)size;
-- (GoPoint*) pointWithVertex:(NSString*)vertex;
++ (GoBoard*) board;
 - (NSEnumerator*) pointEnumerator;
+- (GoPoint*) pointAtVertex:(NSString*)vertex;
+- (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction;
 
 @property int size;
 
