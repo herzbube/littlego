@@ -623,6 +623,7 @@ USAGE_LINE="$SCRIPT_NAME [-h] [-d|-b] [-cq] <software>"
 BUILD_BASEDIR="$SCRIPT_DIR/../3rdparty"
 ARCHIVE_BASEURL="http://www.herzbube.ch/software/3rdparty"
 BUILDENV_SCRIPT="$SCRIPT_DIR/build-env.sh"
+PATCH_BASEDIR="$SCRIPT_DIR/../patch"
 OPTSOK=hdbcq
 unset DOWNLOAD_ONLY BUILD_ONLY CLEAN_BUILD QUIET_BUILD
 

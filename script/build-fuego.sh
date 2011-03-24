@@ -161,6 +161,35 @@ BUILD_ARCHITECTURE()
 }
 
 # +------------------------------------------------------------------------
+# | Performs pre-build steps.
+# |
+# | This function expects that the current working directory is the root
+# | directory of the extracted source archive.
+# +------------------------------------------------------------------------
+# | Arguments:
+# |  None
+# +------------------------------------------------------------------------
+# | Return values:
+# |  * 0: No error
+# |  * 1: Error
+# +------------------------------------------------------------------------
+PRE_BUILD_STEPS_SOFTWARE()
+{
+  if test ! -d "$PATCH_BASEDIR/$SOFTWARE_NAME"; then
+    return 1
+  fi
+
+  for PATCH_FILE in $PATCH_BASEDIR/$SOFTWARE_NAME/*.patch; do
+    echo "Applying patch file $PATCH_FILE..."
+    patch -p1 <"$PATCH_FILE"
+    if test $? -ne 0; then
+      echo "Error applying patch file $PATCH_FILE"
+      return 1
+    fi
+  done
+}
+
+# +------------------------------------------------------------------------
 # | Builds and installs the software package.
 # |
 # | This function expects that the current working directory is the root

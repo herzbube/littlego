@@ -1,0 +1,91 @@
+diff -ruN fuego-1.0-original/fuegomain/Makefile.am fuego-1.0-new/fuegomain/Makefile.am
+--- fuego-1.0-original/fuegomain/Makefile.am	2011-01-14 17:34:48.000000000 +0100
++++ fuego-1.0-new/fuegomain/Makefile.am	2011-03-24 20:59:47.000000000 +0100
+@@ -5,7 +5,7 @@
+ FuegoMainEngine.cpp \
+ FuegoMainUtil.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ FuegoMainEngine.h \
+ FuegoMainUtil.h
+ 
+@@ -37,3 +37,18 @@
+ -I@top_srcdir@/gouct
+ 
+ DISTCLEANFILES = *~
++
++noinst_LIBRARIES = libfuego_main.a
++
++libfuego_main_a_SOURCES = \
++FuegoMainEngine.cpp \
++FuegoMainUtil.cpp
++
++libfuego_main_a_CPPFLAGS = \
++-DDATADIR='"@datadir@"' \
++-DABS_TOP_SRCDIR='"@abs_top_srcdir@"' \
++$(BOOST_CPPFLAGS) \
++-I@top_srcdir@/gtpengine \
++-I@top_srcdir@/smartgame \
++-I@top_srcdir@/go \
++-I@top_srcdir@/gouct
+diff -ruN fuego-1.0-original/go/Makefile.am fuego-1.0-new/go/Makefile.am
+--- fuego-1.0-original/go/Makefile.am	2011-01-14 20:30:35.000000000 +0100
++++ fuego-1.0-new/go/Makefile.am	2011-03-24 20:58:07.000000000 +0100
+@@ -42,7 +42,7 @@
+ GoTimeSettings.cpp \
+ GoUtil.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ GoAssertBoardRestored.h \
+ GoAutoBook.h \
+ GoBensonSolver.h \
+diff -ruN fuego-1.0-original/gouct/Makefile.am fuego-1.0-new/gouct/Makefile.am
+--- fuego-1.0-original/gouct/Makefile.am	2011-01-14 17:34:33.000000000 +0100
++++ fuego-1.0-new/gouct/Makefile.am	2011-03-24 20:58:11.000000000 +0100
+@@ -13,7 +13,7 @@
+ GoUctSearch.cpp \
+ GoUctUtil.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ GoUctBoard.h \
+ GoUctBookBuilder.h \
+ GoUctBookBuilderCommands.h \
+diff -ruN fuego-1.0-original/gtpengine/Makefile.am fuego-1.0-new/gtpengine/Makefile.am
+--- fuego-1.0-original/gtpengine/Makefile.am	2010-05-01 16:50:01.000000000 +0200
++++ fuego-1.0-new/gtpengine/Makefile.am	2011-03-24 20:58:17.000000000 +0100
+@@ -5,7 +5,7 @@
+ GtpInputStream.cpp \
+ GtpOutputStream.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ GtpEngine.h \
+ GtpInputStream.h \
+ GtpOutputStream.h
+diff -ruN fuego-1.0-original/simpleplayers/Makefile.am fuego-1.0-new/simpleplayers/Makefile.am
+--- fuego-1.0-original/simpleplayers/Makefile.am	2010-05-01 16:50:02.000000000 +0200
++++ fuego-1.0-new/simpleplayers/Makefile.am	2011-03-24 20:58:20.000000000 +0100
+@@ -16,7 +16,7 @@
+ SpSimplePlayer.cpp \
+ SpUtil.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ SpAveragePlayer.h \
+ SpCapturePlayer.h \
+ SpDumbTacticalPlayer.h \
+diff -ruN fuego-1.0-original/smartgame/Makefile.am fuego-1.0-new/smartgame/Makefile.am
+--- fuego-1.0-original/smartgame/Makefile.am	2011-01-21 11:30:14.000000000 +0100
++++ fuego-1.0-new/smartgame/Makefile.am	2011-03-24 20:58:25.000000000 +0100
+@@ -50,7 +50,7 @@
+ SgVectorUtil.cpp \
+ SgWrite.cpp
+ 
+-noinst_HEADERS = \
++nobase_pkginclude_HEADERS = \
+ SgArray.h \
+ SgArrayList.h \
+ SgBookBuilder.h \

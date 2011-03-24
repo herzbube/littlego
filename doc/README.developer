@@ -434,4 +434,5 @@ Creation of the patch file:
   diff -ruN fuego-1.0-original fuego-1.0-new >fuego.patch
 
 Application of the patch file:
-  patch -p1 fuego.patch
+  cd fuego-1.0
+  patch -p1 <fuego.patch

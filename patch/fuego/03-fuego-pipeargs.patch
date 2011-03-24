@@ -1,0 +1,152 @@
+diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain/FuegoMainUtil.cpp
+--- fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:20:15.000000000 +0100
++++ fuego-1.0-new/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:36:01.000000000 +0100
+@@ -97,36 +97,58 @@
+     return path(programPath, boost::filesystem::native).branch_path();
+ }
+ 
++/** Check that @a option1 and @a option2 are not specified at the same time. */
++void MutuallyExclusiveOptions(const po::variables_map& vm,
++                              const char* option1, const char* option2)
++{
++    if (0 == vm.count(option1) || 0 == vm.count(option2))
++        return;
++    if (vm[option1].defaulted() || vm[option2].defaulted())
++        return;
++    if (g_inputPipe.empty() || g_inputFiles.empty())
++        return;
++    string errorMessage = "Options '" + string(option1)
++                          + "' and '" + string(option2)
++                          + "' cannot be specified at the same time.";
++    SgDebug() << errorMessage << std::endl;
++    throw exception();
++}
++
+ void Help(po::options_description& desc, ostream& out)
+ {
+     out << "Usage: fuego [options] [input files]\n" << desc << "\n";
+-    exit(0);
+ }
+ 
+ void ParseOptions(int argc, char** argv)
+ {
+     po::options_description normalOptions("Options");
+     normalOptions.add_options()
+-        ("config",
++        ("config", 
+          po::value<std::string>(&g_config)->default_value(""),
+          "execuate GTP commands from file before starting main command loop")
+         ("help", "Displays this help and exit")
+-        ("maxgames",
++        ("maxgames", 
+          po::value<int>(&g_maxGames)->default_value(-1),
+          "make clear_board fail after n invocations")
+         ("nobook", "don't automatically load opening book")
+         ("nohandicap", "don't support handicap commands")
+         ("quiet", "don't print debug messages")
+-        ("srand",
++        ("srand", 
+          po::value<int>(&g_srand)->default_value(0),
+          "set random seed (-1:none, 0:time(0))")
+-        ("size",
++        ("size", 
+          po::value<int>(&g_fixedBoardSize)->default_value(0),
+          "initial (and fixed) board size");
+     po::options_description hiddenOptions;
+     hiddenOptions.add_options()
+         ("input-file", po::value<vector<string> >(&g_inputFiles),
+          "input file");
++    hiddenOptions.add_options()
++        ("input-pipe", po::value<string>(&g_inputPipe)->default_value(""),
++         "input pipe");
++    hiddenOptions.add_options()
++        ("output-pipe", po::value<string>(&g_outputPipe)->default_value(""),
++         "output pipe");
+     po::options_description allOptions;
+     allOptions.add(normalOptions).add(hiddenOptions);
+     po::positional_options_description positionalOptions;
+@@ -137,10 +159,17 @@
+         po::store(po::command_line_parser(argc, argv).options(allOptions).
+                                      positional(positionalOptions).run(), vm);
+         po::notify(vm);
++        MutuallyExclusiveOptions(vm, "input-file", "input-pipe");
++    }
++    catch (const std::exception& e)
++    {
++        SgDebug() << e.what() << '\n';
++        throw;
+     }
+     catch (...)
+     {
+         Help(normalOptions, cerr);
++        throw;
+     }
+     if (vm.count("help"))
+         Help(normalOptions, cout);
+@@ -150,6 +179,7 @@
+         g_noHandicap = true;
+     if (vm.count("quiet"))
+         g_quiet = true;
++    return true;
+ }
+ 
+ void PrintStartupMessage()
+@@ -215,6 +245,10 @@
+             SgDebug() << e.what() << "\n";
+             return 1;
+         }
++        catch (...)
++        {
++            return 1;
++        }
+     }
+     if (g_quiet)
+         SgDebugToNull();
+@@ -232,6 +266,26 @@
+             FuegoMainUtil::LoadBook(engine.Book(), g_programDir);
+         if (g_config != "")
+             engine.ExecuteFile(g_config);
++
++        istream* pInputStream = &cin;
++        ifstream inputPipeStream;
++        if (! g_inputPipe.empty())
++        {
++          inputPipeStream.open(g_inputPipe.c_str());
++          if (! inputPipeStream)
++            throw SgException(format("Error input pipe '%1%'") % g_inputPipe);
++          pInputStream = &inputPipeStream;
++        }
++        ostream* pOutputStream = &cout;
++        ofstream outputPipeStream;
++        if (! g_outputPipe.empty())
++        {
++          outputPipeStream.open(g_outputPipe.c_str());
++          if (! outputPipeStream)
++            throw SgException(format("Error output pipe '%1%'") % g_outputPipe);
++          pOutputStream = &outputPipeStream;
++        }
++
+         if (! g_inputFiles.empty())
+         {
+             for(size_t i = 0; i < g_inputFiles.size(); i++)
+@@ -240,15 +294,16 @@
+                 ifstream fin(file.c_str());
+                 if (! fin)
+                     throw SgException(format("Error file '%1%'") % file);
+-                GtpInputStream in(fin);
+-                GtpOutputStream out(cout);
++                pInputStream = &fin;
++                GtpInputStream in(*pInputStream);
++                GtpOutputStream out(*pOutputStream);
+                 engine.MainLoop(in, out);
+             }
+         }
+         else
+         {
+-            GtpInputStream in(cin);
+-            GtpOutputStream out(cout);
++            GtpInputStream in(*pInputStream);
++            GtpOutputStream out(*pOutputStream);
+             engine.MainLoop(in, out);
+         }
+     }
