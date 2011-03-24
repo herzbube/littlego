@@ -279,7 +279,12 @@ on how to obtain references to resources embedded in the application bundle
 
 Rendering a Go board in a UIView involves drawing with the Core Graphics and
 UIKit frameworks. An introduction to drawing is provided by [6], more specific
-information about drawing in Quartz is in [7].
+information about drawing with Quartz is in [7].
+
+User input is managed by the iOS event handling system. [8] describes how events
+and touches are processed by the system on a fundamental level, and how, on a
+higher level, gesture recognizer classes help with reacting to specific types
+of user input.
 
 [1]  iOS Reference Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Reference Library > Guides > Threading Programming Guide
@@ -288,6 +293,7 @@ information about drawing in Quartz is in [7].
 [5]  iOS Reference Library > Guides > Resource Programming Guide
 [6]  iOS Reference Library > Guides > Drawing and Printing Guide for iOS
 [7]  iOS Reference Library > Guides > Quartz 2D Programming Guide
+[8]  iOS Reference Library > Guides > Event Handling Guide for iOS
 
 
 Compilation command

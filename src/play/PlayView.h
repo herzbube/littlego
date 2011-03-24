@@ -19,7 +19,7 @@
 #import <UIKit/UIKit.h>
 
 // Forward declarations
-@class GoMove;
+@class GoVertex;
 
 // TODO things to document:
 // - calculate only with integer types, use half pixel "translation"; do not
@@ -31,6 +31,8 @@
 {
 }
 
+- (void) moveCrossHairTo:(CGPoint)coordinate;
+
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
 @property float boardOuterMarginPercentage;
@@ -41,6 +43,7 @@
 @property(retain) UIColor* starPointColor;
 @property int starPointRadius;
 @property float stoneRadiusPercentage;
+@property(retain) UIColor* crossHairColor;
 
 @property CGRect previousDrawRect;
 @property bool portrait;
@@ -53,5 +56,7 @@
 @property int topLeftPointY;
 @property int pointDistance;
 @property int lineLength;
+
+@property(retain) GoVertex* crossHairVertex;
 
 @end

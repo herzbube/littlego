@@ -22,10 +22,11 @@
 @class PlayView;
 
 
-@interface PlayViewController : UIViewController
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate>
 {
 }
 
 @property(nonatomic, retain) IBOutlet PlayView* playView;
+@property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
 
 @end

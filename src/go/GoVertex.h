@@ -36,6 +36,7 @@ struct GoVertexNumeric
 
 + (GoVertex*) vertexFromNumeric:(struct GoVertexNumeric)numericValue;
 + (GoVertex*) vertexFromString:(NSString*)stringValue;
+- (bool) isEqualToVertex:(GoVertex*)vertex;
 
 @property(readonly) NSString* string;
 @property(readonly) struct GoVertexNumeric numeric;

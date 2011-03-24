@@ -79,6 +79,20 @@ Priority 1 (important)
     to set the NDEBUG preprocessor macro, even if the project wants to make
     a debug build; this effectively prevents the use of assert()
 - Set up Doxygen (see README.developer)
+- Find out how to suspend the GTP engine's threads if the application moves to
+  the inactive state (phone call); maybe kill the threads, then restart the
+  engine and client at a later time? What about saving the .sgf file in such a
+  scenario?
+- If the GTP engine is running when the application goes to the background,
+  check out if it's possible to let the engine finish processing in the
+  background
+- Implement a gesture recognizer that reacts immediately to the first touch
+  (UITapGestureRecognizer only recognizes the gesture when the finger leaves
+  the screen)
+- Define protocols for ModelObserver and Model; move some methods from GoGame
+  to Model; let GoGame adopt the Model protocol, and the various views and
+  controllers adopt ModelObserver. This makes the different roles a little bit
+  more explicit
 
 
 Priority 2 (nice to have)

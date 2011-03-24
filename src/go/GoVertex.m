@@ -19,10 +19,13 @@
 #import "GoVertex.h"
 
 
-@interface GoVertex(Private)
+@interface GoVertex()
 - (GoVertex*) init;
 - (GoVertex*) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
 - (void) dealloc;
+
+@property(readwrite, retain) NSString* string;
+@property(readwrite) struct GoVertexNumeric numeric;
 @end
 
 
@@ -86,16 +89,21 @@
   if (! self)
     return nil;
   
-  string = stringVertex;
-  numeric = numericVertex;
+  self.string = stringVertex;
+  self.numeric = numericVertex;
   
   return self;
 }
 
 - (void) dealloc
 {
-  string = nil;
+  self.string = nil;
   [super dealloc];
+}
+
+- (bool) isEqualToVertex:(GoVertex*)vertex
+{
+  return [self.string isEqualToString:vertex.string];
 }
 
 @end
