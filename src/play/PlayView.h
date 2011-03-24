@@ -19,7 +19,8 @@
 #import <UIKit/UIKit.h>
 
 // Forward declarations
-@class GoVertex;
+@class GoPoint;
+
 
 // TODO things to document:
 // - calculate only with integer types, use half pixel "translation"; do not
@@ -31,7 +32,8 @@
 {
 }
 
-- (void) moveCrossHairTo:(CGPoint)coordinate;
+- (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
+- (void) moveCrossHairTo:(GoPoint*)point;
 
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
@@ -57,6 +59,6 @@
 @property int pointDistance;
 @property int lineLength;
 
-@property(retain) GoVertex* crossHairVertex;
+@property(retain) GoPoint* crossHairPoint;
 
 @end

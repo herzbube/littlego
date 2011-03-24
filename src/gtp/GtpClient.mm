@@ -163,8 +163,7 @@ static std::ifstream responseStream;
   // Notify the main thread of the response
   NSString* nsResponse = [NSString stringWithCString:fullResponse.c_str() 
                                             encoding:[NSString defaultCStringEncoding]];
-  GtpResponse* response = [GtpResponse response:nsResponse];
-  response.command = command;
+  GtpResponse* response = [GtpResponse response:nsResponse toCommand:command];
   // Retain to make sure that object is still alive when the it "arrives" in
   // the main thread
   [response retain];

@@ -30,10 +30,10 @@
 
 + (GoGame*) sharedGame;
 - (void) play:(GoPoint*)point;
-- (void) playForMe;
 - (void) pass;
-- (void) undo;
+- (void) computerPlay;
 - (void) resign;
+- (void) undo;
 
 @property(retain) GoBoard* board;
 @property(retain) GoPlayer* playerBlack;

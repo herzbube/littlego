@@ -46,6 +46,7 @@
 // Others and helpers
 - (void) gtpResponseReceived:(NSNotification*)notification;
 - (NSString*) colorStringForMoveAfter:(GoMove*)move;
+- (bool) isComputerPlayersTurn;
 @end
 
 @implementation GoGame
@@ -152,23 +153,26 @@
 {
   [self submitPlayMove:point.vertex.string];
   [self updatePlayMove:point];
-  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+  if ([self isComputerPlayersTurn])
+    [self computerPlay];
 }
 
 - (void) pass
 {
   [self submitPassMove];
   [self updatePassMove];
-  // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+  if ([self isComputerPlayersTurn])
+    [self computerPlay];
 }
 
 - (void) resign
 {
   [self submitResignMove];
   [self updateResignMove];
+  // TODO calculate score
 }
 
-- (void) playForMe
+- (void) computerPlay
 {
   [self submitGenMove];
   [self updateGenMove];
@@ -176,7 +180,7 @@
 
 - (void) undo
 {
-  // not yet implementend
+  // TODO not yet implementend
 }
 
 - (bool) hasStarted
@@ -233,8 +237,6 @@
   if (! self.firstMove)
     self.firstMove = move;
   self.lastMove = move;
-
-  // TODO: captured stones: GoPoints need to be updated; view needs to be updated
 }
 
 // updates both state in this model, and view; does not care about GTP
@@ -283,7 +285,7 @@
   NSString* commandString = response.command.command;
   if ([commandString hasPrefix:@"genmove"])
   {
-    NSString* responseString = response.response;
+    NSString* responseString = response.parsedResponse;
     if (NSOrderedSame == [responseString compare:@"pass"])
       [self updatePassMove];
     else if (NSOrderedSame == [responseString compare:@"resign"])
@@ -296,8 +298,8 @@
       else
         ;  // TODO vertex was invalid; do something...
     }
-    // todo invoke submitGenMove() if it is the computer player's turn
-    // todo invoke submitGenMove() and updateGenMove() if it is the computer player's turn
+    if ([self isComputerPlayersTurn])
+      [self computerPlay];
   }
 }
 
@@ -311,6 +313,15 @@
     return @"B";
   else
     return @"W";
+}
+
+- (bool) isComputerPlayersTurn
+{
+  // TODO: Find a better way to determine when it is the computer player's
+  // turn. This works only as long as white is fixed to be the computer
+  if (! self.lastMove)
+    return false;  // first turn always goes to black
+  return self.lastMove.black;
 }
 
 @end

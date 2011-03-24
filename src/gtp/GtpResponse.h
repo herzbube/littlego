@@ -23,10 +23,11 @@
 {
 }
 
-+ (GtpResponse*) response:(NSString*)response;
++ (GtpResponse*) response:(NSString*)response toCommand:(GtpCommand*)command;
+- (NSString*) parsedResponse;
 
-@property(retain) NSString* response;
-@property(retain) GtpCommand* command;
+@property(readonly, retain) NSString* rawResponse;
+@property(readonly, retain) GtpCommand* command;
 @property(readonly) bool status;
 
 @end

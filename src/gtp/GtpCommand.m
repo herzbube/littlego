@@ -21,6 +21,11 @@
 #import "../ApplicationDelegate.h"
 
 
+@interface GtpCommand()
+- (NSString*) description;
+@end
+
+
 @implementation GtpCommand
 
 @synthesize command;
@@ -54,11 +59,17 @@
   [super dealloc];
 }
 
+- (NSString*) description
+{
+  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, self.command];
+}
+
 // Pure convenience method so that clients do not need to know GtpClient
 // (and ApplicationDelegate, which is required to obtain the GtpClient
 // instance).
 - (void) submit
 {
+  NSLog(@"Submitting %@...", self);
   GtpClient* client = [ApplicationDelegate sharedDelegate].gtpClient;
   [client submit:self];
 }

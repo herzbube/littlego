@@ -19,22 +19,27 @@
 #import "GtpResponse.h"
 
 
-@interface GtpResponse(Private)
+@interface GtpResponse()
+- (NSString*) description;
+@property(readwrite, retain) NSString* rawResponse;
+@property(readwrite, retain) GtpCommand* command;
 @end
+
 
 @implementation GtpResponse
 
-@synthesize response;
+@synthesize rawResponse;
 @synthesize command;
 
-+ (GtpResponse*) response:(NSString*)response
++ (GtpResponse*) response:(NSString*)response toCommand:(GtpCommand*)command
 {
   GtpResponse* resp = [[GtpResponse alloc] init];
   if (resp)
   {
-    resp.response = response;
-    resp.command = nil;
+    resp.rawResponse = response;
+    resp.command = command;
     [resp autorelease];
+    NSLog(@"Received %@", resp);
   }
   return resp;
 }
@@ -46,7 +51,7 @@
   if (! self)
     return nil;
 
-  self.response = nil;
+  self.rawResponse = nil;
   self.command = nil;
 
   return self;
@@ -54,27 +59,30 @@
 
 - (void) dealloc
 {
-  self.response = nil;
+  self.rawResponse = nil;
   self.command = nil;
   [super dealloc];
 }
 
-- (NSString*) response
+- (NSString*) description
 {
-  @synchronized(self)
-  {
-    if (! response)
-      return nil;
-    NSString* responseWithoutStatus = [response substringFromIndex:2];
-    return [[responseWithoutStatus retain] autorelease];
-  }
+  return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, self.rawResponse];
+}
+
+- (NSString*) parsedResponse
+{
+  if (! self.rawResponse)
+    return nil;
+  // Remove status
+  NSString* parsedResponse = [self.rawResponse substringFromIndex:2];
+  return [[parsedResponse retain] autorelease];
 }
 
 - (bool) status
 {
-  if (! response)
+  if (! self.rawResponse)
     return false;
-  NSString* statusString = [response substringWithRange:NSMakeRange(0, 1)];
+  NSString* statusString = [self.rawResponse substringWithRange:NSMakeRange(0, 1)];
   if (NSOrderedSame == [statusString compare:@"="])
     return true;
   else

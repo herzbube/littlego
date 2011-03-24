@@ -35,6 +35,7 @@
 - (void) drawGrid;
 - (void) drawStarPoints;
 - (void) drawStones;
+- (void) drawStone:(UIColor*)color point:(GoPoint*)point;
 - (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex;
 - (void) drawStone:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY;
 - (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates;
@@ -44,6 +45,7 @@
 - (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
+- (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
 // Notification responders
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
@@ -74,7 +76,7 @@
 @synthesize topLeftPointY;
 @synthesize pointDistance;
 @synthesize lineLength;
-@synthesize crossHairVertex;
+@synthesize crossHairPoint;
 
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
@@ -116,7 +118,7 @@
   self.pointDistance = 0;
   self.lineLength = 0;
 
-  self.crossHairVertex = nil;
+  self.crossHairPoint = nil;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
@@ -131,7 +133,7 @@
   self.lineColor = nil;
   self.starPointColor = nil;
   self.crossHairColor = nil;
-  self.crossHairVertex = nil;
+  self.crossHairPoint = nil;
   [super dealloc];
 }
 
@@ -147,7 +149,7 @@
   [self drawStones];
   [self drawSymbols];
   [self drawLabels];
-  self.crossHairVertex = nil;
+  self.crossHairPoint = nil;
 }
 
 - (void) updateDrawParametersForRect:(CGRect)rect
@@ -205,8 +207,8 @@
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   CGPoint crossHairCenter = CGPointZero;
-  if (self.crossHairVertex)
-    crossHairCenter = [self coordinatesFromVertex:self.crossHairVertex];
+  if (self.crossHairPoint)
+    crossHairCenter = [self coordinatesFromPoint:self.crossHairPoint];
 
   // Two iterations for the two directions horizontal and vertical
   for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
@@ -306,7 +308,7 @@
     if (point.hasStone)
     {
       UIColor* color;
-      if (self.crossHairVertex && [self.crossHairVertex isEqualToVertex:point.vertex])
+      if (self.crossHairPoint && [self.crossHairPoint.vertex isEqualToVertex:point.vertex])
       {
         color = self.crossHairColor;
         crossHairStoneDrawn = true;
@@ -325,7 +327,7 @@
 
   // Draw after regular stones to paint the cross-hair stone over any regular
   // stone that might be present
-  if (self.crossHairVertex && ! crossHairStoneDrawn)
+  if (self.crossHairPoint && ! crossHairStoneDrawn)
   {
     UIColor* color = nil;
     switch (game.state)
@@ -343,8 +345,13 @@
         break;
     }
     if (color)
-      [self drawStone:color vertex:self.crossHairVertex];
+      [self drawStone:color point:self.crossHairPoint];
   }
+}
+
+- (void) drawStone:(UIColor*)color point:(GoPoint*)point
+{
+  [self drawStone:color vertex:point.vertex];
 }
 
 - (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex
@@ -419,6 +426,12 @@
   return [GoVertex vertexFromNumeric:numericVertex];
 }
 
+- (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
+{
+  GoVertex* vertex = [self vertexFromCoordinates:coordinates];
+  return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+}
+
 - (void) goGameStateChanged:(NSNotification*)notification
 {
   // TODO do we need this?
@@ -436,62 +449,66 @@
   [self setNeedsDisplay];
 }
 
-- (void) moveCrossHairTo:(CGPoint)coordinate
+- (GoPoint*) crossHairPointAt:(CGPoint)coordinates
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one point distance above
-  coordinate.y -= 3 * self.pointDistance;
+  coordinates.y -= 3 * self.pointDistance;
 
   // Check if cross-hair is outside the grid and should not be displayed. To
   // make the edge lines accessible in the same way as the inner lines,
   // a padding of half a point distance must be added.
   int halfPointDistance = floor(self.pointDistance / 2);
-  if (coordinate.x < self.topLeftPointX)
+  if (coordinates.x < self.topLeftPointX)
   {
-    if (coordinate.x < self.topLeftPointX - halfPointDistance)
-      coordinate = CGPointZero;
+    if (coordinates.x < self.topLeftPointX - halfPointDistance)
+      coordinates = CGPointZero;
     else
-      coordinate.x = self.topLeftPointX;
+      coordinates.x = self.topLeftPointX;
   }
-  else if (coordinate.x > self.topLeftPointX + self.lineLength)
+  else if (coordinates.x > self.topLeftPointX + self.lineLength)
   {
-    if (coordinate.x > self.topLeftPointX + self.lineLength + halfPointDistance)
-      coordinate = CGPointZero;
+    if (coordinates.x > self.topLeftPointX + self.lineLength + halfPointDistance)
+      coordinates = CGPointZero;
     else
-      coordinate.x = self.topLeftPointX + self.lineLength;
+      coordinates.x = self.topLeftPointX + self.lineLength;
   }
-  else if (coordinate.y < self.topLeftPointY)
+  else if (coordinates.y < self.topLeftPointY)
   {
-    if (coordinate.y < self.topLeftPointY - halfPointDistance)
-      coordinate = CGPointZero;
+    if (coordinates.y < self.topLeftPointY - halfPointDistance)
+      coordinates = CGPointZero;
     else
-      coordinate.y = self.topLeftPointY;
+      coordinates.y = self.topLeftPointY;
   }
-  else if (coordinate.y > self.topLeftPointY + self.lineLength)
+  else if (coordinates.y > self.topLeftPointY + self.lineLength)
   {
-    if (coordinate.y > self.topLeftPointY + self.lineLength + halfPointDistance)
-      coordinate = CGPointZero;
+    if (coordinates.y > self.topLeftPointY + self.lineLength + halfPointDistance)
+      coordinates = CGPointZero;
     else
-      coordinate.y = self.topLeftPointY + self.lineLength;
+      coordinates.y = self.topLeftPointY + self.lineLength;
   }
   else
   {
     // Adjust so that the snap-to calculation below switches to the next vertex
     // when the cross-hair has moved half-way through the distance to that vertex
-    coordinate.x += halfPointDistance;
-    coordinate.y += halfPointDistance;
+    coordinates.x += halfPointDistance;
+    coordinates.y += halfPointDistance;
   }
 
-  // Snap to the nearest vertex if the coordinate was valid
-  if (0 == coordinate.x && 0 == coordinate.y)
-    self.crossHairVertex = nil;
+  // Snap to the nearest vertex if the coordinates were valid
+  if (0 == coordinates.x && 0 == coordinates.y)
+    return nil;
   else
   {
-    coordinate.x = self.topLeftPointX + self.pointDistance * floor((coordinate.x - self.topLeftPointX) / self.pointDistance);
-    coordinate.y = self.topLeftPointY + self.pointDistance * floor((coordinate.y - self.topLeftPointY) / self.pointDistance);
-    self.crossHairVertex = [self vertexFromCoordinates:coordinate];
+    coordinates.x = self.topLeftPointX + self.pointDistance * floor((coordinates.x - self.topLeftPointX) / self.pointDistance);
+    coordinates.y = self.topLeftPointY + self.pointDistance * floor((coordinates.y - self.topLeftPointY) / self.pointDistance);
+    return [self pointFromCoordinates:coordinates];
   }
+}
 
+- (void) moveCrossHairTo:(GoPoint*)point
+{
+  self.crossHairPoint = point;
   [self setNeedsDisplay];
 }
 

@@ -28,7 +28,6 @@
 @interface PlayViewController()
 /// @name Action methods for toolbar items
 //@{
-- (void) play:(id)sender;
 - (void) pass:(id)sender;
 - (void) resign:(id)sender;
 - (void) playForMe:(id)sender;
@@ -68,12 +67,6 @@
   self.panRecognizer = nil;
 }
 
-- (void) play:(id)sender
-{
-  // todo before actual playing, ask GoGame whether the move would be legal
-  // -> GoGame queries Fuego with the "is_legal" GTP command
-}
-
 - (void) pass:(id)sender
 {
   [[GoGame sharedGame] pass];
@@ -87,7 +80,7 @@
 
 - (void) playForMe:(id)sender
 {
-  [[GoGame sharedGame] playForMe];
+  [[GoGame sharedGame] computerPlay];
 }
 
 - (void) undo:(id)sender
@@ -123,22 +116,36 @@
   //      atari, mark up that group
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
+
+
+  // TODO Check if it's a legal move
+  // -> GoGame queries Fuego with the "is_legal" GTP command
+
+  // TODO Prevent panning and other actions (e.g. pass) while the computer
+  // player is thinking
+
+  CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
+  GoPoint* crossHairPoint = [self.playView crossHairPointAt:panningLocation];
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
-      break;
+      // fall-through intentional
     case UIGestureRecognizerStateChanged:
+      [self.playView moveCrossHairTo:crossHairPoint];
       break;
     case UIGestureRecognizerStateEnded:
+      [self.playView moveCrossHairTo:nil];
+      if (crossHairPoint)
+        [[GoGame sharedGame] play:crossHairPoint];
+      else
+        ; // do nothing, cross-hair probably not inside the board
       break;
     case UIGestureRecognizerStateCancelled:
       break;
     default:
       return;
   }
-  CGPoint coordinateLocation = [gestureRecognizer locationInView:self.playView];
-  [self.playView moveCrossHairTo:coordinateLocation];
 }
 
 @end
