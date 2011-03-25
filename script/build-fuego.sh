@@ -197,8 +197,11 @@ PRE_BUILD_STEPS_SOFTWARE()
       return 1
     fi
   done
-
   echo "Successfully applied all patches"
+
+  echo "Running autoreconf..."
+  autoreconf -i
+
   touch "$PATCH_GUARD_FILE"
 }
 
@@ -217,12 +220,10 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
-return 0
   # Ignore the clean request; we must clean anyway because we are building for
   # multiple architectures, and configure/make cannot handle this inside the
   # same directory
   typeset CLEAN_BUILD="$1"
-
   BUILD_ARCHITECTURE \
     "$IPHONEOS_PREFIX" \
     "$IPHONEOS_CXX" \
@@ -258,7 +259,6 @@ return 0
   if test $? -ne 0; then
     return 1
   fi
-
   return 0
 }
 
@@ -277,7 +277,6 @@ return 0
 # +------------------------------------------------------------------------
 INSTALL_STEPS_SOFTWARE()
 {
-return 0
   # Must create a symbolic link if the iPhoneSimulator base SDK version is
   # different from the iPhoneOS base SDK version. This is necessary because, at
   # the moment, in Xcode there is no way to specify different versions for the
