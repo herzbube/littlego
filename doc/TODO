@@ -22,16 +22,6 @@ Priority 1 (important)
 - Find a way to add the opening book to the project resources without
   depending on a fixed path (a fixed path will break if the project is
   compiled on a newer base SDK)
-- Fix build system
-  - build-fuego.sh (or someone else) must create a symbolic link if the
-    iPhoneSimulator base SDK version is different from the iPhoneOS base SDK
-    version. This is *NOT* necessary if a way can be found how to specify these
-    different base SDKs to Xcode. At the moment, it seems that both base SDKs
-    always have the same value.
-
-    ls -l ~/Documents/dev/littlego/3rdparty/install/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/
-    drwxr-xr-x  6 patrick  staff  204  1 Mär 01:32 iPhoneSimulator4.1.sdk
-    lrwxr-xr-x  1 patrick  staff   22  1 Mär 01:35 iPhoneSimulator4.2.sdk -> iPhoneSimulator4.1.sdk
 - Document reviews before the release
   - INSTALL file
   - Create the NOTICE file
@@ -117,7 +107,9 @@ Future improvements to the 3rdparty build process:
   and the iPhoneSimulator builds. Without this, 1) it's impossible to reference
   such builds of 3rdparty libs in an elegant way; and 2) linking a 4.2 simulator
   Xcode build against a 4.1 simulator 3rdparty build is a mismatch that is
-  asking for trouble
+  asking for trouble. If a solution is found, remove the hack in function
+  INSTALL_STEPS_SOFTWARE() in build-fuego.sh which creates an SDK directory
+  symlink as a workaround for this Xcode limitation.
 
 
 Priority 3 (not important)

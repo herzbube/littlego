@@ -175,18 +175,31 @@ BUILD_ARCHITECTURE()
 # +------------------------------------------------------------------------
 PRE_BUILD_STEPS_SOFTWARE()
 {
+  PATCH_GUARD_FILE="$SOFTWARE_NAME.has.already.been.patched"
+  if test -f "$PATCH_GUARD_FILE"; then
+    echo "It appears that patches have already been applied; skipping pre-build patch step"
+    return 0
+  fi
+
   if test ! -d "$PATCH_BASEDIR/$SOFTWARE_NAME"; then
     return 1
   fi
 
   for PATCH_FILE in $PATCH_BASEDIR/$SOFTWARE_NAME/*.patch; do
     echo "Applying patch file $PATCH_FILE..."
-    patch -p1 <"$PATCH_FILE"
+    # Try to prevent any accidents here that render the source code unusable
+    # --forward ignores patches that seem to be already applied
+    # --fuzz=0 causes a patch to fail if the context doesn't match 100% (i.e.
+    # fuzz factor is 0)
+    patch --forward -p1 <"$PATCH_FILE"
     if test $? -ne 0; then
       echo "Error applying patch file $PATCH_FILE"
       return 1
     fi
   done
+
+  echo "Successfully applied all patches"
+  touch "$PATCH_GUARD_FILE"
 }
 
 # +------------------------------------------------------------------------
@@ -204,6 +217,7 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
+return 0
   # Ignore the clean request; we must clean anyway because we are building for
   # multiple architectures, and configure/make cannot handle this inside the
   # same directory
@@ -263,8 +277,27 @@ BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 INSTALL_STEPS_SOFTWARE()
 {
-  # Nothing to do; build results were installed immediately after each build,
-  # because configure/make cannot handle multiple build results in the same
-  # directory
+return 0
+  # Must create a symbolic link if the iPhoneSimulator base SDK version is
+  # different from the iPhoneOS base SDK version. This is necessary because, at
+  # the moment, in Xcode there is no way to specify different versions for the
+  # two SDKs.
+  if test "$IPHONEOS_BASESDK_VERSION" != "$IPHONE_SIMULATOR_BASESDK_VERSION"; then
+    PREFIX_DIRNAME="$(dirname "$IPHONE_SIMULATOR_PREFIXDIR")"
+    PREFIX_BASENAME="$(basename "$IPHONE_SIMULATOR_PREFIXDIR")"
+    PREFIX_ALTERNATE_BASENAME="${IPHONE_SIMULATOR_PREFIX}${IPHONEOS_BASESDK_VERSION}.sdk"
+    echo "Creating symlink $PREFIX_ALTERNATE_BASENAME to make Xcode happy..."
+    cd "$PREFIX_DIRNAME" >/dev/null 2>&1
+    if test ! -e "$PREFIX_ALTERNATE_BASENAME"; then
+      ln -s "$PREFIX_BASENAME" "$PREFIX_ALTERNATE_BASENAME"
+    else
+      echo "Symlink (or some other file) already exists, nothing to do"
+    fi
+    cd - >/dev/null 2>&1
+  fi
+
+  # Nothing else to do; build results were installed immediately after each
+  # build, because configure/make cannot handle multiple build results in the
+  # same directory
   return 0
 }
