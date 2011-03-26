@@ -34,6 +34,7 @@
 - (void) computerPlay;
 - (void) resign;
 - (void) undo;
+- (bool) isLegalNextMove:(GoPoint*)point;
 
 @property(retain) GoBoard* board;
 @property(retain) GoPlayer* playerBlack;

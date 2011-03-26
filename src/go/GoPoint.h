@@ -28,13 +28,15 @@
 - (bool) hasStone;
 - (bool) blackStone;
 - (int) liberties;
+- (bool) isLegalNextMove;
+- (bool) isEqualToPoint:(GoPoint*)point;
 
 @property(retain) GoVertex* vertex;
 @property(readonly) GoPoint* left;
 @property(readonly) GoPoint* right;
 @property(readonly) GoPoint* above;
 @property(readonly) GoPoint* below;
-@property(readonly) NSArray* neighbours;
+@property(readonly, retain) NSArray* neighbours;
 @property(readonly) GoPoint* next;
 @property(readonly) GoPoint* previous;
 @property(getter=isStarPoint) bool starPoint;

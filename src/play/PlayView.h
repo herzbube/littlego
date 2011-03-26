@@ -33,7 +33,7 @@
 }
 
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
-- (void) moveCrossHairTo:(GoPoint*)point;
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
 
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
@@ -46,6 +46,7 @@
 @property int starPointRadius;
 @property float stoneRadiusPercentage;
 @property(retain) UIColor* crossHairColor;
+@property int crossHairPointDistanceFromFinger;
 
 @property CGRect previousDrawRect;
 @property bool portrait;
@@ -60,5 +61,8 @@
 @property int lineLength;
 
 @property(retain) GoPoint* crossHairPoint;
+@property bool crossHairPointIsLegalMove;
+
+@property(nonatomic, retain) IBOutlet UILabel* statusLine;
 
 @end

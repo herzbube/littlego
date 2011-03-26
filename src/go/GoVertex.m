@@ -103,7 +103,10 @@
 
 - (bool) isEqualToVertex:(GoVertex*)vertex
 {
-  return [self.string isEqualToString:vertex.string];
+  struct GoVertexNumeric myNumericValue = self.numeric;
+  struct GoVertexNumeric otherNumericValue = vertex.numeric;
+  return (myNumericValue.x == otherNumericValue.x &&
+          myNumericValue.y == otherNumericValue.y);
 }
 
 @end

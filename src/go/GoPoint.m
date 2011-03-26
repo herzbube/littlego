@@ -19,6 +19,7 @@
 #import "GoPoint.h"
 #import "GoGame.h"
 #import "GoBoard.h"
+#import "GoVertex.h"
 
 
 @implementation GoPoint
@@ -77,6 +78,8 @@
 
 - (GoPoint*) left
 {
+  // TODO: Caching will not work if this point is at the left edge; the same is
+  // also true for the other directions.
   if (! left)
     left = [[GoGame sharedGame].board neighbourOf:self inDirection:LeftDirection];
   return left;
@@ -117,7 +120,7 @@
     if (self.below)
       [(NSMutableArray*)neighbours addObject:self.below];
   }
-  return neighbours;
+  return [[neighbours retain] autorelease];
 }
 
 - (GoPoint*) next
@@ -168,6 +171,19 @@
     }
     return liberties;
   }
+}
+
+- (bool) isLegalNextMove
+{
+  return [[GoGame sharedGame] isLegalNextMove:self];
+}
+
+- (bool) isEqualToPoint:(GoPoint*)point
+{
+  if (! point)
+    return false;
+  // Don't rely on instance identity, it's better to compare the vertex
+  return [self.vertex isEqualToVertex:point.vertex];
 }
 
 @end

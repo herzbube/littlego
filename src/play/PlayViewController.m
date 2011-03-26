@@ -63,6 +63,8 @@
 
 - (void) viewDidUnload
 {
+  [super viewDidUnload];
+
   self.playView = nil;
   self.panRecognizer = nil;
 }
@@ -118,30 +120,34 @@
   //    user can see the stone location
 
 
-  // TODO Check if it's a legal move
-  // -> GoGame queries Fuego with the "is_legal" GTP command
-
   // TODO Prevent panning and other actions (e.g. pass) while the computer
   // player is thinking
 
   CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
   GoPoint* crossHairPoint = [self.playView crossHairPointAt:panningLocation];
+
+  // TODO If the move is not legal, determine the reason (another stone is
+  // already placed on the point; suicide move; guarded by Ko rule)
+  bool isLegalMove = false;
+  if (crossHairPoint)
+    isLegalMove = [[GoGame sharedGame] isLegalNextMove:crossHairPoint];
+
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
       // fall-through intentional
     case UIGestureRecognizerStateChanged:
-      [self.playView moveCrossHairTo:crossHairPoint];
+      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
       break;
     case UIGestureRecognizerStateEnded:
-      [self.playView moveCrossHairTo:nil];
-      if (crossHairPoint)
+      [self.playView moveCrossHairTo:nil isLegalMove:true];
+      if (isLegalMove)
         [[GoGame sharedGame] play:crossHairPoint];
-      else
-        ; // do nothing, cross-hair probably not inside the board
       break;
     case UIGestureRecognizerStateCancelled:
+      // TODO Phone call? How to test this?
+      [self.playView moveCrossHairTo:nil isLegalMove:true];
       break;
     default:
       return;

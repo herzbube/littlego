@@ -21,6 +21,7 @@
 #import "GoPlayer.h"
 #import "GoMove.h"
 #import "GoPoint.h"
+#import "GoBoardRegion.h"
 #import "GoVertex.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
@@ -181,6 +182,73 @@
 - (void) undo
 {
   // TODO not yet implementend
+}
+
+- (bool) isLegalNextMove:(GoPoint*)point
+{
+  // We could use the Fuego-specific GTP command "go_point_info" to obtain
+  // the desired information, but parsing the response would require some
+  // effort, is prone to fail when Fuego changes its response format, and
+  // Fuego also does not tell us directly whether or not the point is protected
+  // by a Ko, so we would have to derive this information from the other parts
+  // of the response.
+  // -> it's better to implement this in our own terms
+  if (! point)
+    return false;
+  else if ([point hasStone])
+    return false;
+  else if ([point liberties] > 0)
+    return true;
+  else
+  {
+    bool nextMoveIsBlack = true;
+    if (self.lastMove)
+      nextMoveIsBlack = ! self.lastMove.isBlack;
+    bool isKoStillPossible = true;
+
+    NSArray* neighbours = point.neighbours;
+    for (GoPoint* neighbour in neighbours)
+    {
+      if ([neighbour blackStone] == nextMoveIsBlack)  // friendly color?
+      {
+        // If we are connecting to a stone group with more than just one
+        // liberty, we are *NOT* killing it, so the move is not a suicide and
+        // therefore legal
+        if ([neighbour liberties] > 1)
+          return true;
+        else
+        {
+          // A Ko situation is not possible since one of our neighbours is a
+          // friendly colored stone
+          isKoStillPossible = false;
+        }
+      }
+      else  // opposing color!
+      {
+        // Can we capture the stone (or the group to which it belongs)?
+        if ([neighbour liberties] == 1)
+        {
+          // Yes, we can capture the group. If the group is larger than 1 stone
+          // it can't be a Ko, so the move is legal
+          GoBoardRegion* neighbourRegion = neighbour.region;
+          if ([neighbourRegion size] > 1)
+            return true;
+          else if (isKoStillPossible)
+          {
+            // There is a Ko if the opposing stone was just played during the
+            // last turn, so the move is illegal
+            GoPoint* lastMovePoint = self.lastMove.point;
+            if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
+              return false;
+          }
+        }
+      }
+    }
+    // If we arrive here, no opposing stones can be captured and there are no
+    // friendly groups with sufficient liberties to connect to
+    // -> the move is a suicide and therefore illegal
+    return false;
+  }
 }
 
 - (bool) hasStarted

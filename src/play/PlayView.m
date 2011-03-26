@@ -30,6 +30,7 @@
 - (void) awakeFromNib;
 //@}
 - (void) updateDrawParametersForRect:(CGRect)rect;
+// Layer drawing
 - (void) drawBackground:(CGRect)rect;
 - (void) drawBoard;
 - (void) drawGrid;
@@ -41,6 +42,8 @@
 - (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates;
 - (void) drawSymbols;
 - (void) drawLabels;
+- (void) updateStatusLine;
+// Calculators
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
@@ -65,6 +68,7 @@
 @synthesize starPointRadius;
 @synthesize stoneRadiusPercentage;
 @synthesize crossHairColor;
+@synthesize crossHairPointDistanceFromFinger;
 @synthesize previousDrawRect;
 @synthesize portrait;
 @synthesize boardSize;
@@ -77,6 +81,8 @@
 @synthesize pointDistance;
 @synthesize lineLength;
 @synthesize crossHairPoint;
+@synthesize crossHairPointIsLegalMove;
+@synthesize statusLine;
 
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
@@ -105,6 +111,7 @@
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 0.95;  // percentage of pointDistance
   self.crossHairColor = [UIColor blueColor];
+  self.crossHairPointDistanceFromFinger = 2;
 
   self.previousDrawRect = CGRectNull;
   self.portrait = true;
@@ -119,6 +126,7 @@
   self.lineLength = 0;
 
   self.crossHairPoint = nil;
+  self.crossHairPointIsLegalMove = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
@@ -134,10 +142,11 @@
   self.starPointColor = nil;
   self.crossHairColor = nil;
   self.crossHairPoint = nil;
+  self.statusLine = nil;
   [super dealloc];
 }
 
-- (void)drawRect:(CGRect)rect
+- (void) drawRect:(CGRect)rect
 {
   [self updateDrawParametersForRect:rect];
   // The order in which draw methods are invoked is important, as each method
@@ -149,6 +158,7 @@
   [self drawStones];
   [self drawSymbols];
   [self drawLabels];
+  [self updateStatusLine];
   self.crossHairPoint = nil;
 }
 
@@ -291,14 +301,6 @@
 
 - (void) drawStones
 {
-//  NSString* blackStoneImageName = [[NSBundle mainBundle] pathForResource:@"BlackStone-Goban" ofType:@"tiff"];
-//  UIImage* blackStoneImageObj = [[UIImage alloc] initWithContentsOfFile:blackStoneImageName];
-//  CGRect blackStoneImageRect;
-//  blackStoneImageRect.size.width = distanceBetweenLines;
-//  blackStoneImageRect.size.height = distanceBetweenLines;
-//  blackStoneImageRect.origin.x = hoshiWithBlackStone.x - (blackStoneImageRect.size.width / 2);
-//  blackStoneImageRect.origin.y = hoshiWithBlackStone.y - (blackStoneImageRect.size.height / 2);
-//  CGContextDrawImage(context, blackStoneImageRect, [blackStoneImageObj CGImage]);
   bool crossHairStoneDrawn = false;
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
@@ -308,6 +310,7 @@
     if (point.hasStone)
     {
       UIColor* color;
+      // TODO create an isEqualToPoint:(GoPoint*)point in GoPoint
       if (self.crossHairPoint && [self.crossHairPoint.vertex isEqualToVertex:point.vertex])
       {
         color = self.crossHairColor;
@@ -321,6 +324,8 @@
     }
     else
     {
+      // TODO remove this or make it into something that can be turned on
+      // at runtime for debugging
 //      [self drawEmpty:point];
     }
   }
@@ -329,6 +334,8 @@
   // stone that might be present
   if (self.crossHairPoint && ! crossHairStoneDrawn)
   {
+    // TODO move color handling to a helper function; there is similar code
+    // floating around somewhere else (GoGame?)
     UIColor* color = nil;
     switch (game.state)
     {
@@ -384,6 +391,22 @@
 
 - (void) drawLabels
 {
+  // TODO not yet implemented
+}
+
+- (void) updateStatusLine
+{
+  if (self.crossHairPoint)
+  {
+    if (self.crossHairPointIsLegalMove)
+      self.statusLine.text = @"";
+    else
+      self.statusLine.text = @"You can't play there";
+  }
+  else
+  {
+    self.statusLine.text = @"";
+  }
 }
 
 - (void) drawEmpty:(GoPoint*)point
@@ -453,7 +476,7 @@
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one point distance above
-  coordinates.y -= 3 * self.pointDistance;
+  coordinates.y -= self.crossHairPointDistanceFromFinger * self.pointDistance;
 
   // Check if cross-hair is outside the grid and should not be displayed. To
   // make the edge lines accessible in the same way as the inner lines,
@@ -506,9 +529,11 @@
   }
 }
 
-- (void) moveCrossHairTo:(GoPoint*)point
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
 {
+  // TODO check if it's possible to update only a few rectangles
   self.crossHairPoint = point;
+  self.crossHairPointIsLegalMove = isLegalMove;
   [self setNeedsDisplay];
 }
 
