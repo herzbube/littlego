@@ -34,6 +34,7 @@
 - (void) setEnded:(bool)newValue;
 - (void) setFirstMove:(GoMove*)newValue;
 - (void) setLastMove:(GoMove*)newValue;
+- (void) setComputerThinks:(bool)newValue;
 // Submit GTP commands
 - (void) submitPlayMove:(NSString*)vertex;
 - (void) submitPassMove;
@@ -59,6 +60,7 @@
 @synthesize lastMove;
 @synthesize state;
 @synthesize boardSize;
+@synthesize computerThinks;
 
 + (GoGame*) sharedGame;
 {
@@ -88,6 +90,7 @@
   self.firstMove = nil;
   self.lastMove = nil;
   self.state = GameHasNotYetStarted;
+  self.computerThinks = false;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpResponseReceived:)
@@ -285,6 +288,7 @@
 
 - (void) submitGenMove
 {
+  self.computerThinks = true;
   NSString* commandString = @"genmove ";
   commandString = [commandString stringByAppendingString:
                    [self colorStringForMoveAfter:self.lastMove]];
@@ -353,6 +357,7 @@
   NSString* commandString = response.command.command;
   if ([commandString hasPrefix:@"genmove"])
   {
+    self.computerThinks = false;
     NSString* responseString = response.parsedResponse;
     if (NSOrderedSame == [responseString compare:@"pass"])
       [self updatePassMove];
@@ -390,6 +395,22 @@
   if (! self.lastMove)
     return false;  // first turn always goes to black
   return self.lastMove.black;
+}
+
+- (void) setComputerThinks:(bool)newValue
+{
+  @synchronized(self)
+  {
+    if (computerThinks == newValue)
+      return;
+    computerThinks = newValue;
+    NSString* notificationName;
+    if (newValue)
+      notificationName = computerPlayerThinkingStarts;
+    else
+      notificationName = computerPlayerThinkingStops;
+    [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+  }
 }
 
 @end

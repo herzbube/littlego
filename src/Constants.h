@@ -80,3 +80,15 @@ extern NSString* goGameFirstMoveChanged;
 /// most recent move of the game is removed by an undo.
 extern NSString* goGameLastMoveChanged;
 //@}
+
+// -----------------------------------------------------------------------------
+/// @name Computer player notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the computer player has started to think
+/// about its next move.
+extern NSString* computerPlayerThinkingStarts;
+/// @brief Is sent to indicate that the computer player has stopped to think
+/// about its next move.
+extern NSString* computerPlayerThinkingStops;
+//@}

@@ -35,6 +35,9 @@
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
 
+@property(nonatomic, retain) IBOutlet UILabel* statusLine;
+@property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
+
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
 @property float boardOuterMarginPercentage;
@@ -62,7 +65,5 @@
 
 @property(retain) GoPoint* crossHairPoint;
 @property bool crossHairPointIsLegalMove;
-
-@property(nonatomic, retain) IBOutlet UILabel* statusLine;
 
 @end

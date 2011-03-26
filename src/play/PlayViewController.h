@@ -27,6 +27,12 @@
 }
 
 @property(nonatomic, retain) IBOutlet PlayView* playView;
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* playForMeButton;
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* passButton;
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* resignButton;
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* undoButton;
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* newGameButton;
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
+@property(getter=isInteractionEnabled) bool interactionEnabled;
 
 @end

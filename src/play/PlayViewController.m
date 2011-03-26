@@ -35,13 +35,25 @@
 - (void) new:(id)sender;
 //@}
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
+/// @name UIGestureRecognizerDelegate protocol
+//@{
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
+//@}
+// Notification responders
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 @end
 
 
 @implementation PlayViewController
 
 @synthesize playView;
+@synthesize playForMeButton;
+@synthesize passButton;
+@synthesize resignButton;
+@synthesize undoButton;
+@synthesize newGameButton;
 @synthesize panRecognizer;
+@synthesize interactionEnabled;
 
 - (void) dealloc
 {
@@ -54,11 +66,18 @@
 {
   [super viewDidLoad];
 
+  self.interactionEnabled = true;
+
 	self.panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
 	[self.playView addGestureRecognizer:self.panRecognizer];
   self.panRecognizer.delegate = self;
   self.panRecognizer.maximumNumberOfTouches = 1;
 	[self.panRecognizer release];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  // TODO do we really need two notifications?
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
 }
 
 - (void) viewDidUnload
@@ -152,6 +171,22 @@
     default:
       return;
   }
+}
+
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
+{
+  return self.isInteractionEnabled;
+}
+
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  self.interactionEnabled = ! [[GoGame sharedGame] isComputerThinking];
+  BOOL enabled = self.isInteractionEnabled ? YES : NO;
+  self.playForMeButton.enabled = enabled;
+  self.passButton.enabled = enabled;
+  self.resignButton.enabled = enabled;
+  self.undoButton.enabled = enabled;
+  self.newGameButton.enabled = enabled;
 }
 
 @end

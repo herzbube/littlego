@@ -30,7 +30,7 @@
 - (void) awakeFromNib;
 //@}
 - (void) updateDrawParametersForRect:(CGRect)rect;
-// Layer drawing
+// Layer drawing and other GUI updating
 - (void) drawBackground:(CGRect)rect;
 - (void) drawBoard;
 - (void) drawGrid;
@@ -43,6 +43,7 @@
 - (void) drawSymbols;
 - (void) drawLabels;
 - (void) updateStatusLine;
+- (void) updateActivityIndicator;
 // Calculators
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
@@ -53,9 +54,13 @@
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 @end
 
 @implementation PlayView
+
+@synthesize statusLine;
+@synthesize activityIndicator;
 
 @synthesize viewBackgroundColor;
 @synthesize boardColor;
@@ -69,6 +74,7 @@
 @synthesize stoneRadiusPercentage;
 @synthesize crossHairColor;
 @synthesize crossHairPointDistanceFromFinger;
+
 @synthesize previousDrawRect;
 @synthesize portrait;
 @synthesize boardSize;
@@ -80,9 +86,9 @@
 @synthesize topLeftPointY;
 @synthesize pointDistance;
 @synthesize lineLength;
+
 @synthesize crossHairPoint;
 @synthesize crossHairPointIsLegalMove;
-@synthesize statusLine;
 
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
@@ -99,7 +105,7 @@
 
   // Dark gray
   //  self.viewBackgroundColor = [UIColor colorWithRed:0.25 green:0.25 blue:0.25 alpha: 1.0];
-  self.viewBackgroundColor = [UIColor darkGrayColor];
+  self.viewBackgroundColor = [UIColor whiteColor];
   // Alternative colors: 240/161/83, 250/182/109, 251/172/94, 243/172/95
   self.boardColor = [UIColor colorWithRed:243/255.0 green:172/255.0 blue:95/255.0 alpha: 1.0];
   self.boardOuterMarginPercentage = 0.02;
@@ -132,17 +138,20 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(goGameFirstMoveChanged:) name:goGameFirstMoveChanged object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
 }
 
 - (void) dealloc
 {
+  self.statusLine = nil;
+  self.activityIndicator = nil;
   self.viewBackgroundColor = nil;
   self.boardColor = nil;
   self.lineColor = nil;
   self.starPointColor = nil;
   self.crossHairColor = nil;
   self.crossHairPoint = nil;
-  self.statusLine = nil;
   [super dealloc];
 }
 
@@ -387,6 +396,7 @@
 
 - (void) drawSymbols
 {
+  // TODO not yet implemented
 }
 
 - (void) drawLabels
@@ -396,17 +406,29 @@
 
 - (void) updateStatusLine
 {
+  NSString* statusText = @"";
   if (self.crossHairPoint)
   {
-    if (self.crossHairPointIsLegalMove)
-      self.statusLine.text = @"";
-    else
-      self.statusLine.text = @"You can't play there";
+    if (! self.crossHairPointIsLegalMove)
+      statusText = @"You can't play there";
   }
   else
   {
-    self.statusLine.text = @"";
+    if ([GoGame sharedGame].isComputerThinking)
+    {
+      // TODO Insert computer player name here (e.g. "Fuego")
+      statusText = @"Computer is thinking...";
+    }
   }
+  self.statusLine.text = statusText;
+}
+
+- (void) updateActivityIndicator
+{
+  if ([[GoGame sharedGame] isComputerThinking])
+    [self.activityIndicator startAnimating];
+  else
+    [self.activityIndicator stopAnimating];
 }
 
 - (void) drawEmpty:(GoPoint*)point
@@ -470,6 +492,12 @@
 {
   // TODO check if it's possible to update only a rectangle
   [self setNeedsDisplay];
+}
+
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  [self updateStatusLine];
+  [self updateActivityIndicator];
 }
 
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates

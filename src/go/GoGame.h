@@ -43,5 +43,6 @@
 @property(retain) GoMove* lastMove;
 @property enum GoGameState state;
 @property int boardSize;
+@property(getter=isComputerThinking) bool computerThinks;
 
 @end

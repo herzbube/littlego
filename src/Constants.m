@@ -26,3 +26,6 @@ NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 NSString* goGameStateChanged = @"GoGameStateChanged";
 NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
 NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";
+// Computer player notifications
+NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
+NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
