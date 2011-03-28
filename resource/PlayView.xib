@@ -101,7 +101,7 @@
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
-					<object class="IBUILabel" id="617585366">
+					<object class="IBUILabel" id="985521622">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{0, 390}, {320, 21}}</string>
@@ -120,7 +120,7 @@
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
 					</object>
-					<object class="IBUIActivityIndicatorView" id="485000056">
+					<object class="IBUIActivityIndicatorView" id="570871022">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483356</int>
 						<string key="NSFrame">{{242, 12}, {20, 20}}</string>
@@ -175,14 +175,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">new:</string>
-						<reference key="source" ref="530427242"/>
-						<reference key="destination" ref="263589821"/>
-					</object>
-					<int key="connectionID">31</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">playForMe:</string>
 						<reference key="source" ref="13472839"/>
 						<reference key="destination" ref="263589821"/>
@@ -201,7 +193,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">statusLine</string>
 						<reference key="source" ref="196218046"/>
-						<reference key="destination" ref="617585366"/>
+						<reference key="destination" ref="985521622"/>
 					</object>
 					<int key="connectionID">43</int>
 				</object>
@@ -209,7 +201,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">activityIndicator</string>
 						<reference key="source" ref="196218046"/>
-						<reference key="destination" ref="485000056"/>
+						<reference key="destination" ref="570871022"/>
 					</object>
 					<int key="connectionID">44</int>
 				</object>
@@ -253,6 +245,14 @@
 					</object>
 					<int key="connectionID">53</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">newGame:</string>
+						<reference key="source" ref="530427242"/>
+						<reference key="destination" ref="263589821"/>
+					</object>
+					<int key="connectionID">54</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -270,8 +270,8 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="104394266"/>
 							<reference ref="196218046"/>
-							<reference ref="617585366"/>
-							<reference ref="485000056"/>
+							<reference ref="985521622"/>
+							<reference ref="570871022"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -340,12 +340,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">38</int>
-						<reference key="object" ref="617585366"/>
+						<reference key="object" ref="985521622"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">40</int>
-						<reference key="object" ref="485000056"/>
+						<reference key="object" ref="570871022"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</object>
@@ -425,7 +425,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">53</int>
+			<int key="maxID">54</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -437,7 +437,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>new:</string>
+							<string>newGame:</string>
 							<string>pass:</string>
 							<string>playForMe:</string>
 							<string>resign:</string>
@@ -454,7 +454,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>new:</string>
+							<string>newGame:</string>
 							<string>pass:</string>
 							<string>playForMe:</string>
 							<string>resign:</string>
@@ -462,7 +462,7 @@
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBActionInfo">
-								<string key="name">new:</string>
+								<string key="name">newGame:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">

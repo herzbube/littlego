@@ -40,6 +40,7 @@
 - (void) submitPassMove;
 - (void) submitResignMove;
 - (void) submitGenMove;
+- (void) submitFinalScore;
 // Update state
 - (void) updatePlayMove:(GoPoint*)point;
 - (void) updatePassMove;
@@ -61,6 +62,7 @@
 @synthesize state;
 @synthesize boardSize;
 @synthesize computerThinks;
+@synthesize score;
 
 + (GoGame*) sharedGame;
 {
@@ -171,7 +173,7 @@
 
 - (void) resign
 {
-  [self submitResignMove];
+  [self submitFinalScore];
   [self updateResignMove];
   // TODO calculate score
 }
@@ -296,19 +298,33 @@
   [command submit];
 }
 
+- (void) submitFinalScore
+{
+  // Scoring involves the following
+  // 1. Captured stones
+  // 2. Dead stones
+  // 3. Territory
+  // 4. Komi
+  // Little Go is capable of counting 1 and 4, but not 2 and 3. So for the
+  // moment we rely on Fuego's scoring.
+  self.computerThinks = true;
+  GtpCommand* command = [GtpCommand command:@"final_score"];
+  [command submit];
+}
+
 // updates both state in this model, and view; does not care about GTP
 - (void) updatePlayMove:(GoPoint*)point
 {
   GoMove* move = [GoMove move:PlayMove after:self.lastMove];
   move.point = point;
-  
-  // Game state must change before any of the other things; this order is
-  // important for observer notifications
-  self.state = GameHasStarted;
 
   if (! self.firstMove)
     self.firstMove = move;
   self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasStarted;
 }
 
 // updates both state in this model, and view; does not care about GTP
@@ -316,13 +332,19 @@
 {
   GoMove* move = [GoMove move:PassMove after:self.lastMove];
 
-  // Game state must change before any of the other things; this order is
-  // important for observer notifications
-  self.state = GameHasStarted;
-
   if (! self.firstMove)
     self.firstMove = move;
   self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  if (move.previous.type == PassMove)
+  {
+    [self submitFinalScore];
+    self.state = GameHasEnded;
+  }
+  else
+    self.state = GameHasStarted;
 }
 
 // updates both state in this model, and view; does not care about GTP
@@ -330,13 +352,13 @@
 {
   GoMove* move = [GoMove move:ResignMove after:self.lastMove];
 
-  // Game state must change before any of the other things; this order is
-  // important for observer notifications
-  self.state = GameHasEnded;
-
   if (! self.firstMove)
     self.firstMove = move;
   self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasEnded;
 }
 
 // updates both state in this model, and view; does not care about GTP
@@ -359,9 +381,9 @@
   {
     self.computerThinks = false;
     NSString* responseString = response.parsedResponse;
-    if (NSOrderedSame == [responseString compare:@"pass"])
+    if ([responseString isEqualToString:@"pass"])
       [self updatePassMove];
-    else if (NSOrderedSame == [responseString compare:@"resign"])
+    else if ([responseString isEqualToString:@"resign"])
       [self updateResignMove];
     else
     {
@@ -373,6 +395,12 @@
     }
     if ([self isComputerPlayersTurn])
       [self computerPlay];
+  }
+  else if ([commandString isEqualToString:@"final_score"])
+  {
+    self.computerThinks = false;
+    // TODO parse result
+    self.score = response.parsedResponse;
   }
 }
 
@@ -410,6 +438,18 @@
     else
       notificationName = computerPlayerThinkingStops;
     [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+  }
+}
+
+- (void) setScore:(NSString*)newValue
+{
+  @synchronized(self)
+  {
+    if ([score isEqualToString:newValue])
+      return;
+    [score release];
+    score = [newValue retain];
+    [[NSNotificationCenter defaultCenter] postNotificationName:goGameScoreChanged object:self];
   }
 }
 

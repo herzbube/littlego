@@ -44,5 +44,6 @@
 @property enum GoGameState state;
 @property int boardSize;
 @property(getter=isComputerThinking) bool computerThinks;
+@property(retain) NSString* score;
 
 @end

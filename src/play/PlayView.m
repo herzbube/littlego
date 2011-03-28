@@ -416,8 +416,24 @@
   {
     if ([GoGame sharedGame].isComputerThinking)
     {
-      // TODO Insert computer player name here (e.g. "Fuego")
-      statusText = @"Computer is thinking...";
+      switch ([GoGame sharedGame].state)
+      {
+        case GameHasStarted:
+          // TODO Insert computer player name here (e.g. "Fuego")
+          statusText = @"Computer is thinking...";
+          break;
+        case GameHasEnded:
+          // TODO how do we know that the score is being calculated??? this is
+          // secret knowledge of what happens at the end of the game when the
+          // computer is thinking... better to provide an explicit check in
+          // GoGame, or remove this explicit notification; it's probably better
+          // anyway to dump the text-based statusbar in favor of a graphical
+          // feedback of some sort
+          statusText = @"Calculating score...";
+          break;
+        default:
+          break;
+      }
     }
   }
   self.statusLine.text = statusText;

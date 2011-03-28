@@ -10,6 +10,9 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Prevent flickering on play view if computer player is thinking only for a
+  very short time
+- Special notification if computer player has passed or resigned
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
   - Use class extensions instead of categories named "Private"
@@ -69,6 +72,8 @@ Priority 1 (important)
 
 Priority 2 (nice to have)
 -------------------------
+- Gtp console on Debug view that allows to send arbitrary commands
+
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build
   variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS. This is important

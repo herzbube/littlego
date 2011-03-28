@@ -32,7 +32,7 @@
 - (void) resign:(id)sender;
 - (void) playForMe:(id)sender;
 - (void) undo:(id)sender;
-- (void) new:(id)sender;
+- (void) newGame:(id)sender;
 //@}
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
 /// @name UIGestureRecognizerDelegate protocol
@@ -40,7 +40,11 @@
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
 //@}
 // Notification responders
+- (void) goGameStateChanged:(NSNotification*)notification;
+- (void) goGameScoreChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+// Updaters
+- (void) updateButtonStates;
 @end
 
 
@@ -76,8 +80,12 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   // TODO do we really need two notifications?
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(goGameScoreChanged:) name:goGameScoreChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+
+  [self updateButtonStates];
 }
 
 - (void) viewDidUnload
@@ -109,7 +117,7 @@
   [[GoGame sharedGame] undo];
 }
 
-- (void) new:(id)sender
+- (void) newGame:(id)sender
 {
   // TODO implement this
 }
@@ -178,15 +186,83 @@
   return self.isInteractionEnabled;
 }
 
+- (void) goGameStateChanged:(NSNotification*)notification
+{
+  [self updateButtonStates];
+}
+
+- (void) goGameScoreChanged:(NSNotification*)notification
+{
+  if ([GoGame sharedGame].state == GameHasEnded)
+  {
+    NSString* score = [GoGame sharedGame].score;
+    NSString* message = [@"Score = " stringByAppendingString:score];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game has ended"
+                                                    message:message
+                                                   delegate:self
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil];
+    [alert show];
+  }
+}
+
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
   self.interactionEnabled = ! [[GoGame sharedGame] isComputerThinking];
-  BOOL enabled = self.isInteractionEnabled ? YES : NO;
-  self.playForMeButton.enabled = enabled;
-  self.passButton.enabled = enabled;
-  self.resignButton.enabled = enabled;
-  self.undoButton.enabled = enabled;
-  self.newGameButton.enabled = enabled;
+  [self updateButtonStates];
+}
+
+- (void) updateButtonStates
+{
+  BOOL playForMeButtonEnabled = NO;
+  BOOL passButtonEnabled = NO;
+  BOOL resignButtonEnabled = NO;
+  BOOL undoButtonEnabled = NO;
+  BOOL newGameButtonEnabled = NO;
+
+  if (self.isInteractionEnabled)
+  {
+    switch ([GoGame sharedGame].state)
+    {
+      case GameHasNotYetStarted:
+        playForMeButtonEnabled = YES;
+        passButtonEnabled = YES;
+        resignButtonEnabled = NO;
+        undoButtonEnabled = NO;
+        newGameButtonEnabled = YES;
+        break;
+      case GameHasStarted:
+        playForMeButtonEnabled = YES;
+        passButtonEnabled = YES;
+        resignButtonEnabled = YES;
+        undoButtonEnabled = NO; // TODO should be YES;
+        newGameButtonEnabled = NO; // TODO should be YES;
+        break;
+      case GameHasEnded:
+        playForMeButtonEnabled = NO;
+        passButtonEnabled = NO;
+        resignButtonEnabled = NO;
+        undoButtonEnabled = NO;
+        newGameButtonEnabled = NO; // TODO should be YES;
+        break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    playForMeButtonEnabled = NO;
+    passButtonEnabled = NO;
+    resignButtonEnabled = NO;
+    undoButtonEnabled = NO;
+    newGameButtonEnabled = NO;
+  }
+
+  self.playForMeButton.enabled = playForMeButtonEnabled;
+  self.passButton.enabled = passButtonEnabled;
+  self.resignButton.enabled = resignButtonEnabled;
+  self.undoButton.enabled = undoButtonEnabled;
+  self.newGameButton.enabled = newGameButtonEnabled;
 }
 
 @end

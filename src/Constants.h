@@ -79,6 +79,9 @@ extern NSString* goGameFirstMoveChanged;
 /// occur whenever a move is played (including pass and resign), or when the
 /// most recent move of the game is removed by an undo.
 extern NSString* goGameLastMoveChanged;
+/// @brief Is sent to indicate that a new score has been calculated. Typically
+/// occurs after the game has ended.
+extern NSString* goGameScoreChanged;
 //@}
 
 // -----------------------------------------------------------------------------
