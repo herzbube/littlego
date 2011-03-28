@@ -14,13 +14,15 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
 #import <UIKit/UIKit.h>
+
 
 @interface DebugViewController : UIViewController
 {
-  UITextView* textView;
 }
 
 @property(nonatomic, retain) IBOutlet UITextView* textView;
+@property(retain) NSString* textCache;
 
 @end
