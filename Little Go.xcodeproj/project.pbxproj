@@ -22,12 +22,20 @@
 		CD1088611326CD2400E83543 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
 		CD1088631326CDAA00E83543 /* PlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD1088621326CDAA00E83543 /* PlayView.xib */; };
 		CD10887D1326D2C100E83543 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
+		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
+		CD3AE7521344FBD100B58E08 /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3AE7511344FBD100B58E08 /* DocumentViewController.m */; };
+		CD3AE7591344FD7D00B58E08 /* SourceCode.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7581344FD7D00B58E08 /* SourceCode.html */; };
+		CD3AE7841345164800B58E08 /* COPYING.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7821345164800B58E08 /* COPYING.html */; };
+		CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7831345164800B58E08 /* COPYING.LESSER.html */; };
+		CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */; };
 		CD78034D132FE6D300E7843F /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD78034C132FE6D300E7843F /* DebugViewController.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
+		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
+		CDBB0C0B13426DAB007C1C3E /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0A13426DAB007C1C3E /* About.html */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
@@ -64,6 +72,13 @@
 		CD1088621326CDAA00E83543 /* PlayView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
 		CD10887B1326D2C100E83543 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
 		CD10887C1326D2C100E83543 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
+		CD3AE6E91343F14200B58E08 /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
+		CD3AE7501344FBD100B58E08 /* DocumentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentViewController.h; sourceTree = "<group>"; };
+		CD3AE7511344FBD100B58E08 /* DocumentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentViewController.m; sourceTree = "<group>"; };
+		CD3AE7581344FD7D00B58E08 /* SourceCode.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = SourceCode.html; sourceTree = "<group>"; };
+		CD3AE7821345164800B58E08 /* COPYING.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = COPYING.html; sourceTree = "<group>"; };
+		CD3AE7831345164800B58E08 /* COPYING.LESSER.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = COPYING.LESSER.html; sourceTree = "<group>"; };
+		CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
 		CD78034C132FE6D300E7843F /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
@@ -73,6 +88,8 @@
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
 		CDBB039A133573CC007C1C3E /* GoVertex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertex.m; sourceTree = "<group>"; };
+		CDBB0C0113426C56007C1C3E /* DocumentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DocumentView.xib; sourceTree = "<group>"; };
+		CDBB0C0A13426DAB007C1C3E /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -121,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				CD1087701323D07800E83543 /* LICENSE */,
+				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
@@ -221,12 +239,14 @@
 				CD1088551326CBB300E83543 /* debug */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
-				CDA264AA132CF7EF00FAFC51 /* Constants.h */,
-				CDA264AB132CF7EF00FAFC51 /* Constants.m */,
-				CDEC282E12F477360069F5B7 /* Prefix.pch */,
 				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
 				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
+				CDA264AA132CF7EF00FAFC51 /* Constants.h */,
+				CDA264AB132CF7EF00FAFC51 /* Constants.m */,
+				CD3AE7501344FBD100B58E08 /* DocumentViewController.h */,
+				CD3AE7511344FBD100B58E08 /* DocumentViewController.m */,
 				CDEC283112F477360069F5B7 /* main.m */,
+				CDEC282E12F477360069F5B7 /* Prefix.pch */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -250,11 +270,17 @@
 		CDEC28A612F4A2BB0069F5B7 /* resource */ = {
 			isa = PBXGroup;
 			children = (
+				CDBB0C0A13426DAB007C1C3E /* About.html */,
 				CD8A43C613318409009F3C7F /* book.dat */,
-				CD1088621326CDAA00E83543 /* PlayView.xib */,
-				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
+				CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */,
+				CD3AE7821345164800B58E08 /* COPYING.html */,
+				CD3AE7831345164800B58E08 /* COPYING.LESSER.html */,
 				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
+				CDBB0C0113426C56007C1C3E /* DocumentView.xib */,
+				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
+				CD1088621326CDAA00E83543 /* PlayView.xib */,
+				CD3AE7581344FD7D00B58E08 /* SourceCode.html */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -324,6 +350,13 @@
 				CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */,
 				CD1088631326CDAA00E83543 /* PlayView.xib in Resources */,
 				CD8A43C713318409009F3C7F /* book.dat in Resources */,
+				CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */,
+				CDBB0C0B13426DAB007C1C3E /* About.html in Resources */,
+				CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */,
+				CD3AE7591344FD7D00B58E08 /* SourceCode.html in Resources */,
+				CD3AE7841345164800B58E08 /* COPYING.html in Resources */,
+				CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */,
+				CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +384,7 @@
 				CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
+				CD3AE7521344FBD100B58E08 /* DocumentViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

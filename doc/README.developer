@@ -10,6 +10,8 @@ Folder structure
 ----------------
 <root>
  +-- LICENSE           The Apache license file.
+ +-- LICENSE.html      The Apache license in HTML format (for display on the
+ |                     device).
  +-- NOTICE            Attribution notices.
  +-- 3rdparty          This folder does not exist in a pristine clone of the
  |                     Git repository. It is created when the 3rdparty software
@@ -152,6 +154,12 @@ documentation is to source code:
   display its properties in the Inspector window. The properties include the
   controller's class, and the name of the NIB file associated with the
   controller.
+- Each TabBarItem in MainWindow.xib has a unique numeric value assigned to its
+  "tag" property. A controller class that is responsible for managing several
+  different tabs can query this "tag" property and thus perform different
+  actions depending on which tab is currently selected. The tag values in the
+  .xib must match the values of the enumeration TabType, which is defined in
+  Constants.h.
 
 
 Architecture and implementation notes

@@ -30,3 +30,12 @@ NSString* goGameScoreChanged = @"GoGameScoreChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
+
+// Resource file names
+NSString* openingBookResource = @"book.dat";
+NSString* aboutDocumentResource = @"About.html";
+NSString* sourceCodeDocumentResource = @"SourceCode.html";
+NSString* apacheLicenseDocumentResource = @"LICENSE.html";
+NSString* GPLDocumentResource = @"COPYING.html";
+NSString* LGPLDocumentResource = @"COPYING.LESSER.html";
+NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";

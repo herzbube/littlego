@@ -93,7 +93,7 @@
   NSString* outputPipePath = [pipes objectAtIndex:1];
   const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-  NSString* bookFile = [[NSBundle mainBundle] pathForResource:@"book" ofType:@"dat"];
+  NSString* bookFile = [[NSBundle mainBundle] pathForResource:openingBookResource ofType:nil];
 
   char programName[255];
   char inputPipeParameterName[255];
