@@ -258,11 +258,11 @@ The Doxygen configuration file is located in
   doxygen/Doxyfile
 
 Notes about the configuration:
-- Doxygen recursively searches for *.h and *.m files in the project top-level
-  folder "src".
-- Private methods declared in categories in the .m files are not included in
-  the documentation process. Change this by setting EXTRACT_LOCAL_METHODS = YES
-  inside Doxyfile.
+- Doxygen recursively searches for *.h, *.m and *.mm files in the project
+  top-level folder "src".
+- Private methods declared in class extensions or categories in the .m files
+  are not included in the documentation process. Change this by setting
+  EXTRACT_LOCAL_METHODS = YES inside Doxyfile.
 - It is assumed that the command line tool "dot" is available and installed in
     /sw/bin
   dot is part of the Graphviz package and is used to generate a couple of

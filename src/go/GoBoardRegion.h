@@ -19,6 +19,27 @@
 @class GoPoint;
 
 
+// -----------------------------------------------------------------------------
+/// @brief The GoBoardRegion class is a collection of neighbouring GoPoint
+/// objects.
+///
+/// @ingroup go
+///
+/// GoPoint objects within a GoBoardRegion either all have a stone placed on
+/// them (in which case the GoBoardRegion represents a stone group), or they all
+/// have no stone (in which case the GoBoardRegion represents an empty area).
+/// If the GoBoardRegion represents a stone group, all stones are of the same
+/// color.
+///
+/// Every GoPoint object is always part of a GoBoardRegion. At the beginning of
+/// a game there is a single GoBoardRegion that represents the entire board; it
+/// contains all existing GoPoint objects. As the game progresses, the initial
+/// GoBoardRegion is fragmented into smaller GoBoardRegion objects.
+///
+/// GoBoardRegion is retained by its GoPoint objects (see the GoPoint::region
+/// property). A GoBoardRegion is therefore released when it is no longer
+/// referenced by any GoPoint objects.
+// -----------------------------------------------------------------------------
 @interface GoBoardRegion : NSObject
 {
 }
@@ -34,7 +55,11 @@
 - (bool) hasBlackStones;
 - (int) liberties;
 
+/// @brief List of GoPoint objects in this GoBoardRegion. The list is
+/// unordered.
 @property(assign) NSArray* points;
+/// @brief A random color that can be used to mark GoPoints in this
+/// GoBoardRegion. This is intended as a debugging aid.
 @property(retain) UIColor* color;
 
 @end

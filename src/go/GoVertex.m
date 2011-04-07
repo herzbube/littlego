@@ -19,13 +19,21 @@
 #import "GoVertex.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoVertex.
+// -----------------------------------------------------------------------------
 @interface GoVertex()
-- (GoVertex*) init;
-- (GoVertex*) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
 - (void) dealloc;
-
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
 @property(readwrite, retain) NSString* string;
 @property(readwrite) struct GoVertexNumeric numeric;
+//@}
 @end
 
 
@@ -34,6 +42,10 @@
 @synthesize string;
 @synthesize numeric;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoVertex instance from the numeric
+/// compounds in @a numericValue.
+// -----------------------------------------------------------------------------
 + (GoVertex*) vertexFromNumeric:(struct GoVertexNumeric)numericValue
 {
   unichar charA = [@"A" characterAtIndex:0];
@@ -51,6 +63,10 @@
   return vertex;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoVertex instance from
+/// @a stringValue.
+// -----------------------------------------------------------------------------
 + (GoVertex*) vertexFromString:(NSString*)stringValue;
 {
   NSString* vertexX = [stringValue substringWithRange:NSMakeRange(0, 1)];
@@ -71,18 +87,26 @@
   return vertex;
 }
 
-// Creates a "null" vertex that refers to an invalid position
-// TODO: do we need this?
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoVertex object. The object is a "null" vertex, i.e.
+/// it refers to an invalid position.
+// -----------------------------------------------------------------------------
 - (id) init
 {
+  // TODO: do we need this initializer?
   struct GoVertexNumeric numericValue;
   numericValue.x = 0;
   numericValue.y = 0;
   return [self initWithString:@"" numeric:numericValue];
 }
 
-// This is the designated initializer
-- (GoVertex*) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoVertex object with both the string and the numeric
+/// representation of the same vertex.
+///
+/// @note This is the designated initializer of GoVertex.
+// -----------------------------------------------------------------------------
+- (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -95,12 +119,19 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoVertex object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.string = nil;
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a vertex refers to the same intersection as this
+/// GoVertex object.
+// -----------------------------------------------------------------------------
 - (bool) isEqualToVertex:(GoVertex*)vertex
 {
   struct GoVertexNumeric myNumericValue = self.numeric;

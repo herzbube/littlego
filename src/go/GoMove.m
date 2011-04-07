@@ -21,6 +21,23 @@
 #import "GoBoardRegion.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoMove.
+// -----------------------------------------------------------------------------
+@interface GoMove()
+/// @name Initialization and deallocation
+//@{
+- (id) init:(enum GoMoveType)initType;
+- (void) dealloc;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(readwrite, assign) GoMove* previous;
+@property(readwrite, retain) GoMove* next;
+//@}
+@end
+
+
 @implementation GoMove
 
 @synthesize type;
@@ -29,6 +46,18 @@
 @synthesize previous;
 @synthesize next;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoMove instance of type @a type,
+/// whose predecessor is @a move.
+///
+/// If @a move is not nil, this method updates @a move so that the newly
+/// created GoMove instance becomes its successor. The newly created GoMove
+/// instance also gets the alternate color of its predecessor @a move (e.g. if
+/// @a move is black, the new GoMove will be white).
+///
+/// @a move may be nil, in which case the newly created GoMove instance will be
+/// black, and the first move of the game.
+// -----------------------------------------------------------------------------
 + (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move
 {
   GoMove* newMove = [[GoMove alloc] init:type];
@@ -42,7 +71,13 @@
   return newMove;
 }
 
-- (GoMove*) init:(enum GoMoveType)initType
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoMove object. The GoMove has type @a type, is black,
+/// has no associated GoPoint, and has no predecessor or successor GoMove.
+///
+/// @note This is the designated initializer of GoMove.
+// -----------------------------------------------------------------------------
+- (id) init:(enum GoMoveType)initType
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -58,6 +93,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoMove object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.point = nil;     // not strictly necessary since we don't retain it
@@ -70,63 +108,52 @@
   [super dealloc];
 }
 
-// a point whose stone is removed (not relevant here) can mean only one thing:
-// the stone on it, and its entire group, was captured
-//
-// a point that gets a stone can mean exactly one of the following:
-// - the stone forms a new group
-// - the stone is added to an already existing group
-// - the stone merges 2-4 groups
-//
-// in addition, the stone may have split an existing region with no stones
-// into 2-4 new regions
-//
-// stone groups that are captured do not form new regions, the points in the
-// region simply change state
-//
-// liberty checks must be performed in the following order
-// - if setting the stone decreases the liberties of a neighbouring group to
-//   zero, that group is captured, unless there is a Ko state from the
-//   previous round; a Ko state exists if
-//   - the capturing stone is alone, i.e. it forms a single-stone group
-//   - the captured stone is alone, i.e. it forms a single-stone group
-//   - the captured stone was played in the previous move
-//   - when the captured stone was played, it captured a single stone at
-//     the same position that is now just played on
-// - if no capture was made: if setting the stone decreases the liberties
-//   of the stone's group to zero, the move is a suicide and therefore
-//   illegal
+// -----------------------------------------------------------------------------
+/// @brief Associates the GoPoint @a newValue with this GoMove. This GoMove
+/// must be of type #PlayMove.
+///
+/// Invoking this method effectively places a stone at GoPoint @a newValue. The
+/// caller must have checked whether placing the stone at @a newValue is a
+/// legal move.
+///
+/// This method performs the following operations as a side-effect:
+/// - Updates GoPoint.stoneState for GoPoint @a newValue.
+/// - Updates GoPoint.region for GoPoint @a newValue. The old GoBoardRegion may
+///   become fragmented due to placing the stone. Additionally, the new
+///   GoBoardRegion may merge with other regions if the newly placed stone
+///   joins neighbouring stone groups.
+/// - If placing the stone reduces an opposing stone group to 0 (zero)
+///   liberties, that stone group is captured. The game score is updated
+///   accordingly, and the GoBoardRegion representing the captured stone group
+///   turns back into an empty area.
+// -----------------------------------------------------------------------------
 - (void) setPoint:(GoPoint*)newValue
 {
+  // Perform a few cheap precondition checks
+  assert(PlayMove == self.type);
+  if (PlayMove != self.type)
+    return;
+  assert(NoStone == point.stoneState);
+  if (NoStone != point.stoneState)
+    return;
+
+  // ----------------------------------------------------------------------
+  // The precondition that this move is legal is not checked!
+  // ----------------------------------------------------------------------
+
   point = newValue;
   if (nil == point)  // nil should come in only during init
     return;
-
-  // --------------------------------------------------
-  // TODO !!!!!!!!!!! a check must be made for illegal moves before this
-  // function is invoked -> suicides and illegal Ko moves!!!!!!!!!
-  // --------------------------------------------------
-  
-  assert(PlayMove == self.type);
-  assert(NoStone == point.stoneState);
 
   if (self.black)
     point.stoneState = BlackStone;
   else
     point.stoneState = WhiteStone;
 
-  // Whatever happens further down: The point with the newly placed stone will
-  // become part of a different region
   GoBoardRegion* oldRegion = point.region;
   point.region = nil;
-  [oldRegion removePoint:point];
-
-  // todo check if region has been split
-  // -> maybe region could implement a method that checks if there are points
-  //    in it that are no longer neighbours?
-  // -> most elegant: invoke that function automatically when the point is
-  //    removed, then split the region
-  // -> this should have no negative consequences whatsoever
+  [oldRegion removePoint:point];  // possible side-effect: oldRegion might be
+                                  // split into multiple GoBoardRegion objects
 
   // Add stone to existing group and merge regions if the stone has joined
   // them together
@@ -175,9 +202,9 @@
     numberOfCapturedStones += [neighbour.region size];
     for (GoPoint* capture in neighbour.region.points)
     {
-      // If in the next iteration we find a neighbour in the same captured
-      // group, the neighbour will already have its state reset, and we will
-      // skip it
+      // If in the next iteration of the outer loop we find a neighbour in the
+      // same captured group, the neighbour will already have its state reset,
+      // and we will skip it
       capture.stoneState = NoStone;
     }
   }

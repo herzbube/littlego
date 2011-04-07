@@ -15,14 +15,30 @@
 // -----------------------------------------------------------------------------
 
 
+// -----------------------------------------------------------------------------
+/// @defgroup go Go module
+///
+/// Classes in this module directly relate to an aspect of the actual Go game
+/// (e.g. GoBoard represents the Go board).
+// -----------------------------------------------------------------------------
+
+
 // Project includes
 #import "GoBoard.h"
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
 
-@interface GoBoard(Private)
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoBoard.
+// -----------------------------------------------------------------------------
+@interface GoBoard()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
 - (void) dealloc;
+//@}
 @end
 
 
@@ -30,6 +46,9 @@
 
 @synthesize size;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoBoard instance of size 0.
+// -----------------------------------------------------------------------------
 + (GoBoard*) board
 {
   GoBoard* board = [[GoBoard alloc] init];
@@ -38,6 +57,11 @@
   return board;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoBoard object with size 0.
+///
+/// @note This is the designated initializer of GoBoard.
+// -----------------------------------------------------------------------------
 - (id) init
 {
   // Call designated initializer of superclass (NSObject)
@@ -51,12 +75,20 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoBoard object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   [m_vertexDict release];
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Adjusts the size of this GoBoard object to @a newValue.
+///
+/// This function should only be called while the game has not yet started.
+// -----------------------------------------------------------------------------
 - (void) setSize:(int)newValue
 {
   @synchronized(self)
@@ -76,6 +108,13 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns an enumerator that can be used to iterate over all existing
+/// GoPoint objects
+///
+/// @todo Remove this method, clients should instead use GoPoint::next() or
+/// GoPoint::previous() for iteration.
+// -----------------------------------------------------------------------------
 - (NSEnumerator*) pointEnumerator
 {
   // The value array including the enumerator will be destroyed as soon as
@@ -83,6 +122,11 @@
   return [[m_vertexDict allValues] objectEnumerator];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object located at @a vertex.
+///
+/// See the GoVertex class documentation for a discussion of what a vertex is.
+// -----------------------------------------------------------------------------
 - (GoPoint*) pointAtVertex:(NSString*)vertex
 {
   GoPoint* point = [m_vertexDict objectForKey:vertex];
@@ -94,11 +138,20 @@
   return point;
 }
 
-// this is the helper being called by GoPoint properties
-// left/right/above/below/next
-// direction "next" and previous are mainly intended for iteration over all
-// the points of the board; next = moves to the right and then up; previous =
-// moves the left and down
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is a direct neighbour of @a point
+/// located in direction @a direction.
+///
+/// Returns nil if no neighbour exists in the specified direction. For instance,
+/// if @a point is at the left edge of the board, it has no left neighbour,
+/// which will cause a nil value to be returned.
+///
+/// @note #NextDirection and #PreviousDirection are intended to iterate over
+/// all existing GoPoint objects.
+///
+/// @internal This is the backend for the GoPoint directional properties (e.g.
+/// GoPoint::left()).
+// -----------------------------------------------------------------------------
 - (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction
 {
   struct GoVertexNumeric numericVertex = point.vertex.numeric;

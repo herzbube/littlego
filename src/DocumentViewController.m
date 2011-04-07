@@ -15,26 +15,56 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #import "DocumentViewController.h"
 
 
-// Class extension
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for DocumentViewController.
+// -----------------------------------------------------------------------------
 @interface DocumentViewController()
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
+//@}
+/// @name UIViewController methods
+//@{
+- (void) viewDidLoad;
+- (void) viewDidUnload;
+//@}
+/// @name UIWebViewDelegate protocol
+//@{
+- (BOOL) webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType;
+//@}
+/// @name Private helper methods
+//@{
 - (void) showAboutDocument:(NSString*)documentContent;
 - (NSString*) getResourceContent:(NSString*)resourceName;
-- (NSString*) resourceNameForTabType:(int)tabType;
+- (NSString*) resourceNameForTabType:(enum TabType)tabType;
+//@}
 @end
+
 
 @implementation DocumentViewController
 
 @synthesize webView;
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this DocumentViewController object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.webView = nil;
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called after the controller’s view is loaded into memory, usually
+/// to perform additional initialization steps.
+///
+/// This implementation triggers loading of the content of the HTML resource
+/// file into the UIWebView associatd with this controller.
+// -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
@@ -55,13 +85,25 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called when the controller’s view is released from memory, e.g.
+/// during low-memory conditions.
+///
+/// Releases additional objects (e.g. by resetting references to retained
+/// objects) that can be easily recreated when viewDidLoad() is invoked again
+/// later.
+// -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
   [super viewDidUnload];
-
   self.webView = nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIWebViewDelegate method. Makes sure that external links embedded
+/// in the HTML resource are opened in Safari (or whatever browser is configured
+/// to handle such URL requests).
+// -----------------------------------------------------------------------------
 - (BOOL) webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
   if (navigationType == UIWebViewNavigationTypeLinkClicked)
@@ -72,6 +114,10 @@
   return YES;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Replaces a number of tokens known to be present in @a documentContent
+/// before actually displaying the content in the associated UIWebView.
+// -----------------------------------------------------------------------------
 - (void) showAboutDocument:(NSString*)documentContent
 {
   NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
@@ -86,6 +132,9 @@
   [self.webView loadHTMLString:documentContent baseURL:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Loads the content of the resource named @a resourceName.
+// -----------------------------------------------------------------------------
 - (NSString*) getResourceContent:(NSString*)resourceName
 {
   if (! resourceName)
@@ -99,7 +148,11 @@
                                      error:&error];
 }
 
-- (NSString*) resourceNameForTabType:(int)tabType
+// -----------------------------------------------------------------------------
+/// @brief Maps TabType values to resource file names. The name that is returned
+/// can be used with NSBundle to load the resource file's content.
+// -----------------------------------------------------------------------------
+- (NSString*) resourceNameForTabType:(enum TabType)tabType
 {
   NSString* resourceName = nil;
   switch (tabType)

@@ -15,6 +15,13 @@
 // -----------------------------------------------------------------------------
 
 
+// -----------------------------------------------------------------------------
+/// @defgroup gtp GTP module
+///
+/// Classes in this module are associated with GTP, the Go Text Protocol.
+// -----------------------------------------------------------------------------
+
+
 // Project includes
 #import "GtpClient.h"
 #import "GtpCommand.h"
@@ -30,14 +37,20 @@ static std::ofstream commandStream;
 static std::ifstream responseStream;
 
 
-@interface GtpClient(Private)
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GtpClient.
+// -----------------------------------------------------------------------------
+@interface GtpClient()
 /// @name Initialization and deallocation
 //@{
 - (id) initWithPipes:(NSArray*)pipes;
 - (void) dealloc;
 //@}
+/// @name Private helper methods
+//@{
 - (void) processCommand:(GtpCommand*)command;
 - (void) receive:(GtpResponse*)response;
+//@}
 @end
 
 
@@ -46,7 +59,8 @@ static std::ifstream responseStream;
 @synthesize shouldExit;
 
 // -----------------------------------------------------------------------------
-/// @brief xxx
+/// @brief Convenience constructor. Creates a GtpClient instance which will use
+/// the two named pipes to communicate with its counterpart GtpEngine.
 // -----------------------------------------------------------------------------
 + (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
 {
@@ -92,7 +106,8 @@ static std::ifstream responseStream;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief xxx
+/// @brief The secondary thread's main loop method. Returns only after the
+/// @e shouldExit property has been set to true.
 // -----------------------------------------------------------------------------
 - (void) mainLoop:(NSArray*)pipes
 {
@@ -136,6 +151,18 @@ static std::ifstream responseStream;
   [mainPool drain];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Processes the GTP command @a command. This method is executed in the
+/// secondary thread's context.
+///
+/// Performs the following operations:
+/// - Pass @a command to the GtpEngine
+/// - Wait for the response from the GtpEngine (blocks)
+/// - Creates a GtpResponse object using the response received from the
+///   GtpEngine
+/// - Invokes receive:() with the GtpResponse object in the context of the main
+///   thread
+// -----------------------------------------------------------------------------
 - (void) processCommand:(GtpCommand*)command
 {
   // Undo retain message sent to the command object by submit:()
@@ -177,6 +204,11 @@ static std::ifstream responseStream;
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Submits @a command to the GtpEngine. This method is executed in the
+/// main thread's context. It returns immediately and does not wait for the
+/// GtpEngine's response.
+// -----------------------------------------------------------------------------
 - (void) submit:(GtpCommand*)command
 {
   // Synchronously notify observers
@@ -188,6 +220,13 @@ static std::ifstream responseStream;
   [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:NO];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Is invoked after @a response has been received from the GtpEngine.
+/// This method is executed in the main thread's context. It posts a
+/// notification to the default NSNotificationCenter so that clients that
+/// previously submitted a command will know when their expected response has
+/// come in.
+// -----------------------------------------------------------------------------
 - (void) receive:(GtpResponse*)response
 {
   // Undo retain message sent to the command object by processCommand:()

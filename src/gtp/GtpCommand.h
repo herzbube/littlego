@@ -15,6 +15,18 @@
 // -----------------------------------------------------------------------------
 
 
+// -----------------------------------------------------------------------------
+/// @brief The GtpCommand class represents a Go Text Protocol (GTP) command.
+///
+/// @ingroup gtp
+///
+/// GtpCommand is mainly a wrapper around a string that forms the actual GTP
+/// command, including all of the command's arguments.
+///
+/// GtpCommand conveniently knows how to submit itself to the application's
+/// GtpClient, thus clients do not have to concern themselves with where to
+/// obtain a GtpClient instance.
+// -----------------------------------------------------------------------------
 @interface GtpCommand : NSObject
 {
 }
@@ -22,6 +34,7 @@
 + (GtpCommand*) command:(NSString*)command;
 - (void) submit;
 
+/// @brief The GTP command string, including arguments.
 @property(retain) NSString* command;
 
 @end

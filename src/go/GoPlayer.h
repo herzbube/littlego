@@ -15,6 +15,11 @@
 // -----------------------------------------------------------------------------
 
 
+// -----------------------------------------------------------------------------
+/// @brief The GoPlayer class represents one of the two players of a Go game.
+///
+/// @ingroup go
+// -----------------------------------------------------------------------------
 @interface GoPlayer : NSObject
 {
 }
@@ -22,8 +27,12 @@
 + (GoPlayer*) blackPlayer;
 + (GoPlayer*) whitePlayer;
 
+/// @brief The color taken by this GoPlayer object.
 @property(getter=isBlack) bool black;
+/// @brief True if this GoPlayer represents a human player, false if it
+/// represents a computer player.
 @property(getter=isHuman) bool human;
+/// @brief The player's name. This is displayed in the GUI.
 @property(retain) NSString* name;
 
 @end

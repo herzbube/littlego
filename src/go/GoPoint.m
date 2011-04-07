@@ -22,6 +22,18 @@
 #import "GoVertex.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoPoint.
+// -----------------------------------------------------------------------------
+@interface GoPoint()
+/// @name Initialization and deallocation
+//@{
+- (id) initWithVertex:(GoVertex*)aVertex;
+- (void) dealloc;
+//@}
+@end
+
+
 @implementation GoPoint
 
 @synthesize vertex;
@@ -37,6 +49,10 @@
 @synthesize region;
 
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoPoint instance located at the
+/// intersection identified by @a vertex.
+// -----------------------------------------------------------------------------
 + (GoPoint*) pointAtVertex:(GoVertex*)vertex
 {
   GoPoint* point = [[GoPoint alloc] init];
@@ -48,14 +64,21 @@
   return point;
 }
 
-- (GoPoint*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoPoint object. The GoPoint is located at the
+/// intersection identified by @a vertex. The GoPoint has no stone, and is not
+/// part of any GoBoardRegion.
+///
+/// @note This is the designated initializer of GoPoint.
+// -----------------------------------------------------------------------------
+- (id) initWithVertex:(GoVertex*)aVertex
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.vertex = nil;
+  self.vertex = aVertex;
   self.starPoint = false;
   self.stoneState = NoStone;
   left = nil;
@@ -69,6 +92,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoPoint object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.vertex = nil;
@@ -76,6 +102,11 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #LeftDirection. Returns nil if this GoPoint object
+/// is located at the left edge of the Go board.
+// -----------------------------------------------------------------------------
 - (GoPoint*) left
 {
   // TODO: Caching will not work if this point is at the left edge; the same is
@@ -85,6 +116,11 @@
   return left;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #RightDirection. Returns nil if this GoPoint object
+/// is located at the right edge of the Go board.
+// -----------------------------------------------------------------------------
 - (GoPoint*) right
 {
   if (! right)
@@ -92,6 +128,11 @@
   return right;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #UpDirection. Returns nil if this GoPoint object
+/// is located at the upper edge of the Go board.
+// -----------------------------------------------------------------------------
 - (GoPoint*) above
 {
   if (! above)
@@ -99,6 +140,11 @@
   return above;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #DownDirection. Returns nil if this GoPoint object
+/// is located at the lower edge of the Go board.
+// -----------------------------------------------------------------------------
 - (GoPoint*) below
 {
   if (! below)
@@ -106,6 +152,11 @@
   return below;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of up to 4 GoPoint objects that are the direct
+/// neighbours of this GoPoint object in #LeftDirection, #RightDirection,
+/// #UpDirection and #DownDirection. The returned list has no particular order.
+// -----------------------------------------------------------------------------
 - (NSArray*) neighbours
 {
   if (! neighbours)
@@ -123,6 +174,11 @@
   return [[neighbours retain] autorelease];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #NextDirection. Returns nil if this GoPoint object
+/// is the last GoPoint of the sequence.
+// -----------------------------------------------------------------------------
 - (GoPoint*) next
 {
   if (! next)
@@ -130,6 +186,11 @@
   return next;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object that is the direct neighbour of this
+/// GoPoint object in #PreviousDirection. Returns nil if this GoPoint object
+/// is the first GoPoint of the sequence.
+// -----------------------------------------------------------------------------
 - (GoPoint*) previous
 {
   if (! previous)
@@ -137,26 +198,34 @@
   return previous;
 }
 
-- (void) setStoneState:(enum GoStoneState)newValue
-{
-  @synchronized(self)
-  {
-    if (stoneState == newValue)
-      return;
-    stoneState = newValue;
-  }
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the intersection represented by this GoPoint is
+/// occupied by a stone.
+// -----------------------------------------------------------------------------
 - (bool) hasStone
 {
   return (NoStone != self.stoneState);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the intersection represented by this GoPoint is
+/// occupied by a black stone. Otherwise returns false (i.e. also returns false
+/// if the intersection is not occupied by a stone).
+// -----------------------------------------------------------------------------
 - (bool) blackStone
 {
   return (BlackStone == self.stoneState);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of liberties that the intersection represented by
+/// this GoPoint has. The way how liberties are counted depends on whether the
+/// intersection is occupied by a stone.
+///
+/// If the intersection is occupied by a stone, this method returns the number
+/// of liberties of the entire stone group. If the intersection is not occupied,
+/// this method returns the number of liberties of just that one intersection.
+// -----------------------------------------------------------------------------
 - (int) liberties
 {
   if ([self hasStone])
@@ -173,11 +242,20 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a stone on the intersection represented by
+/// this GoPoint would be legal. This includes checking for suicide moves and
+/// Ko situations.
+// -----------------------------------------------------------------------------
 - (bool) isLegalNextMove
 {
   return [[GoGame sharedGame] isLegalNextMove:self];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a point refers to the same intersection as this
+/// GoPoint object.
+// -----------------------------------------------------------------------------
 - (bool) isEqualToPoint:(GoPoint*)point
 {
   if (! point)

@@ -21,8 +21,19 @@
 #import "../ApplicationDelegate.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GtpCommand.
+// -----------------------------------------------------------------------------
 @interface GtpCommand()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (void) dealloc;
+//@}
+/// @name Other methods
+//@{
 - (NSString*) description;
+//@}
 @end
 
 
@@ -30,6 +41,10 @@
 
 @synthesize command;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GtpCommand instance that wraps
+/// the command string @a command.
+// -----------------------------------------------------------------------------
 + (GtpCommand*) command:(NSString*)command
 {
   GtpCommand* cmd = [[GtpCommand alloc] init];
@@ -41,7 +56,12 @@
   return cmd;
 }
 
-- (GtpCommand*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GtpCommand object.
+///
+/// @note This is the designated initializer of GtpCommand.
+// -----------------------------------------------------------------------------
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -53,20 +73,32 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GtpCommand object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.command = nil;
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GtpCommand object.
+///
+/// This method is invoked when GtpCommand needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
 - (NSString*) description
 {
   return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, self.command];
 }
 
-// Pure convenience method so that clients do not need to know GtpClient
-// (and ApplicationDelegate, which is required to obtain the GtpClient
-// instance).
+// -----------------------------------------------------------------------------
+/// @brief Submits this GtpCommand instance to the application's GtpClient.
+///
+/// This is a convenience method so that clients do not need to know GtpClient,
+/// or how to obtain an instance of GtpClient.
+// -----------------------------------------------------------------------------
 - (void) submit
 {
   NSLog(@"Submitting %@...", self);

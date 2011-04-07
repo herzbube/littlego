@@ -20,16 +20,32 @@
 #import "GoPoint.h"
 
 
-@interface GoBoardRegion(Private)
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoBoardRegion.
+// -----------------------------------------------------------------------------
+@interface GoBoardRegion()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (void) dealloc;
+//@}
+/// @name Private helper methods
+//@{
 - (void) setPoints:(NSArray*)points;
-- (void) splitNonStoneRegionIfRequired;
+- (void) splitRegionIfRequired;
+//@}
 @end
+
 
 @implementation GoBoardRegion
 
 @synthesize points;
 @synthesize color;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoBoardRegion instance that
+/// contains the GoPoint objects in @a points.
+// -----------------------------------------------------------------------------
 + (GoBoardRegion*) regionWithPoints:(NSArray*)points
 {
   GoBoardRegion* region = [[GoBoardRegion alloc] init];
@@ -41,6 +57,10 @@
   return region;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoBoardRegion instance that
+/// contains the single GoPoint object @a point.
+// -----------------------------------------------------------------------------
 + (GoBoardRegion*) regionWithPoint:(GoPoint*)point
 {
   GoBoardRegion* region = [[GoBoardRegion alloc] init];
@@ -52,7 +72,12 @@
   return region;
 }
 
-- (GoBoardRegion*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoBoardRegion object.
+///
+/// @note This is the designated initializer of GoBoardRegion.
+// -----------------------------------------------------------------------------
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -68,6 +93,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoBoardRegion object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   [points release];
@@ -75,6 +103,10 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the (unordered) list of GoPoint objects in this
+/// GoBoardRegion.
+// -----------------------------------------------------------------------------
 - (NSArray*) points
 {
   @synchronized(self)
@@ -83,6 +115,11 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Sets the list of GoPoint objects in this GoBoardRegion to
+/// @a newValue. No assumption is made about the order of objects in
+/// @a newValue.
+// -----------------------------------------------------------------------------
 - (void) setPoints:(NSArray*)newValue
 {
   @synchronized(self)
@@ -91,27 +128,59 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the size of this GoBoardRegion, which corresponds to the
+/// number of GoPoint objects in this GoBoardRegion.
+// -----------------------------------------------------------------------------
 - (int) size
 {
   return [points count];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a point is a part of this GoBoardRegion.
+// -----------------------------------------------------------------------------
 - (bool) hasPoint:(GoPoint*)point
 {
   return [points containsObject:point];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Adds @a point to this GoBoardRegion.
+///
+/// @a point must be removed from its previous GoBoardRegion by separately
+/// invoking GoBoardRegion::removePoint:().
+// -----------------------------------------------------------------------------
 - (void) addPoint:(GoPoint*)point
 {
   [(NSMutableArray*)points addObject:point];
+  // TODO: Check if we can say "point.region = self" here; this would be
+  // analogous to what we do in joinRegion:() further down. If this is not
+  // possible, document why. If this is possible, also update the doxygen docs
+  // of this method, and possibly also the class docs.
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Removes @a point from this GoBoardRegion.
+///
+/// Invoking this method may cause this GoBoardRegion to fragment, i.e. other
+/// GoBoardRegion objects may come into existence because GoPoint objects within
+/// this GoBoardRegion are no longer adjacent.
+// -----------------------------------------------------------------------------
 - (void) removePoint:(GoPoint*)point
 {
   [(NSMutableArray*)points removeObject:point];
-  [self splitNonStoneRegionIfRequired];
+  [self splitRegionIfRequired];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Joins @a region with this GoBoardRegion, i.e. all GoPoint objects
+/// in @a region are added to this GoBoardRegion.
+///
+/// The GoBoardRegion reference of all GoPoint objects will be updated to this
+/// GoBoardRegion. As a result, @a region will be released and should not be
+/// used after this method returns.
+// -----------------------------------------------------------------------------
 - (void) joinRegion:(GoBoardRegion*)region
 {
   for (GoPoint* point in [region points])
@@ -121,6 +190,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if this GoBoardRegion represents a stone group.
+// -----------------------------------------------------------------------------
 - (bool) isStoneGroup
 {
   if (0 == [points count])
@@ -129,6 +201,11 @@
   return [point hasStone];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if this GoBoardRegion represents a stone group with
+/// color black. Otherwise returns false (note that false is also returned if
+/// this GoBoardRegion does not represent a stone group).
+// -----------------------------------------------------------------------------
 - (bool) hasBlackStones
 {
   if (0 == [points count])
@@ -139,6 +216,11 @@
   return point.blackStone;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of liberties of the stone group that this
+/// GoBoardRegion represents. Returns -1 if this GoBoardRegion does not
+/// represent a stone group.
+// -----------------------------------------------------------------------------
 - (int) liberties
 {
   if (! [self isStoneGroup])
@@ -160,11 +242,34 @@
   return [libertyPoints count];
 }
 
-// TODO: The following implementatin is rather brute-force... find a more
-// elegant solution...
-- (void) splitNonStoneRegionIfRequired
+// -----------------------------------------------------------------------------
+/// @brief Splits this GoBoardRegion if any of the GoPoint objects within it
+/// are not adjacent.
+///
+/// Additional GoBoardRegion objects are created by this method if it detects
+/// that this GoBoardRegion has fragmented into smaller, non-adjacent sets of
+/// GoPoint objects. No assumption is made about the reason why the
+/// fragmentation occurred.
+///
+/// This method does nothing and returns immediately if this GoBoardRegion
+/// represents a stone group. The reason for this is efficieny, combined with
+/// the knowledge that stone groups can never fragment if the game proceeds in
+/// a regular fashion. A stone group can only be captured as a whole, in which
+/// case the entire GoBoardRegion "converts" from being a stone group to being
+/// an empty area.
+///
+/// @note This method should be called after making changes to the content of a
+/// GoBoardRegion (usually after removing a GoPoint object).
+///
+/// @todo The implementatin of this method is rather brute-force... try to find
+/// a more elegant solution, or document why there is no such solution.
+// -----------------------------------------------------------------------------
+- (void) splitRegionIfRequired
 {
-  assert(! [self isStoneGroup]);
+  // Stone groups can never fragment, they are only captured as a whole which
+  // leaves the region unchanged
+  if ([self isStoneGroup])
+    return;
 
   NSMutableArray* subRegions = [NSMutableArray arrayWithCapacity:0];
   NSMutableArray* pointsToProcess = [self.points mutableCopy];

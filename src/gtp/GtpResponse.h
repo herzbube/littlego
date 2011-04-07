@@ -19,6 +19,15 @@
 @class GtpCommand;
 
 
+// -----------------------------------------------------------------------------
+/// @brief The GtpResponse class represents a Go Text Protocol (GTP) response.
+///
+/// @ingroup gtp
+///
+/// GtpResponse is mainly a wrapper around a string that forms the actual GTP
+/// response. The raw response includes the status prefix, while the parsed
+/// response does not.
+// -----------------------------------------------------------------------------
 @interface GtpResponse : NSObject
 {
 }
@@ -26,8 +35,12 @@
 + (GtpResponse*) response:(NSString*)response toCommand:(GtpCommand*)command;
 - (NSString*) parsedResponse;
 
+/// @brief The raw response string, which includes the status prefix.
 @property(readonly, retain) NSString* rawResponse;
+/// @brief The GtpCommand object that this GtpResponse "belongs" to.
 @property(readonly, retain) GtpCommand* command;
+/// @brief The response status, i.e. whether command execution was successful
+/// (status is true) or not (status is false).
 @property(readonly) bool status;
 
 @end

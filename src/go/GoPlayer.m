@@ -19,12 +19,28 @@
 #import "GoPlayer.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoPlayer.
+// -----------------------------------------------------------------------------
+@interface GoPlayer()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (void) dealloc;
+//@}
+@end
+
+
 @implementation GoPlayer
 
 @synthesize black;
 @synthesize human;
 @synthesize name;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoPlayer instance which takes the
+/// color black.
+// -----------------------------------------------------------------------------
 + (GoPlayer*) blackPlayer
 {
   GoPlayer* player = [[GoPlayer alloc] init];
@@ -36,6 +52,10 @@
   return player;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoPlayer instance which takes the
+/// color white.
+// -----------------------------------------------------------------------------
 + (GoPlayer*) whitePlayer
 {
   GoPlayer* player = [[GoPlayer alloc] init];
@@ -47,7 +67,12 @@
   return player;
 }
 
-- (GoPlayer*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoPlayer object.
+///
+/// @note This is the designated initializer of GoPlayer.
+// -----------------------------------------------------------------------------
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -61,6 +86,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoPlayer object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.name = nil;

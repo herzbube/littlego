@@ -15,17 +15,38 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
 #import "DebugViewController.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 
 
-// Class extension
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for DebugViewController.
+// -----------------------------------------------------------------------------
 @interface DebugViewController()
-- (void) updateView:(NSString*)newText;
-// Notification responders
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
+//@}
+/// @name UINibLoadingAdditions category
+//@{
+- (void) awakeFromNib;
+//@}
+/// @name UIViewController methods
+//@{
+- (void) viewDidLoad;
+- (void) viewDidUnload;
+//@}
+/// @name Notification responders
+//@{
 - (void) gtpCommandSubmitted:(NSNotification*)notification;
 - (void) gtpResponseReceived:(NSNotification*)notification;
+//@}
+/// @name Updaters
+//@{
+- (void) updateView:(NSString*)newText;
+//@}
 @end
 
 
@@ -34,6 +55,9 @@
 @synthesize textView;
 @synthesize textCache;
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this DebugViewController object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.textView = nil;
@@ -41,6 +65,15 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Is called after this DebugViewController object has been allocated
+/// and initialized from DebugView.xib
+///
+/// @note This is a method from the UINibLoadingAdditions category (an addition
+/// to NSObject, defined in UINibLoading.h). Although it has the same purpose,
+/// the implementation via category is different from the NSNibAwaking informal
+/// protocol on the Mac OS X platform.
+// -----------------------------------------------------------------------------
 - (void) awakeFromNib
 {
   [super awakeFromNib];
@@ -57,6 +90,10 @@
                                              object:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called after the controller’s view is loaded into memory, usually
+/// to perform additional initialization steps.
+// -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
@@ -68,6 +105,14 @@
   self.textCache = nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called when the controller’s view is released from memory, e.g.
+/// during low-memory conditions.
+///
+/// Releases additional objects (e.g. by resetting references to retained
+/// objects) that can be easily recreated when viewDidLoad() is invoked again
+/// later.
+// -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
   [super viewDidUnload];
@@ -76,6 +121,9 @@
   self.textCache = nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gtpCommandSubmitted notification.
+// -----------------------------------------------------------------------------
 - (void) gtpCommandSubmitted:(NSNotification*)notification
 {
   // TODO remove if really not needed; see gtpRsponseReceived for details
@@ -85,6 +133,9 @@
 //  [self.textView scrollRangeToVisible:endOfTextRange];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gtpResponseReceived notification.
+// -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(NSNotification*)notification
 {
   // TODO we have to wait for the response so that we can print out command and
@@ -121,6 +172,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Displays @a newText in the debug output text view.
+// -----------------------------------------------------------------------------
 - (void) updateView:(NSString*)newText
 {
   self.textView.text = [self.textView.text stringByAppendingString:newText];

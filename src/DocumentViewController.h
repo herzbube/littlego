@@ -15,13 +15,29 @@
 // -----------------------------------------------------------------------------
 
 
+// System includes
 #import <UIKit/UIKit.h>
 
 
+// -----------------------------------------------------------------------------
+/// @brief The DocumentViewController class is responsible for loading an HTML
+/// resource file and displaying its content in the associated UIWebview object.
+///
+/// The GUI has a number of web views that display different documents such as
+/// the "About" information document. DocumentViewController recognizes which
+/// document it is supposed to load by examining the tag property of its
+/// associated view.
+///
+/// @todo Research how much memory this controller and its associated view are
+/// using. If possible, try to reduce the memory requirements (e.g. only create
+/// one instance of the controller/view pair instead of one instance per
+/// document).
+// -----------------------------------------------------------------------------
 @interface DocumentViewController : UIViewController<UIWebViewDelegate>
 {
 }
 
+/// @brief The view that this DocumentViewController is responsible for.
 @property(nonatomic, retain) IBOutlet UIWebView* webView;
 
 @end

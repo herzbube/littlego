@@ -5,5 +5,6 @@ Little Go.xcodeproj/*.pbxuser
 Little Go.xcodeproj/*.mode1v3
 # Other files
 3rdparty/
+doxygen/html
 .DS_Store
 

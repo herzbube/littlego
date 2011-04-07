@@ -24,8 +24,19 @@
 #import <UIKit/UIKit.h>
 
 
-// Class extension
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for PlayViewController.
+// -----------------------------------------------------------------------------
 @interface PlayViewController()
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
+//@}
+/// @name UIViewController methods
+//@{
+- (void) viewDidLoad;
+- (void) viewDidUnload;
+//@}
 /// @name Action methods for toolbar items
 //@{
 - (void) pass:(id)sender;
@@ -34,17 +45,24 @@
 - (void) undo:(id)sender;
 - (void) newGame:(id)sender;
 //@}
+/// @name Handlers for recognized gestures
+//@{
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
+//@}
 /// @name UIGestureRecognizerDelegate protocol
 //@{
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
 //@}
-// Notification responders
+/// @name Notification responders
+//@{
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameScoreChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-// Updaters
+//@}
+/// @name Updaters
+//@{
 - (void) updateButtonStates;
+//@}
 @end
 
 
@@ -59,6 +77,9 @@
 @synthesize panRecognizer;
 @synthesize interactionEnabled;
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this DocumentViewController object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.playView = nil;
@@ -66,6 +87,10 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called after the controller’s view is loaded into memory, usually
+/// to perform additional initialization steps.
+// -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
@@ -88,6 +113,14 @@
   [self updateButtonStates];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Called when the controller’s view is released from memory, e.g.
+/// during low-memory conditions.
+///
+/// Releases additional objects (e.g. by resetting references to retained
+/// objects) that can be easily recreated when viewDidLoad() is invoked again
+/// later.
+// -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
   [super viewDidUnload];
@@ -96,32 +129,58 @@
   self.panRecognizer = nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Pass" button. Generates a "Pass"
+/// move for the human player whose turn it currently is.
+// -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
   [[GoGame sharedGame] pass];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Resign" button. Generates a "Resign"
+/// move for the human player whose turn it currently is.
+// -----------------------------------------------------------------------------
 - (void) resign:(id)sender
 {
   // TODO ask user for confirmation because this action cannot be undone
   [[GoGame sharedGame] resign];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Play for me" button. Causes the
+/// computer player to generate a move for the human player whose turn it
+/// currently is.
+// -----------------------------------------------------------------------------
 - (void) playForMe:(id)sender
 {
   [[GoGame sharedGame] computerPlay];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Undo" button. Takes back the last
+/// move made by a human player, including any computer player moves that were
+/// made in response.
+// -----------------------------------------------------------------------------
 - (void) undo:(id)sender
 {
   [[GoGame sharedGame] undo];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "New" button. Starts a new game,
+/// discarding the current game.
+// -----------------------------------------------------------------------------
 - (void) newGame:(id)sender
 {
   // TODO implement this
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a dragging, or panning, gesture in the view's Go board
+/// area.
+// -----------------------------------------------------------------------------
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
 {
   // 1. Touching the screen starts stone placement
@@ -181,16 +240,26 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIGestureRecognizerDelegate protocol method. Disables gesture
+/// recognition while interactionEnabled() is false.
+// -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
   return self.isInteractionEnabled;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameStateChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
   [self updateButtonStates];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameScoreChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameScoreChanged:(NSNotification*)notification
 {
   if ([GoGame sharedGame].state == GameHasEnded)
@@ -206,12 +275,18 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingChanged notification.
+// -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
   self.interactionEnabled = ! [[GoGame sharedGame] isComputerThinking];
   [self updateButtonStates];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of all toolbar items.
+// -----------------------------------------------------------------------------
 - (void) updateButtonStates
 {
   BOOL playForMeButtonEnabled = NO;

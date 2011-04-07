@@ -15,37 +15,69 @@
 // -----------------------------------------------------------------------------
 
 
-extern const float gHalfPixel;
+/// @file
 
+// -----------------------------------------------------------------------------
+/// @name GUI constants
+// -----------------------------------------------------------------------------
+//@{
+/// @brief The value of this constant should be added to all drawing operations'
+/// parameters to prevent anti-aliasing. See README.developer for details.
+extern const float gHalfPixel;
+//@}
+
+/// @brief Enumerates possible types of GoMove objects.
 enum GoMoveType
 {
-  PlayMove,
-  PassMove,
-  ResignMove
+  PlayMove,   ///< @brief The player played a stone in this move.
+  PassMove,   ///< @brief The player passed in this move.
+  ResignMove  ///< @brief The player resigned in this move.
 };
 
+/// @brief Enumerates the possible stone states of a GoPoint.
 enum GoStoneState
 {
-  NoStone,
-  BlackStone,
-  WhiteStone
+  NoStone,     ///< @brief There is no stone on the GoPoint.
+  BlackStone,  ///< @brief There is a black stone on the GoPoint.
+  WhiteStone   ///< @brief There is a white stone on the GoPoint.
 };
 
+/// @brief Enumerates the possible states of a GoGame.
 enum GoGameState
 {
-  GameHasNotYetStarted,
-  GameHasStarted,
-  GameHasEnded
+  GameHasNotYetStarted,  ///< @brief Denotes a new game that is ready to begin.
+  GameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
+  GameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
 };
 
+/// @brief Enumerates the possible directions one can take to get from one
+/// GoPoint to another neighbouring GoPoint.
 enum GoBoardDirection
 {
-  LeftDirection,
-  RightDirection,
-  UpDirection,
-  DownDirection,
-  NextDirection,
-  PreviousDirection
+  LeftDirection,     ///< @brief Used for navigating to the left neighbour of a GoPoint.
+  RightDirection,    ///< @brief Used for navigating to the right neighbour of a GoPoint. 
+  UpDirection,       ///< @brief Used for navigating to the neighbour that is above a GoPoint.
+  DownDirection,     ///< @brief Used for navigating to the neighbour that is below a GoPoint.
+  NextDirection,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is Q19.
+  PreviousDirection  ///< @brief Same as NextDirection, but for iterating backwards.
+};
+
+/// @brief Enumerates all existing tabs in the GUI.
+///
+/// Values in this enumeration must match the "tag" property values of each
+/// TabBarItem in MainWindow.xib.
+enum TabType
+{
+  PlayTab,
+  SettingsTab,
+  ArchiveTab,
+  DebugTab,
+  AboutTab,
+  SourceCodeTab,
+  ApacheLicenseTab,
+  GPLTab,
+  LGPLTab,
+  BoostLicenseTab
 };
 
 // -----------------------------------------------------------------------------
@@ -94,4 +126,17 @@ extern NSString* computerPlayerThinkingStarts;
 /// @brief Is sent to indicate that the computer player has stopped to think
 /// about its next move.
 extern NSString* computerPlayerThinkingStops;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Resource file names
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* openingBookResource;
+extern NSString* aboutDocumentResource;
+extern NSString* sourceCodeDocumentResource;
+extern NSString* apacheLicenseDocumentResource;
+extern NSString* GPLDocumentResource;
+extern NSString* LGPLDocumentResource;
+extern NSString* boostLicenseDocumentResource;
 //@}

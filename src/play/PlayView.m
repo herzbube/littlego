@@ -24,13 +24,24 @@
 #import "../go/GoVertex.h"
 
 
-@interface PlayView(Private)
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for PlayView.
+// -----------------------------------------------------------------------------
+@interface PlayView()
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
+//@}
 /// @name UINibLoadingAdditions category
 //@{
 - (void) awakeFromNib;
 //@}
-- (void) updateDrawParametersForRect:(CGRect)rect;
-// Layer drawing and other GUI updating
+/// @name UIView methods
+//@{
+- (void) drawRect:(CGRect)rect;
+//@}
+/// @name Layer drawing and other GUI updating
+//@{
 - (void) drawBackground:(CGRect)rect;
 - (void) drawBoard;
 - (void) drawGrid;
@@ -44,18 +55,28 @@
 - (void) drawLabels;
 - (void) updateStatusLine;
 - (void) updateActivityIndicator;
-// Calculators
+//@}
+/// @name Calculators
+//@{
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
-// Notification responders
+//@}
+/// @name Notification responders
+//@{
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+//@}
+/// @name Internal helpers
+//@{
+- (void) updateDrawParametersForRect:(CGRect)rect;
+//@}
 @end
+
 
 @implementation PlayView
 
@@ -89,6 +110,22 @@
 
 @synthesize crossHairPoint;
 @synthesize crossHairPointIsLegalMove;
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this DocumentViewController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.statusLine = nil;
+  self.activityIndicator = nil;
+  self.viewBackgroundColor = nil;
+  self.boardColor = nil;
+  self.lineColor = nil;
+  self.starPointColor = nil;
+  self.crossHairColor = nil;
+  self.crossHairPoint = nil;
+  [super dealloc];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Is called after an PlayView object has been allocated and initialized
@@ -142,19 +179,9 @@
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
 }
 
-- (void) dealloc
-{
-  self.statusLine = nil;
-  self.activityIndicator = nil;
-  self.viewBackgroundColor = nil;
-  self.boardColor = nil;
-  self.lineColor = nil;
-  self.starPointColor = nil;
-  self.crossHairColor = nil;
-  self.crossHairPoint = nil;
-  [super dealloc];
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Is invoked by UIKit when the view needs updating.
+// -----------------------------------------------------------------------------
 - (void) drawRect:(CGRect)rect
 {
   [self updateDrawParametersForRect:rect];
@@ -171,6 +198,10 @@
   self.crossHairPoint = nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates properties that can be dynamically calculated. @a rect is
+/// assumed to refer to the entire view rectangle.
+// -----------------------------------------------------------------------------
 - (void) updateDrawParametersForRect:(CGRect)rect
 {
   // No need to update if the new rect is the same as the one we did our
@@ -205,6 +236,9 @@
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the view background layer.
+// -----------------------------------------------------------------------------
 - (void) drawBackground:(CGRect)rect
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -212,6 +246,9 @@
   CGContextFillRect(context, rect);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the Go board background layer.
+// -----------------------------------------------------------------------------
 - (void) drawBoard
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -221,6 +258,9 @@
                                         self.boardSize, self.boardSize));
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the grid layer.
+// -----------------------------------------------------------------------------
 - (void) drawGrid
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -267,6 +307,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the star points layer.
+// -----------------------------------------------------------------------------
 - (void) drawStarPoints
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -308,6 +351,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the Go stones layer.
+// -----------------------------------------------------------------------------
 - (void) drawStones
 {
   bool crossHairStoneDrawn = false;
@@ -365,22 +411,36 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a single stone at intersection @a point, using color @a color.
+// -----------------------------------------------------------------------------
 - (void) drawStone:(UIColor*)color point:(GoPoint*)point
 {
   [self drawStone:color vertex:point.vertex];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a single stone at intersection @a vertex, using color @a color.
+// -----------------------------------------------------------------------------
 - (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex
 {
   struct GoVertexNumeric numericVertex = vertex.numeric;
   [self drawStone:color vertexX:numericVertex.x vertexY:numericVertex.y];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a single stone at the intersection identified by @a vertexX
+/// and @a vertexY, using color @a color.
+// -----------------------------------------------------------------------------
 - (void) drawStone:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY
 {
   [self drawStone:color coordinates:[self coordinatesFromVertexX:vertexX vertexY:vertexY]];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a single stone with its center at the view coordinates
+/// @a coordinaes, using color @a color.
+// -----------------------------------------------------------------------------
 - (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -394,16 +454,26 @@
   CGContextFillPath(context);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the symbols layer.
+// -----------------------------------------------------------------------------
 - (void) drawSymbols
 {
   // TODO not yet implemented
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the coordinate labels layer.
+// -----------------------------------------------------------------------------
 - (void) drawLabels
 {
   // TODO not yet implemented
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates the status line with text that provides feedback to the user
+/// about what's going on.
+// -----------------------------------------------------------------------------
 - (void) updateStatusLine
 {
   NSString* statusText = @"";
@@ -439,6 +509,10 @@
   self.statusLine.text = statusText;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Starts/stops animation of the activity indicator, to provide feedback
+/// to the user about operations that take a long time.
+// -----------------------------------------------------------------------------
 - (void) updateActivityIndicator
 {
   if ([[GoGame sharedGame] isComputerThinking])
@@ -447,6 +521,13 @@
     [self.activityIndicator stopAnimating];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a small circle at intersection @a point, when @a point does
+/// not have a stone on it. The color of the circle is different for different
+/// regions.
+///
+/// This method is a debugging aid to see how GoBoardRegions are calculated.
+// -----------------------------------------------------------------------------
 - (void) drawEmpty:(GoPoint*)point
 {
   struct GoVertexNumeric numericVertex = point.vertex.numeric;
@@ -462,23 +543,39 @@
   CGContextFillPath(context);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// @a point.
+// -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point
 {
   return [self coordinatesFromVertex:point.vertex];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// @a vertex.
+// -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromVertex:(GoVertex*)vertex
 {
   struct GoVertexNumeric numericVertex = vertex.numeric;
   return [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// identified by @a vertexX and @a vertexY.
+// -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
 {
   return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
                      self.topLeftPointY + self.lineLength - (self.pointDistance * (vertexY - 1)));
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoVertex object for the intersection identified by the view
+/// coordinates @a coordinates.
+// -----------------------------------------------------------------------------
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates
 {
   struct GoVertexNumeric numericVertex;
@@ -487,35 +584,66 @@
   return [GoVertex vertexFromNumeric:numericVertex];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoPoint object for the intersection identified by the view
+/// coordinates @a coordinates.
+// -----------------------------------------------------------------------------
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
 {
   GoVertex* vertex = [self vertexFromCoordinates:coordinates];
   return [[GoGame sharedGame].board pointAtVertex:vertex.string];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameStateChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
   // TODO do we need this?
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameFirstMoveChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameFirstMoveChanged:(NSNotification*)notification
 {
   // TODO check if it's possible to update only a rectangle
   [self setNeedsDisplay];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameLastMoveChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameLastMoveChanged:(NSNotification*)notification
 {
   // TODO check if it's possible to update only a rectangle
   [self setNeedsDisplay];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingChanged notification.
+// -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
   [self updateStatusLine];
   [self updateActivityIndicator];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoPoint object for the intersection that is closest to the
+/// view coordinates @a coordinates. Returns nil if there is no "closest"
+/// intersection.
+///
+/// Determining "closest" works like this:
+/// - @a coordinates are slightly adjusted so that the intersection is not
+///   directly under the user's fingertip
+/// - The closest intersection is the one whose distance to @a coordinates is
+///   less than half the distance between two adjacent intersections. This
+///   creates a "snap-to" effect when the user's panning fingertip crosses half
+///   the distance between two adjacent intersections.
+/// - If @a coordinates are a sufficient distance away from the Go board edges,
+///   there is no "closest" intersection
+// -----------------------------------------------------------------------------
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
@@ -573,6 +701,10 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Moves the cross-hair to the intersection identified by @a point,
+/// specifying whether an actual play move at the intersection would be legal.
+// -----------------------------------------------------------------------------
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
 {
   // TODO check if it's possible to update only a few rectangles

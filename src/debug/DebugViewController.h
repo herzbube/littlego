@@ -15,14 +15,35 @@
 // -----------------------------------------------------------------------------
 
 
+// System includes
 #import <UIKit/UIKit.h>
 
 
+// -----------------------------------------------------------------------------
+/// @brief The DebugViewController class is responsible for managing the debug
+/// output view.
+///
+/// DebugViewController currently does nothing except logging all GTP commands
+/// and GTP responses to a UITextView.
+///
+/// If the debug output view has not yet been created (because the user has
+/// never switched to its tab), DebugViewController captures debug output in
+/// a text "cache". When the debug output view is created, it is immediately
+/// filled with the content of the cache.
+///
+/// @todo Research how much memory this controller and its associated view are
+/// using. If possible, try to reduce the memory requirements. If necessary,
+/// remove this feature altogether (only from the iPhone build?) and only log
+/// to disk.
+// -----------------------------------------------------------------------------
 @interface DebugViewController : UIViewController
 {
 }
 
+/// @brief The text view that displays the debug output.
 @property(nonatomic, retain) IBOutlet UITextView* textView;
+/// @brief A cache that captures all debug output until the debug output view
+/// is actually created.
 @property(retain) NSString* textCache;
 
 @end

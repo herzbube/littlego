@@ -14,22 +14,47 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// System includes
 #import <UIKit/UIKit.h>
 
+// Forward declarations
 @class GtpClient;
 @class GtpEngine;
 
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate, UITabBarControllerDelegate>
+
+// -----------------------------------------------------------------------------
+/// @brief The ApplicationDelegate class implements the role of delegate of the
+/// UIApplication main object.
+///
+/// As an additional responsibility, it creates instances of GtpEngine and
+/// GtpClient and sets them up to communicate with each other.
+///
+/// @note ApplicationDelegate is instantiated when MainWindow.xib is loaded.
+/// The single instance of ApplicationDelegate is available to clients via the
+/// class method sharedDelegate().
+// -----------------------------------------------------------------------------
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate>
 {
+@private
+  /// @name Outlets
+  /// @brief These variables are outlets and initialized in MainWindow.xib.
+  //@{
   UIWindow* window;
   UITabBarController* tabBarController;
+  //@}
 }
 
 + (ApplicationDelegate*) sharedDelegate;
 
+/// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;
+/// @brief The main application controller.
 @property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+/// @brief The GTP client instance.
 @property(retain) GtpClient* gtpClient;
+/// @brief The GTP engine instance.
 @property(retain) GtpEngine* gtpEngine;
 
 @end
+

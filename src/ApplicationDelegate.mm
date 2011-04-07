@@ -14,11 +14,23 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+/// @mainpage
+///
+/// Little Go is an iOS application that lets the user play the game of Go
+/// against another human, or against the computer.
+///
+/// The two main classes of the project are ApplicationDelegate and GoGame.
+///
+/// The main file to read for new developers is README.developer.
+// -----------------------------------------------------------------------------
+
+
 // Project includes
 #import "ApplicationDelegate.h"
 #import "gtp/GtpClient.h"
 #import "gtp/GtpEngine.h"
-#import "go/GoGame.h"
 
 // System includes
 #include <string>
@@ -27,8 +39,25 @@
 #include <sys/stat.h>  // for mkfifo
 
 
-@interface ApplicationDelegate(Private)
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for ApplicationDelegate.
+// -----------------------------------------------------------------------------
+@interface ApplicationDelegate()
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
 - (void) setupFuego;
+//@}
+/// @name UIApplicationDelegate protocol
+//@{
+- (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions;
+- (void) applicationWillResignActive:(UIApplication*)application;
+- (void) applicationDidEnterBackground:(UIApplication*)application;
+- (void) applicationWillEnterForeground:(UIApplication*)application;
+- (void) applicationDidBecomeActive:(UIApplication*)application;
+- (void) applicationWillTerminate:(UIApplication*)application;
+- (void) applicationDidReceiveMemoryWarning:(UIApplication*)application;
+//@}
 @end
 
 
@@ -39,34 +68,64 @@
 @synthesize gtpClient;
 @synthesize gtpEngine;
 
-
+// -----------------------------------------------------------------------------
+/// @brief Shared instance of ApplicationDelegate.
+// -----------------------------------------------------------------------------
 static ApplicationDelegate* sharedDelegate = nil;
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the shared application delegate object.
+///
+/// TODO: Find out why Doxygen does not generate documentation for this method.
+/// Cf. the convenience constructor in GtpClient, for which documentation is
+/// generated.
+// -----------------------------------------------------------------------------
 + (ApplicationDelegate*) sharedDelegate
 {
   @synchronized(self)
   {
-    assert(sharedDelegate =! nil);
+    assert(sharedDelegate != nil);
     return sharedDelegate;
   }
 }
 
-#pragma mark -
-#pragma mark Application lifecycle
-
-- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this ApplicationDelegate object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
 {
+  self.tabBarController = nil;
+  self.window = nil;
+  self.gtpClient = nil;
+  self.gtpEngine = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs major application initialization tasks.
+///
+/// This method is invoked after the main .nib file has been loaded, but while
+/// the application is still in the inactive state.
+// -----------------------------------------------------------------------------
+- (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+{
+  // Make the single instance of this class available as a "shared object", or
+  // Singleton.
   sharedDelegate = self;
 
-  // Add the tab bar controller's view to the window and display.
+  // Setup GUI
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
 
+  // Setup GTP engine and client
   [self setupFuego];
 
+  // We don't handle any URL resources in launchOptions
+  // -> always return success
   return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication*)application
+- (void) applicationWillResignActive:(UIApplication*)application
 {
     /*
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -104,28 +163,6 @@ static ApplicationDelegate* sharedDelegate = nil;
      */
 }
 
-
-#pragma mark -
-#pragma mark UITabBarControllerDelegate methods
-
-/*
-// Optional UITabBarControllerDelegate method.
-- (void)tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
-{
-}
-*/
-
-/*
-// Optional UITabBarControllerDelegate method.
-- (void)tabBarController:(UITabBarController*)tabBarController didEndCustomizingViewControllers:(NSArray*)viewControllers changed:(BOOL)changed
-{
-}
-*/
-
-
-#pragma mark -
-#pragma mark Memory management
-
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
     /*
@@ -133,15 +170,14 @@ static ApplicationDelegate* sharedDelegate = nil;
      */
 }
 
-- (void) dealloc
-{
-  [tabBarController release];
-  [window release];
-  self.gtpClient = nil;
-  self.gtpEngine = nil;
-  [super dealloc];
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Sets up the GTP engine and client (always Fuego).
+///
+/// In a regular desktop environment, engine and client would be launched in
+/// separate processes, which would then communicate via stdin/stdout. Since
+/// there is no way to launch separate processes under iOS, engine and client
+/// run in separate threads, and they communicate via named pipes.
+// -----------------------------------------------------------------------------
 - (void) setupFuego
 {
   mode_t pipeMode = S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH;
@@ -156,6 +192,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   {
     std::string pipePath = *it;
     std::cout << "Creating input pipe " << pipePath << std::endl;
+    // TODO: Check if pipes already exist, and/or clean them up when the
+    // application shuts down
     int status = mkfifo(pipePath.c_str(), pipeMode);
     if (status == 0)
       std::cout << "Success!" << std::endl;
@@ -185,7 +223,6 @@ static ApplicationDelegate* sharedDelegate = nil;
       }
     }
   }
-
   self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath];
   self.gtpEngine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
 }

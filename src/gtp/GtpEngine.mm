@@ -22,7 +22,10 @@
 #include <fuego/FuegoMainUtil.h>
 
 
-@interface GtpEngine(Private)
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GtpEngine.
+// -----------------------------------------------------------------------------
+@interface GtpEngine()
 /// @name Initialization and deallocation
 //@{
 - (id) initWithPipes:(NSArray*)pipes;
@@ -34,7 +37,8 @@
 @implementation GtpEngine
 
 // -----------------------------------------------------------------------------
-/// @brief xxx
+/// @brief Convenience constructor. Creates a GtpEngine instance which will use
+/// the two named pipes to communicate with its counterpart GtpClient.
 // -----------------------------------------------------------------------------
 + (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe
 {
@@ -78,7 +82,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief xxx
+/// @brief The secondary thread's main loop method. Returns only after the
+/// GTP engine's main method returns.
 // -----------------------------------------------------------------------------
 - (void) mainLoop:(NSArray*)pipes
 {

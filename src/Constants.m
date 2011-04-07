@@ -15,6 +15,7 @@
 // -----------------------------------------------------------------------------
 
 
+// GUI constants
 const float gHalfPixel = 0.5;
 
 // GTP notifications

@@ -28,29 +28,42 @@
 #import "../ApplicationDelegate.h"
 
 
-@interface GoGame(Private)
-// Setters needed for posting notifications to notify our observers
-- (void) setStarted:(bool)newValue;
-- (void) setEnded:(bool)newValue;
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoGame.
+// -----------------------------------------------------------------------------
+@interface GoGame()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (void) dealloc;
+//@}
+/// @name Setters needed for posting notifications to notify our observers
+//@{
 - (void) setFirstMove:(GoMove*)newValue;
 - (void) setLastMove:(GoMove*)newValue;
 - (void) setComputerThinks:(bool)newValue;
-// Submit GTP commands
+//@}
+/// @name Submit GTP commands
+//@{
 - (void) submitPlayMove:(NSString*)vertex;
 - (void) submitPassMove;
-- (void) submitResignMove;
 - (void) submitGenMove;
 - (void) submitFinalScore;
-// Update state
+//@}
+/// @name Update state
+//@{
 - (void) updatePlayMove:(GoPoint*)point;
 - (void) updatePassMove;
 - (void) updateResignMove;
-- (void) updateGenMove;
-// Others and helpers
+//@}
+/// @name Others methods
+//@{
 - (void) gtpResponseReceived:(NSNotification*)notification;
 - (NSString*) colorStringForMoveAfter:(GoMove*)move;
 - (bool) isComputerPlayersTurn;
+//@}
 @end
+
 
 @implementation GoGame
 
@@ -64,6 +77,11 @@
 @synthesize computerThinks;
 @synthesize score;
 
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the shared GoGame object, which is the only instance of
+/// GoGame that is created throughout the application's lifetime.
+// -----------------------------------------------------------------------------
 + (GoGame*) sharedGame;
 {
   static GoGame* sharedGame = nil;
@@ -79,7 +97,12 @@
   }
 }
 
-- (GoGame*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoGame object.
+///
+/// @note This is the designated initializer of GoGame.
+// -----------------------------------------------------------------------------
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -102,6 +125,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoGame object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.board = nil;
@@ -112,6 +138,9 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setFirstMove:(GoMove*)newValue
 {
   @synchronized(self)
@@ -124,6 +153,9 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameFirstMoveChanged object:self];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setLastMove:(GoMove*)newValue
 {
   @synchronized(self)
@@ -136,6 +168,9 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameLastMoveChanged object:self];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setState:(enum GoGameState)newValue
 {
   @synchronized(self)
@@ -147,6 +182,20 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (int) boardSize
+{
+  @synchronized(self)
+  {
+    return board.size;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setBoardSize:(int)newValue
 {
   @synchronized(self)
@@ -155,6 +204,11 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Generates a GoMove of type #PlayMove for the player whose turn it
+/// is (should be a human player). The computer player is triggered if it is
+/// now its turn to move.
+// -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)point
 {
   [self submitPlayMove:point.vertex.string];
@@ -163,6 +217,11 @@
     [self computerPlay];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Generates a GoMove of type #PassMove for the player whose turn it
+/// is (should be a human player). The computer player is triggered if it is
+/// now its turn to move.
+// -----------------------------------------------------------------------------
 - (void) pass
 {
   [self submitPassMove];
@@ -171,6 +230,10 @@
     [self computerPlay];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Generates a GoMove of type #ResignMove for the player whose turn it
+/// is (should be a human player). The game state changes to #GameHasEnded.
+// -----------------------------------------------------------------------------
 - (void) resign
 {
   [self submitFinalScore];
@@ -178,17 +241,28 @@
   // TODO calculate score
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Lets the computer player make a move even if it is not his turn.
+// -----------------------------------------------------------------------------
 - (void) computerPlay
 {
   [self submitGenMove];
-  [self updateGenMove];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Takes back the last move made by a human player, including any
+/// computer player moves that were made in response.
+// -----------------------------------------------------------------------------
 - (void) undo
 {
   // TODO not yet implementend
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a stone on the intersection represented by
+/// @a point would be legal. This includes checking for suicide moves and
+/// Ko situations.
+// -----------------------------------------------------------------------------
 - (bool) isLegalNextMove:(GoPoint*)point
 {
   // We could use the Fuego-specific GTP command "go_point_info" to obtain
@@ -256,16 +330,29 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the game has started and is still running, i.e.
+/// moves are still possible.
+// -----------------------------------------------------------------------------
 - (bool) hasStarted
 {
   return (GameHasStarted == self.state);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the game has ended, i.e. moves are no longer allowed.
+// -----------------------------------------------------------------------------
 - (bool) hasEnded
 {
   return (GameHasEnded == self.state);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Submits a "play" command to the GTP engine.
+///
+/// This method returns immediately. gtpResponseReceived:() is triggered as
+/// soon as the GTP engine response has arrived.
+// -----------------------------------------------------------------------------
 - (void) submitPlayMove:(NSString*)vertex
 {
   NSString* commandString = @"play ";
@@ -277,17 +364,23 @@
   [command submit];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Submits a "pass" command to the GTP engine.
+///
+/// This method returns immediately. gtpResponseReceived:() is triggered as
+/// soon as the GTP engine response has arrived.
+// -----------------------------------------------------------------------------
 - (void) submitPassMove
 {
   [self submitPlayMove:@"pass"];
 }
 
-- (void) submitResignMove
-{
-  GtpCommand* command = [GtpCommand command:@"resign"];
-  [command submit];
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Submits a "genmove" command to the GTP engine.
+///
+/// This method returns immediately. gtpResponseReceived:() is triggered as
+/// soon as the GTP engine response has arrived.
+// -----------------------------------------------------------------------------
 - (void) submitGenMove
 {
   self.computerThinks = true;
@@ -298,6 +391,12 @@
   [command submit];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Submits a "final_score" command to the GTP engine.
+///
+/// This method returns immediately. gtpResponseReceived:() is triggered as
+/// soon as the GTP engine response has arrived.
+// -----------------------------------------------------------------------------
 - (void) submitFinalScore
 {
   // Scoring involves the following
@@ -312,7 +411,12 @@
   [command submit];
 }
 
-// updates both state in this model, and view; does not care about GTP
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #PlayMove.
+///
+/// This method does not care about GTP.
+// -----------------------------------------------------------------------------
 - (void) updatePlayMove:(GoPoint*)point
 {
   GoMove* move = [GoMove move:PlayMove after:self.lastMove];
@@ -327,7 +431,12 @@
   self.state = GameHasStarted;
 }
 
-// updates both state in this model, and view; does not care about GTP
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #PassMove.
+///
+/// This method does not care about GTP.
+// -----------------------------------------------------------------------------
 - (void) updatePassMove
 {
   GoMove* move = [GoMove move:PassMove after:self.lastMove];
@@ -347,7 +456,12 @@
     self.state = GameHasStarted;
 }
 
-// updates both state in this model, and view; does not care about GTP
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #ResignMove.
+///
+/// This method does not care about GTP.
+// -----------------------------------------------------------------------------
 - (void) updateResignMove
 {
   GoMove* move = [GoMove move:ResignMove after:self.lastMove];
@@ -361,16 +475,9 @@
   self.state = GameHasEnded;
 }
 
-// updates both state in this model, and view; does not care about GTP
-- (void) updateGenMove
-{
-  // todo: at the moment there is no need to update the model state - something
-  // will happen when the response from the gtp engine comes in; check if this
-  // is still ok before making the next release
-  
-  // todo: update view (status line = "pondering..." or something)
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Is triggered whenever the GTP engine responds to a command.
+// -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(NSNotification*)notification
 {
   GtpResponse* response = (GtpResponse*)[notification object];
@@ -404,6 +511,10 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns either the string "B" or the string "W" to signify which
+/// color (B=Black, W=White) will make the next move after @a move.
+// -----------------------------------------------------------------------------
 - (NSString*) colorStringForMoveAfter:(GoMove*)move
 {
   // TODO what about a GoColor class?
@@ -416,6 +527,9 @@
     return @"W";
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if it is the computer player's turn.
+// -----------------------------------------------------------------------------
 - (bool) isComputerPlayersTurn
 {
   // TODO: Find a better way to determine when it is the computer player's
@@ -425,6 +539,9 @@
   return self.lastMove.black;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setComputerThinks:(bool)newValue
 {
   @synchronized(self)
@@ -441,6 +558,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setScore:(NSString*)newValue
 {
   @synchronized(self)

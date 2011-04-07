@@ -119,4 +119,6 @@ Future improvements to the 3rdparty build process:
 
 Priority 3 (not important)
 -------------------------
-No items yet
+- There is a nice HOWTO written by Apple that shows how to created Xcode
+  documentation sets with Doxygen. Might be worthwile to check this out:
+  http://developer.apple.com/tools/creatingdocsetswithdoxygen.html

@@ -19,10 +19,24 @@
 #import "GtpResponse.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GtpResponse.
+// -----------------------------------------------------------------------------
 @interface GtpResponse()
+/// @name Initialization and deallocation
+//@{
+- (id) init;
+- (void) dealloc;
+//@}
+/// @name Other methods
+//@{
 - (NSString*) description;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
 @property(readwrite, retain) NSString* rawResponse;
 @property(readwrite, retain) GtpCommand* command;
+//@}
 @end
 
 
@@ -31,6 +45,10 @@
 @synthesize rawResponse;
 @synthesize command;
 
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GtpResponse instance that wraps
+/// the response string @a response, and is a response to @a command.
+// -----------------------------------------------------------------------------
 + (GtpResponse*) response:(NSString*)response toCommand:(GtpCommand*)command
 {
   GtpResponse* resp = [[GtpResponse alloc] init];
@@ -44,7 +62,12 @@
   return resp;
 }
 
-- (GtpResponse*) init
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GtpResponse object.
+///
+/// @note This is the designated initializer of GtpResponse.
+// -----------------------------------------------------------------------------
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -57,6 +80,9 @@
   return self;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GtpResponse object.
+// -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.rawResponse = nil;
@@ -64,11 +90,21 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GtpResponse object.
+///
+/// This method is invoked when GtpResponse needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
 - (NSString*) description
 {
   return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, self.rawResponse];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the parsed response string, which is the raw response without
+/// the status prefix.
+// -----------------------------------------------------------------------------
 - (NSString*) parsedResponse
 {
   if (! self.rawResponse)
@@ -78,6 +114,9 @@
   return [[parsedResponse retain] autorelease];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) status
 {
   if (! self.rawResponse)

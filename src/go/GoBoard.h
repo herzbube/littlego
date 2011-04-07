@@ -19,9 +19,24 @@
 @class GoPoint;
 
 
+// -----------------------------------------------------------------------------
+/// @brief The GoBoard class represents the Go board.
+///
+/// @ingroup go
+///
+/// The main property of GoBoard is its size. The size determines the board's
+/// horizontal and vertical dimensions and thus the number of GoPoint objects
+/// that may exist at any given time.
+///
+/// GoBoard is responsible for creating GoPoint objects and providing access to
+/// these objects. A GoPoint object is identified by the coordinates of the
+/// intersection it is located on, or by its association with its neighbouring
+/// GoPoint objects in one of several directions (see #GoBoardDirection).
+// -----------------------------------------------------------------------------
 @interface GoBoard : NSObject
 {
 @private
+  /// @brief Keys = Vertices as NSString objects, values = GoPoint objects
   NSMutableDictionary* m_vertexDict;
 }
 
@@ -30,6 +45,8 @@
 - (GoPoint*) pointAtVertex:(NSString*)vertex;
 - (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction;
 
+/// @brief The board size, specifying the horizontal and vertical board
+/// dimensions.
 @property int size;
 
 @end

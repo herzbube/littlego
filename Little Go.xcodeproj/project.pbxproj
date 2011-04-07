@@ -6,6 +6,20 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		CD3AE856134A333D00B58E08 /* doxygen */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = CD3AE859134A335B00B58E08 /* Build configuration list for PBXAggregateTarget "doxygen" */;
+			buildPhases = (
+				CD3AE855134A333D00B58E08 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = doxygen;
+			productName = doxygen;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -79,6 +93,8 @@
 		CD3AE7821345164800B58E08 /* COPYING.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = COPYING.html; sourceTree = "<group>"; };
 		CD3AE7831345164800B58E08 /* COPYING.LESSER.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = COPYING.LESSER.html; sourceTree = "<group>"; };
 		CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
+		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
+		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
 		CD78034C132FE6D300E7843F /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
@@ -145,6 +161,7 @@
 				CDEC282B12F477360069F5B7 /* src */,
 				CDEC28A612F4A2BB0069F5B7 /* resource */,
 				CDEC287B12F477E70069F5B7 /* doc */,
+				CD3AE864134A33A500B58E08 /* doxygen */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -200,8 +217,8 @@
 		CD1088551326CBB300E83543 /* debug */ = {
 			isa = PBXGroup;
 			children = (
-				CD78034C132FE6D300E7843F /* DebugViewController.m */,
 				CD10885C1326CCEB00E83543 /* DebugViewController.h */,
+				CD78034C132FE6D300E7843F /* DebugViewController.m */,
 			);
 			path = debug;
 			sourceTree = "<group>";
@@ -224,6 +241,15 @@
 			path = settings;
 			sourceTree = "<group>";
 		};
+		CD3AE864134A33A500B58E08 /* doxygen */ = {
+			isa = PBXGroup;
+			children = (
+				CD3AE865134A33A500B58E08 /* Doxyfile */,
+				CD3AE8AD134A423000B58E08 /* index.html */,
+			);
+			path = doxygen;
+			sourceTree = "<group>";
+		};
 		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
 			isa = PBXGroup;
 			children = (
@@ -239,8 +265,8 @@
 				CD1088551326CBB300E83543 /* debug */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
-				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
 				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
+				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
 				CDA264AA132CF7EF00FAFC51 /* Constants.h */,
 				CDA264AB132CF7EF00FAFC51 /* Constants.m */,
 				CD3AE7501344FBD100B58E08 /* DocumentViewController.h */,
@@ -337,6 +363,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* Little Go */,
+				CD3AE856134A333D00B58E08 /* doxygen */,
 			);
 		};
 /* End PBXProject section */
@@ -361,6 +388,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		CD3AE855134A333D00B58E08 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/sw/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
@@ -465,6 +508,27 @@
 			};
 			name = Release;
 		};
+		CD3AE857134A333D00B58E08 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = doxygen;
+			};
+			name = Debug;
+		};
+		CD3AE858134A333D00B58E08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = doxygen;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -482,6 +546,15 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD3AE859134A335B00B58E08 /* Build configuration list for PBXAggregateTarget "doxygen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD3AE857134A333D00B58E08 /* Debug */,
+				CD3AE858134A333D00B58E08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

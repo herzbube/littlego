@@ -22,12 +22,37 @@
 @class GoPoint;
 
 
-// TODO things to document:
-// - calculate only with integer types, use half pixel "translation"; do not
-//   turn off anti-aliasing
-//   http://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
-// - all calculations rely on the fact the coordinate system origin is in the
-//   top-left corner
+// -----------------------------------------------------------------------------
+/// @brief The PlayView class is a custom view that is responsible for drawing
+/// a Go board.
+///
+/// The view content is drawn in layers:
+/// - View background
+/// - Board background
+/// - Grid lines
+/// - Star points
+/// - Played stones (if any)
+/// - Symbols (if any)
+/// - Coordinate labels (if any)
+///
+/// In addition, PlayView writes text into a status line and animates an
+/// activity indicator, to provide the user with feedback about operations
+/// that are currently going on.
+///
+/// All coordinate calculations are made with integer types. The actual drawing
+/// then uses a half pixel "translation" to prevent anti-aliasing when straight
+/// lines are drawn. See http://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
+/// for details.
+///
+/// @note It's not possible to turn off anti-aliasing, instead of doing
+/// half-pixel translation. The reason is that 1) round shapes (e.g. star
+/// points, stones) do need anti-aliasing; and 2) if not all parts of the view
+/// are drawn with anti-aliasing, things become mis-aligned (e.g. stones are
+/// not exactly centered on line intersections).
+///
+/// @note All calculations rely on the coordinate system origin being in the
+/// top-left corner.
+// -----------------------------------------------------------------------------
 @interface PlayView : UIView
 {
 }
@@ -35,9 +60,13 @@
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
 
+/// @brief The status line GUI control.
 @property(nonatomic, retain) IBOutlet UILabel* statusLine;
+/// @brief The activity indicator.
 @property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
 
+/// @name Static properties
+//@{
 @property(retain) UIColor* viewBackgroundColor;
 @property(retain) UIColor* boardColor;
 @property float boardOuterMarginPercentage;
@@ -50,7 +79,10 @@
 @property float stoneRadiusPercentage;
 @property(retain) UIColor* crossHairColor;
 @property int crossHairPointDistanceFromFinger;
+//@}
 
+/// @name Dynamically calculated properties
+//@{
 @property CGRect previousDrawRect;
 @property bool portrait;
 @property int boardSize;
@@ -62,8 +94,12 @@
 @property int topLeftPointY;
 @property int pointDistance;
 @property int lineLength;
+//@}
 
+/// @name Cross-hair point properties
+//@{
 @property(retain) GoPoint* crossHairPoint;
 @property bool crossHairPointIsLegalMove;
+//@}
 
 @end

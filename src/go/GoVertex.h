@@ -15,21 +15,35 @@
 // -----------------------------------------------------------------------------
 
 
-// Helper to bind numeric compounds together
+// -----------------------------------------------------------------------------
+/// @brief Helper struct to bind the numeric compounds of a GoVertex together.
+///
+/// @ingroup go
+// -----------------------------------------------------------------------------
 struct GoVertexNumeric
 {
-  int x;
-  int y;
+  int x;   ///< @brief Horizontal axis compound of the vertex.
+  int y;   ///< @brief Vertical axis compound of the vertex.
 };
 
-// immutable object
-//
-// vertexes are given as strings such as "C13"; "A1" is in the lower-left
-// corner; the letter axis is horizontal, the number axis is vertical; the
-// letter "I" is not used; a numeric vertex is a conversion of the compounds
-// of a string vertex into numeric values, the number axis conversion is 1:1,
-// letters are converted so that A=1, B=2, etc. The gap caused by the unused
-// letter "I" is closed, i.e. H=8, J=9
+// -----------------------------------------------------------------------------
+/// @brief The GoVertex class stores the coordinates that uniquely identify the
+/// intersection of a horizontal and a vertical line on the Go board. GoVertex
+/// objects are immutable, i.e. they cannot be changed once they have been
+/// created.
+///
+/// @ingroup go
+///
+/// Vertexes are given as human-readable strings such as "C13". "A1" is in the
+/// lower-left corner of the Go board. The letter axis is horizontal, the
+/// number axis is vertical. The letter "I" is not used.
+///
+/// A numeric vertex is a conversion of the compounds of a string vertex into
+/// their numeric values. The number axis conversion is 1:1, but letters are
+/// converted so that A=1, B=2, etc. The gap caused by the unused letter "I" is
+/// closed, i.e. H=8, J=9. The compounds of a numeric vertex are bound together
+/// by the helper struct GoVertexNumeric.
+// -----------------------------------------------------------------------------
 @interface GoVertex : NSObject
 {
 }
@@ -38,7 +52,10 @@ struct GoVertexNumeric
 + (GoVertex*) vertexFromString:(NSString*)stringValue;
 - (bool) isEqualToVertex:(GoVertex*)vertex;
 
+/// @brief The vertex in its human-readable string format.
 @property(readonly, retain) NSString* string;
+/// @brief The vertex in its numeric form, which is easier to process in
+/// calculations and iterations.
 @property(readonly) struct GoVertexNumeric numeric;
 
 @end
