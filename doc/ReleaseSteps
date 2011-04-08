@@ -8,12 +8,10 @@ Before the release
 - If necessary, update the TODO file
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
-- Check if the Preferences dialog opens on the "General" tab (sometimes when I
-  fiddle around in Interface Builder, I forget to switch back to the "General"
-  tab)
-- Update the ChangeLog (should have been done continuously, anyway)
+- Update the ChangeLog
 - Replace the "Changes in this release" section of the README with a collection
-  of the most important entries from the ChangeLog
+  of the most important changes. A possible source for this is the git commit
+  log.
 - Change the release date in the following files:
   - Roadmap
 - Make sure that the version number is up to date in the following files
@@ -25,9 +23,12 @@ Before the release
   - All source files
   - Info.plist
 - Set the active build configuration in Xcode to "Release" and build the project
+  both for the simulator and for all target devices
+- If there are any warnings, fix them
 - Perform tests suitable to make sure that everything still works as intended
-  -> DO THIS OUTSIDE OF THE DEVELOPMENT ENVIRONMENT (= Xcode), i.e. launch the
-     application from the Finder (yes, this can have an impact!)
+  -> DO THIS OUTSIDE OF THE DEVELOPMENT ENVIRONMENT (= Xcode), i.e. install and
+     the application on real target devices, then launch it while not connected
+     to Xcode
 - Commit final changes (check with "git status" that nothing was forgotten)
 
 
@@ -39,15 +40,20 @@ Make the release
 - Update the blessed repository
   cd <projectdir>
   git push
-- Generate the source and binary distributions
+- Generate the source distribution
   - Go to terminal
-  - Launch "<path-to-project-folder>/makedist.sh 0.1"
+  - Launch "<path-to-project-folder>/script/makedist.sh 0.1"
   - The distribution files are placed in <project-folder>/dist
-- Make the source and binary distributions available on the project website
+- Generate the binary distribution and submit it to Apple
+  - TODO
+- Wait for Apple to accept the submission and publish the new version in their
+  App Store
+- Make the source distributions available on the project website
   - Create a new directory in the public web space
-  - Copy ChangeLog, README, disk image file (.dmg) and tar ball (.tar.gz)
-    into the new directory
-  - Update disk image and tar ball symlinks in the "current" directory
+  - Copy ChangeLog, README and tar ball (.tar.gz) into the new directory
+  - Update tar ball symlinks in the "current" directory
+  - Double-check that third party source code tar balls are also available for
+    download
 - Add the new version number to the bug tracker so that issues can be reported
   once the release has been made public
 - Update the project website to announce the new release

@@ -42,11 +42,6 @@ README
   of the project, and also contains other important information that should be
   immediately accessible to new or recurring users.
 
-INSTALL
-  This document provides instructions on how to obtain a copy of the source
-  code of Little Go and how to build the project with Xcode into an executable
-  application.
-
 TODO
   This document contains a list with not-so-important features (aka
   "good ideas" :-); the list is sorted by priority, which provides a rough

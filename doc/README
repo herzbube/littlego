@@ -1,47 +1,59 @@
 Table of Contents
 -----------------
 1. What is it?
-2. Usage
-3. Changes in this release
-4. License and source code
-5. Platforms
-6. Limitations of dgsmonX
-7. Special Thanks
+2. Changes in this release
+3. License and source code
+4. Platforms
+5. Special Thanks
 
 
 What is it?
 -----------
-TODO see dgsmonX
+Little Go is an iOS application that lets you play the game of Go on the iPhone
+or iPad. You can play against another human, or against the computer.
+
+There is no MANUAL or other document with a more detailed description of Little
+Go's features - just try it out, it should all be pretty intuitive.
+
+You can check for the most recent version of Little Go in Apple's app store. If
+you are interested in Little Go as a developer, you can download the source
+code from the project website http://www.herzbube.ch/littlego. Once you have
+unpacked the source tar ball you should first read the README.developer
+document.
 
 
 Changes in this release
 -----------------------
-This is "Little Go" 0.1, the first no-frills version suitable for public release.
+This is Little Go 0.1, the first no-frills version suitable for basic gameplay.
 
 For more details see the ChangeLog document.
 
 
 License and source code
 -----------------------
-dgsmonX is licensed under the Apache License (2.0). You should have received a
-copy of the license along with the "Little Go" application bundle or the source
+Little Go is licensed under the Apache License (2.0). You should have received a
+copy of the license along with the Little Go application bundle or the source
 distribution (see the file LICENSE inside the application bundle or source
-distribution, or start the application and choose the "Help:Apache License"
-menu item). If not, see <http://www.apache.org/licenses/>.
-
-The source code for "Little Go" can be downloaded from its homepage
-http://www.herzbube.ch/littlego. You will get the source files ready for
-building with Xcode. Once the project's git repository becomes available online,
-you may also get the project's source code from there.
+distribution, or start the application and choose the "More:Apache License"
+tab item). If not, see <http://www.apache.org/licenses/>.
 
 
 Platforms
 ---------
-"Little Go" is available both for the iPhone and the iPad.
+Currently Little Go is available for the iPhone only. Later on, an iPad version
+is planned as well.
 
-The minimum requirement for running this version of "Little Go" is iOS 4.
+The minimum requirement for running this version of Little Go is iOS 4.2.
+
+It might be possible to make a build for earlier versions of iOS, but unless
+someone requests it I won't spend any time on this.
 
 
 Special Thanks
 --------------
-TODO
+The Fuego project and its developers, for creating a freely usable Go engine
+in the first place, but also for encouraging me to use their engine despite
+some legal uncertainties regarding the LGPL license.
+
+The two iPhone apps Tetsuki and Goban, for giving me a bit of inspiration how
+to design an iOS user interface.

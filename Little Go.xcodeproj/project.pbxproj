@@ -114,8 +114,6 @@
 		CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
 		CDEC283112F477360069F5B7 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
-		CDEC287D12F477E70069F5B7 /* INSTALL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
-		CDEC287F12F477E70069F5B7 /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CDEC288012F477E70069F5B7 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
@@ -281,8 +279,6 @@
 			isa = PBXGroup;
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
-				CDEC287D12F477E70069F5B7 /* INSTALL */,
-				CDEC287F12F477E70069F5B7 /* MANUAL */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
