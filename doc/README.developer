@@ -390,15 +390,20 @@ Build
 Installation
 - "make install" only copies the executables (fuego, fuego_test), but not the
   libraries nor the headers. The build script for Fuego applies a patch that
-  modifies a number of Makefile.am files. The change made is to rename the
-  "noinst_HEADERS" property to "nobase_pkginclude_HEADERS". Notes:
+  modifies a number of Makefile.am files. The changes made are to rename the
+  "noinst_LIBRARIES" property to "lib_LIBRARIES", and to rename the
+  "noinst_HEADERS" property to "pkginclude_HEADERS". Notes:
+  - Libraries are installed under
+      <prefix>/lib
   - Headers are installed under
       <prefix>/include/fuego
-    because "pkginclude" is used instead of "include". In theory, sub-folders
-    should also be kept because of "nobase", e.g.
+    because "pkginclude" is used instead of "include"
+  - I would have preferred to keep sub-folders, e.g.
       <prefix>/include/fuego/gtpengine
-    For unknown reasons, this does not work. I have tried the following
-    combinations, but could not get it to work as desired:
+    In theory, to make this work it should be possible to use
+    "nobase_pkginclude_HEADERS". In practice, however, this does not work, the
+    "nobase" prefix has no effect. The reason for this is unknown. I have tried
+    the following combinations, but could not get it to work as desired:
       pkginclude_HEADERS     -> installs into include/fuego/*
       nobase_include_HEADERS -> installs into include/*
       nobase_dist_HEADERS    -> installs into include/*
