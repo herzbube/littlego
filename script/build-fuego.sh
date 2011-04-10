@@ -11,10 +11,10 @@
 # =========================================================================
 
 # Variables for downloading/extracting the source archive
-FUEGO_VERSION="1.0"
+FUEGO_VERSION="1.1"
 ARCHIVE_FILE="fuego-$FUEGO_VERSION.tar.gz"
 ARCHIVE_URL="$ARCHIVE_BASEURL/$ARCHIVE_FILE"
-ARCHIVE_CHECKSUM="64011422e6be749190194925314e9cb2b38eada999d53ff3e7dc12ac35d36453"
+ARCHIVE_CHECKSUM="c61d18293670c3cde8cc8b7b28ae037a85a4b8018827f2a0f93e34b165bc16ce"
 
 # Compiler flags
 FUEGO_COMMON_CPPFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden"
