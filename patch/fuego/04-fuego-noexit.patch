@@ -1,8 +1,11 @@
 diff -ruN fuego-1.0-original-with-mainfunction-pipeargs-patches/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain/FuegoMainUtil.cpp
 --- fuego-1.0-original-with-mainfunction-pipeargs-patches/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:36:01.000000000 +0100
 +++ fuego-1.0-new/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:38:25.000000000 +0100
-@@ -119,7 +119,14 @@
+@@ -117,10 +117,16 @@
+ void Help(po::options_description& desc, ostream& out)
+ {
      out << "Usage: fuego [options] [input files]\n" << desc << "\n";
+-    exit(0);
  }
  
 -void ParseOptions(int argc, char** argv)
@@ -17,8 +20,11 @@ diff -ruN fuego-1.0-original-with-mainfunction-pipeargs-patches/fuegomain/FuegoM
  {
      po::options_description normalOptions("Options");
      normalOptions.add_options()
-@@ -172,7 +179,10 @@
-         throw;
+@@ -170,15 +176,20 @@
+     catch (...)
+     {
+         Help(normalOptions, cerr);
++        throw;
      }
      if (vm.count("help"))
 +    {
@@ -28,7 +34,14 @@ diff -ruN fuego-1.0-original-with-mainfunction-pipeargs-patches/fuegomain/FuegoM
      if (vm.count("nobook"))
          g_noBook = true;
      if (vm.count("nohandicap"))
-@@ -238,7 +248,9 @@
+         g_noHandicap = true;
+     if (vm.count("quiet"))
+         g_quiet = true;
++    return true;
+ }
+
+ void PrintStartupMessage()
+@@ -237,7 +248,9 @@
          g_programDir = GetProgramDir(argv[0]);
          try
          {

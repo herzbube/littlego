@@ -1,7 +1,7 @@
 diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain/FuegoMainUtil.cpp
 --- fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:20:15.000000000 +0100
 +++ fuego-1.0-new/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:36:01.000000000 +0100
-@@ -97,36 +97,58 @@
+@@ -97,6 +97,23 @@
      return path(programPath, boost::filesystem::native).branch_path();
  }
  
@@ -25,34 +25,7 @@ diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp
  void Help(po::options_description& desc, ostream& out)
  {
      out << "Usage: fuego [options] [input files]\n" << desc << "\n";
--    exit(0);
- }
- 
- void ParseOptions(int argc, char** argv)
- {
-     po::options_description normalOptions("Options");
-     normalOptions.add_options()
--        ("config",
-+        ("config", 
-          po::value<std::string>(&g_config)->default_value(""),
-          "execuate GTP commands from file before starting main command loop")
-         ("help", "Displays this help and exit")
--        ("maxgames",
-+        ("maxgames", 
-          po::value<int>(&g_maxGames)->default_value(-1),
-          "make clear_board fail after n invocations")
-         ("nobook", "don't automatically load opening book")
-         ("nohandicap", "don't support handicap commands")
-         ("quiet", "don't print debug messages")
--        ("srand",
-+        ("srand", 
-          po::value<int>(&g_srand)->default_value(0),
-          "set random seed (-1:none, 0:time(0))")
--        ("size",
-+        ("size", 
-          po::value<int>(&g_fixedBoardSize)->default_value(0),
-          "initial (and fixed) board size");
-     po::options_description hiddenOptions;
+@@ -127,6 +144,12 @@
      hiddenOptions.add_options()
          ("input-file", po::value<vector<string> >(&g_inputFiles),
           "input file");
@@ -65,7 +38,7 @@ diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp
      po::options_description allOptions;
      allOptions.add(normalOptions).add(hiddenOptions);
      po::positional_options_description positionalOptions;
-@@ -137,10 +159,17 @@
+@@ -137,6 +160,12 @@
          po::store(po::command_line_parser(argc, argv).options(allOptions).
                                       positional(positionalOptions).run(), vm);
          po::notify(vm);
@@ -78,20 +51,7 @@ diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp
      }
      catch (...)
      {
-         Help(normalOptions, cerr);
-+        throw;
-     }
-     if (vm.count("help"))
-         Help(normalOptions, cout);
-@@ -150,6 +179,7 @@
-         g_noHandicap = true;
-     if (vm.count("quiet"))
-         g_quiet = true;
-+    return true;
- }
- 
- void PrintStartupMessage()
-@@ -215,6 +245,10 @@
+@@ -215,6 +244,10 @@
              SgDebug() << e.what() << "\n";
              return 1;
          }
@@ -102,7 +62,7 @@ diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp
      }
      if (g_quiet)
          SgDebugToNull();
-@@ -232,6 +266,26 @@
+@@ -232,6 +265,26 @@
              FuegoMainUtil::LoadBook(engine.Book(), g_programDir);
          if (g_config != "")
              engine.ExecuteFile(g_config);
@@ -129,7 +89,7 @@ diff -ruN fuego-1.0-original-with-mainfunction-patch/fuegomain/FuegoMainUtil.cpp
          if (! g_inputFiles.empty())
          {
              for(size_t i = 0; i < g_inputFiles.size(); i++)
-@@ -240,15 +294,16 @@
+@@ -240,15 +293,16 @@
                  ifstream fin(file.c_str());
                  if (! fin)
                      throw SgException(format("Error file '%1%'") % file);
