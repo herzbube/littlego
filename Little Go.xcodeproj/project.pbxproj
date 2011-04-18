@@ -106,6 +106,7 @@
 		CDBB039A133573CC007C1C3E /* GoVertex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertex.m; sourceTree = "<group>"; };
 		CDBB0C0113426C56007C1C3E /* DocumentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DocumentView.xib; sourceTree = "<group>"; };
 		CDBB0C0A13426DAB007C1C3E /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
+		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -299,6 +300,7 @@
 				CD3AE7831345164800B58E08 /* COPYING.LESSER.html */,
 				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
 				CDBB0C0113426C56007C1C3E /* DocumentView.xib */,
+				CDE300F113578E54005235F2 /* Entitlements.plist */,
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
 				CD1088621326CDAA00E83543 /* PlayView.xib */,
@@ -434,6 +436,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = "~/Documents/dev/littlego/resource/Entitlements.plist";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -458,6 +461,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = "~/Documents/dev/littlego/resource/Entitlements.plist";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
@@ -525,6 +529,55 @@
 			};
 			name = Release;
 		};
+		CDE3010D1357942E005235F2 /* Distribute */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Distribute;
+		};
+		CDE3010E1357942E005235F2 /* Distribute */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = "~/Documents/dev/littlego/resource/Entitlements.plist";
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
+				INFOPLIST_FILE = resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
+				OTHER_LDFLAGS = (
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
+				);
+				PRODUCT_NAME = "Little Go";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribute;
+		};
+		CDE3010F1357942E005235F2 /* Distribute */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = doxygen;
+				ZERO_LINK = NO;
+			};
+			name = Distribute;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -533,6 +586,7 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
+				CDE3010E1357942E005235F2 /* Distribute */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -542,6 +596,7 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+				CDE3010D1357942E005235F2 /* Distribute */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -551,6 +606,7 @@
 			buildConfigurations = (
 				CD3AE857134A333D00B58E08 /* Debug */,
 				CD3AE858134A333D00B58E08 /* Release */,
+				CDE3010F1357942E005235F2 /* Distribute */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

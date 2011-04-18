@@ -31,7 +31,7 @@ For more details see the ChangeLog document.
 
 License and source code
 -----------------------
-Little Go is licensed under the Apache License (2.0). You should have received a
+Little Go is released under the Apache License (2.0). You should have received a
 copy of the license along with the Little Go application bundle or the source
 distribution (see the file LICENSE inside the application bundle or source
 distribution, or start the application and choose the "More:Apache License"
