@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PlayViewBackgroundColor</key>
+	<string>ffffff</string>
+	<key>PlayViewBoardColor</key>
+	<string>f3ac5f</string>
+	<key>PlayViewBoardOuterMarginPercentage</key>
+	<real>0.02</real>
+	<key>PlayViewBoardInnerMarginPercentage</key>
+	<real>0.02</real>
+	<key>PlayViewLineColor</key>
+	<string>000000</string>
+	<key>PlayViewBoundingLineWidth</key>
+	<integer>2</integer>
+	<key>PlayViewNormalLineWidth</key>
+	<integer>1</integer>
+	<key>PlayViewStarPointColor</key>
+	<string>000000</string>
+	<key>PlayViewStarPointRadius</key>
+	<integer>3</integer>
+	<key>PlayViewStoneRadiusPercentage</key>
+	<real>0.95</real>
+	<key>PlayViewCrossHairColor</key>
+	<string>0000ff</string>
+	<key>PlayViewCrossHairPointDistanceFromFinger</key>
+	<string>2</string>
+</dict>
+</plist>

@@ -50,6 +50,8 @@
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
 		CDBB0C0B13426DAB007C1C3E /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0A13426DAB007C1C3E /* About.html */; };
+		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
+		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
@@ -107,6 +109,9 @@
 		CDBB0C0113426C56007C1C3E /* DocumentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DocumentView.xib; sourceTree = "<group>"; };
 		CDBB0C0A13426DAB007C1C3E /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
+		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
+		CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIColorAdditions.m; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -256,6 +261,15 @@
 			name = 3rdparty;
 			sourceTree = "<group>";
 		};
+		CDE30138135CA7D5005235F2 /* utility */ = {
+			isa = PBXGroup;
+			children = (
+				CDE30139135CA7D5005235F2 /* UIColorAdditions.h */,
+				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
+			);
+			path = utility;
+			sourceTree = "<group>";
+		};
 		CDEC282B12F477360069F5B7 /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -264,6 +278,7 @@
 				CD1088551326CBB300E83543 /* debug */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
+				CDE30138135CA7D5005235F2 /* utility */,
 				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
 				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
 				CDA264AA132CF7EF00FAFC51 /* Constants.h */,
@@ -304,6 +319,7 @@
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
 				CD1088621326CDAA00E83543 /* PlayView.xib */,
+				CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */,
 				CD3AE7581344FD7D00B58E08 /* SourceCode.html */,
 			);
 			path = resource;
@@ -382,6 +398,7 @@
 				CD3AE7841345164800B58E08 /* COPYING.html in Resources */,
 				CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */,
 				CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */,
+				CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +443,7 @@
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CD3AE7521344FBD100B58E08 /* DocumentViewController.m in Sources */,
+				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

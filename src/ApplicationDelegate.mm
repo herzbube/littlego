@@ -113,6 +113,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
+  // Setup application defaults
+  NSString* defaultsPathName = [[NSBundle mainBundle] pathForResource:registrationDomainDefaultsResource ofType:nil];
+  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+
   // Setup GUI
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];

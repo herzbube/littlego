@@ -139,4 +139,23 @@ extern NSString* apacheLicenseDocumentResource;
 extern NSString* GPLDocumentResource;
 extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
+extern NSString* registrationDomainDefaultsResource;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Keys for user defaults
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* playViewBackgroundColorKey;
+extern NSString* playViewBoardColorKey;
+extern NSString* playViewBoardOuterMarginPercentageKey;
+extern NSString* playViewBoardInnerMarginPercentageKey;
+extern NSString* playViewLineColorKey;
+extern NSString* playViewBoundingLineWidthKey;
+extern NSString* playViewNormalLineWidthKey;
+extern NSString* playViewStarPointColorKey;
+extern NSString* playViewStarPointRadiusKey;
+extern NSString* playViewStoneRadiusPercentageKey;
+extern NSString* playViewCrossHairColorKey;
+extern NSString* playViewCrossHairPointDistanceFromFingerKey;
 //@}

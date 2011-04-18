@@ -65,22 +65,6 @@
 /// @brief The activity indicator.
 @property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
 
-/// @name Static properties
-//@{
-@property(retain) UIColor* viewBackgroundColor;
-@property(retain) UIColor* boardColor;
-@property float boardOuterMarginPercentage;
-@property float boardInnerMarginPercentage;
-@property(retain) UIColor* lineColor;
-@property int boundingLineWidth;
-@property int normalLineWidth;
-@property(retain) UIColor* starPointColor;
-@property int starPointRadius;
-@property float stoneRadiusPercentage;
-@property(retain) UIColor* crossHairColor;
-@property int crossHairPointDistanceFromFinger;
-//@}
-
 /// @name Dynamically calculated properties
 //@{
 @property CGRect previousDrawRect;

@@ -40,3 +40,18 @@ NSString* apacheLicenseDocumentResource = @"LICENSE.html";
 NSString* GPLDocumentResource = @"COPYING.html";
 NSString* LGPLDocumentResource = @"COPYING.LESSER.html";
 NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";
+NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
+
+// Keys for user defaults
+NSString* playViewBackgroundColorKey = @"PlayViewBackgroundColor";
+NSString* playViewBoardColorKey = @"PlayViewBoardColor";
+NSString* playViewBoardOuterMarginPercentageKey = @"PlayViewBoardOuterMarginPercentage";
+NSString* playViewBoardInnerMarginPercentageKey = @"PlayViewBoardInnerMarginPercentage";
+NSString* playViewLineColorKey = @"PlayViewLineColor";
+NSString* playViewBoundingLineWidthKey = @"PlayViewBoundingLineWidth";
+NSString* playViewNormalLineWidthKey = @"PlayViewNormalLineWidth";
+NSString* playViewStarPointColorKey = @"PlayViewStarPointColor";
+NSString* playViewStarPointRadiusKey = @"PlayViewStarPointRadius";
+NSString* playViewStoneRadiusPercentageKey = @"PlayViewStoneRadiusPercentage";
+NSString* playViewCrossHairColorKey = @"PlayViewCrossHairColor";
+NSString* playViewCrossHairPointDistanceFromFingerKey = @"PlayViewCrossHairPointDistanceFromFinger";
