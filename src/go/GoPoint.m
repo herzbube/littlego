@@ -55,7 +55,7 @@
 // -----------------------------------------------------------------------------
 + (GoPoint*) pointAtVertex:(GoVertex*)vertex
 {
-  GoPoint* point = [[GoPoint alloc] init];
+  GoPoint* point = [[GoPoint alloc] initWithVertex:vertex];
   if (point)
   {
     point.vertex = vertex;

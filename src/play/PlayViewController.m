@@ -53,6 +53,10 @@
 //@{
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
 //@}
+/// @name UIAlertViewDelegate protocol
+//@{
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+//@}
 /// @name Notification responders
 //@{
 - (void) goGameStateChanged:(NSNotification*)notification;
@@ -82,6 +86,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.playView = nil;
   self.panRecognizer = nil;
   [super dealloc];
@@ -174,7 +179,45 @@
 // -----------------------------------------------------------------------------
 - (void) newGame:(id)sender
 {
-  // TODO implement this
+  GoGame* game = [GoGame sharedGame];
+  switch (game.state)
+  {
+    case GameHasStarted:
+    {
+      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
+                                                      message:@"Are you sure you want to start a new game and discard the game in progress?"
+                                                     delegate:self
+                                            cancelButtonTitle:@"No"
+                                            otherButtonTitles:@"Yes", nil];
+      [alert show];
+      break;
+    }
+    default:
+    {
+      [GoGame newGame];
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user dismissing an alert view for which this controller
+/// is the delegate.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  switch (buttonIndex)
+  {
+    case 0:
+      // "No" button clicked
+      break;
+    case 1:
+      // "Yes" button clicked
+      [GoGame newGame];
+      break;
+    default:
+      break;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -311,14 +354,14 @@
         passButtonEnabled = YES;
         resignButtonEnabled = YES;
         undoButtonEnabled = NO; // TODO should be YES;
-        newGameButtonEnabled = NO; // TODO should be YES;
+        newGameButtonEnabled = YES;
         break;
       case GameHasEnded:
         playForMeButtonEnabled = NO;
         passButtonEnabled = NO;
         resignButtonEnabled = NO;
         undoButtonEnabled = NO;
-        newGameButtonEnabled = NO; // TODO should be YES;
+        newGameButtonEnabled = YES;
         break;
       default:
         break;

@@ -79,22 +79,41 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the shared GoGame object, which is the only instance of
-/// GoGame that is created throughout the application's lifetime.
+/// @brief Shared instance of GoGame.
+// -----------------------------------------------------------------------------
+static GoGame* sharedGame = nil;
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the shared GoGame object that represents the current game.
+/// If no such object exists, a new one is created.
 // -----------------------------------------------------------------------------
 + (GoGame*) sharedGame;
 {
-  static GoGame* sharedGame = nil;
-  @synchronized(self)
-  {
-    // TODO: We are the owner of sharedGame, but we never release the object
-    if (! sharedGame)
-    {
-      sharedGame = [[GoGame alloc] init];
-      sharedGame.boardSize = 19;
-    }
+  if (! sharedGame)
+    return [GoGame newGame];
+  else
     return sharedGame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new GoGame object and returns that object. From now on,
+/// sharedGame() also returns the same object. If another GoGame object exists
+/// at the moment, it is de-allocated first.
+// -----------------------------------------------------------------------------
++ (GoGame*) newGame
+{
+  if (sharedGame)
+  {
+    [sharedGame release];
+    assert(nil == sharedGame);
   }
+  // TODO: We are the owner of sharedGame, but we never release the object
+  GoGame* newGame = [[GoGame alloc] init];
+  assert(newGame == sharedGame);
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameNewCreated object:newGame];
+
+  return newGame;
 }
 
 // -----------------------------------------------------------------------------
@@ -109,6 +128,10 @@
   if (! self)
     return nil;
 
+  // Make sure that this instance of GoGame is globally available
+  assert(nil == sharedGame);
+  sharedGame = self;
+
   self.board = [GoBoard board];
   self.playerBlack = [GoPlayer blackPlayer];
   self.playerWhite = [GoPlayer whitePlayer];
@@ -121,6 +144,16 @@
                                            selector:@selector(gtpResponseReceived:)
                                                name:gtpResponseReceivedNotification
                                              object:nil];
+  [[GtpCommand command:@"clear_board"] submit];
+
+  // Setting this property triggers creation of all GoPoint objects
+  // -> do this only after everything else has been set up
+  // TODO Try to improve the design so that the order of initialization is
+  // not important
+  // TODO It would be better if GoBoard would initialize itself to the correct
+  // size by reading from the user defaults. Note that the GTP client also
+  // needs to be set up.
+  self.boardSize = 19;
 
   return self;
 }
@@ -130,6 +163,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  sharedGame = nil;
   self.board = nil;
   self.playerBlack = nil;
   self.playerWhite = nil;
@@ -201,6 +236,7 @@
   @synchronized(self)
   {
     board.size = newValue;
+    [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", newValue]] submit];
   }
 }
 

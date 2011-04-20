@@ -67,6 +67,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameNewCreated:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
@@ -104,6 +105,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.crossHairPoint = nil;
@@ -139,6 +141,7 @@
   self.crossHairPointIsLegalMove = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(goGameFirstMoveChanged:) name:goGameFirstMoveChanged object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
@@ -589,6 +592,14 @@
 {
   GoVertex* vertex = [self vertexFromCoordinates:coordinates];
   return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameNewCreated notification.
+// -----------------------------------------------------------------------------
+- (void) goGameNewCreated:(NSNotification*)notification
+{
+  [self setNeedsDisplay];
 }
 
 // -----------------------------------------------------------------------------

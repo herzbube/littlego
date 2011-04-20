@@ -24,6 +24,7 @@ NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";
 NSString* gtpEngineRunningNotification = @"GtpEngineRunning";
 NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 // GoGame notifications
+NSString* goGameNewCreated = @"GoGameNewCreated";
 NSString* goGameStateChanged = @"GoGameStateChanged";
 NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
 NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";

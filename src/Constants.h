@@ -100,6 +100,8 @@ extern NSString* gtpEngineIdleNotification;
 /// @name GoGame notifications
 // -----------------------------------------------------------------------------
 //@{
+/// @brief Is sent to indicate that a new GoGame has been created.
+extern NSString* goGameNewCreated;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
 /// i.e. the game has started or ended.
 extern NSString* goGameStateChanged;

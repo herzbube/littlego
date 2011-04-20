@@ -80,6 +80,12 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // Break the retain cycle between GoPoint and GoBoardRegion
+  // TODO Change design so that there is no retain cycle. Currently this would
+  // mean to mark up the property GoPoint.region with "assign" instead of
+  // "retain", but then nobody retains GoBoardRegion...
+  for (GoPoint* point in [m_vertexDict allValues])
+    point.region = nil;
   [m_vertexDict release];
   [super dealloc];
 }

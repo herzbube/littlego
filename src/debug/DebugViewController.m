@@ -60,6 +60,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.textView = nil;
   self.textCache = nil;
   [super dealloc];
@@ -100,6 +101,7 @@
 
   UIFont* oldFont = self.textView.font;
   UIFont* newFont = [oldFont fontWithSize:oldFont.pointSize * 0.75];
+  self.textView.text = nil;
   self.textView.font = newFont;
   [self updateView:self.textCache];
   self.textCache = nil;

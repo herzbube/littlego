@@ -31,7 +31,7 @@
 ///   This is used to place a stone on the board.
 /// - Tapping gesture on several buttons
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, UIAlertViewDelegate>
 {
 }
 
