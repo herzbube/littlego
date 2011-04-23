@@ -148,16 +148,36 @@ extern NSString* registrationDomainDefaultsResource;
 /// @name Keys for user defaults
 // -----------------------------------------------------------------------------
 //@{
-extern NSString* playViewBackgroundColorKey;
-extern NSString* playViewBoardColorKey;
-extern NSString* playViewBoardOuterMarginPercentageKey;
-extern NSString* playViewBoardInnerMarginPercentageKey;
-extern NSString* playViewLineColorKey;
-extern NSString* playViewBoundingLineWidthKey;
-extern NSString* playViewNormalLineWidthKey;
-extern NSString* playViewStarPointColorKey;
-extern NSString* playViewStarPointRadiusKey;
-extern NSString* playViewStoneRadiusPercentageKey;
-extern NSString* playViewCrossHairColorKey;
-extern NSString* playViewCrossHairPointDistanceFromFingerKey;
+extern NSString* playViewKey;
+extern NSString* markLastMoveKey;
+extern NSString* displayCoordinatesKey;
+extern NSString* displayMoveNumbersKey;
+extern NSString* playSoundKey;
+extern NSString* vibrateKey;
+extern NSString* backgroundColorKey;
+extern NSString* boardColorKey;
+extern NSString* boardOuterMarginPercentageKey;
+extern NSString* boardInnerMarginPercentageKey;
+extern NSString* lineColorKey;
+extern NSString* boundingLineWidthKey;
+extern NSString* normalLineWidthKey;
+extern NSString* starPointColorKey;
+extern NSString* starPointRadiusKey;
+extern NSString* stoneRadiusPercentageKey;
+extern NSString* crossHairColorKey;
+extern NSString* crossHairPointDistanceFromFingerKey;
+extern NSString* newGameKey;
+extern NSString* boardSizeKey;
+extern NSString* blackPlayerKey;
+extern NSString* whitePlayerKey;
+extern NSString* handicapKey;
+extern NSString* komiKey;
+extern NSString* playerListKey;
+extern NSString* nameKey;
+extern NSString* isHumanKey;
+extern NSString* statisticsKey;
+extern NSString* gamesPlayedKey;
+extern NSString* gamesWonKey;
+extern NSString* gamesLostKey;
+extern NSString* gamesTiedKey;
 //@}

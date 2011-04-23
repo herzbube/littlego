@@ -21,6 +21,9 @@
 // Forward declarations
 @class GtpClient;
 @class GtpEngine;
+@class NewGameModel;
+@class PlayerModel;
+@class PlayViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -55,6 +58,12 @@
 @property(retain) GtpClient* gtpClient;
 /// @brief The GTP engine instance.
 @property(retain) GtpEngine* gtpEngine;
+/// @brief Model object that stores attributes of a new game.
+@property(retain) NewGameModel* newGameModel;
+/// @brief Model object that stores player data.
+@property(retain) PlayerModel* playerModel;
+/// @brief Model object that stores attributes used to manage the Play view.
+@property(retain) PlayViewModel* playViewModel;
 
 @end
 

@@ -31,6 +31,9 @@
 #import "ApplicationDelegate.h"
 #import "gtp/GtpClient.h"
 #import "gtp/GtpEngine.h"
+#import "NewGameModel.h"
+#import "player/PlayerModel.h"
+#import "play/PlayViewModel.h"
 
 // System includes
 #include <string>
@@ -67,6 +70,10 @@
 @synthesize tabBarController;
 @synthesize gtpClient;
 @synthesize gtpEngine;
+@synthesize newGameModel;
+@synthesize playerModel;
+@synthesize playViewModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Shared instance of ApplicationDelegate.
@@ -98,6 +105,9 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.window = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;
+  self.newGameModel = nil;
+  self.playerModel = nil;
+  self.playViewModel = nil;
   [super dealloc];
 }
 
@@ -117,6 +127,14 @@ static ApplicationDelegate* sharedDelegate = nil;
   NSString* defaultsPathName = [[NSBundle mainBundle] pathForResource:registrationDomainDefaultsResource ofType:nil];
   NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+
+  // Setup user defaults
+  self.newGameModel = [[NewGameModel alloc] init];
+  self.playerModel = [[PlayerModel alloc] init];
+  self.playViewModel = [[PlayViewModel alloc] init];
+  [self.newGameModel readUserDefaults];
+  [self.playerModel readUserDefaults];
+  [self.playViewModel readUserDefaults];
 
   // Setup GUI
   [self.window addSubview:tabBarController.view];

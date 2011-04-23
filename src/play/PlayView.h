@@ -19,6 +19,7 @@
 #import <UIKit/UIKit.h>
 
 // Forward declarations
+@class PlayViewModel;
 @class GoPoint;
 
 
@@ -64,6 +65,9 @@
 @property(nonatomic, retain) IBOutlet UILabel* statusLine;
 /// @brief The activity indicator.
 @property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
+
+/// @brief The model that manages data used by this view.
+@property(assign) PlayViewModel* model;
 
 /// @name Dynamically calculated properties
 //@{

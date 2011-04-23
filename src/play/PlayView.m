@@ -17,6 +17,8 @@
 
 // Project includes
 #import "PlayView.h"
+#import "PlayViewModel.h"
+#import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
 #import "../go/GoMove.h"
@@ -85,6 +87,8 @@
 @synthesize statusLine;
 @synthesize activityIndicator;
 
+@synthesize model;
+
 @synthesize previousDrawRect;
 @synthesize portrait;
 @synthesize boardSize;
@@ -101,13 +105,14 @@
 @synthesize crossHairPointIsLegalMove;
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DocumentViewController object.
+/// @brief Deallocates memory allocated by this PlayView object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.statusLine = nil;
   self.activityIndicator = nil;
+  self.model = nil;
   self.crossHairPoint = nil;
   [super dealloc];
 }
@@ -124,6 +129,9 @@
 - (void) awakeFromNib
 {
   [super awakeFromNib];
+
+  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  self.model = [delegate playViewModel];
 
   self.previousDrawRect = CGRectNull;
   self.portrait = true;
@@ -180,10 +188,6 @@
     return;
   self.previousDrawRect = rect;
 
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  float boardOuterMarginPercentage = [userDefaults floatForKey:playViewBoardOuterMarginPercentageKey];
-  float boardInnerMarginPercentage = [userDefaults floatForKey:playViewBoardInnerMarginPercentageKey];
-
   // The view rect is rectangular, but the Go board is square. Examine the view
   // rect orientation and use the smaller dimension of the rect as the base for
   // the Go board's dimension.
@@ -193,9 +197,9 @@
     boardSizeBase = rect.size.width;
   else
     boardSizeBase = rect.size.height;
-  self.boardOuterMargin = floor(boardSizeBase * boardOuterMarginPercentage);
+  self.boardOuterMargin = floor(boardSizeBase * self.model.boardOuterMarginPercentage);
   self.boardSize = boardSizeBase - (self.boardOuterMargin * 2);
-  self.boardInnerMargin = floor(self.boardSize * boardInnerMarginPercentage);
+  self.boardInnerMargin = floor(self.boardSize * self.model.boardInnerMarginPercentage);
   // Don't use border here - rounding errors might cause improper centering
   self.topLeftBoardCornerX = floor((rect.size.width - self.boardSize) / 2);
   self.topLeftBoardCornerY = floor((rect.size.height - self.boardSize) / 2);
@@ -215,11 +219,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawBackground:(CGRect)rect
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  UIColor* viewBackgroundColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewBackgroundColorKey]];
-
   CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, viewBackgroundColor.CGColor);
+  CGContextSetFillColorWithColor(context, self.model.backgroundColor.CGColor);
   CGContextFillRect(context, rect);
 }
 
@@ -228,11 +229,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawBoard
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  UIColor* boardColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewBoardColorKey]];
-
   CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, boardColor.CGColor);
+  CGContextSetFillColorWithColor(context, self.model.boardColor.CGColor);
   CGContextFillRect(context, CGRectMake(self.topLeftBoardCornerX + gHalfPixel,
                                         self.topLeftBoardCornerY + gHalfPixel,
                                         self.boardSize, self.boardSize));
@@ -243,12 +241,6 @@
 // -----------------------------------------------------------------------------
 - (void) drawGrid
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  UIColor* lineColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewLineColorKey]];
-  int boundingLineWidth = [userDefaults integerForKey:playViewBoundingLineWidthKey];
-  int normalLineWidth = [userDefaults integerForKey:playViewNormalLineWidthKey];
-  UIColor* crossHairColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewCrossHairColorKey]];
-
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   CGPoint crossHairCenter = CGPointZero;
@@ -270,24 +262,24 @@
       {
         CGContextAddLineToPoint(context, lineStartPointX + lineLength + gHalfPixel, lineStartPointY + gHalfPixel);
         if (lineStartPointY == crossHairCenter.y)
-          CGContextSetStrokeColorWithColor(context, crossHairColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.model.crossHairColor.CGColor);
         else
-          CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.model.lineColor.CGColor);
         lineStartPointY += self.pointDistance;  // calculate for next iteration
       }
       else
       {
         CGContextAddLineToPoint(context, lineStartPointX + gHalfPixel, lineStartPointY + lineLength + gHalfPixel);
         if (lineStartPointX == crossHairCenter.x)
-          CGContextSetStrokeColorWithColor(context, crossHairColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.model.crossHairColor.CGColor);
         else
-          CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.model.lineColor.CGColor);
         lineStartPointX += self.pointDistance;  // calculate for next iteration
       }
       if (0 == lineCounter || ([GoGame sharedGame].board.size - 1) == lineCounter)
-        CGContextSetLineWidth(context, boundingLineWidth);
+        CGContextSetLineWidth(context, self.model.boundingLineWidth);
       else
-        CGContextSetLineWidth(context, normalLineWidth);
+        CGContextSetLineWidth(context, self.model.normalLineWidth);
 
       CGContextStrokePath(context);
     }
@@ -299,12 +291,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawStarPoints
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  UIColor* starPointColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewStarPointColorKey]];
-  int starPointRadius = [userDefaults integerForKey:playViewStarPointRadiusKey];
-
   CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetFillColorWithColor(context, starPointColor.CGColor);
+	CGContextSetFillColorWithColor(context, self.model.starPointColor.CGColor);
 
   // TODO: Move definition of star points to somewhere else (e.g. GoBoard).
   // Note that Goban.app draws the following hoshi:
@@ -337,7 +325,7 @@
     }
     int starPointCenterPointX = self.topLeftPointX + (self.pointDistance * (vertexX - 1));
     int starPointCenterPointY = self.topLeftPointY + (self.pointDistance * (vertexY - 1));
-    CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, starPointRadius, startRadius, endRadius, clockwise);
+    CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, self.model.starPointRadius, startRadius, endRadius, clockwise);
     CGContextFillPath(context);
   }
 }
@@ -347,9 +335,6 @@
 // -----------------------------------------------------------------------------
 - (void) drawStones
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  UIColor* crossHairColor = [UIColor colorFromHexString:[userDefaults stringForKey:playViewCrossHairColorKey]];
-
   bool crossHairStoneDrawn = false;
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
@@ -362,7 +347,7 @@
       // TODO create an isEqualToPoint:(GoPoint*)point in GoPoint
       if (self.crossHairPoint && [self.crossHairPoint.vertex isEqualToVertex:point.vertex])
       {
-        color = crossHairColor;
+        color = self.model.crossHairColor;
         crossHairStoneDrawn = true;
       }
       else if (point.blackStone)
@@ -437,16 +422,13 @@
 // -----------------------------------------------------------------------------
 - (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  float stoneRadiusPercentage = [userDefaults floatForKey:playViewStoneRadiusPercentageKey];  // percentage of pointDistance
-
   CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, color.CGColor);
 
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
-  int stoneRadius = floor(self.pointDistance / 2 * stoneRadiusPercentage);
+  int stoneRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage);
   CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, stoneRadius, startRadius, endRadius, clockwise);
   CGContextFillPath(context);
 }
@@ -527,9 +509,6 @@
 // -----------------------------------------------------------------------------
 - (void) drawEmpty:(GoPoint*)point
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  float stoneRadiusPercentage = [userDefaults floatForKey:playViewStoneRadiusPercentageKey];  // percentage of pointDistance
-
   struct GoVertexNumeric numericVertex = point.vertex.numeric;
   CGPoint coordinates = [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -538,7 +517,7 @@
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
-  int circleRadius = floor(self.pointDistance / 2 * stoneRadiusPercentage / 2);
+  int circleRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage / 2);
   CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, circleRadius, startRadius, endRadius, clockwise);
   CGContextFillPath(context);
 }
@@ -654,12 +633,9 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  int crossHairPointDistanceFromFinger = [userDefaults integerForKey:playViewCrossHairPointDistanceFromFingerKey];
-
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one point distance above
-  coordinates.y -= crossHairPointDistanceFromFinger * self.pointDistance;
+  coordinates.y -= self.model.crossHairPointDistanceFromFinger * self.pointDistance;
 
   // Check if cross-hair is outside the grid and should not be displayed. To
   // make the edge lines accessible in the same way as the inner lines,

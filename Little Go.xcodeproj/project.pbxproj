@@ -52,6 +52,11 @@
 		CDBB0C0B13426DAB007C1C3E /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0A13426DAB007C1C3E /* About.html */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
+		CDE302881360BDA4005235F2 /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302801360BDA3005235F2 /* NewGameModel.m */; };
+		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
+		CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
+		CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
+		CDE302901360BDD3005235F2 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3028F1360BDD3005235F2 /* PlayViewModel.m */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
@@ -112,6 +117,16 @@
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
 		CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIColorAdditions.m; sourceTree = "<group>"; };
+		CDE3027F1360BDA3005235F2 /* NewGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameModel.h; sourceTree = "<group>"; };
+		CDE302801360BDA3005235F2 /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
+		CDE302821360BDA3005235F2 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		CDE302831360BDA3005235F2 /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
+		CDE302841360BDA3005235F2 /* PlayerModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerModel.h; sourceTree = "<group>"; };
+		CDE302851360BDA3005235F2 /* PlayerModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerModel.m; sourceTree = "<group>"; };
+		CDE302861360BDA3005235F2 /* PlayerStatistics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerStatistics.h; sourceTree = "<group>"; };
+		CDE302871360BDA3005235F2 /* PlayerStatistics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerStatistics.m; sourceTree = "<group>"; };
+		CDE3028E1360BDD3005235F2 /* PlayViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewModel.h; sourceTree = "<group>"; };
+		CDE3028F1360BDD3005235F2 /* PlayViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewModel.m; sourceTree = "<group>"; };
 		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
@@ -234,6 +249,8 @@
 				CD1088601326CD2400E83543 /* PlayViewController.m */,
 				CD10887B1326D2C100E83543 /* PlayView.h */,
 				CD10887C1326D2C100E83543 /* PlayView.m */,
+				CDE3028E1360BDD3005235F2 /* PlayViewModel.h */,
+				CDE3028F1360BDD3005235F2 /* PlayViewModel.m */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -270,14 +287,28 @@
 			path = utility;
 			sourceTree = "<group>";
 		};
+		CDE302811360BDA3005235F2 /* player */ = {
+			isa = PBXGroup;
+			children = (
+				CDE302821360BDA3005235F2 /* Player.h */,
+				CDE302831360BDA3005235F2 /* Player.m */,
+				CDE302841360BDA3005235F2 /* PlayerModel.h */,
+				CDE302851360BDA3005235F2 /* PlayerModel.m */,
+				CDE302861360BDA3005235F2 /* PlayerStatistics.h */,
+				CDE302871360BDA3005235F2 /* PlayerStatistics.m */,
+			);
+			path = player;
+			sourceTree = "<group>";
+		};
 		CDEC282B12F477360069F5B7 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				CD1088561326CBB300E83543 /* play */,
-				CD1088571326CBB300E83543 /* settings */,
 				CD1088551326CBB300E83543 /* debug */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
+				CD1088561326CBB300E83543 /* play */,
+				CDE302811360BDA3005235F2 /* player */,
+				CD1088571326CBB300E83543 /* settings */,
 				CDE30138135CA7D5005235F2 /* utility */,
 				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
 				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
@@ -286,6 +317,8 @@
 				CD3AE7501344FBD100B58E08 /* DocumentViewController.h */,
 				CD3AE7511344FBD100B58E08 /* DocumentViewController.m */,
 				CDEC283112F477360069F5B7 /* main.m */,
+				CDE3027F1360BDA3005235F2 /* NewGameModel.h */,
+				CDE302801360BDA3005235F2 /* NewGameModel.m */,
 				CDEC282E12F477360069F5B7 /* Prefix.pch */,
 			);
 			path = src;
@@ -444,6 +477,11 @@
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CD3AE7521344FBD100B58E08 /* DocumentViewController.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
+				CDE302881360BDA4005235F2 /* NewGameModel.m in Sources */,
+				CDE302891360BDA4005235F2 /* Player.m in Sources */,
+				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
+				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
+				CDE302901360BDD3005235F2 /* PlayViewModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
