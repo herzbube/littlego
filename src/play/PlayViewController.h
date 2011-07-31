@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../newgame/NewGameController.h"
+
 // System includes
 #import <UIKit/UIKit.h>
 
@@ -31,7 +34,7 @@
 ///   This is used to place a stone on the board.
 /// - Tapping gesture on several buttons
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, UIAlertViewDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, UIAlertViewDelegate, NewGameDelegate>
 {
 }
 

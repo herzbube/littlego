@@ -57,6 +57,10 @@
 //@{
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 //@}
+/// @name NewGameDelegate protocol
+//@{
+- (void) newGameController:(NewGameController*)newGameController didStartNewGame:(bool)didStartNewGame;
+//@}
 /// @name Notification responders
 //@{
 - (void) goGameStateChanged:(NSNotification*)notification;
@@ -66,6 +70,10 @@
 /// @name Updaters
 //@{
 - (void) updateButtonStates;
+//@}
+/// @name Helpers
+//@{
+- (void) doNewGame;
 //@}
 @end
 
@@ -82,7 +90,7 @@
 @synthesize interactionEnabled;
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DocumentViewController object.
+/// @brief Deallocates memory allocated by this PlayViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -194,7 +202,7 @@
     }
     default:
     {
-      [GoGame newGame];
+      [self doNewGame];
       break;
     }
   }
@@ -213,7 +221,7 @@
       break;
     case 1:
       // "Yes" button clicked
-      [GoGame newGame];
+      [self doNewGame];
       break;
     default:
       break;
@@ -381,6 +389,36 @@
   self.resignButton.enabled = resignButtonEnabled;
   self.undoButton.enabled = undoButtonEnabled;
   self.newGameButton.enabled = newGameButtonEnabled;
+}
+
+- (void) doNewGame;
+{
+  // This controller manages the actual "New Game" view
+  NewGameController* newGameController = [[NewGameController alloc] initWithNibName:nil bundle:nil];
+  newGameController.delegate = self;
+
+  // This controller provides a navigation bar at the top of the screen where
+  // it will display the navigation item that represents the "new game"
+  // controller. The "new game" controller internally configures this
+  // navigation item according to its needs.
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:newGameController];
+  // Present the navigation controller, not the "new game" controller. Control
+  // does not return until the modal controller has been dismissed. This happens
+  // when we (as the delegate of the "new game" controller) get notified that
+  // either the required information has been collected, or that the user has
+  // cancelled creation of the new game.
+  navigationController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+  [self presentModalViewController:navigationController animated:YES];
+
+  // Cleanup
+  [navigationController release];
+  [newGameController release];
+}
+
+- (void) newGameController:(NewGameController*)newGameController didStartNewGame:(bool)didStartNewGame
+{
+  [self dismissModalViewControllerAnimated:YES];
 }
 
 @end
