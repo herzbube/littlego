@@ -15,9 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#include "../Constants.h"
-
 // Forward declarations
 @class GoPoint;
 

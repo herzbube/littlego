@@ -48,6 +48,7 @@
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
+		CDAB606213E7165500C4A4AA /* BoardSizeController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB606113E7165500C4A4AA /* BoardSizeController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
@@ -112,6 +113,9 @@
 		CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
 		CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameController.h; sourceTree = "<group>"; };
 		CDAB5ED013E483DE00C4A4AA /* NewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameController.m; sourceTree = "<group>"; };
+		CDAB5FE213E6D46900C4A4AA /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
+		CDAB606013E7165500C4A4AA /* BoardSizeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardSizeController.h; sourceTree = "<group>"; };
+		CDAB606113E7165500C4A4AA /* BoardSizeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSizeController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 		CDAB5EC613E4835900C4A4AA /* newgame */ = {
 			isa = PBXGroup;
 			children = (
+				CDAB606013E7165500C4A4AA /* BoardSizeController.h */,
+				CDAB606113E7165500C4A4AA /* BoardSizeController.m */,
 				CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */,
 				CDAB5ED013E483DE00C4A4AA /* NewGameController.m */,
 				CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */,
@@ -340,6 +346,7 @@
 		CDEC287B12F477E70069F5B7 /* doc */ = {
 			isa = PBXGroup;
 			children = (
+				CDAB5FE213E6D46900C4A4AA /* MANUAL */,
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
@@ -496,6 +503,7 @@
 				CDE302901360BDD3005235F2 /* PlayViewModel.m in Sources */,
 				CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */,
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
+				CDAB606213E7165500C4A4AA /* BoardSizeController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

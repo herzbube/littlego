@@ -80,6 +80,19 @@ enum TabType
   BoostLicenseTab
 };
 
+/// @brief Enumerates the supported board sizes.
+enum GoBoardSize
+{
+  BoardSize7,
+  BoardSize9,
+  BoardSize11,
+  BoardSize13,
+  BoardSize15,
+  BoardSize17,
+  BoardSize19,
+  BoardSizeMax = BoardSize19
+};
+
 // -----------------------------------------------------------------------------
 /// @name GTP notifications
 // -----------------------------------------------------------------------------

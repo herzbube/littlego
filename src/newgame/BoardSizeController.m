@@ -16,27 +16,14 @@
 
 
 // Project includes
-#import "NewGameController.h"
-#import "../go/GoGame.h"
-#import "../go/GoBoard.h"
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "New Game" table view.
-// -----------------------------------------------------------------------------
-enum NewGameTableViewSection
-{
-  BoardSizeSection,
-  PlayerSection,
-  HandicapSection,
-  KomiSection,
-  MaxSection = KomiSection
-};
+#import "BoardSizeController.h"
+#import "../Go/GoBoard.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewGameController.
+/// @brief Class extension with private methods for BoardSizeController.
 // -----------------------------------------------------------------------------
-@interface NewGameController()
+@interface BoardSizeController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -53,7 +40,6 @@ enum NewGameTableViewSection
 //@}
 /// @name UITableViewDataSource protocol
 //@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
@@ -61,38 +47,32 @@ enum NewGameTableViewSection
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name BoardSizeDelegate protocol
-//@{
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
 @end
 
 
-@implementation NewGameController
+@implementation BoardSizeController
 
 @synthesize delegate;
 @synthesize boardSize;
 
-
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a NewGameController instance of
+/// @brief Convenience constructor. Creates a BoardSizeController instance of
 /// grouped style.
 // -----------------------------------------------------------------------------
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate
++ (BoardSizeController*) controllerWithDelegate:(id<BoardSizeDelegate>)delegate defaultBoardSize:(enum GoBoardSize)boardSize
 {
-  NewGameController* controller = [[NewGameController alloc] initWithStyle:UITableViewStyleGrouped];
+  BoardSizeController* controller = [[BoardSizeController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
-    // TODO: Get initial settings from NewGameModel
-    controller.boardSize = BoardSize19;
+    controller.boardSize = boardSize;
   }
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NewGameController object.
+/// @brief Deallocates memory allocated by this BoardSizeController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -116,7 +96,7 @@ enum NewGameTableViewSection
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                         target:self
                                                                                         action:@selector(cancel:)];
-  self.navigationItem.title = @"New Game";
+  self.navigationItem.title = @"Board size";
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
@@ -136,30 +116,19 @@ enum NewGameTableViewSection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting parameters for a new
-/// game.
+/// @brief Invoked when the user has finished selecting a board size.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  // TODO: Remember settings by applying them to NewGameModel
-  [GoGame newGame];
-  [self.delegate didStartNewGame:true];
+  [self.delegate boardSizeController:self didMakeSelection:true];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has decided not to start a new game.
+/// @brief Invoked when the user has cancelled selecting a board size.
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
-  [self.delegate didStartNewGame:false];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
-{
-  return 4;
+  [self.delegate boardSizeController:self didMakeSelection:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -167,20 +136,7 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
-  {
-    case BoardSizeSection:
-      return 1;
-    case PlayerSection:
-      return 2;
-    case HandicapSection:
-      return 1;
-    case KomiSection:
-      return 1;
-    default:
-      break;
-  }
-  return 0;
+  return BoardSizeMax + 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -188,50 +144,18 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  static NSString* cellID = @"NewGameCell";
+  static NSString* cellID = @"BoardSizeCell";
   UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellID];
   if (cell == nil)
   {
-    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                    reuseIdentifier:cellID] autorelease];
   }
-
-  switch (indexPath.section)
-  {
-    case BoardSizeSection:
-      cell.textLabel.text = @"Board size";
-      cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      break;
-    case PlayerSection:
-      switch (indexPath.row)
-      {
-        case 0:
-          cell.textLabel.text = @"Black";
-          cell.detailTextLabel.text = @"Human Player";
-          break;
-        case 1:
-          cell.textLabel.text = @"White";
-          cell.detailTextLabel.text = @"Computer Player";
-          break;
-        default:
-          assert(0);
-          break;
-      }
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
-    case HandicapSection:
-      cell.textLabel.text = @"Handicap";
-      cell.detailTextLabel.text = @"0";
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
-    case KomiSection:
-      cell.textLabel.text = @"Komi";
-      cell.detailTextLabel.text = @"6½";
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
-  }
-
+  cell.textLabel.text = [GoBoard stringForSize:indexPath.row];
+  if (indexPath.row == self.boardSize)
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  else
+    cell.accessoryType = UITableViewCellAccessoryNone;
   return cell;
 }
 
@@ -240,46 +164,23 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
+  // Deselect the row that was just selected
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-
-  UIViewController* modalController;
-  switch (indexPath.section)
-  {
-    case BoardSizeSection:
-      modalController = [[BoardSizeController controllerWithDelegate:self
-                                                    defaultBoardSize:self.boardSize] retain];
-      break;
-    case PlayerSection:
-      return;
-    case HandicapSection:
-      return;
-    case KomiSection:
-      return;
-  }
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
-  [navigationController release];
-  [modalController release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief BoardSizeDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection
-{
-  if (didMakeSelection)
-  {
-    if (self.boardSize != controller.boardSize)
-    {
-      self.boardSize = controller.boardSize;
-      NSIndexPath* boardSizeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BoardSizeSection];
-      UITableViewCell* boardSizeCell = [self.tableView cellForRowAtIndexPath:boardSizeIndexPath];
-      boardSizeCell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-    }
-  }
-  [self dismissModalViewControllerAnimated:YES];
+  // Do nothing if the selection did not change
+  enum GoBoardSize newBoardSize = (enum GoBoardSize)indexPath.row;
+  if (self.boardSize == newBoardSize)
+    return;
+  // Remove the checkmark from the previously selected cell
+  NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:self.boardSize inSection:0];
+  UITableViewCell* previousCell = [tableView cellForRowAtIndexPath:previousIndexPath];
+  if (previousCell.accessoryType == UITableViewCellAccessoryCheckmark)
+    previousCell.accessoryType = UITableViewCellAccessoryNone;
+  // Add the checkmark to the newly selected cell
+  UITableViewCell* newCell = [tableView cellForRowAtIndexPath:indexPath];
+  if (newCell.accessoryType == UITableViewCellAccessoryNone)
+    newCell.accessoryType = UITableViewCellAccessoryCheckmark;
+  // Last but not least, remember the new selection
+  self.boardSize = newBoardSize;
 }
 
 @end

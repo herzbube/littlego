@@ -58,6 +58,93 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a size that is suitable
+/// for displaying in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringForSize:(enum GoBoardSize)size
+{
+  switch (size)
+  {
+    case BoardSize7:
+      return @"7";
+    case BoardSize9:
+      return @"9";
+    case BoardSize11:
+      return @"11";
+    case BoardSize13:
+      return @"13";
+    case BoardSize15:
+      return @"15";
+    case BoardSize17:
+      return @"17";
+    case BoardSize19:
+      return @"19";
+    default:
+      assert(false);
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the numeric dimension that corresponds to @a size. For
+/// instance, 19 will be returned for the enum value #BoardSize19.
+// -----------------------------------------------------------------------------
++ (int) dimensionForSize:(enum GoBoardSize)size
+{
+  switch (size)
+  {
+    case BoardSize7:
+      return 7;
+    case BoardSize9:
+      return 9;
+    case BoardSize11:
+      return 11;
+    case BoardSize13:
+      return 13;
+    case BoardSize15:
+      return 15;
+    case BoardSize17:
+      return 17;
+    case BoardSize19:
+      return 19;
+    default:
+      assert(false);
+      break;
+  }
+  return -1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the board size that corresponds to the numeric @a dimension.
+/// For instance, #BoardSize19 will be returned for the numeric value 19.
+// -----------------------------------------------------------------------------
++ (enum GoBoardSize) sizeForDimension:(int)dimension
+{
+  switch (dimension)
+  {
+    case 7:
+      return BoardSize7;
+    case 9:
+      return BoardSize9;
+    case 11:
+      return BoardSize11;
+    case 13:
+      return BoardSize13;
+    case 15:
+      return BoardSize15;
+    case 17:
+      return BoardSize17;
+    case 19:
+      return BoardSize19;
+    default:
+      assert(false);
+      break;
+  }
+  return BoardSize7;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a GoBoard object with size 0.
 ///
 /// @note This is the designated initializer of GoBoard.

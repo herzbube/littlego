@@ -15,58 +15,52 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "BoardSizeController.h"
-
 // System includes
 #import <UIKit/UIKit.h>
 
 // Forward declarations
-@class NewGameController;
+@class BoardSizeController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NewGameDelegate protocol must be implemented by the delegate of
-/// NewGameController.
+/// @brief The BoardSizeDelegate protocol must be implemented by the delegate of
+/// BoardSizeController.
 // -----------------------------------------------------------------------------
-@protocol NewGameDelegate
-/// @brief This method is invoked when the user has finished working with the
-/// NewGameController. The implementation is responsible for dismissing the
-/// modal NewGameController.
+@protocol BoardSizeDelegate
+/// @brief This method is invoked when the user has finished working with
+/// @a controller. The implementation is responsible for dismissing the
+/// modal @a controller.
 ///
-/// If @a didStartNewGame is true, the user has requested starting a new game.
-/// If @a didStartNewGame is false, the user has cancelled starting a new game.
-- (void) didStartNewGame:(bool)didStartNewGame;
+/// If @a didMakeSelection is true, the user has made a selection; the selected
+/// board size can be queried from the BoardSizeController object's property
+/// @a boardSize. If @a didMakeSelection is false, the user has cancelled the
+/// selection.
+- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NewGameController class is responsible for managing user
-/// interaction on the "New Game" view.
+/// @brief The BoardSizeController class is responsible for managing the view
+/// that lets the user select the board size.
 ///
-/// The "New Game" view collects information from the user that is required to
-/// start a new game. The view is a generic UITableView whose input elements
-/// are created dynamically by NewGameController. The data for populating the
-/// view is provided by NewGameModel.
-///
-/// NewGameController expects to be displayed modally by a navigation
+/// BoardSizeController expects to be displayed modally by a navigation
 /// controller. For this reason it populates its own navigation item with
 /// controls that are then expected to be displayed in the navigation bar of
 /// the parent navigation controller.
 ///
-/// NewGameController expects to be configured with a delegate that can be
+/// BoardSizeController expects to be configured with a delegate that can be
 /// informed of the result of data collection. For this to work, the delegate
-/// must implement the protocol NewGameDelegate.
+/// must implement the protocol BoardSizeDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeDelegate>
+@interface BoardSizeController : UITableViewController
 {
 }
 
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate;
++ (BoardSizeController*) controllerWithDelegate:(id<BoardSizeDelegate>)delegate defaultBoardSize:(enum GoBoardSize)boardSize;
 
 /// @brief This is the delegate that will be informed about the result of data
 /// collection.
-@property(nonatomic, assign) id<NewGameDelegate> delegate;
+@property(nonatomic, assign) id<BoardSizeDelegate> delegate;
 /// @brief The currently selected board size.
 @property enum GoBoardSize boardSize;
 

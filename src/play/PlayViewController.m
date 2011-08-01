@@ -59,7 +59,7 @@
 //@}
 /// @name NewGameDelegate protocol
 //@{
-- (void) newGameController:(NewGameController*)newGameController didStartNewGame:(bool)didStartNewGame;
+- (void) didStartNewGame:(bool)didStartNewGame;
 //@}
 /// @name Notification responders
 //@{
@@ -391,11 +391,14 @@
   self.newGameButton.enabled = newGameButtonEnabled;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Displays NewGameController as a modal view controller to gather
+/// information required to start a new game.
+// -----------------------------------------------------------------------------
 - (void) doNewGame;
 {
   // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController alloc] initWithNibName:nil bundle:nil];
-  newGameController.delegate = self;
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
 
   // This controller provides a navigation bar at the top of the screen where
   // it will display the navigation item that represents the "new game"
@@ -416,7 +419,15 @@
   [newGameController release];
 }
 
-- (void) newGameController:(NewGameController*)newGameController didStartNewGame:(bool)didStartNewGame
+// -----------------------------------------------------------------------------
+/// @brief This method is invoked when the user has finished working with the
+/// NewGameController. The implementation is responsible for dismissing the
+/// modal NewGameController.
+///
+/// If @a didStartNewGame is true, the user has requested starting a new game.
+/// If @a didStartNewGame is false, the user has cancelled starting a new game.
+// -----------------------------------------------------------------------------
+- (void) didStartNewGame:(bool)didStartNewGame
 {
   [self dismissModalViewControllerAnimated:YES];
 }
