@@ -17,8 +17,11 @@
 
 // Project includes
 #import "NewGameController.h"
+#import "NewGameModel.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../ApplicationDelegate.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "New Game" table view.
@@ -85,8 +88,9 @@ enum NewGameTableViewSection
   {
     [controller autorelease];
     controller.delegate = delegate;
-    // TODO: Get initial settings from NewGameModel
-    controller.boardSize = BoardSize19;
+    NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+    assert(model);
+    controller.boardSize = model.boardSize;
   }
   return controller;
 }
@@ -141,7 +145,10 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  // TODO: Remember settings by applying them to NewGameModel
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  assert(model);
+  model.boardSize = self.boardSize;
+
   [GoGame newGame];
   [self.delegate didStartNewGame:true];
 }

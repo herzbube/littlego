@@ -28,7 +28,7 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property int boardSize;
+@property enum GoBoardSize boardSize;
 @property int blackPlayer;
 @property int whitePlayer;
 @property int handicap;

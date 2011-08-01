@@ -90,6 +90,7 @@
 @synthesize model;
 
 @synthesize previousDrawRect;
+@synthesize previousBoardDimension;
 @synthesize portrait;
 @synthesize boardSize;
 @synthesize boardOuterMargin;
@@ -134,6 +135,7 @@
   self.model = [delegate playViewModel];
 
   self.previousDrawRect = CGRectNull;
+  self.previousBoardDimension = 0;
   self.portrait = true;
   self.boardSize = 0;
   self.boardOuterMargin = 0;
@@ -183,10 +185,12 @@
 - (void) updateDrawParametersForRect:(CGRect)rect
 {
   // No need to update if the new rect is the same as the one we did our
-  // previous calculations with
-  if (CGRectEqualToRect(self.previousDrawRect, rect))
+  // previous calculations with *AND* the board dimensions did not change
+  int currentBoardDimension = [GoGame sharedGame].board.size;
+  if (CGRectEqualToRect(self.previousDrawRect, rect) && self.previousBoardDimension == currentBoardDimension)
     return;
   self.previousDrawRect = rect;
+  self.previousBoardDimension = currentBoardDimension;
 
   // The view rect is rectangular, but the Go board is square. Examine the view
   // rect orientation and use the smaller dimension of the rect as the base for
@@ -208,7 +212,7 @@
   // must be based on the point distance
   int lineLengthApproximation = self.boardSize - (self.boardInnerMargin * 2);
   self.pointDistance = floor(lineLengthApproximation / ([GoGame sharedGame].board.size - 1));
-  self.lineLength = self.pointDistance * ([GoGame sharedGame].board.size - 1);
+  self.lineLength = self.pointDistance * (currentBoardDimension - 1);
   // Don't use padding here, rounding errors mighth cause improper positioning
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;

@@ -26,6 +26,7 @@
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../ApplicationDelegate.h"
+#import "../newgame/NewGameModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -153,7 +154,7 @@ static GoGame* sharedGame = nil;
   // TODO It would be better if GoBoard would initialize itself to the correct
   // size by reading from the user defaults. Note that the GTP client also
   // needs to be set up.
-  self.boardSize = 19;
+  self.boardSize = [GoBoard dimensionForSize:[ApplicationDelegate sharedDelegate].newGameModel.boardSize];
 
   return self;
 }

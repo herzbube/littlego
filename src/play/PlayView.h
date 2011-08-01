@@ -72,6 +72,7 @@
 /// @name Dynamically calculated properties
 //@{
 @property CGRect previousDrawRect;
+@property int previousBoardDimension;
 @property bool portrait;
 @property int boardSize;
 @property int boardOuterMargin;  // distance to view edge

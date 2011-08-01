@@ -55,6 +55,9 @@ Priority 1 (important)
   to Model; let GoGame adopt the Model protocol, and the various views and
   controllers adopt ModelObserver. This makes the different roles a little bit
   more explicit
+- Panning outside the board sometimes triggers a PlayMove. May have something
+  to do with changing the board size and starting a new game. Panning very fast
+  sometimes also triggers the error.
 
 
 Priority 2 (nice to have)

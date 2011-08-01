@@ -100,6 +100,10 @@
   [dictionary setValue:[NSNumber numberWithInt:self.komi] forKey:komiKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
+  // TODO: As far as I can tell, the assertion above is wrong, at least on the
+  // simulator. Verify whether the assertion might be true on the device proper.
+  // If it's not, implement my own layer that takes care of storing only values
+  // that differ from the registered defaults.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
 }
