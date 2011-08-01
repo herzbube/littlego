@@ -150,7 +150,7 @@
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setObject:dictionary forKey:newGameKey];
+  [userDefaults setObject:dictionary forKey:playViewKey];
 }
 
 @end
