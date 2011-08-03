@@ -66,6 +66,7 @@
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameScoreChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+- (void) goGameLastMoveChanged:(NSNotification*)notification;
 //@}
 /// @name Updaters
 //@{
@@ -122,6 +123,7 @@
   [center addObserver:self selector:@selector(goGameScoreChanged:) name:goGameScoreChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
 
   [self updateButtonStates];
 }
@@ -336,6 +338,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameLastMoveChanged notification.
+// -----------------------------------------------------------------------------
+- (void) goGameLastMoveChanged:(NSNotification*)notification
+{
+  // Mainly here for updating the "undo" button
+  [self updateButtonStates];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of all toolbar items.
 // -----------------------------------------------------------------------------
 - (void) updateButtonStates
@@ -361,7 +372,10 @@
         playForMeButtonEnabled = YES;
         passButtonEnabled = YES;
         resignButtonEnabled = YES;
-        undoButtonEnabled = NO; // TODO should be YES;
+        if ([GoGame sharedGame].lastMove != nil)
+          undoButtonEnabled = YES;
+        else
+          undoButtonEnabled = NO;
         newGameButtonEnabled = YES;
         break;
       case GameHasEnded:

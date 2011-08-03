@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The GoPoint class represents the intersection of a horizontal and a
 /// vertical line on the Go board. The location of the intersection is
-/// identified by the GoVertex which is used to create the GoPoint object.
+/// identified by a GoVertex, which is used to create the GoPoint object.
 ///
 /// @ingroup go
 ///

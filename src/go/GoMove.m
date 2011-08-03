@@ -30,6 +30,10 @@
 - (id) init:(enum GoMoveType)initType;
 - (void) dealloc;
 //@}
+/// @name Other methods
+//@{
+- (void) movePointToNewRegion:(GoPoint*)thePoint;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite, assign) GoMove* previous;
@@ -118,10 +122,8 @@
 ///
 /// This method performs the following operations as a side-effect:
 /// - Updates GoPoint.stoneState for GoPoint @a newValue.
-/// - Updates GoPoint.region for GoPoint @a newValue. The old GoBoardRegion may
-///   become fragmented due to placing the stone. Additionally, the new
-///   GoBoardRegion may merge with other regions if the newly placed stone
-///   joins neighbouring stone groups.
+/// - Updates GoPoint.region for GoPoint @a newValue. GoBoardRegions may become
+///   fragmented and/or multiple GoBoardRegions may merge with other regions.
 /// - If placing the stone reduces an opposing stone group to 0 (zero)
 ///   liberties, that stone group is captured. The game score is updated
 ///   accordingly, and the GoBoardRegion representing the captured stone group
@@ -133,8 +135,8 @@
   assert(PlayMove == self.type);
   if (PlayMove != self.type)
     return;
-  assert(NoStone == point.stoneState);
-  if (NoStone != point.stoneState)
+  assert(NoStone == newValue.stoneState);
+  if (NoStone != newValue.stoneState)
     return;
 
   // ----------------------------------------------------------------------
@@ -142,59 +144,23 @@
   // ----------------------------------------------------------------------
 
   point = newValue;
-  if (nil == point)  // nil should come in only during init
+  if (nil == newValue)  // nil should come in only during init
     return;
 
+  // Update the point's stone state *BEFORE* moving it to a new region
   if (self.black)
-    point.stoneState = BlackStone;
+    newValue.stoneState = BlackStone;
   else
-    point.stoneState = WhiteStone;
+    newValue.stoneState = WhiteStone;
+  [self movePointToNewRegion:newValue];
 
-  GoBoardRegion* oldRegion = point.region;
-  point.region = nil;
-  [oldRegion removePoint:point];  // possible side-effect: oldRegion might be
-                                  // split into multiple GoBoardRegion objects
-
-  // Add stone to existing group and merge regions if the stone has joined
-  // them together
-  GoBoardRegion* newRegion = nil;
-  NSArray* neighbours = point.neighbours;
-  for (GoPoint* neighbour in neighbours)
-  {
-    if (! neighbour.hasStone)
-      continue;
-    if (neighbour.blackStone != point.blackStone)
-      continue;
-    if (neighbour.region == newRegion)
-      continue;
-    if (! newRegion)
-    {
-      // Join the stone group of one of the neighbours
-      newRegion = neighbour.region;
-      point.region = newRegion;
-      [newRegion addPoint:point];
-    }
-    else
-    {
-      // Merge the current stone group with yet another one
-      [newRegion joinRegion:neighbour.region];
-    }
-  }
-
-  // Still no region? The stone forms its own new stone group!
-  if (! newRegion)
-  {
-    newRegion = [GoBoardRegion regionWithPoint:point];
-    point.region = newRegion;
-  }
-
-  // Iterate neighbours again, but this time check for captures
+  // Check neighbours for captures
   int numberOfCapturedStones = 0;
-  for (GoPoint* neighbour in neighbours)
+  for (GoPoint* neighbour in newValue.neighbours)
   {
     if (! neighbour.hasStone)
       continue;
-    if (neighbour.blackStone == point.blackStone)
+    if (neighbour.blackStone == newValue.blackStone)
       continue;
     if ([neighbour liberties] > 0)
       continue;
@@ -209,6 +175,90 @@
     }
   }
   // TODO do scoring here!
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reverts the board to the state it had before this GoMove was played.
+/// Does nothing if this GoMove is not of type #PlayMove.
+///
+/// As a side-effect of this method, GoBoardRegions may become fragmented
+/// and/or multiple GoBoardRegions may merge with other regions.
+// -----------------------------------------------------------------------------
+- (void) undo
+{
+  if (PlayMove != self.type)
+    return;
+
+  // Update the point's stone state *BEFORE* moving it to a new region
+  GoPoint* thePoint = self.point;
+  assert(thePoint);
+  thePoint.stoneState = NoStone;
+  [self movePointToNewRegion:thePoint];
+
+  // Remove references from/to predecessor. This decreases the retain count of
+  // this GoMove and may lead to deallocation
+  if (self.previous)
+  {
+    self.previous.next = nil;
+    self.previous = nil;
+  }
+
+  // Not strictly necessary since we expect to be deallocated soon
+  point = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Moves @a thePoint to a new GoBoardRegion in response to a change of
+/// GoPoint.stoneState.
+///
+/// @a thePoint's stone state already must have its new value at the time this
+/// method is invoked.
+///
+/// Side-effects of this method are:
+/// - @a thePoint's old GoBoardRegion may become fragmented if @a thePoint
+///   has been the only link between two or more sub-regions
+/// - @a thePoint's new GoBoardRegion may merge with other regions if
+///   @a thePoint joins them together
+// -----------------------------------------------------------------------------
+- (void) movePointToNewRegion:(GoPoint*)thePoint
+{
+  // Step 1: Remove point from old region
+  GoBoardRegion* oldRegion = thePoint.region;
+  thePoint.region = nil;
+  [oldRegion removePoint:thePoint];  // possible side-effect: oldRegion might be
+                                     // split into multiple GoBoardRegion objects
+
+  // Step 2: Attempt to add the point to the same region as one of its
+  // neighbours. At the same time, merge regions if they can be joined.
+  GoBoardRegion* newRegion = nil;
+  for (GoPoint* neighbour in thePoint.neighbours)
+  {
+    // Do not consider the neighbour if the stone states do not match (stone
+    // state also includes stone color)
+    if (neighbour.stoneState != thePoint.stoneState)
+      continue;
+    if (! newRegion)
+    {
+      // Join the region of one of the neighbours
+      newRegion = neighbour.region;
+      thePoint.region = newRegion;
+      [newRegion addPoint:thePoint];
+    }
+    else
+    {
+      // The stone has already joined a neighbouring region
+      // -> now check if entire regions can be merged
+      if (neighbour.region != newRegion)
+        [newRegion joinRegion:neighbour.region];
+    }
+  }
+
+  // Step 3: Still no region? The point forms its own new region!
+  if (! newRegion)
+  {
+    newRegion = [GoBoardRegion regionWithPoint:point];
+    point.region = newRegion;
+  }
 }
 
 @end

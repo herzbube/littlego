@@ -54,6 +54,7 @@
 - (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex;
 - (void) drawStone:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY;
 - (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates;
+- (void) drawEmpty:(GoPoint*)point;
 - (void) drawSymbols;
 - (void) drawLabels;
 - (void) updateStatusLine;

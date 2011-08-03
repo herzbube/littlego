@@ -50,14 +50,16 @@
 - (void) submitPassMove;
 - (void) submitGenMove;
 - (void) submitFinalScore;
+- (void) submitUndo;
 //@}
 /// @name Update state
 //@{
 - (void) updatePlayMove:(GoPoint*)point;
 - (void) updatePassMove;
 - (void) updateResignMove;
+- (void) updateUndo;
 //@}
-/// @name Others methods
+/// @name Other methods
 //@{
 - (void) gtpResponseReceived:(NSNotification*)notification;
 - (NSString*) colorStringForMoveAfter:(GoMove*)move;
@@ -292,7 +294,16 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) undo
 {
-  // TODO not yet implementend
+  [self submitUndo];
+  [self updateUndo];
+  // If it's now the computer player's turn, the "undo" above took back the
+  // computer player's move
+  // -> now also take back the player's move
+  if ([self isComputerPlayersTurn])
+  {
+    [self submitUndo];
+    [self updateUndo];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -449,6 +460,18 @@ static GoGame* sharedGame = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Submits an "undo" command to the GTP engine.
+///
+/// This method returns immediately. gtpResponseReceived:() is triggered as
+/// soon as the GTP engine response has arrived.
+// -----------------------------------------------------------------------------
+- (void) submitUndo
+{
+  GtpCommand* command = [GtpCommand command:@"undo"];
+  [command submit];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players making a #PlayMove.
 ///
@@ -457,7 +480,7 @@ static GoGame* sharedGame = nil;
 - (void) updatePlayMove:(GoPoint*)point
 {
   GoMove* move = [GoMove move:PlayMove after:self.lastMove];
-  move.point = point;
+  move.point = point;  // many side-effects here (e.g. region handling) !!!
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -510,6 +533,32 @@ static GoGame* sharedGame = nil;
   // Game state must change after any of the other things; this order is
   // important for observer notifications
   self.state = GameHasEnded;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players taking back his move.
+///
+/// This method does not care about GTP.
+// -----------------------------------------------------------------------------
+- (void) updateUndo
+{
+  GoMove* undoMove = self.lastMove;
+  GoMove* newLastMove = undoMove.previous;  // get this reference before it vanishes
+  [undoMove undo];  // many side-effects here (e.g. region handling) !!!
+
+  // One of the following statements will cause the retain count of lastMove
+  // to drop to zero
+  // -> the object will be deallocated
+  self.lastMove = newLastMove;  // is nil if we are undoing the first move
+  if (self.firstMove == undoMove)
+    self.firstMove = nil;
+
+  // No game state change
+  // - Since we are able to undo moves, this clearly means that we are in state
+  //   GameHasStarted
+  // - But undoing a move will never cause the game to revert to state
+  //   GameHasNotYetStarted
 }
 
 // -----------------------------------------------------------------------------

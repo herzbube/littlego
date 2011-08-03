@@ -39,6 +39,7 @@
 }
 
 + (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move;
+- (void) undo;
 
 /// @brief The type of this GoMove object.
 @property enum GoMoveType type;
