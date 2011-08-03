@@ -101,6 +101,7 @@
 @synthesize topLeftPointY;
 @synthesize pointDistance;
 @synthesize lineLength;
+@synthesize stoneRadius;
 
 @synthesize crossHairPoint;
 @synthesize crossHairPointIsLegalMove;
@@ -216,6 +217,8 @@
   // Don't use padding here, rounding errors mighth cause improper positioning
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
+
+  self.stoneRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage);
 }
 
 // -----------------------------------------------------------------------------
@@ -409,8 +412,7 @@
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
-  int stoneRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage);
-  CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, stoneRadius, startRadius, endRadius, clockwise);
+  CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, self.stoneRadius, startRadius, endRadius, clockwise);
   CGContextFillPath(context);
 }
 
@@ -419,7 +421,36 @@
 // -----------------------------------------------------------------------------
 - (void) drawSymbols
 {
-  // TODO not yet implemented
+  GoMove* lastMove = [GoGame sharedGame].lastMove;
+  if (lastMove)
+  {
+    CGPoint lastMoveCoordinates = [self coordinatesFromVertex:lastMove.point.vertex];
+    // The symbol for marking the last move is a box inside the circle that
+    // represents the Go stone. Geometry tells us that in this scenario
+    //   a = r * sqrt(2)
+    // We subtract another 2 points because we don't want to touch the circle.
+    int lastMoveBoxSide = floor(self.stoneRadius * sqrt(2) - 2);
+    // The origin for Core Graphics is in the bottom-left corner!
+    CGRect lastMoveBox;
+    lastMoveBox.origin.x = floor((lastMoveCoordinates.x - (lastMoveBoxSide / 2))) + gHalfPixel;
+    lastMoveBox.origin.y = floor((lastMoveCoordinates.y - (lastMoveBoxSide / 2))) + gHalfPixel;
+    lastMoveBox.size.width = lastMoveBoxSide;
+    lastMoveBox.size.height = lastMoveBoxSide;
+    // TODO move color handling to a helper function; there is similar code
+    // floating around somewhere else in this class
+    UIColor* lastMoveBoxColor;
+    if (lastMove.black)
+      lastMoveBoxColor = [UIColor whiteColor];
+    else
+      lastMoveBoxColor = [UIColor blackColor];
+    // Now render the box
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextBeginPath(context);
+    CGContextAddRect(context, lastMoveBox);
+    CGContextSetStrokeColorWithColor(context, lastMoveBoxColor.CGColor);
+    CGContextSetLineWidth(context, self.model.normalLineWidth);
+    CGContextStrokePath(context);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -498,7 +529,7 @@
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
-  int circleRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage / 2);
+  int circleRadius = floor(self.stoneRadius / 2);
   CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, circleRadius, startRadius, endRadius, clockwise);
   CGContextFillPath(context);
 }
@@ -528,6 +559,7 @@
 // -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
 {
+  // The origin for Core Graphics is in the bottom-left corner!
   return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
                      self.topLeftPointY + self.lineLength - (self.pointDistance * (vertexY - 1)));
 }

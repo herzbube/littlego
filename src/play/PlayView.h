@@ -83,6 +83,7 @@
 @property int topLeftPointY;
 @property int pointDistance;
 @property int lineLength;
+@property int stoneRadius;
 //@}
 
 /// @name Cross-hair point properties
