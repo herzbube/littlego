@@ -298,37 +298,14 @@
   CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, self.model.starPointColor.CGColor);
 
-  // TODO: Move definition of star points to somewhere else (e.g. GoBoard).
-  // Note that Goban.app draws the following hoshi:
-  // - 15x15, 17x17, 19x19 boards: 9 hoshi - 4 corner on the 4th line,
-  //   4 edge on the 4th line, 1 in the center
-  // - 13x13: 5 hoshi - 4 corner on the 4th line, 1 in the center
-  // - 9x9, 11x11: 5 hoshi - 4 corner on the 3rd line, 1 in the center
-  // - 7x7: 4 hoshi - 4 corner on the 3rd line
-  // Double-check with Fuego. Sensei's Library has less complete information.
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
-  const int numberOfStarPoints = 9;
-  for (int starPointCounter = 0; starPointCounter < numberOfStarPoints; ++starPointCounter)
+  for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
   {
-    int vertexX = 0;
-    int vertexY = 0;
-    switch(starPointCounter)
-    {
-      case 0: vertexX = 4;  vertexY = 4;  break;
-      case 1: vertexX = 10; vertexY = 4;  break;
-      case 2: vertexX = 16; vertexY = 4;  break;
-      case 3: vertexX = 4;  vertexY = 10; break;
-      case 4: vertexX = 10; vertexY = 10; break;
-      case 5: vertexX = 16; vertexY = 10; break;
-      case 6: vertexX = 4;  vertexY = 16; break;
-      case 7: vertexX = 10; vertexY = 16; break;
-      case 8: vertexX = 16; vertexY = 16; break;
-      default: break;
-    }
-    int starPointCenterPointX = self.topLeftPointX + (self.pointDistance * (vertexX - 1));
-    int starPointCenterPointY = self.topLeftPointY + (self.pointDistance * (vertexY - 1));
+    struct GoVertexNumeric numericVertex = starPoint.vertex.numeric;
+    int starPointCenterPointX = self.topLeftPointX + (self.pointDistance * (numericVertex.x - 1));
+    int starPointCenterPointY = self.topLeftPointY + (self.pointDistance * (numericVertex.y - 1));
     CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, self.model.starPointRadius, startRadius, endRadius, clockwise);
     CGContextFillPath(context);
   }

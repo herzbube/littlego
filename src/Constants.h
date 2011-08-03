@@ -193,4 +193,5 @@ extern NSString* gamesPlayedKey;
 extern NSString* gamesWonKey;
 extern NSString* gamesLostKey;
 extern NSString* gamesTiedKey;
+extern NSString* starPointsKey;
 //@}

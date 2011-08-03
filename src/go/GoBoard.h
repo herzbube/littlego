@@ -52,5 +52,6 @@
 /// @brief The board size, specifying the horizontal and vertical board
 /// dimensions.
 @property int size;
+@property(readonly, retain) NSArray* starPoints;
 
 @end

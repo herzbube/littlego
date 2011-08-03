@@ -89,5 +89,20 @@
 			</dict>
 		</dict>
 	</array>
+	<key>StarPoints</key>
+	<dict>
+		<key>19</key>
+		<string>D4,K4,Q4,D10,K10,Q10,D16,K16,Q16</string>
+		<key>17</key>
+		<string>D4,J4,O4,D9,J9,O9,D14,J14,O14</string>
+		<key>15</key>
+		<string>D4,H4,M4,D8,H8,M8,D12,H12,M12</string>
+		<key>13</key>
+		<string>D4,G4,K4,D7,G7,K7,D10,G10,K10</string>
+		<key>11</key>
+		<string>C3,J3,C9,J9</string>
+		<key>9</key>
+		<string>C3,G3,C7,G7</string>
+	</dict>
 </dict>
 </plist>

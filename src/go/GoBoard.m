@@ -39,12 +39,14 @@
 - (id) init;
 - (void) dealloc;
 //@}
+- (NSArray*) starPointVertexes;
 @end
 
 
 @implementation GoBoard
 
 @synthesize size;
+@synthesize starPoints;
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoard instance of size 0.
@@ -158,6 +160,7 @@
 
   self.size = 0;
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
+  starPoints = [[NSArray array] retain];
 
   return self;
 }
@@ -174,6 +177,7 @@
   for (GoPoint* point in [m_vertexDict allValues])
     point.region = nil;
   [m_vertexDict release];
+  [starPoints release];
   [super dealloc];
 }
 
@@ -189,15 +193,35 @@
     if (size == newValue)
       return;
     size = newValue;
+
+    // Removing references to GoPoint objects destroys them
     [m_vertexDict removeAllObjects];
+    [starPoints release];
+    starPoints = nil;
+
+    // Create an initial GoPoint and GoBoardRegion object
     GoPoint* point = [self pointAtVertex:@"A1"];
     GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
     point.region = region;
+    // On a clear board, the initial region contains all GoPoint objects.
+    // Note: Moving to the next point creates the corresponding GoPoint object!
     for (; point = point.next; point != nil)
     {
       point.region = region;
       [region addPoint:point];
     }
+
+    // Re-create the list of star points
+    NSMutableArray* starPointsLocal = [NSMutableArray arrayWithCapacity:0];
+    for (NSString* starPointVertex in [self starPointVertexes])
+    {
+      GoPoint* starPoint = [self pointAtVertex:starPointVertex];
+      starPoint.starPoint = true;
+      [starPointsLocal addObject:starPoint];
+    }
+    // Make a copy that is immutable because we hand out references to the
+    // array, and we don't want clients to be able to change the array
+    starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
   }
 }
 
@@ -295,6 +319,43 @@
   }
   GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
   return [self pointAtVertex:vertex.string];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of GoPoint objects that refer to the star points for
+/// the current board size. The returned list has no particular order.
+// -----------------------------------------------------------------------------
+- (NSArray*) starPoints
+{
+  return [[starPoints retain] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of NSString vertexes that define the star points for
+/// the current board size.
+///
+/// Returns an empty list if the current board size does not have any star
+/// points.
+///
+/// Star point definitions are read from the user defaults system. The
+/// definitions are immutable and are available only through the application
+/// defaults registered at application startup.
+///
+/// @note Star point definitions vary depending on which information source is
+/// queried. Fuego and Goban.app, for instance, do not have the same definitions
+/// for some board sizes. Sensei's Library only has definitions for 9x9, 13x13
+/// and 19x19. The current star point definitions in Little Go match those
+/// provided by Fuego.
+// -----------------------------------------------------------------------------
+- (NSArray*) starPointVertexes
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:starPointsKey];
+  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.size]; 
+  NSString* starPointVertexListAsString = [dictionary valueForKey:boardSizeKey];
+  if (starPointVertexListAsString == nil || [starPointVertexListAsString length] == 0)
+    return [NSArray array];
+  return [starPointVertexListAsString componentsSeparatedByString:@","];
 }
 
 @end

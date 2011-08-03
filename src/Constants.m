@@ -76,3 +76,4 @@ NSString* gamesPlayedKey = @"GamesPlayed";
 NSString* gamesWonKey = @"GamesWon";
 NSString* gamesLostKey = @"GamesLost";
 NSString* gamesTiedKey = @"GamesTied";
+NSString* starPointsKey = @"StarPoints";
