@@ -20,9 +20,6 @@
 #import "PlayView.h"
 #import "../go/GoGame.h"
 
-// System includes
-#import <UIKit/UIKit.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for PlayViewController.

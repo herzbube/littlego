@@ -59,6 +59,8 @@
 		CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
 		CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
 		CDE302901360BDD3005235F2 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3028F1360BDD3005235F2 /* PlayViewModel.m */; };
+		CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
+		CDE4057B13EB09120091E719 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE4057A13EB09120091E719 /* SettingsView.xib */; };
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
@@ -138,6 +140,9 @@
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
 		CDE3F58F13117EFE00EC16CC /* build-env.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-env.sh"; sourceTree = "<group>"; };
+		CDE4057313EB081C0091E719 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		CDE4057413EB081C0091E719 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		CDE4057A13EB09120091E719 /* SettingsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsView.xib; sourceTree = "<group>"; };
 		CDEC282E12F477360069F5B7 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
 		CDEC283112F477360069F5B7 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -265,6 +270,8 @@
 		CD1088571326CBB300E83543 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
+				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
 			);
 			path = settings;
 			sourceTree = "<group>";
@@ -373,6 +380,7 @@
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
 				CD1088621326CDAA00E83543 /* PlayView.xib */,
 				CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */,
+				CDE4057A13EB09120091E719 /* SettingsView.xib */,
 				CD3AE7581344FD7D00B58E08 /* SourceCode.html */,
 			);
 			path = resource;
@@ -452,6 +460,7 @@
 				CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */,
 				CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */,
 				CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */,
+				CDE4057B13EB09120091E719 /* SettingsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -504,6 +513,7 @@
 				CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */,
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
 				CDAB606213E7165500C4A4AA /* BoardSizeController.m in Sources */,
+				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
