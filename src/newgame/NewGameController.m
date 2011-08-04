@@ -29,10 +29,47 @@
 enum NewGameTableViewSection
 {
   BoardSizeSection,
-  PlayerSection,
+  PlayersSection,
   HandicapSection,
   KomiSection,
-  MaxSection = KomiSection
+  MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the BoardSizeSection.
+// -----------------------------------------------------------------------------
+enum BoardSizeSectionItem
+{
+  BoardSizeItem,
+  MaxBoardSizeSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PlayersSection.
+// -----------------------------------------------------------------------------
+enum PlayersSectionItem
+{
+  BlackPlayerItem,
+  WhitePlayerItem,
+  MaxPlayersSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the HandicapSection.
+// -----------------------------------------------------------------------------
+enum HandicapSectionItem
+{
+  HandicapItem,
+  MaxHandicapSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the KomiSection.
+// -----------------------------------------------------------------------------
+enum KomiSectionItem
+{
+  KomiItem,
+  MaxKomiSectionItem
 };
 
 
@@ -166,7 +203,7 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 4;
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -177,14 +214,15 @@ enum NewGameTableViewSection
   switch (section)
   {
     case BoardSizeSection:
-      return 1;
-    case PlayerSection:
-      return 2;
+      return MaxBoardSizeSectionItem;
+    case PlayersSection:
+      return MaxPlayersSectionItem;
     case HandicapSection:
-      return 1;
+      return MaxHandicapSectionItem;
     case KomiSection:
-      return 1;
+      return MaxKomiSectionItem;
     default:
+      assert(0);
       break;
   }
   return 0;
@@ -206,18 +244,26 @@ enum NewGameTableViewSection
   switch (indexPath.section)
   {
     case BoardSizeSection:
-      cell.textLabel.text = @"Board size";
-      cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      break;
-    case PlayerSection:
       switch (indexPath.row)
       {
-        case 0:
+        case BoardSizeItem:
+          cell.textLabel.text = @"Board size";
+          cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    case PlayersSection:
+      switch (indexPath.row)
+      {
+        case BlackPlayerItem:
           cell.textLabel.text = @"Black";
           cell.detailTextLabel.text = @"Human Player";
           break;
-        case 1:
+        case WhitePlayerItem:
           cell.textLabel.text = @"White";
           cell.detailTextLabel.text = @"Computer Player";
           break;
@@ -228,14 +274,31 @@ enum NewGameTableViewSection
       cell.accessoryType = UITableViewCellAccessoryNone;
       break;
     case HandicapSection:
-      cell.textLabel.text = @"Handicap";
-      cell.detailTextLabel.text = @"0";
-      cell.accessoryType = UITableViewCellAccessoryNone;
+      switch (indexPath.row)
+      {
+        case HandicapItem:
+          cell.textLabel.text = @"Handicap";
+          cell.detailTextLabel.text = @"0";
+          cell.accessoryType = UITableViewCellAccessoryNone;
+        default:
+          assert(0);
+          break;
+      }
       break;
     case KomiSection:
-      cell.textLabel.text = @"Komi";
-      cell.detailTextLabel.text = @"6½";
-      cell.accessoryType = UITableViewCellAccessoryNone;
+      switch (indexPath.row)
+      {
+        case KomiItem:
+          cell.textLabel.text = @"Komi";
+          cell.detailTextLabel.text = @"6½";
+          cell.accessoryType = UITableViewCellAccessoryNone;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    default:
+      assert(0);
       break;
   }
 
@@ -256,11 +319,14 @@ enum NewGameTableViewSection
       modalController = [[BoardSizeController controllerWithDelegate:self
                                                     defaultBoardSize:self.boardSize] retain];
       break;
-    case PlayerSection:
+    case PlayersSection:
       return;
     case HandicapSection:
       return;
     case KomiSection:
+      return;
+    default:
+      assert(0);
       return;
   }
   UINavigationController* navigationController = [[UINavigationController alloc]
