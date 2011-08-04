@@ -17,6 +17,9 @@
 
 // Project includes
 #import "SettingsViewController.h"
+#import "../ApplicationDelegate.h"
+#import "../play/PlayViewModel.h"
+#import "../player/PlayerModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -97,6 +100,14 @@ enum PlayersSectionItem
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
+/// @name Action methods
+//@{
+- (void) togglePlaySound:(id)sender;
+- (void) toggleVibrate:(id)sender;
+- (void) toggleMarkLastMove:(id)sender;
+- (void) toggleDisplayCoordinates:(id)sender;
+- (void) toggleDisplayMoveNumbers:(id)sender;
+//@}
 /// @name Helpers
 //@{
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForType:(enum TableViewCellType)type;
@@ -106,6 +117,8 @@ enum PlayersSectionItem
 
 @implementation SettingsViewController
 
+@synthesize playViewModel;
+@synthesize playerModel;
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this SettingsViewController object.
@@ -122,6 +135,10 @@ enum PlayersSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+
+  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  self.playViewModel = [delegate playViewModel];
+  self.playerModel = [delegate playerModel];
 }
 
 // -----------------------------------------------------------------------------
@@ -157,7 +174,7 @@ enum PlayersSectionItem
     case ViewSection:
       return MaxViewSectionItem;
     case PlayersSection:
-      return MaxPlayersSectionItem + 2;  // TODO add correct number here (acquired from model)
+      return MaxPlayersSectionItem + self.playerModel.playerCount;
     default:
       assert(0);
       break;
@@ -201,11 +218,13 @@ enum PlayersSectionItem
       {
         case PlaySoundItem:
           cell.textLabel.text = @"Play sound";
-          accessoryView.on = NO;
+          accessoryView.on = self.playViewModel.playSound;
+          [accessoryView addTarget:self action:@selector(togglePlaySound:) forControlEvents:UIControlEventValueChanged];
           break;
         case VibrateItem:
           cell.textLabel.text = @"Vibrate";
-          accessoryView.on = NO;
+          accessoryView.on = self.playViewModel.vibrate;
+          [accessoryView addTarget:self action:@selector(toggleVibrate:) forControlEvents:UIControlEventValueChanged];
           break;
         default:
           assert(0);
@@ -231,19 +250,23 @@ enum PlayersSectionItem
         {
           case MarkLastMoveItem:
             cell.textLabel.text = @"Mark last move";
-            accessoryView.on = YES;
+            accessoryView.on = self.playViewModel.markLastMove;
+            accessoryView.enabled = YES;
+            [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
             break;
           case DisplayCoordinatesItem:
             cell.textLabel.text = @"Coordinates";
-            accessoryView.on = NO;
+            accessoryView.on = self.playViewModel.displayCoordinates;
+            [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
             break;
           case DisplayMoveNumbersItem:
             cell.textLabel.text = @"Move numbers";
-            accessoryView.on = NO;
+            accessoryView.on = self.playViewModel.displayMoveNumbers;
+            [accessoryView addTarget:self action:@selector(toggleDisplayMoveNumbers:) forControlEvents:UIControlEventValueChanged];
             break;
           case CrossHairPointDistanceFromFingerItem:
             cell.textLabel.text = @"Cross-hair distance";
-            cell.detailTextLabel.text = @"2";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
             break;
           default:
             assert(0);
@@ -257,21 +280,12 @@ enum PlayersSectionItem
       //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       // TODO add icon to player entries to distinguish human from computer
       // players
-      switch (indexPath.row)
-      {
-        case 0:
-          cell.textLabel.text = @"Human Player";
-          break;
-        case 1:
-          cell.textLabel.text = @"Computer Player";
-          break;
-        case 2:
-          cell.textLabel.text = @"Add player ...";
-          break;
-        default:
-          assert(0);
-          break;
-      }
+      if (indexPath.row < self.playerModel.playerCount)
+        cell.textLabel.text = [self.playerModel playerNameAtIndex:indexPath.row];
+      else if (indexPath.row == self.playerModel.playerCount)
+        cell.textLabel.text = @"Add player ...";
+      else
+        assert(0);
       break;
     default:
       assert(0);
@@ -374,5 +388,54 @@ enum PlayersSectionItem
   return cell;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Play Sound" switch. Writes the new
+/// value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) togglePlaySound:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.playSound = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Vibrate" switch. Writes the new
+/// value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleVibrate:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.vibrate = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Mark last move" switch. Writes the
+/// new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleMarkLastMove:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.markLastMove = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Display coordinates" switch. Writes
+/// the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleDisplayCoordinates:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.displayCoordinates = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Display move numbers" switch. Writes
+/// the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleDisplayMoveNumbers:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.displayMoveNumbers = accessoryView.on;
+}
 
 @end

@@ -33,7 +33,9 @@
 
 @implementation PlayerModel
 
+@synthesize playerCount;
 @synthesize playerList;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayerModel object with user defaults data.
@@ -47,7 +49,8 @@
   if (! self)
     return nil;
 
-  self.playerList = [NSMutableArray arrayWithCapacity:0];
+  self.playerCount = 0;
+  self.playerList = [NSMutableArray arrayWithCapacity:self.playerCount];
 
   return self;
 }
@@ -77,6 +80,7 @@
     [player autorelease];
     [localPlayerList addObject:player];
   }
+  self.playerCount = [localPlayerList count];
   // Completely replace the previous player list to trigger the
   // key-value-observing mechanism.
   self.playerList = localPlayerList;
@@ -95,6 +99,17 @@
   // values.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:userDefaultsPlayerList forKey:playerListKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the name of the player at position @a index in the list of
+/// players. This is a convenience method.
+// -----------------------------------------------------------------------------
+- (NSString*) playerNameAtIndex:(int)index
+{
+  assert(index >= 0 && index < [self.playerList count]);
+  Player* player = (Player*)[self.playerList objectAtIndex:index];
+  return player.name;
 }
 
 @end

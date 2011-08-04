@@ -5,7 +5,7 @@
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
-		<false/>
+		<true/>
 		<key>DisplayCoordinates</key>
 		<false/>
 		<key>DisplayMoveNumbers</key>

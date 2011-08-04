@@ -75,6 +75,7 @@
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Internal helpers
 //@{
@@ -159,6 +160,10 @@
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  // KVO observing
+  [self.model addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
+  [self.model addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
+  [self.model addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -422,35 +427,38 @@
 // -----------------------------------------------------------------------------
 - (void) drawSymbols
 {
-  GoMove* lastMove = [GoGame sharedGame].lastMove;
-  if (lastMove)
+  if (self.model.markLastMove)
   {
-    CGPoint lastMoveCoordinates = [self coordinatesFromVertex:lastMove.point.vertex];
-    // The symbol for marking the last move is a box inside the circle that
-    // represents the Go stone. Geometry tells us that in this scenario
-    //   a = r * sqrt(2)
-    // We subtract another 2 points because we don't want to touch the circle.
-    int lastMoveBoxSide = floor(self.stoneRadius * sqrt(2) - 2);
-    // The origin for Core Graphics is in the bottom-left corner!
-    CGRect lastMoveBox;
-    lastMoveBox.origin.x = floor((lastMoveCoordinates.x - (lastMoveBoxSide / 2))) + gHalfPixel;
-    lastMoveBox.origin.y = floor((lastMoveCoordinates.y - (lastMoveBoxSide / 2))) + gHalfPixel;
-    lastMoveBox.size.width = lastMoveBoxSide;
-    lastMoveBox.size.height = lastMoveBoxSide;
-    // TODO move color handling to a helper function; there is similar code
-    // floating around somewhere else in this class
-    UIColor* lastMoveBoxColor;
-    if (lastMove.black)
-      lastMoveBoxColor = [UIColor whiteColor];
-    else
-      lastMoveBoxColor = [UIColor blackColor];
-    // Now render the box
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextBeginPath(context);
-    CGContextAddRect(context, lastMoveBox);
-    CGContextSetStrokeColorWithColor(context, lastMoveBoxColor.CGColor);
-    CGContextSetLineWidth(context, self.model.normalLineWidth);
-    CGContextStrokePath(context);
+    GoMove* lastMove = [GoGame sharedGame].lastMove;
+    if (lastMove)
+    {
+      CGPoint lastMoveCoordinates = [self coordinatesFromVertex:lastMove.point.vertex];
+      // The symbol for marking the last move is a box inside the circle that
+      // represents the Go stone. Geometry tells us that in this scenario
+      //   a = r * sqrt(2)
+      // We subtract another 2 points because we don't want to touch the circle.
+      int lastMoveBoxSide = floor(self.stoneRadius * sqrt(2) - 2);
+      // The origin for Core Graphics is in the bottom-left corner!
+      CGRect lastMoveBox;
+      lastMoveBox.origin.x = floor((lastMoveCoordinates.x - (lastMoveBoxSide / 2))) + gHalfPixel;
+      lastMoveBox.origin.y = floor((lastMoveCoordinates.y - (lastMoveBoxSide / 2))) + gHalfPixel;
+      lastMoveBox.size.width = lastMoveBoxSide;
+      lastMoveBox.size.height = lastMoveBoxSide;
+      // TODO move color handling to a helper function; there is similar code
+      // floating around somewhere else in this class
+      UIColor* lastMoveBoxColor;
+      if (lastMove.black)
+        lastMoveBoxColor = [UIColor whiteColor];
+      else
+        lastMoveBoxColor = [UIColor blackColor];
+      // Now render the box
+      CGContextRef context = UIGraphicsGetCurrentContext();
+      CGContextBeginPath(context);
+      CGContextAddRect(context, lastMoveBox);
+      CGContextSetStrokeColorWithColor(context, lastMoveBoxColor.CGColor);
+      CGContextSetLineWidth(context, self.model.normalLineWidth);
+      CGContextStrokePath(context);
+    }
   }
 }
 
@@ -631,6 +639,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  // TODO check if it's possible to update only specific parts of the view
+  [self setNeedsDisplay];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a GoPoint object for the intersection that is closest to the
 /// view coordinates @a coordinates. Returns nil if there is no "closest"
 /// intersection.
@@ -648,7 +665,7 @@
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
-  // but one point distance above
+  // but one or more point distances above
   coordinates.y -= self.model.crossHairPointDistanceFromFinger * self.pointDistance;
 
   // Check if cross-hair is outside the grid and should not be displayed. To

@@ -28,7 +28,9 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
+- (NSString*) playerNameAtIndex:(int)index;
 
+@property(assign) int playerCount;
 @property(retain) NSArray* playerList;
 
 @end
