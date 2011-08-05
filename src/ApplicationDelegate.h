@@ -24,6 +24,7 @@
 @class NewGameModel;
 @class PlayerModel;
 @class PlayViewModel;
+@class SoundHandling;
 
 
 // -----------------------------------------------------------------------------
@@ -64,6 +65,8 @@
 @property(retain) PlayerModel* playerModel;
 /// @brief Model object that stores attributes used to manage the Play view.
 @property(retain) PlayViewModel* playViewModel;
+/// @brief Object that handles sounds and vibration.
+@property(retain) SoundHandling* soundHandling;
 
 @end
 

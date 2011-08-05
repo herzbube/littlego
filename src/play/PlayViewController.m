@@ -326,7 +326,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #computerPlayerThinkingChanged notification.
+/// @brief Responds to the #computerPlayerThinkingStarts and
+/// #computerPlayerThinkingStops notifications.
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {

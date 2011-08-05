@@ -63,7 +63,6 @@
 //@{
 - (void) gtpResponseReceived:(NSNotification*)notification;
 - (NSString*) colorStringForMoveAfter:(GoMove*)move;
-- (bool) isComputerPlayersTurn;
 //@}
 @end
 
@@ -431,12 +430,15 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) submitGenMove
 {
-  self.computerThinks = true;
   NSString* commandString = @"genmove ";
   commandString = [commandString stringByAppendingString:
                    [self colorStringForMoveAfter:self.lastMove]];
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
+
+  // Thinking state must change after any of the other things; this order is
+  // important for observer notifications
+  self.computerThinks = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -454,9 +456,12 @@ static GoGame* sharedGame = nil;
   // 4. Komi
   // Little Go is capable of counting 1 and 4, but not 2 and 3. So for the
   // moment we rely on Fuego's scoring.
-  self.computerThinks = true;
   GtpCommand* command = [GtpCommand command:@"final_score"];
   [command submit];
+
+  // Thinking state must change after any of the other things; this order is
+  // important for observer notifications
+  self.computerThinks = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -572,7 +577,6 @@ static GoGame* sharedGame = nil;
   NSString* commandString = response.command.command;
   if ([commandString hasPrefix:@"genmove"])
   {
-    self.computerThinks = false;
     NSString* responseString = response.parsedResponse;
     if ([responseString isEqualToString:@"pass"])
       [self updatePassMove];
@@ -586,14 +590,22 @@ static GoGame* sharedGame = nil;
       else
         ;  // TODO vertex was invalid; do something...
     }
+
+    // Thinking state must change after any of the other things; this order is
+    // important for observer notifications
+    self.computerThinks = false;
+
     if ([self isComputerPlayersTurn])
       [self computerPlay];
   }
   else if ([commandString isEqualToString:@"final_score"])
   {
-    self.computerThinks = false;
     // TODO parse result
     self.score = response.parsedResponse;
+
+    // Thinking state must change after any of the other things; this order is
+    // important for observer notifications
+    self.computerThinks = false;
   }
 }
 
@@ -619,7 +631,8 @@ static GoGame* sharedGame = nil;
 - (bool) isComputerPlayersTurn
 {
   // TODO: Find a better way to determine when it is the computer player's
-  // turn. This works only as long as white is fixed to be the computer
+  // turn. This works only as long as white is fixed to be the computer. It
+  // also does not take the game state into account.
   if (! self.lastMove)
     return false;  // first turn always goes to black
   return self.lastMove.black;

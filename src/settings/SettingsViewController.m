@@ -224,6 +224,7 @@ enum PlayersSectionItem
         case VibrateItem:
           cell.textLabel.text = @"Vibrate";
           accessoryView.on = self.playViewModel.vibrate;
+          accessoryView.enabled = true;
           [accessoryView addTarget:self action:@selector(toggleVibrate:) forControlEvents:UIControlEventValueChanged];
           break;
         default:

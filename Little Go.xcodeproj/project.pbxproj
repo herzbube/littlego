@@ -53,6 +53,8 @@
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
 		CDBB0C0B13426DAB007C1C3E /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0A13426DAB007C1C3E /* About.html */; };
+		CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
+		CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -124,6 +126,9 @@
 		CDBB039A133573CC007C1C3E /* GoVertex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertex.m; sourceTree = "<group>"; };
 		CDBB0C0113426C56007C1C3E /* DocumentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DocumentView.xib; sourceTree = "<group>"; };
 		CDBB0C0A13426DAB007C1C3E /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
+		CDBF976913EC66FE00476748 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
+		CDBF976A13EC66FE00476748 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
+		CDBF979E13EC750C00476748 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -167,6 +172,7 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */,
+				CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +211,7 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765070DF74369002DB57D /* CoreGraphics.framework */,
+				CDBF979E13EC750C00476748 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -263,6 +270,8 @@
 				CD10887C1326D2C100E83543 /* PlayView.m */,
 				CDE3028E1360BDD3005235F2 /* PlayViewModel.h */,
 				CDE3028F1360BDD3005235F2 /* PlayViewModel.m */,
+				CDBF976913EC66FE00476748 /* SoundHandling.h */,
+				CDBF976A13EC66FE00476748 /* SoundHandling.m */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -514,6 +523,7 @@
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
 				CDAB606213E7165500C4A4AA /* BoardSizeController.m in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
+				CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

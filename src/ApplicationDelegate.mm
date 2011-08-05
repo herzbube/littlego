@@ -34,6 +34,7 @@
 #import "NewGameModel.h"
 #import "player/PlayerModel.h"
 #import "play/PlayViewModel.h"
+#import "play/SoundHandling.h"
 
 // System includes
 #include <string>
@@ -73,6 +74,7 @@
 @synthesize newGameModel;
 @synthesize playerModel;
 @synthesize playViewModel;
+@synthesize soundHandling;
 
 
 // -----------------------------------------------------------------------------
@@ -108,6 +110,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.newGameModel = nil;
   self.playerModel = nil;
   self.playViewModel = nil;
+  self.soundHandling = nil;
   [super dealloc];
 }
 
@@ -139,6 +142,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Setup GUI
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
+  self.soundHandling = [[SoundHandling alloc] init];
 
   // Setup GTP engine and client
   [self setupFuego];

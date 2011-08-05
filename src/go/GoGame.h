@@ -48,6 +48,7 @@
 - (void) resign;
 - (void) undo;
 - (bool) isLegalNextMove:(GoPoint*)point;
+- (bool) isComputerPlayersTurn;
 
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(retain) GoBoard* board;
