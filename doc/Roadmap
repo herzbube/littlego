@@ -23,6 +23,7 @@ Version 1.x
   - Replay game (manual, or automatic with delay)
 - Settings view
   - Player statistics (number of games played, possibly strength)
+  - Computer players with different strengths
 - Archive view
   - Send .sgf files via email
 - About view
@@ -38,7 +39,7 @@ Version 1.x
 Version 0.7
 - Artwork & media
   - Application icon
-- Publish app
+- Publish app to the App Store
 
 Version 0.6
 - Play view
@@ -55,6 +56,8 @@ Version 0.4
   - Send arbitrary commands to GTP engine
   - View application log
   - Make application log available in iTunes
+- Technical
+  - Handle interruptions (phone call, application is suspended, etc)
 
 Version 0.3
 - Archive view
@@ -62,6 +65,8 @@ Version 0.3
   - Load existing game from .sgf
   - Manage saved games
   - Provide access to .sgf files from iTunes
+- Technical
+  - Handle memory issues
 
 Version 0.2
 - Play view
@@ -71,7 +76,6 @@ Version 0.2
   - Two computer players can play against each other
 - Settings view
   - Manage players
-  - Computer players with different strengths
   - Sounds / no sounds / vibrate
 - New game properties
   - Board size (9x9, 11x11, 13x13, 19x19)

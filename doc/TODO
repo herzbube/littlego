@@ -24,10 +24,6 @@ Priority 1 (important)
 - Find a way to add the opening book to the project resources without
   depending on a fixed path (a fixed path will break if the project is
   compiled on a newer base SDK)
-- Contacts
-  - Fuego team (on fuego-devel): Do they object to my using their source code?
-    Answers to date: Only one developer spoke up, saying that he has no general
-    objections as long as the spirit of the LGPL is in place.
 - Give back to Fuego
   - information about how to build for iPhone
   - fix for the configure problem
@@ -62,7 +58,7 @@ Priority 1 (important)
 
 Priority 2 (nice to have)
 -------------------------
-- Gtp console on Debug view that allows to send arbitrary commands
+- Transition to Xcode 4, mainly to get native git support
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build
@@ -109,6 +105,6 @@ Future improvements to the 3rdparty build process:
 
 Priority 3 (not important)
 -------------------------
-- There is a nice HOWTO written by Apple that shows how to created Xcode
+- There is a nice HOWTO written by Apple that shows how to create Xcode
   documentation sets with Doxygen. Might be worthwile to check this out:
   http://developer.apple.com/tools/creatingdocsetswithdoxygen.html

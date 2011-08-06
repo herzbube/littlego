@@ -55,5 +55,17 @@ The Fuego project and its developers, for creating a freely usable Go engine
 in the first place, but also for encouraging me to use their engine despite
 some legal uncertainties regarding the LGPL license.
 
-The two iPhone apps Tetsuki and Goban, for giving me a bit of inspiration how
-to design an iOS user interface.
+Sen:te, for creating the beautiful app Goban (http://www.sente.ch/software/goban/)
+and making it available free of charge. Goban is one of my much-loved Mac OS X
+applications, and for a long time I had hoped that it would be ported to iOS.
+Unfortunately, this never happened, so I had to come up with something of my
+own - the result is Little Go. Although Little Go will never match Goban in
+terms of style, elegance and execution, you might recognize one or two
+similarities between the two programs :-)
+
+The Sensei's Library (http://senseis.xmp.net/), for providing a wealth of
+information on Go that I could consult whenever I had any doubts about one of
+the rules and concepts of the game.
+
+The two iPhone apps Tetsuki and Goban (not by Sen:te), for some of the
+inspiration they gave me how to design an iOS user interface.

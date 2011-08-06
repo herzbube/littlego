@@ -212,6 +212,12 @@ Architecture and implementation notes
     not want to spend the time required to implement the overhead necessary for
     a complete separation of model and view. Re-usability is not a key design
     of this project.
+- Preferences: The iOS Application Programming Guide says that "The Settings
+  bundle is generally the preferred mechanism for displaying preferences", then
+  goes into details about how to use such a Settings bundle. I don't like to
+  separate the UI for application preferences from the application, though, and
+  therefore chose to implement a dedicated Preferences view inside the
+  application.
 
 
 Coding guidelines
@@ -292,6 +298,22 @@ and touches are processed by the system on a fundamental level, and how, on a
 higher level, gesture recognizer classes help with reacting to specific types
 of user input.
 
+[9] and [10] go into detail about the different types of views and view
+controllers, and how they can be combined to make a nice and efficient UI. Worth
+mentioning are the two sections of special interest that cover animations and
+modal view controllers. Table views are such an important topic that an entire
+guide [11] has been written about them. Last but not least, [12] provides a
+useful all-in-one-page overview of the UI elements and styles available in iOS.
+
+Observing various model objects for user preferences changes can be elegantly
+solved using the Key-Value Observing (KVO) technique, which in turn is based on
+Key-Value Coding (KVC). The two concepts are extensively documented in [13] and
+[14].
+
+Playing short sounds and vibrating the iOS device are covered by [15], while
+[16] has additional in-depth information on Audio processing.
+
+
 [1]  iOS Reference Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Reference Library > Guides > Threading Programming Guide
 [3]  iOS Reference Library > Guides > Timer Programming Topics
@@ -300,6 +322,15 @@ of user input.
 [6]  iOS Reference Library > Guides > Drawing and Printing Guide for iOS
 [7]  iOS Reference Library > Guides > Quartz 2D Programming Guide
 [8]  iOS Reference Library > Guides > Event Handling Guide for iOS
+[9]  iOS Reference Library > Guides > View Programming Guide for iOS
+[10] iOS Reference Library > Guides > View Controller Programming Guide for iOS
+[11] iOS Reference Library > Guides > Table View Programming Guide for iOS
+[12] iOS Reference Library > Guides > iOS Human Interface Guidelines > iOS UI Element Usage Guidelines
+[13] iOS Reference Library > Guides > Key-Value Observing Programming Guide
+[14] iOS Reference Library > Guides > Key-Value Coding Programming Guide
+[15] iOS Reference Library > Reference > System Sound Services Reference
+[16] iOS Reference Library > Guides > Multimedia Programming Guide
+
 
 
 Compilation command
