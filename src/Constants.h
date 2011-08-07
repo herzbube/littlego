@@ -155,6 +155,7 @@ extern NSString* GPLDocumentResource;
 extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
+extern NSString* playStoneSoundFileResource;
 //@}
 
 // -----------------------------------------------------------------------------

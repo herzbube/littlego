@@ -42,6 +42,7 @@ NSString* GPLDocumentResource = @"COPYING.html";
 NSString* LGPLDocumentResource = @"COPYING.LESSER.html";
 NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
+NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 
 // Keys for user defaults
 NSString* playViewKey = @"PlayView";

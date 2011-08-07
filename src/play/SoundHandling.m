@@ -39,12 +39,14 @@
 //@}
 /// @brief The model that manages data used by this view.
 @property(assign) PlayViewModel* model;
+@property(assign) SystemSoundID playStoneSystemSound;
 @end
 
 
 @implementation SoundHandling
 
 @synthesize model;
+@synthesize playStoneSystemSound;
 
 
 // -----------------------------------------------------------------------------
@@ -58,6 +60,12 @@
   self = [super init];
   if (! self)
     return nil;
+
+  // NSString and CFStringRef are toll-free bridged types, which allows to
+  // simply cast NSString* into a CFStringRef.
+  CFURLRef playStoneURLRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), (CFStringRef)playStoneSoundFileResource, NULL, NULL);
+  AudioServicesCreateSystemSoundID(playStoneURLRef, &playStoneSystemSound);
+  CFRelease(playStoneURLRef);
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.model = [delegate playViewModel];
@@ -74,6 +82,7 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  AudioServicesDisposeSystemSoundID(self.playStoneSystemSound);
   self.model = nil;
   [super dealloc];
 }
@@ -114,9 +123,8 @@
 
   if (self.model.playSound)
   {
-    // TODO implement this
+    AudioServicesPlaySystemSound(self.playStoneSystemSound);
   }
 }
-
 
 @end
