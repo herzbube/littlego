@@ -165,14 +165,6 @@ enum IsHumanSectionItem
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  // Add the player object to the model.
-  //
-  // Note that at this time there may still be text in the UITextField that has
-  // not yet been synced to the player object, simply because the user has
-  // tapped the "Done" button without tapping the "return" button of the
-  // keyboard first. The sync will occur, though, as soon as this controller is
-  // dismissed: At that time, the UITextField will lose its first responder
-  // status, which will trigger the delegate method textFieldDidEndEditing:
   PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
   assert(model);
   [model add:self.player];
