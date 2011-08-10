@@ -57,8 +57,8 @@
 /// @brief Initializes a Player object with user defaults data stored inside
 /// @a dictionary.
 ///
-/// If @a dictionary is @e nil, the Player object is human, has a dummy name
-/// and is associated with a PlayerStatistics object that has all attributes set
+/// If @a dictionary is @e nil, the Player object is human, has no name, and is
+/// associated with a PlayerStatistics object that has all attributes set
 /// to zero.
 ///
 /// Invoke the asDictionary() method to convert a Player object's user defaults
@@ -75,9 +75,10 @@
     return nil;
   else if (! dictionary)
   {
-    self.name = @"Homo sapiens";
+    self.name = @"";
     self.human = true;
     self.statistics = [[PlayerStatistics alloc] init];
+    [self.statistics release];
   }
   else
   {

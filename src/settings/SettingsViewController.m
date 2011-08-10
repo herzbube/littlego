@@ -20,18 +20,8 @@
 #import "../ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../player/PlayerModel.h"
+#import "../utility/TableViewCellFactory.h"
 
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates types of table view cells used in the "Settings" table
-/// view.
-// -----------------------------------------------------------------------------
-enum TableViewCellType
-{
-  DefaultCellType,
-  Value1CellType,
-  SwitchCellType
-};
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "Settings" table view.
@@ -108,9 +98,13 @@ enum PlayersSectionItem
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
 //@}
+/// @name NewPlayerDelegate protocol
+//@{
+- (void) didCreateNewPlayer:(bool)didCreateNewPlayer;
+//@}
 /// @name Helpers
 //@{
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForType:(enum TableViewCellType)type;
+- (void) doNewPlayer;
 //@}
 @end
 
@@ -211,7 +205,7 @@ enum PlayersSectionItem
   switch (indexPath.section)
   {
     case FeedbackSection:
-      cell = [self tableView:tableView cellForType:SwitchCellType];
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       switch (indexPath.row)
       {
@@ -242,7 +236,7 @@ enum PlayersSectionItem
             cellType = SwitchCellType;
             break;
         }
-        cell = [self tableView:tableView cellForType:cellType];
+        cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
         UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
         accessoryView.enabled = false;  // TODO enable when settings are implemented
         switch (indexPath.row)
@@ -274,9 +268,8 @@ enum PlayersSectionItem
         break;
       }
     case PlayersSection:
-      cell = [self tableView:tableView cellForType:DefaultCellType];
-      // TODO enable this when player management is implemented
-      //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       // TODO add icon to player entries to distinguish human from computer
       // players
       if (indexPath.row < self.playerModel.playerCount)
@@ -301,90 +294,19 @@ enum PlayersSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   
-//  UIViewController* modalController;
   switch (indexPath.section)
   {
-    case FeedbackSection:
-//      modalController = [[BoardSizeController controllerWithDelegate:self
-//                                                    defaultBoardSize:self.boardSize] retain];
-      break;
-    case ViewSection:
-      return;
     case PlayersSection:
+      if (indexPath.row < self.playerModel.playerCount)
+        ;  // TODO implement editing a player
+      if (indexPath.row == self.playerModel.playerCount)
+        [self doNewPlayer];
+      else
+        assert(0);
+      break;
+    default:
       return;
-    default:
-      assert(0);
-      return;
   }
-/*
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
-  [navigationController release];
-  [modalController release];
-*/
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Factory method that returns a UITableViewCell object for
-/// @a tableView, with a style that is appropriate for the requested @a type.
-// -----------------------------------------------------------------------------
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForType:(enum TableViewCellType)type
-{
-  // Check whether we can reuse an existing cell object
-  NSString* cellID;
-  switch (type)
-  {
-    case DefaultCellType:
-      cellID = @"DefaultCellType";
-      break;
-    case Value1CellType:
-      cellID = @"Value1CellType";
-      break;
-    case SwitchCellType:
-      cellID = @"SwitchCellType";
-      break;
-    default:
-      assert(0);
-      return nil;
-  }
-  // UITableViewCell does the caching for us
-  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-  if (cell != nil)
-    return cell;
-
-  // Create the cell object
-  UITableViewCellStyle cellStyle;
-  switch (type)
-  {
-    case Value1CellType:
-      cellStyle = UITableViewCellStyleValue1;
-      break;
-    default:
-      cellStyle = UITableViewCellStyleDefault;
-      break;
-  }
-  cell = [[[UITableViewCell alloc] initWithStyle:cellStyle
-                                 reuseIdentifier:cellID] autorelease];
-
-  // Additional customization
-  switch (type)
-  {
-    case SwitchCellType:
-      {
-        // UISwitch ignores the frame, so we can conveniently use CGRectZero here
-        UISwitch* accessoryViewSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-        cell.accessoryView = accessoryViewSwitch;
-        break;
-      }
-    default:
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
-  }
-
-  // Return the finished product
-  return cell;
 }
 
 // -----------------------------------------------------------------------------
@@ -435,6 +357,47 @@ enum PlayersSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.playViewModel.displayMoveNumbers = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays NewPlayerController as a modal view controller to gather
+/// information required to create a new player.
+// -----------------------------------------------------------------------------
+- (void) doNewPlayer;
+{
+  // This controller manages the actual "New Game" view
+  NewPlayerController* newPlayerController = [[NewPlayerController controllerWithDelegate:self] retain];
+
+  // This controller provides a navigation bar at the top of the screen where
+  // it will display the navigation item that represents the "new player"
+  // controller. The "new playe" controller internally configures this
+  // navigation item according to its needs.
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:newPlayerController];
+  // Present the navigation controller, not the "new player" controller.
+  navigationController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+  [self presentModalViewController:navigationController animated:YES];
+  // Cleanup
+  [navigationController release];
+  [newPlayerController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This method is invoked when the user has finished working with the
+/// NewPlayerController. The implementation is responsible for dismissing the
+/// modal NewPlayerController.
+///
+/// If @a didCreateNewPlayer is true, the user has requested creating a new
+/// player. If @a didCreateNewPlayer is false, the user has cancelled creating
+/// a new player.
+// -----------------------------------------------------------------------------
+- (void) didCreateNewPlayer:(bool)didCreateNewPlayer
+{
+  [self dismissModalViewControllerAnimated:YES];
+  // Reloading the entire table view data is the cheapest way (in terms of code
+  // lines) to add a row for the new player.
+  if (didCreateNewPlayer)
+    [[self tableView] reloadData];
 }
 
 @end

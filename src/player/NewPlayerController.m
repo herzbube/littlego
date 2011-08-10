@@ -16,68 +16,46 @@
 
 
 // Project includes
-#import "NewGameController.h"
-#import "NewGameModel.h"
+#import "NewPlayerController.h"
+#import "PlayerModel.h"
 #import "../utility/TableViewCellFactory.h"
-#import "../go/GoGame.h"
-#import "../go/GoBoard.h"
 #import "../ApplicationDelegate.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "New Game" table view.
+/// @brief Enumerates the sections presented in the "New Player" table view.
 // -----------------------------------------------------------------------------
 enum NewGameTableViewSection
 {
-  BoardSizeSection,
-  PlayersSection,
-  HandicapSection,
-  KomiSection,
+  PlayerNameSection,
+  IsHumanSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the BoardSizeSection.
+/// @brief Enumerates items in the PlayerNameSection.
 // -----------------------------------------------------------------------------
-enum BoardSizeSectionItem
+enum PlayerNameSectionItem
 {
-  BoardSizeItem,
-  MaxBoardSizeSectionItem
+  PlayerNameItem,
+  MaxPlayerNameSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the PlayersSection.
+/// @brief Enumerates items in the IsHumanSection.
 // -----------------------------------------------------------------------------
-enum PlayersSectionItem
+enum IsHumanSectionItem
 {
-  BlackPlayerItem,
-  WhitePlayerItem,
-  MaxPlayersSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the HandicapSection.
-// -----------------------------------------------------------------------------
-enum HandicapSectionItem
-{
-  HandicapItem,
-  MaxHandicapSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the KomiSection.
-// -----------------------------------------------------------------------------
-enum KomiSectionItem
-{
-  KomiItem,
-  MaxKomiSectionItem
+  IsHumanItem,
+  MaxIsHumanSectionItem,
 };
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewGameController.
+/// @brief Class extension with private methods for NewPlayerController.
 // -----------------------------------------------------------------------------
-@interface NewGameController()
+@interface NewPlayerController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -91,6 +69,7 @@ enum KomiSectionItem
 //@{
 - (void) done:(id)sender;
 - (void) cancel:(id)sender;
+- (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -102,43 +81,46 @@ enum KomiSectionItem
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name BoardSizeDelegate protocol
+/// @name UITextFieldDelegate protocol method.
 //@{
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection;
+- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+//@}
+/// @name Helpers
+//@{
+- (bool) isPlayerValid;
 //@}
 @end
 
 
-@implementation NewGameController
+@implementation NewPlayerController
 
 @synthesize delegate;
-@synthesize boardSize;
+@synthesize player;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a NewGameController instance of
+/// @brief Convenience constructor. Creates a NewPlayerController instance of
 /// grouped style.
 // -----------------------------------------------------------------------------
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate
++ (NewPlayerController*) controllerWithDelegate:(id<NewPlayerDelegate>)delegate
 {
-  NewGameController* controller = [[NewGameController alloc] initWithStyle:UITableViewStyleGrouped];
+  NewPlayerController* controller = [[NewPlayerController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
-    NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
-    assert(model);
-    controller.boardSize = model.boardSize;
+    controller.player = [[[Player alloc] init] autorelease];
   }
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NewGameController object.
+/// @brief Deallocates memory allocated by this NewPlayerController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.delegate = nil;
+  self.player = nil;
   [super dealloc];
 }
 
@@ -158,10 +140,11 @@ enum KomiSectionItem
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                         target:self
                                                                                         action:@selector(cancel:)];
-  self.navigationItem.title = @"New Game";
+  self.navigationItem.title = @"New Player";
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
 }
 
 // -----------------------------------------------------------------------------
@@ -178,25 +161,31 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting parameters for a new
-/// game.
+/// @brief Invoked when the user has finished entering data for a new player.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  // Add the player object to the model.
+  //
+  // Note that at this time there may still be text in the UITextField that has
+  // not yet been synced to the player object, simply because the user has
+  // tapped the "Done" button without tapping the "return" button of the
+  // keyboard first. The sync will occur, though, as soon as this controller is
+  // dismissed: At that time, the UITextField will lose its first responder
+  // status, which will trigger the delegate method textFieldDidEndEditing:
+  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
   assert(model);
-  model.boardSize = self.boardSize;
+  [model add:self.player];
 
-  [GoGame newGame];
-  [self.delegate didStartNewGame:true];
+  [self.delegate didCreateNewPlayer:true];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has decided not to start a new game.
+/// @brief Invoked when the user has decided not to creat a new player.
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
-  [self.delegate didStartNewGame:false];
+  [self.delegate didCreateNewPlayer:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -214,14 +203,10 @@ enum KomiSectionItem
 {
   switch (section)
   {
-    case BoardSizeSection:
-      return MaxBoardSizeSectionItem;
-    case PlayersSection:
-      return MaxPlayersSectionItem;
-    case HandicapSection:
-      return MaxHandicapSectionItem;
-    case KomiSection:
-      return MaxKomiSectionItem;
+    case PlayerNameSection:
+      return MaxPlayerNameSectionItem;
+    case IsHumanSection:
+      return MaxIsHumanSectionItem;
     default:
       assert(0);
       break;
@@ -234,58 +219,40 @@ enum KomiSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  UITableViewCell* cell;
   switch (indexPath.section)
   {
-    case BoardSizeSection:
+    case PlayerNameSection:
       switch (indexPath.row)
       {
-        case BoardSizeItem:
-          cell.textLabel.text = @"Board size";
-          cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-          break;
+        case PlayerNameItem:
+          {
+            enum TableViewCellType cellType = TextFieldCellType;
+            cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+            UITextField* textField = (UITextField*)[cell viewWithTag:cellType];
+            textField.delegate = self;
+            textField.text = self.player.name;
+            textField.placeholder = @"Player name";
+            // Place the insertion point into this field; might be better to
+            // do this in viewWillAppear:
+            [textField becomeFirstResponder];
+            break;
+          }
         default:
           assert(0);
           break;
       }
       break;
-    case PlayersSection:
+    case IsHumanSection:
       switch (indexPath.row)
       {
-        case BlackPlayerItem:
-          cell.textLabel.text = @"Black";
-          cell.detailTextLabel.text = @"Human Player";
+        case IsHumanItem:
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          cell.textLabel.text = @"Human player";
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
+          accessoryView.on = self.player.human;
           break;
-        case WhitePlayerItem:
-          cell.textLabel.text = @"White";
-          cell.detailTextLabel.text = @"Computer Player";
-          break;
-        default:
-          assert(0);
-          break;
-      }
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
-    case HandicapSection:
-      switch (indexPath.row)
-      {
-        case HandicapItem:
-          cell.textLabel.text = @"Handicap";
-          cell.detailTextLabel.text = @"0";
-          cell.accessoryType = UITableViewCellAccessoryNone;
-        default:
-          assert(0);
-          break;
-      }
-      break;
-    case KomiSection:
-      switch (indexPath.row)
-      {
-        case KomiItem:
-          cell.textLabel.text = @"Komi";
-          cell.detailTextLabel.text = @"6½";
-          cell.accessoryType = UITableViewCellAccessoryNone;
         default:
           assert(0);
           break;
@@ -305,48 +272,44 @@ enum KomiSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-
-  UIViewController* modalController;
-  switch (indexPath.section)
-  {
-    case BoardSizeSection:
-      modalController = [[BoardSizeController controllerWithDelegate:self
-                                                    defaultBoardSize:self.boardSize] retain];
-      break;
-    case PlayersSection:
-      return;
-    case HandicapSection:
-      return;
-    case KomiSection:
-      return;
-    default:
-      assert(0);
-      return;
-  }
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
-  [navigationController release];
-  [modalController release];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief BoardSizeDelegate protocol method.
+/// @brief UITextFieldDelegate protocol method.
+///
+/// An alternative to using the delegate protocol is to listen for notifications
+/// sent by the text field.
 // -----------------------------------------------------------------------------
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection
+- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
 {
-  if (didMakeSelection)
-  {
-    if (self.boardSize != controller.boardSize)
-    {
-      self.boardSize = controller.boardSize;
-      NSIndexPath* boardSizeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BoardSizeSection];
-      UITableViewCell* boardSizeCell = [self.tableView cellForRowAtIndexPath:boardSizeIndexPath];
-      boardSizeCell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-    }
-  }
-  [self dismissModalViewControllerAnimated:YES];
+  // Compose the string as it would look like if the proposed change had already
+  // been made
+  self.player.name = [textField.text stringByReplacingCharactersInRange:range withString:string];
+  // Make sure that the new player cannot be added, unless its name is valid
+  self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+  // Accept all changes, even those that make the player name invalid
+  // -> the user must simply continue editing until the player name becomes
+  //    valid
+  return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Is Human" switch. Updates the Player
+/// object with the new value.
+// -----------------------------------------------------------------------------
+- (void) toggleIsHuman:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.player.human = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the current Player object contains valid data so that
+/// the object can safely be added to the Player model.
+// -----------------------------------------------------------------------------
+- (bool) isPlayerValid
+{
+  return (self.player.name > 0);
 }
 
 @end

@@ -418,14 +418,9 @@
   // navigation item according to its needs.
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:newGameController];
-  // Present the navigation controller, not the "new game" controller. Control
-  // does not return until the modal controller has been dismissed. This happens
-  // when we (as the delegate of the "new game" controller) get notified that
-  // either the required information has been collected, or that the user has
-  // cancelled creation of the new game.
+  // Present the navigation controller, not the "new game" controller.
   navigationController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
   [self presentModalViewController:navigationController animated:YES];
-
   // Cleanup
   [navigationController release];
   [newGameController release];

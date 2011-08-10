@@ -54,6 +54,12 @@ Priority 1 (important)
 - Panning outside the board sometimes triggers a PlayMove. May have something
   to do with changing the board size and starting a new game. Panning very fast
   sometimes also triggers the error.
+- Little Go sometimes won't let you play on a certain intersection, incorrectly
+  thinking that the move is illegal. There are several potential sources for
+  this bug:
+  - The code that determines whether a move is legal is not correct
+  - Some sort of rendering bug: What the user sees in PlayView does not
+    correspond to the state in memory
 
 
 Priority 2 (nice to have)

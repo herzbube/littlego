@@ -18,6 +18,7 @@
 // Project includes
 #import "BoardSizeController.h"
 #import "../Go/GoBoard.h"
+#import "../utility/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------
@@ -144,13 +145,7 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  static NSString* cellID = @"BoardSizeCell";
-  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-  if (cell == nil)
-  {
-    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                   reuseIdentifier:cellID] autorelease];
-  }
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
   cell.textLabel.text = [GoBoard stringForSize:indexPath.row];
   if (indexPath.row == self.boardSize)
     cell.accessoryType = UITableViewCellAccessoryCheckmark;

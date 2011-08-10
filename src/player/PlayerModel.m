@@ -112,4 +112,24 @@
   return player.name;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Adds object @a player to this model.
+// -----------------------------------------------------------------------------
+- (void) add:(Player*)player
+{
+  NSMutableArray* localPlayerList = (NSMutableArray*)self.playerList;
+  [localPlayerList addObject:player];
+  self.playerCount = [localPlayerList count];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes object @a player from this model.
+// -----------------------------------------------------------------------------
+- (void) remove:(Player*)player
+{
+  NSMutableArray* localPlayerList = (NSMutableArray*)self.playerList;
+  [localPlayerList removeObject:player];
+  self.playerCount = [localPlayerList count];
+}
+
 @end

@@ -16,26 +16,30 @@
 
 
 // Forward declarations
-@class Player;
+@class UITableViewCell;
+@class UITableView;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayerModel class manages Player objects and provides clients
-/// with access to those objects. Data that makes up Player objects is read
-/// from and written to the user defaults system.
+/// @brief Enumerates types of table view cells that can be created by
+/// TableViewCellFactory.
 // -----------------------------------------------------------------------------
-@interface PlayerModel : NSObject
+enum TableViewCellType
+{
+  DefaultCellType,
+  Value1CellType,
+  SwitchCellType,
+  TextFieldCellType
+};
+
+// -----------------------------------------------------------------------------
+/// @brief The TableViewCellFactory class is a container for factory functions
+/// that create table view cell objects.
+// -----------------------------------------------------------------------------
+@interface TableViewCellFactory : NSObject
 {
 }
 
-- (id) init;
-- (void) readUserDefaults;
-- (void) writeUserDefaults;
-- (NSString*) playerNameAtIndex:(int)index;
-- (void) add:(Player*)player;
-- (void) remove:(Player*)player;
-
-@property(assign) int playerCount;
-@property(retain) NSArray* playerList;
++ (UITableViewCell*) cellWithType:(enum TableViewCellType)type tableView:(UITableView*)tableView;
 
 @end
