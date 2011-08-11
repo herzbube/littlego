@@ -28,14 +28,9 @@
 /// NewPlayerController.
 // -----------------------------------------------------------------------------
 @protocol NewPlayerDelegate
-/// @brief This method is invoked when the user has finished working with the
-/// NewPlayerController. The implementation is responsible for dismissing the
-/// modal NewPlayerController.
-///
-/// If @a didCreateNewPlayer is true, the user has requested creating a new
-/// player. If @a didCreateNewPlayer is false, the user has cancelled creating
-/// a new player.
-- (void) didCreateNewPlayer:(bool)didCreateNewPlayer;
+/// @brief This method is invoked after @a newPlayerController has created a
+/// new player object.
+- (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
 @end
 
 
@@ -47,14 +42,14 @@
 /// create a new player. The view is a generic UITableView whose input elements
 /// are created dynamically by NewPlayerController.
 ///
-/// NewPlayerController expects to be displayed modally by a navigation
-/// controller. For this reason it populates its own navigation item with
-/// controls that are then expected to be displayed in the navigation bar of
-/// the parent navigation controller.
+/// NewPlayerController expects to be displayed by a navigation controller. For
+/// this reason it populates its own navigation item with controls that are
+/// then expected to be displayed in the navigation bar of the parent
+/// navigation controller.
 ///
 /// NewPlayerController expects to be configured with a delegate that can be
-/// informed of the result of data collection. For this to work, the delegate
-/// must implement the protocol NewPlayerDelegate.
+/// informed after a new player object has been created. For this to work, the
+/// delegate must implement the protocol NewPlayerDelegate.
 // -----------------------------------------------------------------------------
 @interface NewPlayerController : UITableViewController <UITextFieldDelegate>
 {

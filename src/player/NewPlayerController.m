@@ -67,8 +67,7 @@ enum IsHumanSectionItem
 //@}
 /// @name Action methods
 //@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
+- (void) create:(id)sender;
 - (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
@@ -137,13 +136,11 @@ enum IsHumanSectionItem
   // Configure the navigation item representing this controller. This item will
   // be displayed by the navigation controller that wraps this controller in
   // its navigation bar.
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                        target:self
-                                                                                        action:@selector(cancel:)];
   self.navigationItem.title = @"New Player";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                         target:self
-                                                                                         action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
+                                                                            style:UIBarButtonItemStyleDone
+                                                                           target:self
+                                                                           action:@selector(create:)];
   self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
 }
 
@@ -161,23 +158,17 @@ enum IsHumanSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished entering data for a new player.
+/// @brief Invoked when the user wants to create a new player object using the
+/// data that has been entered so far.
 // -----------------------------------------------------------------------------
-- (void) done:(id)sender
+- (void) create:(id)sender
 {
   PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
   assert(model);
   [model add:self.player];
 
-  [self.delegate didCreateNewPlayer:true];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked when the user has decided not to creat a new player.
-// -----------------------------------------------------------------------------
-- (void) cancel:(id)sender
-{
-  [self.delegate didCreateNewPlayer:false];
+  [self.delegate didCreateNewPlayer:self];
+  [self.navigationController popViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -301,7 +292,7 @@ enum IsHumanSectionItem
 // -----------------------------------------------------------------------------
 - (bool) isPlayerValid
 {
-  return (self.player.name > 0);
+  return (self.player.name.length > 0);
 }
 
 @end
