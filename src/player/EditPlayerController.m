@@ -16,17 +16,15 @@
 
 
 // Project includes
-#import "NewPlayerController.h"
-#import "PlayerModel.h"
+#import "EditPlayerController.h"
 #import "../utility/TableViewCellFactory.h"
-#import "../ApplicationDelegate.h"
 #import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "New Player" table view.
+/// @brief Enumerates the sections presented in the "Edit Player" table view.
 // -----------------------------------------------------------------------------
-enum NewPlayerTableViewSection
+enum EditPlayerTableViewSection
 {
   PlayerNameSection,
   IsHumanSection,
@@ -53,9 +51,9 @@ enum IsHumanSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewPlayerController.
+/// @brief Class extension with private methods for EditPlayerController.
 // -----------------------------------------------------------------------------
-@interface NewPlayerController()
+@interface EditPlayerController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -67,7 +65,6 @@ enum IsHumanSectionItem
 //@}
 /// @name Action methods
 //@{
-- (void) create:(id)sender;
 - (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
@@ -91,30 +88,30 @@ enum IsHumanSectionItem
 @end
 
 
-@implementation NewPlayerController
+@implementation EditPlayerController
 
 @synthesize delegate;
 @synthesize player;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a NewPlayerController instance of
-/// grouped style.
+/// @brief Convenience constructor. Creates a EditPlayerController instance of
+/// grouped style that is used to edit @a player.
 // -----------------------------------------------------------------------------
-+ (NewPlayerController*) controllerWithDelegate:(id<NewPlayerDelegate>)delegate
++ (EditPlayerController*) controllerForPlayer:(Player*)player withDelegate:(id<EditPlayerDelegate>)delegate
 {
-  NewPlayerController* controller = [[NewPlayerController alloc] initWithStyle:UITableViewStyleGrouped];
+  EditPlayerController* controller = [[EditPlayerController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.player = [[[Player alloc] init] autorelease];
+    controller.player = player;
   }
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NewPlayerController object.
+/// @brief Deallocates memory allocated by this EditPlayerController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -133,15 +130,8 @@ enum IsHumanSectionItem
 
   assert(self.delegate != nil);
 
-  // Configure the navigation item representing this controller. This item will
-  // be displayed by the navigation controller that wraps this controller in
-  // its navigation bar.
-  self.navigationItem.title = @"New Player";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
-                                                                            style:UIBarButtonItemStyleDone
-                                                                           target:self
-                                                                           action:@selector(create:)];
-  self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+  self.navigationItem.title = @"Edit Player";
+  self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
 }
 
 // -----------------------------------------------------------------------------
@@ -155,20 +145,6 @@ enum IsHumanSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked when the user wants to create a new player object using the
-/// data that has been entered so far.
-// -----------------------------------------------------------------------------
-- (void) create:(id)sender
-{
-  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
-  assert(model);
-  [model add:self.player];
-
-  [self.delegate didCreateNewPlayer:self];
-  [self.navigationController popViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -207,45 +183,45 @@ enum IsHumanSectionItem
   {
     case PlayerNameSection:
       switch (indexPath.row)
+    {
+      case PlayerNameItem:
       {
-        case PlayerNameItem:
-          {
-            enum TableViewCellType cellType = TextFieldCellType;
-            cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-            UITextField* textField = (UITextField*)[cell viewWithTag:cellType];
-            textField.delegate = self;
-            textField.text = self.player.name;
-            textField.placeholder = @"Player name";
-            // Place the insertion point into this field; might be better to
-            // do this in viewWillAppear:
-            [textField becomeFirstResponder];
-            break;
-          }
-        default:
-          assert(0);
-          break;
+        enum TableViewCellType cellType = TextFieldCellType;
+        cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+        UITextField* textField = (UITextField*)[cell viewWithTag:cellType];
+        textField.delegate = self;
+        textField.text = self.player.name;
+        textField.placeholder = @"Player name";
+        // Place the insertion point into this field; might be better to
+        // do this in viewWillAppear:
+        [textField becomeFirstResponder];
+        break;
       }
+      default:
+        assert(0);
+        break;
+    }
       break;
     case IsHumanSection:
       switch (indexPath.row)
-      {
-        case IsHumanItem:
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          cell.textLabel.text = @"Human player";
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
-          accessoryView.on = self.player.human;
-          break;
-        default:
-          assert(0);
-          break;
-      }
+    {
+      case IsHumanItem:
+        cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+        cell.textLabel.text = @"Human player";
+        UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+        [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
+        accessoryView.on = self.player.human;
+        break;
+      default:
+        assert(0);
+        break;
+    }
       break;
     default:
       assert(0);
       break;
   }
-
+  
   return cell;
 }
 
@@ -268,8 +244,11 @@ enum IsHumanSectionItem
   // Compose the string as it would look like if the proposed change had already
   // been made
   self.player.name = [textField.text stringByReplacingCharactersInRange:range withString:string];
-  // Make sure that the new player cannot be added, unless its name is valid
-  self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+  // Make sure that the editing view cannot be left, unless the player name is
+  // valid
+  self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+  // Notify delegate that something about the player object has changed
+  [self.delegate didChangePlayer:self];
   // Accept all changes, even those that make the player name invalid
   // -> the user must simply continue editing until the player name becomes
   //    valid
@@ -284,6 +263,8 @@ enum IsHumanSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.player.human = accessoryView.on;
+  // Notify delegate that something about the player object has changed
+  [self.delegate didChangePlayer:self];
 }
 
 // -----------------------------------------------------------------------------

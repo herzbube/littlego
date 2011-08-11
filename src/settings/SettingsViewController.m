@@ -100,11 +100,13 @@ enum PlayersSectionItem
 //@}
 /// @name NewPlayerDelegate protocol
 //@{
-- (void) didCreateNewPlayer:(bool)didCreateNewPlayer;
+- (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
+- (void) didChangePlayer:(EditPlayerController*)editPlayerController;
 //@}
 /// @name Helpers
 //@{
-- (void) doNewPlayer;
+- (void) newPlayer;
+- (void) editPlayer:(Player*)player;
 //@}
 @end
 
@@ -298,9 +300,9 @@ enum PlayersSectionItem
   {
     case PlayersSection:
       if (indexPath.row < self.playerModel.playerCount)
-        ;  // TODO implement editing a player
+        [self editPlayer:[self.playerModel.playerList objectAtIndex:indexPath.row]];
       if (indexPath.row == self.playerModel.playerCount)
-        [self doNewPlayer];
+        [self newPlayer];
       else
         assert(0);
       break;
@@ -363,7 +365,7 @@ enum PlayersSectionItem
 /// @brief Displays NewPlayerController to gather information required to
 /// create a new player.
 // -----------------------------------------------------------------------------
-- (void) doNewPlayer;
+- (void) newPlayer;
 {
   NewPlayerController* newPlayerController = [[NewPlayerController controllerWithDelegate:self] retain];
   [self.navigationController pushViewController:newPlayerController animated:YES];
@@ -374,10 +376,32 @@ enum PlayersSectionItem
 /// @brief This method is invoked after @a newPlayerController has created a
 /// new player object.
 // -----------------------------------------------------------------------------
-- (void) didCreateNewPlayer:(bool)didCreateNewPlayer
+- (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController
 {
   // Reloading the entire table view data is the cheapest way (in terms of code
   // lines) to add a row for the new player.
+  [[self tableView] reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays EditPlayerController to allow the user to change player
+/// information.
+// -----------------------------------------------------------------------------
+- (void) editPlayer:(Player*)player
+{
+  EditPlayerController* editPlayerController = [[EditPlayerController controllerForPlayer:player withDelegate:self] retain];
+  [self.navigationController pushViewController:editPlayerController animated:YES];
+  [editPlayerController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This method is invoked after @a EditPlayerController has updated its
+/// player object with new information.
+// -----------------------------------------------------------------------------
+- (void) didChangePlayer:(EditPlayerController*)editPlayerController
+{
+  // Reloading the entire table view data is the cheapest way (in terms of code
+  // lines) to update the row with changed data
   [[self tableView] reloadData];
 }
 

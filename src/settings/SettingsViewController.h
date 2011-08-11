@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "../player/EditPlayerController.h"
 #import "../player/NewPlayerController.h"
 
 // System includes
@@ -30,7 +31,7 @@
 /// @brief The SettingsViewController class is responsible for managing user
 /// interaction on the "Settings" view.
 // -----------------------------------------------------------------------------
-@interface SettingsViewController : UITableViewController <NewPlayerDelegate>
+@interface SettingsViewController : UITableViewController <EditPlayerDelegate, NewPlayerDelegate>
 {
 }
 

@@ -58,6 +58,7 @@
 		CDBF97E813EEBFD400476748 /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */; };
 		CDBF984D13EEF69B00476748 /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF984C13EEF69B00476748 /* NewPlayerController.m */; };
 		CDBF98E113F064FF00476748 /* TableViewCellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF98E013F064FF00476748 /* TableViewCellFactory.m */; };
+		CDBF99DE13F2FF2500476748 /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF99DD13F2FF2500476748 /* EditPlayerController.m */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -137,6 +138,8 @@
 		CDBF984C13EEF69B00476748 /* NewPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewPlayerController.m; sourceTree = "<group>"; };
 		CDBF98DF13F064FF00476748 /* TableViewCellFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCellFactory.h; sourceTree = "<group>"; };
 		CDBF98E013F064FF00476748 /* TableViewCellFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCellFactory.m; sourceTree = "<group>"; };
+		CDBF99DC13F2FF2500476748 /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
+		CDBF99DD13F2FF2500476748 /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -336,6 +339,8 @@
 		CDE302811360BDA3005235F2 /* player */ = {
 			isa = PBXGroup;
 			children = (
+				CDBF99DC13F2FF2500476748 /* EditPlayerController.h */,
+				CDBF99DD13F2FF2500476748 /* EditPlayerController.m */,
 				CDBF984B13EEF69B00476748 /* NewPlayerController.h */,
 				CDBF984C13EEF69B00476748 /* NewPlayerController.m */,
 				CDE302821360BDA3005235F2 /* Player.h */,
@@ -540,6 +545,7 @@
 				CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */,
 				CDBF984D13EEF69B00476748 /* NewPlayerController.m in Sources */,
 				CDBF98E113F064FF00476748 /* TableViewCellFactory.m in Sources */,
+				CDBF99DE13F2FF2500476748 /* EditPlayerController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
