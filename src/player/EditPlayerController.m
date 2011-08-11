@@ -17,7 +17,9 @@
 
 // Project includes
 #import "EditPlayerController.h"
+#import "PlayerModel.h"
 #import "../utility/TableViewCellFactory.h"
+#import "../ApplicationDelegate.h"
 #import "../player/Player.h"
 
 
@@ -65,6 +67,7 @@ enum IsHumanSectionItem
 //@}
 /// @name Action methods
 //@{
+- (void) delete:(id)sender;
 - (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
@@ -131,6 +134,10 @@ enum IsHumanSectionItem
   assert(self.delegate != nil);
 
   self.navigationItem.title = @"Edit Player";
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete"
+                                                                            style:UIBarButtonItemStyleDone
+                                                                           target:self
+                                                                           action:@selector(delete:)];
   self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
 }
 
@@ -254,6 +261,20 @@ enum IsHumanSectionItem
   //    valid
   return YES;
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user wants to delete the player object.
+// -----------------------------------------------------------------------------
+- (void) delete:(id)sender
+{
+  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+  assert(model);
+  [model remove:self.player];
+
+  [self.delegate didDeletePlayer:self];
+  [self.navigationController popViewControllerAnimated:YES];
+}
+
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Is Human" switch. Updates the Player

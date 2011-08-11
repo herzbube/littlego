@@ -102,6 +102,7 @@ enum PlayersSectionItem
 //@{
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
+- (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
 //@}
 /// @name Helpers
 //@{
@@ -400,8 +401,15 @@ enum PlayersSectionItem
 // -----------------------------------------------------------------------------
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController
 {
-  // Reloading the entire table view data is the cheapest way (in terms of code
-  // lines) to update the row with changed data
+  [[self tableView] reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This method is invoked after @a EditPlayerController has deleted its
+/// player object.
+// -----------------------------------------------------------------------------
+- (void) didDeletePlayer:(EditPlayerController*)editPlayerController
+{
   [[self tableView] reloadData];
 }
 
