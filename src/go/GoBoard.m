@@ -28,6 +28,9 @@
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
+#import "../ApplicationDelegate.h"
+#import "../newgame/NewGameModel.h"
+#import "../gtp/GtpCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -36,8 +39,13 @@
 @interface GoBoard()
 /// @name Initialization and deallocation
 //@{
-- (id) init;
+- (id) initWithSize:(enum GoBoardSize)boardSize;
 - (void) dealloc;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(readwrite) enum GoBoardSize size;
+@property(readwrite) int dimensions;
 //@}
 - (NSArray*) starPointVertexes;
 @end
@@ -46,14 +54,25 @@
 @implementation GoBoard
 
 @synthesize size;
+@synthesize dimensions;
 @synthesize starPoints;
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GoBoard instance of size 0.
+/// @brief Convenience constructor. Creates a GoBoard instance which uses the
+/// "New Game" default board size.
 // -----------------------------------------------------------------------------
-+ (GoBoard*) board
++ (GoBoard*) newGameBoard
 {
-  GoBoard* board = [[GoBoard alloc] init];
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  return [GoBoard boardWithSize:model.boardSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoBoard instance of size @a size.
+// -----------------------------------------------------------------------------
++ (GoBoard*) boardWithSize:(enum GoBoardSize)size;
+{
+  GoBoard* board = [[GoBoard alloc] initWithSize:size];
   if (board)
     [board autorelease];
   return board;
@@ -147,18 +166,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoBoard object with size 0.
+/// @brief Initializes a GoBoard object with size @a boardSize.
 ///
 /// @note This is the designated initializer of GoBoard.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithSize:(enum GoBoardSize)boardSize
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.size = 0;
+  // Setting this property 1) also adjusts property dimensions, and 2) triggers
+  // creation of all GoPoint objects!
+  self.size = boardSize;
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
   starPoints = [[NSArray array] retain];
 
@@ -182,17 +203,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adjusts the size of this GoBoard object to @a newValue.
+/// @brief Adjusts the size of this GoBoard object to @a newValue. Also adjusts
+/// property @e dimensions to a value that corresponds to @a newValue.
 ///
 /// This function should only be called while the game has not yet started.
 // -----------------------------------------------------------------------------
-- (void) setSize:(int)newValue
+- (void) setSize:(enum GoBoardSize)newValue
 {
   @synchronized(self)
   {
     if (size == newValue)
       return;
     size = newValue;
+    self.dimensions = [GoBoard dimensionForSize:newValue];
 
     // Removing references to GoPoint objects destroys them
     [m_vertexDict removeAllObjects];
@@ -222,6 +245,10 @@
     // Make a copy that is immutable because we hand out references to the
     // array, and we don't want clients to be able to change the array
     starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
+
+    // GTP engine must also be notified
+    [[GtpCommand command:@"clear_board"] submit];
+    [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", self.dimensions]] submit];
   }
 }
 
@@ -281,12 +308,12 @@
       break;
     case RightDirection:
       numericVertex.x++;
-      if (numericVertex.x > self.size)
+      if (numericVertex.x > self.dimensions)
         return nil;
       break;
     case UpDirection:
       numericVertex.y++;
-      if (numericVertex.y > self.size)
+      if (numericVertex.y > self.dimensions)
         return nil;
       break;
     case DownDirection:
@@ -296,11 +323,11 @@
       break;
     case NextDirection:
       numericVertex.x++;
-      if (numericVertex.x > self.size)
+      if (numericVertex.x > self.dimensions)
       {
         numericVertex.x = 1;
         numericVertex.y++;
-        if (numericVertex.y > self.size)
+        if (numericVertex.y > self.dimensions)
           return nil;
       }
       break;
@@ -308,7 +335,7 @@
       numericVertex.x--;
       if (numericVertex.x < 1)
       {
-        numericVertex.x = self.size;
+        numericVertex.x = self.dimensions;
         numericVertex.y--;
         if (numericVertex.y < 1)
           return nil;
@@ -351,7 +378,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:starPointsKey];
-  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.size]; 
+  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.dimensions]; 
   NSString* starPointVertexListAsString = [dictionary valueForKey:boardSizeKey];
   if (starPointVertexListAsString == nil || [starPointVertexListAsString length] == 0)
     return [NSArray array];

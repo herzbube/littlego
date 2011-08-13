@@ -74,7 +74,6 @@
 @synthesize firstMove;
 @synthesize lastMove;
 @synthesize state;
-@synthesize boardSize;
 @synthesize computerThinks;
 @synthesize score;
 
@@ -133,7 +132,7 @@ static GoGame* sharedGame = nil;
 
   // Initialize members (some objects initialize themselves with values from
   // NewGameModel, but we don't really have to know about this)
-  self.board = [GoBoard board];
+  self.board = [GoBoard newGameBoard];
   self.playerBlack = [GoPlayer newGameBlackPlayer];
   self.playerWhite = [GoPlayer newGameWhitePlayer];
   self.firstMove = nil;
@@ -145,16 +144,6 @@ static GoGame* sharedGame = nil;
                                            selector:@selector(gtpResponseReceived:)
                                                name:gtpResponseReceivedNotification
                                              object:nil];
-  [[GtpCommand command:@"clear_board"] submit];
-
-  // Setting this property triggers creation of all GoPoint objects
-  // -> do this only after everything else has been set up
-  // TODO Try to improve the design so that the order of initialization is
-  // not important
-  // TODO It would be better if GoBoard would initialize itself to the correct
-  // size by reading from the user defaults. Note that the GTP client also
-  // needs to be set up.
-  self.boardSize = [GoBoard dimensionForSize:[ApplicationDelegate sharedDelegate].newGameModel.boardSize];
 
   return self;
 }
@@ -216,29 +205,6 @@ static GoGame* sharedGame = nil;
     state = newValue;
   }
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (int) boardSize
-{
-  @synchronized(self)
-  {
-    return board.size;
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setBoardSize:(int)newValue
-{
-  @synchronized(self)
-  {
-    board.size = newValue;
-    [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", newValue]] submit];
-  }
 }
 
 // -----------------------------------------------------------------------------

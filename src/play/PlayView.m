@@ -193,7 +193,7 @@
 {
   // No need to update if the new rect is the same as the one we did our
   // previous calculations with *AND* the board dimensions did not change
-  int currentBoardDimension = [GoGame sharedGame].board.size;
+  int currentBoardDimension = [GoGame sharedGame].board.dimensions;
   if (CGRectEqualToRect(self.previousDrawRect, rect) && self.previousBoardDimension == currentBoardDimension)
     return;
   self.previousDrawRect = rect;
@@ -218,7 +218,7 @@
   // subsequent point distance calculation, the final line length calculation
   // must be based on the point distance
   int lineLengthApproximation = self.boardSize - (self.boardInnerMargin * 2);
-  self.pointDistance = floor(lineLengthApproximation / ([GoGame sharedGame].board.size - 1));
+  self.pointDistance = floor(lineLengthApproximation / ([GoGame sharedGame].board.dimensions - 1));
   self.lineLength = self.pointDistance * (currentBoardDimension - 1);
   // Don't use padding here, rounding errors mighth cause improper positioning
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
@@ -267,7 +267,7 @@
     int lineStartPointX = self.topLeftPointX;
     int lineStartPointY = self.topLeftPointY;
     bool drawHorizontalLine = (0 == lineDirection) ? true : false;
-    for (int lineCounter = 0; lineCounter < [GoGame sharedGame].board.size; ++lineCounter)
+    for (int lineCounter = 0; lineCounter < [GoGame sharedGame].board.dimensions; ++lineCounter)
     {
       CGContextBeginPath(context);
       CGContextMoveToPoint(context, lineStartPointX + gHalfPixel, lineStartPointY + gHalfPixel);
@@ -289,7 +289,7 @@
           CGContextSetStrokeColorWithColor(context, self.model.lineColor.CGColor);
         lineStartPointX += self.pointDistance;  // calculate for next iteration
       }
-      if (0 == lineCounter || ([GoGame sharedGame].board.size - 1) == lineCounter)
+      if (0 == lineCounter || ([GoGame sharedGame].board.dimensions - 1) == lineCounter)
         CGContextSetLineWidth(context, self.model.boundingLineWidth);
       else
         CGContextSetLineWidth(context, self.model.normalLineWidth);

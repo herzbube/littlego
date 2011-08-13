@@ -41,7 +41,8 @@
   NSMutableDictionary* m_vertexDict;
 }
 
-+ (GoBoard*) board;
++ (GoBoard*) newGameBoard;
++ (GoBoard*) boardWithSize:(enum GoBoardSize)size;
 + (NSString*) stringForSize:(enum GoBoardSize)size;
 + (int) dimensionForSize:(enum GoBoardSize)size;
 + (enum GoBoardSize) sizeForDimension:(int)dimension;
@@ -51,7 +52,11 @@
 
 /// @brief The board size, specifying the horizontal and vertical board
 /// dimensions.
-@property int size;
+@property(readonly) enum GoBoardSize size;
+/// @brief Numeric board dimension that corresponds to property @a size. For
+/// instance 19, if @e size has the enum value #BoardSize19.
+@property(readonly) int dimensions;
+// Getter implementation documents this property.
 @property(readonly, retain) NSArray* starPoints;
 
 @end

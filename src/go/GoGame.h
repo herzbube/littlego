@@ -52,9 +52,6 @@
 
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(retain) GoBoard* board;
-/// @brief Convenience property that provides access to the board size without
-/// having to deal with GoBoard.
-@property int boardSize;
 /// @brief The GoPlayer object that plays for black.
 @property(retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays for white.
