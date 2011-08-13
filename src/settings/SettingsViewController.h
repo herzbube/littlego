@@ -16,8 +16,8 @@
 
 
 // Project includes
-#import "../player/EditPlayerController.h"
-#import "../player/NewPlayerController.h"
+#import "EditPlayerController.h"
+#import "NewPlayerController.h"
 
 // System includes
 #import <UIKit/UIKit.h>
