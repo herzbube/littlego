@@ -16,15 +16,17 @@
 
 
 // Project includes
-#import "BoardSizeSelectionController.h"
-#import "../Go/GoBoard.h"
+#import "PlayerSelectionController.h"
 #import "../utility/TableViewCellFactory.h"
+#import "../ApplicationDelegate.h"
+#import "../player/PlayerModel.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BoardSizeSelectionController.
+/// @brief Class extension with private methods for PlayerSelectionController.
 // -----------------------------------------------------------------------------
-@interface BoardSizeSelectionController()
+@interface PlayerSelectionController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -48,37 +50,45 @@
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
+/// @name Helpers
+//@{
+- (bool) isSelectionValid;
+//@}
 @end
 
 
-@implementation BoardSizeSelectionController
+@implementation PlayerSelectionController
 
 @synthesize delegate;
-@synthesize boardSize;
+@synthesize player;
+@synthesize blackPlayer;
+
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a BoardSizeSelectionController
-/// instance of grouped style.
+/// @brief Convenience constructor. Creates a PlayerSelectionController instance
+/// of grouped style.
 // -----------------------------------------------------------------------------
-+ (BoardSizeSelectionController*) controllerWithDelegate:(id<BoardSizeSelectionDelegate>)delegate defaultBoardSize:(enum GoBoardSize)boardSize
++ (PlayerSelectionController*) controllerWithDelegate:(id<PlayerSelectionDelegate>)delegate defaultPlayer:(Player*)player blackPlayer:(bool)blackPlayer
 {
-  BoardSizeSelectionController* controller = [[BoardSizeSelectionController alloc] initWithStyle:UITableViewStyleGrouped];
+  PlayerSelectionController* controller = [[PlayerSelectionController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.boardSize = boardSize;
+    controller.player = player;
+    controller.blackPlayer = blackPlayer;
   }
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this BoardSizeSelectionController
+/// @brief Deallocates memory allocated by this PlayerSelectionController
 /// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.delegate = nil;
+  self.player = nil;
   [super dealloc];
 }
 
@@ -98,10 +108,11 @@
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                         target:self
                                                                                         action:@selector(cancel:)];
-  self.navigationItem.title = @"Board size";
+  self.navigationItem.title = @"Select player";
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
 
 // -----------------------------------------------------------------------------
@@ -118,19 +129,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting a board size.
+/// @brief Invoked when the user has finished selecting a player.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  [self.delegate boardSizeSelectionController:self didMakeSelection:true];
+  [self.delegate playerSelectionController:self didMakeSelection:true];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has cancelled selecting a board size.
+/// @brief Invoked when the user has cancelled selecting a player.
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
-  [self.delegate boardSizeSelectionController:self didMakeSelection:false];
+  [self.delegate playerSelectionController:self didMakeSelection:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -138,7 +149,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return BoardSizeMax + 1;
+  return [ApplicationDelegate sharedDelegate].playerModel.playerCount;
 }
 
 // -----------------------------------------------------------------------------
@@ -147,8 +158,10 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [GoBoard stringForSize:indexPath.row];
-  if (indexPath.row == self.boardSize)
+  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+  Player* cellPlayer = [model.playerList objectAtIndex:indexPath.row];
+  cell.textLabel.text = cellPlayer.name;
+  if (cellPlayer == self.player)
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   else
     cell.accessoryType = UITableViewCellAccessoryNone;
@@ -163,11 +176,14 @@
   // Deselect the row that was just selected
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   // Do nothing if the selection did not change
-  enum GoBoardSize newBoardSize = (enum GoBoardSize)indexPath.row;
-  if (self.boardSize == newBoardSize)
+  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+  NSArray* playerList = model.playerList;
+  Player* newPlayer = [playerList objectAtIndex:indexPath.row];
+  if (self.player == newPlayer)
     return;
   // Remove the checkmark from the previously selected cell
-  NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:self.boardSize inSection:0];
+  int previousRow = [playerList indexOfObject:self.player];
+  NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:previousRow inSection:0];
   UITableViewCell* previousCell = [tableView cellForRowAtIndexPath:previousIndexPath];
   if (previousCell.accessoryType == UITableViewCellAccessoryCheckmark)
     previousCell.accessoryType = UITableViewCellAccessoryNone;
@@ -176,7 +192,18 @@
   if (newCell.accessoryType == UITableViewCellAccessoryNone)
     newCell.accessoryType = UITableViewCellAccessoryCheckmark;
   // Last but not least, remember the new selection
-  self.boardSize = newBoardSize;
+  self.player = newPlayer;
+  // Also update the button that lets the user confirm the selection and
+  // dismiss the selection screen
+  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the currently selected player is valid.
+// -----------------------------------------------------------------------------
+- (bool) isSelectionValid
+{
+  return (self.player != nil);
 }
 
 @end

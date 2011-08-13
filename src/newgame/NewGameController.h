@@ -17,12 +17,14 @@
 
 // Project includes
 #import "BoardSizeSelectionController.h"
+#import "PlayerSelectionController.h"
 
 // System includes
 #import <UIKit/UIKit.h>
 
 // Forward declarations
 @class NewGameController;
+@class Player;
 
 
 // -----------------------------------------------------------------------------
@@ -30,13 +32,13 @@
 /// NewGameController.
 // -----------------------------------------------------------------------------
 @protocol NewGameDelegate
-/// @brief This method is invoked when the user has finished working with the
-/// NewGameController. The implementation is responsible for dismissing the
-/// modal NewGameController.
+/// @brief This method is invoked when the user has finished working with
+/// @a controller. The implementation is responsible for dismissing the modal
+/// @a controller.
 ///
 /// If @a didStartNewGame is true, the user has requested starting a new game.
 /// If @a didStartNewGame is false, the user has cancelled starting a new game.
-- (void) didStartNewGame:(bool)didStartNewGame;
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
 @end
 
 
@@ -58,7 +60,7 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate>
+@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate>
 {
 }
 
@@ -69,5 +71,9 @@
 @property(nonatomic, assign) id<NewGameDelegate> delegate;
 /// @brief The currently selected board size.
 @property enum GoBoardSize boardSize;
+/// @brief The currently selected player for black.
+@property(retain) Player* blackPlayer;
+/// @brief The currently selected player for white.
+@property(retain) Player* whitePlayer;
 
 @end

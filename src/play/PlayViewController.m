@@ -56,7 +56,7 @@
 //@}
 /// @name NewGameDelegate protocol
 //@{
-- (void) didStartNewGame:(bool)didStartNewGame;
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
 //@}
 /// @name Notification responders
 //@{
@@ -427,14 +427,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked when the user has finished working with the
-/// NewGameController. The implementation is responsible for dismissing the
-/// modal NewGameController.
+/// @brief This method is invoked when the user has finished working with
+/// @a controller. The implementation is responsible for dismissing the modal
+/// @a controller.
 ///
 /// If @a didStartNewGame is true, the user has requested starting a new game.
 /// If @a didStartNewGame is false, the user has cancelled starting a new game.
 // -----------------------------------------------------------------------------
-- (void) didStartNewGame:(bool)didStartNewGame
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {
   [self dismissModalViewControllerAnimated:YES];
 }

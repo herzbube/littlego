@@ -70,6 +70,7 @@
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */; };
 		CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */; };
+		CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -173,6 +174,8 @@
 		CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewPlayerController.m; sourceTree = "<group>"; };
 		CDFB49EE13F6AA7A00FAA5AF /* BoardSizeSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardSizeSelectionController.h; sourceTree = "<group>"; };
 		CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSizeSelectionController.m; sourceTree = "<group>"; };
+		CDFB4A1013F6AC3600FAA5AF /* PlayerSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerSelectionController.h; sourceTree = "<group>"; };
+		CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerSelectionController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -325,6 +328,8 @@
 				CDAB5ED013E483DE00C4A4AA /* NewGameController.m */,
 				CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */,
 				CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */,
+				CDFB4A1013F6AC3600FAA5AF /* PlayerSelectionController.h */,
+				CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */,
 			);
 			path = newgame;
 			sourceTree = "<group>";
@@ -546,6 +551,7 @@
 				CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */,
 				CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */,
 				CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */,
+				CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -22,6 +22,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
 #import "../ApplicationDelegate.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
@@ -106,6 +107,15 @@ enum KomiSectionItem
 //@{
 - (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
+/// @name PlayerSelectionDelegate protocol
+//@{
+- (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
+/// @name Helpers
+//@{
+- (void) updateCell:(UITableViewCell*)cell withPlayer:(Player*)player;
+- (bool) isSelectionValid;
+//@}
 @end
 
 
@@ -113,6 +123,8 @@ enum KomiSectionItem
 
 @synthesize delegate;
 @synthesize boardSize;
+@synthesize blackPlayer;
+@synthesize whitePlayer;
 
 
 // -----------------------------------------------------------------------------
@@ -129,6 +141,10 @@ enum KomiSectionItem
     NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
     assert(model);
     controller.boardSize = model.boardSize;
+    // TODO set defaults, e.g. if a game is in progress now, set the players
+    // of that game
+    controller.blackPlayer = nil;
+    controller.whitePlayer = nil;
   }
   return controller;
 }
@@ -162,6 +178,7 @@ enum KomiSectionItem
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
 
 // -----------------------------------------------------------------------------
@@ -251,22 +268,24 @@ enum KomiSectionItem
       }
       break;
     case PlayersSection:
-      switch (indexPath.row)
       {
-        case BlackPlayerItem:
-          cell.textLabel.text = @"Black";
-          cell.detailTextLabel.text = @"Human Player";
-          break;
-        case WhitePlayerItem:
-          cell.textLabel.text = @"White";
-          cell.detailTextLabel.text = @"Computer Player";
-          break;
-        default:
-          assert(0);
-          break;
+        switch (indexPath.row)
+        {
+          case BlackPlayerItem:
+            cell.textLabel.text = @"Black";
+            [self updateCell:cell withPlayer:self.blackPlayer];
+            break;
+          case WhitePlayerItem:
+            cell.textLabel.text = @"White";
+            [self updateCell:cell withPlayer:self.blackPlayer];
+            break;
+          default:
+            assert(0);
+            break;
+        }
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        break;
       }
-      cell.accessoryType = UITableViewCellAccessoryNone;
-      break;
     case HandicapSection:
       switch (indexPath.row)
       {
@@ -314,7 +333,24 @@ enum KomiSectionItem
                                                              defaultBoardSize:self.boardSize] retain];
       break;
     case PlayersSection:
-      return;
+      {
+        Player* player;
+        bool selectBlackPlayer;
+        if (indexPath.row == BlackPlayerItem)
+        {
+          player = self.blackPlayer;
+          selectBlackPlayer = true;
+        }
+        else
+        {
+          player = self.whitePlayer;
+          selectBlackPlayer = false;
+        }
+        modalController = [[PlayerSelectionController controllerWithDelegate:self
+                                                               defaultPlayer:player
+                                                                 blackPlayer:selectBlackPlayer] retain];
+        break;
+      }
     case HandicapSection:
       return;
     case KomiSection:
@@ -344,9 +380,67 @@ enum KomiSectionItem
       NSIndexPath* boardSizeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BoardSizeSection];
       UITableViewCell* boardSizeCell = [self.tableView cellForRowAtIndexPath:boardSizeIndexPath];
       boardSizeCell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
+      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
     }
   }
   [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief PlayerSelectionDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    Player* previousPlayer = controller.blackPlayer ? self.blackPlayer : self.whitePlayer;
+    if (previousPlayer != controller.player)
+    {
+      int playerRow;
+      if (controller.blackPlayer)
+      {
+        self.blackPlayer = controller.player;
+        playerRow = BlackPlayerItem;
+      }
+      else
+      {
+        self.whitePlayer = controller.player;
+        playerRow = WhitePlayerItem;
+      }
+      NSIndexPath* playerIndexPath = [NSIndexPath indexPathForRow:playerRow inSection:PlayersSection];
+      UITableViewCell* playerCell = [self.tableView cellForRowAtIndexPath:playerIndexPath];
+      [self updateCell:playerCell withPlayer:controller.player];
+      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates @a cell so that it represents @a player. Note that @a player
+/// may be @e nil.
+// -----------------------------------------------------------------------------
+- (void) updateCell:(UITableViewCell*)cell withPlayer:(Player*)player
+{
+  if (player)
+  {
+    cell.detailTextLabel.text = player.name;
+    cell.detailTextLabel.textColor = [UIColor blackColor];
+  }
+  else
+  {
+    cell.detailTextLabel.text = @"No player selected";
+    cell.detailTextLabel.textColor = [UIColor grayColor];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the currently selected settings are valid so that a
+/// new game can be started.
+// -----------------------------------------------------------------------------
+- (bool) isSelectionValid
+{
+  return (self.blackPlayer != nil && self.whitePlayer != nil);
 }
 
 @end

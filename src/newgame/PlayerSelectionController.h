@@ -19,49 +19,52 @@
 #import <UIKit/UIKit.h>
 
 // Forward declarations
-@class BoardSizeSelectionController;
+@class PlayerSelectionController;
+@class Player;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardSizeSelectionDelegate protocol must be implemented by the
-/// delegate of BoardSizeSelectionController.
+/// @brief The PlayerSelectionDelegate protocol must be implemented by the
+/// delegate of PlayerSelectionController.
 // -----------------------------------------------------------------------------
-@protocol BoardSizeSelectionDelegate
+@protocol PlayerSelectionDelegate
 /// @brief This method is invoked when the user has finished working with
-/// @a controller. The implementation is responsible for dismissing the
-/// modal @a controller.
+/// @a controller. The implementation is responsible for dismissing the modal
+/// @a controller.
 ///
 /// If @a didMakeSelection is true, the user has made a selection; the selected
-/// board size can be queried from the BoardSizeSelectionController object's
-/// property @a boardSize. If @a didMakeSelection is false, the user has
-/// cancelled the selection.
-- (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+/// player object can be queried from the PlayerSelectionController object's
+/// property @a player. If @a didMakeSelection is false, the user has cancelled
+/// the selection.
+- (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardSizeSelectionController class is responsible for managing
-/// the view that lets the user select the board size.
+/// @brief The PlayerSelectionController class is responsible for managing the
+/// view that lets the user select a player.
 ///
-/// BoardSizeSelectionController expects to be displayed modally by a navigation
+/// PlayerSelectionController expects to be displayed modally by a navigation
 /// controller. For this reason it populates its own navigation item with
 /// controls that are then expected to be displayed in the navigation bar of
 /// the parent navigation controller.
 ///
-/// BoardSizeSelectionController expects to be configured with a delegate that
+/// PlayerSelectionController expects to be configured with a delegate that
 /// can be informed of the result of data collection. For this to work, the
-/// delegate must implement the protocol BoardSizeSelectionDelegate.
+/// delegate must implement the protocol PlayerSelectionDelegate.
 // -----------------------------------------------------------------------------
-@interface BoardSizeSelectionController : UITableViewController
+@interface PlayerSelectionController : UITableViewController
 {
 }
 
-+ (BoardSizeSelectionController*) controllerWithDelegate:(id<BoardSizeSelectionDelegate>)delegate defaultBoardSize:(enum GoBoardSize)boardSize;
++ (PlayerSelectionController*) controllerWithDelegate:(id<PlayerSelectionDelegate>)delegate defaultPlayer:(Player*)player blackPlayer:(bool)blackPlayer;
 
 /// @brief This is the delegate that will be informed about the result of data
 /// collection.
-@property(nonatomic, assign) id<BoardSizeSelectionDelegate> delegate;
-/// @brief The currently selected board size.
-@property enum GoBoardSize boardSize;
+@property(nonatomic, assign) id<PlayerSelectionDelegate> delegate;
+/// @brief The currently selected player.
+@property(retain) Player* player;
+/// @brief True if the selected player is going to play black.
+@property(assign) bool blackPlayer;
 
 @end
