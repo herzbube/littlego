@@ -35,6 +35,7 @@
 #import "player/PlayerModel.h"
 #import "play/PlayViewModel.h"
 #import "play/SoundHandling.h"
+#import "go/GoGame.h"
 
 // System includes
 #include <string>
@@ -146,6 +147,33 @@ static ApplicationDelegate* sharedDelegate = nil;
 
   // Setup GTP engine and client
   [self setupFuego];
+
+  // Start a new game
+  // TODO This should be moved to somewhere else. This was implemented to fix
+  // a bug where two instances of GoGame where created when a new game was
+  // started. Bugfix details (can be removed if this TODO is solved):
+  // - The problem that had to be fixed was that during deallocation of GoGame,
+  //   when the shared game reference was already set to nil, some object wanted
+  //   access to that shared reference. The buggy implementation of GoGame's
+  //   sharedGame() class method happily created a new GoGame object, while
+  //   deallocation was still in progress. Then, after deallocation was
+  //   complete, a second GoGame object was created by GoGame's newGame() class
+  //   method
+  // - The fix mainly consists of a reimplementaton of GoGame's sharedGame()
+  //   class method: It no longer allocates a GoGame object if none exists, it
+  //   just returns whatever reference it has, even if that reference is nil
+  // - The new way of implementing sharedGame() requires that the question is
+  //   answered: Who owns the single GoGame instance? Because of the old way how
+  //   sharedGame() was implemented, this important question had never been
+  //   answered, leading to a mild case of "programming by coincidence". This
+  //   was fine when the project was still in its infancy, but now that new
+  //   games can be created by the user via the app's GUI, a good answer is
+  //   required
+  // - There is still no final answer, but for the moment the situation looks
+  //   like this: The application delegate has inherited from sharedGame() the
+  //   job of creating the first GoGame object. Subsequent instances are created
+  //   by NewGameController. The final instance is never deallocated.
+  [GoGame newGame];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success

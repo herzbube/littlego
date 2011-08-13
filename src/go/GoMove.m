@@ -68,8 +68,11 @@
   if (newMove)
   {
     newMove.previous = move;
-    move.next = newMove;  // set reference to self
-    newMove.black = ! move.isBlack;
+    if (move)
+    {
+      move.next = newMove;  // set reference to self
+      newMove.black = ! move.isBlack;
+    }
     [newMove autorelease];
   }
   return newMove;

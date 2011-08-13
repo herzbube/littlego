@@ -87,14 +87,10 @@ static GoGame* sharedGame = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the shared GoGame object that represents the current game.
-/// If no such object exists, a new one is created.
 // -----------------------------------------------------------------------------
 + (GoGame*) sharedGame;
 {
-  if (! sharedGame)
-    return [GoGame newGame];
-  else
-    return sharedGame;
+  return sharedGame;
 }
 
 // -----------------------------------------------------------------------------
@@ -109,7 +105,9 @@ static GoGame* sharedGame = nil;
     [sharedGame release];
     assert(nil == sharedGame);
   }
-  // TODO: We are the owner of sharedGame, but we never release the object
+  // TODO: We are the owner of sharedGame, but we never release the object.
+  // We should autorelease, as does every other convenience constructor, instead
+  // someone else should hold a reference to the game.
   GoGame* newGame = [[GoGame alloc] init];
   assert(newGame == sharedGame);
 
