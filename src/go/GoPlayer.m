@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoPlayer.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,42 +34,45 @@
 
 @implementation GoPlayer
 
+@synthesize player;
 @synthesize black;
-@synthesize human;
-@synthesize name;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
-/// color black.
+/// color black and refers to @a player.
 // -----------------------------------------------------------------------------
-+ (GoPlayer*) blackPlayer
++ (GoPlayer*) blackPlayer:(Player*)player
 {
-  GoPlayer* player = [[GoPlayer alloc] init];
-  if (player)
+  GoPlayer* goPlayer = [[GoPlayer alloc] init];
+  if (goPlayer)
   {
-    player.black = true;
-    [player autorelease];
+    goPlayer.player = player;
+    goPlayer.black = true;
+    [goPlayer autorelease];
   }
-  return player;
+  return goPlayer;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
-/// color white.
+/// color white and refers to @a player.
 // -----------------------------------------------------------------------------
-+ (GoPlayer*) whitePlayer
++ (GoPlayer*) whitePlayer:(Player*)player
 {
-  GoPlayer* player = [[GoPlayer alloc] init];
-  if (player)
+  GoPlayer* goPlayer = [[GoPlayer alloc] init];
+  if (goPlayer)
   {
-    player.black = false;
-    [player autorelease];
+    goPlayer.player = player;
+    goPlayer.black = false;
+    [goPlayer autorelease];
   }
-  return player;
+  return goPlayer;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoPlayer object.
+/// @brief Initializes a GoPlayer object. The player takes color black and does
+/// not refer to a Player object.
 ///
 /// @note This is the designated initializer of GoPlayer.
 // -----------------------------------------------------------------------------
@@ -79,9 +83,8 @@
   if (! self)
     return nil;
 
+  self.player = nil;
   self.black = true;
-  self.human = false;
-  self.name = @"Fuego";
 
   return self;
 }
@@ -91,7 +94,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.name = nil;
+  self.player = nil;
   [super dealloc];
 }
 

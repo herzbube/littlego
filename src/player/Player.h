@@ -22,6 +22,10 @@
 // -----------------------------------------------------------------------------
 /// @brief The Player class collects data used to describe a Go player (e.g.
 /// player name, whether the player is human or computer, etc.).
+///
+/// The difference between the Player and the GoPlayer class is that Player
+/// refers to an @e identity, whereas GoPlayer attaches that identity to the
+/// context of a Go game.
 // -----------------------------------------------------------------------------
 @interface Player : NSObject
 {
@@ -31,10 +35,10 @@
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 - (NSDictionary*) asDictionary;
 
-/// @brief The name of this Player.
+/// @brief The player's name. This is displayed in the GUI.
 @property(retain) NSString* name;
-/// @brief True if this Player represents a human player, false if it represents
-/// a computer player.
+/// @brief True if this Player object represents a human player, false if it
+/// represents a computer player.
 @property(getter=isHuman) bool human;
 /// @brief Reference to an object that stores statistics about the history of
 /// games played by this Player.

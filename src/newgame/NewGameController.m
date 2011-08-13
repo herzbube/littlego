@@ -21,6 +21,7 @@
 #import "../utility/TableViewCellFactory.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoPlayer.h"
 #import "../ApplicationDelegate.h"
 #import "../player/Player.h"
 
@@ -204,8 +205,11 @@ enum KomiSectionItem
   assert(model);
   model.boardSize = self.boardSize;
 
-  [GoGame newGame];
-  [self.delegate didStartNewGame:true];
+  GoGame* game = [GoGame newGame];
+  game.playerBlack = [GoPlayer blackPlayer:self.blackPlayer];
+  game.playerWhite = [GoPlayer whitePlayer:self.whitePlayer];
+
+  [self.delegate newGameController:self didStartNewGame:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -213,7 +217,7 @@ enum KomiSectionItem
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
-  [self.delegate didStartNewGame:false];
+  [self.delegate newGameController:self didStartNewGame:false];
 }
 
 // -----------------------------------------------------------------------------

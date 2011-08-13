@@ -15,8 +15,15 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class Player;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The GoPlayer class represents one of the two players of a Go game.
+///
+/// GoPlayer combines a Player object (which refers to a player's @e identity)
+/// with attributes that are valid in the context of a Go game.
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
@@ -24,15 +31,13 @@
 {
 }
 
-+ (GoPlayer*) blackPlayer;
-+ (GoPlayer*) whitePlayer;
++ (GoPlayer*) blackPlayer:(Player*)player;
++ (GoPlayer*) whitePlayer:(Player*)player;
 
-/// @brief The color taken by this GoPlayer object.
+/// @brief Reference to player object that stores information about that
+/// player's identity.
+@property(retain) Player* player;
+/// @brief The color taken by the player.
 @property(getter=isBlack) bool black;
-/// @brief True if this GoPlayer represents a human player, false if it
-/// represents a computer player.
-@property(getter=isHuman) bool human;
-/// @brief The player's name. This is displayed in the GUI.
-@property(retain) NSString* name;
 
 @end

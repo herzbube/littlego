@@ -135,8 +135,9 @@ static GoGame* sharedGame = nil;
   sharedGame = self;
 
   self.board = [GoBoard board];
-  self.playerBlack = [GoPlayer blackPlayer];
-  self.playerWhite = [GoPlayer whitePlayer];
+  // TODO do not use nil as value for Player objects
+  self.playerBlack = [GoPlayer blackPlayer:nil];
+  self.playerWhite = [GoPlayer whitePlayer:nil];
   self.firstMove = nil;
   self.lastMove = nil;
   self.state = GameHasNotYetStarted;
