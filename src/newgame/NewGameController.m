@@ -19,6 +19,7 @@
 #import "NewGameController.h"
 #import "NewGameModel.h"
 #import "../utility/TableViewCellFactory.h"
+#import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
 #import "../go/GoPlayer.h"
@@ -429,7 +430,7 @@ enum KomiSectionItem
   if (player)
   {
     cell.detailTextLabel.text = player.name;
-    cell.detailTextLabel.textColor = [UIColor blackColor];
+    cell.detailTextLabel.textColor = [UIColor slateBlueColor];
   }
   else
   {

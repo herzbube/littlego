@@ -22,10 +22,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The UIColorAdditions category enhances UIColor by adding string
-/// conversion methods.
+/// conversion methods, and a new predefined color "slate blue".
 ///
 /// Inspiration for this category comes from
-/// http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
+/// - String conversion: http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
+/// - Slate blue color: http://stackoverflow.com/questions/3943607/iphone-need-the-dark-blue-color-as-a-uicolor-used-on-tables-details-text-3366
 // -----------------------------------------------------------------------------
 @interface UIColor(UIColorAdditions)
 + (NSString*) stringFromUIColor:(UIColor*)color;
@@ -36,4 +37,6 @@
 - (CGFloat) green;
 - (CGFloat) blue;
 - (CGFloat) alpha;
+
++ (UIColor*) slateBlueColor;
 @end

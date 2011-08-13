@@ -184,5 +184,17 @@
 {
   return [self rgbComponentAtIndex:3];
 }
-  
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are 0.22, 0.33, and 0.53 and
+/// whose alpha value is 1.0.
+///
+/// This is the color that Apple uses in their UIs for displaying editable text
+/// and selected values.
+// -----------------------------------------------------------------------------
++ (UIColor*) slateBlueColor
+{
+  return [UIColor colorWithRed:0.22f green:0.33f blue:0.53f alpha:1.0f];
+}
+
 @end

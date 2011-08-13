@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TableViewCellFactory.h"
+#import "UIColorAdditions.h"
 
 // System includes
 #import <UIKit/UIKit.h>
@@ -89,6 +90,7 @@
         UITextField* textField = [[UITextField alloc] initWithFrame:rect];
         [cell.contentView addSubview:textField];
         [textField release];
+        textField.textColor = [UIColor slateBlueColor];
         // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
         // moment we don't use it because the clear button is displayed
         // overlaying the right border of the cell

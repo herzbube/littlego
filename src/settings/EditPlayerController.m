@@ -275,7 +275,6 @@ enum IsHumanSectionItem
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Is Human" switch. Updates the Player
 /// object with the new value.
