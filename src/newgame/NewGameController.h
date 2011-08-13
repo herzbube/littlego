@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "BoardSizeController.h"
+#import "BoardSizeSelectionController.h"
 
 // System includes
 #import <UIKit/UIKit.h>
@@ -58,7 +58,7 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeDelegate>
+@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate>
 {
 }
 

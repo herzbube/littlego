@@ -102,9 +102,9 @@ enum KomiSectionItem
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name BoardSizeDelegate protocol
+/// @name BoardSizeSelectionDelegate protocol
 //@{
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection;
+- (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
 @end
 
@@ -310,8 +310,8 @@ enum KomiSectionItem
   switch (indexPath.section)
   {
     case BoardSizeSection:
-      modalController = [[BoardSizeController controllerWithDelegate:self
-                                                    defaultBoardSize:self.boardSize] retain];
+      modalController = [[BoardSizeSelectionController controllerWithDelegate:self
+                                                             defaultBoardSize:self.boardSize] retain];
       break;
     case PlayersSection:
       return;
@@ -332,9 +332,9 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief BoardSizeDelegate protocol method.
+/// @brief BoardSizeSelectionDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) boardSizeController:(BoardSizeController*)controller didMakeSelection:(bool)didMakeSelection
+- (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection
 {
   if (didMakeSelection)
   {
