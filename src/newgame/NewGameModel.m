@@ -33,8 +33,8 @@
 @implementation NewGameModel
 
 @synthesize boardSize;
-@synthesize blackPlayer;
-@synthesize whitePlayer;
+@synthesize blackPlayerUUID;
+@synthesize whitePlayerUUID;
 @synthesize handicap;
 @synthesize komi;
 
@@ -52,8 +52,8 @@
     return nil;
 
   self.boardSize = 0;
-  self.blackPlayer = -1;
-  self.whitePlayer = -1;
+  self.blackPlayerUUID = @"";
+  self.whitePlayerUUID = @"";
   self.handicap = 0;
   self.komi = 0;
 
@@ -65,6 +65,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.blackPlayerUUID = nil;
+  self.whitePlayerUUID = nil;
   [super dealloc];
 }
 
@@ -76,8 +78,8 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:newGameKey];
   self.boardSize = [[dictionary valueForKey:boardSizeKey] intValue];
-  self.blackPlayer = [[dictionary valueForKey:blackPlayerKey] intValue];
-  self.whitePlayer = [[dictionary valueForKey:whitePlayerKey] intValue];
+  self.blackPlayerUUID = (NSString*)[dictionary valueForKey:blackPlayerKey];
+  self.whitePlayerUUID = (NSString*)[dictionary valueForKey:whitePlayerKey];
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
   self.komi = [[dictionary valueForKey:komiKey] doubleValue];
 }
@@ -94,8 +96,8 @@
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
   [dictionary setValue:[NSNumber numberWithInt:self.boardSize] forKey:boardSizeKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.blackPlayer] forKey:blackPlayerKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.whitePlayer] forKey:whitePlayerKey];
+  [dictionary setValue:self.blackPlayerUUID forKey:blackPlayerKey];
+  [dictionary setValue:self.whitePlayerUUID forKey:whitePlayerKey];
   [dictionary setValue:[NSNumber numberWithInt:self.handicap] forKey:handicapKey];
   [dictionary setValue:[NSNumber numberWithInt:self.komi] forKey:komiKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed

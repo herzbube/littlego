@@ -15,28 +15,21 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class Player;
+// Project includes
+#import "NSStringAdditions.h"
 
 
+@implementation NSString(NSStringAdditions)
+
 // -----------------------------------------------------------------------------
-/// @brief The PlayerModel class manages Player objects and provides clients
-/// with access to those objects. Data that makes up Player objects is read
-/// from and written to the user defaults system.
+/// @brief Returns a string UUID. Example: C42B7FB8-F5DC-4D07-877E-AA583EFECF80.
 // -----------------------------------------------------------------------------
-@interface PlayerModel : NSObject
++ (NSString*) UUIDString
 {
+  CFUUIDRef UUIDRef = CFUUIDCreate(NULL);
+  NSString* uuidString = (NSString*)CFUUIDCreateString(NULL, UUIDRef);
+  CFRelease(UUIDRef);
+  return [uuidString autorelease];
 }
-
-- (id) init;
-- (void) readUserDefaults;
-- (void) writeUserDefaults;
-- (NSString*) playerNameAtIndex:(int)index;
-- (void) add:(Player*)player;
-- (void) remove:(Player*)player;
-- (Player*) playerWithUUID:(NSString*)uuid;
-
-@property(assign) int playerCount;
-@property(retain) NSArray* playerList;
 
 @end

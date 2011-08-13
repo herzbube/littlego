@@ -17,7 +17,10 @@
 
 // Project includes
 #import "GoPlayer.h"
+#import "../ApplicationDelegate.h"
+#import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../newgame/NewGameModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -37,6 +40,30 @@
 @synthesize player;
 @synthesize black;
 
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoPlayer instance which takes the
+/// color black and refers to the "New Game" default black player.
+// -----------------------------------------------------------------------------
++ (GoPlayer*) newGameBlackPlayer
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+  Player* player = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
+  return [GoPlayer blackPlayer:player];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoPlayer instance which takes the
+/// color white and refers to the "New Game" default white player.
+// -----------------------------------------------------------------------------
++ (GoPlayer*) newGameWhitePlayer
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+  Player* player = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
+  return [GoPlayer whitePlayer:player];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the

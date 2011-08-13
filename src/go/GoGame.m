@@ -28,7 +28,6 @@
 #import "../ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
 
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for GoGame.
 // -----------------------------------------------------------------------------
@@ -132,10 +131,11 @@ static GoGame* sharedGame = nil;
   assert(nil == sharedGame);
   sharedGame = self;
 
+  // Initialize members (some objects initialize themselves with values from
+  // NewGameModel, but we don't really have to know about this)
   self.board = [GoBoard board];
-  // TODO do not use nil as value for Player objects
-  self.playerBlack = [GoPlayer blackPlayer:nil];
-  self.playerWhite = [GoPlayer whitePlayer:nil];
+  self.playerBlack = [GoPlayer newGameBlackPlayer];
+  self.playerWhite = [GoPlayer newGameWhitePlayer];
   self.firstMove = nil;
   self.lastMove = nil;
   self.state = GameHasNotYetStarted;

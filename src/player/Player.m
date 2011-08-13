@@ -18,6 +18,7 @@
 // Project includes
 #import "Player.h"
 #import "PlayerStatistics.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -28,11 +29,16 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(readwrite, retain) NSString* uuid;
+//@}
 @end
 
 
 @implementation Player
 
+@synthesize uuid;
 @synthesize name;
 @synthesize human;
 @synthesize statistics;
@@ -59,7 +65,7 @@
 ///
 /// If @a dictionary is @e nil, the Player object is human, has no name, and is
 /// associated with a PlayerStatistics object that has all attributes set
-/// to zero.
+/// to zero. The UUID is randomly generated.
 ///
 /// Invoke the asDictionary() method to convert a Player object's user defaults
 /// attributes back into an NSDictionary suitable for storage in the user
@@ -75,6 +81,7 @@
     return nil;
   else if (! dictionary)
   {
+    self.uuid = [NSString UUIDString];
     self.name = @"";
     self.human = true;
     self.statistics = [[PlayerStatistics alloc] init];
@@ -82,6 +89,7 @@
   }
   else
   {
+    self.uuid = (NSString*)[dictionary valueForKey:uuidKey];
     self.name = (NSString*)[dictionary valueForKey:nameKey];
     // The value returned from the NSDictionary has the type NSCFBoolean. It
     // appears that this can be treated as an NSNumber object, from which we
@@ -90,6 +98,7 @@
     NSDictionary* statisticsDictionary = (NSDictionary*)[dictionary valueForKey:statisticsKey];
     self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
   }
+  assert([self.uuid length] > 0);
   return self;
 }
 
@@ -98,6 +107,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.uuid = nil;
   self.name = nil;
   self.statistics = nil;
   [super dealloc];
@@ -114,6 +124,7 @@
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
+  [dictionary setValue:self.uuid forKey:uuidKey];
   [dictionary setValue:self.name forKey:nameKey];
   [dictionary setValue:[NSNumber numberWithBool:self.isHuman] forKey:isHumanKey];
   [dictionary setValue:[self.statistics asDictionary] forKey:statisticsKey];

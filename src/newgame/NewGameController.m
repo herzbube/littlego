@@ -24,6 +24,7 @@
 #import "../go/GoBoard.h"
 #import "../go/GoPlayer.h"
 #import "../ApplicationDelegate.h"
+#import "../player/PlayerModel.h"
 #import "../player/Player.h"
 
 
@@ -140,15 +141,26 @@ enum KomiSectionItem
   {
     [controller autorelease];
     controller.delegate = delegate;
-    NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
-    assert(model);
-    controller.boardSize = model.boardSize;
-    // TODO set defaults, e.g. if a game is in progress now, set the players
-    // of that game
-    controller.blackPlayer = nil;
-    controller.whitePlayer = nil;
+    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+    PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+    controller.boardSize = newGameModel.boardSize;
+    controller.blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
+    controller.whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
   }
   return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Starts a new game using the values currently stored in NewGameModel.
+// -----------------------------------------------------------------------------
++ (void) startNewGame
+{
+  // Creating a new GoGame instance automatically deallocates the old instance.
+  // TODO: We need to store a reference to the GoGame object so that we can
+  // deallocate it if necessary (e.g. on application shutdown).
+  // TODO: Prevent starting a new game if the defaults are somehow invalid
+  // (currently known: player UUID may refer to a player that has been removed)
+  [GoGame newGame];
 }
 
 // -----------------------------------------------------------------------------
@@ -198,18 +210,21 @@ enum KomiSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user has finished selecting parameters for a new
-/// game.
+/// game. Makes the collected information persistent, then starts a new game.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
+  // First store the collected information in the NewGameModel
   NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
   assert(model);
   model.boardSize = self.boardSize;
+  model.blackPlayerUUID = self.blackPlayer.uuid;
+  model.whitePlayerUUID = self.whitePlayer.uuid;
 
-  GoGame* game = [GoGame newGame];
-  game.playerBlack = [GoPlayer blackPlayer:self.blackPlayer];
-  game.playerWhite = [GoPlayer whitePlayer:self.whitePlayer];
+  // Second step: Start a new game using the information from the NewGameModel
+  [NewGameController startNewGame];
 
+  // Finally inform our delegate
   [self.delegate newGameController:self didStartNewGame:true];
 }
 
@@ -282,7 +297,7 @@ enum KomiSectionItem
             break;
           case WhitePlayerItem:
             cell.textLabel.text = @"White";
-            [self updateCell:cell withPlayer:self.blackPlayer];
+            [self updateCell:cell withPlayer:self.whitePlayer];
             break;
           default:
             assert(0);

@@ -70,6 +70,7 @@ NSString* whitePlayerKey = @"WhitePlayer";
 NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
 NSString* playerListKey = @"PlayerList";
+NSString* uuidKey = @"UUID";
 NSString* nameKey = @"Name";
 NSString* isHumanKey = @"IsHuman";
 NSString* statisticsKey = @"Statistics";

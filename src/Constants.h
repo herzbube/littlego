@@ -187,6 +187,7 @@ extern NSString* whitePlayerKey;
 extern NSString* handicapKey;
 extern NSString* komiKey;
 extern NSString* playerListKey;
+extern NSString* uuidKey;
 extern NSString* nameKey;
 extern NSString* isHumanKey;
 extern NSString* statisticsKey;

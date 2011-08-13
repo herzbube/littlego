@@ -16,27 +16,16 @@
 
 
 // Forward declarations
-@class Player;
+@class NSString;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayerModel class manages Player objects and provides clients
-/// with access to those objects. Data that makes up Player objects is read
-/// from and written to the user defaults system.
+/// @brief The NSStringAdditions category enhances NSString by adding a class
+/// method that allows to create UUIDs.
+///
+/// The code for this method was copied more or less verbatim from
+/// http://www.cocoabuilder.com/archive/cocoa/217665-how-to-create-guid.html
 // -----------------------------------------------------------------------------
-@interface PlayerModel : NSObject
-{
-}
-
-- (id) init;
-- (void) readUserDefaults;
-- (void) writeUserDefaults;
-- (NSString*) playerNameAtIndex:(int)index;
-- (void) add:(Player*)player;
-- (void) remove:(Player*)player;
-- (Player*) playerWithUUID:(NSString*)uuid;
-
-@property(assign) int playerCount;
-@property(retain) NSArray* playerList;
-
+@interface NSString(NSStringAdditions)
++ (NSString*) UUIDString;
 @end

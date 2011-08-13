@@ -132,4 +132,18 @@
   self.playerCount = [localPlayerList count];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the player object identified by @a uuid. Returns nil if no
+/// such object exists.
+// -----------------------------------------------------------------------------
+- (Player*) playerWithUUID:(NSString*)uuid
+{
+  for (Player* player in self.playerList)
+  {
+    if ([player.uuid isEqualToString:uuid])
+      return player;
+  }
+  return nil;
+}
+
 @end
