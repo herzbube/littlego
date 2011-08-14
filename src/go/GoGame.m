@@ -148,6 +148,9 @@ static GoGame* sharedGame = nil;
                                                name:gtpResponseReceivedNotification
                                              object:nil];
 
+  if ([self isComputerPlayersTurn])
+    [self computerPlay];
+
   return self;
 }
 
