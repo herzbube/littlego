@@ -47,9 +47,13 @@
 - (void) computerPlay;
 - (void) resign;
 - (void) undo;
+- (void) pause;
+- (void) continue;
 - (bool) isLegalNextMove:(GoPoint*)point;
 - (bool) isComputerPlayersTurn;
 
+/// @brief The type of this GoGame object.
+@property(readonly) enum GoGameType type;
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(retain) GoBoard* board;
 /// @brief The GoPlayer object that plays for black.

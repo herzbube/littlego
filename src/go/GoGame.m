@@ -60,6 +60,10 @@
 - (void) updateResignMove;
 - (void) updateUndo;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(readwrite) enum GoGameType type;
+//@}
 /// @name Other methods
 //@{
 - (void) gtpResponseReceived:(NSNotification*)notification;
@@ -70,6 +74,7 @@
 
 @implementation GoGame
 
+@synthesize type;
 @synthesize board;
 @synthesize playerBlack;
 @synthesize playerWhite;
@@ -142,6 +147,15 @@ static GoGame* sharedGame = nil;
   self.lastMove = nil;
   self.state = GameHasNotYetStarted;
   self.computerThinks = false;
+
+  bool blackPlayerIsHuman = self.playerBlack.player.human;
+  bool whitePlayerIsHuman = self.playerWhite.player.human;
+  if (blackPlayerIsHuman && whitePlayerIsHuman)
+    self.type = HumanVsHumanGame;
+  else if (! blackPlayerIsHuman && ! whitePlayerIsHuman)
+    self.type = ComputerVsComputerGame;
+  else
+    self.type = ComputerVsHumanGame;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpResponseReceived:)
@@ -251,10 +265,14 @@ static GoGame* sharedGame = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Lets the computer player make a move even if it is not his turn.
+/// @brief Lets the computer player make a move (even if it is not his turn).
+/// The request is ignored if the game is currently paused.
 // -----------------------------------------------------------------------------
 - (void) computerPlay
 {
+  // Ignore request if 
+  if (GameIsPaused == self.state)
+    return;
   [self submitGenMove];
 }
 
@@ -274,6 +292,39 @@ static GoGame* sharedGame = nil;
     [self submitUndo];
     [self updateUndo];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pauses the game if two computer players play against each other.
+///
+/// The computer player whose turn it is will finish its thinking and play its
+/// move. The game is then paused, i.e. the second computer player's move is
+/// not triggered.
+///
+/// This solution is necessary because there is no way to tell the GTP engine
+/// to stop its thinking once the "genmove" command has been sent. The only
+/// way how to handle this in a graceful way is to let the GTP engine finish
+/// its thinking.
+// -----------------------------------------------------------------------------
+- (void) pause
+{
+  assert(ComputerVsComputerGame == self.type);
+  assert(GameHasStarted == self.state);
+  self.state = GameIsPaused;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Continues the game if it is paused while two computer players play
+/// against each other.
+///
+/// Essentially, this method triggers the next computer player move.
+// -----------------------------------------------------------------------------
+- (void) continue
+{
+  assert(ComputerVsComputerGame == self.type);
+  assert(GameIsPaused == self.state);
+  self.state = GameHasStarted;
+  [self computerPlay];
 }
 
 // -----------------------------------------------------------------------------
@@ -352,7 +403,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (bool) hasStarted
 {
-  return (GameHasStarted == self.state);
+  return (GameHasStarted == self.state || GameIsPaused == self.state);
 }
 
 // -----------------------------------------------------------------------------
@@ -462,7 +513,8 @@ static GoGame* sharedGame = nil;
 
   // Game state must change after any of the other things; this order is
   // important for observer notifications
-  self.state = GameHasStarted;
+  if (GameHasNotYetStarted == self.state)
+    self.state = GameHasStarted;  // don't set this state if game is currently paused
 }
 
 // -----------------------------------------------------------------------------
@@ -487,7 +539,10 @@ static GoGame* sharedGame = nil;
     self.state = GameHasEnded;
   }
   else
-    self.state = GameHasStarted;
+  {
+    if (GameHasNotYetStarted == self.state)
+      self.state = GameHasStarted;  // don't set this state if game is currently paused
+  }
 }
 
 // -----------------------------------------------------------------------------

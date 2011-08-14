@@ -40,6 +40,8 @@
 - (void) resign:(id)sender;
 - (void) playForMe:(id)sender;
 - (void) undo:(id)sender;
+- (void) pause:(id)sender;
+- (void) continue:(id)sender;
 - (void) newGame:(id)sender;
 //@}
 /// @name Handlers for recognized gestures
@@ -60,6 +62,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameNewCreated:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameScoreChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
@@ -67,6 +70,7 @@
 //@}
 /// @name Updaters
 //@{
+- (void) populateToolbar;
 - (void) updateButtonStates;
 //@}
 /// @name Helpers
@@ -79,10 +83,14 @@
 @implementation PlayViewController
 
 @synthesize playView;
+@synthesize toolbar;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize resignButton;
 @synthesize undoButton;
+@synthesize pauseButton;
+@synthesize continueButton;
+@synthesize flexibleSpaceButton;
 @synthesize newGameButton;
 @synthesize panRecognizer;
 @synthesize interactionEnabled;
@@ -116,12 +124,14 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   // TODO do we really need two notifications?
+  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(goGameScoreChanged:) name:goGameScoreChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
 
+  [self populateToolbar];
   [self updateButtonStates];
 }
 
@@ -181,6 +191,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Pause" button. Pauses the game if
+/// two computer players play against each other.
+// -----------------------------------------------------------------------------
+- (void) pause:(id)sender
+{
+  [[GoGame sharedGame] pause];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Undo" button. Continues the game if
+/// it is paused while two computer players play against each other.
+// -----------------------------------------------------------------------------
+- (void) continue:(id)sender
+{
+  [[GoGame sharedGame] continue];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "New" button. Starts a new game,
 /// discarding the current game.
 // -----------------------------------------------------------------------------
@@ -190,6 +218,7 @@
   switch (game.state)
   {
     case GameHasStarted:
+    case GameIsPaused:
     {
       UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
                                                       message:@"Are you sure you want to start a new game and discard the game in progress?"
@@ -302,6 +331,14 @@
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameStateChanged notification.
 // -----------------------------------------------------------------------------
+- (void) goGameNewCreated:(NSNotification*)notification
+{
+  [self populateToolbar];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameStateChanged notification.
+// -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
   [self updateButtonStates];
@@ -345,6 +382,33 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Populates the toolbar with toolbar items that are appropriate for
+/// the #GoGameType currently in progress.
+// -----------------------------------------------------------------------------
+- (void) populateToolbar
+{
+  NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+      [toolbarItems addObject:self.pauseButton];
+      [toolbarItems addObject:self.continueButton];
+      [toolbarItems addObject:self.flexibleSpaceButton];
+      [toolbarItems addObject:self.newGameButton];
+      break;
+    default:
+      [toolbarItems addObject:self.playForMeButton];
+      [toolbarItems addObject:self.passButton];
+      [toolbarItems addObject:self.resignButton];
+      [toolbarItems addObject:self.undoButton];
+      [toolbarItems addObject:self.flexibleSpaceButton];
+      [toolbarItems addObject:self.newGameButton];
+      break;
+  }
+  self.toolbar.items = toolbarItems;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of all toolbar items.
 // -----------------------------------------------------------------------------
 - (void) updateButtonStates
@@ -353,53 +417,94 @@
   BOOL passButtonEnabled = NO;
   BOOL resignButtonEnabled = NO;
   BOOL undoButtonEnabled = NO;
+  BOOL pauseButtonEnabled = NO;
+  BOOL continueButtonEnabled = NO;
   BOOL newGameButtonEnabled = NO;
 
-  if (self.isInteractionEnabled)
+  switch ([GoGame sharedGame].type)
   {
-    switch ([GoGame sharedGame].state)
-    {
-      case GameHasNotYetStarted:
-        playForMeButtonEnabled = YES;
-        passButtonEnabled = YES;
-        resignButtonEnabled = NO;
-        undoButtonEnabled = NO;
-        newGameButtonEnabled = YES;
-        break;
-      case GameHasStarted:
-        playForMeButtonEnabled = YES;
-        passButtonEnabled = YES;
-        resignButtonEnabled = YES;
-        if ([GoGame sharedGame].lastMove != nil)
-          undoButtonEnabled = YES;
-        else
-          undoButtonEnabled = NO;
-        newGameButtonEnabled = YES;
-        break;
-      case GameHasEnded:
+    case ComputerVsComputerGame:
+      switch ([GoGame sharedGame].state)
+      {
+        case GameHasNotYetStarted:
+          pauseButtonEnabled = NO;
+          continueButtonEnabled = NO;
+          newGameButtonEnabled = YES;
+          break;
+        case GameHasStarted:
+          pauseButtonEnabled = YES;
+          continueButtonEnabled = NO;
+          newGameButtonEnabled = NO;
+          break;
+        case GameIsPaused:
+          pauseButtonEnabled = NO;
+          continueButtonEnabled = YES;
+          // New game is only allowed if the computer player has finished
+          // thinking
+          newGameButtonEnabled = ! [GoGame sharedGame].isComputerThinking;
+          break;
+        case GameHasEnded:
+          pauseButtonEnabled = NO;
+          continueButtonEnabled = NO;
+          newGameButtonEnabled = YES;
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      if (self.isInteractionEnabled)
+      {
+        switch ([GoGame sharedGame].state)
+        {
+          case GameHasNotYetStarted:
+            playForMeButtonEnabled = YES;
+            passButtonEnabled = YES;
+            resignButtonEnabled = NO;
+            undoButtonEnabled = NO;
+            newGameButtonEnabled = YES;
+            break;
+          case GameHasStarted:
+            playForMeButtonEnabled = YES;
+            passButtonEnabled = YES;
+            resignButtonEnabled = YES;
+            if ([GoGame sharedGame].lastMove != nil)
+              undoButtonEnabled = YES;
+            else
+              undoButtonEnabled = NO;
+            newGameButtonEnabled = YES;
+            break;
+          case GameIsPaused:
+            assert(false);  // should never happen if a human player is involved
+            break;
+          case GameHasEnded:
+            playForMeButtonEnabled = NO;
+            passButtonEnabled = NO;
+            resignButtonEnabled = NO;
+            undoButtonEnabled = NO;
+            newGameButtonEnabled = YES;
+            break;
+          default:
+            break;
+        }
+      }
+      else
+      {
         playForMeButtonEnabled = NO;
         passButtonEnabled = NO;
         resignButtonEnabled = NO;
         undoButtonEnabled = NO;
-        newGameButtonEnabled = YES;
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    playForMeButtonEnabled = NO;
-    passButtonEnabled = NO;
-    resignButtonEnabled = NO;
-    undoButtonEnabled = NO;
-    newGameButtonEnabled = NO;
+        newGameButtonEnabled = NO;
+      }
+      break;
   }
 
   self.playForMeButton.enabled = playForMeButtonEnabled;
   self.passButton.enabled = passButtonEnabled;
   self.resignButton.enabled = resignButtonEnabled;
   self.undoButton.enabled = undoButtonEnabled;
+  self.pauseButton.enabled = pauseButtonEnabled;
+  self.continueButton.enabled = continueButtonEnabled;
   self.newGameButton.enabled = newGameButtonEnabled;
 }
 

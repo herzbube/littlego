@@ -46,11 +46,20 @@ enum GoStoneState
   WhiteStone   ///< @brief There is a white stone on the GoPoint.
 };
 
+/// @brief Enumerates the possible types of GoGame objects.
+enum GoGameType
+{
+  ComputerVsHumanGame,     ///< @brief A computer and a human player play against each other.
+  ComputerVsComputerGame,  ///< @brief Two computer players play against each other.
+  HumanVsHumanGame         ///< @brief Two human players play against each other.
+};
+
 /// @brief Enumerates the possible states of a GoGame.
 enum GoGameState
 {
   GameHasNotYetStarted,  ///< @brief Denotes a new game that is ready to begin.
   GameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
+  GameIsPaused,          ///< @brief Denotes a computer vs. computer game that is paused.
   GameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
 };
 

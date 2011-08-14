@@ -40,6 +40,8 @@
 
 /// @brief The view that PlayViewController is responsible for.
 @property(nonatomic, retain) IBOutlet PlayView* playView;
+/// @brief The toolbar that displays action buttons.
+@property(nonatomic, retain) IBOutlet UIToolbar* toolbar;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* playForMeButton;
@@ -53,6 +55,15 @@
 /// by a human player, including any computer player moves that were made in
 /// response.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* undoButton;
+/// @brief The "Pause" button. Tapping this button causes the game to pause if
+/// two computer players play against each other.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* pauseButton;
+/// @brief The "Continue" button. Tapping this button causes the game to
+/// continue if it is paused while two computer players play against each other.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* continueButton;
+/// @brief Dummy button that creates an expanding space between the "New"
+/// button and its predecessors.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* flexibleSpaceButton;
 /// @brief The "New" button. Tapping this button starts a new game, discarding
 /// the current game.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* newGameButton;

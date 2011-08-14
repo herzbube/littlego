@@ -362,20 +362,10 @@
     // TODO move color handling to a helper function; there is similar code
     // floating around somewhere else (GoGame?)
     UIColor* color = nil;
-    switch (game.state)
-    {
-      case GameHasNotYetStarted:
-        color = [UIColor blackColor];
-        break;
-      case GameHasStarted:
-        if (game.lastMove.player.isBlack)
-          color = [UIColor whiteColor];
-        else
-          color = [UIColor blackColor];
-        break;
-      default:
-        break;
-    }
+    if (game.nextPlayer.isBlack)
+      color = [UIColor blackColor];
+    else
+      color = [UIColor whiteColor];
     if (color)
       [self drawStone:color point:self.crossHairPoint];
   }
