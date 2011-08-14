@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoPlayer;
 @class GoPoint;
 
 
@@ -26,25 +27,34 @@
 ///
 /// A GoMove object always has a type(); the different types of moves are
 /// enumerated by #GoMoveType. A GoMove object is always associated with the
-/// color (see the black() property) of the player who made the move. In
-/// addition, if a GoMove object is of type #PlayMove it also has an associated
-/// GoPoint object which registers where the stone was placed.
+/// player who made the move. The player object can be queried for the color of
+/// the move.
+///
+/// If a GoMove object is of type#PlayMove it also has an associated GoPoint
+/// object which registers where the stone was placed. The GoPoint object is
+/// assigned (soon) after construction.
+///
+/// @note Assignment of a GoPoint object is a non-trivial operation that
+/// triggers the mechanism for placing a stone.
 ///
 /// GoMove objects are interlinked with their predecessor (previous()) and
 /// successor (next()) GoMove object. This represents the fact that a game
 /// can be seen as a series of moves.
+///
+/// GoMove objects are immutable, i.e. they cannot be changed once they have
+/// been initialized.
 // -----------------------------------------------------------------------------
 @interface GoMove : NSObject
 {
 }
 
-+ (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move;
++ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move;
 - (void) undo;
 
 /// @brief The type of this GoMove object.
-@property enum GoMoveType type;
-/// @brief The color of the player who made the move.
-@property(getter=isBlack) bool black;
+@property(readonly) enum GoMoveType type;
+/// @brief The player who made this GoMove.
+@property(readonly, retain) GoPlayer* player;
 /// @brief The GoPoint object registering where the stone was placed for this
 /// GoMove. Is nil if this GoMove is @e not a #PlayMove.
 @property(assign) GoPoint* point;

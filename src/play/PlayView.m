@@ -22,6 +22,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
 #import "../go/GoMove.h"
+#import "../go/GoPlayer.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
 #import "../utility/UIColorAdditions.h"
@@ -367,7 +368,7 @@
         color = [UIColor blackColor];
         break;
       case GameHasStarted:
-        if (game.lastMove.black)
+        if (game.lastMove.player.isBlack)
           color = [UIColor whiteColor];
         else
           color = [UIColor blackColor];
@@ -447,7 +448,7 @@
       // TODO move color handling to a helper function; there is similar code
       // floating around somewhere else in this class
       UIColor* lastMoveBoxColor;
-      if (lastMove.black)
+      if (lastMove.player.isBlack)
         lastMoveBoxColor = [UIColor whiteColor];
       else
         lastMoveBoxColor = [UIColor blackColor];

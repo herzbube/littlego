@@ -35,6 +35,10 @@ enum GoMoveType
 };
 
 /// @brief Enumerates the possible stone states of a GoPoint.
+///
+/// @note It's important to have two states that distinguish the color of the
+/// stone placed on the GoPoint. Two states allow for efficient comparison
+/// whether two GoPoints have the potential to belong to the same GoBoardRegion.
 enum GoStoneState
 {
   NoStone,     ///< @brief There is no stone on the GoPoint.

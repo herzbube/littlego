@@ -27,6 +27,8 @@
 #import "../gtp/GtpResponse.h"
 #import "../ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
+#import "../player/Player.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for GoGame.
@@ -71,6 +73,7 @@
 @synthesize board;
 @synthesize playerBlack;
 @synthesize playerWhite;
+@synthesize nextPlayer;
 @synthesize firstMove;
 @synthesize lastMove;
 @synthesize state;
@@ -292,9 +295,7 @@ static GoGame* sharedGame = nil;
     return true;
   else
   {
-    bool nextMoveIsBlack = true;
-    if (self.lastMove)
-      nextMoveIsBlack = ! self.lastMove.isBlack;
+    bool nextMoveIsBlack = self.nextPlayer.isBlack;
     bool isKoStillPossible = true;
 
     NSArray* neighbours = point.neighbours;
@@ -449,7 +450,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updatePlayMove:(GoPoint*)point
 {
-  GoMove* move = [GoMove move:PlayMove after:self.lastMove];
+  GoMove* move = [GoMove move:PlayMove by:self.nextPlayer after:self.lastMove];
   move.point = point;  // many side-effects here (e.g. region handling) !!!
 
   if (! self.firstMove)
@@ -469,7 +470,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updatePassMove
 {
-  GoMove* move = [GoMove move:PassMove after:self.lastMove];
+  GoMove* move = [GoMove move:PassMove by:self.nextPlayer after:self.lastMove];
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -494,7 +495,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updateResignMove
 {
-  GoMove* move = [GoMove move:ResignMove after:self.lastMove];
+  GoMove* move = [GoMove move:ResignMove by:self.nextPlayer after:self.lastMove];
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -583,7 +584,7 @@ static GoGame* sharedGame = nil;
   // TODO what about a GoColor class?
   bool playForBlack = true;
   if (self.lastMove)
-    playForBlack = ! self.lastMove.isBlack;
+    playForBlack = ! self.lastMove.player.isBlack;
   if (playForBlack)
     return @"B";
   else
@@ -595,12 +596,21 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (bool) isComputerPlayersTurn
 {
-  // TODO: Find a better way to determine when it is the computer player's
-  // turn. This works only as long as white is fixed to be the computer. It
-  // also does not take the game state into account.
-  if (! self.lastMove)
-    return false;  // first turn always goes to black
-  return self.lastMove.black;
+  return (! self.nextPlayer.player.isHuman);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (GoPlayer*) nextPlayer
+{
+  GoMove* move = self.lastMove;
+  if (! move)
+    return self.playerBlack;
+  else if (move.player == self.playerBlack)
+    return self.playerWhite;
+  else
+    return self.playerBlack;
 }
 
 // -----------------------------------------------------------------------------

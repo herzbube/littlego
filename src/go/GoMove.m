@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoMove.h"
+#import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 
@@ -27,7 +28,7 @@
 @interface GoMove()
 /// @name Initialization and deallocation
 //@{
-- (id) init:(enum GoMoveType)initType;
+- (id) init:(enum GoMoveType)initType by:(GoPlayer*)initPlayer;
 - (void) dealloc;
 //@}
 /// @name Other methods
@@ -36,6 +37,8 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
+@property(readwrite) enum GoMoveType type;
+@property(readwrite, retain) GoPlayer* player;
 @property(readwrite, assign) GoMove* previous;
 @property(readwrite, retain) GoMove* next;
 //@}
@@ -45,14 +48,14 @@
 @implementation GoMove
 
 @synthesize type;
-@synthesize black;
+@synthesize player;
 @synthesize point;
 @synthesize previous;
 @synthesize next;
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoMove instance of type @a type,
-/// whose predecessor is @a move.
+/// which is associated with @a player, and whose predecessor is @a move.
 ///
 /// If @a move is not nil, this method updates @a move so that the newly
 /// created GoMove instance becomes its successor. The newly created GoMove
@@ -62,37 +65,36 @@
 /// @a move may be nil, in which case the newly created GoMove instance will be
 /// black, and the first move of the game.
 // -----------------------------------------------------------------------------
-+ (GoMove*) move:(enum GoMoveType)type after:(GoMove*)move
++ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move
 {
-  GoMove* newMove = [[GoMove alloc] init:type];
+  GoMove* newMove = [[GoMove alloc] init:type by:player];
   if (newMove)
   {
     newMove.previous = move;
     if (move)
-    {
       move.next = newMove;  // set reference to self
-      newMove.black = ! move.isBlack;
-    }
     [newMove autorelease];
   }
   return newMove;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoMove object. The GoMove has type @a type, is black,
-/// has no associated GoPoint, and has no predecessor or successor GoMove.
+/// @brief Initializes a GoMove object. The GoMove has type @a type, is
+/// associated with @a initPlayer, and has no predecessor or successor GoMove.
 ///
 /// @note This is the designated initializer of GoMove.
 // -----------------------------------------------------------------------------
-- (id) init:(enum GoMoveType)initType
+- (id) init:(enum GoMoveType)initType by:(GoPlayer*)initPlayer
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
+  assert(initPlayer != nil);
+
   self.type = initType;
-  self.black = true;
+  self.player = initPlayer;
   self.point = nil;
   self.previous = nil;
   self.next = nil;
@@ -105,6 +107,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.player = nil;
   self.point = nil;     // not strictly necessary since we don't retain it
   self.previous = nil;  // not strictly necessary since we don't retain it
   if (self.next)
@@ -151,7 +154,7 @@
     return;
 
   // Update the point's stone state *BEFORE* moving it to a new region
-  if (self.black)
+  if (self.player.black)
     newValue.stoneState = BlackStone;
   else
     newValue.stoneState = WhiteStone;

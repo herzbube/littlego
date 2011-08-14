@@ -56,6 +56,8 @@
 @property(retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays for white.
 @property(retain) GoPlayer* playerWhite;
+/// @brief The player whose turn it is next.
+@property(readonly, assign) GoPlayer* nextPlayer;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// the game is still in state #GameHasNotYetStarted.
 @property(retain) GoMove* firstMove;
