@@ -496,6 +496,8 @@
           break;
       }
     }
+    else if (GameIsPaused == [GoGame sharedGame].state)
+      statusText = @"Game is paused, tap 'Play' button to continue";
   }
   self.statusLine.text = statusText;
 }
