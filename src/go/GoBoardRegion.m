@@ -111,7 +111,7 @@
 {
   @synchronized(self)
   {
-    return [points copy];
+    return [[points copy] autorelease];
   }
 }
 
