@@ -139,6 +139,8 @@ enum IsHumanSectionItem
                                                                            target:self
                                                                            action:@selector(delete:)];
   self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+  // Player can be deleted only if he is not currently playing a game
+  self.navigationItem.rightBarButtonItem.enabled = (! self.player.isPlaying);
 }
 
 // -----------------------------------------------------------------------------
@@ -218,6 +220,8 @@ enum IsHumanSectionItem
         UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
         [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
         accessoryView.on = self.player.human;
+        // Player can be deleted only if he is not currently playing a game
+        accessoryView.enabled = (! self.player.isPlaying);
         break;
       default:
         assert(0);

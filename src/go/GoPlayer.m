@@ -29,7 +29,7 @@
 @interface GoPlayer()
 /// @name Initialization and deallocation
 //@{
-- (id) init;
+- (id) initWithPlayer:(Player*)aPlayer;
 - (void) dealloc;
 //@}
 @end
@@ -71,10 +71,9 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) blackPlayer:(Player*)player
 {
-  GoPlayer* goPlayer = [[GoPlayer alloc] init];
+  GoPlayer* goPlayer = [[GoPlayer alloc] initWithPlayer:player];
   if (goPlayer)
   {
-    goPlayer.player = player;
     goPlayer.black = true;
     [goPlayer autorelease];
   }
@@ -87,10 +86,9 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) whitePlayer:(Player*)player
 {
-  GoPlayer* goPlayer = [[GoPlayer alloc] init];
+  GoPlayer* goPlayer = [[GoPlayer alloc] initWithPlayer:player];
   if (goPlayer)
   {
-    goPlayer.player = player;
     goPlayer.black = false;
     [goPlayer autorelease];
   }
@@ -98,20 +96,24 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoPlayer object. The player takes color black and does
-/// not refer to a Player object.
+/// @brief Initializes a GoPlayer object. The player takes color black and
+/// refers to @a player.
 ///
 /// @note This is the designated initializer of GoPlayer.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithPlayer:(Player*)aPlayer
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.player = nil;
+  self.player = aPlayer;
   self.black = true;
+
+  // Mark the Player object as taking part in a game. This assumes that GoPlayer
+  // objects are created only when a new GoGame is started.
+  self.player.playing = true;
 
   return self;
 }
@@ -121,6 +123,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.player.playing = false;
   self.player = nil;
   [super dealloc];
 }

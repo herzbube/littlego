@@ -65,6 +65,9 @@ Priority 1 (important)
 Priority 2 (nice to have)
 -------------------------
 - Transition to Xcode 4, mainly to get native git support
+- In PlayerSelectionController and SetingsViewController: Add human/computer
+  symbol to the table view cell depending on the type of the player that the
+  cell represents
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build

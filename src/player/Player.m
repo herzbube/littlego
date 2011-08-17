@@ -42,6 +42,7 @@
 @synthesize name;
 @synthesize human;
 @synthesize statistics;
+@synthesize playing;
 
 
 // -----------------------------------------------------------------------------
@@ -99,6 +100,9 @@
     self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
   }
   assert([self.uuid length] > 0);
+
+  self.playing = false;
+
   return self;
 }
 

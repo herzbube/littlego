@@ -46,5 +46,8 @@
 /// @brief Reference to an object that stores statistics about the history of
 /// games played by this Player.
 @property(retain) PlayerStatistics* statistics;
+/// @brief True if this Player object is taking part in the currently ongoing
+/// GoGame.
+@property(getter=isPlaying) bool playing;
 
 @end
