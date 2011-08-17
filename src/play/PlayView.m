@@ -470,8 +470,9 @@
   NSString* statusText = @"";
   if (self.crossHairPoint)
   {
+    statusText = self.crossHairPoint.vertex.string;
     if (! self.crossHairPointIsLegalMove)
-      statusText = @"You can't play there";
+      statusText = [statusText stringByAppendingString:@" - You can't play there"];
   }
   else
   {
