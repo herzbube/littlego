@@ -41,6 +41,9 @@
 //@{
 - (id) initWithSize:(enum GoBoardSize)boardSize;
 - (void) dealloc;
+- (void) setupGoPoints;
+- (void) setupStarPoints;
+- (void) setupGTPEngine;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -181,17 +184,10 @@
   if (! self)
     return nil;
 
-  // Init with "undefined" value so that the setter is properly triggered
-  size = BoardSizeUndefined;
-  assert(boardSize != BoardSizeUndefined);
-  if (boardSize == BoardSizeUndefined)
-    return nil;
-
-  // Setting this property 1) also adjusts property dimensions, and 2) triggers
-  // creation of all GoPoint objects!
   self.size = boardSize;
+  self.dimensions = [GoBoard dimensionForSize:boardSize];
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
-  starPoints = [[NSArray array] retain];
+  starPoints = nil;
 
   return self;
 }
@@ -213,53 +209,68 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adjusts the size of this GoBoard object to @a newValue. Also adjusts
-/// property @e dimensions to a value that corresponds to @a newValue.
+/// @brief Sets up this GoBoard.
 ///
-/// This function should only be called while the game has not yet started.
+/// This is a post-initalization setup routine. It performs initialization that
+/// cannot be done during initWithSize:() because it requires that this GoBoard
+/// object is known to the shared GoGame instance.
 // -----------------------------------------------------------------------------
-- (void) setSize:(enum GoBoardSize)newValue
+- (void) setupBoard
 {
-  @synchronized(self)
+  [self setupGoPoints];
+  [self setupStarPoints];
+  [self setupGTPEngine];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates all GoPoint objects that belong to a single GoBoardRegion.
+///
+/// This is a post-initalization setup routine.
+// -----------------------------------------------------------------------------
+- (void) setupGoPoints
+{
+  // Create an initial GoPoint and GoBoardRegion object
+  GoPoint* point = [self pointAtVertex:@"A1"];
+  GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
+  point.region = region;
+
+  // On a clear board, the initial region contains all GoPoint objects.
+  // Note: Moving to the next point creates the corresponding GoPoint object!
+  for (; point = point.next; point != nil)
   {
-    if (size == newValue)
-      return;
-    size = newValue;
-    self.dimensions = [GoBoard dimensionForSize:newValue];
-
-    // Removing references to GoPoint objects destroys them
-    [m_vertexDict removeAllObjects];
-    [starPoints release];
-    starPoints = nil;
-
-    // Create an initial GoPoint and GoBoardRegion object
-    GoPoint* point = [self pointAtVertex:@"A1"];
-    GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
     point.region = region;
-    // On a clear board, the initial region contains all GoPoint objects.
-    // Note: Moving to the next point creates the corresponding GoPoint object!
-    for (; point = point.next; point != nil)
-    {
-      point.region = region;
-      [region addPoint:point];
-    }
-
-    // Re-create the list of star points
-    NSMutableArray* starPointsLocal = [NSMutableArray arrayWithCapacity:0];
-    for (NSString* starPointVertex in [self starPointVertexes])
-    {
-      GoPoint* starPoint = [self pointAtVertex:starPointVertex];
-      starPoint.starPoint = true;
-      [starPointsLocal addObject:starPoint];
-    }
-    // Make a copy that is immutable because we hand out references to the
-    // array, and we don't want clients to be able to change the array
-    starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
-
-    // GTP engine must also be notified
-    [[GtpCommand command:@"clear_board"] submit];
-    [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", self.dimensions]] submit];
+    [region addPoint:point];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Determines all GoPoint objects that are star points.
+///
+/// This is a post-initalization setup routine.
+// -----------------------------------------------------------------------------
+- (void) setupStarPoints
+{
+  NSMutableArray* starPointsLocal = [NSMutableArray arrayWithCapacity:0];
+  for (NSString* starPointVertex in [self starPointVertexes])
+  {
+    GoPoint* starPoint = [self pointAtVertex:starPointVertex];
+    starPoint.starPoint = true;
+    [starPointsLocal addObject:starPoint];
+  }
+  // Make a copy that is immutable because we hand out references to the
+  // array, and we don't want clients to be able to change the array
+  starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Notify GTP engine that a new board has been created.
+///
+/// This is a post-initalization setup routine.
+// -----------------------------------------------------------------------------
+- (void) setupGTPEngine
+{
+  [[GtpCommand command:@"clear_board"] submit];
+  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", self.dimensions]] submit];
 }
 
 // -----------------------------------------------------------------------------

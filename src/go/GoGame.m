@@ -162,6 +162,10 @@ static GoGame* sharedGame = nil;
                                                name:gtpResponseReceivedNotification
                                              object:nil];
 
+  // Post-initialization, after everything else has been set up (especially a
+  // reference to the GoBoard object must have been set up)
+  [self.board setupBoard];
+
   if ([self isComputerPlayersTurn])
     [self computerPlay];
 

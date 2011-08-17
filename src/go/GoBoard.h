@@ -46,6 +46,7 @@
 + (NSString*) stringForSize:(enum GoBoardSize)size;
 + (int) dimensionForSize:(enum GoBoardSize)size;
 + (enum GoBoardSize) sizeForDimension:(int)dimension;
+- (void) setupBoard;
 - (NSEnumerator*) pointEnumerator;
 - (GoPoint*) pointAtVertex:(NSString*)vertex;
 - (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction;

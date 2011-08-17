@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Review weird memory management of GoBoardRegion.points
 - Special notification if computer player has passed or resigned
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
