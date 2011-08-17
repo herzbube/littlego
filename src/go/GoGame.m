@@ -332,7 +332,7 @@ static GoGame* sharedGame = nil;
 /// @a point would be legal. This includes checking for suicide moves and
 /// Ko situations.
 // -----------------------------------------------------------------------------
-- (bool) isLegalNextMove:(GoPoint*)point
+- (bool) isLegalMove:(GoPoint*)point
 {
   // We could use the Fuego-specific GTP command "go_point_info" to obtain
   // the desired information, but parsing the response would require some

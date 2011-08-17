@@ -49,7 +49,7 @@
 - (void) undo;
 - (void) pause;
 - (void) continue;
-- (bool) isLegalNextMove:(GoPoint*)point;
+- (bool) isLegalMove:(GoPoint*)point;
 - (bool) isComputerPlayersTurn;
 
 /// @brief The type of this GoGame object.

@@ -247,9 +247,9 @@
 /// this GoPoint would be legal. This includes checking for suicide moves and
 /// Ko situations.
 // -----------------------------------------------------------------------------
-- (bool) isLegalNextMove
+- (bool) isLegalMove
 {
-  return [[GoGame sharedGame] isLegalNextMove:self];
+  return [[GoGame sharedGame] isLegalMove:self];
 }
 
 // -----------------------------------------------------------------------------

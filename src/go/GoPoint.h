@@ -39,9 +39,9 @@
 /// occupied, the method returns the number of liberties of just that one
 /// intersection.
 ///
-/// isLegalNextMove() is a convenient way to check whether placing a stone on
-/// the GoPoint would be legal. This includes checking for suicide moves and
-/// Ko situations.
+/// isLegalMove() is a convenient way to check whether placing a stone on the
+/// GoPoint would be legal. This includes checking for suicide moves and Ko
+/// situations.
 // -----------------------------------------------------------------------------
 @interface GoPoint : NSObject
 {
@@ -51,7 +51,7 @@
 - (bool) hasStone;
 - (bool) blackStone;
 - (int) liberties;
-- (bool) isLegalNextMove;
+- (bool) isLegalMove;
 - (bool) isEqualToPoint:(GoPoint*)point;
 
 /// @brief Identifies the location of the intersection that the GoPoint

@@ -295,7 +295,7 @@
   // already placed on the point; suicide move; guarded by Ko rule)
   bool isLegalMove = false;
   if (crossHairPoint)
-    isLegalMove = [[GoGame sharedGame] isLegalNextMove:crossHairPoint];
+    isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairPoint];
 
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
