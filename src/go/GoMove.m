@@ -41,6 +41,7 @@
 @property(readwrite, retain) GoPlayer* player;
 @property(readwrite, assign) GoMove* previous;
 @property(readwrite, retain) GoMove* next;
+@property(readwrite, retain) NSArray* capturedStones;
 //@}
 @end
 
@@ -52,6 +53,8 @@
 @synthesize point;
 @synthesize previous;
 @synthesize next;
+@synthesize capturedStones;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoMove instance of type @a type,
@@ -98,6 +101,7 @@
   self.point = nil;
   self.previous = nil;
   self.next = nil;
+  self.capturedStones = [NSMutableArray arrayWithCapacity:0];
 
   return self;
 }
@@ -115,6 +119,7 @@
     self.next.previous = nil;  // remove reference to self
     self.next = nil;
   }
+  self.capturedStones = nil;
   [super dealloc];
 }
 
@@ -161,7 +166,6 @@
   [self movePointToNewRegion:newValue];
 
   // Check neighbours for captures
-  int numberOfCapturedStones = 0;
   for (GoPoint* neighbour in newValue.neighbours)
   {
     if (! neighbour.hasStone)
@@ -171,13 +175,13 @@
     if ([neighbour liberties] > 0)
       continue;
     // The stone made a capture!!!
-    numberOfCapturedStones += [neighbour.region size];
     for (GoPoint* capture in neighbour.region.points)
     {
       // If in the next iteration of the outer loop we find a neighbour in the
       // same captured group, the neighbour will already have its state reset,
       // and we will skip it
       capture.stoneState = NoStone;
+      [(NSMutableArray*)capturedStones addObject:capture];
     }
   }
   // TODO do scoring here!
@@ -195,6 +199,17 @@
   if (PlayMove != self.type)
     return;
 
+  // Update stone state of captured stones *BEFORE* handling the actual point
+  // of this move. This makes sure that movePointToNewRegion:() further down
+  // does not join regions incorrectly.
+  enum GoStoneState capturedStoneState;
+  if (self.player.black)
+    capturedStoneState = WhiteStone;
+  else
+    capturedStoneState = BlackStone;
+  for (GoPoint* capture in self.capturedStones)
+    capture.stoneState = capturedStoneState;
+
   // Update the point's stone state *BEFORE* moving it to a new region
   GoPoint* thePoint = self.point;
   assert(thePoint);
@@ -210,7 +225,8 @@
   }
 
   // Not strictly necessary since we expect to be deallocated soon
-  point = nil;
+  point = nil;  // make sure not to use the setter here!
+  self.player = nil;
 }
 
 // -----------------------------------------------------------------------------

@@ -64,5 +64,11 @@
 /// @brief The successor to this GoMove object. nil if this is the last move
 /// of the game.
 @property(readonly, retain) GoMove* next;      // retain here, making us the parent, and next the child
+/// @brief Keeps track of stones that were captured by this move.
+///
+/// If not empty, the array contains an unordered list of GoPoint objects. Also,
+/// if several stone groups were captured, the GoPoint objects do not form a
+/// single contiguous region.
+@property(readonly, retain) NSArray* capturedStones;
 
 @end
