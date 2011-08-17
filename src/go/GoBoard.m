@@ -86,6 +86,8 @@
 {
   switch (size)
   {
+    case BoardSizeUndefined:
+      return @"Undefined";
     case BoardSize7:
       return @"7";
     case BoardSize9:
@@ -115,6 +117,8 @@
 {
   switch (size)
   {
+    case BoardSizeUndefined:
+      return 0;
     case BoardSize7:
       return 7;
     case BoardSize9:
@@ -162,7 +166,7 @@
       assert(false);
       break;
   }
-  return BoardSize7;
+  return BoardSizeUndefined;
 }
 
 // -----------------------------------------------------------------------------
@@ -175,6 +179,12 @@
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
+    return nil;
+
+  // Init with "undefined" value so that the setter is properly triggered
+  size = BoardSizeUndefined;
+  assert(boardSize != BoardSizeUndefined);
+  if (boardSize == BoardSizeUndefined)
     return nil;
 
   // Setting this property 1) also adjusts property dimensions, and 2) triggers

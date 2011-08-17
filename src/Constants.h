@@ -103,7 +103,8 @@ enum GoBoardSize
   BoardSize15,
   BoardSize17,
   BoardSize19,
-  BoardSizeMax = BoardSize19
+  BoardSizeMax = BoardSize19,
+  BoardSizeUndefined
 };
 
 // -----------------------------------------------------------------------------
