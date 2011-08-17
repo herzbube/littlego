@@ -70,9 +70,8 @@
 /// @brief The gesture recognizer used to detect the dragging, or panning,
 /// gesture.
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
-/// @brief True if user interaction is currently enabled, false if not. User
-/// interaction is usually disabled while the computer player is thinking about
-/// its move.
-@property(getter=isInteractionEnabled) bool interactionEnabled;
+/// @brief True if a panning gesture is currently allowed, false if not (e.g.
+/// while a computer player is thinking).
+@property(getter=isPanningEnabled) bool panningEnabled;
 
 @end

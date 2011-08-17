@@ -10,8 +10,6 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
-- Prevent flickering on play view if computer player is thinking only for a
-  very short time
 - Special notification if computer player has passed or resigned
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
@@ -68,6 +66,13 @@ Priority 2 (nice to have)
 - In PlayerSelectionController and SetingsViewController: Add human/computer
   symbol to the table view cell depending on the type of the player that the
   cell represents
+- While panning
+  - If the location is invalid, display the reason in the status line
+  - If placing a stone would capture other stones, mark up those stones
+    and display in the status line how many stones would be captured
+  - If placing a stone would set a group (your own or an enemy group) to
+    atari, mark up that group
+
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build

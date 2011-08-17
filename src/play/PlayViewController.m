@@ -93,7 +93,8 @@
 @synthesize flexibleSpaceButton;
 @synthesize newGameButton;
 @synthesize panRecognizer;
-@synthesize interactionEnabled;
+@synthesize panningEnabled;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this PlayViewController object.
@@ -114,16 +115,15 @@
 {
   [super viewDidLoad];
 
-  self.interactionEnabled = true;
+  self.panningEnabled = false;
 
 	self.panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
+	[self.panRecognizer release];
 	[self.playView addGestureRecognizer:self.panRecognizer];
   self.panRecognizer.delegate = self;
   self.panRecognizer.maximumNumberOfTouches = 1;
-	[self.panRecognizer release];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  // TODO do we really need two notifications?
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(goGameScoreChanged:) name:goGameScoreChanged object:nil];
@@ -131,8 +131,10 @@
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
 
-  [self populateToolbar];
-  [self updateButtonStates];
+  // We invoke this to set up initial state because we did not get
+  // get goGameNewCreated for the initial game (viewDidLoad gets called too
+  // late)
+  [self goGameNewCreated:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -262,6 +264,8 @@
 // -----------------------------------------------------------------------------
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
 {
+  // TODO move the following summary somewhere else where it is not buried in
+  // code and forgotten...
   // 1. Touching the screen starts stone placement
   // 2. Stone is placed when finger leaves the screen and the stone is placed
   //    in a valid location
@@ -283,10 +287,6 @@
   //      atari, mark up that group
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
-
-
-  // TODO Prevent panning and other actions (e.g. pass) while the computer
-  // player is thinking
 
   CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
   GoPoint* crossHairPoint = [self.playView crossHairPointAt:panningLocation];
@@ -325,7 +325,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  return self.isInteractionEnabled;
+  return self.isPanningEnabled;
 }
 
 // -----------------------------------------------------------------------------
@@ -333,7 +333,16 @@
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
+  // Panning is always disabled in a computer vs. computer game. In other game
+  // types, panning is optimistically enabled first, but may be disabled again
+  // later on by computerPlayerThinkingChanged:().
+  if (ComputerVsComputerGame == [GoGame sharedGame].type)
+    self.panningEnabled = false;
+  else
+    self.panningEnabled = true;
+
   [self populateToolbar];
+  [self updateButtonStates];
 }
 
 // -----------------------------------------------------------------------------
@@ -368,7 +377,14 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  self.interactionEnabled = ! [[GoGame sharedGame] isComputerThinking];
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsHumanGame:
+      self.panningEnabled = ! [[GoGame sharedGame] isComputerThinking];
+      break;
+    default:
+      break;
+  }
   [self updateButtonStates];
 }
 
@@ -453,7 +469,15 @@
       }
       break;
     default:
-      if (self.isInteractionEnabled)
+      if ([GoGame sharedGame].isComputerThinking)
+      {
+        playForMeButtonEnabled = NO;
+        passButtonEnabled = NO;
+        resignButtonEnabled = NO;
+        undoButtonEnabled = NO;
+        newGameButtonEnabled = NO;
+      }
+      else
       {
         switch ([GoGame sharedGame].state)
         {
@@ -487,14 +511,6 @@
           default:
             break;
         }
-      }
-      else
-      {
-        playForMeButtonEnabled = NO;
-        passButtonEnabled = NO;
-        resignButtonEnabled = NO;
-        undoButtonEnabled = NO;
-        newGameButtonEnabled = NO;
       }
       break;
   }
