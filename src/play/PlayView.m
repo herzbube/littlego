@@ -362,7 +362,7 @@
     // TODO move color handling to a helper function; there is similar code
     // floating around somewhere else (GoGame?)
     UIColor* color = nil;
-    if (game.nextPlayer.isBlack)
+    if (game.currentPlayer.isBlack)
       color = [UIColor blackColor];
     else
       color = [UIColor whiteColor];

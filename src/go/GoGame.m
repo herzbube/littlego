@@ -78,7 +78,7 @@
 @synthesize board;
 @synthesize playerBlack;
 @synthesize playerWhite;
-@synthesize nextPlayer;
+@synthesize currentPlayer;
 @synthesize firstMove;
 @synthesize lastMove;
 @synthesize state;
@@ -349,7 +349,7 @@ static GoGame* sharedGame = nil;
     return true;
   else
   {
-    bool nextMoveIsBlack = self.nextPlayer.isBlack;
+    bool nextMoveIsBlack = self.currentPlayer.isBlack;
     bool isKoStillPossible = true;
 
     NSArray* neighbours = point.neighbours;
@@ -504,7 +504,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updatePlayMove:(GoPoint*)point
 {
-  GoMove* move = [GoMove move:PlayMove by:self.nextPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:PlayMove by:self.currentPlayer after:self.lastMove];
   move.point = point;  // many side-effects here (e.g. region handling) !!!
 
   if (! self.firstMove)
@@ -525,7 +525,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updatePassMove
 {
-  GoMove* move = [GoMove move:PassMove by:self.nextPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:PassMove by:self.currentPlayer after:self.lastMove];
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -553,7 +553,7 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) updateResignMove
 {
-  GoMove* move = [GoMove move:ResignMove by:self.nextPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:ResignMove by:self.currentPlayer after:self.lastMove];
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -654,13 +654,13 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (bool) isComputerPlayersTurn
 {
-  return (! self.nextPlayer.player.isHuman);
+  return (! self.currentPlayer.player.isHuman);
 }
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (GoPlayer*) nextPlayer
+- (GoPlayer*) currentPlayer
 {
   GoMove* move = self.lastMove;
   if (! move)
