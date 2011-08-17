@@ -19,6 +19,9 @@
 #import "PlayViewController.h"
 #import "PlayView.h"
 #import "../go/GoGame.h"
+#import "../go/GoMove.h"
+#import "../go/GoPlayer.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
@@ -492,10 +495,16 @@
             playForMeButtonEnabled = YES;
             passButtonEnabled = YES;
             resignButtonEnabled = YES;
-            if ([GoGame sharedGame].lastMove != nil)
-              undoButtonEnabled = YES;
+            GoMove* lastMove = [GoGame sharedGame].lastMove;
+            if (lastMove == nil)
+              undoButtonEnabled = NO;               // no move yet
+            else if (lastMove.player.player.human)
+              undoButtonEnabled = YES;              // last move by human player
+            else if (lastMove.previous == nil)
+              undoButtonEnabled = NO;               // last move by computer, but no other move before that
             else
-              undoButtonEnabled = NO;
+              undoButtonEnabled = YES;              // last move by computer, and another move before that
+                                                    // -> assume it's by a human player because game type has been checked before
             newGameButtonEnabled = YES;
             break;
           case GameIsPaused:
