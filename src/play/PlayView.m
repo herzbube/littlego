@@ -25,6 +25,7 @@
 #import "../go/GoPlayer.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
+#import "../player/Player.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -481,8 +482,7 @@
       switch ([GoGame sharedGame].state)
       {
         case GameHasStarted:
-          // TODO Insert computer player name here (e.g. "Fuego")
-          statusText = @"Computer is thinking...";
+          statusText = [[GoGame sharedGame].currentPlayer.player.name stringByAppendingString:@" is thinking..."];
           break;
         case GameHasEnded:
           // TODO how do we know that the score is being calculated??? this is
