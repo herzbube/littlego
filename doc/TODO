@@ -16,7 +16,9 @@ Priority 1 (important)
   - Remove @synchronized where possible and make properties non-atomic
   - Review properties to see if any can be declared readonly in the public
     interface, then re-declared rewrite in the private class extension
-- Add NSLog; possibly replace asserts; definitely where abort criteria are met
+- Add logging; possibly replace asserts; definitely where abort criteria are met
+  - Use logging framework instead of NSLog
+  - Have a look at this: http://code.google.com/p/cocoalumberjack/
 - Testing
   - Test application shutdown to see whether there are no memory leaks
   - Add unit tests (oh, the pain!)

@@ -43,6 +43,8 @@ struct GoVertexNumeric
 /// converted so that A=1, B=2, etc. The gap caused by the unused letter "I" is
 /// closed, i.e. H=8, J=9. The compounds of a numeric vertex are bound together
 /// by the helper struct GoVertexNumeric.
+///
+/// GoVertex supports values in the range 1..19 on both axis.
 // -----------------------------------------------------------------------------
 @interface GoVertex : NSObject
 {

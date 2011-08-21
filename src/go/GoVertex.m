@@ -45,9 +45,20 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoVertex instance from the numeric
 /// compounds in @a numericValue.
+///
+/// Raises an @e NSRangeException if one of the vertex compounds stored in
+/// @a numericValue is outside the supported range of values.
 // -----------------------------------------------------------------------------
 + (GoVertex*) vertexFromNumeric:(struct GoVertexNumeric)numericValue
 {
+  if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
+  {
+    NSException* exception = [NSException exceptionWithName:NSRangeException
+                                                     reason:@"Numeric vertex is invalid"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   unichar charA = [@"A" characterAtIndex:0];
   unichar charH = [@"H" characterAtIndex:0];
   unichar charVertexX = charA + numericValue.x - 1; // -1 because numeric vertex is not zero-based
@@ -66,20 +77,40 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoVertex instance from
 /// @a stringValue.
+///
+/// Raises an @e NSRangeException if one of the vertex compounds stored in
+/// @a stringValue is outside the supported range of values.
 // -----------------------------------------------------------------------------
 + (GoVertex*) vertexFromString:(NSString*)stringValue;
 {
   NSString* vertexX = [stringValue substringWithRange:NSMakeRange(0, 1)];
   NSString* vertexY = [stringValue substringFromIndex:1];
   unichar charVertexX = [vertexX characterAtIndex:0];
-  unichar charA = [@"A" characterAtIndex:0];
-  unichar charH = [@"H" characterAtIndex:0];
+  const unichar charA = [@"A" characterAtIndex:0];
+  const unichar charH = [@"H" characterAtIndex:0];
+  const unichar charI = [@"I" characterAtIndex:0];
+
+  if (charVertexX == charI)
+  {
+    NSException* exception = [NSException exceptionWithName:NSRangeException
+                                                     reason:@"Letter 'I' may not be used"
+                                                   userInfo:nil];
+    @throw exception;
+  }
 
   struct GoVertexNumeric numericValue;
   numericValue.x = charVertexX - charA + 1;  // +1 because vertex is not zero-based
   if (charVertexX > charH)
     numericValue.x--;                        // -1 because "I" is never used
-  numericValue.y = [vertexY intValue];
+  numericValue.y = [vertexY intValue];       // no @try needed, intValue does not throw any exceptions
+
+  if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
+  {
+    NSException* exception = [NSException exceptionWithName:NSRangeException
+                                                     reason:@"String vertex is invalid"
+                                                   userInfo:nil];
+    @throw exception;
+  }
 
   GoVertex* vertex = [[GoVertex alloc] initWithString:stringValue numeric:numericValue];
   if (vertex)
