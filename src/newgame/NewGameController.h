@@ -65,7 +65,6 @@
 }
 
 + (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate;
-+ (void) startNewGame;
 
 /// @brief This is the delegate that will be informed about the result of data
 /// collection.

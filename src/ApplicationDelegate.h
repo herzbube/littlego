@@ -25,6 +25,7 @@
 @class PlayerModel;
 @class PlayViewModel;
 @class SoundHandling;
+@class GoGame;
 
 
 // -----------------------------------------------------------------------------
@@ -51,6 +52,11 @@
 
 + (ApplicationDelegate*) sharedDelegate;
 
+- (void) setupFuego;
+- (void) setupUserDefaults;
+- (void) setupGUI;
+- (void) startNewGame;
+
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;
 /// @brief The main application controller.
@@ -67,6 +73,8 @@
 @property(retain) PlayViewModel* playViewModel;
 /// @brief Object that handles sounds and vibration.
 @property(retain) SoundHandling* soundHandling;
+/// @brief Object that represents the game that is currently in progress.
+@property(retain) GoGame* game;
 
 @end
 

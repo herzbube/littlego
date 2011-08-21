@@ -52,7 +52,6 @@
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
-- (void) setupFuego;
 //@}
 /// @name UIApplicationDelegate protocol
 //@{
@@ -77,6 +76,7 @@
 @synthesize playerModel;
 @synthesize playViewModel;
 @synthesize soundHandling;
+@synthesize game;
 
 
 // -----------------------------------------------------------------------------
@@ -113,6 +113,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = nil;
   self.playViewModel = nil;
   self.soundHandling = nil;
+  self.game = nil;
   [super dealloc];
 }
 
@@ -128,29 +129,10 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
-  // Setup application defaults
-  NSString* defaultsPathName = [[NSBundle mainBundle] pathForResource:registrationDomainDefaultsResource ofType:nil];
-  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
-  [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-
-  // Setup user defaults
-  self.newGameModel = [[NewGameModel alloc] init];
-  self.playerModel = [[PlayerModel alloc] init];
-  self.playViewModel = [[PlayViewModel alloc] init];
-  [self.newGameModel readUserDefaults];
-  [self.playerModel readUserDefaults];
-  [self.playViewModel readUserDefaults];
-
-  // Setup GUI
-  [self.window addSubview:tabBarController.view];
-  [self.window makeKeyAndVisible];
-  self.soundHandling = [[SoundHandling alloc] init];
-
-  // Setup GTP engine and client
+  [self setupUserDefaults];
+  [self setupGUI];
   [self setupFuego];
-
-  // Start a new game (will use the defaults in NewGameModel)
-  [NewGameController startNewGame];
+  [self startNewGame];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -203,6 +185,36 @@ static ApplicationDelegate* sharedDelegate = nil;
     /*
      Free up as much memory as possible by purging cached data objects that can be recreated (or reloaded from disk) later.
      */
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the various application models with values from the user
+/// defaults system.
+// -----------------------------------------------------------------------------
+- (void) setupUserDefaults
+{
+  // Set up application defaults *BEFORE* loading user defaults
+  NSString* defaultsPathName = [[NSBundle mainBundle] pathForResource:registrationDomainDefaultsResource ofType:nil];
+  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+
+  // Create model objects and load values from the user defaults system
+  self.newGameModel = [[NewGameModel alloc] init];
+  self.playerModel = [[PlayerModel alloc] init];
+  self.playViewModel = [[PlayViewModel alloc] init];
+  [self.newGameModel readUserDefaults];
+  [self.playerModel readUserDefaults];
+  [self.playViewModel readUserDefaults];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the objects used to manage the GUI.
+// -----------------------------------------------------------------------------
+- (void) setupGUI
+{
+  [self.window addSubview:tabBarController.view];
+  [self.window makeKeyAndVisible];
+  self.soundHandling = [[SoundHandling alloc] init];
 }
 
 // -----------------------------------------------------------------------------
@@ -260,6 +272,22 @@ static ApplicationDelegate* sharedDelegate = nil;
   }
   self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath];
   self.gtpEngine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Starts a new game using the values currently stored in NewGameModel.
+// -----------------------------------------------------------------------------
+- (void) startNewGame
+{
+  // De-allocate the old game *BEFORE* creating a new one. Go objects attached
+  // to the old game need to be able to access their instance using GoGame's
+  // class method sharedGame().
+  // TODO: Remove this comment and statement as soon as Go objects no longer
+  // rely on sharedGame().
+  self.game = nil;
+  // TODO: Prevent starting a new game if the defaults are somehow invalid
+  // (currently known: player UUID may refer to a player that has been removed)
+  self.game = [GoGame newGame];
 }
 
 @end

@@ -101,20 +101,11 @@ static GoGame* sharedGame = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Creates a new GoGame object and returns that object. From now on,
-/// sharedGame() also returns the same object. If another GoGame object exists
-/// at the moment, it is de-allocated first.
+/// sharedGame() also returns the same object.
 // -----------------------------------------------------------------------------
 + (GoGame*) newGame
 {
-  if (sharedGame)
-  {
-    [sharedGame release];
-    assert(nil == sharedGame);
-  }
-  // TODO: We are the owner of sharedGame, but we never release the object.
-  // We should autorelease, as does every other convenience constructor, instead
-  // someone else should hold a reference to the game.
-  GoGame* newGame = [[GoGame alloc] init];
+  GoGame* newGame = [[[GoGame alloc] init] autorelease];
   assert(newGame == sharedGame);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameNewCreated object:newGame];
@@ -135,7 +126,6 @@ static GoGame* sharedGame = nil;
     return nil;
 
   // Make sure that this instance of GoGame is globally available
-  assert(nil == sharedGame);
   sharedGame = self;
 
   // Initialize members (some objects initialize themselves with values from
@@ -162,8 +152,9 @@ static GoGame* sharedGame = nil;
                                                name:gtpResponseReceivedNotification
                                              object:nil];
 
-  // Post-initialization, after everything else has been set up (especially a
-  // reference to the GoBoard object must have been set up)
+  // Post-initialization, after everything else has been set up (especially the
+  // shared game instance and a reference to the GoBoard object must have been
+  // set up)
   [self.board setupBoard];
 
   if ([self isComputerPlayersTurn])
@@ -178,12 +169,13 @@ static GoGame* sharedGame = nil;
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  sharedGame = nil;
   self.board = nil;
   self.playerBlack = nil;
   self.playerWhite = nil;
   self.firstMove = nil;
   self.lastMove = nil;
+  if (self == sharedGame)
+    sharedGame = nil;
   [super dealloc];
 }
 

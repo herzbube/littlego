@@ -23,11 +23,17 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoGame class represents a game of Go. Only one instance of GoGame
-/// is created throughout the application's lifetime. This instance can be
-/// accessed by invoking the class method sharedGame().
+/// @brief The GoGame class represents a game of Go.
 ///
 /// @ingroup go
+///
+/// Only one instance of GoGame can exist at the same time. This instance can
+/// be accessed by invoking the class method sharedGame().
+///
+/// Currently the shared game instance is made available early on during the
+/// GoGame initialization process so that other Go objects, which are also
+/// created during GoGame initialization, may access the shared instance. There
+/// is a todo with the intention to change this behaviour!
 ///
 /// GoGame can be viewed as taking the role of a model in an MVC pattern that
 /// includes the views and controllers on the Play tab of the GUI. Clients that

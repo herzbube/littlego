@@ -151,19 +151,6 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Starts a new game using the values currently stored in NewGameModel.
-// -----------------------------------------------------------------------------
-+ (void) startNewGame
-{
-  // Creating a new GoGame instance automatically deallocates the old instance.
-  // TODO: We need to store a reference to the GoGame object so that we can
-  // deallocate it if necessary (e.g. on application shutdown).
-  // TODO: Prevent starting a new game if the defaults are somehow invalid
-  // (currently known: player UUID may refer to a player that has been removed)
-  [GoGame newGame];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this NewGameController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -222,7 +209,7 @@ enum KomiSectionItem
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
   // Second step: Start a new game using the information from the NewGameModel
-  [NewGameController startNewGame];
+  [[ApplicationDelegate sharedDelegate] startNewGame];
 
   // Finally inform our delegate
   [self.delegate newGameController:self didStartNewGame:true];
