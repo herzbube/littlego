@@ -17,6 +17,7 @@
 
 // Project includes
 #import "DocumentViewController.h"
+#import "ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -120,9 +121,9 @@
 // -----------------------------------------------------------------------------
 - (void) showAboutDocument:(NSString*)documentContent
 {
-  NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-  NSString* bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-  NSString* copyright = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
+  NSString* bundleName = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+  NSString* bundleVersion = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleVersion"];
+  NSString* copyright = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
   documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%bundleName%"
                                                                withString:bundleName];
   documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%bundleVersion%"
@@ -139,8 +140,8 @@
 {
   if (! resourceName)
     return @"";
-  NSURL* resourceURL = [[NSBundle mainBundle] URLForResource:resourceName
-                                               withExtension:nil];
+  NSURL* resourceURL = [[ApplicationDelegate sharedDelegate].resourceBundle URLForResource:resourceName
+                                                                             withExtension:nil];
   NSStringEncoding usedEncoding;
   NSError* error;
   return [NSString stringWithContentsOfURL:resourceURL

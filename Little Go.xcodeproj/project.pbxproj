@@ -44,6 +44,28 @@
 		CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */; };
 		CD78034D132FE6D300E7843F /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD78034C132FE6D300E7843F /* DebugViewController.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
+		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
+		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
+		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
+		CD85B59B1401C1CA001715B8 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
+		CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
+		CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881813255A4000E83543 /* GoBoard.m */; };
+		CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
+		CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
+		CD85B5AA1401C209001715B8 /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
+		CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
+		CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
+		CD85B5AF1401C23D001715B8 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
+		CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108814132559EA00E83543 /* GtpResponse.m */; };
+		CD85B5C41401C338001715B8 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
+		CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
+		CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
+		CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
+		CD85B5CC1401C360001715B8 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3028F1360BDD3005235F2 /* PlayViewModel.m */; };
+		CD85B5CF1401C374001715B8 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
+		CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
+		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
+		CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
@@ -69,6 +91,10 @@
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
+		CDF43D5B1402DD83007F44A4 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
+		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
+		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
+		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */; };
@@ -128,11 +154,12 @@
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
 		CD78034C132FE6D300E7843F /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
+		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
+		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CDA264AA132CF7EF00FAFC51 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		CDA264AB132CF7EF00FAFC51 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		CDA595AF1401383E00B250D8 /* Unit tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDA595BE140142C700B250D8 /* Unit tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Unit tests-Info.plist"; sourceTree = "<group>"; };
 		CDA596111401741800B250D8 /* GoVertexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertexTest.h; sourceTree = "<group>"; };
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
 		CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameModel.h; sourceTree = "<group>"; };
@@ -185,6 +212,13 @@
 		CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		CDEC28AD12F4A3500069F5B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "get-and-build-3rdparty-software.sh"; sourceTree = "<group>"; };
+		CDF43D031402BF2A007F44A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CDF43D9B1402E970007F44A4 /* BaseTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTestCase.h; sourceTree = "<group>"; };
+		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTestCase.m; sourceTree = "<group>"; };
+		CDF43DAD1402EC83007F44A4 /* GoBoardTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardTest.h; sourceTree = "<group>"; };
+		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
+		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
+		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
@@ -213,6 +247,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
+				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,7 +395,7 @@
 		CDA595BD140142C700B250D8 /* resource */ = {
 			isa = PBXGroup;
 			children = (
-				CDA595BE140142C700B250D8 /* Unit tests-Info.plist */,
+				CDF43D031402BF2A007F44A4 /* Info.plist */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -367,6 +403,14 @@
 		CDA595BF140142C700B250D8 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CDF43D9B1402E970007F44A4 /* BaseTestCase.h */,
+				CDF43D9C1402E970007F44A4 /* BaseTestCase.m */,
+				CDF43DAD1402EC83007F44A4 /* GoBoardTest.h */,
+				CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */,
+				CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */,
+				CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */,
+				CD85B58E1401C137001715B8 /* GoGameTest.h */,
+				CD85B58F1401C137001715B8 /* GoGameTest.m */,
 				CDA596111401741800B250D8 /* GoVertexTest.h */,
 				CDA596121401741800B250D8 /* GoVertexTest.m */,
 			);
@@ -577,6 +621,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDF43D5B1402DD83007F44A4 /* RegistrationDomainDefaults.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -658,6 +703,29 @@
 			files = (
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
+				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
+				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
+				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
+				CD85B59B1401C1CA001715B8 /* Constants.m in Sources */,
+				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
+				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
+				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
+				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
+				CD85B5AA1401C209001715B8 /* ApplicationDelegate.mm in Sources */,
+				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
+				CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */,
+				CD85B5AF1401C23D001715B8 /* GtpCommand.m in Sources */,
+				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
+				CD85B5C41401C338001715B8 /* Player.m in Sources */,
+				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
+				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
+				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
+				CD85B5CC1401C360001715B8 /* PlayViewModel.m in Sources */,
+				CD85B5CF1401C374001715B8 /* SoundHandling.m in Sources */,
+				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
+				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
+				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
+				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,14 +848,17 @@
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				HEADER_SEARCH_PATHS = ./src;
-				INFOPLIST_FILE = "test/resource/Unit tests-Info.plist";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					"./3rdparty/install$(SDKROOT)/include",
+					./src,
+				);
+				INFOPLIST_FILE = test/resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -795,6 +866,11 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";
@@ -813,13 +889,16 @@
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				HEADER_SEARCH_PATHS = ./src;
-				INFOPLIST_FILE = "Unit tests-Info.plist";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					"./3rdparty/install$(SDKROOT)/include",
+					./src,
+				);
+				INFOPLIST_FILE = test/resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -827,6 +906,11 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";
@@ -844,13 +928,16 @@
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				HEADER_SEARCH_PATHS = ./src;
-				INFOPLIST_FILE = "Unit tests-Info.plist";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					"./3rdparty/install$(SDKROOT)/include",
+					./src,
+				);
+				INFOPLIST_FILE = test/resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -858,6 +945,11 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";

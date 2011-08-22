@@ -63,6 +63,8 @@
 
   // NSString and CFStringRef are toll-free bridged types, which allows to
   // simply cast NSString* into a CFStringRef.
+  // TODO: We should use ApplicationDelegate.resourceBundle here, but how can
+  // we get from NSBundle to CFBundle? These are not toll-free bridged types...
   CFURLRef playStoneURLRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), (CFStringRef)playStoneSoundFileResource, NULL, NULL);
   AudioServicesCreateSystemSoundID(playStoneURLRef, &playStoneSystemSound);
   CFRelease(playStoneURLRef);

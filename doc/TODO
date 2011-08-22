@@ -21,7 +21,14 @@ Priority 1 (important)
   - Have a look at this: http://code.google.com/p/cocoalumberjack/
 - Testing
   - Test application shutdown to see whether there are no memory leaks
-  - Add unit tests (oh, the pain!)
+  - Add more unit tests
+    - GoPlayer
+    - GoMove, GoPoint, GoBoardRegion; the main problem here is that certain
+      methods in these classes have large side-effects, while other methods
+      are utterly trivial
+      -> extract logic and make all methods trivial
+    - GoGame; the main problem here is that GoGame relies on GTP responses
+      -> we need to substitute GTP client and engine with mock objects
 - Find a way to add the opening book to the project resources without
   depending on a fixed path (a fixed path will break if the project is
   compiled on a newer base SDK)

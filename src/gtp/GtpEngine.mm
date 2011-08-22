@@ -17,6 +17,7 @@
 
 // Project includes
 #include "GtpEngine.h"
+#import "../ApplicationDelegate.h"
 
 // Fuego
 #include <fuego/FuegoMainUtil.h>
@@ -98,7 +99,7 @@
   NSString* outputPipePath = [pipes objectAtIndex:1];
   const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-  NSString* bookFile = [[NSBundle mainBundle] pathForResource:openingBookResource ofType:nil];
+  NSString* bookFile = [[ApplicationDelegate sharedDelegate].resourceBundle pathForResource:openingBookResource ofType:nil];
 
   char programName[255];
   char inputPipeParameterName[255];

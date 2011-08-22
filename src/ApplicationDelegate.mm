@@ -70,6 +70,7 @@
 
 @synthesize window;
 @synthesize tabBarController;
+@synthesize resourceBundle;
 @synthesize gtpClient;
 @synthesize gtpEngine;
 @synthesize newGameModel;
@@ -101,6 +102,20 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates a new ApplicationDelegate object and returns that object.
+/// From now on, sharedDelegate() also returns the same object.
+///
+/// This method exists for the purpose of unit testing. In a normal environment
+/// the application delegate is created when the application's main nib file is
+/// loaded.
+// -----------------------------------------------------------------------------
++ (ApplicationDelegate*) newDelegate
+{
+  sharedDelegate = [[[ApplicationDelegate alloc] init] autorelease];
+  return sharedDelegate;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this ApplicationDelegate object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -114,6 +129,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playViewModel = nil;
   self.soundHandling = nil;
   self.game = nil;
+  if (self == sharedDelegate)
+    sharedDelegate = nil;
   [super dealloc];
 }
 
@@ -129,6 +146,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
+  [self setupResourceBundle];
   [self setupUserDefaults];
   [self setupGUI];
   [self setupFuego];
@@ -188,20 +206,30 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the bundle that contains the application's resources. This
+/// method does nothing if the @e resourceBundle property is not nil.
+// -----------------------------------------------------------------------------
+- (void) setupResourceBundle
+{
+  if (! self.resourceBundle)
+    self.resourceBundle = [NSBundle mainBundle];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the various application models with values from the user
 /// defaults system.
 // -----------------------------------------------------------------------------
 - (void) setupUserDefaults
 {
   // Set up application defaults *BEFORE* loading user defaults
-  NSString* defaultsPathName = [[NSBundle mainBundle] pathForResource:registrationDomainDefaultsResource ofType:nil];
+  NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
   NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
 
   // Create model objects and load values from the user defaults system
-  self.newGameModel = [[NewGameModel alloc] init];
-  self.playerModel = [[PlayerModel alloc] init];
-  self.playViewModel = [[PlayViewModel alloc] init];
+  self.newGameModel = [[[NewGameModel alloc] init] autorelease];
+  self.playerModel = [[[PlayerModel alloc] init] autorelease];
+  self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
   [self.newGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];

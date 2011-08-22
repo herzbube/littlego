@@ -79,10 +79,20 @@
 /// @a stringValue.
 ///
 /// Raises an @e NSRangeException if one of the vertex compounds stored in
-/// @a stringValue is outside the supported range of values.
+/// @a stringValue is outside the supported range of values. Raises an
+/// @e NSInvalidArgumentException if @a stringValue is nil or otherwise
+/// fundamentally malformed.
 // -----------------------------------------------------------------------------
 + (GoVertex*) vertexFromString:(NSString*)stringValue;
 {
+  if (! stringValue || [stringValue length] < 2 || [stringValue length] > 3)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"String vertex is nil or otherwise malformed"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   NSString* vertexX = [stringValue substringWithRange:NSMakeRange(0, 1)];
   NSString* vertexY = [stringValue substringFromIndex:1];
   unichar charVertexX = [vertexX characterAtIndex:0];

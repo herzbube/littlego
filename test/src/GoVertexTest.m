@@ -170,6 +170,9 @@
   NSString* inputVertex12 = @"1A";
   NSString* inputVertex13 = @"ΩA";  // something weird that is not ASCII
   NSString* inputVertex14 = @"I1";  // use letter "I"
+  NSString* inputVertex15 = @"";
+  NSString* inputVertex16 = nil;
+  NSString* inputVertex17 = @"foobar";
 
   STAssertThrowsSpecificNamed([GoVertex vertexFromNumeric:inputVertex1],
                               NSException, NSRangeException, @"test 1");
@@ -199,6 +202,12 @@
                               NSException, NSRangeException, @"test 13");
   STAssertThrowsSpecificNamed([GoVertex vertexFromString:inputVertex14],
                               NSException, NSRangeException, @"test 14");
+  STAssertThrowsSpecificNamed([GoVertex vertexFromString:inputVertex15],
+                              NSException, NSInvalidArgumentException, @"test 15");
+  STAssertThrowsSpecificNamed([GoVertex vertexFromString:inputVertex16],
+                              NSException, NSInvalidArgumentException, @"test 16");
+  STAssertThrowsSpecificNamed([GoVertex vertexFromString:inputVertex17],
+                              NSException, NSInvalidArgumentException, @"test 17");
 }
 
 @end

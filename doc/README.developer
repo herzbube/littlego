@@ -267,6 +267,15 @@ Notes about the "Unit test" target:
 - Because application source files depend on the presence of a prefix header,
   the "Unit test" target has to have the same "Prefix header" build settings
   as the main application target.
+- Compiling ApplicationDelegate for the "Unit test" target pulls in Fuego/Boost
+  (via GTP classes) as dependencies. As a consequence, the "Unit test" target
+  must be set up with Header/Library search paths that are the same as in the
+  main application target.
+  - Additionally, the build setting "Symbols hidden by default" must be set to
+    YES to prevent build warnings because of symbol visibility differences
+    between Fuego/Boost libraries and the unit test bundle. For some unknown
+    reason, this build setting is correct by default in the main application
+    target, but incorrect in the "Unit test" target.
 
 [1] http://developer.apple.com/library/ios/#documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
 

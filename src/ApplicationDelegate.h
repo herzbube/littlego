@@ -51,16 +51,21 @@
 }
 
 + (ApplicationDelegate*) sharedDelegate;
++ (ApplicationDelegate*) newDelegate;
 
-- (void) setupFuego;
+- (void) setupResourceBundle;
 - (void) setupUserDefaults;
 - (void) setupGUI;
+- (void) setupFuego;
 - (void) startNewGame;
 
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;
 /// @brief The main application controller.
 @property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+/// @brief The bundle that contains the application's resources. This property
+/// exists to make the application more testable.
+@property(assign) NSBundle* resourceBundle;
 /// @brief The GTP client instance.
 @property(retain) GtpClient* gtpClient;
 /// @brief The GTP engine instance.
