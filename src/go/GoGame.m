@@ -394,23 +394,6 @@ static GoGame* sharedGame = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if the game has started and is still running, i.e.
-/// moves are still possible.
-// -----------------------------------------------------------------------------
-- (bool) hasStarted
-{
-  return (GameHasStarted == self.state || GameIsPaused == self.state);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if the game has ended, i.e. moves are no longer allowed.
-// -----------------------------------------------------------------------------
-- (bool) hasEnded
-{
-  return (GameHasEnded == self.state);
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Submits a "play" command to the GTP engine.
 ///
 /// This method returns immediately. gtpResponseReceived:() is triggered as
