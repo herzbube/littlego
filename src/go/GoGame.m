@@ -577,17 +577,17 @@ static GoGame* sharedGame = nil;
   GtpResponse* response = (GtpResponse*)[notification object];
   if (! response.status)
     return;
-  NSString* commandString = response.command.command;
+  NSString* commandString = [response.command.command lowercaseString];
   if ([commandString hasPrefix:@"genmove"])
   {
-    NSString* responseString = response.parsedResponse;
+    NSString* responseString = [response.parsedResponse lowercaseString];
     if ([responseString isEqualToString:@"pass"])
       [self updatePassMove];
     else if ([responseString isEqualToString:@"resign"])
       [self updateResignMove];
     else
     {
-      GoPoint* point = [self.board pointAtVertex:responseString];
+      GoPoint* point = [self.board pointAtVertex:[responseString uppercaseString]];
       if (point)
         [self updatePlayMove:point];
       else
