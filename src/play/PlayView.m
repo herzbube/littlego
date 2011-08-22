@@ -570,23 +570,41 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns a GoVertex object for the intersection identified by the view
 /// coordinates @a coordinates.
+///
+/// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
+/// because @a coordinates are outside the board's edges).
 // -----------------------------------------------------------------------------
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates
 {
   struct GoVertexNumeric numericVertex;
   numericVertex.x = 1 + (coordinates.x - self.topLeftPointX) / self.pointDistance;
   numericVertex.y = 1 + (self.topLeftPointY + self.lineLength - coordinates.y) / self.pointDistance;
-  return [GoVertex vertexFromNumeric:numericVertex];
+  GoVertex* vertex;
+  @try
+  {
+    vertex = [GoVertex vertexFromNumeric:numericVertex];
+  }
+  @catch (NSException* exception)
+  {
+    vertex = nil;
+  }
+  return vertex;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a GoPoint object for the intersection identified by the view
 /// coordinates @a coordinates.
+///
+/// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
+/// because @a coordinates are outside the board's edges).
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
 {
   GoVertex* vertex = [self vertexFromCoordinates:coordinates];
-  return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+  if (vertex)
+    return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
