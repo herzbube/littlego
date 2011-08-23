@@ -494,8 +494,8 @@
           case GameHasStarted:
             playForMeButtonEnabled = YES;
             passButtonEnabled = YES;
-            resignButtonEnabled = YES;
             GoMove* lastMove = [GoGame sharedGame].lastMove;
+            resignButtonEnabled = (lastMove != nil);  // handle "no move yet" in the same way as GameHasNotYetStarted
             if (lastMove == nil)
               undoButtonEnabled = NO;               // no move yet
             else if (lastMove.player.player.human)
