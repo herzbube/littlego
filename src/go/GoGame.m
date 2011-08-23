@@ -573,8 +573,8 @@ static GoGame* sharedGame = nil;
 - (void) gtpResponseReceived:(NSNotification*)notification
 {
   GtpResponse* response = (GtpResponse*)[notification object];
-  if (! response.status)
-    return;
+  // TODO handle response.status == false; this happens, for instance, when
+  // Fuego is unable to calculate the score ("final_score" command)
   NSString* commandString = [response.command.command lowercaseString];
   if ([commandString hasPrefix:@"genmove"])
   {
@@ -616,7 +616,9 @@ static GoGame* sharedGame = nil;
   }
   else if ([commandString isEqualToString:@"final_score"])
   {
-    // TODO parse result
+    // TODO parse result; if Fuego is unable to calculate the score, the raw
+    // response text is "? cannot score", which results in response.status
+    // becoming false
     self.score = response.parsedResponse;
 
     // Thinking state must change after any of the other things; this order is
