@@ -255,20 +255,18 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  [self submitFinalScore];
+  // Cannot submit GTP command because GTP has no "resign" command
   [self updateResignMove];
+
+  [self submitFinalScore];
   // TODO calculate score
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Lets the computer player make a move (even if it is not his turn).
-/// The request is ignored if the game is currently paused.
 // -----------------------------------------------------------------------------
 - (void) computerPlay
 {
-  // Ignore request if 
-  if (GameIsPaused == self.state)
-    return;
   [self submitGenMove];
 }
 
@@ -584,7 +582,12 @@ static GoGame* sharedGame = nil;
     if ([responseString isEqualToString:@"pass"])
       [self updatePassMove];
     else if ([responseString isEqualToString:@"resign"])
+    {
+      // TODO should we invoke resign()? we do the same stuff as that method...
+      // delay decision until proper scoring has been implemented.
       [self updateResignMove];
+      [self submitFinalScore];
+    }
     else
     {
       GoPoint* point = [self.board pointAtVertex:[responseString uppercaseString]];
@@ -598,8 +601,18 @@ static GoGame* sharedGame = nil;
     // important for observer notifications
     self.computerThinks = false;
 
-    if ([self isComputerPlayersTurn])
-      [self computerPlay];
+    // Let computer continue playing if the game state allows it and it is
+    // actually a computer player's turn
+    switch (self.state)
+    {
+      case GameIsPaused:  // game has been paused while GTP was thinking about its last move
+      case GameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
+        break;
+      default:
+        if ([self isComputerPlayersTurn])
+          [self computerPlay];
+        break;
+    }
   }
   else if ([commandString isEqualToString:@"final_score"])
   {
