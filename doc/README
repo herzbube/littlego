@@ -2,9 +2,10 @@ Table of Contents
 -----------------
 1. What is it?
 2. Changes in this release
-3. License and source code
-4. Platforms
-5. Special Thanks
+3. Known bugs
+4. License and source code
+5. Platforms
+6. Special Thanks
 
 
 What is it?
@@ -24,9 +25,21 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.1, the first no-frills version suitable for basic gameplay.
+This is Little Go 0.2.
+
+New features in this release are still very basic: For instance, you can now
+start a new game without having to restart the application. Another major
+addition is the ability to select a board size when a new game is started, and
+also to select which players should play against each other (allows computer
+vs. computer play). Last but not least, you can now undo your last move.
 
 For more details see the ChangeLog document.
+
+
+Known bugs
+----------
+Resigning at the start of the game will crash the application due to Fuego
+consuming more memory than is available during scoring.
 
 
 License and source code
@@ -67,5 +80,5 @@ The Sensei's Library (http://senseis.xmp.net/), for providing a wealth of
 information on Go that I could consult whenever I had any doubts about one of
 the rules and concepts of the game.
 
-The two iPhone apps Tetsuki and Goban (not by Sen:te), for some of the
-inspiration they gave me how to design an iOS user interface.
+The two iPhone apps Tetsuki and Goban (the latter not by Sen:te), for
+inspiration how to design certain aspects of Little Go's user interface.

@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Write makedist.sh script that creates a source distribution
 - Review weird memory management of GoBoardRegion.points
 - Special notification if computer player has passed or resigned
 - Code cleanup
@@ -92,6 +93,9 @@ Priority 2 (nice to have)
   - Testability is sub-optimal. With the current implementation, test cases have
     to care about tearing down a GoGame instance before they can set up the
     next instance (similar to ApplicationDelegate)
+- PlayView.boardInnerMargin is too thin for boards of size 15x15 and smaller.
+  The margin should be slightly thicker than a point radius, otherwise points
+  are drawn over the edge of the board (looks ugly!).
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build

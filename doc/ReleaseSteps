@@ -32,6 +32,25 @@ Before the release
 - Commit final changes (check with "git status" that nothing was forgotten)
 
 
+Make a beta release (binary distribution only)
+----------------------------------------------
+- Build the application for the iOS device (not the simulator) and the
+  "Distribution" configuration
+- In Xcode, select "Build and Archive" from the "Build" menu
+- This will open the "Organizer" window and display the archived application
+  build
+- Select the build, then click the "Share..." button
+- A dialog opens that lets you fill in a few things about how you intend to
+  distribute the build
+- Most important is that the URL matches exactly the URL of the .ipa file as it
+  is going to be available for download
+- As a result, you will get a .plist file and an .ipa file
+- Upload the .plist, .ipa and .mobileprovision files to the server from where
+  testers can download it
+- Create an index.html at the download location that provides the necessary
+  download links
+
+
 Make the release
 ----------------
 - Tag and sign the release
@@ -42,8 +61,10 @@ Make the release
   git push
 - Generate the source distribution
   - Go to terminal
-  - Launch "<path-to-project-folder>/script/makedist.sh 0.1"
-  - The distribution files are placed in <project-folder>/dist
+  - Run the following commands
+    cd <projectdir>
+    cd ..
+    tar cfz littlego-0.1.tar.gz --exclude littlego/3rdparty --exclude littlego/build --exclude littlego/doxygen/html littlego/*
 - Generate the binary distribution and submit it to Apple
   - TODO
 - Wait for Apple to accept the submission and publish the new version in their

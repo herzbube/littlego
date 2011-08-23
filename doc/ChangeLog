@@ -1,3 +1,24 @@
+Tue August 23 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.2
+- features
+  - players can be added/edited/removed; player attributes
+    - name
+    - is human / is computer player
+  - start a new game
+    - variable board size
+    - select players
+  - pause game in an automated game with two computer players
+  - undo move
+  - markup last played stone
+  - play sound and/or vibrate when computer player makes a move
+  - display star points for all board sizes
+  - user preferences
+- bugfixes
+  - too many to enumerate
+- technical changes
+  - updated to use Fuego 1.1
+  - unit test support
+
 Fri April 8 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.1
 
