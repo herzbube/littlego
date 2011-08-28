@@ -98,11 +98,14 @@ enum PlayersSectionItem
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
 //@}
+/// @name EditPlayerDelegate protocol
+//@{
+- (void) didChangePlayer:(EditPlayerController*)editPlayerController;
+- (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
+//@}
 /// @name NewPlayerDelegate protocol
 //@{
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
-- (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-- (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
 //@}
 /// @name Helpers
 //@{
@@ -116,6 +119,7 @@ enum PlayersSectionItem
 
 @synthesize playViewModel;
 @synthesize playerModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this SettingsViewController object.
@@ -134,8 +138,8 @@ enum PlayersSectionItem
   [super viewDidLoad];
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
-  self.playViewModel = [delegate playViewModel];
-  self.playerModel = [delegate playerModel];
+  self.playViewModel = delegate.playViewModel;
+  self.playerModel = delegate.playerModel;
 }
 
 // -----------------------------------------------------------------------------
@@ -240,8 +244,12 @@ enum PlayersSectionItem
             break;
         }
         cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-        UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-        accessoryView.enabled = false;  // TODO enable when settings are implemented
+        UISwitch* accessoryView = nil;
+        if (SwitchCellType == cellType)
+        {
+          accessoryView = (UISwitch*)cell.accessoryView;
+          accessoryView.enabled = false;  // TODO enable when settings are implemented
+        }
         switch (indexPath.row)
         {
           case MarkLastMoveItem:
