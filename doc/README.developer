@@ -201,6 +201,31 @@ Architecture and implementation notes
     client is still waiting for the response to a previous command. For this
     reason, all GUI elements that trigger a GTP command should be disabled
     while a command is being processed.
+- Application states and transitions
+  - When the application starts up (application:didFinishLaunchingWithOptions:),
+    it displays the "Play" view. If the application detects that a game was in
+    progress the last time it was running, it loads that game so that the user
+    may continue where he has left off. If no game-in-progress is detected, a
+    new game is started.
+  - When the application becomes suspended (applicationDidEnterBackground:), the
+    current user preferences are saved, and the game in progress is written to
+    a temporary .sgf file. This is to guard against a forceful shutdown either
+    by the user or the system ("purge") while the application is suspended and
+    helpless. Nothing special is done to keep the GTP engine running, or to
+    shut it down - it is expected that the system simply suspends code
+    execution at the appropriate time.
+  - When the application is terminated (applicationWillTerminate:), it performs
+    the same save operations as if it were being suspended.
+  - When the application resumes (applicationWillEnterForeground:) it does
+    nothing.
+  - When the application becomes inactive (applicationWillResignActive:), it
+    suppresses audio/vibration feedback so as not to disturb the user while the
+    screen is locked (or an interruption is in progress). In addition, a
+    computer vs. computer game is paused.
+  - When the application becomes active (applicationDidBecomeActive:), it
+    re-enables audio/vibration if these features were disabled due to becoming
+    inactive. A paused computer vs. computer game is not automatically resumed,
+    though, it must be explicitly resumed by user interaction.
 - MVC design pattern considerations
   - GoGame is the master model for PlayView and PlayViewController. These
     classes implement the traditional MVC design pattern where the view
@@ -238,8 +263,8 @@ Coding guidelines
   is much stricter than for lines of code
 - Setter/getter methods should be named after the property they encapsulate
   (e.g. getter = icon(), setter = setIcon:())
-- Private methods of a class are declared in a category named "Private" which is
-  declared in the .m file
+- Private methods of a class are declared in class extension which is declared
+  in the .m file
 - Everything should be documented with Doxygen documentation blocks
 
 

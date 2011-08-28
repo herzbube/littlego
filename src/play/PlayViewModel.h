@@ -17,10 +17,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewModel class provides data to the controller and view
-/// that manage the Play tab of the GUI. PlayViewModel acts as a Facade to hide
-/// the actual data sources (e.g. user defaults, shared GoGame object) from
-/// controller and view.
+/// @brief The PlayViewModel class provides user defaults data to its clients
+/// that describes the UI characteristics of the Play view.
 // -----------------------------------------------------------------------------
 @interface PlayViewModel : NSObject
 {

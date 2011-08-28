@@ -40,11 +40,20 @@ Make a beta release (binary distribution only)
 - This will open the "Organizer" window and display the archived application
   build
 - Select the build, then click the "Share..." button
+- Select a code-signing identity (default should be OK), then click the
+  "Distribute for Enterprise..." button
 - A dialog opens that lets you fill in a few things about how you intend to
   distribute the build
 - Most important is that the URL matches exactly the URL of the .ipa file as it
   is going to be available for download
-- As a result, you will get a .plist file and an .ipa file
+- Sensible values are
+  URL = http://www.herzbube.ch/software/littlego/0.1/littlego.ipa
+  Name = Little Go Beta Test
+- You are now asked to specify a save location & name. This step creates both a
+  .plist and an .ipa file, where the specified name serves as the base name for
+  both files. Make sure to specify the same name as in the URL above.
+- Make sure to get the "Ad Hoc Distribution Provisioning Profile" from the
+  iOS Provisioning Portal. This profile is stored in a .mobileprovision file.
 - Upload the .plist, .ipa and .mobileprovision files to the server from where
   testers can download it
 - Create an index.html at the download location that provides the necessary
@@ -58,7 +67,7 @@ Make the release
   git tag -s -m "tagging release x.y" x.y <commit hash>
 - Update the blessed repository
   cd <projectdir>
-  git push
+  git push --tags
 - Generate the source distribution
   - Go to terminal
   - Run the following commands

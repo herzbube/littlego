@@ -18,8 +18,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayerStatistics class collects statistical data about the
-/// history of games played by a Player. PlayerStatistics is not much more than
-/// a linear extension of the Player class.
+/// history of games played by a Player. PlayerStatistics is a mandatory linear
+/// extension of the Player class.
 // -----------------------------------------------------------------------------
 @interface PlayerStatistics : NSObject
 {

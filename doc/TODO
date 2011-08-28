@@ -66,6 +66,7 @@ Priority 1 (important)
   - The code that determines whether a move is legal is not correct
   - Some sort of rendering bug: What the user sees in PlayView does not
     correspond to the state in memory
+- Implement application state transitions as described in README.developer
 
 
 Priority 2 (nice to have)
@@ -96,6 +97,9 @@ Priority 2 (nice to have)
 - PlayView.boardInnerMargin is too thin for boards of size 15x15 and smaller.
   The margin should be slightly thicker than a point radius, otherwise points
   are drawn over the edge of the board (looks ugly!).
+- Add more preferences to tune Fuego (e.g. time limit for moves)
+- Provide informational feedback to user when low memory warnings are received
+  -> this is about the time when a crash can be expected
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build

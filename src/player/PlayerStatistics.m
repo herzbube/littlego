@@ -39,9 +39,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayerStatistics object with user defaults data.
-///
-/// @note This is the designated initializer of PlayerStatistics.
+/// @brief Initializes a PlayerStatistics object with all attributes set to
+/// zero.
 // -----------------------------------------------------------------------------
 - (id) init
 {
