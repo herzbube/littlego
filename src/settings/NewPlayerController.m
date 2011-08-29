@@ -17,7 +17,7 @@
 
 // Project includes
 #import "NewPlayerController.h"
-#import "../utility/TableViewCellFactory.h"
+#import "../ui/TableViewCellFactory.h"
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"

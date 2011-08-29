@@ -18,7 +18,7 @@
 // Project includes
 #import "BoardSizeSelectionController.h"
 #import "../Go/GoBoard.h"
-#import "../utility/TableViewCellFactory.h"
+#import "../ui/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------

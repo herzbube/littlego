@@ -20,7 +20,7 @@
 #import "../ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../player/PlayerModel.h"
-#import "../utility/TableViewCellFactory.h"
+#import "../ui/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------

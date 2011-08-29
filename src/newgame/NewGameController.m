@@ -18,7 +18,7 @@
 // Project includes
 #import "NewGameController.h"
 #import "NewGameModel.h"
-#import "../utility/TableViewCellFactory.h"
+#import "../ui/TableViewCellFactory.h"
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"

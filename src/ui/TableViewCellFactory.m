@@ -17,8 +17,8 @@
 
 // Project includes
 #import "TableViewCellFactory.h"
-#import "UIColorAdditions.h"
-#import "../ui/TableViewSliderCell.h"
+#import "TableViewSliderCell.h"
+#import "../utility/UIColorAdditions.h"
 
 // System includes
 #import <UIKit/UIKit.h>

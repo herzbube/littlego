@@ -17,11 +17,11 @@
 
 // Project includes
 #import "EditPlayerController.h"
-#import "../utility/TableViewCellFactory.h"
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../player/GtpEngineSettings.h"
+#import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
 
