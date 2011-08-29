@@ -21,6 +21,8 @@
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../player/GtpEngineSettings.h"
+#import "../ui/TableViewSliderCell.h"
 
 
 // -----------------------------------------------------------------------------
@@ -30,6 +32,9 @@ enum EditPlayerTableViewSection
 {
   PlayerNameSection,
   IsHumanSection,
+  GtpEngineSettingsSection,
+  // If a section is added here (after the optional GtpEngineSettingsSection),
+  // section handling in this class must be drastically changed!
   MaxSection
 };
 
@@ -51,6 +56,17 @@ enum IsHumanSectionItem
   MaxIsHumanSectionItem,
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the GtpEngineSettingsSection.
+// -----------------------------------------------------------------------------
+enum GtpEngineSettingsSectionItem
+{
+  FuegoMaxMemoryItem,
+  FuegoThreadCountItem,
+  FuegoPonderingItem,
+  FuegoReuseSubtreeItem,
+  MaxGtpEngineSettingsSectionItem
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for EditPlayerController.
@@ -69,15 +85,19 @@ enum IsHumanSectionItem
 //@{
 - (void) delete:(id)sender;
 - (void) toggleIsHuman:(id)sender;
+- (void) togglePondering:(id)sender;
+- (void) toggleReuseSubtree:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITextFieldDelegate protocol method.
@@ -161,7 +181,10 @@ enum IsHumanSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  if (self.player.isHuman)
+    return MaxSection - 1;  // GTP engine settings is only for computer players
+  else
+    return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -175,11 +198,32 @@ enum IsHumanSectionItem
       return MaxPlayerNameSectionItem;
     case IsHumanSection:
       return MaxIsHumanSectionItem;
+    case GtpEngineSettingsSection:
+      return MaxGtpEngineSettingsSectionItem;
     default:
       assert(0);
       break;
   }
   return 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+{
+  switch (section)
+  {
+    case PlayerNameSection:
+    case IsHumanSection:
+      return nil;
+    case GtpEngineSettingsSection:
+      return @"GTP engine settings";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,49 +235,132 @@ enum IsHumanSectionItem
   switch (indexPath.section)
   {
     case PlayerNameSection:
-      switch (indexPath.row)
     {
-      case PlayerNameItem:
+      switch (indexPath.row)
       {
-        enum TableViewCellType cellType = TextFieldCellType;
-        cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-        UITextField* textField = (UITextField*)[cell viewWithTag:cellType];
-        textField.delegate = self;
-        textField.text = self.player.name;
-        textField.placeholder = @"Player name";
-        // Place the insertion point into this field; might be better to
-        // do this in viewWillAppear:
-        [textField becomeFirstResponder];
-        break;
+        case PlayerNameItem:
+        {
+          enum TableViewCellType cellType = TextFieldCellType;
+          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+          UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
+          textField.delegate = self;
+          textField.text = self.player.name;
+          textField.placeholder = @"Player name";
+          // Place the insertion point into this field; might be better to
+          // do this in viewWillAppear:
+          [textField becomeFirstResponder];
+          break;
+        }
+        default:
+          assert(0);
+          break;
       }
-      default:
-        assert(0);
-        break;
-    }
       break;
+    }
     case IsHumanSection:
-      switch (indexPath.row)
     {
-      case IsHumanItem:
-        cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-        cell.textLabel.text = @"Human player";
-        UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-        [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
-        accessoryView.on = self.player.human;
-        // Player can be deleted only if he is not currently playing a game
-        accessoryView.enabled = (! self.player.isPlaying);
-        break;
-      default:
-        assert(0);
-        break;
-    }
+      switch (indexPath.row)
+      {
+        case IsHumanItem:
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          cell.textLabel.text = @"Human player";
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
+          accessoryView.on = self.player.human;
+          // Player can be deleted only if he is not currently playing a game
+          accessoryView.enabled = (! self.player.isPlaying);
+          break;
+        default:
+          assert(0);
+          break;
+      }
       break;
+    }
+    case GtpEngineSettingsSection:
+    {
+      enum TableViewCellType cellType;
+      switch (indexPath.row)
+      {
+        case FuegoMaxMemoryItem:
+        case FuegoThreadCountItem:
+          cellType = SliderCellType;
+          break;
+        default:
+          cellType = SwitchCellType;
+          break;
+      }
+      cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+      UISwitch* accessoryView = nil;
+      if (SwitchCellType == cellType)
+      {
+        accessoryView = (UISwitch*)cell.accessoryView;
+        accessoryView.enabled = false;  // TODO enable when settings are implemented
+      }
+      switch (indexPath.row)
+      {
+        case FuegoMaxMemoryItem:
+        {
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.descriptionLabel.text = @"Max. memory (MB)";
+          sliderCell.valueLabel.text = [NSString stringWithFormat:@"%d", self.player.gtpEngineSettings.fuegoMaxMemory];
+          break;
+        }
+        case FuegoThreadCountItem:
+        {
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.descriptionLabel.text = @"Number of threads";
+          sliderCell.valueLabel.text = [NSString stringWithFormat:@"%d", self.player.gtpEngineSettings.fuegoThreadCount];
+          break;
+        }
+        case FuegoPonderingItem:
+          cell.textLabel.text = @"Pondering";
+          accessoryView.on = self.player.gtpEngineSettings.fuegoPondering;
+          [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
+          break;
+        case FuegoReuseSubtreeItem:
+          cell.textLabel.text = @"Reuse subtree";
+          accessoryView.on = self.player.gtpEngineSettings.fuegoReuseSubtree;
+          [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
     default:
       assert(0);
       break;
   }
-  
+
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  CGFloat height = tableView.rowHeight;
+  switch (indexPath.section)
+  {
+    case GtpEngineSettingsSection:
+    {
+      switch (indexPath.row)
+      {
+        case FuegoMaxMemoryItem:
+        case FuegoThreadCountItem:
+          height = [TableViewSliderCell rowHeightInTableView:tableView];
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  return height;
 }
 
 // -----------------------------------------------------------------------------
@@ -287,7 +414,31 @@ enum IsHumanSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.player.human = accessoryView.on;
-  // Notify delegate that something about the player object has changed
+
+  [self.delegate didChangePlayer:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Ponder" switch. Updates the Player
+/// object with the new value.
+// -----------------------------------------------------------------------------
+- (void) togglePondering:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.player.gtpEngineSettings.fuegoPondering = accessoryView.on;
+
+  [self.delegate didChangePlayer:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Reuse subtree" switch. Updates the
+/// Player object with the new value.
+// -----------------------------------------------------------------------------
+- (void) toggleReuseSubtree:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.player.gtpEngineSettings.fuegoReuseSubtree = accessoryView.on;
+
   [self.delegate didChangePlayer:self];
 }
 

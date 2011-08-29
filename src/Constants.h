@@ -158,6 +158,18 @@ extern NSString* computerPlayerThinkingStops;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name GTP engine settings default values
+///
+/// @brief See GtpEngineSettings for attribute documentation.
+// -----------------------------------------------------------------------------
+//@{
+extern int fuegoMaxMemoryDefault;
+extern int fuegoThreadCountDefault;
+extern bool fuegoPonderingDefault;
+extern bool fuegoReuseSubtreeDefault;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Resource file names
 // -----------------------------------------------------------------------------
 //@{
@@ -176,6 +188,7 @@ extern NSString* playStoneSoundFileResource;
 /// @name Keys for user defaults
 // -----------------------------------------------------------------------------
 //@{
+// Play view settings
 extern NSString* playViewKey;
 extern NSString* markLastMoveKey;
 extern NSString* displayCoordinatesKey;
@@ -194,12 +207,14 @@ extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* crossHairColorKey;
 extern NSString* crossHairPointDistanceFromFingerKey;
+// New game settings
 extern NSString* newGameKey;
 extern NSString* boardSizeKey;
 extern NSString* blackPlayerKey;
 extern NSString* whitePlayerKey;
 extern NSString* handicapKey;
 extern NSString* komiKey;
+// Players
 extern NSString* playerListKey;
 extern NSString* uuidKey;
 extern NSString* nameKey;
@@ -210,4 +225,10 @@ extern NSString* gamesWonKey;
 extern NSString* gamesLostKey;
 extern NSString* gamesTiedKey;
 extern NSString* starPointsKey;
+// GTP engine settings
+extern NSString* gtpEngineSettingsKey;
+extern NSString* fuegoMaxMemoryKey;
+extern NSString* fuegoThreadCountKey;
+extern NSString* fuegoPonderingKey;
+extern NSString* fuegoReuseSubtreeKey;
 //@}

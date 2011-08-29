@@ -91,6 +91,10 @@
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
+		CDEF3BAF140A192F002D9C1C /* GtpEngineSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */; };
+		CDEF3BC2140A28B7002D9C1C /* GtpEngineSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */; };
+		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
+		CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CDF43D5B1402DD83007F44A4 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
@@ -212,6 +216,12 @@
 		CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		CDEC28AD12F4A3500069F5B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "get-and-build-3rdparty-software.sh"; sourceTree = "<group>"; };
+		CDEF3BAD140A192F002D9C1C /* GtpEngineSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineSettings.h; sourceTree = "<group>"; };
+		CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineSettings.m; sourceTree = "<group>"; };
+		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
+		CDEF3C76140A69A2002D9C1C /* UIDebugging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDebugging.m; sourceTree = "<group>"; };
+		CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewSliderCell.h; sourceTree = "<group>"; };
+		CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewSliderCell.m; sourceTree = "<group>"; };
 		CDF43D031402BF2A007F44A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDF43D9B1402E970007F44A4 /* BaseTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTestCase.h; sourceTree = "<group>"; };
 		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTestCase.m; sourceTree = "<group>"; };
@@ -441,6 +451,8 @@
 				CDBF98E013F064FF00476748 /* TableViewCellFactory.m */,
 				CDE30139135CA7D5005235F2 /* UIColorAdditions.h */,
 				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
+				CDEF3C75140A69A2002D9C1C /* UIDebugging.h */,
+				CDEF3C76140A69A2002D9C1C /* UIDebugging.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -448,6 +460,8 @@
 		CDE302811360BDA3005235F2 /* player */ = {
 			isa = PBXGroup;
 			children = (
+				CDEF3BAD140A192F002D9C1C /* GtpEngineSettings.h */,
+				CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */,
 				CDE302821360BDA3005235F2 /* Player.h */,
 				CDE302831360BDA3005235F2 /* Player.m */,
 				CDE302841360BDA3005235F2 /* PlayerModel.h */,
@@ -468,6 +482,7 @@
 				CD1088561326CBB300E83543 /* play */,
 				CDE302811360BDA3005235F2 /* player */,
 				CD1088571326CBB300E83543 /* settings */,
+				CDEF3D87140C2F39002D9C1C /* ui */,
 				CDE30138135CA7D5005235F2 /* utility */,
 				CDEC282F12F477360069F5B7 /* ApplicationDelegate.h */,
 				CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */,
@@ -528,6 +543,15 @@
 				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
 			);
 			path = script;
+			sourceTree = "<group>";
+		};
+		CDEF3D87140C2F39002D9C1C /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
+				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
+			);
+			path = ui;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -694,6 +718,9 @@
 				CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */,
 				CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
+				CDEF3BAF140A192F002D9C1C /* GtpEngineSettings.m in Sources */,
+				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,
+				CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -726,6 +753,7 @@
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
+				CDEF3BC2140A28B7002D9C1C /* GtpEngineSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

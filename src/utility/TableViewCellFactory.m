@@ -18,12 +18,14 @@
 // Project includes
 #import "TableViewCellFactory.h"
 #import "UIColorAdditions.h"
+#import "../ui/TableViewSliderCell.h"
 
 // System includes
 #import <UIKit/UIKit.h>
 
 
 @implementation TableViewCellFactory
+
 
 // -----------------------------------------------------------------------------
 /// @brief Factory method that returns an autoreleased UITableViewCell object
@@ -48,6 +50,9 @@
     case TextFieldCellType:
       cellID = @"TextFieldCellType";
       break;
+    case SliderCellType:
+      cellID = @"SliderCellType";
+      break;
     default:
       assert(0);
       return nil;
@@ -58,19 +63,29 @@
     return cell;
 
   // Create the (autoreleased) cell object
-  UITableViewCellStyle cellStyle;
   switch (type)
   {
-    case Value1CellType:
-      cellStyle = UITableViewCellStyleValue1;
+    case SliderCellType:
+      cell = [TableViewSliderCell cellWithReuseIdentifier:cellID];
       break;
     default:
-      cellStyle = UITableViewCellStyleDefault;
+    {
+      UITableViewCellStyle cellStyle;
+      switch (type)
+      {
+        case Value1CellType:
+          cellStyle = UITableViewCellStyleValue1;
+          break;
+        default:
+          cellStyle = UITableViewCellStyleDefault;
+          break;
+      }
+      cell = [[[UITableViewCell alloc] initWithStyle:cellStyle
+                                     reuseIdentifier:cellID] autorelease];
       break;
+    }
   }
-  cell = [[[UITableViewCell alloc] initWithStyle:cellStyle
-                                 reuseIdentifier:cellID] autorelease];
-  
+
   // Additional customization
   switch (type)
   {
@@ -85,11 +100,10 @@
       }
     case TextFieldCellType:
       {
-        CGRect bounds = [[cell contentView] bounds];
+        CGRect bounds = cell.contentView.bounds;
         CGRect rect = CGRectInset(bounds, 10.0, 10.0);
-        UITextField* textField = [[UITextField alloc] initWithFrame:rect];
+        UITextField* textField = [[[UITextField alloc] initWithFrame:rect] autorelease];
         [cell.contentView addSubview:textField];
-        [textField release];
         textField.textColor = [UIColor slateBlueColor];
         // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
         // moment we don't use it because the clear button is displayed
@@ -97,7 +111,7 @@
         textField.clearButtonMode = UITextFieldViewModeNever;
         // Make the text field identifiable so that clients can get at it by
         // sending "viewWithTag:" to the cell
-        textField.tag = type;
+        textField.tag = TextFieldCellTextFieldTag;
         // Properties from the UITextInputTraits protocol
         textField.autocapitalizationType = YES;
         textField.autocorrectionType = UITextAutocorrectionTypeNo;

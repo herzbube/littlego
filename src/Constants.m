@@ -33,6 +33,12 @@ NSString* goGameScoreChanged = @"GoGameScoreChanged";
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
 
+/// GTP engine settings default values
+int fuegoMaxMemoryDefault = 128;
+int fuegoThreadCountDefault = 2;
+bool fuegoPonderingDefault = true;
+bool fuegoReuseSubtreeDefault = true;
+
 // Resource file names
 NSString* openingBookResource = @"book.dat";
 NSString* aboutDocumentResource = @"About.html";
@@ -45,6 +51,7 @@ NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plis
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 
 // Keys for user defaults
+// Play view settings
 NSString* playViewKey = @"PlayView";
 NSString* markLastMoveKey = @"MarkLastMove";
 NSString* displayCoordinatesKey = @"DisplayCoordinates";
@@ -63,12 +70,14 @@ NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
 NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
+// New game settings
 NSString* newGameKey = @"NewGame";
 NSString* boardSizeKey = @"BoardSize";
 NSString* blackPlayerKey = @"BlackPlayer";
 NSString* whitePlayerKey = @"WhitePlayer";
 NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
+// Players
 NSString* playerListKey = @"PlayerList";
 NSString* uuidKey = @"UUID";
 NSString* nameKey = @"Name";
@@ -79,3 +88,9 @@ NSString* gamesWonKey = @"GamesWon";
 NSString* gamesLostKey = @"GamesLost";
 NSString* gamesTiedKey = @"GamesTied";
 NSString* starPointsKey = @"StarPoints";
+// GTP engine settings
+NSString* gtpEngineSettingsKey = @"GtpEngineSettings";
+NSString* fuegoMaxMemoryKey = @"FuegoMaxMemory";
+NSString* fuegoThreadCountKey = @"FuegoThreadCount";
+NSString* fuegoPonderingKey = @"FuegoPondering";
+NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";

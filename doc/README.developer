@@ -158,6 +158,29 @@ documentation is to source code:
   Constants.h.
 
 
+UI elements design notes
+------------------------
+TableViewCell
+- TableViewCellFactory creates a couple of table cell types that are not
+  available from the UIKit
+- For the cell type that has a slider, I did a bit off debugging/inspection of
+  the default UITableViewCell and its subviews; following are the results
+- Size of a UITableViewCell (from its frame rect) = 320x45
+- In a cell with style UITableViewCellStyleValue1 and accessoryType
+  UITableViewCellAccessoryNone
+  - cell.contentView frame rect = 10/0, 300x43
+  - cell.textLabel frame rect = 10/11, 161x21 (text is "Cross-hair distance")
+  - cell.detailTextLabel frame rect = 280/11, 10x21 (text is "2")
+- In a cell with style UITableViewCellStyleValue1 and accessoryType
+  UITableViewCellAccessoryDisclosureIndicator
+  - cell.contentView frame rect = 10/1, 280x43
+  - cell.textLabel frame rect = 10/11, 46x21 (text is "Black")
+  - cell.detailTextLabel frame rect = 163/11, 107x21 (text is "Human player")
+  - the disclosure indicator button is a direct subview of the cell (i.e. it's
+    not part of the content view, and it's not in the accessoryView) with
+    frame rect = 280/1, 30x43
+
+
 Architecture and implementation notes
 -------------------------------------
 - Error handling: TODO

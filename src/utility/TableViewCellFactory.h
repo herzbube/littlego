@@ -26,15 +26,30 @@
 // -----------------------------------------------------------------------------
 enum TableViewCellType
 {
-  DefaultCellType,
-  Value1CellType,
-  SwitchCellType,
-  TextFieldCellType
+  DefaultCellType,    ///< @brief Cell with style @e UITableViewCellStyleDefault
+  Value1CellType,     ///< @brief Cell with style @e UITableViewCellStyleValue1
+  SwitchCellType,     ///< @brief with a UISwitch in the accessory view
+  TextFieldCellType,  ///< @brief The cell's entire content view is a UITextField
+  SliderCellType      ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates all possible tags for subviews in custom table view cells
+/// created by TableViewCellFactory.
+// -----------------------------------------------------------------------------
+enum TableViewCellSubViewTag
+{
+  UnusedSubviewTag = 0,  ///< @brief Tag 0 must not be used, it is the default tag used for all framework-created views (e.g. the cell's content view)
+  TextFieldCellTextFieldTag,
 };
 
 // -----------------------------------------------------------------------------
 /// @brief The TableViewCellFactory class is a container for factory functions
-/// that create table view cell objects.
+/// that create table view cell objects that fit into a table view of grouped
+/// style.
+///
+/// The section "UI elements design notes" in README.developer has notes about
+/// the layout of some cell types.
 // -----------------------------------------------------------------------------
 @interface TableViewCellFactory : NSObject
 {

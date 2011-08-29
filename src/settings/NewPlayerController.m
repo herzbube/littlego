@@ -212,7 +212,7 @@ enum IsHumanSectionItem
           {
             enum TableViewCellType cellType = TextFieldCellType;
             cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-            UITextField* textField = (UITextField*)[cell viewWithTag:cellType];
+            UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
             textField.delegate = self;
             textField.text = self.player.name;
             textField.placeholder = @"Player name";

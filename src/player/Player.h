@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class PlayerStatistics;
+@class GtpEngineSettings;
 
 
 // -----------------------------------------------------------------------------
@@ -46,6 +47,13 @@
 /// @brief Reference to an object that stores statistics about the history of
 /// games played by this Player.
 @property(retain) PlayerStatistics* statistics;
+/// @brief Reference to an object that stores settings that define the behaviour
+/// of the GTP engine for this computer Player.
+///
+/// If this Player is not a computer player (i.e. isHuman() returns true), this
+/// property still references a settings object, but the referenced object's
+/// attribute values are undefined.
+@property(retain) GtpEngineSettings* gtpEngineSettings;
 /// @brief True if this Player object is taking part in the currently ongoing
 /// GoGame.
 @property(getter=isPlaying) bool playing;
