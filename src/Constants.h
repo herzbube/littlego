@@ -163,7 +163,11 @@ extern NSString* computerPlayerThinkingStops;
 /// @brief See GtpEngineSettings for attribute documentation.
 // -----------------------------------------------------------------------------
 //@{
+extern int fuegoMaxMemoryMinimum;
+extern int fuegoMaxMemoryMaximum;
 extern int fuegoMaxMemoryDefault;
+extern int fuegoThreadCountMinimum;
+extern int fuegoThreadCountMaximum;
 extern int fuegoThreadCountDefault;
 extern bool fuegoPonderingDefault;
 extern bool fuegoReuseSubtreeDefault;

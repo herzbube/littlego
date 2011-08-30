@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GtpEngineSettings.h"
+#import "../gtp/GtpCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -108,6 +109,29 @@
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoPondering] forKey:fuegoPonderingKey];
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoReuseSubtree] forKey:fuegoReuseSubtreeKey];
   return dictionary;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Applies settings to the GTP engine.
+// -----------------------------------------------------------------------------
+- (void) applySettings
+{
+  NSString* commandString;
+  GtpCommand* command;
+
+  long long fuegoMaxMemoryInBytes = self.fuegoMaxMemory * 1000000;
+  commandString = [NSString stringWithFormat:@"uct_max_memory %d", fuegoMaxMemoryInBytes];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"uct_param_search number_threads %d", self.fuegoThreadCount];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"uct_param_player ponder %d", (self.fuegoPondering ? 1 : 0)];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"uct_param_player reuse_subtree %d", (self.fuegoReuseSubtree ? 1 : 0)];
+  command = [GtpCommand command:commandString];
+  [command submit];
 }
 
 @end

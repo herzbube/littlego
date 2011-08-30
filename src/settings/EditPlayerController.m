@@ -294,10 +294,7 @@ enum GtpEngineSettingsSectionItem
       cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
       UISwitch* accessoryView = nil;
       if (SwitchCellType == cellType)
-      {
         accessoryView = (UISwitch*)cell.accessoryView;
-        accessoryView.enabled = false;  // TODO enable when settings are implemented
-      }
       switch (indexPath.row)
       {
         case FuegoMaxMemoryItem:
@@ -305,9 +302,8 @@ enum GtpEngineSettingsSectionItem
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
           sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-          // TODO boundary values should be coded somewhere else
-          sliderCell.slider.minimumValue = 64;
-          sliderCell.slider.maximumValue = 512;
+          sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
+          sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
           sliderCell.value = self.player.gtpEngineSettings.fuegoMaxMemory;
           break;
         }
@@ -316,9 +312,8 @@ enum GtpEngineSettingsSectionItem
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
           sliderCell.descriptionLabel.text = @"Number of threads";
-          // TODO boundary values should be coded somewhere else
-          sliderCell.slider.minimumValue = 1;
-          sliderCell.slider.maximumValue = 8;
+          sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
+          sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
           sliderCell.value = self.player.gtpEngineSettings.fuegoThreadCount;
           break;
         }

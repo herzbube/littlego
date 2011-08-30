@@ -96,7 +96,7 @@
 				<key>FuegoMaxMemory</key>
 				<integer>128</integer>
 				<key>FuegoThreadCount</key>
-				<integer>2</integer>
+				<integer>1</integer>
 				<key>FuegoPondering</key>
 				<true/>
 				<key>FuegoReuseSubtree</key>

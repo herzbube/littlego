@@ -34,9 +34,12 @@
 #import "newgame/NewGameController.h"
 #import "newgame/NewGameModel.h"
 #import "player/PlayerModel.h"
+#import "player/Player.h"
+#import "player/GtpEngineSettings.h"
 #import "play/PlayViewModel.h"
 #import "play/SoundHandling.h"
 #import "go/GoGame.h"
+#import "go/GoPlayer.h"
 
 // System includes
 #include <string>
@@ -295,6 +298,23 @@ static ApplicationDelegate* sharedDelegate = nil;
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
   self.game = [GoGame newGame];
+
+  if (HumanVsHumanGame != self.game.type)
+  {
+    Player* computerPlayerWithGtpSettings = self.game.playerBlack.player;
+    if (computerPlayerWithGtpSettings.isHuman)
+    {
+      computerPlayerWithGtpSettings = self.game.playerWhite.player;
+      assert(! computerPlayerWithGtpSettings.isHuman);
+    }
+    else
+    {
+      // TODO notify user that we ignore the white player's settings;
+      // alternatively let the user choose which player's settings should be
+      // used
+    }
+    [computerPlayerWithGtpSettings.gtpEngineSettings applySettings];
+  }
 }
 
 @end

@@ -34,8 +34,12 @@ NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
 
 /// GTP engine settings default values
+int fuegoMaxMemoryMinimum = 32;
+int fuegoMaxMemoryMaximum = 512;
 int fuegoMaxMemoryDefault = 128;
-int fuegoThreadCountDefault = 2;
+int fuegoThreadCountMinimum = 1;
+int fuegoThreadCountMaximum = 8;
+int fuegoThreadCountDefault = 1;
 bool fuegoPonderingDefault = true;
 bool fuegoReuseSubtreeDefault = true;
 

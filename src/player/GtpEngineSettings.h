@@ -28,6 +28,7 @@
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 - (NSDictionary*) asDictionary;
+- (void) applySettings;
 
 /// @brief The maximum amount of memory in MB that the Fuego GTP engine is
 /// allowed to consume.
