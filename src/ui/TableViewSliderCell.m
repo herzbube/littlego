@@ -31,11 +31,22 @@
 - (void) setupCell;
 - (void) setupContentView;
 //@}
+/// @name Action methods
+//@{
+- (void) sliderValueChanged:(UISlider*)sender;
+//@}
+/// @name Other methods
+//@{
+- (void) updateValueLabel;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite, retain) UILabel* descriptionLabel;
 @property(readwrite, retain) UILabel* valueLabel;
 @property(readwrite, retain) UISlider* slider;
+@property(readwrite, retain) id delegate;
+@property(readwrite) SEL delegateActionValueDidChange;
+@property(readwrite) SEL delegateActionSliderValueDidChange;
 //@}
 @end
 
@@ -45,6 +56,10 @@
 @synthesize descriptionLabel;
 @synthesize valueLabel;
 @synthesize slider;
+@synthesize value;
+@synthesize delegate;
+@synthesize delegateActionValueDidChange;
+@synthesize delegateActionSliderValueDidChange;
 
 
 // Values determined experimentally by debugging a default UITableViewCell
@@ -89,7 +104,16 @@ static const int descriptionLabelWidth = 230;
 
   [self setupCell];
   [self setupContentView];
- 
+  [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+
+  // TODO: instead of duplicating code from the setter, we should invoke the
+  // setter (self.value = ...), but we need to be sure that it does not update
+  // because of its old/new value check
+  int newValue = self.slider.minimumValue;
+  value = newValue;
+  self.slider.value = newValue;
+  [self updateValueLabel];
+
   return self;
 }
 
@@ -143,7 +167,7 @@ static const int descriptionLabelWidth = 230;
   int valueLabelWidth = contentViewWidth - valueLabelX - distanceFromEdgeHorizontal;
   assert(valueLabelWidth > 0);
   CGRect valueLabelRect = CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, labelHeight);
-  valueLabel = [[[UILabel alloc] initWithFrame:valueLabelRect] autorelease];  // no autorelease, property is retained
+  valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
   valueLabel.tag = SliderCellValueLabelTag;
   valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
   valueLabel.textAlignment = UITextAlignmentRight;
@@ -154,8 +178,9 @@ static const int descriptionLabelWidth = 230;
   int sliderY = descriptionLabelRect.origin.y + descriptionLabelRect.size.height + spacingVertical;
   int sliderWidth = valueLabelX + valueLabelWidth - sliderX;
   CGRect sliderRect = CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
-  slider = [[[UISlider alloc] initWithFrame: sliderRect] autorelease];  // no autorelease, property is retained
+  slider = [[UISlider alloc] initWithFrame: sliderRect];  // no autorelease, property is retained
   slider.tag = SliderCellSliderTag;
+  slider.continuous = YES;
   [self.contentView addSubview:slider];
 }
 
@@ -172,5 +197,59 @@ static const int descriptionLabelWidth = 230;
   return rowHeight;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates the integer value of this cell to @a newValue.
+///
+/// This method also updates the slider's value, so be sure to adjust the
+/// slider's minimum/maximum values to accomodate @a newValue before invoking
+/// this method.
+// -----------------------------------------------------------------------------
+- (void) setValue:(int)newValue
+{
+  if (value == newValue)
+    return;
+  value = newValue;
+  self.slider.value = newValue;
+  [self updateValueLabel];
+  if ([self.delegate respondsToSelector:self.delegateActionValueDidChange])
+    [self.delegate performSelector:self.delegateActionValueDidChange withObject:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Update value label to display the slider's new value.
+// -----------------------------------------------------------------------------
+- (void) sliderValueChanged:(UISlider*)sender
+{
+  // This check also has the benefit that the value label is not updated
+  // unnecessarily many times for fraction changes that we are not interested
+  // in
+  int newValue = sender.value;
+  if (value == newValue)
+    return;
+  self.value = newValue;
+  if ([self.delegate respondsToSelector:self.delegateActionSliderValueDidChange])
+    [self.delegate performSelector:self.delegateActionSliderValueDidChange withObject:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates value label to display the slider's current value (only the
+/// integer part).
+// -----------------------------------------------------------------------------
+- (void) updateValueLabel
+{
+  int intValue = slider.value;
+  self.valueLabel.text = [NSString stringWithFormat:@"%d", intValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures this cell with @a delegate and selectors for methods to
+/// invoke when the cell's integer value changes.
+// -----------------------------------------------------------------------------
+- (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2
+{
+  self.delegate = aDelegate;
+  self.delegateActionValueDidChange = action1;
+  self.delegateActionSliderValueDidChange = action2;
+}
 
 @end

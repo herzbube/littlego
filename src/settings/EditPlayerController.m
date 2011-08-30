@@ -87,6 +87,8 @@ enum GtpEngineSettingsSectionItem
 - (void) toggleIsHuman:(id)sender;
 - (void) togglePondering:(id)sender;
 - (void) toggleReuseSubtree:(id)sender;
+- (void) maxMemoryDidChange:(id)sender;
+- (void) threadCountDidChange:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -301,15 +303,23 @@ enum GtpEngineSettingsSectionItem
         case FuegoMaxMemoryItem:
         {
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
           sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-          sliderCell.valueLabel.text = [NSString stringWithFormat:@"%d", self.player.gtpEngineSettings.fuegoMaxMemory];
+          // TODO boundary values should be coded somewhere else
+          sliderCell.slider.minimumValue = 64;
+          sliderCell.slider.maximumValue = 512;
+          sliderCell.value = self.player.gtpEngineSettings.fuegoMaxMemory;
           break;
         }
         case FuegoThreadCountItem:
         {
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
           sliderCell.descriptionLabel.text = @"Number of threads";
-          sliderCell.valueLabel.text = [NSString stringWithFormat:@"%d", self.player.gtpEngineSettings.fuegoThreadCount];
+          // TODO boundary values should be coded somewhere else
+          sliderCell.slider.minimumValue = 1;
+          sliderCell.slider.maximumValue = 8;
+          sliderCell.value = self.player.gtpEngineSettings.fuegoThreadCount;
           break;
         }
         case FuegoPonderingItem:
@@ -449,6 +459,28 @@ enum GtpEngineSettingsSectionItem
 - (bool) isPlayerValid
 {
   return (self.player.name.length > 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing Fuego's maximum amount of memory.
+// -----------------------------------------------------------------------------
+- (void) maxMemoryDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.player.gtpEngineSettings.fuegoMaxMemory = sliderCell.value;
+
+  [self.delegate didChangePlayer:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing Fuego's number of threads.
+// -----------------------------------------------------------------------------
+- (void) threadCountDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.player.gtpEngineSettings.fuegoThreadCount = sliderCell.value;
+
+  [self.delegate didChangePlayer:self];
 }
 
 @end

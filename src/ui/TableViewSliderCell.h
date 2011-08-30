@@ -15,7 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------------
 /// @brief Enumerates tags of subviews of TableViewSliderCell.
 // -----------------------------------------------------------------------------
@@ -29,7 +28,7 @@ enum SliderCellSubViewTag
 
 // -----------------------------------------------------------------------------
 /// @brief The TableViewSliderCell class implements a custom table view cell
-/// that displays a numeric value and uses a UISlider to change that value.
+/// that displays an integer value and uses a UISlider to change that value.
 ///
 /// TableViewSliderCell adds its UI elements as subview to its content view and
 /// arranges them according to the following schema:
@@ -49,7 +48,7 @@ enum SliderCellSubViewTag
 /// @endverbatim
 ///
 /// Notes and constraints:
-/// - Use the UISlider to set or get the numeric value
+/// - Use the @e value property to set or get the integer value
 /// - Each UI element has its view tag set to a value from the SubViewTag enum
 /// - The labels' width is fixed
 /// - The value label has room for roughly 3-4 characters
@@ -63,9 +62,21 @@ enum SliderCellSubViewTag
 
 + (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier;
 + (CGFloat) rowHeightInTableView:(UITableView*)tableView;
+- (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2;
 
 @property(readonly, retain) UILabel* descriptionLabel;
 @property(readonly, retain) UILabel* valueLabel;
 @property(readonly, retain) UISlider* slider;
+@property int value;
+/// @brief Delegate object that will be informed when the cell's integer
+/// value changes.
+@property(readonly, retain) id delegate;
+/// @brief Is invoked when the cell's integer value changes, regardless of the
+/// source of the change.
+@property(readonly) SEL delegateActionValueDidChange;
+/// @brief Is invoked when the user's interaction with the slider causes the
+/// cell's integer value to change.
+@property(readonly) SEL delegateActionSliderValueDidChange;
+//@}
 
 @end
