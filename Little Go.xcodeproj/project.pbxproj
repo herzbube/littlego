@@ -182,6 +182,7 @@
 		CDBF979E13EC750C00476748 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		CDBF97E513EEBFD400476748 /* wood-on-wood-01.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-01.aiff"; sourceTree = "<group>"; };
 		CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
+		CDD48C62140EE7D000188B6A /* Features */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Features; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -505,6 +506,7 @@
 				CDEC288312F477E70069F5B7 /* Research */,
 				CDEC288412F477E70069F5B7 /* Roadmap */,
 				CDEC288512F477E70069F5B7 /* TODO */,
+				CDD48C62140EE7D000188B6A /* Features */,
 			);
 			path = doc;
 			sourceTree = "<group>";

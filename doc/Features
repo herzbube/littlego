@@ -1,0 +1,95 @@
+Purpose of this document
+------------------------
+This document provides a description of the features of the application.
+
+Before development for a new feature or set of features begins, a description of
+how the feature is supposed to work should be noted down in this document. The
+description should not be too technical, and it should focus on how the user
+perceives the feature to work. After writing down the description, it can then
+serve as a guideline for the development effort.
+
+If this document is kept up-to-date, it also serves as an informal reference,
+e.g. to get going again after a longer break between development cycles. Keep in
+mind that this document is NOT intended to be a manual. If it threatens to
+become one, convert it into a proper MANUAL file.
+
+
+Application lifecycle
+---------------------
+TODO
+
+
+Starting a new game
+-------------------
+TODO
+
+
+Playing the game
+----------------
+TODO
+
+
+End of game and scoring
+-----------------------
+TODO
+
+
+Changing preferences
+--------------------
+TODO
+
+
+Working with .sgf files
+-----------------------
+- The Archive view on the "Archive" tab provides the means to save the current
+  game to an .sgf file, or to load a previously saved game from an .sgf file
+- Files are stored in the application's document folder
+- The file extension .sgf is not enforced
+- Loading a game works as follows
+  - Overall, the procedure to load a game is very similar to starting a new
+    game on the Play view
+  - If a game is already in progress, the user is asked to confirm that the
+    game in progress will be abandoned
+  - The user is then presented with the choice of players that should be used
+    for the game that is about to be loaded
+  - The user cannot choose Komi or Handicap, as these parameters are part of
+    the saved game
+  - If the user confirms loading of the game, the "loadsgf" command is sent to
+    the GTP engine
+  - The application then queries the GTP engine to gather all the information
+    it needs to start a new game (e.g. board size)
+  - The application then starts the new game (without the usual resetting of
+    the GTP engine) and switches to the Play view
+- Saving the current game works as follows
+  - The option is available as soon as the first move has been played
+  - The user must enter a filename
+  - The application provides a sensible default filename that can be simply
+    accepted
+  - If a file already exists, the user is presented with the choice to
+    overwrite the file
+  - If saving the game proceeds, the "savesgf" command is sent to the GTP engine
+  - The application remains on the Archive view
+- Existing files are managed as follows
+  - Existing files are listed in a table view
+  - The user can switch been different sorting criteria and sort orders
+  - Available sorting criteria are file name and file date
+  - Available sort orders are ascending and descending
+  - The user can enter a search string to filter the list
+  - Tapping the entry for a file drills down into the detail view for that file
+  - Information on the detail view is filesystem related only; in a future
+    release the detail view might also display data from within the .sgf file
+  - The detail view offers options to rename and delete the file
+  - If a file is renamed and another file with the new name already exists, the
+    user is presented with the choice to overwrite the file
+  - The user must confirm deletion of a file
+- Saved games are available for syncing in iTunes
+
+
+Interacting with the GTP engine
+-------------------------------
+TODO
+
+
+The "About" and other documents
+-------------------------------
+TODO

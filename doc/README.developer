@@ -403,6 +403,10 @@ or Cocoa data types across the boundary into Core Foundation is sometimes as
 simple as casting from one type to the other. [17] has details about this
 so-called system of "Toll-Free Bridged Types".
 
+Handling documents (including the sync to iTunes) is thoroughly explained in
+[18].
+
+
 [1]  iOS Reference Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Reference Library > Guides > Threading Programming Guide
 [3]  iOS Reference Library > Guides > Timer Programming Topics
@@ -420,6 +424,7 @@ so-called system of "Toll-Free Bridged Types".
 [15] iOS Reference Library > Reference > System Sound Services Reference
 [16] iOS Reference Library > Guides > Multimedia Programming Guide
 [17] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html
+[18] iOS Reference Library > Guides > iOS Application Programming Guide > Implementing Common Application Behaviors > Files and the File System
 
 
 Compilation command
@@ -650,3 +655,22 @@ wood-on-wood-12.aiff:
   save under "AIFF (Apple) signed 16 bit PCM". This is one of the few formats
   that the System Sound Services function AudioServicesPlaySystemSound() is
   capable of playing.
+
+
+Working with .sgf files
+-----------------------
+The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it
+should load or save a game from/to a specified filename. Due to the limitations
+of the GTP protocol, the filename cannot include spaces, hash signs (#), or
+control characters. The workaround for this is to set the application's current
+working directory before issuing a load or save command, so that the command
+only needs a simple filename instead of a full path that may include spaces or
+other forbidden characters.
+
+Experiment has shown that the application's document folder is at the following
+path locations:
+- iOS Simulator environment
+  /Users/<username>/Library/Application Support/iPhone Simulator/4.2/Applications/03C363CC-7330-40A0-A382-74FEA08E6C29/Documents
+- iPhone device
+  /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
+
