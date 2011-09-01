@@ -40,12 +40,17 @@
 #import "play/SoundHandling.h"
 #import "go/GoGame.h"
 #import "go/GoPlayer.h"
+#import "archive/ArchiveViewModel.h"
 
 // System includes
 #include <string>
 #include <vector>
 #include <iostream>  // for cout
 #include <sys/stat.h>  // for mkfifo
+
+
+#include <stdlib.h>
+#include <unistd.h>
 
 
 // -----------------------------------------------------------------------------
@@ -81,6 +86,7 @@
 @synthesize playViewModel;
 @synthesize soundHandling;
 @synthesize game;
+@synthesize archiveViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -132,6 +138,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playViewModel = nil;
   self.soundHandling = nil;
   self.game = nil;
+  self.archiveViewModel = nil;
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];
@@ -169,6 +176,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.newGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
+  [self.archiveViewModel writeUserDefaults];
 }
 
 - (void) applicationWillEnterForeground:(UIApplication*)application
@@ -212,9 +220,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.newGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
+  self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   [self.newGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];
+  [self.archiveViewModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

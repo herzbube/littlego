@@ -26,6 +26,7 @@
 @class PlayViewModel;
 @class SoundHandling;
 @class GoGame;
+@class ArchiveViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -80,6 +81,8 @@
 @property(retain) SoundHandling* soundHandling;
 /// @brief Object that represents the game that is currently in progress.
 @property(retain) GoGame* game;
+/// @brief Model object that stores attributes used to manage the Archive view.
+@property(retain) ArchiveViewModel* archiveViewModel;
 
 @end
 

@@ -119,5 +119,12 @@
 		<key>9</key>
 		<string>C3,G3,C7,G7</string>
 	</dict>
+	<key>ArchiveView</key>
+	<dict>
+		<key>SortCriteria</key>
+		<integer>0</integer>
+		<key>SortAscending</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

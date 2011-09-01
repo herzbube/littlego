@@ -98,3 +98,7 @@ NSString* fuegoMaxMemoryKey = @"FuegoMaxMemory";
 NSString* fuegoThreadCountKey = @"FuegoThreadCount";
 NSString* fuegoPonderingKey = @"FuegoPondering";
 NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";
+// Archive view settings
+NSString* archiveViewKey = @"ArchiveView";
+NSString* sortCriteriaKey = @"SortCriteria";
+NSString* sortAscendingKey = @"SortAscending";

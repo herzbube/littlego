@@ -107,6 +107,13 @@ enum GoBoardSize
   BoardSizeUndefined
 };
 
+/// @brief Enumerates the supported sort criteria on the Archive view.
+enum ArchiveSortCriteria
+{
+  FileNameArchiveSort,
+  FileDateArchiveSort
+};
+
 // -----------------------------------------------------------------------------
 /// @name GTP notifications
 // -----------------------------------------------------------------------------
@@ -235,4 +242,8 @@ extern NSString* fuegoMaxMemoryKey;
 extern NSString* fuegoThreadCountKey;
 extern NSString* fuegoPonderingKey;
 extern NSString* fuegoReuseSubtreeKey;
+// Archive view settings
+extern NSString* archiveViewKey;
+extern NSString* sortCriteriaKey;
+extern NSString* sortAscendingKey;
 //@}
