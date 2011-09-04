@@ -16,50 +16,47 @@
 
 
 // Project includes
-#import "GtpCommand.h"
-#import "GtpClient.h"
-#import "../ApplicationDelegate.h"
+#import "CommandProcessor.h"
+#import "Command.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpCommand.
+/// @brief Class extension with private methods for CommandProcessor.
 // -----------------------------------------------------------------------------
-@interface GtpCommand()
+@interface CommandProcessor()
 /// @name Initialization and deallocation
 //@{
 - (id) init;
 - (void) dealloc;
 //@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 @end
 
 
-@implementation GtpCommand
-
-@synthesize command;
+@implementation CommandProcessor
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GtpCommand instance that wraps
-/// the command string @a command.
+/// @brief Shared instance of CommandProcessor.
 // -----------------------------------------------------------------------------
-+ (GtpCommand*) command:(NSString*)command
+static CommandProcessor* sharedProcessor = nil;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the shared command processor object.
+// -----------------------------------------------------------------------------
++ (CommandProcessor*) sharedProcessor
 {
-  GtpCommand* cmd = [[GtpCommand alloc] init];
-  if (cmd)
+  @synchronized(self)
   {
-    cmd.command = command;
-    [cmd autorelease];
+    if (! sharedProcessor)
+      sharedProcessor = [[CommandProcessor alloc] init];
+    return sharedProcessor;
   }
-  return cmd;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GtpCommand object.
+/// @brief Initializes a CommandProcessor object.
 ///
-/// @note This is the designated initializer of GtpCommand.
+/// @note This is the designated initializer of CommandProcessor.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -67,43 +64,30 @@
   self = [super init];
   if (! self)
     return nil;
-
-  self.command = nil;
-
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GtpCommand object.
+/// @brief Deallocates memory allocated by this CommandProcessor object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.command = nil;
+  if (sharedProcessor == self)
+    sharedProcessor = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a description for this GtpCommand object.
+/// @brief Invokes doIt() on @a command to execute the encapsulated command.
 ///
-/// This method is invoked when GtpCommand needs to be represented as a string,
-/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+/// Releases @a command after execution is complete with the intent of
+/// disposing of the command object.
 // -----------------------------------------------------------------------------
-- (NSString*) description
+- (void) submitCommand:(id<Command>)command
 {
-  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, self.command];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits this GtpCommand instance to the application's GtpClient.
-///
-/// This is a convenience method so that clients do not need to know GtpClient,
-/// or how to obtain an instance of GtpClient.
-// -----------------------------------------------------------------------------
-- (void) submit
-{
-  NSLog(@"Submitting %@", self);
-  GtpClient* client = [ApplicationDelegate sharedDelegate].gtpClient;
-  [client submit:self];
+  NSLog(@"Executing %@", command);
+  [command doIt];
+  [command release];
 }
 
 @end

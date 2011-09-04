@@ -16,50 +16,31 @@
 
 
 // Project includes
-#import "GtpCommand.h"
-#import "GtpClient.h"
-#import "../ApplicationDelegate.h"
+#import "CommandBase.h"
+#import "CommandProcessor.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpCommand.
+/// @brief Class extension with private methods for CommandBase.
 // -----------------------------------------------------------------------------
-@interface GtpCommand()
+@interface CommandBase()
 /// @name Initialization and deallocation
 //@{
-- (id) init;
 - (void) dealloc;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
 //@}
 @end
 
 
-@implementation GtpCommand
+@implementation CommandBase
 
-@synthesize command;
-
-// -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GtpCommand instance that wraps
-/// the command string @a command.
-// -----------------------------------------------------------------------------
-+ (GtpCommand*) command:(NSString*)command
-{
-  GtpCommand* cmd = [[GtpCommand alloc] init];
-  if (cmd)
-  {
-    cmd.command = command;
-    [cmd autorelease];
-  }
-  return cmd;
-}
+@synthesize name;
+@synthesize undoable;
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GtpCommand object.
+/// @brief Initializes a CommandBase object. The command is not undoable and
+/// uses the command object's class name as the command name.
 ///
-/// @note This is the designated initializer of GtpCommand.
+/// @note This is the designated initializer of CommandBase.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -68,42 +49,53 @@
   if (! self)
     return nil;
 
-  self.command = nil;
+  self.name = NSStringFromClass([self class]);
+  self.undoable = false;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GtpCommand object.
+/// @brief Deallocates memory allocated by this CommandBase object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.command = nil;
+  self.name = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a description for this GtpCommand object.
+/// @brief Returns a description for this Command object.
 ///
-/// This method is invoked when GtpCommand needs to be represented as a string,
+/// This method is invoked when Command needs to be represented as a string,
 /// i.e. by NSLog, or when the debugger command "po" is used on the object.
 // -----------------------------------------------------------------------------
 - (NSString*) description
 {
-  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, self.command];
+  return [NSString stringWithFormat:@"%@(%p): name = %@, undoable = %d", NSStringFromClass([self class]), self, self.name, self.isUndoable];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Submits this GtpCommand instance to the application's GtpClient.
+/// @brief This default implementation exists only to prevent an "incomplete
+/// implementation" compiler warning. It always throws an exception and must be
+/// overridden by subclasses.
+// -----------------------------------------------------------------------------
+- (bool) doIt
+{
+  [self doesNotRecognizeSelector:_cmd];
+  return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Submits this command to the application's shared CommandProcessor.
 ///
-/// This is a convenience method so that clients do not need to know GtpClient,
-/// or how to obtain an instance of GtpClient.
+/// This is a convenience method so that clients do not need to know
+/// CommandProcessor, or how to obtain an instance of CommandProcessor.
 // -----------------------------------------------------------------------------
 - (void) submit
 {
-  NSLog(@"Submitting %@", self);
-  GtpClient* client = [ApplicationDelegate sharedDelegate].gtpClient;
-  [client submit:self];
+  CommandProcessor* processor = [CommandProcessor sharedProcessor];
+  [processor submitCommand:self];
 }
 
 @end

@@ -699,12 +699,16 @@ wood-on-wood-12.aiff:
 Working with .sgf files
 -----------------------
 The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it
-should load or save a game from/to a specified filename. Due to the limitations
-of the GTP protocol, the filename cannot include spaces, hash signs (#), or
-control characters. The workaround for this is to set the application's current
-working directory before issuing a load or save command, so that the command
-only needs a simple filename instead of a full path that may include spaces or
-other forbidden characters.
+should load or save a game from/to a specified filename. To be able to sync .sgf
+files with iTunes, the files must be located in the documents folder.
+Unfortunately, the full path to that folder may contain spaces, which means
+that it can't be specified as an argument to any GTP commands, because the GTP
+protocol has limitations that prevent command arguments from including spaces,
+hash signs (#), or control characters.
+
+The workaround for this is to set the application's current working directory
+to the documents folder when the application starts up. This allows to specify
+a simple filename to the load or save command.
 
 Experiment has shown that the application's document folder is at the following
 path locations:
@@ -712,4 +716,3 @@ path locations:
   /Users/<username>/Library/Application Support/iPhone Simulator/4.2/Applications/03C363CC-7330-40A0-A382-74FEA08E6C29/Documents
 - iPhone device
   /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
-

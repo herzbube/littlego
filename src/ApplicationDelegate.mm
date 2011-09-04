@@ -41,6 +41,7 @@
 #import "go/GoGame.h"
 #import "go/GoPlayer.h"
 #import "archive/ArchiveViewModel.h"
+#import "command/CommandProcessor.h"
 
 // System includes
 #include <string>
@@ -139,6 +140,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.soundHandling = nil;
   self.game = nil;
   self.archiveViewModel = nil;
+  [[CommandProcessor sharedProcessor] release];
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];
@@ -155,6 +157,17 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Make the single instance of this class available as a "shared object", or
   // Singleton.
   sharedDelegate = self;
+
+  // Changing current working directory to documents folder is important so
+  // that the "savesgf" and "loadsgf" GTP commands can be submitted using a
+  // simple filename only. If we had to specify the full path to the documents
+  // folder, we would be in trouble because that path contains spaces, but the
+  // GTP protocol does not support spaces in command arguments.
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  NSString* documentsDirectory = [paths objectAtIndex:0];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  [fileManager changeCurrentDirectoryPath:documentsDirectory];
 
   [self setupResourceBundle];
   [self setupUserDefaults];

@@ -84,6 +84,10 @@
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */; };
+		CDD48FAC1413E00E00188B6A /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */; };
+		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
+		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
+		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -195,6 +199,13 @@
 		CDD48C8F141036D200188B6A /* ArchiveViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewModel.m; sourceTree = "<group>"; };
 		CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewActionSheetController.h; sourceTree = "<group>"; };
 		CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewActionSheetController.m; sourceTree = "<group>"; };
+		CDD48FA71413E00E00188B6A /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		CDD48FA91413E00E00188B6A /* SaveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveGameCommand.h; sourceTree = "<group>"; };
+		CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveGameCommand.m; sourceTree = "<group>"; };
+		CDD48FAE1413E95500188B6A /* CommandBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandBase.h; sourceTree = "<group>"; };
+		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
+		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
+		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -469,6 +480,20 @@
 			path = archive;
 			sourceTree = "<group>";
 		};
+		CDD48FA61413E00E00188B6A /* command */ = {
+			isa = PBXGroup;
+			children = (
+				CDD48FA71413E00E00188B6A /* Command.h */,
+				CDD48FAE1413E95500188B6A /* CommandBase.h */,
+				CDD48FAF1413E95500188B6A /* CommandBase.m */,
+				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
+				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
+				CDD48FA91413E00E00188B6A /* SaveGameCommand.h */,
+				CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */,
+			);
+			path = command;
+			sourceTree = "<group>";
+		};
 		CDE30138135CA7D5005235F2 /* utility */ = {
 			isa = PBXGroup;
 			children = (
@@ -501,6 +526,7 @@
 			isa = PBXGroup;
 			children = (
 				CDD48C80141034F000188B6A /* archive */,
+				CDD48FA61413E00E00188B6A /* command */,
 				CD1088551326CBB300E83543 /* debug */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
@@ -755,6 +781,9 @@
 				CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */,
 				CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */,
 				CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */,
+				CDD48FAC1413E00E00188B6A /* SaveGameCommand.m in Sources */,
+				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
+				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -790,6 +819,7 @@
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineSettings.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
+				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

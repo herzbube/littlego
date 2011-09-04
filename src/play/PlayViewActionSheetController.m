@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayViewActionSheetController.h"
 #import "../go/GoGame.h"
+#import "../command/SaveGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -202,6 +203,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
+  [[[SaveGameCommand alloc] init] submit];
 }
 
 // -----------------------------------------------------------------------------
