@@ -49,8 +49,6 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a Player object with user defaults data.
-///
-/// @note This is the designated initializer of Player.
 // -----------------------------------------------------------------------------
 - (id) init
 {

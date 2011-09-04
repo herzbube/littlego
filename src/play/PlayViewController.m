@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayViewController.h"
+#import "PlayViewActionSheetController.h"
 #import "PlayView.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
@@ -40,12 +41,11 @@
 /// @name Action methods for toolbar items
 //@{
 - (void) pass:(id)sender;
-- (void) resign:(id)sender;
 - (void) playForMe:(id)sender;
 - (void) undo:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
-- (void) newGame:(id)sender;
+- (void) gameActions:(id)sender;
 //@}
 /// @name Handlers for recognized gestures
 //@{
@@ -54,14 +54,6 @@
 /// @name UIGestureRecognizerDelegate protocol
 //@{
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name NewGameDelegate protocol
-//@{
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
 //@}
 /// @name Notification responders
 //@{
@@ -75,10 +67,12 @@
 //@{
 - (void) populateToolbar;
 - (void) updateButtonStates;
-//@}
-/// @name Helpers
-//@{
-- (void) doNewGame;
+- (void) updatePlayForMeButtonState;
+- (void) updatePassButtonState;
+- (void) updateUndoButtonState;
+- (void) updatePauseButtonState;
+- (void) updateContinueButtonState;
+- (void) updateGameActionsButtonState;
 //@}
 @end
 
@@ -89,12 +83,11 @@
 @synthesize toolbar;
 @synthesize playForMeButton;
 @synthesize passButton;
-@synthesize resignButton;
 @synthesize undoButton;
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize flexibleSpaceButton;
-@synthesize newGameButton;
+@synthesize gameActionsButton;
 @synthesize panRecognizer;
 @synthesize panningEnabled;
 
@@ -166,16 +159,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Resign" button. Generates a "Resign"
-/// move for the human player whose turn it currently is.
-// -----------------------------------------------------------------------------
-- (void) resign:(id)sender
-{
-  // TODO ask user for confirmation because this action cannot be undone
-  [[GoGame sharedGame] resign];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Play for me" button. Causes the
 /// computer player to generate a move for the human player whose turn it
 /// currently is.
@@ -214,51 +197,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "New" button. Starts a new game,
-/// discarding the current game.
+/// @brief Reacts to a tap gesture on the "Game Actions" button. Displays an
+/// action sheet with actions that related to Go games as a whole.
 // -----------------------------------------------------------------------------
-- (void) newGame:(id)sender
+- (void) gameActions:(id)sender
 {
-  GoGame* game = [GoGame sharedGame];
-  switch (game.state)
-  {
-    case GameHasStarted:
-    case GameIsPaused:
-    {
-      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
-                                                      message:@"Are you sure you want to start a new game and discard the game in progress?"
-                                                     delegate:self
-                                            cancelButtonTitle:@"No"
-                                            otherButtonTitles:@"Yes", nil];
-      [alert show];
-      break;
-    }
-    default:
-    {
-      [self doNewGame];
-      break;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user dismissing an alert view for which this controller
-/// is the delegate.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  switch (buttonIndex)
-  {
-    case 0:
-      // "No" button clicked
-      break;
-    case 1:
-      // "Yes" button clicked
-      [self doNewGame];
-      break;
-    default:
-      break;
-  }
+  PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self];
+  [controller showActionSheetFromBarButtonItem:self.gameActionsButton];
 }
 
 // -----------------------------------------------------------------------------
@@ -413,15 +358,14 @@
       [toolbarItems addObject:self.pauseButton];
       [toolbarItems addObject:self.continueButton];
       [toolbarItems addObject:self.flexibleSpaceButton];
-      [toolbarItems addObject:self.newGameButton];
+      [toolbarItems addObject:self.gameActionsButton];
       break;
     default:
       [toolbarItems addObject:self.playForMeButton];
       [toolbarItems addObject:self.passButton];
-      [toolbarItems addObject:self.resignButton];
       [toolbarItems addObject:self.undoButton];
       [toolbarItems addObject:self.flexibleSpaceButton];
-      [toolbarItems addObject:self.newGameButton];
+      [toolbarItems addObject:self.gameActionsButton];
       break;
   }
   self.toolbar.items = toolbarItems;
@@ -432,141 +376,201 @@
 // -----------------------------------------------------------------------------
 - (void) updateButtonStates
 {
-  BOOL playForMeButtonEnabled = NO;
-  BOOL passButtonEnabled = NO;
-  BOOL resignButtonEnabled = NO;
-  BOOL undoButtonEnabled = NO;
-  BOOL pauseButtonEnabled = NO;
-  BOOL continueButtonEnabled = NO;
-  BOOL newGameButtonEnabled = NO;
+  [self updatePlayForMeButtonState];
+  [self updatePassButtonState];
+  [self updateUndoButtonState];
+  [self updatePauseButtonState];
+  [self updateContinueButtonState];
+  [self updateGameActionsButtonState];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Play for me" button.
+// -----------------------------------------------------------------------------
+- (void) updatePlayForMeButtonState
+{
+  BOOL enabled = NO;
   switch ([GoGame sharedGame].type)
   {
     case ComputerVsComputerGame:
+      break;
+    default:
+    {
+      if ([GoGame sharedGame].isComputerThinking)
+        break;
       switch ([GoGame sharedGame].state)
       {
         case GameHasNotYetStarted:
-          pauseButtonEnabled = NO;
-          continueButtonEnabled = NO;
-          newGameButtonEnabled = YES;
-          break;
         case GameHasStarted:
-          pauseButtonEnabled = YES;
-          continueButtonEnabled = NO;
-          newGameButtonEnabled = NO;
-          break;
-        case GameIsPaused:
-          pauseButtonEnabled = NO;
-          continueButtonEnabled = YES;
-          // New game is only allowed if the computer player has finished
-          // thinking
-          newGameButtonEnabled = ! [GoGame sharedGame].isComputerThinking;
-          break;
-        case GameHasEnded:
-          pauseButtonEnabled = NO;
-          continueButtonEnabled = NO;
-          newGameButtonEnabled = YES;
+          enabled = YES;
           break;
         default:
           break;
       }
       break;
+    }
+  }
+  self.playForMeButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Pass" button.
+// -----------------------------------------------------------------------------
+- (void) updatePassButtonState
+{
+  BOOL enabled = NO;
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+      break;
     default:
+    {
       if ([GoGame sharedGame].isComputerThinking)
+        break;
+      switch ([GoGame sharedGame].state)
       {
-        playForMeButtonEnabled = NO;
-        passButtonEnabled = NO;
-        resignButtonEnabled = NO;
-        undoButtonEnabled = NO;
-        newGameButtonEnabled = NO;
-      }
-      else
-      {
-        switch ([GoGame sharedGame].state)
-        {
-          case GameHasNotYetStarted:
-            playForMeButtonEnabled = YES;
-            passButtonEnabled = YES;
-            resignButtonEnabled = NO;
-            undoButtonEnabled = NO;
-            newGameButtonEnabled = YES;
-            break;
-          case GameHasStarted:
-            playForMeButtonEnabled = YES;
-            passButtonEnabled = YES;
-            GoMove* lastMove = [GoGame sharedGame].lastMove;
-            resignButtonEnabled = (lastMove != nil);  // handle "no move yet" in the same way as GameHasNotYetStarted
-            if (lastMove == nil)
-              undoButtonEnabled = NO;               // no move yet
-            else if (lastMove.player.player.human)
-              undoButtonEnabled = YES;              // last move by human player
-            else if (lastMove.previous == nil)
-              undoButtonEnabled = NO;               // last move by computer, but no other move before that
-            else
-              undoButtonEnabled = YES;              // last move by computer, and another move before that
-                                                    // -> assume it's by a human player because game type has been checked before
-            newGameButtonEnabled = YES;
-            break;
-          case GameIsPaused:
-            assert(false);  // should never happen if a human player is involved
-            break;
-          case GameHasEnded:
-            playForMeButtonEnabled = NO;
-            passButtonEnabled = NO;
-            resignButtonEnabled = NO;
-            undoButtonEnabled = NO;
-            newGameButtonEnabled = YES;
-            break;
-          default:
-            break;
-        }
+        case GameHasNotYetStarted:
+        case GameHasStarted:
+          enabled = YES;
+          break;
+        default:
+          break;
       }
       break;
+    }
   }
-
-  self.playForMeButton.enabled = playForMeButtonEnabled;
-  self.passButton.enabled = passButtonEnabled;
-  self.resignButton.enabled = resignButtonEnabled;
-  self.undoButton.enabled = undoButtonEnabled;
-  self.pauseButton.enabled = pauseButtonEnabled;
-  self.continueButton.enabled = continueButtonEnabled;
-  self.newGameButton.enabled = newGameButtonEnabled;
+  self.passButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays NewGameController as a modal view controller to gather
-/// information required to start a new game.
+/// @brief Updates the enabled state of the "Undo" button.
 // -----------------------------------------------------------------------------
-- (void) doNewGame;
+- (void) updateUndoButtonState
 {
-  // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
-
-  // This controller provides a navigation bar at the top of the screen where
-  // it will display the navigation item that represents the "new game"
-  // controller. The "new game" controller internally configures this
-  // navigation item according to its needs.
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:newGameController];
-  // Present the navigation controller, not the "new game" controller.
-  navigationController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-  [self presentModalViewController:navigationController animated:YES];
-  // Cleanup
-  [navigationController release];
-  [newGameController release];
+  BOOL enabled = NO;
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+      break;
+    default:
+    {
+      if ([GoGame sharedGame].isComputerThinking)
+        break;
+      switch ([GoGame sharedGame].state)
+      {
+        case GameHasStarted:
+        {
+          GoMove* lastMove = [GoGame sharedGame].lastMove;
+          if (lastMove == nil)
+            enabled = NO;                         // no move yet
+          else if (lastMove.player.player.human)
+            enabled = YES;                        // last move by human player
+          else if (lastMove.previous == nil)
+            enabled = NO;                         // last move by computer, but no other move before that
+          else
+            enabled = YES;                        // last move by computer, and another move before that
+                                                  // -> assume it's by a human player because game type has been checked before
+          break;
+        }
+        default:
+          break;
+      }
+      break;
+    }
+  }
+  self.undoButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked when the user has finished working with
-/// @a controller. The implementation is responsible for dismissing the modal
-/// @a controller.
-///
-/// If @a didStartNewGame is true, the user has requested starting a new game.
-/// If @a didStartNewGame is false, the user has cancelled starting a new game.
+/// @brief Updates the enabled state of the "Pause" button.
 // -----------------------------------------------------------------------------
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
+- (void) updatePauseButtonState
 {
-  [self dismissModalViewControllerAnimated:YES];
+  BOOL enabled = NO;
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+    {
+      switch ([GoGame sharedGame].state)
+      {
+        case GameHasStarted:
+          enabled = YES;
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  self.pauseButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Continue" button.
+// -----------------------------------------------------------------------------
+- (void) updateContinueButtonState
+{
+  BOOL enabled = NO;
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+    {
+      switch ([GoGame sharedGame].state)
+      {
+        case GameIsPaused:
+          enabled = YES;
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  self.continueButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Game Actions" button.
+// -----------------------------------------------------------------------------
+- (void) updateGameActionsButtonState
+{
+  BOOL enabled = NO;
+  switch ([GoGame sharedGame].type)
+  {
+    case ComputerVsComputerGame:
+    {
+      switch ([GoGame sharedGame].state)
+      {
+        case GameHasNotYetStarted:
+        case GameHasEnded:
+          enabled = YES;
+        case GameIsPaused:
+          // Computer may still be thinking
+          enabled = ! [GoGame sharedGame].isComputerThinking;
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+    {
+      if ([GoGame sharedGame].isComputerThinking)
+        break;
+      switch ([GoGame sharedGame].state)
+      {
+        default:
+          enabled = YES;
+          break;
+      }
+      break;
+    }
+  }
+  self.gameActionsButton.enabled = enabled;
 }
 
 @end

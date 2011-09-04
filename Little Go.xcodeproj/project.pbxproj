@@ -83,6 +83,7 @@
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
+		CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -192,6 +193,8 @@
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
 		CDD48C8F141036D200188B6A /* ArchiveViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewModel.m; sourceTree = "<group>"; };
+		CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewActionSheetController.h; sourceTree = "<group>"; };
+		CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewActionSheetController.m; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -363,10 +366,12 @@
 		CD1088561326CBB300E83543 /* play */ = {
 			isa = PBXGroup;
 			children = (
-				CD10885F1326CD2400E83543 /* PlayViewController.h */,
-				CD1088601326CD2400E83543 /* PlayViewController.m */,
 				CD10887B1326D2C100E83543 /* PlayView.h */,
 				CD10887C1326D2C100E83543 /* PlayView.m */,
+				CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */,
+				CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */,
+				CD10885F1326CD2400E83543 /* PlayViewController.h */,
+				CD1088601326CD2400E83543 /* PlayViewController.m */,
 				CDE3028E1360BDD3005235F2 /* PlayViewModel.h */,
 				CDE3028F1360BDD3005235F2 /* PlayViewModel.m */,
 				CDBF976913EC66FE00476748 /* SoundHandling.h */,
@@ -521,13 +526,13 @@
 			isa = PBXGroup;
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
+				CDD48C62140EE7D000188B6A /* Features */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
 				CDEC288312F477E70069F5B7 /* Research */,
 				CDEC288412F477E70069F5B7 /* Roadmap */,
 				CDEC288512F477E70069F5B7 /* TODO */,
-				CDD48C62140EE7D000188B6A /* Features */,
 			);
 			path = doc;
 			sourceTree = "<group>";
@@ -749,6 +754,7 @@
 				CDEF3DD8140C55AB002D9C1C /* TableViewCellFactory.m in Sources */,
 				CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */,
 				CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */,
+				CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -267,6 +267,45 @@ Architecture and implementation notes
   separate the UI for application preferences from the application, though, and
   therefore chose to implement a dedicated Preferences view inside the
   application.
+- The "Play" view is the most complex view of the entire application. It has
+  a large number of UI elements that must somehow be fitted onto the small
+  screeen estate available on the iPhone. This "crowded" environment requires a
+  thoughtful UI design, which I try to outline here:
+  - The game view
+    - The game view has two main purposes: 1) To accurately represent the
+      current game state, and 2) to provide user interaction so that the user
+      can place a stone
+    - Because the Go board is square, but iOS device screens are oblong, the
+      game view cannot take full advantage of all the available screen estate.
+      The game view is responsible for making the most of the current situation,
+      dynamically adjusting to any changes such as device orientation changes.
+    - User preferences modify view appearance (e.g. display labels) and user
+      interaction behaviour.
+  - The toolbar
+    - Only the most important actions can be represented by items on the
+      toolbar. The user usually wants to play a game, so toolbar items should
+      represent actions that are related to game moves (e.g. "pass").
+    - At the right-most position there is a "Game Actions" button which provides
+      access to an action sheet with additional actions that do not fit on the
+      toolbar. Only actions related to games as a whole are to be displayed on
+      this action sheet.
+    - When a computer vs. computer game starts, the usual game move actions
+      (e.g. "pass") do not make sense and are therefore hidden. The toolbar
+      instead displays buttons that can be used to control the automatic game
+      play of the computer players (e.g. the game can be paused).
+    - Most toolbar items do not use the iOS provided icons available from
+      UIBarButtonItem. The reason is that, although the icons' visual appearance
+      might seem appropriate, their semantic meaning is not!
+  - The status line
+    - Currently a status line is situated below the game view, which is used
+      to display information about the current game state to the user
+    - Somehow this seems to be rather clunky, I want to find a different way
+      how to represent the information in the UI
+  - The activity indicator
+    - An activity indicator is needed to let the user know when the Go engine
+      is busy so that he knows why some UI elements are disabled
+    - Currently the indicator is located in the toolbar, this might change in
+      a future version.
 
 
 Coding guidelines

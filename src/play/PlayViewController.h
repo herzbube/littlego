@@ -15,9 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../newgame/NewGameController.h"
-
 // System includes
 #import <UIKit/UIKit.h>
 
@@ -32,9 +29,10 @@
 /// PlayViewController reacts to the following user input:
 /// - Dragging, or panning, gesture in the view's Go board area
 ///   This is used to place a stone on the board.
-/// - Tapping gesture on several buttons
+/// - Tapping gesture on buttons that trigger a Go move
+/// - Tapping gesture on the "Game Actions" button
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, UIAlertViewDelegate, NewGameDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate>
 {
 }
 
@@ -48,9 +46,6 @@
 /// @brief The "Pass" button. Tapping this button generates a "Pass" move for
 /// the human player whose turn it currently is.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* passButton;
-/// @brief The "Resign" button. Tapping this button generates a "Resign" move
-/// for the human player whose turn it currently is.
-@property(nonatomic, retain) IBOutlet UIBarButtonItem* resignButton;
 /// @brief The "Undo" button. Tapping this button takes back the last move made
 /// by a human player, including any computer player moves that were made in
 /// response.
@@ -64,9 +59,9 @@
 /// @brief Dummy button that creates an expanding space between the "New"
 /// button and its predecessors.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* flexibleSpaceButton;
-/// @brief The "New" button. Tapping this button starts a new game, discarding
-/// the current game.
-@property(nonatomic, retain) IBOutlet UIBarButtonItem* newGameButton;
+/// @brief The "Game Actions" button. Tapping this button displays an action
+/// sheet with actions that relate to Go games as a whole.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* gameActionsButton;
 /// @brief The gesture recognizer used to detect the dragging, or panning,
 /// gesture.
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;

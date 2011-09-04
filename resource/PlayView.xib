@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="40"/>
+			<integer value="1"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -103,43 +103,38 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 			<object class="IBUIBarButtonItem" id="439090991">
+				<string key="IBUITitle">Play for me</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">17</int>
 			</object>
 			<object class="IBUIBarButtonItem" id="154265301">
+				<string key="IBUITitle">Pass</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">18</int>
-			</object>
-			<object class="IBUIBarButtonItem" id="947267096">
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">14</int>
 			</object>
 			<object class="IBUIBarButtonItem" id="771764188">
+				<string key="IBUITitle">Undo</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">21</int>
 			</object>
 			<object class="IBUIBarButtonItem" id="396511777">
+				<string key="IBUITitle">Pause</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">18</int>
 			</object>
 			<object class="IBUIBarButtonItem" id="640322159">
+				<string key="IBUITitle">Continue</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">17</int>
 			</object>
 			<object class="IBUIBarButtonItem" id="697305305">
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUISystemItemIdentifier">5</int>
 			</object>
-			<object class="IBUIBarButtonItem" id="328474208">
+			<object class="IBUIBarButtonItem" id="173624301">
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<int key="IBUIStyle">1</int>
-				<int key="IBUISystemItemIdentifier">7</int>
+				<int key="IBUISystemItemIdentifier">9</int>
 			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -195,14 +190,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">newGameButton</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="328474208"/>
-					</object>
-					<int key="connectionID">82</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">passButton</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="154265301"/>
@@ -235,14 +222,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">resignButton</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="947267096"/>
-					</object>
-					<int key="connectionID">87</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">undoButton</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="771764188"/>
@@ -256,14 +235,6 @@
 						<reference key="destination" ref="263589821"/>
 					</object>
 					<int key="connectionID">89</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">newGame:</string>
-						<reference key="source" ref="328474208"/>
-						<reference key="destination" ref="263589821"/>
-					</object>
-					<int key="connectionID">90</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -291,19 +262,27 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">resign:</string>
-						<reference key="source" ref="947267096"/>
-						<reference key="destination" ref="263589821"/>
-					</object>
-					<int key="connectionID">94</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">undo:</string>
 						<reference key="source" ref="771764188"/>
 						<reference key="destination" ref="263589821"/>
 					</object>
 					<int key="connectionID">95</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">gameActionsButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="173624301"/>
+					</object>
+					<int key="connectionID">103</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">gameActions:</string>
+						<reference key="source" ref="173624301"/>
+						<reference key="destination" ref="263589821"/>
+					</object>
+					<int key="connectionID">104</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -375,11 +354,6 @@
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">68</int>
-						<reference key="object" ref="947267096"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">69</int>
 						<reference key="object" ref="771764188"/>
 						<reference key="parent" ref="0"/>
@@ -400,8 +374,8 @@
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">74</int>
-						<reference key="object" ref="328474208"/>
+						<int key="objectID">100</int>
+						<reference key="object" ref="173624301"/>
 						<reference key="parent" ref="0"/>
 					</object>
 				</object>
@@ -415,6 +389,7 @@
 					<string>1.IBEditorWindowLastContentRect</string>
 					<string>1.IBPluginDependency</string>
 					<string>1.IBViewBoundsToFrameTransform</string>
+					<string>100.IBPluginDependency</string>
 					<string>19.IBPluginDependency</string>
 					<string>19.IBViewBoundsToFrameTransform</string>
 					<string>22.CustomClassName</string>
@@ -426,22 +401,21 @@
 					<string>40.IBViewBoundsToFrameTransform</string>
 					<string>66.IBPluginDependency</string>
 					<string>67.IBPluginDependency</string>
-					<string>68.IBPluginDependency</string>
 					<string>69.IBPluginDependency</string>
 					<string>70.IBPluginDependency</string>
 					<string>71.IBPluginDependency</string>
 					<string>73.IBPluginDependency</string>
-					<string>74.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>PlayViewController</string>
 					<string>UIResponder</string>
-					<string>{{778, 451}, {320, 480}}</string>
+					<string>{{801, 88}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAAAAAAAAw8yAAA</bytes>
 					</object>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAAAAAAAAwigAAA</bytes>
@@ -459,8 +433,6 @@
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABDlgAAw8wAAA</bytes>
 					</object>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -485,7 +457,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">95</int>
+			<int key="maxID">109</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -498,15 +470,13 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>continue:</string>
-							<string>newGame:</string>
+							<string>gameActions:</string>
 							<string>pass:</string>
 							<string>pause:</string>
 							<string>playForMe:</string>
-							<string>resign:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -519,11 +489,10 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>continue:</string>
-							<string>newGame:</string>
+							<string>gameActions:</string>
 							<string>pass:</string>
 							<string>pause:</string>
 							<string>playForMe:</string>
-							<string>resign:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -532,7 +501,7 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">newGame:</string>
+								<string key="name">gameActions:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -545,10 +514,6 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">playForMe:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">resign:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -607,13 +572,13 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>continueButton</string>
 							<string>flexibleSpaceButton</string>
-							<string>newGameButton</string>
+							<string>gameActionsButton</string>
 							<string>passButton</string>
 							<string>pauseButton</string>
 							<string>playForMeButton</string>
 							<string>playView</string>
-							<string>resignButton</string>
 							<string>toolbar</string>
+							<string>toolbar2</string>
 							<string>undoButton</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -625,7 +590,7 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>PlayView</string>
-							<string>UIBarButtonItem</string>
+							<string>UIToolbar</string>
 							<string>UIToolbar</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -636,13 +601,13 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>continueButton</string>
 							<string>flexibleSpaceButton</string>
-							<string>newGameButton</string>
+							<string>gameActionsButton</string>
 							<string>passButton</string>
 							<string>pauseButton</string>
 							<string>playForMeButton</string>
 							<string>playView</string>
-							<string>resignButton</string>
 							<string>toolbar</string>
+							<string>toolbar2</string>
 							<string>undoButton</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -656,7 +621,7 @@
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">newGameButton</string>
+								<string key="name">gameActionsButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -676,11 +641,11 @@
 								<string key="candidateClassName">PlayView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">resignButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
+								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">toolbar</string>
+								<string key="name">toolbar2</string>
 								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
