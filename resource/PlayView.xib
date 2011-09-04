@@ -299,10 +299,10 @@
 						<reference key="object" ref="191373211"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="104394266"/>
 							<reference ref="196218046"/>
 							<reference ref="985521622"/>
 							<reference ref="570871022"/>
+							<reference ref="104394266"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -316,14 +316,6 @@
 						<int key="objectID">-2</int>
 						<reference key="object" ref="263589821"/>
 						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">19</int>
-						<reference key="object" ref="104394266"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-						</object>
-						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">22</int>
@@ -378,6 +370,11 @@
 						<reference key="object" ref="173624301"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">19</int>
+						<reference key="object" ref="104394266"/>
+						<reference key="parent" ref="191373211"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -410,7 +407,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>PlayViewController</string>
 					<string>UIResponder</string>
-					<string>{{801, 88}, {320, 480}}</string>
+					<string>{{681, 326}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAAAAAAAAw8yAAA</bytes>
@@ -578,7 +575,6 @@
 							<string>playForMeButton</string>
 							<string>playView</string>
 							<string>toolbar</string>
-							<string>toolbar2</string>
 							<string>undoButton</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -590,7 +586,6 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>PlayView</string>
-							<string>UIToolbar</string>
 							<string>UIToolbar</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -607,7 +602,6 @@
 							<string>playForMeButton</string>
 							<string>playView</string>
 							<string>toolbar</string>
-							<string>toolbar2</string>
 							<string>undoButton</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -642,10 +636,6 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>
-								<string key="candidateClassName">UIToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">toolbar2</string>
 								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
