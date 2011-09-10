@@ -78,6 +78,10 @@ enum FileAttributesSectionItem
 //@{
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
+/// @name Notification responders
+//@{
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
+//@}
 /// @name Helpers
 //@{
 - (void) editGame;
@@ -110,6 +114,9 @@ enum FileAttributesSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self.game removeObserver:self forKeyPath:@"fileDate"];
+  [self.game removeObserver:self forKeyPath:@"fileSize"];
+
   self.game = nil;
   [super dealloc];
 }
@@ -123,6 +130,10 @@ enum FileAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
+
+  // KVO observing
+  [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
+  [self.game addObserver:self forKeyPath:@"fileSize" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -240,6 +251,14 @@ enum FileAttributesSectionItem
     default:
       break;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  [self.tableView reloadData];
 }
 
 // -----------------------------------------------------------------------------
