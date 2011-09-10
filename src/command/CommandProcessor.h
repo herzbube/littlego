@@ -22,7 +22,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The CommandProcessor class is responsible for executing commands
-/// encapsulated by objects of type Command.
+/// encapsulated by objects of type Command. It implements a part of the
+/// Command Processor design pattern.
 ///
 /// Clients invoke submitCommand:() to pass a command object to the command
 /// processor. The command processor then synchronously executes the command
