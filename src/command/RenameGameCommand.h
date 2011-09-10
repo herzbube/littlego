@@ -16,30 +16,21 @@
 
 
 // Project includes
-#import "SaveGameCommand.h"
-#import "../gtp/GtpCommand.h"
+#import "CommandBase.h"
 
+// Forward declarations
+@class ArchiveGame;
 
-
-@implementation SaveGameCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Executes this command. See the class documentation for details.
+/// @brief The RenameGameCommand class is responsible for renaming an .sgf file
+/// in the documents folder.
 // -----------------------------------------------------------------------------
-- (bool) doIt
+@interface RenameGameCommand : CommandBase
 {
-  // TODO get filename from user
-  static int iii = 0;
-  iii++;
-  NSString* sgfFileName = [NSString stringWithFormat:@"foo-%d.sgf", iii];
-  GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"savesgf %@", sgfFileName]];
-  [command submit];
-
-  // TODO send these when we get the response
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:sgfFileName];
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-
-  return true;
 }
+
+@property(retain) ArchiveGame* game;
+@property(retain) NSString* newFileName;
 
 @end

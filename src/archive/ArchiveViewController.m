@@ -17,8 +17,10 @@
 
 // Project includes
 #import "ArchiveViewController.h"
+#import "ArchiveViewModel.h"
+#import "ArchiveGame.h"
+#import "ViewGameController.h"
 #import "../ApplicationDelegate.h"
-#import "../archive/ArchiveViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -44,6 +46,14 @@
 /// @name UITableViewDelegate protocol
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
+//@}
+/// @name Notification responders
+//@{
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
+//@}
+/// @name Helpers
+//@{
+- (void) viewGame:(ArchiveGame*)game;
 //@}
 @end
 
@@ -71,6 +81,9 @@
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.archiveViewModel = delegate.archiveViewModel;
+
+  // KVO observing
+  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -99,7 +112,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return 33;
+  return self.archiveViewModel.gameCount;
 }
 
 // -----------------------------------------------------------------------------
@@ -107,10 +120,11 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = nil;
-  cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-  cell.textLabel.text = @"foo";
-  cell.detailTextLabel.text = @"bar";
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
+  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
+  cell.textLabel.text = game.fileName;
+  cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
 }
 
@@ -120,6 +134,28 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  // Invocation of most of the UITableViewDataSource methods is delayed until
+  // the table is displayed 
+  [self.tableView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays ViewGameController to allow the user to view and/or change
+/// archive game information.
+// -----------------------------------------------------------------------------
+- (void) viewGame:(ArchiveGame*)game
+{
+  ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game] retain];
+  [self.navigationController pushViewController:viewGameController animated:YES];
+  [viewGameController release];
 }
 
 @end

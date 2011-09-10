@@ -15,31 +15,24 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "SaveGameCommand.h"
-#import "../gtp/GtpCommand.h"
-
-
-
-@implementation SaveGameCommand
-
 // -----------------------------------------------------------------------------
-/// @brief Executes this command. See the class documentation for details.
+/// @brief The ArchiveGame class collects data used to describe an archived game
+/// that exists as an .sgf file in the application's document folder.
 // -----------------------------------------------------------------------------
-- (bool) doIt
+@interface ArchiveGame : NSObject
 {
-  // TODO get filename from user
-  static int iii = 0;
-  iii++;
-  NSString* sgfFileName = [NSString stringWithFormat:@"foo-%d.sgf", iii];
-  GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"savesgf %@", sgfFileName]];
-  [command submit];
-
-  // TODO send these when we get the response
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:sgfFileName];
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-
-  return true;
 }
+
+- (id) init;
+- (id) initWithFileName:(NSString*)aFileName fileAttributes:(NSDictionary*)fileAttributes;
+- (void) updateFileAttributes:(NSDictionary*)fileAttributes;
+- (NSComparisonResult) compare:(ArchiveGame*)aGame;
+
+/// @brief The filename of the .sgf file.
+@property(retain) NSString* fileName;
+/// @brief The modification date of the .sgf file.
+@property(retain) NSString* fileDate;
+/// @brief The size of the .sgf file.
+@property(retain) NSString* fileSize;
 
 @end

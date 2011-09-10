@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ArchiveViewModel.h"
+#import "ArchiveGame.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -27,12 +28,26 @@
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
+- (void) updateGameList;
+//@}
+/// @name Notification responders
+//@{
+- (void) archiveContentChanged:(NSNotification*)notification;
+//@}
+/// @name Helpers
+//@{
+- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(readwrite, retain) NSArray* gameList;
 //@}
 @end
 
 
 @implementation ArchiveViewModel
 
+@synthesize gameList;
 @synthesize sortCriteria;
 @synthesize sortAscending;
 
@@ -49,8 +64,14 @@
   if (! self)
     return nil;
 
+  self.gameList = [NSMutableArray arrayWithCapacity:0];
   self.sortCriteria = FileNameArchiveSort;
   self.sortAscending = true;
+
+  [self updateGameList];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(archiveContentChanged:) name:archiveContentChanged object:nil];
 
   return self;
 }
@@ -85,6 +106,78 @@
   [dictionary setValue:[NSNumber numberWithBool:self.sortAscending] forKey:sortAscendingKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:playViewKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #archiveContentChanged notification.
+// -----------------------------------------------------------------------------
+- (void) archiveContentChanged:(NSNotification*)notification
+{
+  [self updateGameList];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of save games that this model has information
+/// about.
+// -----------------------------------------------------------------------------
+- (int) gameCount
+{
+  return gameList.count;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the game object located at position @a index in the gameList
+/// array.
+// -----------------------------------------------------------------------------
+- (ArchiveGame*) gameAtIndex:(int)index
+{
+  return [gameList objectAtIndex:index];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the game object with file name @a fileName.
+// -----------------------------------------------------------------------------
+- (ArchiveGame*) gameWithFileName:(NSString*)fileName
+{
+  for (ArchiveGame* game in gameList)
+  {
+    if ([game.fileName isEqualToString:fileName])
+         return game;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the game list array so that its content matches the content
+/// of the document folder.
+// -----------------------------------------------------------------------------
+- (void) updateGameList
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  NSString* documentsDirectory = [paths objectAtIndex:0];
+  NSArray* fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:nil];
+
+  NSMutableArray* localGameList = [NSMutableArray arrayWithCapacity:fileList.count];
+  for (NSString* fileName in fileList)
+  {
+    NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileName error:nil];
+    ArchiveGame* game = [self gameWithFileName:fileName];
+    if (game)
+      [game updateFileAttributes:fileAttributes];
+    else
+      game = [[[ArchiveGame alloc] initWithFileName:(NSString*)fileName fileAttributes:fileAttributes] autorelease];
+    [localGameList addObject:game];
+  }
+  // TODO: sort by file date if self.sortCriteria says so. It might be
+  // interesting to have a look at NSComparator and blocks.
+  NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:nil
+                                                                   ascending:self.sortAscending
+                                                                    selector:@selector(compare:)];
+  [localGameList sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+
+  // Replace entire array to trigger KVO
+  self.gameList = localGameList;
 }
 
 @end

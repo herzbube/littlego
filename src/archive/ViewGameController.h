@@ -16,30 +16,33 @@
 
 
 // Project includes
-#import "SaveGameCommand.h"
-#import "../gtp/GtpCommand.h"
+#import "EditTextController.h"
 
+// Forward declarations
+@class ArchiveGame;
 
-
-@implementation SaveGameCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Executes this command. See the class documentation for details.
+/// @brief The ViewGameController class is responsible for managing user
+/// interaction on the "View Game" view.
+///
+/// The "View Game" view displays information associated with an ArchiveGame
+/// object. The view is a generic UITableView whose input elements are created
+/// dynamically by ViewGameController.
+///
+/// ViewGameController expects to be displayed by a navigation controller. For
+/// this reason it populates its own navigation item with controls that are
+/// then expected to be displayed in the navigation bar of the parent
+/// navigation controller.
 // -----------------------------------------------------------------------------
-- (bool) doIt
+@interface ViewGameController : UITableViewController <EditTextDelegate>
 {
-  // TODO get filename from user
-  static int iii = 0;
-  iii++;
-  NSString* sgfFileName = [NSString stringWithFormat:@"foo-%d.sgf", iii];
-  GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"savesgf %@", sgfFileName]];
-  [command submit];
-
-  // TODO send these when we get the response
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:sgfFileName];
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-
-  return true;
 }
+
++ (ViewGameController*) controllerWithGame:(ArchiveGame*)game;
+
+/// @brief Reference to the ArchiveGame that this ViewGameController displays
+/// data for.
+@property(assign) ArchiveGame* game;
 
 @end

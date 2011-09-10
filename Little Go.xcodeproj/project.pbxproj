@@ -110,6 +110,11 @@
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
+		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
+		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
+		CDFABCA814194A420065C93B /* ViewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCA714194A420065C93B /* ViewGameController.m */; };
+		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
+		CDFABCF7141B56510065C93B /* RenameGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCF6141B56510065C93B /* RenameGameCommand.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */; };
 		CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */; };
@@ -256,6 +261,14 @@
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
+		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
+		CDFABB871416DD880065C93B /* ArchiveGame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveGame.m; sourceTree = "<group>"; };
+		CDFABCA614194A420065C93B /* ViewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewGameController.h; sourceTree = "<group>"; };
+		CDFABCA714194A420065C93B /* ViewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewGameController.m; sourceTree = "<group>"; };
+		CDFABCAB14194DA00065C93B /* EditTextController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditTextController.h; sourceTree = "<group>"; };
+		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
+		CDFABCF5141B56510065C93B /* RenameGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenameGameCommand.h; sourceTree = "<group>"; };
+		CDFABCF6141B56510065C93B /* RenameGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenameGameCommand.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
 		CDFB49C613F6A84C00FAA5AF /* NewPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewPlayerController.h; sourceTree = "<group>"; };
@@ -472,10 +485,14 @@
 		CDD48C80141034F000188B6A /* archive */ = {
 			isa = PBXGroup;
 			children = (
+				CDFABB861416DD880065C93B /* ArchiveGame.h */,
+				CDFABB871416DD880065C93B /* ArchiveGame.m */,
 				CDD48C81141034F000188B6A /* ArchiveViewController.h */,
 				CDD48C82141034F000188B6A /* ArchiveViewController.m */,
 				CDD48C8E141036D200188B6A /* ArchiveViewModel.h */,
 				CDD48C8F141036D200188B6A /* ArchiveViewModel.m */,
+				CDFABCA614194A420065C93B /* ViewGameController.h */,
+				CDFABCA714194A420065C93B /* ViewGameController.m */,
 			);
 			path = archive;
 			sourceTree = "<group>";
@@ -488,6 +505,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
+				CDFABCF5141B56510065C93B /* RenameGameCommand.h */,
+				CDFABCF6141B56510065C93B /* RenameGameCommand.m */,
 				CDD48FA91413E00E00188B6A /* SaveGameCommand.h */,
 				CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */,
 			);
@@ -602,6 +621,8 @@
 		CDEF3D87140C2F39002D9C1C /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				CDFABCAB14194DA00065C93B /* EditTextController.h */,
+				CDFABCAC14194DA00065C93B /* EditTextController.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
@@ -784,6 +805,10 @@
 				CDD48FAC1413E00E00188B6A /* SaveGameCommand.m in Sources */,
 				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
+				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
+				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
+				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
+				CDFABCF7141B56510065C93B /* RenameGameCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -820,6 +845,7 @@
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
+				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
