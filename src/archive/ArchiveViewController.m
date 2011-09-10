@@ -154,7 +154,7 @@
 // -----------------------------------------------------------------------------
 - (void) viewGame:(ArchiveGame*)game
 {
-  ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game] retain];
+  ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game model:self.archiveViewModel] retain];
   [self.navigationController pushViewController:viewGameController animated:YES];
   [viewGameController release];
 }

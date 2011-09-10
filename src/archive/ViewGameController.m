@@ -18,6 +18,7 @@
 // Project includes
 #import "ViewGameController.h"
 #import "ArchiveGame.h"
+#import "ArchiveViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../command/RenameGameCommand.h"
 
@@ -76,6 +77,7 @@ enum FileAttributesSectionItem
 //@}
 /// @name EditTextDelegate protocol
 //@{
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
 /// @name Notification responders
@@ -92,19 +94,21 @@ enum FileAttributesSectionItem
 @implementation ViewGameController
 
 @synthesize game;
+@synthesize model;
 
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a ViewGameController instance of
 /// grouped style that is used to view information associated with @a game.
 // -----------------------------------------------------------------------------
-+ (ViewGameController*) controllerWithGame:(ArchiveGame*)game
++ (ViewGameController*) controllerWithGame:(ArchiveGame*)game model:(ArchiveViewModel*)model
 {
   ViewGameController* controller = [[ViewGameController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.game = game;
+    controller.model = model;
   }
   return controller;
 }
@@ -118,6 +122,7 @@ enum FileAttributesSectionItem
   [self.game removeObserver:self forKeyPath:@"fileSize"];
 
   self.game = nil;
+  self.model = nil;
   [super dealloc];
 }
 
@@ -277,10 +282,26 @@ enum FileAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked when the user has finished editing the text.
-///
-/// @a didCancel is true if the user has cancelled editing. @a didCancel is
-/// false if the user has confirmed editing.
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
+{
+  ArchiveGame* aGame = [self.model gameWithFileName:text];
+  if (nil == aGame)
+    return true;  // ok, no file with the new name exists
+  else if (aGame == self.game)
+    return true;  // ok, user has made no real changes
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File already exists"
+                                                  message:@"Please choose a different name. Another game file with that name already exists."
+                                                 delegate:self
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"Ok", nil];
+  [alert show];
+  return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 {

@@ -52,6 +52,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if ([self.game.fileName isEqualToString:self.newFileName])
+    return true;
+
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager moveItemAtPath:game.fileName toPath:self.newFileName error:nil];
   if (success)

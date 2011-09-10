@@ -34,10 +34,6 @@
 //@{
 - (void) archiveContentChanged:(NSNotification*)notification;
 //@}
-/// @name Helpers
-//@{
-- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite, retain) NSArray* gameList;

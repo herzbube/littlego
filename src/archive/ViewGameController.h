@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class ArchiveGame;
+@class ArchiveViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -39,10 +40,12 @@
 {
 }
 
-+ (ViewGameController*) controllerWithGame:(ArchiveGame*)game;
++ (ViewGameController*) controllerWithGame:(ArchiveGame*)game model:(ArchiveViewModel*)model;
 
 /// @brief Reference to the ArchiveGame that this ViewGameController displays
 /// data for.
 @property(assign) ArchiveGame* game;
+/// @brief Model that manages all ArchiveGame objects.
+@property(assign) ArchiveViewModel* model;
 
 @end

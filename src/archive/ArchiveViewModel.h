@@ -33,6 +33,7 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 - (ArchiveGame*) gameAtIndex:(int)index;
+- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
 
 /// @brief Number of objects in gameList.
 ///

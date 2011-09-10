@@ -24,6 +24,14 @@
 /// of EditTextController.
 // -----------------------------------------------------------------------------
 @protocol EditTextDelegate
+/// @brief Asks the delegate if editing should end using @a text as the result.
+///
+/// The delegate should return true if @a text is acceptable, false if not.
+/// If the delegate returns false, it should display an alert prior to returning
+/// that informs the user why the text cannot be accepted. If no such alert is
+/// displayed, the user will have no feedback why tapping the "done" button
+/// has no effect.
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 /// @brief This method is invoked when the user has finished editing the text.
 ///
 /// @a didCancel is true if the user has cancelled editing. @a didCancel is
@@ -37,7 +45,11 @@
 /// "Edit Text" view that allows the user to edit a text string.
 ///
 /// The "Edit Text" view is a generic UITableView whose input elements are
-/// created dynamically by EditTextController.
+/// created dynamically by EditTextController. The elements are
+/// - A text field that allows the user to enter a text
+/// - A "cancel" button used to end editing without changes
+/// - A "done" button used to end editing, using the currently entered text as
+///   the result
 ///
 /// EditTextController expects to be displayed modally by a navigation
 /// controller. For this reason it populates its own navigation item with
@@ -46,7 +58,11 @@
 ///
 /// EditTextController expects to be configured with a delegate that can be
 /// informed when the user has finished editing the text. For this to work, the
-/// delegate must implement the protocol EditTextDelegate.
+/// delegate must implement the protocol EditTextDelegate. The delegate is also
+/// notified when the user intends to end the editing session by tapping the
+/// "done" button. The delegate can refuse the entered text and prevent the
+/// editing session from ending (it should also display an alert to provide
+/// feedback to the user why tapping the "done" button has no effect).
 // -----------------------------------------------------------------------------
 @interface EditTextController : UITableViewController <UITextFieldDelegate>
 {

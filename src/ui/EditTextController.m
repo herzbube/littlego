@@ -169,6 +169,8 @@
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
+  if (! [self.delegate controller:self shouldEndEditingWithText:m_textField.text])
+    return;
   self.textHasChanged = ! [self.text isEqualToString:m_textField.text];
   self.text = m_textField.text;
   [self.delegate didEndEditing:self didCancel:false];
