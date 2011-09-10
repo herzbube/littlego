@@ -68,6 +68,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
   [super dealloc];
 }
 

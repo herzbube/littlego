@@ -116,6 +116,9 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.model removeObserver:self forKeyPath:@"markLastMove"];
+  [self.model removeObserver:self forKeyPath:@"displayCoordinates;"];
+  [self.model removeObserver:self forKeyPath:@"displayMoveNumbers"];
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.model = nil;
