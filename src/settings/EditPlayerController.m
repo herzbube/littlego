@@ -269,7 +269,7 @@ enum GtpEngineSettingsSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
           accessoryView.on = self.player.human;
-          // Player can be deleted only if he is not currently playing a game
+          // Player type can be changed only if he is not currently playing a game
           accessoryView.enabled = (! self.player.isPlaying);
           break;
         default:
@@ -389,7 +389,7 @@ enum GtpEngineSettingsSectionItem
   self.player.name = [textField.text stringByReplacingCharactersInRange:range withString:string];
   // Make sure that the editing view cannot be left, unless the player name is
   // valid
-  self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+  [self.navigationItem setHidesBackButton:! [self isPlayerValid] animated:YES];
   // Notify delegate that something about the player object has changed
   [self.delegate didChangePlayer:self];
   // Accept all changes, even those that make the player name invalid
@@ -449,7 +449,7 @@ enum GtpEngineSettingsSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the current Player object contains valid data so that
-/// the object can safely be added to the Player model.
+/// editing can safely be stopped.
 // -----------------------------------------------------------------------------
 - (bool) isPlayerValid
 {
