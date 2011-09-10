@@ -18,6 +18,17 @@
 // GUI constants
 const float gHalfPixel = 0.5;
 
+// Table cell constants
+// Note: Values determined experimentally by debugging a default UITableViewCell
+const int cellContentDistanceFromEdgeHorizontal = 10;
+const int cellContentDistanceFromEdgeVertical = 11;
+// Values determined experimentally in Interface Builder
+const int cellContentSpacingHorizontal = 8;
+const int cellContentSpacingVertical = 8;
+// Values also from IB
+const int cellContentLabelHeight = 21;
+const int cellContentSliderHeight = 23;
+
 // GTP notifications
 NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";
 NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";
@@ -32,6 +43,10 @@ NSString* goGameScoreChanged = @"GoGameScoreChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
+// Archive related notifications
+NSString* gameSavedToArchive = @"GameSavedToArchive";
+NSString* gameLoadedFromArchive = @"GameLoadedFromArchive";
+NSString* archiveContentChanged = @"ArchiveContentChanged";
 
 /// GTP engine settings default values
 int fuegoMaxMemoryMinimum = 32;

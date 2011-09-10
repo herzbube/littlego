@@ -159,3 +159,5 @@ Priority 3 (not important)
   device.
 - In a computer vs. computer game, consider automatically pausing the game if
   the user leaves the "Play" tab.
+- Update the Archive View if the user changes his locale in the system
+  preferences (the view displays formatted dates)

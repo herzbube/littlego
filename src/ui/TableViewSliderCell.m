@@ -62,16 +62,6 @@
 @synthesize delegateActionSliderValueDidChange;
 
 
-// Values determined experimentally by debugging a default UITableViewCell
-static const int distanceFromEdgeHorizontal = 10;
-static const int distanceFromEdgeVertical = 11;
-// Spacing between UI elements (values determined experimentally in
-// Interface Builder)
-static const int spacingHorizontal = 8;
-static const int spacingVertical = 8;
-// UI elements sizes (values also from IB)
-static const int labelHeight = 21;
-static const int sliderHeight = 23;
 // Arbitrary value that hopefully leaves enough space for the value label
 static const int descriptionLabelWidth = 230;
 
@@ -154,7 +144,7 @@ static const int descriptionLabelWidth = 230;
   int contentViewWidth = self.contentView.bounds.size.width - (2 * self.indentationWidth);
 
   assert(descriptionLabelWidth < contentViewWidth);
-  CGRect descriptionLabelRect = CGRectMake(distanceFromEdgeHorizontal, distanceFromEdgeVertical, descriptionLabelWidth, labelHeight);
+  CGRect descriptionLabelRect = CGRectMake(cellContentDistanceFromEdgeHorizontal, cellContentDistanceFromEdgeVertical, descriptionLabelWidth, cellContentLabelHeight);
   descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
   descriptionLabel.tag = SliderCellDescriptionLabelTag;
   descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
@@ -162,11 +152,11 @@ static const int descriptionLabelWidth = 230;
   descriptionLabel.textColor = [UIColor blackColor];
   [self.contentView addSubview:descriptionLabel];
 
-  int valueLabelX = descriptionLabelRect.origin.x + descriptionLabelRect.size.width + spacingHorizontal;
+  int valueLabelX = descriptionLabelRect.origin.x + descriptionLabelRect.size.width + cellContentSpacingHorizontal;
   int valueLabelY = descriptionLabelRect.origin.y;
-  int valueLabelWidth = contentViewWidth - valueLabelX - distanceFromEdgeHorizontal;
+  int valueLabelWidth = contentViewWidth - valueLabelX - cellContentDistanceFromEdgeHorizontal;
   assert(valueLabelWidth > 0);
-  CGRect valueLabelRect = CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, labelHeight);
+  CGRect valueLabelRect = CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, cellContentLabelHeight);
   valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
   valueLabel.tag = SliderCellValueLabelTag;
   valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
@@ -175,9 +165,9 @@ static const int descriptionLabelWidth = 230;
   [self.contentView addSubview:valueLabel];
 
   int sliderX = descriptionLabelRect.origin.x;
-  int sliderY = descriptionLabelRect.origin.y + descriptionLabelRect.size.height + spacingVertical;
+  int sliderY = descriptionLabelRect.origin.y + descriptionLabelRect.size.height + cellContentSpacingVertical;
   int sliderWidth = valueLabelX + valueLabelWidth - sliderX;
-  CGRect sliderRect = CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
+  CGRect sliderRect = CGRectMake(sliderX, sliderY, sliderWidth, cellContentSliderHeight);
   slider = [[UISlider alloc] initWithFrame: sliderRect];  // no autorelease, property is retained
   slider.tag = SliderCellSliderTag;
   slider.continuous = YES;
@@ -192,7 +182,7 @@ static const int descriptionLabelWidth = 230;
   static CGFloat rowHeight = 0;
   if (0 == rowHeight)
   {
-    rowHeight = 2 * distanceFromEdgeVertical + labelHeight + spacingVertical + sliderHeight;
+    rowHeight = 2 * cellContentDistanceFromEdgeVertical + cellContentLabelHeight + cellContentSpacingVertical + cellContentSliderHeight;
   }
   return rowHeight;
 }

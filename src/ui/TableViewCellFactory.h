@@ -28,6 +28,8 @@ enum TableViewCellType
 {
   DefaultCellType,    ///< @brief Cell with style @e UITableViewCellStyleDefault
   Value1CellType,     ///< @brief Cell with style @e UITableViewCellStyleValue1
+  Value2CellType,     ///< @brief Cell with style @e UITableViewCellStyleValue2
+  SubtitleCellType,   ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,     ///< @brief with a UISwitch in the accessory view
   TextFieldCellType,  ///< @brief The cell's entire content view is a UITextField
   SliderCellType      ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value

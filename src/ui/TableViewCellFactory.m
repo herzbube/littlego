@@ -44,6 +44,12 @@
     case Value1CellType:
       cellID = @"Value1CellType";
       break;
+    case Value2CellType:
+      cellID = @"Value2CellType";
+      break;
+    case SubtitleCellType:
+      cellID = @"SubtitleCellType";
+      break;
     case SwitchCellType:
       cellID = @"SwitchCellType";
       break;
@@ -76,6 +82,12 @@
         case Value1CellType:
           cellStyle = UITableViewCellStyleValue1;
           break;
+        case Value2CellType:
+          cellStyle = UITableViewCellStyleValue2;
+          break;
+        case SubtitleCellType:
+          cellStyle = UITableViewCellStyleSubtitle;
+          break;
         default:
           cellStyle = UITableViewCellStyleDefault;
           break;
@@ -100,9 +112,24 @@
       }
     case TextFieldCellType:
       {
-        CGRect bounds = cell.contentView.bounds;
-        CGRect rect = CGRectInset(bounds, 10.0, 10.0);
-        UITextField* textField = [[[UITextField alloc] initWithFrame:rect] autorelease];
+        // self.contentView still thinks it has the entire table view width, but in a
+        // table view with grouped style the available width will be less because the
+        // cell is set off from the view edges both on the left and the right
+        // -> through debugging we know that the offset happens to be the default
+        //    indentation width
+        // -> this is probably not a coincidence, so we boldly use this indentation
+        //    width for our calculations
+        // TODO: move this calculation and comment somewhere else;
+        // tableviewslidercell has the same calculation
+        int contentViewWidth = cell.contentView.bounds.size.width - (2 * cell.indentationWidth);
+        int contentViewHeight = cell.contentView.bounds.size.height;
+
+        int textFieldX = cellContentDistanceFromEdgeHorizontal;
+        int textFieldY = cellContentDistanceFromEdgeVertical;
+        int textFieldWidth = contentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
+        int textFieldHeight = contentViewHeight - 2 * cellContentDistanceFromEdgeVertical;
+        CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
+        UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
         [cell.contentView addSubview:textField];
         textField.textColor = [UIColor slateBlueColor];
         // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
