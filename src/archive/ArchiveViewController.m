@@ -143,8 +143,8 @@
   if (editingStyle != UITableViewCellEditingStyleDelete)
     return;
 
-  DeleteGameCommand* command = [[DeleteGameCommand alloc] init];
-  command.game = [self.archiveViewModel gameAtIndex:indexPath.row];
+  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
+  DeleteGameCommand* command = [[DeleteGameCommand alloc] initWithGame:game];
   // Temporarily disable KVO observer mechanism so that no table view update
   // is triggered during command execution. Purpose: In a minute, we are going
   // to manipulate the table view ourselves so that a nice animation is shown.

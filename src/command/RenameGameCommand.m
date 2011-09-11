@@ -38,6 +38,24 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a RenameGameCommand object.
+///
+/// @note This is the designated initializer of RenameGameCommand.
+// -----------------------------------------------------------------------------
+- (id) initWithGame:(ArchiveGame*)aGame newFileName:(NSString*)aNewFileName
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.game = aGame;
+  self.newFileName = aNewFileName;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this RenameGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc

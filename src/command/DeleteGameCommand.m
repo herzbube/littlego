@@ -37,6 +37,23 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a DeleteGameCommand object.
+///
+/// @note This is the designated initializer of DeleteGameCommand.
+// -----------------------------------------------------------------------------
+- (id) initWithGame:(ArchiveGame*)aGame
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.game = aGame;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this DeleteGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc

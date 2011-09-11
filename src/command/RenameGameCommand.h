@@ -30,6 +30,8 @@
 {
 }
 
+- (id) initWithGame:(ArchiveGame*)aGame newFileName:(NSString*)aNewFileName;
+
 @property(retain) ArchiveGame* game;
 @property(retain) NSString* newFileName;
 

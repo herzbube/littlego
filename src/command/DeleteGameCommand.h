@@ -30,6 +30,8 @@
 {
 }
 
+- (id) initWithGame:(ArchiveGame*)aGame;
+
 @property(retain) ArchiveGame* game;
 
 @end

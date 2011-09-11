@@ -307,9 +307,8 @@ enum FileAttributesSectionItem
 {
   if (! didCancel)
   {
-    RenameGameCommand* command = [[RenameGameCommand alloc] init];
-    command.game = self.game;
-    command.newFileName = editTextController.text;
+    RenameGameCommand* command = [[RenameGameCommand alloc] initWithGame:self.game
+                                                             newFileName:editTextController.text];
     [command submit];
 
     [self.tableView reloadData];
