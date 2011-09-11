@@ -18,10 +18,55 @@
 // Project includes
 #import "SaveGameCommand.h"
 #import "../gtp/GtpCommand.h"
+#import "../gtp/GtpResponse.h"
 
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for SaveGameCommand.
+// -----------------------------------------------------------------------------
+@interface SaveGameCommand()
+- (void) dealloc;
+- (void) gtpResponseReceived:(NSNotification*)notification;
+@end
 
 
 @implementation SaveGameCommand
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a SaveGameCommand object.
+///
+/// @note This is the designated initializer of CommandBase.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  m_sgfFileName = nil;
+  m_gtpCommand = nil;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this CommandBase object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  if (m_sgfFileName)
+  {
+    [m_sgfFileName release];
+    m_sgfFileName = nil;
+  }
+  if (m_gtpCommand)
+  {
+    [m_gtpCommand release];
+    m_gtpCommand = nil;
+  }
+  [super dealloc];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
@@ -31,15 +76,48 @@
   // TODO get filename from user
   static int iii = 0;
   iii++;
-  NSString* sgfFileName = [NSString stringWithFormat:@"foo-%d.sgf", iii];
-  GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"savesgf %@", sgfFileName]];
-  [command submit];
+  m_sgfFileName = [[NSString stringWithFormat:@"foo-%d.sgf", iii] retain];
 
-  // TODO send these when we get the response
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:sgfFileName];
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+  // Add ourselves as observers before we submit the command
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(gtpResponseReceived:)
+                                               name:gtpResponseReceivedNotification
+                                             object:nil];
+  // Make sure that this command object survives until it gets the notification.
+  // If the notification never arrives there will be a memory leak :-(
+  [self retain];
 
+  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", m_sgfFileName];
+  m_gtpCommand = [[GtpCommand command:commandString] retain];
+  [m_gtpCommand submit];
+
+  // TODO It would be better if we could wait for the GtpResponse before
+  // returning! For instance, this would enable the calling party to block the
+  // user interface until the game has been saved. At the moment, the user is
+  // able to go on playing while game saving is in progress...
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gtpResponseReceived notification.
+// -----------------------------------------------------------------------------
+- (void) gtpResponseReceived:(NSNotification*)notification
+{
+  GtpResponse* response = [notification object];
+  if (m_gtpCommand != response.command)
+    return;
+
+  // We got what we wanted, we are no longer interested in notifications
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  // Balance the retain message in doIt() to trigger deallocation
+  [self autorelease];
+
+  if (response.status)
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:m_sgfFileName];
+    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+  }
 }
 
 @end

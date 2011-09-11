@@ -18,6 +18,9 @@
 // Project includes
 #import "CommandBase.h"
 
+// Forward declarations
+@class GtpCommand;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The SaveGameCommand class is responsible for saving the current
@@ -28,6 +31,11 @@
 // -----------------------------------------------------------------------------
 @interface SaveGameCommand : CommandBase
 {
+@private
+  NSString* m_sgfFileName;
+  GtpCommand* m_gtpCommand;
 }
+
+- (id) init;
 
 @end
