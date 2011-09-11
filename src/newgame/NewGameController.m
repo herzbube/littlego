@@ -25,7 +25,6 @@
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
-#import "../command/NewGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -499,21 +498,19 @@ enum KomiSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user has finished selecting parameters for a new
-/// game. Makes the collected information persistent, then starts a new game.
+/// game. Makes the collected information persistent, then informs the delegate
+/// that a new game needs to be started.
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  // First store the collected information in the NewGameModel
+  // Store the collected information in NewGameModel before informing the
+  // delegate
   NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
   assert(model);
   model.boardSize = self.boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
-  // Second step: Start a new game using the information from the NewGameModel
-  [[[NewGameCommand alloc] init] submit];
-
-  // Finally inform our delegate
   [self.delegate newGameController:self didStartNewGame:true];
 }
 

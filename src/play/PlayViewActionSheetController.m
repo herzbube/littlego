@@ -21,6 +21,7 @@
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"
 #import "../command/SaveGameCommand.h"
+#import "../command/NewGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -304,6 +305,8 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {
+  if (didStartNewGame)
+    [[[NewGameCommand alloc] init] submit];
   [self.modalMaster dismissModalViewControllerAnimated:YES];
 }
 

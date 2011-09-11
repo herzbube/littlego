@@ -75,8 +75,7 @@ Working with .sgf files
     the GTP engine
   - The application then queries the GTP engine to gather all the information
     it needs to start a new game (e.g. board size)
-  - The application then starts the new game (without the usual resetting of
-    the GTP engine) and switches to the Play view
+  - The application then starts the new game and switches to the Play view
 - Saving the current game works as follows
   - The operation is initiated from the Play view on the "Play" tab
   - The option is available as soon as a new game has started
