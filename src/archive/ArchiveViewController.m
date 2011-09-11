@@ -22,6 +22,7 @@
 #import "ViewGameController.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../command/DeleteGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -42,6 +43,7 @@
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
+- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
@@ -82,6 +84,9 @@
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.archiveViewModel = delegate.archiveViewModel;
+  // self.editButtonItem is a standard item provided by UIViewController, which
+  // is linked to triggering the view's edit mode
+  self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
   // KVO observing
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
@@ -127,6 +132,28 @@
   cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  assert(editingStyle == UITableViewCellEditingStyleDelete);
+  if (editingStyle != UITableViewCellEditingStyleDelete)
+    return;
+
+  DeleteGameCommand* command = [[DeleteGameCommand alloc] init];
+  command.game = [self.archiveViewModel gameAtIndex:indexPath.row];
+  // Temporarily disable KVO observer mechanism so that no table view update
+  // is triggered during command execution. Purpose: In a minute, we are going
+  // to manipulate the table view ourselves so that a nice animation is shown.
+  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
+  [command submit];
+  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+  // Animate item deletion. Requires that in the meantime we have not triggered
+  // a reloadData().
+  [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
 }
 
 // -----------------------------------------------------------------------------
