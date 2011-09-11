@@ -114,10 +114,15 @@ enum KomiSectionItem
 //@{
 - (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
+/// @name UIAlertViewDelegate protocol
+//@{
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+//@}
 /// @name Helpers
 //@{
 - (void) updateCell:(UITableViewCell*)cell withPlayer:(Player*)player;
 - (bool) isSelectionValid;
+- (void) newGame;
 //@}
 @end
 
@@ -196,23 +201,31 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting parameters for a new
-/// game. Makes the collected information persistent, then starts a new game.
+/// @brief Invoked when the user has decided to start a new game.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  // First store the collected information in the NewGameModel
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
-  assert(model);
-  model.boardSize = self.boardSize;
-  model.blackPlayerUUID = self.blackPlayer.uuid;
-  model.whitePlayerUUID = self.whitePlayer.uuid;
-
-  // Second step: Start a new game using the information from the NewGameModel
-  [[ApplicationDelegate sharedDelegate] startNewGame];
-
-  // Finally inform our delegate
-  [self.delegate newGameController:self didStartNewGame:true];
+  GoGame* game = [GoGame sharedGame];
+  switch (game.state)
+  {
+    case GameHasStarted:
+    case GameIsPaused:
+    {
+      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
+                                                      message:@"Are you sure you want to start a new game and discard the game in progress?"
+                                                     delegate:self
+                                            cancelButtonTitle:@"No"
+                                            otherButtonTitles:@"Yes", nil];
+      alert.tag = NewGameAlertView;
+      [alert show];
+      break;
+    }
+    default:
+    {
+      [self newGame];
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -448,6 +461,44 @@ enum KomiSectionItem
 - (bool) isSelectionValid
 {
   return (self.blackPlayer != nil && self.whitePlayer != nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user dismissing an alert view for which this controller
+/// is the delegate.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  switch (buttonIndex)
+  {
+    case NoAlertViewButton:
+      break;
+    case YesAlertViewButton:
+      [self newGame];
+      break;
+    default:
+      break;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user has finished selecting parameters for a new
+/// game. Makes the collected information persistent, then starts a new game.
+// -----------------------------------------------------------------------------
+- (void) newGame
+{
+  // First store the collected information in the NewGameModel
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  assert(model);
+  model.boardSize = self.boardSize;
+  model.blackPlayerUUID = self.blackPlayer.uuid;
+  model.whitePlayerUUID = self.whitePlayer.uuid;
+
+  // Second step: Start a new game using the information from the NewGameModel
+  [[ApplicationDelegate sharedDelegate] startNewGame];
+
+  // Finally inform our delegate
+  [self.delegate newGameController:self didStartNewGame:true];
 }
 
 @end

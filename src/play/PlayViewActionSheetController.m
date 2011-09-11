@@ -70,7 +70,6 @@ enum ActionSheetButton
 - (void) saveGame;
 - (void) doSaveGame:(NSString*)fileName;
 - (void) newGame;
-- (void) doNewGame;
 //@}
 @end
 
@@ -253,27 +252,21 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  GoGame* game = [GoGame sharedGame];
-  switch (game.state)
-  {
-    case GameHasStarted:
-    case GameIsPaused:
-    {
-      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
-                                                      message:@"Are you sure you want to start a new game and discard the game in progress?"
-                                                     delegate:self
-                                            cancelButtonTitle:@"No"
-                                            otherButtonTitles:@"Yes", nil];
-      alert.tag = NewGameAlertView;
-      [alert show];
-      break;
-    }
-    default:
-    {
-      [self doNewGame];
-      break;
-    }
-  }
+  // This controller manages the actual "New Game" view
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
+
+  // This controller provides a navigation bar at the top of the screen where
+  // it will display the navigation item that represents the "new game"
+  // controller. The "new game" controller internally configures this
+  // navigation item according to its needs.
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:newGameController];
+  // Present the navigation controller, not the "new game" controller.
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self.modalMaster presentModalViewController:navigationController animated:YES];
+  // Cleanup
+  [navigationController release];
+  [newGameController release];
 }
 
 // -----------------------------------------------------------------------------
@@ -290,9 +283,6 @@ enum ActionSheetButton
     {
       switch (alertView.tag)
       {
-        case NewGameAlertView:
-          [self doNewGame];
-          break;
         case SaveGameAlertView:
           [self doSaveGame:m_sgfFileName];
           [m_sgfFileName release];
@@ -307,29 +297,6 @@ enum ActionSheetButton
     default:
       break;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays NewGameController as a modal view controller to gather
-/// information required to start a new game.
-// -----------------------------------------------------------------------------
-- (void) doNewGame
-{
-  // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
-
-  // This controller provides a navigation bar at the top of the screen where
-  // it will display the navigation item that represents the "new game"
-  // controller. The "new game" controller internally configures this
-  // navigation item according to its needs.
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:newGameController];
-  // Present the navigation controller, not the "new game" controller.
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self.modalMaster presentModalViewController:navigationController animated:YES];
-  // Cleanup
-  [navigationController release];
-  [newGameController release];
 }
 
 // -----------------------------------------------------------------------------

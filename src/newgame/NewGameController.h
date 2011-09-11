@@ -60,7 +60,7 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate>
+@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate, UIAlertViewDelegate>
 {
 }
 
