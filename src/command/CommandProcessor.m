@@ -79,15 +79,18 @@ static CommandProcessor* sharedProcessor = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Invokes doIt() on @a command to execute the encapsulated command.
+/// Returns true if execution was successful.
 ///
 /// Releases @a command after execution is complete with the intent of
-/// disposing of the command object.
+/// disposing of the command object. A client that wants to continue using the
+/// object (not recommended) must retain it.
 // -----------------------------------------------------------------------------
-- (void) submitCommand:(id<Command>)command
+- (bool) submitCommand:(id<Command>)command
 {
   NSLog(@"Executing %@", command);
-  [command doIt];
+  bool result = [command doIt];
   [command release];
+  return result;
 }
 
 @end

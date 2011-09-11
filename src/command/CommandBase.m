@@ -87,15 +87,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Submits this command to the application's shared CommandProcessor.
+/// @brief Submits this command to the application's shared CommandProcessor
+/// for execution. Returns true if execution was successful.
 ///
 /// This is a convenience method so that clients do not need to know
 /// CommandProcessor, or how to obtain an instance of CommandProcessor.
+///
+/// @note Unless the client retains this command, it will be deallocated after
+/// execution has completed.
 // -----------------------------------------------------------------------------
-- (void) submit
+- (bool) submit
 {
   CommandProcessor* processor = [CommandProcessor sharedProcessor];
-  [processor submitCommand:self];
+  return [processor submitCommand:self];  // self is probably deallocated here!
 }
 
 @end

@@ -51,7 +51,7 @@
 }
 
 + (CommandProcessor*) sharedProcessor;
-- (void) submitCommand:(id<Command>)command;
+- (bool) submitCommand:(id<Command>)command;
 // TODO implement undo functionality discussed in the class documentation
 // - (void) undoCommand;
 

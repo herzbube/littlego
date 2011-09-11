@@ -149,11 +149,12 @@
   // is triggered during command execution. Purpose: In a minute, we are going
   // to manipulate the table view ourselves so that a nice animation is shown.
   [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
-  [command submit];
+  bool success = [command submit];
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
   // Animate item deletion. Requires that in the meantime we have not triggered
   // a reloadData().
-  [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+  if (success)
+    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
 }
 
 // -----------------------------------------------------------------------------

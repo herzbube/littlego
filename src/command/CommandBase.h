@@ -43,6 +43,6 @@
 }
 
 - (id) init;
-- (void) submit;
+- (bool) submit;
 
 @end
