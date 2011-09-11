@@ -41,19 +41,36 @@ TODO
 
 Working with .sgf files
 -----------------------
-- The Archive view on the "Archive" tab provides the means to save the current
-  game to an .sgf file, or to load a previously saved game from an .sgf file
-- Files are stored in the application's document folder
-- The file extension .sgf is not enforced
+- Saved games are available for syncing in iTunes
+  - To achieve this, save game files are stored in the application's document
+    folder
+- The Archive view on the "Archive" tab lists previously saved games and
+  provides the means to manage them as follows
+  - Existing files are listed in a table view
+  - The user can switch between different sorting criteria and sort orders
+  - Available sorting criteria are file name and file date
+  - Available sort orders are ascending and descending
+  - The user can enter a search string to filter the list
+  - The user can delete files by entering the table view's editing mode (a
+    standard iOS feature)
+  - Tapping the entry for a file drills down into the detail view for that file
+  - Information on the detail view is filesystem related only; in a future
+    release the detail view might also display data from within the .sgf file
+  - The detail view offers options to load a game and to rename the game file
+  - If the user attempts to rename a file and another file with the new name
+    already exists, the rename operation fails. The user is informed about the
+    problem via an alert view.
 - Loading a game works as follows
+  - The operation is initiated from the detail view, when a saved game is viewed
+    on the Archive view
   - Overall, the procedure to load a game is very similar to starting a new
     game on the Play view
+  - The user is presented with the choice of players that should be used for
+    the game that is about to be loaded
+  - The user cannot choose board size, Komi or Handicap, as these parameters
+    are part of the saved game
   - If a game is already in progress, the user is asked to confirm that the
     game in progress will be abandoned
-  - The user is then presented with the choice of players that should be used
-    for the game that is about to be loaded
-  - The user cannot choose Komi or Handicap, as these parameters are part of
-    the saved game
   - If the user confirms loading of the game, the "loadsgf" command is sent to
     the GTP engine
   - The application then queries the GTP engine to gather all the information
@@ -61,28 +78,16 @@ Working with .sgf files
   - The application then starts the new game (without the usual resetting of
     the GTP engine) and switches to the Play view
 - Saving the current game works as follows
-  - The option is available as soon as the first move has been played
+  - The operation is initiated from the Play view on the "Play" tab
+  - The option is available as soon as a new game has started
   - The user must enter a filename
+  - The file extension .sgf (Smart Game Format) is not enforced
   - The application provides a sensible default filename that can be simply
     accepted
   - If a file already exists, the user is presented with the choice to
     overwrite the file
   - If saving the game proceeds, the "savesgf" command is sent to the GTP engine
-  - The application remains on the Archive view
-- Existing files are managed as follows
-  - Existing files are listed in a table view
-  - The user can switch been different sorting criteria and sort orders
-  - Available sorting criteria are file name and file date
-  - Available sort orders are ascending and descending
-  - The user can enter a search string to filter the list
-  - Tapping the entry for a file drills down into the detail view for that file
-  - Information on the detail view is filesystem related only; in a future
-    release the detail view might also display data from within the .sgf file
-  - The detail view offers options to rename and delete the file
-  - If a file is renamed and another file with the new name already exists, the
-    user is presented with the choice to overwrite the file
-  - The user must confirm deletion of a file
-- Saved games are available for syncing in iTunes
+  - The application remains on the Play view
 
 
 Interacting with the GTP engine

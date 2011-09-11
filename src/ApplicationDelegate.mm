@@ -31,27 +31,19 @@
 #import "ApplicationDelegate.h"
 #import "gtp/GtpClient.h"
 #import "gtp/GtpEngine.h"
-#import "newgame/NewGameController.h"
 #import "newgame/NewGameModel.h"
 #import "player/PlayerModel.h"
-#import "player/Player.h"
-#import "player/GtpEngineSettings.h"
 #import "play/PlayViewModel.h"
 #import "play/SoundHandling.h"
-#import "go/GoGame.h"
-#import "go/GoPlayer.h"
 #import "archive/ArchiveViewModel.h"
 #import "command/CommandProcessor.h"
+#import "command/NewGameCommand.h"
 
 // System includes
 #include <string>
 #include <vector>
 #include <iostream>  // for cout
 #include <sys/stat.h>  // for mkfifo
-
-
-#include <stdlib.h>
-#include <unistd.h>
 
 
 // -----------------------------------------------------------------------------
@@ -173,7 +165,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupUserDefaults];
   [self setupGUI];
   [self setupFuego];
-  [self startNewGame];
+  [[[NewGameCommand alloc] init] submit];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -308,35 +300,21 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Starts a new game using the values currently stored in NewGameModel.
+/// @brief Activates the tab identified by @a tabID, making it visible to the
+/// user.
+///
+/// This method works correctly even if the tab is located in the "More"
+/// navigation controller.
 // -----------------------------------------------------------------------------
-- (void) startNewGame
+- (void) activateTab:(enum TabType)tabID
 {
-  // De-allocate the old game *BEFORE* creating a new one. Go objects attached
-  // to the old game need to be able to access their instance using GoGame's
-  // class method sharedGame().
-  // TODO: Remove this comment and statement as soon as Go objects no longer
-  // rely on sharedGame().
-  self.game = nil;
-  // TODO: Prevent starting a new game if the defaults are somehow invalid
-  // (currently known: player UUID may refer to a player that has been removed)
-  self.game = [GoGame newGame];
-
-  if (HumanVsHumanGame != self.game.type)
+  for (UIViewController* controller in tabBarController.viewControllers)
   {
-    Player* computerPlayerWithGtpSettings = self.game.playerBlack.player;
-    if (computerPlayerWithGtpSettings.isHuman)
+    if (controller.tabBarItem.tag == tabID)
     {
-      computerPlayerWithGtpSettings = self.game.playerWhite.player;
-      assert(! computerPlayerWithGtpSettings.isHuman);
+      tabBarController.selectedViewController = controller;
+      break;
     }
-    else
-    {
-      // TODO notify user that we ignore the white player's settings;
-      // alternatively let the user choose which player's settings should be
-      // used
-    }
-    [computerPlayerWithGtpSettings.gtpEngineSettings applySettings];
   }
 }
 

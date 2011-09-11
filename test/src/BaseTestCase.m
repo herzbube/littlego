@@ -21,6 +21,7 @@
 // Application includes
 #import <ApplicationDelegate.h>
 #import <go/GoGame.h>
+#import <command/NewGameCommand.h>
 
 
 @implementation BaseTestCase
@@ -39,7 +40,7 @@
   STAssertNotNil(m_delegate.resourceBundle, @"Unable to determine unit test bundle in setUp()");
   [m_delegate setupUserDefaults];
 
-  [m_delegate startNewGame];
+  [[[NewGameCommand alloc] init] submit];
   m_game = m_delegate.game;
   STAssertNotNil(m_game, @"Unable to create GoGame object in setUp()");
 

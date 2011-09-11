@@ -253,7 +253,7 @@ enum ActionSheetButton
 - (void) newGame
 {
   // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:false] retain];
 
   // This controller provides a navigation bar at the top of the screen where
   // it will display the navigation item that represents the "new game"
@@ -300,12 +300,7 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked when the user has finished working with
-/// @a controller. The implementation is responsible for dismissing the modal
-/// @a controller.
-///
-/// If @a didStartNewGame is true, the user has requested starting a new game.
-/// If @a didStartNewGame is false, the user has cancelled starting a new game.
+/// @brief NewGameDelegate protocol method
 // -----------------------------------------------------------------------------
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {

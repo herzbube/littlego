@@ -22,10 +22,10 @@
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
-#import "../go/GoPlayer.h"
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../command/NewGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,8 +33,10 @@
 // -----------------------------------------------------------------------------
 enum NewGameTableViewSection
 {
-  BoardSizeSection,
   PlayersSection,
+  MaxSectionLoadGame,
+  // Sections from here on are not displayed in "load game" mode
+  BoardSizeSection = MaxSectionLoadGame,
   HandicapSection,
   KomiSection,
   MaxSection
@@ -133,19 +135,27 @@ enum KomiSectionItem
 @synthesize boardSize;
 @synthesize blackPlayer;
 @synthesize whitePlayer;
+@synthesize loadGame;
 
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a NewGameController instance of
 /// grouped style.
+///
+/// @a loadGame is true to indicate that the intent of starting the new game is
+/// to load an archived game. @a loadGame is false to indicate that the new game
+/// should be started in the regular fashion. The two modes display different
+/// UI elements and trigger different operations when the user finally confirms
+/// starting the new game.
 // -----------------------------------------------------------------------------
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate
++ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate loadGame:(bool)loadGame
 {
   NewGameController* controller = [[NewGameController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
+    controller.loadGame = loadGame;
     NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
     PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
     controller.boardSize = newGameModel.boardSize;
@@ -180,7 +190,10 @@ enum KomiSectionItem
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                         target:self
                                                                                         action:@selector(cancel:)];
-  self.navigationItem.title = @"New Game";
+  if (! self.loadGame)
+    self.navigationItem.title = @"New Game";
+  else
+    self.navigationItem.title = @"Load Game";
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
@@ -241,7 +254,10 @@ enum KomiSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  if (! self.loadGame)
+    return MaxSection;
+  else
+    return MaxSectionLoadGame;
 }
 
 // -----------------------------------------------------------------------------
@@ -495,7 +511,7 @@ enum KomiSectionItem
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
   // Second step: Start a new game using the information from the NewGameModel
-  [[ApplicationDelegate sharedDelegate] startNewGame];
+  [[[NewGameCommand alloc] init] submit];
 
   // Finally inform our delegate
   [self.delegate newGameController:self didStartNewGame:true];

@@ -58,7 +58,7 @@
 - (void) setupUserDefaults;
 - (void) setupGUI;
 - (void) setupFuego;
-- (void) startNewGame;
+- (void) activateTab:(enum TabType)tabID;
 
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;

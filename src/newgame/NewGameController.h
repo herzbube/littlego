@@ -64,11 +64,14 @@
 {
 }
 
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate;
++ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate loadGame:(bool)loadGame;
 
 /// @brief This is the delegate that will be informed about the result of data
 /// collection.
 @property(nonatomic, assign) id<NewGameDelegate> delegate;
+/// @brief True if the intent for starting a new game is to load a game from
+/// the archive.
+@property(assign) bool loadGame;
 /// @brief The currently selected board size.
 @property enum GoBoardSize boardSize;
 /// @brief The currently selected player for black.
