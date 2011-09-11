@@ -315,6 +315,7 @@
                                                    delegate:self
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"OK", nil];
+    alert.tag = GameHasEndedAlertView;
     [alert show];
   }
 }

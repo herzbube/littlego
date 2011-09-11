@@ -29,6 +29,9 @@ const int cellContentSpacingVertical = 8;
 const int cellContentLabelHeight = 21;
 const int cellContentSliderHeight = 23;
 
+// Filesystem related constants
+NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
+
 // GTP notifications
 NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";
 NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";

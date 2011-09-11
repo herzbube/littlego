@@ -155,7 +155,7 @@
   // -----> debugview receives the response notification too late!!!!
   GtpResponse* response = (GtpResponse*)[notification object];
   GtpCommand* command = response.command;
-  NSString* newText = [NSString stringWithFormat:@"%@\n%@\n\n", command.command, [response rawResponse], nil];
+  NSString* newText = [NSString stringWithFormat:@"%@\n%@\n\n", command.command, [response rawResponse]];
   if (self.textCache)
   {
     // Cache everything until debug view is activated and viewDidLoad() is

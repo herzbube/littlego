@@ -18,6 +18,8 @@
 // Project includes
 #import "PlayViewActionSheetController.h"
 #import "../go/GoGame.h"
+#import "../go/GoPlayer.h"
+#import "../player/Player.h"
 #import "../command/SaveGameCommand.h"
 
 
@@ -57,10 +59,16 @@ enum ActionSheetButton
 //@{
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
 //@}
+/// @name EditTextDelegate protocol
+//@{
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+//@}
 /// @name Helpers
 //@{
 - (void) resign;
 - (void) saveGame;
+- (void) doSaveGame:(NSString*)fileName;
 - (void) newGame;
 - (void) doNewGame;
 //@}
@@ -87,6 +95,7 @@ enum ActionSheetButton
   self = [super init];
   if (! self)
     return nil;
+  m_sgfFileName = nil;
   self.modalMaster = aController;
   self.buttonIndexes = [NSMutableDictionary dictionaryWithCapacity:MaxButton];
   return self;
@@ -98,6 +107,11 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  if (m_sgfFileName)
+  {
+    [m_sgfFileName release];
+    m_sgfFileName = nil;
+  }
   self.modalMaster = nil;
   self.buttonIndexes = nil;
   [super dealloc];
@@ -203,7 +217,34 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
-  [[[SaveGameCommand alloc] init] submit];
+  // Determine default file name, which must be a name for which no file exists
+  // yet. The file name pattern is this:
+  //   BBB vs. WWW iii.sgf
+  // where
+  // - BBB = Black player name
+  // - WWW = White player name
+  // - iii = Numeric counter starting with 1. The counter does not use prefix
+  //         zeroes.
+  GoGame* game = [GoGame sharedGame];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* defaultFileName = nil;
+  NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
+  int suffix = 1;
+  while (true)
+  {
+    defaultFileName = [NSString stringWithFormat:@"%@ %d.sgf", prefix, suffix];
+    if (! [fileManager fileExistsAtPath:defaultFileName])
+      break;
+    suffix++;
+  }
+
+  EditTextController* editTextController = [[EditTextController controllerWithText:defaultFileName title:@"File name" delegate:self] retain];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:editTextController];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self.modalMaster presentModalViewController:navigationController animated:YES];
+  [navigationController release];
+  [editTextController release];
 }
 
 // -----------------------------------------------------------------------------
@@ -223,6 +264,7 @@ enum ActionSheetButton
                                                      delegate:self
                                             cancelButtonTitle:@"No"
                                             otherButtonTitles:@"Yes", nil];
+      alert.tag = NewGameAlertView;
       [alert show];
       break;
     }
@@ -242,13 +284,26 @@ enum ActionSheetButton
 {
   switch (buttonIndex)
   {
-    case 0:
-      // "No" button clicked
+    case NoAlertViewButton:
       break;
-    case 1:
-      // "Yes" button clicked
-      [self doNewGame];
+    case YesAlertViewButton:
+    {
+      switch (alertView.tag)
+      {
+        case NewGameAlertView:
+          [self doNewGame];
+          break;
+        case SaveGameAlertView:
+          [self doSaveGame:m_sgfFileName];
+          [m_sgfFileName release];
+          m_sgfFileName = nil;
+          break;
+        default:
+          assert(0);
+          break;
+      }
       break;
+    }
     default:
       break;
   }
@@ -258,7 +313,7 @@ enum ActionSheetButton
 /// @brief Displays NewGameController as a modal view controller to gather
 /// information required to start a new game.
 // -----------------------------------------------------------------------------
-- (void) doNewGame;
+- (void) doNewGame
 {
   // This controller manages the actual "New Game" view
   NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
@@ -270,7 +325,7 @@ enum ActionSheetButton
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:newGameController];
   // Present the navigation controller, not the "new game" controller.
-  navigationController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   [self.modalMaster presentModalViewController:navigationController animated:YES];
   // Cleanup
   [navigationController release];
@@ -288,6 +343,52 @@ enum ActionSheetButton
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {
   [self.modalMaster dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
+{
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+{
+  if (! didCancel)
+  {
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:editTextController.text])
+    {
+      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File already exists"
+                                                      message:@"Another game file with that name already exists. Do you want to overwrite that file?"
+                                                     delegate:self
+                                            cancelButtonTitle:@"No"
+                                            otherButtonTitles:@"Yes", nil];
+      alert.tag = SaveGameAlertView;
+      [alert show];
+      // Remember file name for later use (should the user confirm the
+      // overwrite).
+      m_sgfFileName = [editTextController.text retain];
+    }
+    else
+    {
+      [self doSaveGame:editTextController.text];
+    }
+  }
+  [self.modalMaster dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the actual "save game" operation. The game is written to
+/// file @a fileName. If a file of that name already exists, it is overwritten.
+// -----------------------------------------------------------------------------
+- (void) doSaveGame:(NSString*)fileName
+{
+  [[[SaveGameCommand alloc] initWithFile:fileName] submit];
 }
 
 @end

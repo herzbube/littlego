@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../newgame/NewGameController.h"
+#import "../ui/EditTextController.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,8 +32,10 @@
 /// - Managing sub-controllers for views that need to be displayed as part of
 ///   handling the tap on an action sheet button
 // -----------------------------------------------------------------------------
-@interface PlayViewActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate>
+@interface PlayViewActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate, EditTextDelegate>
 {
+@private
+  NSString* m_sgfFileName;
 }
 
 - (id) initWithModalMaster:(UIViewController*)aController;

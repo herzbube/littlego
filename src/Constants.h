@@ -107,12 +107,42 @@ enum GoBoardSize
   BoardSizeUndefined
 };
 
+/// @brief Enumerates the types of alert views used across the application.
+///
+/// Enumeration values are used as UIView tags so that an alert view delegate
+/// that manages several alert views knows how to distinguish between them.
+enum AlertViewType
+{
+  GameHasEndedAlertView,
+  NewGameAlertView,
+  SaveGameAlertView,
+  RenameGameAlertView
+};
+
+/// @brief Enumerates the types of buttons used by the various alert views in
+/// #AlertViewType.
+enum AlertViewButtonType
+{
+  OkAlertViewButton = 0,  ///< @brief Used as the single button in a simple alert view
+  NoAlertViewButton = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
+  YesAlertViewButton = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
+};
+
 /// @brief Enumerates the supported sort criteria on the Archive view.
 enum ArchiveSortCriteria
 {
   FileNameArchiveSort,
   FileDateArchiveSort
 };
+
+// -----------------------------------------------------------------------------
+/// @name Filesystem related constants
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Simple file name that violates none of the GTP protocol restrictions
+/// for file names. Is used for the "loadsgf" and "savesgf" GTP commands.
+extern NSString* sgfTemporaryFileName;
+//@}
 
 // -----------------------------------------------------------------------------
 /// @name Table cell constants

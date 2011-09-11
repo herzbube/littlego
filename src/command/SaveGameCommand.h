@@ -27,15 +27,16 @@
 /// game to an .sgf file.
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
-/// command.
+/// command. If a file with the same name already exists, it is overwritten.
 // -----------------------------------------------------------------------------
 @interface SaveGameCommand : CommandBase
 {
 @private
-  NSString* m_sgfFileName;
   GtpCommand* m_gtpCommand;
 }
 
-- (id) init;
+- (id) initWithFile:(NSString*)aFileName;
+
+@property(retain) NSString* fileName;
 
 @end

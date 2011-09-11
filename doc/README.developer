@@ -699,16 +699,30 @@ wood-on-wood-12.aiff:
 Working with .sgf files
 -----------------------
 The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it
-should load or save a game from/to a specified filename. To be able to sync .sgf
-files with iTunes, the files must be located in the documents folder.
-Unfortunately, the full path to that folder may contain spaces, which means
-that it can't be specified as an argument to any GTP commands, because the GTP
-protocol has limitations that prevent command arguments from including spaces,
-hash signs (#), or control characters.
+should load or save a game from/to a specified filename. Unfortunately, due to
+limitations of the GTP protocol not just any path/filename can be specified.
+Notably, the path/filename may not contain spaces, hash signs (#) or control
+characters.
 
-The workaround for this is to set the application's current working directory
-to the documents folder when the application starts up. This allows to specify
-a simple filename to the load or save command.
+The workaround here is to let the GTP engine load from/save to a temporary
+file that is in a well-known location and whose filename/path does not violate
+any of the GTP protocol restrictions. The application performs the necessary
+pre-/post-processing via the NSFileManager API, which has none of the GTP
+protocol limitations.
+
+NSFileManager pre-/post-processing:
+- Load game: Copy the real .sgf file to the well-known temporary file, from
+  where it can then be loaded using the "loadsgf" GTP command. After the game
+  has been loaded, the temporary file is removed.
+- Save game: The "savesgf" GTP command is used to save the game to the
+  well-known temporary file. After the game has been saved, the temporary file
+  is moved to its real location.
+
+This approach allows to keep the .sgf files in the application's documents
+folder (which may contain spaces in its path), where they need to be located
+for iTunes's syncing to work. It also allows to use arbitrary characters in the
+filename, including unicode characters which might otherwise be interpreted as
+control characters when sent over the GTP protocol wire.
 
 Experiment has shown that the application's document folder is at the following
 path locations:
@@ -716,3 +730,4 @@ path locations:
   /Users/<username>/Library/Application Support/iPhone Simulator/4.2/Applications/03C363CC-7330-40A0-A382-74FEA08E6C29/Documents
 - iPhone device
   /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
+

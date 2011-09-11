@@ -157,6 +157,13 @@
   NSMutableArray* localGameList = [NSMutableArray arrayWithCapacity:fileList.count];
   for (NSString* fileName in fileList)
   {
+    // Ignore the temporary file used by "loadsgf" and "savesgf" GTP commands.
+    // It's extremely (!) unlikely that we encounter the file, but the current
+    // implementation of the application does not explicitly try to prevent
+    // the situation. So we better make 100% sure that the user never gets to
+    // see the file, at the very small cost of a string comparison.
+    if ([fileName isEqualToString:sgfTemporaryFileName])
+      continue;
     NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileName error:nil];
     ArchiveGame* game = [self gameWithFileName:fileName];
     if (game)

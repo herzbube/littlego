@@ -296,6 +296,7 @@ enum FileAttributesSectionItem
                                                  delegate:self
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
+  alert.tag = RenameGameAlertView;
   [alert show];
   return false;
 }

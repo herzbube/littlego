@@ -32,19 +32,22 @@
 
 @implementation SaveGameCommand
 
+@synthesize fileName;
+
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SaveGameCommand object.
 ///
-/// @note This is the designated initializer of CommandBase.
+/// @note This is the designated initializer of SaveGameCommand.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithFile:(NSString*)aFileName
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  m_sgfFileName = nil;
+  self.fileName = aFileName;
   m_gtpCommand = nil;
 
   return self;
@@ -55,11 +58,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  if (m_sgfFileName)
-  {
-    [m_sgfFileName release];
-    m_sgfFileName = nil;
-  }
+  self.fileName = nil;
   if (m_gtpCommand)
   {
     [m_gtpCommand release];
@@ -73,10 +72,8 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  // TODO get filename from user
-  static int iii = 0;
-  iii++;
-  m_sgfFileName = [[NSString stringWithFormat:@"foo-%d.sgf", iii] retain];
+  if (! self.fileName)
+    return false;
 
   // Add ourselves as observers before we submit the command
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -87,7 +84,7 @@
   // If the notification never arrives there will be a memory leak :-(
   [self retain];
 
-  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", m_sgfFileName];
+  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfTemporaryFileName];
   m_gtpCommand = [[GtpCommand command:commandString] retain];
   [m_gtpCommand submit];
 
@@ -113,11 +110,35 @@
   // Balance the retain message in doIt() to trigger deallocation
   [self autorelease];
 
-  if (response.status)
+  // Was GTP command successful?
+  if (! response.status)
   {
-    [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:m_sgfFileName];
-    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+    assert(0);
+    return;
   }
+
+  // Get rid of another file of the same name (otherwise the subsequent move
+  // operation fails)
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:self.fileName])
+  {
+    BOOL success = [fileManager removeItemAtPath:self.fileName error:nil];
+    if (! success)
+    {
+      assert(0);
+      return;
+    }
+  }
+
+  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFileName toPath:self.fileName error:nil];
+  if (! success)
+  {
+    assert(0);
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.fileName];
+  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
 }
 
 @end
