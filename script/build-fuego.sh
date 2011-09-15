@@ -220,9 +220,14 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
-  # Ignore the clean request; we must clean anyway because we are building for
-  # multiple architectures, and configure/make cannot handle this inside the
-  # same directory
+  if test $1 -eq 0; then
+    cat << EOF
+Ignoring the "don't clean" request. The Fuego build must always clean because
+it builds for multiple architectures, and configure/make cannot handle this
+inside the same directory.
+EOF
+  fi
+
   typeset CLEAN_BUILD="$1"
   BUILD_ARCHITECTURE \
     "$IPHONEOS_PREFIX" \
