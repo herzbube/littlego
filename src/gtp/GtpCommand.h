@@ -32,9 +32,20 @@
 }
 
 + (GtpCommand*) command:(NSString*)command;
++ (GtpCommand*) command:(NSString*)command responseTarget:(id)target selector:(SEL)selector;
 - (void) submit;
 
 /// @brief The GTP command string, including arguments.
 @property(retain) NSString* command;
+/// @brief The target on which @e selector is performed when the GTP response
+/// for this command is received.
+///
+/// @note The object must be retained to make sure that it is still alive when
+/// @e selector is to be performed.
+@property(retain) id responseTarget;
+/// @brief The selector that is performed on @e target when the GTP response
+/// for this command is received. The selector must take a single GtpResponse*
+/// argument.
+@property(assign) SEL responseTargetSelector;
 
 @end

@@ -40,6 +40,9 @@
 @implementation GtpCommand
 
 @synthesize command;
+@synthesize responseTarget;
+@synthesize responseTargetSelector;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpCommand instance that wraps
@@ -51,6 +54,24 @@
   if (cmd)
   {
     cmd.command = command;
+    [cmd autorelease];
+  }
+  return cmd;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GtpCommand instance that wraps
+/// the command string @a command and performs @a selector on @a target when
+/// the GTP response to this command is received.
+// -----------------------------------------------------------------------------
++ (GtpCommand*) command:(NSString*)command responseTarget:(id)target selector:(SEL)selector
+{
+  GtpCommand* cmd = [[GtpCommand alloc] init];
+  if (cmd)
+  {
+    cmd.command = command;
+    cmd.responseTarget = target;
+    cmd.responseTargetSelector = selector;
     [cmd autorelease];
   }
   return cmd;
@@ -69,6 +90,8 @@
     return nil;
 
   self.command = nil;
+  self.responseTarget = nil;
+  self.responseTargetSelector = nil;
 
   return self;
 }
@@ -79,6 +102,8 @@
 - (void) dealloc
 {
   self.command = nil;
+  self.responseTarget = nil;
+  self.responseTargetSelector = nil;
   [super dealloc];
 }
 

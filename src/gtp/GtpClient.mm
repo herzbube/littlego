@@ -222,10 +222,14 @@ static std::ifstream responseStream;
 
 // -----------------------------------------------------------------------------
 /// @brief Is invoked after @a response has been received from the GtpEngine.
-/// This method is executed in the main thread's context. It posts a
-/// notification to the default NSNotificationCenter so that clients that
-/// previously submitted a command will know when their expected response has
-/// come in.
+/// This method is executed in the main thread's context.
+///
+/// This method posts a notification to the default NSNotificationCenter so that
+/// clients that previously submitted a command will know when their expected
+/// response has come in.
+///
+/// This method also notifies the response.command.responseTarget if such an
+/// object has been set.
 // -----------------------------------------------------------------------------
 - (void) receive:(GtpResponse*)response
 {
@@ -233,6 +237,12 @@ static std::ifstream responseStream;
   [response autorelease];
   // Synchronously notify observers
   [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseReceivedNotification object:response];
+  id responseTarget = response.command.responseTarget;
+  if (responseTarget)
+  {
+    [responseTarget performSelector:response.command.responseTargetSelector
+                         withObject:response];
+  }
 }
 
 @end
