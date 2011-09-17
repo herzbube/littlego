@@ -355,9 +355,15 @@ enum FileAttributesSectionItem
     command.whitePlayer = controller.whitePlayer;
     [command submit];
   }
+  // Must dismiss modal view controller before navigation stack is changed
+  // -> if it's done later the modal view controller is *NOT* dismissed
   [self dismissModalViewControllerAnimated:YES];
   if (didStartNewGame)
+  {
     [[ApplicationDelegate sharedDelegate] activateTab:PlayTab];
+    // No animation necessary, the Play tab is now visible
+    [self.navigationController popViewControllerAnimated:false];
+  }
 }
 
 @end
