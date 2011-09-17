@@ -44,10 +44,6 @@
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
-  if (! self)
-    return nil;
   // Invoke designated initializer
   return [self initWithDictionary:nil];
 }
