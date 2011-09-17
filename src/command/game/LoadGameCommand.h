@@ -33,8 +33,9 @@
 ///   and that is needed to start a new game
 /// - Store the information in NewGameModel
 /// - Start a new game by executing a NewGameCommand instance
-/// - Query the GTP engine for the moves that were stored in the .sgf file
-/// - Create GoMove objects as needed (no GTP commands are sent)
+/// - Query the GTP engine for other information that was stored in the .sgf
+///   file (handicap, komi, moves)
+/// - Setup the game with the information gathered via GTP
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand : CommandBase
 {
