@@ -32,6 +32,10 @@
 - (id) initWithPlayer:(Player*)aPlayer;
 - (void) dealloc;
 //@}
+/// @name Other methods
+//@{
+- (NSString*) description;
+//@}
 @end
 
 
@@ -126,6 +130,19 @@
   self.player.playing = false;
   self.player = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoPlayer object.
+///
+/// This method is invoked when GoPlayer needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoPlayer(%p): isBlack = %d", self, black];
 }
 
 @end

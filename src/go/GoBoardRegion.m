@@ -34,6 +34,10 @@
 - (void) setPoints:(NSArray*)points;
 - (void) splitRegionIfRequired;
 //@}
+/// @name Other methods
+//@{
+- (NSString*) description;
+//@}
 @end
 
 
@@ -101,6 +105,19 @@
   [points release];
   points = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoBoardRegion object.
+///
+/// This method is invoked when GoBoardRegion needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %d", self, points.count];
 }
 
 // -----------------------------------------------------------------------------

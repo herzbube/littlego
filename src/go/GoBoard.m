@@ -45,6 +45,10 @@
 - (void) setupStarPoints;
 - (void) setupGTPEngine;
 //@}
+/// @name Other methods
+//@{
+- (NSString*) description;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite) enum GoBoardSize size;
@@ -271,6 +275,19 @@
 {
   [[GtpCommand command:@"clear_board"] submit];
   [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", self.dimensions]] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoBoard object.
+///
+/// This method is invoked when GoBoard needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoBoard(%p): dimension = %d", self, dimensions];
 }
 
 // -----------------------------------------------------------------------------

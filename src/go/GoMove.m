@@ -33,6 +33,7 @@
 //@}
 /// @name Other methods
 //@{
+- (NSString*) description;
 - (void) movePointToNewRegion:(GoPoint*)thePoint;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -121,6 +122,19 @@
   }
   self.capturedStones = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoMove object.
+///
+/// This method is invoked when GoMove needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoMove(%p): type = %d", self, type];
 }
 
 // -----------------------------------------------------------------------------

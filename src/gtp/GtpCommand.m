@@ -115,7 +115,9 @@
 // -----------------------------------------------------------------------------
 - (NSString*) description
 {
-  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, self.command];
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, command];
 }
 
 // -----------------------------------------------------------------------------

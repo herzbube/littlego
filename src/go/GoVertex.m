@@ -29,6 +29,10 @@
 - (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
 - (void) dealloc;
 //@}
+/// @name Other methods
+//@{
+- (NSString*) description;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite, retain) NSString* string;
@@ -153,10 +157,10 @@
   self = [super init];
   if (! self)
     return nil;
-  
+
   self.string = stringVertex;
   self.numeric = numericVertex;
-  
+
   return self;
 }
 
@@ -167,6 +171,19 @@
 {
   self.string = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoVertex object.
+///
+/// This method is invoked when GoVertex needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoVertex(%p): %@", self, string];
 }
 
 // -----------------------------------------------------------------------------

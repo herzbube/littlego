@@ -98,7 +98,9 @@
 // -----------------------------------------------------------------------------
 - (NSString*) description
 {
-  return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, self.rawResponse];
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, rawResponse];
 }
 
 // -----------------------------------------------------------------------------
