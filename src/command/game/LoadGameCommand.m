@@ -18,6 +18,7 @@
 // Project includes
 #import "LoadGameCommand.h"
 #import "../NewGameCommand.h"
+#import "../move/ComputerPlayMoveCommand.h"
 #import "../../ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -26,6 +27,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 
 
@@ -44,12 +46,13 @@
 - (void) getkomiCommandResponseReceived:(GtpResponse*)response;
 - (void) listhandicapCommandResponseReceived:(GtpResponse*)response;
 - (void) listmovesCommandResponseReceived:(GtpResponse*)response;
-- (void) gtpResponseReceived:(NSNotification*)notification;
 //@}
 /// @name Helpers
 //@{
 - (void) startNewGame;
-- (void) setupNewGame;
+- (void) setupHandicap:(NSString*)handicapFromGtp;
+- (void) setupMoves:(NSString*)movesFromGtp;
+- (void) triggerComputerPlayer;
 //@}
 @end
 
@@ -85,13 +88,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this CommandBase object.
+/// @brief Deallocates memory allocated by this LoadGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.fileName = nil;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
+  [m_handicap release];
+  [m_moves release];
   [super dealloc];
 }
 
@@ -242,6 +247,10 @@
   m_moves = [response.parsedResponse copy];
 
   [self startNewGame];
+  [self setupHandicap:m_handicap];
+  [self setupMoves:m_moves];
+  // TODO: Add Komi
+  [self triggerComputerPlayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -249,63 +258,65 @@
 // -----------------------------------------------------------------------------
 - (void) startNewGame
 {
-  // Configure NewGameModel with information that is used when a new GoGame
-  // instance is created
+  // Configure NewGameModel with information that is used when NewGameCommand
+  // creates a new GoGame object
   NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
   model.boardSize = [GoBoard sizeForDimension:m_boardDimension];
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
-  // Add ourselves as observers before we submit the command
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(gtpResponseReceived:)
-                                               name:gtpResponseReceivedNotification
-                                             object:nil];
-  // Make sure that this command object survives until it gets the
-  // notification.
-  [self retain];
-
   NewGameCommand* command = [[NewGameCommand alloc] init];
+  command.shouldSetupGtpBoard = false;  // was already set up by the "loadsgf" GTP command
+  command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
   [command submit];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for "clear_board" GTP command was
-/// received.
+/// @brief Sets up the handicap for the new game, using the information in
+/// @a handicapFromGtp.
+///
+/// Expected format for @a handicapFromGtp:
+///   "vertex vertex vertex[...]"
+///
+/// @a handicapFromGtp may be empty to indicate that there is no handicap.
 // -----------------------------------------------------------------------------
-- (void) gtpResponseReceived:(NSNotification*)notification
+- (void) setupHandicap:(NSString*)handicapFromGtp
 {
-  // Let's hope this really is for "clear_board" :-)
-  GtpResponse* response = [notification object];
-  NSLog(@"LoadGameCommand, gtpResponseReceived: invoked for GTP command @%", response.command.command);
-
-  // We got what we wanted, we are no longer interested in notifications
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  // Balance the retain message in startNewGame() to trigger deallocation
-  [self autorelease];
-
-  [self setupNewGame];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up the new game with the information that was previously
-/// gathered.
-// -----------------------------------------------------------------------------
-- (void) setupNewGame
-{
-  NSLog(@"---------------------------------------------------------");
-  NSLog(@"board dimensions = %d", m_boardDimension);
-  NSLog(@"komi = %.1f", m_komi);
-  NSLog(@"handicap stones = %@", m_handicap);
-  NSLog(@"moves = %@", m_moves);
-  NSLog(@"---------------------------------------------------------");
+  if (0 == m_handicap.length)
+    return;
 
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
 
-  // TODO: Add Komi and handicap
+  NSArray* vertexList = [m_handicap componentsSeparatedByString:@" "];
+  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:vertexList.count];
+  for (NSString* vertex in vertexList)
+  {
+    GoPoint* point = [board pointAtVertex:vertex];
+    point.stoneState = BlackStone;
+    [GoUtilities movePointToNewRegion:point];
+    [handicapPoints addObject:point];
+  }
+  game.handicapPoints = handicapPoints;
+}
 
-  // Expected format = "color vertex, color vertex, color vertex[...]"
+// -----------------------------------------------------------------------------
+/// @brief Sets up the moves for the new game, using the information in
+/// @a movesFromGtp.
+///
+/// Expected format for @a movesFromGtp:
+///   "color vertex, color vertex, color vertex[...]"
+///
+/// @a movesFromGtp may be empty to indicate that there are no moves.
+// -----------------------------------------------------------------------------
+- (void) setupMoves:(NSString*)movesFromGtp
+{
+  if (0 == m_moves.length)
+    return;
+
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+
   bool hasResigned = false;
   NSArray* moveList = [m_moves componentsSeparatedByString:@", "];
   for (NSString* move in moveList)
@@ -335,6 +346,18 @@
       GoPoint* point = [board pointAtVertex:vertexString];
       [game play:point];
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers the computer player to make a move, if it is his turn.
+// -----------------------------------------------------------------------------
+- (void) triggerComputerPlayer
+{
+  if ([[GoGame sharedGame] isComputerPlayersTurn])
+  {
+    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+    [command submit];
   }
 }
 

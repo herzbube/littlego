@@ -42,5 +42,6 @@
 
 @property(assign) bool shouldSetupGtpBoard;
 @property(assign) bool shouldSetupComputerPlayer;
+@property(assign) bool shouldTriggerComputerPlayer;
 
 @end

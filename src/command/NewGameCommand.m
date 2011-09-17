@@ -40,6 +40,7 @@
 - (void) newGame;
 - (void) setupGtpBoard;
 - (void) setupComputerPlayer;
+- (void) triggerComputerPlayer;
 //@}
 @end
 
@@ -48,6 +49,7 @@
 
 @synthesize shouldSetupGtpBoard;
 @synthesize shouldSetupComputerPlayer;
+@synthesize shouldTriggerComputerPlayer;
 
 
 // -----------------------------------------------------------------------------
@@ -64,6 +66,7 @@
 
   self.shouldSetupGtpBoard = true;
   self.shouldSetupComputerPlayer = true;
+  self.shouldTriggerComputerPlayer = true;
 
   return self;
 }
@@ -86,13 +89,8 @@
     [self setupGtpBoard];
   if (self.shouldSetupComputerPlayer)
     [self setupComputerPlayer];
-
-  if ([[GoGame sharedGame] isComputerPlayersTurn])
-  {
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
-  }
-
+  if (self.shouldTriggerComputerPlayer)
+    [self triggerComputerPlayer];
   return true;
 }
 
@@ -157,6 +155,18 @@
       // used
     }
     [computerPlayerWithGtpSettings.gtpEngineSettings applySettings];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers the computer player to make a move, if it is his turn.
+// -----------------------------------------------------------------------------
+- (void) triggerComputerPlayer
+{
+  if ([[GoGame sharedGame] isComputerPlayersTurn])
+  {
+    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+    [command submit];
   }
 }
 
