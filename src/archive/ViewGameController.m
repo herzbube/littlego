@@ -19,8 +19,10 @@
 #import "ViewGameController.h"
 #import "ArchiveGame.h"
 #import "ArchiveViewModel.h"
+#import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../command/RenameGameCommand.h"
+#import "../command/game/LoadGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -80,6 +82,10 @@ enum FileAttributesSectionItem
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
+/// @name NewGameDelegate protocol
+//@{
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
+//@}
 /// @name Notification responders
 //@{
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
@@ -87,6 +93,7 @@ enum FileAttributesSectionItem
 /// @name Helpers
 //@{
 - (void) editGame;
+- (void) loadGame;
 //@}
 @end
 
@@ -135,6 +142,10 @@ enum FileAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Load"
+                                                                            style:UIBarButtonItemStylePlain
+                                                                           target:self
+                                                                           action:@selector(loadGame)];
 
   // KVO observing
   [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
@@ -315,6 +326,38 @@ enum FileAttributesSectionItem
     [self.tableView reloadData];
   }
   [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays NewGameController to allow the user to start a new game and
+/// load the game's initial state from the archive game being viewed.
+// -----------------------------------------------------------------------------
+- (void) loadGame
+{
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:true] retain];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:newGameController];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self presentModalViewController:navigationController animated:YES];
+  [navigationController release];
+  [newGameController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NewGameDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
+{
+  if (didStartNewGame)
+  {
+    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFile:self.game.fileName];
+    command.blackPlayer = controller.blackPlayer;
+    command.whitePlayer = controller.whitePlayer;
+    [command submit];
+  }
+  [self dismissModalViewControllerAnimated:YES];
+  if (didStartNewGame)
+    [[ApplicationDelegate sharedDelegate] activateTab:PlayTab];
 }
 
 @end

@@ -380,3 +380,90 @@ Other useful stuff
   legal move for either black or white
 - The "is_legal" GTP command allows to query Fuego whether it would be legal for
   the specified player to play on the specified point
+
+
+Details on Fuego's smartgame module
+-----------------------------------
+Classes
+- SgNode represents a node in a tree structure
+- SgProp represents a property of a node
+- SgPoint represents a vertex on the board, but can also be used to refer to
+  the "virtual" point of a pass move
+
+Nodes and properties
+- One node can have 0-n properties
+- A property has a type (e.g. SG_PROP_MOVE)
+  - The term that is used, though, is "ID" - a misnomer in my opinion.
+  - SgPropID is the type used to store a property ID/type
+  - SgProp::ID() is called to get at a property object's ID/type
+- A property is additionally classified by (binary) flags that can be set or
+  cleared on it
+  - For instance, a property with ID SG_PROP_MOVE has set the flag
+    SG_PROPCLASS_MOVE, and either SG_PROPCLASS_BLACK or SG_PROPCLASS_WHITE
+    to indicate whether the move was made by the black or the white player
+  - SgProp::Flag() returns a boolean value; the method is used to check whether
+    a given flag is set on the property object
+
+The node tree
+- The terminology used by documentation and SgNode methods views the tree with
+  the root node at the top, and the branches pointing downwards
+- For instance
+                                node0
+                               /    \
+                              /      \
+                           node1     node2
+                          /  |  \        \
+                         /   |   \        \
+                      node3 node4 node5   node6
+
+- Looking at this example, and at the methods in SgNode, one can say that
+  - node0->IsRoot() == true
+  - node1->Father() == node0
+  - node1->RightBrother() == node2
+  - node1->LeftBrother() == NULL
+  - node6->HasBrother() == false
+  - node5->NumLeftBrothers() == 2
+  - node1->NumSons() == 3
+  - node1->LeftMostSon() == node3
+  - node1->RightMostSon() == node5
+  - SgNode::IsTerminal() == true for node3, node4, node5 and node6
+  - SgNode::IsBranchPoint() == true for node0 and node1
+  - SgNode::IsOnMain() == true for node0, node1 and node3
+
+Code snippets:
+
+void inspectProp(SgProp* prop)
+{
+  SgPropID propID = prop->ID();
+  std::string propLabel = prop->Label();
+  bool black = prop->Flag(SG_PROPCLASS_BLACK);
+  bool white = prop->Flag(SG_PROPCLASS_WHITE);
+  bool info = prop->Flag(SG_PROPCLASS_INFO);
+  bool anno = prop->Flag(SG_PROPCLASS_ANNO);
+  bool stat = prop->Flag(SG_PROPCLASS_STAT);
+  bool move = prop->Flag(SG_PROPCLASS_MOVE);
+  bool mark = prop->Flag(SG_PROPCLASS_MARK);
+  NSLog(@"propID = %d, propLabel = %s, black = %d, white = %d, info = %d, anno = %d, stat = %d, move = %d, mark = %d",
+        propID, propLabel.c_str(), black, white, info, anno, stat, move, mark);
+}
+
+void inspectNode(SgNode* node)
+{
+  bool hasFather = node->HasFather();
+  bool isRoot = node->IsRoot();
+  bool hasLeftFather = node->HasLeftBrother();
+  bool hasRightBrother = node->HasRightBrother();
+  bool hasSon = node->HasSon();
+  bool hasBrother = node->HasBrother();
+  bool isOnMain = node->IsOnMain();
+  NSLog(@"hasFather = %d, isRoot = %d, hasLeftFather = %d, hasRightBrother = %d, hasSon = %d, hasBrother = %d, isOnMain = %d",
+        hasFather, isRoot, hasLeftFather, hasRightBrother, hasSon, hasBrother, isOnMain);
+  const SgPropList& propList = node->Props();
+  SgPropListIterator propListIterator(propList);
+  while (propListIterator)
+  {
+    SgProp* prop = *propListIterator;
+    inspectProp(prop);
+    ++propListIterator;
+  }
+}

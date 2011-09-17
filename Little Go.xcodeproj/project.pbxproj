@@ -34,6 +34,7 @@
 		CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */; };
 		CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
+		CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -164,6 +165,8 @@
 		CD05AA711423D80500214BBE /* ContinueGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinueGameCommand.m; sourceTree = "<group>"; };
 		CD05AA731423D80C00214BBE /* PauseGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PauseGameCommand.h; sourceTree = "<group>"; };
 		CD05AA741423D80C00214BBE /* PauseGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PauseGameCommand.m; sourceTree = "<group>"; };
+		CD05AAB71424BF1000214BBE /* LoadGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadGameCommand.h; sourceTree = "<group>"; };
+		CD05AAB81424BF1000214BBE /* LoadGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadGameCommand.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -394,6 +397,8 @@
 			children = (
 				CD05AA701423D80500214BBE /* ContinueGameCommand.h */,
 				CD05AA711423D80500214BBE /* ContinueGameCommand.m */,
+				CD05AAB71424BF1000214BBE /* LoadGameCommand.h */,
+				CD05AAB81424BF1000214BBE /* LoadGameCommand.m */,
 				CD05AA731423D80C00214BBE /* PauseGameCommand.h */,
 				CD05AA741423D80C00214BBE /* PauseGameCommand.m */,
 			);
@@ -884,6 +889,7 @@
 				CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
+				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

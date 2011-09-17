@@ -16,7 +16,8 @@
 
 
 // Project includes
-#import "EditTextController.h"
+#import "../ui/EditTextController.h"
+#import "../newgame/NewGameController.h"
 
 // Forward declarations
 @class ArchiveGame;
@@ -36,7 +37,7 @@
 /// then expected to be displayed in the navigation bar of the parent
 /// navigation controller.
 // -----------------------------------------------------------------------------
-@interface ViewGameController : UITableViewController <EditTextDelegate>
+@interface ViewGameController : UITableViewController <EditTextDelegate, NewGameDelegate>
 {
 }
 
