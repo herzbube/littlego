@@ -118,7 +118,7 @@
     shouldResign = true;  // wait until thinking state has been updated
   else
   {
-    GoPoint* point = [self.game.board pointAtVertex:[responseString uppercaseString]];
+    GoPoint* point = [self.game.board pointAtVertex:responseString];
     if (point)
       [self.game play:point];
     else

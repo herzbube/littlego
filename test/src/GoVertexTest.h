@@ -31,6 +31,7 @@
 - (void) testVertexFromString;
 - (void) testIsEqualToVertex;
 - (void) testUnusedLetterI;
+- (void) testLowerCaseString;
 - (void) testBorderCases;
 - (void) testIllegalInputValues;
 

@@ -97,6 +97,7 @@
     @throw exception;
   }
 
+  stringValue = [stringValue uppercaseString];
   NSString* vertexX = [stringValue substringWithRange:NSMakeRange(0, 1)];
   NSString* vertexY = [stringValue substringFromIndex:1];
   unichar charVertexX = [vertexX characterAtIndex:0];

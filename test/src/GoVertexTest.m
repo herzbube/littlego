@@ -117,6 +117,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Tests behaviour when a lower-case letter is passed to
+/// vertexFromString:()
+// -----------------------------------------------------------------------------
+- (void) testLowerCaseString
+{
+  NSString* inputVertex = @"q5";
+  NSString* expectedStringResult = [inputVertex uppercaseString];
+  struct GoVertexNumeric expectedNumericResult;
+  expectedNumericResult.x = 16;
+  expectedNumericResult.y = 5;
+
+  GoVertex* vertex = [GoVertex vertexFromString:inputVertex];
+  STAssertNotNil(vertex, nil);
+  STAssertTrue([vertex.string isEqualToString:expectedStringResult], nil);
+  STAssertEquals(vertex.numeric, expectedNumericResult, nil);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Tests border cases for convenience constructors' input values.
 // -----------------------------------------------------------------------------
 - (void) testBorderCases
