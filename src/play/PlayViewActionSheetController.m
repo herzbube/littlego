@@ -22,6 +22,7 @@
 #import "../player/Player.h"
 #import "../command/SaveGameCommand.h"
 #import "../command/NewGameCommand.h"
+#import "../command/move/ResignMoveCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -208,7 +209,8 @@ enum ActionSheetButton
 - (void) resign
 {
   // TODO ask user for confirmation because this action cannot be undone
-  [[GoGame sharedGame] resign];
+  ResignMoveCommand* command = [[ResignMoveCommand alloc] init];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------

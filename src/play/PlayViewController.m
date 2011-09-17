@@ -23,6 +23,11 @@
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"
+#import "../command/move/ComputerPlayMoveCommand.h"
+#import "../command/move/PlayMoveCommand.h"
+#import "../command/move/UndoMoveCommand.h"
+#import "../command/game/PauseGameCommand.h"
+#import "../command/game/ContinueGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -155,7 +160,8 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
-  [[GoGame sharedGame] pass];
+  PlayMoveCommand* command = [[PlayMoveCommand alloc] initPass];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -165,7 +171,8 @@
 // -----------------------------------------------------------------------------
 - (void) playForMe:(id)sender
 {
-  [[GoGame sharedGame] computerPlay];
+  ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -175,7 +182,8 @@
 // -----------------------------------------------------------------------------
 - (void) undo:(id)sender
 {
-  [[GoGame sharedGame] undo];
+  UndoMoveCommand* command = [[UndoMoveCommand alloc] init];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -184,7 +192,8 @@
 // -----------------------------------------------------------------------------
 - (void) pause:(id)sender
 {
-  [[GoGame sharedGame] pause];
+  PauseGameCommand* command = [[PauseGameCommand alloc] init];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -193,7 +202,8 @@
 // -----------------------------------------------------------------------------
 - (void) continue:(id)sender
 {
-  [[GoGame sharedGame] continue];
+  ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -256,7 +266,10 @@
     case UIGestureRecognizerStateEnded:
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       if (isLegalMove)
-        [[GoGame sharedGame] play:crossHairPoint];
+      {
+        PlayMoveCommand* command = [[PlayMoveCommand alloc] initWithPoint:crossHairPoint];
+        [command submit];
+      }
       break;
     case UIGestureRecognizerStateCancelled:
       // TODO Phone call? How to test this?

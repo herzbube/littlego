@@ -37,10 +37,10 @@
 ///
 /// GoGame can be viewed as taking the role of a model in an MVC pattern that
 /// includes the views and controllers on the Play tab of the GUI. Clients that
-/// invoke one of the various "action" methods (e.g. play:()) will trigger
-/// (possibly asynchronous) events that can be observed by registering with the
-/// default NSNotificationCenter. See Constants.h for a list of notifications
-/// that can be observed.
+/// run one of the various commands (e.g. PlayMoveCommand) will trigger updates
+/// in GoGame that can be observed by registering with the default
+/// NSNotificationCenter. See Constants.h for a list of notifications that can
+/// be observed.
 // -----------------------------------------------------------------------------
 @interface GoGame : NSObject
 {
@@ -50,13 +50,13 @@
 + (GoGame*) newGame;
 - (void) play:(GoPoint*)point;
 - (void) pass;
-- (void) computerPlay;
 - (void) resign;
 - (void) undo;
 - (void) pause;
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point;
 - (bool) isComputerPlayersTurn;
+- (NSString*) colorStringForMoveAfter:(GoMove*)move;
 
 /// @brief The type of this GoGame object.
 @property(readonly) enum GoGameType type;

@@ -45,29 +45,9 @@
 - (void) setLastMove:(GoMove*)newValue;
 - (void) setComputerThinks:(bool)newValue;
 //@}
-/// @name Submit GTP commands
-//@{
-- (void) submitPlayMove:(NSString*)vertex;
-- (void) submitPassMove;
-- (void) submitGenMove;
-- (void) submitFinalScore;
-- (void) submitUndo;
-//@}
-/// @name Update state
-//@{
-- (void) updatePlayMove:(GoPoint*)point;
-- (void) updatePassMove;
-- (void) updateResignMove;
-- (void) updateUndo;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite) enum GoGameType type;
-//@}
-/// @name Other methods
-//@{
-- (void) gtpResponseReceived:(NSNotification*)notification;
-- (NSString*) colorStringForMoveAfter:(GoMove*)move;
 //@}
 @end
 
@@ -147,18 +127,10 @@ static GoGame* sharedGame = nil;
   else
     self.type = ComputerVsHumanGame;
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(gtpResponseReceived:)
-                                               name:gtpResponseReceivedNotification
-                                             object:nil];
-
   // Post-initialization, after everything else has been set up (especially the
   // shared game instance and a reference to the GoBoard object must have been
   // set up)
   [self.board setupBoard];
-
-  if ([self isComputerPlayersTurn])
-    [self computerPlay];
 
   return self;
 }
@@ -168,7 +140,6 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.board = nil;
   self.playerBlack = nil;
   self.playerWhite = nil;
@@ -224,68 +195,86 @@ static GoGame* sharedGame = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates a GoMove of type #PlayMove for the player whose turn it
-/// is (should be a human player). The computer player is triggered if it is
-/// now its turn to move.
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #PlayMove.
 // -----------------------------------------------------------------------------
-- (void) play:(GoPoint*)point
+- (void) play:(GoPoint*)aPoint
 {
-  [self submitPlayMove:point.vertex.string];
-  [self updatePlayMove:point];
-  if ([self isComputerPlayersTurn])
-    [self computerPlay];
+  GoMove* move = [GoMove move:PlayMove by:self.currentPlayer after:self.lastMove];
+  move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  if (GameHasNotYetStarted == self.state)
+    self.state = GameHasStarted;  // don't set this state if game is currently paused
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates a GoMove of type #PassMove for the player whose turn it
-/// is (should be a human player). The computer player is triggered if it is
-/// now its turn to move.
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #PassMove.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
-  [self submitPassMove];
-  [self updatePassMove];
-  if ([self isComputerPlayersTurn])
-    [self computerPlay];
+  GoMove* move = [GoMove move:PassMove by:self.currentPlayer after:self.lastMove];
+
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  if (move.previous.type == PassMove)
+    self.state = GameHasEnded;
+  else
+  {
+    if (GameHasNotYetStarted == self.state)
+      self.state = GameHasStarted;  // don't set this state if game is currently paused
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates a GoMove of type #ResignMove for the player whose turn it
-/// is (should be a human player). The game state changes to #GameHasEnded.
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players making a #ResignMove.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  // Cannot submit GTP command because GTP has no "resign" command
-  [self updateResignMove];
+  GoMove* move = [GoMove move:ResignMove by:self.currentPlayer after:self.lastMove];
 
-  [self submitFinalScore];
-  // TODO calculate score
+  if (! self.firstMove)
+    self.firstMove = move;
+  self.lastMove = move;
+
+  // Game state must change after any of the other things; this order is
+  // important for observer notifications
+  self.state = GameHasEnded;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Lets the computer player make a move (even if it is not his turn).
-// -----------------------------------------------------------------------------
-- (void) computerPlay
-{
-  [self submitGenMove];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Takes back the last move made by a human player, including any
-/// computer player moves that were made in response.
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to one of the players taking back his move.
 // -----------------------------------------------------------------------------
 - (void) undo
 {
-  [self submitUndo];
-  [self updateUndo];
-  // If it's now the computer player's turn, the "undo" above took back the
-  // computer player's move
-  // -> now also take back the player's move
-  if ([self isComputerPlayersTurn])
-  {
-    [self submitUndo];
-    [self updateUndo];
-  }
+  GoMove* undoMove = self.lastMove;
+  GoMove* newLastMove = undoMove.previous;  // get this reference before it disappears
+  [undoMove undo];  // many side-effects here (e.g. region handling) !!!
+
+  // One of the following statements will cause the retain count of lastMove
+  // to drop to zero
+  // -> the object will be deallocated
+  self.lastMove = newLastMove;  // is nil if we are undoing the first move
+  if (self.firstMove == undoMove)
+    self.firstMove = nil;
+
+  // No game state change
+  // - Since we are able to undo moves, this clearly means that we are in state
+  //   GameHasStarted
+  // - But undoing a move will never cause the game to revert to state
+  //   GameHasNotYetStarted
 }
 
 // -----------------------------------------------------------------------------
@@ -318,7 +307,6 @@ static GoGame* sharedGame = nil;
   assert(ComputerVsComputerGame == self.type);
   assert(GameIsPaused == self.state);
   self.state = GameHasStarted;
-  [self computerPlay];
 }
 
 // -----------------------------------------------------------------------------
@@ -388,242 +376,6 @@ static GoGame* sharedGame = nil;
     // friendly groups with sufficient liberties to connect to
     // -> the move is a suicide and therefore illegal
     return false;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits a "play" command to the GTP engine.
-///
-/// This method returns immediately. gtpResponseReceived:() is triggered as
-/// soon as the GTP engine response has arrived.
-// -----------------------------------------------------------------------------
-- (void) submitPlayMove:(NSString*)vertex
-{
-  NSString* commandString = @"play ";
-  commandString = [commandString stringByAppendingString:
-                   [self colorStringForMoveAfter:self.lastMove]];
-  commandString = [commandString stringByAppendingString:@" "];
-  commandString = [commandString stringByAppendingString:vertex];
-  GtpCommand* command = [GtpCommand command:commandString];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits a "pass" command to the GTP engine.
-///
-/// This method returns immediately. gtpResponseReceived:() is triggered as
-/// soon as the GTP engine response has arrived.
-// -----------------------------------------------------------------------------
-- (void) submitPassMove
-{
-  [self submitPlayMove:@"pass"];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits a "genmove" command to the GTP engine.
-///
-/// This method returns immediately. gtpResponseReceived:() is triggered as
-/// soon as the GTP engine response has arrived.
-// -----------------------------------------------------------------------------
-- (void) submitGenMove
-{
-  NSString* commandString = @"genmove ";
-  commandString = [commandString stringByAppendingString:
-                   [self colorStringForMoveAfter:self.lastMove]];
-  GtpCommand* command = [GtpCommand command:commandString];
-  [command submit];
-
-  // Thinking state must change after any of the other things; this order is
-  // important for observer notifications
-  self.computerThinks = true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits a "final_score" command to the GTP engine.
-///
-/// This method returns immediately. gtpResponseReceived:() is triggered as
-/// soon as the GTP engine response has arrived.
-// -----------------------------------------------------------------------------
-- (void) submitFinalScore
-{
-  // Scoring involves the following
-  // 1. Captured stones
-  // 2. Dead stones
-  // 3. Territory
-  // 4. Komi
-  // Little Go is capable of counting 1 and 4, but not 2 and 3. So for the
-  // moment we rely on Fuego's scoring.
-  GtpCommand* command = [GtpCommand command:@"final_score"];
-  [command submit];
-
-  // Thinking state must change after any of the other things; this order is
-  // important for observer notifications
-  self.computerThinks = true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Submits an "undo" command to the GTP engine.
-///
-/// This method returns immediately. gtpResponseReceived:() is triggered as
-/// soon as the GTP engine response has arrived.
-// -----------------------------------------------------------------------------
-- (void) submitUndo
-{
-  GtpCommand* command = [GtpCommand command:@"undo"];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #PlayMove.
-///
-/// This method does not care about GTP.
-// -----------------------------------------------------------------------------
-- (void) updatePlayMove:(GoPoint*)point
-{
-  GoMove* move = [GoMove move:PlayMove by:self.currentPlayer after:self.lastMove];
-  move.point = point;  // many side-effects here (e.g. region handling) !!!
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
-  if (GameHasNotYetStarted == self.state)
-    self.state = GameHasStarted;  // don't set this state if game is currently paused
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #PassMove.
-///
-/// This method does not care about GTP.
-// -----------------------------------------------------------------------------
-- (void) updatePassMove
-{
-  GoMove* move = [GoMove move:PassMove by:self.currentPlayer after:self.lastMove];
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
-  if (move.previous.type == PassMove)
-  {
-    [self submitFinalScore];
-    self.state = GameHasEnded;
-  }
-  else
-  {
-    if (GameHasNotYetStarted == self.state)
-      self.state = GameHasStarted;  // don't set this state if game is currently paused
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #ResignMove.
-///
-/// This method does not care about GTP.
-// -----------------------------------------------------------------------------
-- (void) updateResignMove
-{
-  GoMove* move = [GoMove move:ResignMove by:self.currentPlayer after:self.lastMove];
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
-  self.state = GameHasEnded;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players taking back his move.
-///
-/// This method does not care about GTP.
-// -----------------------------------------------------------------------------
-- (void) updateUndo
-{
-  GoMove* undoMove = self.lastMove;
-  GoMove* newLastMove = undoMove.previous;  // get this reference before it vanishes
-  [undoMove undo];  // many side-effects here (e.g. region handling) !!!
-
-  // One of the following statements will cause the retain count of lastMove
-  // to drop to zero
-  // -> the object will be deallocated
-  self.lastMove = newLastMove;  // is nil if we are undoing the first move
-  if (self.firstMove == undoMove)
-    self.firstMove = nil;
-
-  // No game state change
-  // - Since we are able to undo moves, this clearly means that we are in state
-  //   GameHasStarted
-  // - But undoing a move will never cause the game to revert to state
-  //   GameHasNotYetStarted
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Is triggered whenever the GTP engine responds to a command.
-// -----------------------------------------------------------------------------
-- (void) gtpResponseReceived:(NSNotification*)notification
-{
-  GtpResponse* response = (GtpResponse*)[notification object];
-  // TODO handle response.status == false; this happens, for instance, when
-  // Fuego is unable to calculate the score ("final_score" command)
-  NSString* commandString = [response.command.command lowercaseString];
-  if ([commandString hasPrefix:@"genmove"])
-  {
-    NSString* responseString = [response.parsedResponse lowercaseString];
-    if ([responseString isEqualToString:@"pass"])
-      [self updatePassMove];
-    else if ([responseString isEqualToString:@"resign"])
-    {
-      // TODO should we invoke resign()? we do the same stuff as that method...
-      // delay decision until proper scoring has been implemented.
-      [self updateResignMove];
-      [self submitFinalScore];
-    }
-    else
-    {
-      GoPoint* point = [self.board pointAtVertex:[responseString uppercaseString]];
-      if (point)
-        [self updatePlayMove:point];
-      else
-        ;  // TODO vertex was invalid; do something...
-    }
-
-    // Thinking state must change after any of the other things; this order is
-    // important for observer notifications
-    self.computerThinks = false;
-
-    // Let computer continue playing if the game state allows it and it is
-    // actually a computer player's turn
-    switch (self.state)
-    {
-      case GameIsPaused:  // game has been paused while GTP was thinking about its last move
-      case GameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
-        break;
-      default:
-        if ([self isComputerPlayersTurn])
-          [self computerPlay];
-        break;
-    }
-  }
-  else if ([commandString isEqualToString:@"final_score"])
-  {
-    // TODO parse result; if Fuego is unable to calculate the score, the raw
-    // response text is "? cannot score", which results in response.status
-    // becoming false
-    self.score = response.parsedResponse;
-
-    // Thinking state must change after any of the other things; this order is
-    // important for observer notifications
-    self.computerThinks = false;
   }
 }
 

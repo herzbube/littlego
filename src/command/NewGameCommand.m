@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NewGameCommand.h"
+#import "move/ComputerPlayMoveCommand.h"
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
@@ -77,6 +78,9 @@
     }
     [computerPlayerWithGtpSettings.gtpEngineSettings applySettings];
   }
+
+  if ([newGame isComputerPlayersTurn])
+    [[[ComputerPlayMoveCommand alloc] init] submit];
 
   return true;
 }
