@@ -425,7 +425,7 @@
   if (self.model.markLastMove)
   {
     GoMove* lastMove = [GoGame sharedGame].lastMove;
-    if (lastMove)
+    if (lastMove && PlayMove == lastMove.type)
     {
       CGPoint lastMoveCoordinates = [self coordinatesFromVertex:lastMove.point.vertex];
       // The symbol for marking the last move is a box inside the circle that
