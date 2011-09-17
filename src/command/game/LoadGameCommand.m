@@ -17,7 +17,7 @@
 
 // Project includes
 #import "LoadGameCommand.h"
-#import "../NewGameCommand.h"
+#import "NewGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"

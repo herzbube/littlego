@@ -37,6 +37,11 @@
 		CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
 		CD05AB961425169500214BBE /* GoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AB951425169500214BBE /* GoUtilities.m */; };
 		CD05AB97142516A400214BBE /* GoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AB951425169500214BBE /* GoUtilities.m */; };
+		CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC741425470B00214BBE /* DeleteGameCommand.m */; };
+		CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC761425470B00214BBE /* NewGameCommand.m */; };
+		CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC781425470B00214BBE /* RenameGameCommand.m */; };
+		CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC7A1425470B00214BBE /* SaveGameCommand.m */; };
+		CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC761425470B00214BBE /* NewGameCommand.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -97,7 +102,6 @@
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */; };
-		CDD48FAC1413E00E00188B6A /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */; };
 		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
@@ -127,10 +131,6 @@
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABCA814194A420065C93B /* ViewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCA714194A420065C93B /* ViewGameController.m */; };
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
-		CDFABCF7141B56510065C93B /* RenameGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCF6141B56510065C93B /* RenameGameCommand.m */; };
-		CDFABDBA141CD22C0065C93B /* DeleteGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABDB9141CD22C0065C93B /* DeleteGameCommand.m */; };
-		CDFABF46141D307C0065C93B /* NewGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABF45141D307C0065C93B /* NewGameCommand.m */; };
-		CDFABF59141D342C0065C93B /* NewGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABF45141D307C0065C93B /* NewGameCommand.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */; };
@@ -171,6 +171,14 @@
 		CD05AAB81424BF1000214BBE /* LoadGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadGameCommand.m; sourceTree = "<group>"; };
 		CD05AB941425169500214BBE /* GoUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoUtilities.h; sourceTree = "<group>"; };
 		CD05AB951425169500214BBE /* GoUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoUtilities.m; sourceTree = "<group>"; };
+		CD05AC731425470B00214BBE /* DeleteGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteGameCommand.h; sourceTree = "<group>"; };
+		CD05AC741425470B00214BBE /* DeleteGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeleteGameCommand.m; sourceTree = "<group>"; };
+		CD05AC751425470B00214BBE /* NewGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameCommand.h; sourceTree = "<group>"; };
+		CD05AC761425470B00214BBE /* NewGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameCommand.m; sourceTree = "<group>"; };
+		CD05AC771425470B00214BBE /* RenameGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenameGameCommand.h; sourceTree = "<group>"; };
+		CD05AC781425470B00214BBE /* RenameGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenameGameCommand.m; sourceTree = "<group>"; };
+		CD05AC791425470B00214BBE /* SaveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveGameCommand.h; sourceTree = "<group>"; };
+		CD05AC7A1425470B00214BBE /* SaveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveGameCommand.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -240,8 +248,6 @@
 		CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewActionSheetController.h; sourceTree = "<group>"; };
 		CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewActionSheetController.m; sourceTree = "<group>"; };
 		CDD48FA71413E00E00188B6A /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
-		CDD48FA91413E00E00188B6A /* SaveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveGameCommand.h; sourceTree = "<group>"; };
-		CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveGameCommand.m; sourceTree = "<group>"; };
 		CDD48FAE1413E95500188B6A /* CommandBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandBase.h; sourceTree = "<group>"; };
 		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
 		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
@@ -302,12 +308,6 @@
 		CDFABCA714194A420065C93B /* ViewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewGameController.m; sourceTree = "<group>"; };
 		CDFABCAB14194DA00065C93B /* EditTextController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditTextController.h; sourceTree = "<group>"; };
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
-		CDFABCF5141B56510065C93B /* RenameGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenameGameCommand.h; sourceTree = "<group>"; };
-		CDFABCF6141B56510065C93B /* RenameGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenameGameCommand.m; sourceTree = "<group>"; };
-		CDFABDB8141CD22B0065C93B /* DeleteGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteGameCommand.h; sourceTree = "<group>"; };
-		CDFABDB9141CD22C0065C93B /* DeleteGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeleteGameCommand.m; sourceTree = "<group>"; };
-		CDFABF44141D307C0065C93B /* NewGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameCommand.h; sourceTree = "<group>"; };
-		CDFABF45141D307C0065C93B /* NewGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameCommand.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
 		CDFB49C613F6A84C00FAA5AF /* NewPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewPlayerController.h; sourceTree = "<group>"; };
@@ -401,10 +401,18 @@
 			children = (
 				CD05AA701423D80500214BBE /* ContinueGameCommand.h */,
 				CD05AA711423D80500214BBE /* ContinueGameCommand.m */,
+				CD05AC731425470B00214BBE /* DeleteGameCommand.h */,
+				CD05AC741425470B00214BBE /* DeleteGameCommand.m */,
 				CD05AAB71424BF1000214BBE /* LoadGameCommand.h */,
 				CD05AAB81424BF1000214BBE /* LoadGameCommand.m */,
+				CD05AC751425470B00214BBE /* NewGameCommand.h */,
+				CD05AC761425470B00214BBE /* NewGameCommand.m */,
 				CD05AA731423D80C00214BBE /* PauseGameCommand.h */,
 				CD05AA741423D80C00214BBE /* PauseGameCommand.m */,
+				CD05AC771425470B00214BBE /* RenameGameCommand.h */,
+				CD05AC781425470B00214BBE /* RenameGameCommand.m */,
+				CD05AC791425470B00214BBE /* SaveGameCommand.h */,
+				CD05AC7A1425470B00214BBE /* SaveGameCommand.m */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -576,16 +584,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
-				CDFABDB8141CD22B0065C93B /* DeleteGameCommand.h */,
-				CDFABDB9141CD22C0065C93B /* DeleteGameCommand.m */,
 				CD05A9BB1422ABFC00214BBE /* FinalScoreCommand.h */,
 				CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */,
-				CDFABF44141D307C0065C93B /* NewGameCommand.h */,
-				CDFABF45141D307C0065C93B /* NewGameCommand.m */,
-				CDFABCF5141B56510065C93B /* RenameGameCommand.h */,
-				CDFABCF6141B56510065C93B /* RenameGameCommand.m */,
-				CDD48FA91413E00E00188B6A /* SaveGameCommand.h */,
-				CDD48FAA1413E00E00188B6A /* SaveGameCommand.m */,
 			);
 			path = command;
 			sourceTree = "<group>";
@@ -879,15 +879,11 @@
 				CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */,
 				CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */,
 				CDD48D8B1412BEFB00188B6A /* PlayViewActionSheetController.m in Sources */,
-				CDD48FAC1413E00E00188B6A /* SaveGameCommand.m in Sources */,
 				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
-				CDFABCF7141B56510065C93B /* RenameGameCommand.m in Sources */,
-				CDFABDBA141CD22C0065C93B /* DeleteGameCommand.m in Sources */,
-				CDFABF46141D307C0065C93B /* NewGameCommand.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05A9BD1422ABFC00214BBE /* FinalScoreCommand.m in Sources */,
@@ -897,6 +893,10 @@
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
+				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
+				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
+				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
+				CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -934,12 +934,12 @@
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
-				CDFABF59141D342C0065C93B /* NewGameCommand.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */,
 				CD05AA2B1423C2A000214BBE /* ResignMoveCommand.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
+				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

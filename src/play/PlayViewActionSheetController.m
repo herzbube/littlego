@@ -20,8 +20,8 @@
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"
-#import "../command/SaveGameCommand.h"
-#import "../command/NewGameCommand.h"
+#import "../command/game/SaveGameCommand.h"
+#import "../command/game/NewGameCommand.h"
 #import "../command/move/ResignMoveCommand.h"
 
 

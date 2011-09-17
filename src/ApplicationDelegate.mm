@@ -37,7 +37,7 @@
 #import "play/SoundHandling.h"
 #import "archive/ArchiveViewModel.h"
 #import "command/CommandProcessor.h"
-#import "command/NewGameCommand.h"
+#import "command/game/NewGameCommand.h"
 
 // System includes
 #include <string>

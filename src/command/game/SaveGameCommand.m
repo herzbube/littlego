@@ -17,8 +17,8 @@
 
 // Project includes
 #import "SaveGameCommand.h"
-#import "../gtp/GtpCommand.h"
-#import "../gtp/GtpResponse.h"
+#import "../../gtp/GtpCommand.h"
+#import "../../gtp/GtpResponse.h"
 
 
 // -----------------------------------------------------------------------------

@@ -16,14 +16,14 @@
 
 
 // Project includes
-#import "RenameGameCommand.h"
-#import "../archive/ArchiveGame.h"
+#import "DeleteGameCommand.h"
+#import "../../archive/ArchiveGame.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RenameGameCommand.
+/// @brief Class extension with private methods for DeleteGameCommand.
 // -----------------------------------------------------------------------------
-@interface RenameGameCommand()
+@interface DeleteGameCommand()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -31,18 +31,17 @@
 @end
 
 
-@implementation RenameGameCommand
+@implementation DeleteGameCommand
 
 @synthesize game;
-@synthesize newFileName;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a RenameGameCommand object.
+/// @brief Initializes a DeleteGameCommand object.
 ///
-/// @note This is the designated initializer of RenameGameCommand.
+/// @note This is the designated initializer of DeleteGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithGame:(ArchiveGame*)aGame newFileName:(NSString*)aNewFileName
+- (id) initWithGame:(ArchiveGame*)aGame
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
@@ -50,18 +49,16 @@
     return nil;
 
   self.game = aGame;
-  self.newFileName = aNewFileName;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this RenameGameCommand object.
+/// @brief Deallocates memory allocated by this DeleteGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.game = nil;
-  self.newFileName = nil;
   [super dealloc];
 }
 
@@ -70,19 +67,10 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if ([self.game.fileName isEqualToString:self.newFileName])
-    return true;
-
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager moveItemAtPath:game.fileName toPath:self.newFileName error:nil];
+  BOOL success = [fileManager removeItemAtPath:game.fileName error:nil];
   if (success)
-  {
-    // Must update the ArchiveGame before posting the notification. Reason: The
-    // notification triggers an update cycle which tries to match ArchiveGame
-    // objects to filesystem entries via their file names.
-    self.game.fileName = self.newFileName;
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-  }
   return success;
 }
 

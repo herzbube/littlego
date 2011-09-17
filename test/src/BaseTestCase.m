@@ -21,7 +21,7 @@
 // Application includes
 #import <ApplicationDelegate.h>
 #import <go/GoGame.h>
-#import <command/NewGameCommand.h>
+#import <command/game/NewGameCommand.h>
 
 
 @implementation BaseTestCase

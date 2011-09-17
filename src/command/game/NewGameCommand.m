@@ -17,14 +17,14 @@
 
 // Project includes
 #import "NewGameCommand.h"
-#import "move/ComputerPlayMoveCommand.h"
-#import "../ApplicationDelegate.h"
-#import "../gtp/GtpCommand.h"
-#import "../go/GoBoard.h"
-#import "../go/GoGame.h"
-#import "../go/GoPlayer.h"
-#import "../player/Player.h"
-#import "../player/GtpEngineSettings.h"
+#import "../move/ComputerPlayMoveCommand.h"
+#import "../../ApplicationDelegate.h"
+#import "../../gtp/GtpCommand.h"
+#import "../../go/GoBoard.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoPlayer.h"
+#import "../../player/Player.h"
+#import "../../player/GtpEngineSettings.h"
 
 
 // -----------------------------------------------------------------------------

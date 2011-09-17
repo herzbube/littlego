@@ -21,7 +21,7 @@
 #import "ArchiveViewModel.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../command/RenameGameCommand.h"
+#import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
 
 

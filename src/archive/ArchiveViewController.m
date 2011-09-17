@@ -22,7 +22,7 @@
 #import "ViewGameController.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../command/DeleteGameCommand.h"
+#import "../command/game/DeleteGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
