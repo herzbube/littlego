@@ -22,9 +22,25 @@
 // -----------------------------------------------------------------------------
 /// @brief The NewGameCommand class is responsible for starting a new game
 /// using the values currently stored in NewGameModel.
+///
+/// Starting a new game is a complex operation that can be broken down into
+/// the following steps:
+/// - Deallocate the old GoGame object (if it exists)
+/// - Create a new GoGame object
+/// - Set up the board in the GTP engine
+/// - If at least one of the players of the new game is a computer player:
+///   Configure the GTP engine with settings obtained from the computer player
+///
+/// A client may suppress some of these steps by clearing the corresponding
+/// property flag before a NewGameCommand object is executed.
 // -----------------------------------------------------------------------------
 @interface NewGameCommand : CommandBase
 {
 }
+
+- (id) init;
+
+@property(assign) bool shouldSetupGtpBoard;
+@property(assign) bool shouldSetupComputerPlayer;
 
 @end

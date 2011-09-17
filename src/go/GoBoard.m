@@ -43,7 +43,6 @@
 - (void) dealloc;
 - (void) setupGoPoints;
 - (void) setupStarPoints;
-- (void) setupGTPEngine;
 //@}
 /// @name Other methods
 //@{
@@ -223,7 +222,6 @@
 {
   [self setupGoPoints];
   [self setupStarPoints];
-  [self setupGTPEngine];
 }
 
 // -----------------------------------------------------------------------------
@@ -264,17 +262,6 @@
   // Make a copy that is immutable because we hand out references to the
   // array, and we don't want clients to be able to change the array
   starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Notify GTP engine that a new board has been created.
-///
-/// This is a post-initalization setup routine.
-// -----------------------------------------------------------------------------
-- (void) setupGTPEngine
-{
-  [[GtpCommand command:@"clear_board"] submit];
-  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", self.dimensions]] submit];
 }
 
 // -----------------------------------------------------------------------------
