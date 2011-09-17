@@ -35,6 +35,8 @@
 		CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
+		CD05AB961425169500214BBE /* GoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AB951425169500214BBE /* GoUtilities.m */; };
+		CD05AB97142516A400214BBE /* GoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AB951425169500214BBE /* GoUtilities.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -167,6 +169,8 @@
 		CD05AA741423D80C00214BBE /* PauseGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PauseGameCommand.m; sourceTree = "<group>"; };
 		CD05AAB71424BF1000214BBE /* LoadGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadGameCommand.h; sourceTree = "<group>"; };
 		CD05AAB81424BF1000214BBE /* LoadGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadGameCommand.m; sourceTree = "<group>"; };
+		CD05AB941425169500214BBE /* GoUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoUtilities.h; sourceTree = "<group>"; };
+		CD05AB951425169500214BBE /* GoUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoUtilities.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -435,6 +439,8 @@
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
 				CD10882413255AA600E83543 /* GoPoint.m */,
+				CD05AB941425169500214BBE /* GoUtilities.h */,
+				CD05AB951425169500214BBE /* GoUtilities.m */,
 				CDBB0399133573CC007C1C3E /* GoVertex.h */,
 				CDBB039A133573CC007C1C3E /* GoVertex.m */,
 			);
@@ -890,6 +896,7 @@
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
+				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -932,6 +939,7 @@
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */,
 				CD05AA2B1423C2A000214BBE /* ResignMoveCommand.m in Sources */,
+				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
