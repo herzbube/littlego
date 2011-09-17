@@ -145,4 +145,17 @@
   return [NSString stringWithFormat:@"GoPlayer(%p): isBlack = %d", self, black];
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSString*) colorString
+{
+  // TODO what about a GoColor class?
+  if (self.black)
+    return @"B";
+  else
+    return @"W";
+}
+
+
 @end

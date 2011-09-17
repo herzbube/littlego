@@ -56,12 +56,13 @@
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point;
 - (bool) isComputerPlayersTurn;
-- (NSString*) colorStringForMoveAfter:(GoMove*)move;
 
 /// @brief The type of this GoGame object.
 @property(readonly) enum GoGameType type;
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(retain) GoBoard* board;
+/// @brief List of GoPoint objects with handicap stones.
+@property(retain) NSArray* handicapPoints;
 /// @brief The GoPlayer object that plays for black.
 @property(retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays for white.

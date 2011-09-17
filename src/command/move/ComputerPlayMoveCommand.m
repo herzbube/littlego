@@ -20,6 +20,7 @@
 #import "ResignMoveCommand.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -86,7 +87,7 @@
 - (bool) doIt
 {
   NSString* commandString = @"genmove ";
-  commandString = [commandString stringByAppendingString:[self.game colorStringForMoveAfter:self.game.lastMove]];
+  commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
   GtpCommand* command = [GtpCommand command:commandString
                              responseTarget:self
                                    selector:@selector(gtpResponseReceived:)];

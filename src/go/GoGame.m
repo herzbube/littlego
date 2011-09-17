@@ -23,10 +23,7 @@
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoVertex.h"
-#import "../gtp/GtpCommand.h"
-#import "../gtp/GtpResponse.h"
 #import "../ApplicationDelegate.h"
-#import "../newgame/NewGameModel.h"
 #import "../player/Player.h"
 
 
@@ -56,9 +53,9 @@
 
 @synthesize type;
 @synthesize board;
+@synthesize handicapPoints;
 @synthesize playerBlack;
 @synthesize playerWhite;
-@synthesize currentPlayer;
 @synthesize firstMove;
 @synthesize lastMove;
 @synthesize state;
@@ -111,6 +108,7 @@ static GoGame* sharedGame = nil;
   // Initialize members (some objects initialize themselves with values from
   // NewGameModel, but we don't really have to know about this)
   self.board = [GoBoard newGameBoard];
+  self.handicapPoints = [NSArray array];
   self.playerBlack = [GoPlayer newGameBlackPlayer];
   self.playerWhite = [GoPlayer newGameWhitePlayer];
   self.firstMove = nil;
@@ -141,6 +139,7 @@ static GoGame* sharedGame = nil;
 - (void) dealloc
 {
   self.board = nil;
+  self.handicapPoints = nil;
   self.playerBlack = nil;
   self.playerWhite = nil;
   self.firstMove = nil;
@@ -380,22 +379,6 @@ static GoGame* sharedGame = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns either the string "B" or the string "W" to signify which
-/// color (B=Black, W=White) will make the next move after @a move.
-// -----------------------------------------------------------------------------
-- (NSString*) colorStringForMoveAfter:(GoMove*)move
-{
-  // TODO what about a GoColor class?
-  bool playForBlack = true;
-  if (self.lastMove)
-    playForBlack = ! self.lastMove.player.isBlack;
-  if (playForBlack)
-    return @"B";
-  else
-    return @"W";
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns true if it is the computer player's turn.
 // -----------------------------------------------------------------------------
 - (bool) isComputerPlayersTurn
@@ -410,7 +393,12 @@ static GoGame* sharedGame = nil;
 {
   GoMove* move = self.lastMove;
   if (! move)
-    return self.playerBlack;
+  {
+    if (0 == self.handicapPoints.count)
+      return self.playerBlack;
+    else
+      return self.playerWhite;
+  }
   else if (move.player == self.playerBlack)
     return self.playerWhite;
   else

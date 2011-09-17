@@ -54,7 +54,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this CommandBase object.
+/// @brief Deallocates memory allocated by this SaveGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

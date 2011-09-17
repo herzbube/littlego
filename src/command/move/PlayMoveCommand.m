@@ -20,6 +20,7 @@
 #import "ComputerPlayMoveCommand.h"
 #import "FinalScoreCommand.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
@@ -116,7 +117,7 @@
 - (bool) doIt
 {
   NSString* commandString = @"play ";
-  commandString = [commandString stringByAppendingString:[self.game colorStringForMoveAfter:self.game.lastMove]];
+  commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
   commandString = [commandString stringByAppendingString:@" "];
   switch (self.moveType)
   {
