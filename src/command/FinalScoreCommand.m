@@ -95,12 +95,6 @@
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
-  if (! response.status)
-  {
-    assert(0);
-    return;
-  }
-
   // TODO parse result; if Fuego is unable to calculate the score, the raw
   // response text is "? cannot score", which results in response.status
   // becoming false
