@@ -29,27 +29,34 @@ Version 1.x
 - About view
   - "Help" section
 - New game properties
-  - Handicap
-  - Komi
+  - Free handicap placement
 - Let users play against each other via network (Bonjour via Wi-Fi)
 - Artwork & media
   - Stones
   - Board
 
-Version 0.7
+Version 0.8
 - Artwork & media
   - Application icon
 - Publish app to the App Store
 
-Version 0.6
+Version 0.7
 - Play view
   - Coordinate labels
   - Display move numbers
   - Suggest move
 
-Version 0.5
+Version 0.6
 - iPad version
 - React to device orientation changes
+
+Version 0.5
+- New game properties
+  - Handicap
+  - Komi
+- Play view
+  - Proper scoring
+  - Switch to "back side" of the view to see information about the current game
 
 Version 0.4
 - Debug view
