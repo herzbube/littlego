@@ -54,7 +54,7 @@ NSString* archiveContentChanged = @"ArchiveContentChanged";
 /// GTP engine settings default values
 int fuegoMaxMemoryMinimum = 32;
 int fuegoMaxMemoryMaximum = 512;
-int fuegoMaxMemoryDefault = 128;
+int fuegoMaxMemoryDefault = 64;
 int fuegoThreadCountMinimum = 1;
 int fuegoThreadCountMaximum = 8;
 int fuegoThreadCountDefault = 1;

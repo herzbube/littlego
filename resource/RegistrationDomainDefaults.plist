@@ -91,10 +91,10 @@
 				<key>GamesTied</key>
 				<integer>0</integer>
 			</dict>
-			<key>GtpEngine</key>
+			<key>GtpEngineSettings</key>
 			<dict>
 				<key>FuegoMaxMemory</key>
-				<integer>128</integer>
+				<integer>64</integer>
 				<key>FuegoThreadCount</key>
 				<integer>1</integer>
 				<key>FuegoPondering</key>

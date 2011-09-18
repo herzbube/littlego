@@ -648,11 +648,13 @@ potentially different settings, the black player's settings take precedence.
 Choosing black is arbitrary, white could take precedence just as well.
 
 Notes about default values
-- fuegoMaxMemory = 128
+- fuegoMaxMemory = 64
   - I own an iPhone 3GS, and a 1st generation iPad, according to [2] both of
     them have 256 MB RAM
-  - Since these devices are my main targets, half of their RAM seems to be a
-    sensible default value
+  - Tests on my iPhone 3GS have shown that 128 MB is too much - the app very
+    quickly gets memory warnings and then is killed by the system
+  - 64 MB however, seems to be an acceptable value - I have run an entire
+    computer vs. computer game with that setting without any problems.
 - fuegoThreadCount = 1
   - [1] recommends to set this to the number of cores
   - According to [2], the iOS devices I own only have one core

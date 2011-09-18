@@ -67,6 +67,28 @@ Priority 1 (important)
   - Some sort of rendering bug: What the user sees in PlayView does not
     correspond to the state in memory
 - Implement application state transitions as described in README.developer
+- When editing a player, and the player type is changed, the GTP Engine Settings
+  section must be hidden/shown as appropriate; also the GtpEngineSettings
+  object attached to the Player object must be set appropriately when the user
+  has finished editing the player
+- Which GTP engine settings should be applied for a game with two human players?
+  Possible solution: Define a "default" set of GTP engine settings; computer
+  players can then be configured to use the default set, or t
+- Find out more about GTP engine settings. Using the knowledge gained,
+  reconsider whether it still makes sense that GTP engine settings are applied
+  only at the beginning of the game.
+  - Is it correct that "pondering" means that the engine is doing calculations
+    while the human player takes his time for his turn, thus increasing its
+    playing strength because it had more time for its calculations?
+  - What does "reuse subtree" mean anyway?
+  - Is actual memory consumption lowered on the spot when "max. memory" is set
+    to a lower value? (would be useful to handle low-memory warnings)
+  - When pondering is disabled and then re-enabled, does Fuego continue with its
+    calculations where it left off? (would be useful to handle interruptions
+    such as phone calls)
+  - Does lowering the thread count degrade playing strength in any way (except
+    of course that with matching hardware Fuego may be able to calculate more
+    in less time)?
 
 
 Priority 2 (nice to have)
@@ -100,6 +122,17 @@ Priority 2 (nice to have)
 - Add more preferences to tune Fuego (e.g. time limit for moves)
 - Provide informational feedback to user when low memory warnings are received
   -> this is about the time when a crash can be expected
+- Remove the move type ResignMove; instead add something like an enumeration
+  GoGameResult that can be added as another property to GoGame
+- Add a "swap players" option to the "new game" view
+- When a new game is started, the request to confirm if the old game can be
+  discarded should not appear based on the GoGameState; instead it should
+  appear based on some sort of "document dirty" flag - if a game has been
+  saved to .sgf it is marked as "not dirty".
+- Add activity indicator to "load game" view in case loading the .sgf file
+  takes a long time
+- Add handler for .sgf files so that other apps can pass those files to the
+  app for processing
 
 Future improvements to the 3rdparty build process:
 - Build both a debug and a release version of 3rdparty libraries; use the build
@@ -161,3 +194,4 @@ Priority 3 (not important)
   the user leaves the "Play" tab.
 - Update the Archive View if the user changes his locale in the system
   preferences (the view displays formatted dates)
+- Add support for folders to the Archive view
