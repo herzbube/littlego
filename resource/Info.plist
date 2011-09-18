@@ -28,5 +28,7 @@
 	<string>MainWindow</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2011 Patrick Näf</string>
+	<key>UIFileSharingEnabled</key>
+	<string>YES</string>
 </dict>
 </plist>
