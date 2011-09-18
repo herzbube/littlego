@@ -330,8 +330,6 @@
     }
 
     NSArray* moveComponents = [move componentsSeparatedByString:@" "];
-    // TODO: Handle handicap and color of first move !!!!
-//    NSString* colorString = [moveComponents objectAtIndex:0];
     NSString* vertexString = [[moveComponents objectAtIndex:1] lowercaseString];
 
     if ([vertexString isEqualToString:@"pass"])

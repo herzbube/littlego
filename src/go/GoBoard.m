@@ -298,6 +298,7 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointAtVertex:(NSString*)vertex
 {
+  vertex = [vertex uppercaseString];
   GoPoint* point = [m_vertexDict objectForKey:vertex];
   if (! point)
   {

@@ -78,6 +78,10 @@
   point = [board pointAtVertex:@"T19"];
   STAssertNotNil(point, @"T19");
 
+  // A lower-case string must also work
+  point = [board pointAtVertex:@"c3"];
+  STAssertNotNil(point, @"c3");
+
   // A few invalid vertexes
   STAssertThrowsSpecificNamed([board pointAtVertex:@"I4"],
                               NSException, NSRangeException, @"letter I used for vertex");
