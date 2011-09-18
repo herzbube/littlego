@@ -172,10 +172,40 @@ static ApplicationDelegate* sharedDelegate = nil;
   return YES;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Invoked to notify this delegate that the application is about to
+/// become inactive.
+///
+/// Known events that trigger this:
+/// - Screen locking
+/// - Modifying an app's document folder via iTunes' "File sharing" feature
+/// - Any interrupt (e.g. incoming phone call, calling up the multitasking UI)
+/// - Anything that will put the app in the background
+// -----------------------------------------------------------------------------
 - (void) applicationWillResignActive:(UIApplication*)application
 {
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Invoked to notify this delegate that the application has become
+/// active (again).
+// -----------------------------------------------------------------------------
+- (void) applicationDidBecomeActive:(UIApplication*)application
+{
+  // Send this notification just in case something changed in the documents
+  // folder since the app was deactivated. Note: This is not just laziness - if
+  // the user really *DID* change something via the file sharing feature of
+  // iTunes, we won't be notified in any special way. The only thing that
+  // happens in such a case is deactivation and reactivation.
+  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked to notify this delegate that the application has entered the
+/// background and is about to be suspended.
+///
+/// This method must complete within 5 seconds.
+// -----------------------------------------------------------------------------
 - (void) applicationDidEnterBackground:(UIApplication*)application
 {
   [self.newGameModel writeUserDefaults];
@@ -184,15 +214,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel writeUserDefaults];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Invoked to notify this delegate that the application is about to
+/// come to the foreground (after having been suspended in the background).
+// -----------------------------------------------------------------------------
 - (void) applicationWillEnterForeground:(UIApplication*)application
-{
-}
-
-- (void) applicationDidBecomeActive:(UIApplication*)application
-{
-}
-
-- (void) applicationWillTerminate:(UIApplication*)application
 {
 }
 

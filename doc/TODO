@@ -89,6 +89,8 @@ Priority 1 (important)
   - Does lowering the thread count degrade playing strength in any way (except
     of course that with matching hardware Fuego may be able to calculate more
     in less time)?
+- Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
+  refuses an "undo" command.
 
 
 Priority 2 (nice to have)
