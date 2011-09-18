@@ -101,7 +101,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.sortCriteria] forKey:sortCriteriaKey];
   [dictionary setValue:[NSNumber numberWithBool:self.sortAscending] forKey:sortAscendingKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setObject:dictionary forKey:playViewKey];
+  [userDefaults setObject:dictionary forKey:archiveViewKey];
 }
 
 // -----------------------------------------------------------------------------
