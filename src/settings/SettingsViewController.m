@@ -50,9 +50,9 @@ enum FeedbackSectionItem
 enum ViewSectionItem
 {
   MarkLastMoveItem,
-  DisplayCoordinatesItem,
-  DisplayMoveNumbersItem,
-  CrossHairPointDistanceFromFingerItem,
+//  DisplayCoordinatesItem,
+//  DisplayMoveNumbersItem,
+//  CrossHairPointDistanceFromFingerItem,
   MaxViewSectionItem
 };
 
@@ -236,9 +236,9 @@ enum PlayersSectionItem
         enum TableViewCellType cellType;
         switch (indexPath.row)
         {
-          case CrossHairPointDistanceFromFingerItem:
-            cellType = Value1CellType;
-            break;
+//          case CrossHairPointDistanceFromFingerItem:
+//            cellType = Value1CellType;
+//            break;
           default:
             cellType = SwitchCellType;
             break;
@@ -258,20 +258,20 @@ enum PlayersSectionItem
             accessoryView.enabled = YES;
             [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
             break;
-          case DisplayCoordinatesItem:
-            cell.textLabel.text = @"Coordinates";
-            accessoryView.on = self.playViewModel.displayCoordinates;
-            [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
-            break;
-          case DisplayMoveNumbersItem:
-            cell.textLabel.text = @"Move numbers";
-            accessoryView.on = self.playViewModel.displayMoveNumbers;
-            [accessoryView addTarget:self action:@selector(toggleDisplayMoveNumbers:) forControlEvents:UIControlEventValueChanged];
-            break;
-          case CrossHairPointDistanceFromFingerItem:
-            cell.textLabel.text = @"Cross-hair distance";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
-            break;
+//          case DisplayCoordinatesItem:
+//            cell.textLabel.text = @"Coordinates";
+//            accessoryView.on = self.playViewModel.displayCoordinates;
+//            [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
+//            break;
+//          case DisplayMoveNumbersItem:
+//            cell.textLabel.text = @"Move numbers";
+//            accessoryView.on = self.playViewModel.displayMoveNumbers;
+//            [accessoryView addTarget:self action:@selector(toggleDisplayMoveNumbers:) forControlEvents:UIControlEventValueChanged];
+//            break;
+//          case CrossHairPointDistanceFromFingerItem:
+//            cell.textLabel.text = @"Cross-hair distance";
+//            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
+//            break;
           default:
             assert(0);
             break;
