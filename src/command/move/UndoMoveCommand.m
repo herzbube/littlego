@@ -20,6 +20,7 @@
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../play/PlayView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -82,6 +83,10 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // It is possible that we need to undo two moves, but we want them to be drawn
+  // in a single view update. Therefore we need to disable view updates now.
+  [[PlayView sharedView] actionStarts];
+
   GtpCommand* command = [GtpCommand command:@"undo"
                              responseTarget:self
                                    selector:@selector(gtpResponseReceived:)];
@@ -101,6 +106,7 @@
   }
 
   [self.game undo];
+
   // If it's now the computer player's turn, the "undo" above took back the
   // computer player's move
   // -> now also take back the player's move
@@ -109,6 +115,9 @@
     UndoMoveCommand* command = [[UndoMoveCommand alloc] init];
     [command submit];
   }
+
+  // Re-enable play view updates
+  [[PlayView sharedView] actionEnds];
 }
 
 @end

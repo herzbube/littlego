@@ -82,6 +82,7 @@
 /// @name Internal helpers
 //@{
 - (void) updateDrawParametersForRect:(CGRect)rect;
+- (void) delayedUpdate;
 //@}
 @end
 
@@ -110,6 +111,27 @@
 @synthesize crossHairPoint;
 @synthesize crossHairPointIsLegalMove;
 
+@synthesize actionsInProgress;
+@synthesize updatesWereDelayed;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Shared instance of PlayView.
+// -----------------------------------------------------------------------------
+static PlayView* sharedPlayView = nil;
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the shared PlayView object.
+// -----------------------------------------------------------------------------
++ (PlayView*) sharedView
+{
+  @synchronized(self)
+  {
+    assert(sharedPlayView != nil);
+    return sharedPlayView;
+  }
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this PlayView object.
 // -----------------------------------------------------------------------------
@@ -123,6 +145,8 @@
   self.activityIndicator = nil;
   self.model = nil;
   self.crossHairPoint = nil;
+  if (self == sharedPlayView)
+    sharedPlayView = nil;
   [super dealloc];
 }
 
@@ -138,6 +162,8 @@
 - (void) awakeFromNib
 {
   [super awakeFromNib];
+
+  sharedPlayView = self;
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.model = [delegate playViewModel];
@@ -158,6 +184,9 @@
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
 
+  self.actionsInProgress = 0;
+  self.updatesWereDelayed = false;
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
@@ -172,10 +201,62 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) actionStarts
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) actionEnds
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+  {
+    if (self.updatesWereDelayed)
+      [self setNeedsDisplay];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. PlayView
+/// methods that need a view update should invoke this helper instead of
+/// setNeedsDisplay().
+///
+/// If @e actionsInProgress is 0, this helper invokes setNeedsDisplay(), thus
+/// triggering the update in UIKit.
+///
+/// If @e actionsInProgress is >0, this helper sets @e updatesWereDelayed to
+/// true.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if (self.actionsInProgress > 0)
+    self.updatesWereDelayed = true;
+  else
+    [self setNeedsDisplay];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Is invoked by UIKit when the view needs updating.
 // -----------------------------------------------------------------------------
 - (void) drawRect:(CGRect)rect
 {
+  // Guard against
+  // - updates triggered by UIKit
+  // - updates that were triggered by delayedUpdate() before actionsInProgress
+  //   was increased
+  if (self.actionsInProgress > 0)
+  {
+    self.updatesWereDelayed = true;
+    return;
+  }
+
+//  NSLog(@"PlayView::drawRect:() starts");
   [self updateDrawParametersForRect:rect];
   // The order in which draw methods are invoked is important, as each method
   // draws its objects as a new layer on top of the previous layers.
@@ -187,7 +268,7 @@
   [self drawSymbols];
   [self drawLabels];
   [self updateStatusLine];
-  self.crossHairPoint = nil;
+//  NSLog(@"PlayView::drawRect:() ends");
 }
 
 // -----------------------------------------------------------------------------
@@ -613,7 +694,7 @@
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
-  [self setNeedsDisplay];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -630,7 +711,7 @@
 - (void) goGameFirstMoveChanged:(NSNotification*)notification
 {
   // TODO check if it's possible to update only a rectangle
-  [self setNeedsDisplay];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -639,7 +720,7 @@
 - (void) goGameLastMoveChanged:(NSNotification*)notification
 {
   // TODO check if it's possible to update only a rectangle
-  [self setNeedsDisplay];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -658,7 +739,7 @@
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
   // TODO check if it's possible to update only specific parts of the view
-  [self setNeedsDisplay];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -739,10 +820,13 @@
 // -----------------------------------------------------------------------------
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
 {
+  if (crossHairPoint == point && crossHairPointIsLegalMove == isLegalMove)
+    return;
+
   // TODO check if it's possible to update only a few rectangles
   self.crossHairPoint = point;
   self.crossHairPointIsLegalMove = isLegalMove;
-  [self setNeedsDisplay];
+  [self delayedUpdate];
 }
 
 @end

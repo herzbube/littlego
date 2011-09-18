@@ -29,6 +29,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
+#import "../../play/PlayView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -107,6 +108,9 @@
 {
   if (! self.fileName || ! self.blackPlayer || ! self.whitePlayer)
     return false;
+
+  // Disable play view updates while this command executes its multiple steps
+  [[PlayView sharedView] actionStarts];
 
   // Need to work wih temporary file whose name is known and guaranteed to not
   // contain any characters that are prohibited by GTP
@@ -251,6 +255,9 @@
   [self setupMoves:m_moves];
   // TODO: Add Komi
   [self triggerComputerPlayer];
+
+  // We are finally finished: Re-enable play view updates.
+  [[PlayView sharedView] actionEnds];
 }
 
 // -----------------------------------------------------------------------------

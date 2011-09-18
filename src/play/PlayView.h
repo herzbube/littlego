@@ -53,13 +53,20 @@
 ///
 /// @note All calculations rely on the coordinate system origin being in the
 /// top-left corner.
+///
+/// @note All methods that require a view update should invoke delayedUpdate()
+/// instead of setNeedsDisplay() so that multiple updates can be coalesced into
+/// a single update, after one or more long-running actions have finished.
 // -----------------------------------------------------------------------------
 @interface PlayView : UIView
 {
 }
 
++ (PlayView*) sharedView;
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
+- (void) actionStarts;
+- (void) actionEnds;
 
 /// @brief The status line GUI control.
 @property(nonatomic, retain) IBOutlet UILabel* statusLine;
@@ -90,6 +97,15 @@
 //@{
 @property(retain) GoPoint* crossHairPoint;
 @property bool crossHairPointIsLegalMove;
+//@}
+
+/// @name Update optimizing
+//@{
+/// @brief Number of "expensive" actions that are currently in progress. View
+/// updates are delayed while this number is >0.
+@property int actionsInProgress;
+/// @brief Is true if updates were delayed because @e actionsInProgress was >0.
+@property bool updatesWereDelayed;
 //@}
 
 @end
