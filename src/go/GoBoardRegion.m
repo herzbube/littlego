@@ -287,6 +287,9 @@
   // leaves the region unchanged
   if ([self isStoneGroup])
     return;
+  // Split not possible if less than 2 points
+  if (self.points.count < 2)
+    return;
 
   NSMutableArray* subRegions = [NSMutableArray arrayWithCapacity:0];
   NSMutableArray* pointsToProcess = [self.points mutableCopy];

@@ -78,6 +78,7 @@
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
 - (void) updateGameActionsButtonState;
+- (void) updatePanningEnabled;
 //@}
 @end
 
@@ -294,16 +295,9 @@
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
-  // Panning is always disabled in a computer vs. computer game. In other game
-  // types, panning is optimistically enabled first, but may be disabled again
-  // later on by computerPlayerThinkingChanged:().
-  if (ComputerVsComputerGame == [GoGame sharedGame].type)
-    self.panningEnabled = false;
-  else
-    self.panningEnabled = true;
-
   [self populateToolbar];
   [self updateButtonStates];
+  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -312,6 +306,7 @@
 - (void) goGameStateChanged:(NSNotification*)notification
 {
   [self updateButtonStates];
+  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -339,15 +334,8 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  switch ([GoGame sharedGame].type)
-  {
-    case ComputerVsHumanGame:
-      self.panningEnabled = ! [[GoGame sharedGame] isComputerThinking];
-      break;
-    default:
-      break;
-  }
   [self updateButtonStates];
+  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -585,6 +573,36 @@
     }
   }
   self.gameActionsButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates whether panning is enabled.
+// -----------------------------------------------------------------------------
+- (void) updatePanningEnabled
+{
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+  {
+    self.panningEnabled = false;
+    return;
+  }
+
+  if (ComputerVsComputerGame == game.type)
+  {
+    self.panningEnabled = false;
+    return;
+  }
+
+  switch (game.state)
+  {
+    case GameHasNotYetStarted:
+    case GameHasStarted:
+      self.panningEnabled = ! [game isComputerThinking];
+      break;
+    default:  // specifically GameHasEnded
+      self.panningEnabled = false;
+      break;
+  }
 }
 
 @end
