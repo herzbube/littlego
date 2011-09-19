@@ -367,6 +367,8 @@ static GoGame* sharedGame = nil;
             GoPoint* lastMovePoint = self.lastMove.point;
             if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
               return false;
+            else
+              return true;  // no Ko -> capturing is possible -> the move is legal
           }
         }
       }
