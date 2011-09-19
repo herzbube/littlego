@@ -318,9 +318,15 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawBackground:(CGRect)rect
 {
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, self.model.backgroundColor.CGColor);
-  CGContextFillRect(context, rect);
+  // Currently we don't draw the background, the table view background set in
+  // the .xib looks nice enough. If this should ever become configurable, note
+  // that the table view background is a pattern and not an RGB color, i.e. it
+  // can't be converted to a hex string for storage in the user defaults.
+  // Convenience constructor: [UIColor groupTableViewBackgroundColor].
+
+//  CGContextRef context = UIGraphicsGetCurrentContext();
+//  CGContextSetFillColorWithColor(context, self.model.backgroundColor.CGColor);
+//  CGContextFillRect(context, rect);
 }
 
 // -----------------------------------------------------------------------------
