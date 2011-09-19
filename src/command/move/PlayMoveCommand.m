@@ -117,6 +117,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // Must get this before updating the game model
+  NSString* colorForMove = self.game.currentPlayer.colorString;
+
   // Update game model now, don't wait until we get the response to the GTP
   // command (as most of the other commands do). If we update the game model
   // now, the play view only needs to be updated once, which is good! If we
@@ -144,7 +147,7 @@
   }
 
   NSString* commandString = @"play ";
-  commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
+  commandString = [commandString stringByAppendingString:colorForMove];
   commandString = [commandString stringByAppendingString:@" "];
   switch (self.moveType)
   {
