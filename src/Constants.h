@@ -106,6 +106,9 @@ enum GoBoardSize
   BoardSizeMax = BoardSize19,
   BoardSizeUndefined
 };
+/// @brief Default board size that should be used if no sensible user default
+/// is available.
+extern const enum GoBoardSize gDefaultBoardSize;
 
 /// @brief Enumerates the types of alert views used across the application.
 ///
@@ -116,7 +119,9 @@ enum AlertViewType
   GameHasEndedAlertView,
   NewGameAlertView,
   SaveGameAlertView,
-  RenameGameAlertView
+  RenameGameAlertView,
+  LoadGameFailedAlertView,
+  UndoMoveFailedAlertView
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in

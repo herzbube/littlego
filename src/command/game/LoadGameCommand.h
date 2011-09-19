@@ -40,7 +40,7 @@
 @interface LoadGameCommand : CommandBase
 {
 @private
-  int m_boardDimension;
+  enum GoBoardSize m_boardSize;
   double m_komi;
   NSString* m_handicap;
   NSString* m_moves;

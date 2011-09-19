@@ -50,10 +50,14 @@
 //@}
 /// @name Helpers
 //@{
-- (void) startNewGame;
+- (void) handleCommandSucceeded;
+- (void) handleCommandFailed;
+- (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize;
 - (void) setupHandicap:(NSString*)handicapFromGtp;
 - (void) setupMoves:(NSString*)movesFromGtp;
 - (void) triggerComputerPlayer;
+- (void) cleanup;
+- (void) showAlert;
 //@}
 @end
 
@@ -80,7 +84,7 @@
   self.fileName = aFileName;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
-  m_boardDimension = 0;
+  m_boardSize = BoardSizeUndefined;
   m_komi = 0;
   m_handicap = nil;
   m_moves = nil;
@@ -139,14 +143,16 @@
   BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:nil];
   if (! success)
   {
+    [self handleCommandFailed];
     assert(0);
     return;
   }
 
-  // Was GTP command successful?
+  // Was GTP command successful? Failure is possible if the file we attempted
+  // to load was not an .sgf file.
   if (! response.status)
   {
-    assert(0);
+    [self handleCommandFailed];
     return;
   }
 
@@ -166,6 +172,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
+    [self handleCommandFailed];
     assert(0);
     return;
   }
@@ -182,7 +189,7 @@
   // board. Not terribly sophisticated, but I have not found a better, or more
   // reliable way to query for board size.
   NSArray* responseLines = [response.parsedResponse componentsSeparatedByString:@"\n"];
-  m_boardDimension = [responseLines count];
+  m_boardSize = [GoBoard sizeForDimension:[responseLines count]];
 
   // Submit the next GTP command
   GtpCommand* command = [GtpCommand command:@"get_komi"
@@ -200,6 +207,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
+    [self handleCommandFailed];
     assert(0);
     return;
   }
@@ -222,6 +230,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
+    [self handleCommandFailed];
     assert(0);
     return;
   }
@@ -244,36 +253,64 @@
   // Was GTP command successful?
   if (! response.status)
   {
+    [self handleCommandFailed];
     assert(0);
     return;
   }
 
   m_moves = [response.parsedResponse copy];
 
-  [self startNewGame];
+  [self handleCommandSucceeded];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs all steps required to handle successful command execution.
+// -----------------------------------------------------------------------------
+- (void) handleCommandSucceeded
+{
+  [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
   [self setupHandicap:m_handicap];
   [self setupMoves:m_moves];
   // TODO: Add Komi
   [self triggerComputerPlayer];
+  [self cleanup];
+}
 
-  // We are finally finished: Re-enable play view updates.
-  [[PlayView sharedView] actionEnds];
+// -----------------------------------------------------------------------------
+/// @brief Performs all steps required to handle failed command execution.
+///
+/// Failure may occur during any of the steps in this command.
+// -----------------------------------------------------------------------------
+- (void) handleCommandFailed
+{
+  // Start a new game anyway, with the goal to bring the app into a controlled
+  // state that matches the state of the GTP engine.
+  [self startNewGameForSuccessfulCommand:false boardSize:gDefaultBoardSize];
+
+  [self cleanup];
+  [self showAlert];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Starts the new game.
 // -----------------------------------------------------------------------------
-- (void) startNewGame
+- (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize
 {
   // Configure NewGameModel with information that is used when NewGameCommand
   // creates a new GoGame object
   NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
-  model.boardSize = [GoBoard sizeForDimension:m_boardDimension];
+  model.boardSize = boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
   NewGameCommand* command = [[NewGameCommand alloc] init];
-  command.shouldSetupGtpBoard = false;  // was already set up by the "loadsgf" GTP command
+  // If command was successful, the board was already set up by the "loadsgf"
+  // GTP command. We must not setup the board again, or we will lose all moves
+  // that were just loaded.
+  // If command failed, we must setup the board again to bring the application
+  // and the GTP engine into a defined state that matches
+  if (! success)
+    command.shouldSetupGtpBoard = false;
   command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
   [command submit];
 }
@@ -364,6 +401,30 @@
     ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
     [command submit];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs mandatory cleanup steps. This method is intended to be
+/// invoked just before the command finishes executing.
+// -----------------------------------------------------------------------------
+- (void) cleanup
+{
+  // Re-enable play view updates
+  [[PlayView sharedView] actionEnds];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays alert with "failed to load game" message.
+// -----------------------------------------------------------------------------
+- (void) showAlert
+{
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to load game"
+                                                  message:@"The archived game could not be loaded. Is the game file in .sgf format?"
+                                                 delegate:nil
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"Ok", nil];
+  alert.tag = LoadGameFailedAlertView;
+  [alert show];
 }
 
 @end

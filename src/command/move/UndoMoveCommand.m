@@ -35,6 +35,11 @@
 //@{
 - (void) gtpResponseReceived:(GtpResponse*)response;
 //@}
+/// @name Helpers
+//@{
+- (void) cleanup;
+- (void) showAlert;
+//@}
 @end
 
 
@@ -101,6 +106,8 @@
 {
   if (! response.status)
   {
+    [self cleanup];
+    [self showAlert];
     assert(0);
     return;
   }
@@ -116,8 +123,31 @@
     [command submit];
   }
 
+  [self cleanup];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs mandatory cleanup steps. This method is intended to be
+/// invoked just before the command finishes executing.
+// -----------------------------------------------------------------------------
+- (void) cleanup
+{
   // Re-enable play view updates
   [[PlayView sharedView] actionEnds];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays alert with "failed to load game" message.
+// -----------------------------------------------------------------------------
+- (void) showAlert
+{
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Undo failed"
+                                                  message:@"Failed to undo the last move."
+                                                 delegate:nil
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"Ok", nil];
+  alert.tag = UndoMoveFailedAlertView;
+  [alert show];
 }
 
 @end
