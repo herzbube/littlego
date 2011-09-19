@@ -39,7 +39,7 @@
 }
 
 - (id) initWithModalMaster:(UIViewController*)aController;
-- (void) showActionSheetFromBarButtonItem:(UIBarButtonItem*)item;
+- (void) showActionSheetFromView:(UIView*)view;
 
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.

@@ -122,7 +122,7 @@ enum ActionSheetButton
 /// @brief Reacts to a tap gesture on the "Action" button. Displays an action
 /// sheet with actions that are not used very often during a game.
 // -----------------------------------------------------------------------------
-- (void) showActionSheetFromBarButtonItem:(UIBarButtonItem*)item
+- (void) showActionSheetFromView:(UIView*)view
 {
   // TODO iPad: Modify this to not include a cancel button (see HIG).
   UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"Game actions"
@@ -160,13 +160,17 @@ enum ActionSheetButton
   }
   actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:@"Cancel"];
 
-  // TODO iPad: On the iPad only, using this method apparently does not disable
+  // Showing the acton sheet based on a view generates much smoother animations,
+  // at least with the view setup in this app, than based on a bar button item.
+  // TODO iPad: The action sheet "base" needs to be re-evaluated on the iPad
+  // because there we can have pop-overs. Some historical notes on the bar
+  // button item "base": Using this "base" apparently does not disable
   // the other buttons on the toolbar, i.e. the user can still tap other buttons
   // in the toolbar such as "Pass". Review whether this is true, and if it is
   // make sure that the sheet is dismissed if a button from the toolbar is
   // tapped. For details about this, see the UIActionSheet class reference,
   // specifically the documentation for showFromBarButtonItem:animated:().
-  [actionSheet showFromBarButtonItem:item animated:NO];
+  [actionSheet showInView:view];
   [actionSheet release];
 }
 

@@ -214,7 +214,7 @@
 - (void) gameActions:(id)sender
 {
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self];
-  [controller showActionSheetFromBarButtonItem:self.gameActionsButton];
+  [controller showActionSheetFromView:self.playView];
 }
 
 // -----------------------------------------------------------------------------
