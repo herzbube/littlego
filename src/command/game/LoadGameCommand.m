@@ -22,6 +22,7 @@
 #import "../../ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../gtp/GtpUtilities.h"
 #import "../../newgame/NewGameModel.h"
 #import "../../player/Player.h"
 #import "../../go/GoBoard.h"
@@ -67,6 +68,7 @@
 @synthesize fileName;
 @synthesize blackPlayer;
 @synthesize whitePlayer;
+@synthesize waitUntilDone;
 
 
 // -----------------------------------------------------------------------------
@@ -84,6 +86,7 @@
   self.fileName = aFileName;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
+  self.waitUntilDone = false;
   m_boardSize = BoardSizeUndefined;
   m_komi = 0;
   m_handicap = nil;
@@ -116,7 +119,7 @@
   // Disable play view updates while this command executes its multiple steps
   [[PlayView sharedView] actionStarts];
 
-  // Need to work wih temporary file whose name is known and guaranteed to not
+  // Need to work with temporary file whose name is known and guaranteed to not
   // contain any characters that are prohibited by GTP
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:self.fileName])
@@ -125,10 +128,11 @@
   if (! success)
     return false;
   NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
-  GtpCommand* command = [GtpCommand command:commandString
-                             responseTarget:self
-                                   selector:@selector(loadsgfCommandResponseReceived:)];
-  [command submit];
+  [GtpUtilities submitCommand:commandString
+                       target:self
+                     selector:@selector(loadsgfCommandResponseReceived:)
+                waitUntilDone:self.waitUntilDone];
+
   return true;
 }
 
@@ -157,10 +161,11 @@
   }
 
   // Submit the next GTP command
-  GtpCommand* command = [GtpCommand command:@"go_point_numbers"
-                             responseTarget:self
-                                   selector:@selector(gopointnumbersCommandResponseReceived:)];
-  [command submit];
+  NSString* commandString = @"go_point_numbers";
+  [GtpUtilities submitCommand:commandString
+                       target:self
+                     selector:@selector(gopointnumbersCommandResponseReceived:)
+                waitUntilDone:self.waitUntilDone];
 }
 
 // -----------------------------------------------------------------------------
@@ -192,10 +197,11 @@
   m_boardSize = [GoBoard sizeForDimension:[responseLines count]];
 
   // Submit the next GTP command
-  GtpCommand* command = [GtpCommand command:@"get_komi"
-                             responseTarget:self
-                                   selector:@selector(getkomiCommandResponseReceived:)];
-  [command submit];
+  NSString* commandString = @"get_komi";
+  [GtpUtilities submitCommand:commandString
+                       target:self
+                     selector:@selector(getkomiCommandResponseReceived:)
+                waitUntilDone:self.waitUntilDone];
 }
 
 // -----------------------------------------------------------------------------
@@ -215,10 +221,11 @@
   m_komi = [response.parsedResponse doubleValue];
 
   // Submit the next GTP command
-  GtpCommand* command = [GtpCommand command:@"list_handicap"
-                             responseTarget:self
-                                   selector:@selector(listhandicapCommandResponseReceived:)];
-  [command submit];
+  NSString* commandString = @"list_handicap";
+  [GtpUtilities submitCommand:commandString
+                       target:self
+                     selector:@selector(listhandicapCommandResponseReceived:)
+                waitUntilDone:self.waitUntilDone];
 }
 
 // -----------------------------------------------------------------------------
@@ -238,10 +245,11 @@
   m_handicap = [response.parsedResponse copy];
 
   // Submit the next GTP command
-  GtpCommand* command = [GtpCommand command:@"list_moves"
-                             responseTarget:self
-                                   selector:@selector(listmovesCommandResponseReceived:)];
-  [command submit];
+  NSString* commandString = @"list_moves";
+  [GtpUtilities submitCommand:commandString
+                       target:self
+                     selector:@selector(listmovesCommandResponseReceived:)
+                waitUntilDone:self.waitUntilDone];
 }
 
 // -----------------------------------------------------------------------------
@@ -309,8 +317,7 @@
   // that were just loaded.
   // If command failed, we must setup the board again to bring the application
   // and the GTP engine into a defined state that matches
-  if (! success)
-    command.shouldSetupGtpBoard = false;
+  command.shouldSetupGtpBoard = (! success);
   command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
   [command submit];
 }

@@ -34,6 +34,7 @@ const int cellContentSliderHeight = 23;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
+NSString* sgfBackupFileName = @"backup.sgf";
 
 // GTP notifications
 NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";

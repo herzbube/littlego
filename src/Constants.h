@@ -147,6 +147,9 @@ enum ArchiveSortCriteria
 /// @brief Simple file name that violates none of the GTP protocol restrictions
 /// for file names. Is used for the "loadsgf" and "savesgf" GTP commands.
 extern NSString* sgfTemporaryFileName;
+/// @brief Name of the .sgf file used for backup/restore when the app goes
+// to/returns from the background. The file is stored in the Library folder.
+extern NSString* sgfBackupFileName;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -169,6 +172,8 @@ extern const int cellContentSliderHeight;
 //@{
 /// @brief Is sent when a command is submitted to the GTP engine. The GtpCommand
 /// instance that is submitted is associated with the notification.
+///
+/// @attention This notification may be delivered in a secondary thread.
 extern NSString* gtpCommandSubmittedNotification;
 /// @brief Is sent when a response is received from the GTP engine. The
 /// GtpResponse instance that was received is associated with the notification.

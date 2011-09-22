@@ -37,7 +37,9 @@
 #import "play/SoundHandling.h"
 #import "archive/ArchiveViewModel.h"
 #import "command/CommandProcessor.h"
-#import "command/game/NewGameCommand.h"
+#import "command/backup/BackupGameCommand.h"
+#import "command/backup/CleanBackupCommand.h"
+#import "command/backup/RestoreGameCommand.h"
 
 // System includes
 #include <string>
@@ -160,11 +162,16 @@ static ApplicationDelegate* sharedDelegate = nil;
   NSFileManager* fileManager = [NSFileManager defaultManager];
   [fileManager changeCurrentDirectoryPath:documentsDirectory];
 
+  [self setupFolders];
   [self setupResourceBundle];
   [self setupUserDefaults];
   [self setupGUI];
   [self setupFuego];
-  [[[NewGameCommand alloc] init] submit];
+
+  // TODO: Display splash screen
+  // TODO Execute the command synchronously while the splash screen is visible
+  [[[RestoreGameCommand alloc] init] submit];
+  // TODO: Dispose of the splash screen
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -207,6 +214,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidEnterBackground:(UIApplication*)application
 {
+  [[[BackupGameCommand alloc] init] submit];
   [self.newGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
@@ -219,10 +227,41 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationWillEnterForeground:(UIApplication*)application
 {
+  [[[CleanBackupCommand alloc] init] submit];
 }
 
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up a number of folders in the application bundle, creating them
+/// if they do not exist.
+// -----------------------------------------------------------------------------
+- (void) setupFolders
+{
+  // TODO: Reimplement with loop over a list that was previously filled with
+  // the enum values representing the required directories
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  NSString* documentsDirectory = [paths objectAtIndex:0];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if (! [fileManager fileExistsAtPath:documentsDirectory])
+  {
+    [fileManager createDirectoryAtPath:documentsDirectory
+           withIntermediateDirectories:YES
+                            attributes:nil
+                                 error:nil];
+  }
+  paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
+  NSString* appSupportDirectory = [paths objectAtIndex:0];
+  if (! [fileManager fileExistsAtPath:appSupportDirectory])
+  {
+    [fileManager createDirectoryAtPath:appSupportDirectory
+           withIntermediateDirectories:YES
+                            attributes:nil
+                                 error:nil];
+  }
 }
 
 // -----------------------------------------------------------------------------

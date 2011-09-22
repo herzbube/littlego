@@ -36,6 +36,13 @@
 /// - Query the GTP engine for other information that was stored in the .sgf
 ///   file (handicap, komi, moves)
 /// - Setup the game with the information gathered via GTP
+///
+/// If the @e waitUntilDone property is set to true (by default it's false) the
+/// entire sequence of operations will be executed synchronously. This may take
+/// a long time.
+///
+/// Even if synchronous execution is requested, GTP commands
+/// whose responses do not yield a result that is requi
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand : CommandBase
 {
@@ -51,5 +58,8 @@
 @property(retain) NSString* fileName;
 @property(retain) Player* blackPlayer;
 @property(retain) Player* whitePlayer;
+/// @brief True if command execution should be synchronous. The default is
+/// false.
+@property bool waitUntilDone;
 
 @end

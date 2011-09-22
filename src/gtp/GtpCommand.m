@@ -40,6 +40,8 @@
 @implementation GtpCommand
 
 @synthesize command;
+@synthesize waitUntilDone;
+@synthesize response;
 @synthesize responseTarget;
 @synthesize responseTargetSelector;
 
@@ -90,6 +92,8 @@
     return nil;
 
   self.command = nil;
+  self.waitUntilDone = false;
+  self.response = nil;
   self.responseTarget = nil;
   self.responseTargetSelector = nil;
 
@@ -102,6 +106,7 @@
 - (void) dealloc
 {
   self.command = nil;
+  self.response = nil;
   self.responseTarget = nil;
   self.responseTargetSelector = nil;
   [super dealloc];

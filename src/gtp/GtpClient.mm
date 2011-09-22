@@ -187,14 +187,18 @@ static std::ifstream responseStream;
     fullResponse += singleLineResponse;
   }
 
-  // Notify the main thread of the response
+  // Create the response object
   NSString* nsResponse = [NSString stringWithCString:fullResponse.c_str() 
                                             encoding:[NSString defaultCStringEncoding]];
   GtpResponse* response = [GtpResponse response:nsResponse toCommand:command];
-  // Retain to make sure that object is still alive when the it "arrives" in
+  command.response = response;
+  // Retain to make sure that object is still alive when it "arrives" in
   // the main thread
   [response retain];
-  [self performSelectorOnMainThread:@selector(receive:) withObject:response waitUntilDone:NO];
+
+  // Notify the main thread of the response
+  if (! command.waitUntilDone)
+    [self performSelectorOnMainThread:@selector(receive:) withObject:response waitUntilDone:NO];
 
   if (NSOrderedSame == [command.command compare:@"quit"])
   {
@@ -205,9 +209,11 @@ static std::ifstream responseStream;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Submits @a command to the GtpEngine. This method is executed in the
-/// main thread's context. It returns immediately and does not wait for the
-/// GtpEngine's response.
+/// @brief Submits @a command to the GtpEngine.
+///
+/// This method is usually executed in the main thread's context. If
+/// @a command.waitUntilDone is false, this method returns immediately and does
+/// not wait for the GtpEngine's response.
 // -----------------------------------------------------------------------------
 - (void) submit:(GtpCommand*)command
 {
@@ -217,18 +223,24 @@ static std::ifstream responseStream;
   // the secondary thread
   [command retain];
   // Trigger secondary thread
-  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:NO];
+  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:command.waitUntilDone];
+  // Only if necessary: Undo retain message sent to the command object by
+  // processCommand:()
+  if (command.waitUntilDone)
+    [command.response autorelease];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked after @a response has been received from the GtpEngine.
-/// This method is executed in the main thread's context.
+/// @brief Is invoked after @a response has been received from the GtpEngine
+/// for a GtpCommand whose @e waitUntilDone property is false.
+///
+/// This method is always executed in the main thread's context.
 ///
 /// This method posts a notification to the default NSNotificationCenter so that
 /// clients that previously submitted a command will know when their expected
 /// response has come in.
 ///
-/// This method also notifies the response.command.responseTarget if such an
+/// This method also notifies the @e response.command.responseTarget if such an
 /// object has been set.
 // -----------------------------------------------------------------------------
 - (void) receive:(GtpResponse*)response

@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class GtpResponse;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The GtpCommand class represents a Go Text Protocol (GTP) command.
 ///
@@ -26,6 +30,14 @@
 /// GtpCommand conveniently knows how to submit itself to the application's
 /// GtpClient, thus clients do not have to concern themselves with where to
 /// obtain a GtpClient instance.
+///
+/// GtpCommand can be executed synchronously or asynchronously (the default).
+/// In the latter case, a target object and selector may be specified that
+/// are invoked when the response to the command has been received. This
+/// callback always occurs in the main thread context. The assumtpion here is
+/// that the command was submitted in the main thread, and asynchronous
+/// execution was chosen because the main thread should remain responsive to
+/// user interaction.
 // -----------------------------------------------------------------------------
 @interface GtpCommand : NSObject
 {
@@ -37,11 +49,27 @@
 
 /// @brief The GTP command string, including arguments.
 @property(retain) NSString* command;
+/// @brief True if execution should wait for the GTP response (i.e. command
+/// execution is synchronous).
+///
+/// The default for this property is false (i.e. command execution is
+/// asynchronous).
+///
+/// If this property is true, @e responseTarget and @e responseTargetSelector
+/// are ignored.
+@property bool waitUntilDone;
+/// @brief The GtpResponse object that "belongs" to this GtpCommand.
+///
+/// @note GtpCommand does not retain the response object to avoid a retain
+/// cycle.
+@property(readwrite, assign) GtpResponse* response;
 /// @brief The target on which @e selector is performed when the GTP response
 /// for this command is received.
 ///
-/// @note The object must be retained to make sure that it is still alive when
-/// @e selector is to be performed.
+/// This property is ignored if @e waitUntilDone is true.
+///
+/// @note GtpCommand retains the response target to make sure that it is still
+/// alive when @e responseTargetSelector is to be performed.
 @property(retain) id responseTarget;
 /// @brief The selector that is performed on @e target when the GTP response
 /// for this command is received. The selector must take a single GtpResponse*
