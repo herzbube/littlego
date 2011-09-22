@@ -350,7 +350,8 @@ enum FileAttributesSectionItem
 {
   if (didStartNewGame)
   {
-    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFile:self.game.fileName];
+    NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
+    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath];
     command.blackPlayer = controller.blackPlayer;
     command.whitePlayer = controller.whitePlayer;
     [command submit];

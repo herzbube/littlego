@@ -18,21 +18,18 @@
 // Project includes
 #import "CommandBase.h"
 
-// Forward declarations
-@class GtpCommand;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The SaveGameCommand class is responsible for saving the current
-/// game to an .sgf file.
+/// game to an .sgf file in the archive folder.
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
 /// command. If a file with the same name already exists, it is overwritten.
+///
+/// SaveGameCommand executes synchronously.
 // -----------------------------------------------------------------------------
 @interface SaveGameCommand : CommandBase
 {
-@private
-  GtpCommand* m_gtpCommand;
 }
 
 - (id) initWithFile:(NSString*)aFileName;

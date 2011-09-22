@@ -35,6 +35,8 @@
 - (ArchiveGame*) gameAtIndex:(int)index;
 - (ArchiveGame*) gameWithFileName:(NSString*)fileName;
 
+/// @brief Path to folder that contains files with archived games.
+@property(retain) NSString* archiveFolder;
 /// @brief Number of objects in gameList.
 ///
 /// This property exists purely as a convenience to clients, since the object

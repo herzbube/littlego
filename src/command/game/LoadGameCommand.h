@@ -51,11 +51,13 @@
   double m_komi;
   NSString* m_handicap;
   NSString* m_moves;
+  NSString* m_oldCurrentDirectory;
 }
 
-- (id) initWithFile:(NSString*)aFileName;
+- (id) initWithFilePath:(NSString*)aFilePath;
 
-@property(retain) NSString* fileName;
+/// @brief Full path to the .sgf file to be loaded.
+@property(retain) NSString* filePath;
 @property(retain) Player* blackPlayer;
 @property(retain) Player* whitePlayer;
 /// @brief True if command execution should be synchronous. The default is

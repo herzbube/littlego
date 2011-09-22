@@ -17,9 +17,11 @@
 
 // Project includes
 #import "PlayViewActionSheetController.h"
+#import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"
+#import "../archive/ArchiveViewModel.h"
 #import "../command/game/SaveGameCommand.h"
 #import "../command/game/NewGameCommand.h"
 #import "../command/move/ResignMoveCommand.h"
@@ -223,6 +225,9 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
+  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  GoGame* game = [GoGame sharedGame];
+
   // Determine default file name, which must be a name for which no file exists
   // yet. The file name pattern is this:
   //   BBB vs. WWW iii.sgf
@@ -231,15 +236,16 @@ enum ActionSheetButton
   // - WWW = White player name
   // - iii = Numeric counter starting with 1. The counter does not use prefix
   //         zeroes.
-  GoGame* game = [GoGame sharedGame];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* defaultFileName = nil;
+  NSString* defaultFilePath = nil;
   NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
   int suffix = 1;
   while (true)
   {
     defaultFileName = [NSString stringWithFormat:@"%@ %d.sgf", prefix, suffix];
-    if (! [fileManager fileExistsAtPath:defaultFileName])
+    defaultFilePath = [model.archiveFolder stringByAppendingPathComponent:defaultFileName];
+    if (! [fileManager fileExistsAtPath:defaultFilePath])
       break;
     suffix++;
   }
@@ -331,8 +337,10 @@ enum ActionSheetButton
 {
   if (! didCancel)
   {
+    ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+    NSString* sgfFilePath = [model.archiveFolder stringByAppendingPathComponent:editTextController.text];
     NSFileManager* fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:editTextController.text])
+    if ([fileManager fileExistsAtPath:sgfFilePath])
     {
       UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File already exists"
                                                       message:@"Another game file with that name already exists. Do you want to overwrite that file?"

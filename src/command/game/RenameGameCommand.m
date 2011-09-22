@@ -17,7 +17,9 @@
 
 // Project includes
 #import "RenameGameCommand.h"
+#import "../../ApplicationDelegate.h"
 #import "../../archive/ArchiveGame.h"
+#import "../../archive/ArchiveViewModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -73,8 +75,12 @@
   if ([self.game.fileName isEqualToString:self.newFileName])
     return true;
 
+  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
+  NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:self.newFileName];
+
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager moveItemAtPath:game.fileName toPath:self.newFileName error:nil];
+  BOOL success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
   if (success)
   {
     // Must update the ArchiveGame before posting the notification. Reason: The

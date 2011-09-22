@@ -739,3 +739,10 @@ path locations:
 - iPhone device
   /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
 
+Design note for code that needs to work with files
+- The code should never assume that the current working directory is set to a
+  specific location
+- The code should not change the current working directory, unless absolutely
+  necessary; working with absolute paths often obviates this need
+- If the current working directory must indeed be changed, it should be changed
+  back to the original location after the desired purpose has been achieved

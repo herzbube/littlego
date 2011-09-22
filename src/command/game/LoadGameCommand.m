@@ -65,7 +65,7 @@
 
 @implementation LoadGameCommand
 
-@synthesize fileName;
+@synthesize filePath;
 @synthesize blackPlayer;
 @synthesize whitePlayer;
 @synthesize waitUntilDone;
@@ -76,14 +76,14 @@
 ///
 /// @note This is the designated initializer of LoadGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithFile:(NSString*)aFileName
+- (id) initWithFilePath:(NSString*)aFilePath
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  self.fileName = aFileName;
+  self.filePath = aFilePath;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
   self.waitUntilDone = false;
@@ -91,6 +91,7 @@
   m_komi = 0;
   m_handicap = nil;
   m_moves = nil;
+  m_oldCurrentDirectory = nil;
 
   return self;
 }
@@ -100,11 +101,12 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.fileName = nil;
+  self.filePath = nil;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
   [m_handicap release];
   [m_moves release];
+  [m_oldCurrentDirectory release];
   [super dealloc];
 }
 
@@ -113,7 +115,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (! self.fileName || ! self.blackPlayer || ! self.whitePlayer)
+  if (! self.filePath || ! self.blackPlayer || ! self.whitePlayer)
     return false;
 
   // Disable play view updates while this command executes its multiple steps
@@ -121,12 +123,18 @@
 
   // Need to work with temporary file whose name is known and guaranteed to not
   // contain any characters that are prohibited by GTP
+  NSString* temporaryDirectory = NSTemporaryDirectory();
+  NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  if (! [fileManager fileExistsAtPath:self.fileName])
+  if (! [fileManager fileExistsAtPath:self.filePath])
     return false;
-  BOOL success = [fileManager copyItemAtPath:self.fileName toPath:sgfTemporaryFileName error:nil];
+  BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:nil];
   if (! success)
     return false;
+
+  m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
+  [fileManager changeCurrentDirectoryPath:temporaryDirectory];
+  // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
   [GtpUtilities submitCommand:commandString
                        target:self
@@ -145,6 +153,7 @@
   // Get rid of the temporary file
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:nil];
+  [fileManager changeCurrentDirectoryPath:m_oldCurrentDirectory];
   if (! success)
   {
     [self handleCommandFailed];

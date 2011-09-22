@@ -19,6 +19,8 @@
 #import "SaveGameCommand.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../ApplicationDelegate.h"
+#import "../../archive/ArchiveViewModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -26,7 +28,6 @@
 // -----------------------------------------------------------------------------
 @interface SaveGameCommand()
 - (void) dealloc;
-- (void) gtpResponseReceived:(NSNotification*)notification;
 @end
 
 
@@ -48,7 +49,6 @@
     return nil;
 
   self.fileName = aFileName;
-  m_gtpCommand = nil;
 
   return self;
 }
@@ -59,11 +59,6 @@
 - (void) dealloc
 {
   self.fileName = nil;
-  if (m_gtpCommand)
-  {
-    [m_gtpCommand release];
-    m_gtpCommand = nil;
-  }
   [super dealloc];
 }
 
@@ -74,71 +69,60 @@
 {
   if (! self.fileName)
     return false;
+  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  if (! model)
+    return false;
 
-  // Add ourselves as observers before we submit the command
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(gtpResponseReceived:)
-                                               name:gtpResponseReceivedNotification
-                                             object:nil];
-  // Make sure that this command object survives until it gets the notification.
-  // If the notification never arrives there will be a memory leak :-(
-  [self retain];
+  // The GTP engine saves its file into the temporary directory, but the final
+  // destination is in the archive folder
+  NSString* temporaryDirectory = NSTemporaryDirectory();
+  NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
+  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.fileName];
 
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
+  [fileManager changeCurrentDirectoryPath:temporaryDirectory];
+  // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfTemporaryFileName];
-  m_gtpCommand = [[GtpCommand command:commandString] retain];
-  [m_gtpCommand submit];
+  GtpCommand* command = [GtpCommand command:commandString];
+  command.waitUntilDone = true;
+  [command submit];
 
-  // TODO It would be better if we could wait for the GtpResponse before
-  // returning! For instance, this would enable the calling party to block the
-  // user interface until the game has been saved. At the moment, the user is
-  // able to go on playing while game saving is in progress...
-  return true;
-}
+  // Switch back as soon as possible; from now on operations use the full path
+  // to the temporary file
+  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
 
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #gtpResponseReceived notification.
-// -----------------------------------------------------------------------------
-- (void) gtpResponseReceived:(NSNotification*)notification
-{
-  GtpResponse* response = [notification object];
-  if (m_gtpCommand != response.command)
-    return;
-
-  // We got what we wanted, we are no longer interested in notifications
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-  // Balance the retain message in doIt() to trigger deallocation
-  [self autorelease];
-
-  // Was GTP command successful?
-  if (! response.status)
+  if (! command.response.status)
   {
+    [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
     assert(0);
-    return;
+    return false;
   }
 
   // Get rid of another file of the same name (otherwise the subsequent move
   // operation fails)
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:self.fileName])
+  if ([fileManager fileExistsAtPath:filePath])
   {
-    BOOL success = [fileManager removeItemAtPath:self.fileName error:nil];
+    BOOL success = [fileManager removeItemAtPath:filePath error:nil];
     if (! success)
     {
+      [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
       assert(0);
-      return;
+      return false;
     }
   }
 
-  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFileName toPath:self.fileName error:nil];
+  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFilePath toPath:filePath error:nil];
   if (! success)
   {
+    [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
     assert(0);
-    return;
+    return false;
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.fileName];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+  return true;
 }
 
 @end

@@ -43,6 +43,7 @@
 
 @implementation ArchiveViewModel
 
+@synthesize archiveFolder;
 @synthesize gameList;
 @synthesize sortCriteria;
 @synthesize sortAscending;
@@ -59,6 +60,10 @@
   self = [super init];
   if (! self)
     return nil;
+
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  self.archiveFolder = [paths objectAtIndex:0];
 
   self.gameList = [NSMutableArray arrayWithCapacity:0];
   self.sortCriteria = FileNameArchiveSort;
@@ -149,27 +154,17 @@
 // -----------------------------------------------------------------------------
 - (void) updateGameList
 {
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
-  NSString* documentsDirectory = [paths objectAtIndex:0];
-  NSArray* fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:nil];
-
+  NSArray* fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.archiveFolder error:nil];
   NSMutableArray* localGameList = [NSMutableArray arrayWithCapacity:fileList.count];
   for (NSString* fileName in fileList)
   {
-    // Ignore the temporary file used by "loadsgf" and "savesgf" GTP commands.
-    // It's extremely (!) unlikely that we encounter the file, but the current
-    // implementation of the application does not explicitly try to prevent
-    // the situation. So we better make 100% sure that the user never gets to
-    // see the file, at the very small cost of a string comparison.
-    if ([fileName isEqualToString:sgfTemporaryFileName])
-      continue;
-    NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileName error:nil];
+    NSString* filePath = [self.archiveFolder stringByAppendingPathComponent:fileName];
+    NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
     ArchiveGame* game = [self gameWithFileName:fileName];
     if (game)
       [game updateFileAttributes:fileAttributes];
     else
-      game = [[[ArchiveGame alloc] initWithFileName:(NSString*)fileName fileAttributes:fileAttributes] autorelease];
+      game = [[[ArchiveGame alloc] initWithFileName:fileName fileAttributes:fileAttributes] autorelease];
     [localGameList addObject:game];
   }
   // TODO: sort by file date if self.sortCriteria says so. It might be

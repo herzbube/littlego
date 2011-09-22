@@ -151,17 +151,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
-  // Changing current working directory to documents folder is important so
-  // that the "savesgf" and "loadsgf" GTP commands can be submitted using a
-  // simple filename only. If we had to specify the full path to the documents
-  // folder, we would be in trouble because that path contains spaces, but the
-  // GTP protocol does not support spaces in command arguments.
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
-  NSString* documentsDirectory = [paths objectAtIndex:0];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  [fileManager changeCurrentDirectoryPath:documentsDirectory];
-
   [self setupFolders];
   [self setupResourceBundle];
   [self setupUserDefaults];

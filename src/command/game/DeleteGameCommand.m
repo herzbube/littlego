@@ -17,7 +17,9 @@
 
 // Project includes
 #import "DeleteGameCommand.h"
+#import "../../ApplicationDelegate.h"
 #import "../../archive/ArchiveGame.h"
+#import "../../archive/ArchiveViewModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -67,8 +69,10 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager removeItemAtPath:game.fileName error:nil];
+  BOOL success = [fileManager removeItemAtPath:filePath error:nil];
   if (success)
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return success;
