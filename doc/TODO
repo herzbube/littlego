@@ -30,9 +30,6 @@ Priority 1 (important)
       -> extract logic and make all methods trivial
     - GoGame; the main problem here is that GoGame relies on GTP responses
       -> we need to substitute GTP client and engine with mock objects
-- Find a way to add the opening book to the project resources without
-  depending on a fixed path (a fixed path will break if the project is
-  compiled on a newer base SDK)
 - Give back to Fuego
   - information about how to build for iPhone
   - fix for the configure problem
@@ -45,9 +42,6 @@ Priority 1 (important)
   the inactive state (phone call); maybe kill the threads, then restart the
   engine and client at a later time? What about saving the .sgf file in such a
   scenario?
-- If the GTP engine is running when the application goes to the background,
-  check out if it's possible to let the engine finish processing in the
-  background
 - Implement a gesture recognizer that reacts immediately to the first touch
   (UITapGestureRecognizer only recognizes the gesture when the finger leaves
   the screen)
@@ -55,12 +49,6 @@ Priority 1 (important)
   to Model; let GoGame adopt the Model protocol, and the various views and
   controllers adopt ModelObserver. This makes the different roles a little bit
   more explicit
-- Little Go sometimes won't let you play on a certain intersection, incorrectly
-  thinking that the move is illegal. There are several potential sources for
-  this bug:
-  - The code that determines whether a move is legal is not correct
-  - Some sort of rendering bug: What the user sees in PlayView does not
-    correspond to the state in memory
 - Implement application state transitions as described in README.developer
 - When editing a player, and the player type is changed, the GTP Engine Settings
   section must be hidden/shown as appropriate; also the GtpEngineSettings
@@ -92,6 +80,13 @@ Priority 1 (important)
     the word "archive"
   - Hide the file extension .sgf; it should be tacked on when the game is saved,
     and removed when the game list is displayed
+- Synchronous GTP commands are not logged in DebugView at the moment because
+  there is no notification for the response. Fix this.
+- LoadGameCommand is too slow - when a game with many moves on a large board is
+  restored, the command takes many seconds to execute. The probable culprit is
+  GoBoardRegion::splitRegionIfRequired().
+- Add versioning to user defaults so that existing preferences on the user's
+  device can be upgraded when a new version of the app is installed
 
 
 Priority 2 (nice to have)
@@ -136,8 +131,37 @@ Priority 2 (nice to have)
   takes a long time
 - Add handler for .sgf files so that other apps can pass those files to the
   app for processing
+- Future improvements to the 3rdparty build process (see separate section
+  further down)
 
-Future improvements to the 3rdparty build process:
+
+Priority 3 (not important)
+-------------------------
+- There is a nice HOWTO written by Apple that shows how to create Xcode
+  documentation sets with Doxygen. Might be worthwile to check this out:
+  http://developer.apple.com/tools/creatingdocsetswithdoxygen.html
+- In the iOS Simulator, using the mouse to pan outside the board sometimes
+  triggers a PlayMove. This seems to happen only when the left or right edges
+  are passed, and only in the simulator environment. In my opinion this is a bug
+  in the simulator and/or UIPanGestureRecognizer: The gesture recognizer sends
+  a message for state UIGestureRecognizerStateEnded while its locationInView:()
+  method still returns a valid, on-board position. I set this problem to a low
+  priority because the erroneous behaviour cannot be observed on the iPhone
+  device.
+- In a computer vs. computer game, consider automatically pausing the game if
+  the user leaves the "Play" tab.
+- Update the Archive View if the user changes his locale in the system
+  preferences (the view displays formatted dates)
+- Add support for folders to the Archive view
+- Consider adding undo support through shaking the device (see HIG for a
+  description of how this is supposed to work)
+- Find a way to add the opening book to the project resources without
+  depending on a fixed path (a fixed path will break if the project is
+  compiled on a newer base SDK)
+
+
+Future improvements to the 3rdparty build process
+-------------------------------------------------
 - Build both a debug and a release version of 3rdparty libraries; use the build
   variable $(CONFIGURATION) to set LIBRARY_SEARCH_PATHS. This is important
   so that Little Go no longer needs to set the preprocessor macro NDEBUG in
@@ -178,25 +202,3 @@ Future improvements to the 3rdparty build process:
   asking for trouble. If a solution is found, remove the hack in function
   INSTALL_STEPS_SOFTWARE() in build-fuego.sh which creates an SDK directory
   symlink as a workaround for this Xcode limitation.
-
-
-Priority 3 (not important)
--------------------------
-- There is a nice HOWTO written by Apple that shows how to create Xcode
-  documentation sets with Doxygen. Might be worthwile to check this out:
-  http://developer.apple.com/tools/creatingdocsetswithdoxygen.html
-- In the iOS Simulator, using the mouse to pan outside the board sometimes
-  triggers a PlayMove. This seems to happen only when the left or right edges
-  are passed, and only in the simulator environment. In my opinion this is a bug
-  in the simulator and/or UIPanGestureRecognizer: The gesture recognizer sends
-  a message for state UIGestureRecognizerStateEnded while its locationInView:()
-  method still returns a valid, on-board position. I set this problem to a low
-  priority because the erroneous behaviour cannot be observed on the iPhone
-  device.
-- In a computer vs. computer game, consider automatically pausing the game if
-  the user leaves the "Play" tab.
-- Update the Archive View if the user changes his locale in the system
-  preferences (the view displays formatted dates)
-- Add support for folders to the Archive view
-- Consider adding undo support through shaking the device (see HIG for a
-  description of how this is supposed to work)

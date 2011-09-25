@@ -25,21 +25,26 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.2.
+This is Little Go 0.3.
 
-New features in this release are still very basic: For instance, you can now
-start a new game without having to restart the application. Another major
-addition is the ability to select a board size when a new game is started, and
-also to select which players should play against each other (allows computer
-vs. computer play). Last but not least, you can now undo your last move.
+The two most important new features in this release are support for saving and
+loading of games, and an option that allows memory consumption of the GTP engine
+to be limited so that the system does not kill the application because it uses
+up too much memory.
 
 For more details see the ChangeLog document.
 
 
 Known bugs
 ----------
-Resigning at the start of the game will crash the application due to Fuego
-consuming more memory than is available during scoring.
+Loading a game on a large board and with many moves takes much too long.
+
+If the application is launched and automatically starts a human vs. human game,
+memory consumption of the GTP engine will not be limited. The technical reason
+for this is that no computer player was involved in the game. As soon as a game
+that involves a computer player is started, that computer player's memory
+consumption limit will be applied - and will remain in force (!) until the
+application is killed, or a different limit is applied.
 
 
 License and source code

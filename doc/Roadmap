@@ -67,7 +67,7 @@ Version 0.4
 - Technical
   - Handle interruptions (phone call, application is suspended, etc)
 
-Version 0.3
+Version 0.3 (September 25 2011)
 - Archive view
   - Save current game to .sgf
   - Load existing game from .sgf

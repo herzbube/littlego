@@ -12,6 +12,7 @@ Before the release
 - Replace the "Changes in this release" section of the README with a collection
   of the most important changes. A possible source for this is the git commit
   log.
+- Update the "Known bugs" listed in the README
 - Change the release date in the following files:
   - Roadmap
 - Make sure that the version number is up to date in the following files

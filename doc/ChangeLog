@@ -1,3 +1,32 @@
+Sun September 25 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.3
+- features
+  - computer players now have a set of GTP engine attributes that allow to
+    limit memory consumption and, to a certain degree, playing strength
+  - game archive
+    - a game in progress can now be saved
+    - existing games can be managed on a separate "Archive" tab
+    - the game archive is accessible from iTunes so that archived games can be
+      transferred to/from the iOS device when it is connected to iTunes
+  - the game in progress is auto-saved when the application is put into the
+    background so that the game is not lost if the application is subsequently
+    killed for any reason
+  - Play view now uses a grey instead of a b/w color scheme
+- bugfixes
+  - by default the GTP engine now uses 64 MB memory only; on an iPhone 3GS with
+    256 MB memory this limit is sufficient that the system no longer kills the
+    application because it uses up too much memory
+  - application no longer hangs if GTP engine responds with error to final_score
+  - capturing moves with a single stone now work correctly
+  - pass moves are no longer drawn on the Go board
+  - toolbar buttons on Play view now use an explicit text label instead of
+    confusing icons
+- technical changes
+  - less view updates on the Play view, which means less power consumption and
+    slightly snappier panning
+  - add command processor design pattern
+  - GTP commands can now be executed synchronously
+
 Tue August 23 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.2
 - features
