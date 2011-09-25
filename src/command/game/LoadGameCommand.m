@@ -49,6 +49,10 @@
 - (void) listhandicapCommandResponseReceived:(GtpResponse*)response;
 - (void) listmovesCommandResponseReceived:(GtpResponse*)response;
 //@}
+/// @name MBProgressHUDDelegate protocol
+//@{
+- (void) hudWasHidden:(MBProgressHUD*)progressHUD;
+//@}
 /// @name Helpers
 //@{
 - (void) handleCommandSucceeded;
@@ -59,6 +63,7 @@
 - (void) triggerComputerPlayer;
 - (void) cleanup;
 - (void) showAlert;
+- (void) replayMoves:(NSArray*)moveList;
 //@}
 @end
 
@@ -289,8 +294,8 @@
   [self setupHandicap:m_handicap];
   [self setupMoves:m_moves];
   // TODO: Add Komi
-  [self triggerComputerPlayer];
-  [self cleanup];
+//  [self triggerComputerPlayer];
+//  [self cleanup];
 }
 
 // -----------------------------------------------------------------------------
@@ -371,14 +376,43 @@
 // -----------------------------------------------------------------------------
 - (void) setupMoves:(NSString*)movesFromGtp
 {
-  if (0 == m_moves.length)
+  if (0 == movesFromGtp.length)
     return;
+  NSArray* moveList = [movesFromGtp componentsSeparatedByString:@", "];
 
+  UIView* theSuperView = [ApplicationDelegate sharedDelegate].tabBarController.view;
+	m_progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
+	[theSuperView addSubview:m_progressHUD];
+	// Set determinate mode
+	m_progressHUD.mode = MBProgressHUDModeDeterminate;
+	m_progressHUD.determinateStyle = MBDeterminateStyleBar;
+	m_progressHUD.dimBackground = YES;
+	m_progressHUD.delegate = self;
+	m_progressHUD.labelText = @"Loading game...";
+	[m_progressHUD showWhileExecuting:@selector(replayMoves:) onTarget:self withObject:moveList animated:YES];
+
+  [self retain];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Replays the moves in @a moveList.
+///
+/// @a moveList is expected to contain NSString objects, each having the format
+/// "color vertex" (e.g. "W C13").
+///
+/// @note This method runs in a secondary thread. For every move that is
+/// replayed, the progress view in @e m_progressHUD is updated by one step.
+// -----------------------------------------------------------------------------
+- (void) replayMoves:(NSArray*)moveList
+{
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
 
+  int totalSteps = moveList.count;
+  float stepIncrease = 1.0 / totalSteps;
+  float progress = 0.0;
+
   bool hasResigned = false;
-  NSArray* moveList = [m_moves componentsSeparatedByString:@", "];
   for (NSString* move in moveList)
   {
     if (hasResigned)
@@ -404,7 +438,22 @@
       GoPoint* point = [board pointAtVertex:vertexString];
       [game play:point];
     }
+
+    progress += stepIncrease;
+    m_progressHUD.progress = progress;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MBProgressHUDDelegate method
+// -----------------------------------------------------------------------------
+- (void) hudWasHidden:(MBProgressHUD*)progressHUD
+{
+  [progressHUD removeFromSuperview];
+  [progressHUD release];
+  [self autorelease];
+  [self triggerComputerPlayer];
+  [self cleanup];
 }
 
 // -----------------------------------------------------------------------------

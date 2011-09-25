@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../CommandBase.h"
+#import "../../ui/MBProgressHUD.h"
 
 // Forward declarations
 @class GtpCommand;
@@ -44,7 +45,7 @@
 /// Even if synchronous execution is requested, GTP commands
 /// whose responses do not yield a result that is requi
 // -----------------------------------------------------------------------------
-@interface LoadGameCommand : CommandBase
+@interface LoadGameCommand : CommandBase <MBProgressHUDDelegate>
 {
 @private
   enum GoBoardSize m_boardSize;
@@ -52,6 +53,7 @@
   NSString* m_handicap;
   NSString* m_moves;
   NSString* m_oldCurrentDirectory;
+  MBProgressHUD* m_progressHUD;
 }
 
 - (id) initWithFilePath:(NSString*)aFilePath;

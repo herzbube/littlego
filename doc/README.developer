@@ -442,8 +442,14 @@ or Cocoa data types across the boundary into Core Foundation is sometimes as
 simple as casting from one type to the other. [17] has details about this
 so-called system of "Toll-Free Bridged Types".
 
+[18] is a very good starting point for solutions to rather high-level problems.
 Handling documents (including the sync to iTunes) is thoroughly explained in
-[18].
+the subsecion "Files and the File System".
+
+Tasks that should run while the app is in the background are also explained in
+[18], in section "Executing Code in the Background". To understand blocks,
+which are required for background tasks, a side-trip to [19] and [20] should be
+sufficient.
 
 
 [1]  iOS Reference Library > Guides > The Objective-C Programming Language > Declared Properties
@@ -463,7 +469,9 @@ Handling documents (including the sync to iTunes) is thoroughly explained in
 [15] iOS Reference Library > Reference > System Sound Services Reference
 [16] iOS Reference Library > Guides > Multimedia Programming Guide
 [17] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html
-[18] iOS Reference Library > Guides > iOS Application Programming Guide > Implementing Common Application Behaviors > Files and the File System
+[18] iOS Reference Library > Guides > iOS Application Programming Guide
+[19] iOS Reference Library > Getting Started > A Short Practical Guide to Blocks
+[20] iOS Reference Library > Guides > Blocks Programming Topics
 
 
 Compilation command
