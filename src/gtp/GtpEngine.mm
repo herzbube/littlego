@@ -17,7 +17,6 @@
 
 // Project includes
 #include "GtpEngine.h"
-#import "../ApplicationDelegate.h"
 
 // Fuego
 #include <fuego/FuegoMainUtil.h>
@@ -99,26 +98,26 @@
   NSString* outputPipePath = [pipes objectAtIndex:1];
   const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-  NSString* bookFile = [[ApplicationDelegate sharedDelegate].resourceBundle pathForResource:openingBookResource ofType:nil];
-
   char programName[255];
   char inputPipeParameterName[255];
   char inputPipeParameterValue[255];
   char outputPipeParameterName[255];
   char outputPipeParameterValue[255];
-  // TODO: fix this hack!!!
-  sprintf(programName, "%s", [bookFile cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+  char nobookParameterName[255];
+  sprintf(programName, "fuego");
   sprintf(inputPipeParameterName, "--input-pipe");
   sprintf(inputPipeParameterValue, "%s", pchInputPipePath);
   sprintf(outputPipeParameterName, "--output-pipe");
   sprintf(outputPipeParameterValue, "%s", pchOutputPipePath);
-  int argc = 5;
+  sprintf(nobookParameterName, "--nobook");  // opening book is loaded separately from a project resource
+  int argc = 6;
   char* argv[argc];
   argv[0] = programName;
   argv[1] = inputPipeParameterName;
   argv[2] = inputPipeParameterValue;
   argv[3] = outputPipeParameterName;
   argv[4] = outputPipeParameterValue;
+  argv[5] = nobookParameterName;
 
   try
   {

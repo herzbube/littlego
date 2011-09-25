@@ -37,6 +37,7 @@
 #import "play/SoundHandling.h"
 #import "archive/ArchiveViewModel.h"
 #import "command/CommandProcessor.h"
+#import "command/LoadOpeningBook.h"
 #import "command/backup/BackupGameCommand.h"
 #import "command/backup/CleanBackupCommand.h"
 #import "command/backup/RestoreGameCommand.h"
@@ -157,10 +158,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupGUI];
   [self setupFuego];
 
-  // TODO: Display splash screen
-  // TODO Execute the command synchronously while the splash screen is visible
+  [[[LoadOpeningBook alloc] init] submit];
   [[[RestoreGameCommand alloc] init] submit];
-  // TODO: Dispose of the splash screen
 
   // We don't handle any URL resources in launchOptions
   // -> always return success

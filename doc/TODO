@@ -38,11 +38,6 @@ Priority 1 (important)
   - fix for the configure problem
   - improvements to the Autoconf/Automake configuration, i.e. optional creation
     of a unified library and optional installation of headers
-  - Load opening book: Cannot be done via "book_load" GTP command because of
-    spaces in the path. The default search paths are 1) executable path: can be
-    used via hacking argv[0]; 2) ABS_TOP_SRCDIR/book: no good since we don't
-    have the sources; 3) DATADIR/PACKAGE: no good since we don't know the
-    folder in advance
   - Building against a release build of Fuego requires that the project needs
     to set the NDEBUG preprocessor macro, even if the project wants to make
     a debug build; this effectively prevents the use of assert()
