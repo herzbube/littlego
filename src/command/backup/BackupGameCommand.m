@@ -82,6 +82,13 @@
   if (! backgroundSupported)
     return false;
 
+  // No need to backup if there are no moves. All the other game characteristics
+  // (komi, handicap, players) are backed up separately by the "new game"
+  // subsystem and will be picked by when the application restarts and a new
+  // game is started.
+  if (! game.firstMove)
+    return true;
+
   // This block is invoked a certain amount of time after the background task
   // has been started. An experiment with the iOS 4.2 simulator has shown the
   // time to be approximately 10 minutes. In the experiment, the main background
