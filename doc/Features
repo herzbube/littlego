@@ -89,6 +89,70 @@ Working with .sgf files
 
 Interacting with the GTP engine
 -------------------------------
+- All interaction with the GTP engine takes place in the Debug view on the
+  "Debug" tab
+- The Debug view is a table view with a GTP section. The cells in that section
+  are
+  - View the GTP log
+  - Clear the GTP log
+  - Manage canned GTP commands
+  - Edit settings
+- GTP log
+  - The GTP log can be viewed either in "structured" or in "raw" mode. A button
+    with a "flip" animation allows to switch between the two modes.
+  - Commands are listed in the order in which they were submitted, the most
+    recent command appears at the bottom of the log
+  - The log is dynamically updated when a new GTP command/response is submitted
+    to or received from the GTP engine
+  - The navigation item displays a button that can be used to submit a command
+    - Selecting the button displays a view with an editable text field that
+      allows the user to manually enter a command
+    - The user may also select one of the canned commands; doing so transfers
+      the command text into the text field where the command can be further
+      edited (e.g. to add arguments)
+    - The navigation item displays a button that is used to submit the command
+    - Tapping the keyboard "Enter" key also submits the command
+  - The "structured" GTP log lists submitted GTP commands in a table view
+    - One table view cell corresponds to one command
+    - A table view cell shows the following condensed information:
+      - The command name
+      - A timestamp when the command was submitted
+      - A color-code for the status of the GTP response (green = success,
+        red = failed, gray = no response)
+    - Tapping a table view cell presents a detail view for that command with
+      the following information
+      - The same information as in the condensed table view cell
+      - The GTP response status is additionally spelled out (the color-code
+        is also displayed)
+      - The GTP response is displayed in a text view with a fixed font; this
+        retains the readability of formatted responses (e.g. the response to
+        the "showboard" command)
+      - The navigation item displays a button that can be used to add the
+        command to the list of canned commands
+  - The "raw" GTP log displays commands and responses in a scrollable text view
+    with a fixed font.
+- Clearing the GTP log discards all GTP command/response items that are
+  currently in the log
+- Canned commands
+  - Canned commands are listed as cells in a table view
+  - The application comes with a predefined factory set of canned commands
+  - The user can delete and re-arrange commands by entering the table view's
+    editing mode (a standard iOS feature)
+  - A table view cell displays the command text
+  - Tapping a cell presents a detail view with the following information
+    - The command text in an editable text view
+    - A submit button in the navigation item. Tapping the button submits
+      the command as-is, i.e. there is no opportunity to further edit the
+      command (e.g. to add an argument)
+- Settings
+  - Maximum number of GTP commands that are to be retained in the GTP log.
+    There is no "unlimited" setting so that memory usage remains tolerable.
+  - Restore the factory set of "canned" GTP commands
+  - Enable/disable making a sound when a GTP command is submitted by the user
+
+
+Managing the application log
+----------------------------
 TODO
 
 
