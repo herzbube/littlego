@@ -52,7 +52,8 @@ Make a beta release (binary distribution only)
   Name = Little Go Beta Test
 - You are now asked to specify a save location & name. This step creates both a
   .plist and an .ipa file, where the specified name serves as the base name for
-  both files. Make sure to specify the same name as in the URL above.
+  both files. Make sure to specify the same name as in the URL above (but
+  without the .ipa extension; e.g. "littlego").
 - Make sure to get the "Ad Hoc Distribution Provisioning Profile" from the
   iOS Provisioning Portal. This profile is stored in a .mobileprovision file.
 - Upload the .plist, .ipa and .mobileprovision files to the server from where

@@ -16,15 +16,15 @@
 
 
 // Project includes
-#import "DebugViewController.h"
+#import "GtpRawLogController.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DebugViewController.
+/// @brief Class extension with private methods for GtpRawLogController.
 // -----------------------------------------------------------------------------
-@interface DebugViewController()
+@interface GtpRawLogController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -50,13 +50,13 @@
 @end
 
 
-@implementation DebugViewController
+@implementation GtpRawLogController
 
 @synthesize textView;
 @synthesize textCache;
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DebugViewController object.
+/// @brief Deallocates memory allocated by this GtpRawLogController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -67,7 +67,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is called after this DebugViewController object has been allocated
+/// @brief Is called after this GtpRawLogController object has been allocated
 /// and initialized from DebugView.xib
 ///
 /// @note This is a method from the UINibLoadingAdditions category (an addition

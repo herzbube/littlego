@@ -20,14 +20,14 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DebugViewController class is responsible for managing the debug
-/// output view.
+/// @brief The GtpRawLogController class is responsible for managing the raw
+/// log of the GTP client/engine command/response exchange.
 ///
-/// DebugViewController currently does nothing except logging all GTP commands
+/// GtpRawLogController currently does nothing except logging all GTP commands
 /// and GTP responses to a UITextView.
 ///
 /// If the debug output view has not yet been created (because the user has
-/// never switched to its tab), DebugViewController captures debug output in
+/// never switched to its tab), GtpRawLogController captures debug output in
 /// a text "cache". When the debug output view is created, it is immediately
 /// filled with the content of the cache.
 ///
@@ -36,7 +36,7 @@
 /// remove this feature altogether (only from the iPhone build?) and only log
 /// to disk.
 // -----------------------------------------------------------------------------
-@interface DebugViewController : UIViewController
+@interface GtpRawLogController : UIViewController
 {
 }
 

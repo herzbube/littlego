@@ -56,6 +56,7 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
+		CD0CCB58142FDF3300A3F869 /* GtpRawLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -74,7 +75,6 @@
 		CD3AE7841345164800B58E08 /* COPYING.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7821345164800B58E08 /* COPYING.html */; };
 		CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7831345164800B58E08 /* COPYING.LESSER.html */; };
 		CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */; };
-		CD78034D132FE6D300E7843F /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD78034C132FE6D300E7843F /* DebugViewController.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
@@ -205,6 +205,8 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBook.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBook.m; sourceTree = "<group>"; };
+		CD0CCB56142FDF3300A3F869 /* GtpRawLogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpRawLogController.h; sourceTree = "<group>"; };
+		CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpRawLogController.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -225,7 +227,6 @@
 		CD10882113255A6B00E83543 /* GoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayer.m; sourceTree = "<group>"; };
 		CD10882313255AA600E83543 /* GoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPoint.h; sourceTree = "<group>"; };
 		CD10882413255AA600E83543 /* GoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPoint.m; sourceTree = "<group>"; };
-		CD10885C1326CCEB00E83543 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		CD10885F1326CD2400E83543 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		CD1088601326CD2400E83543 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
 		CD1088621326CDAA00E83543 /* PlayView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
@@ -240,7 +241,6 @@
 		CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
-		CD78034C132FE6D300E7843F /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
@@ -499,8 +499,8 @@
 		CD1088551326CBB300E83543 /* debug */ = {
 			isa = PBXGroup;
 			children = (
-				CD10885C1326CCEB00E83543 /* DebugViewController.h */,
-				CD78034C132FE6D300E7843F /* DebugViewController.m */,
+				CD0CCB56142FDF3300A3F869 /* GtpRawLogController.h */,
+				CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */,
 			);
 			path = debug;
 			sourceTree = "<group>";
@@ -899,7 +899,6 @@
 				CD1088611326CD2400E83543 /* PlayViewController.m in Sources */,
 				CD10887D1326D2C100E83543 /* PlayView.m in Sources */,
 				CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */,
-				CD78034D132FE6D300E7843F /* DebugViewController.m in Sources */,
 				CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
@@ -949,6 +948,7 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */,
+				CD0CCB58142FDF3300A3F869 /* GtpRawLogController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

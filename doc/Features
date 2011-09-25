@@ -42,8 +42,6 @@ TODO
 Working with .sgf files
 -----------------------
 - Saved games are available for syncing in iTunes
-  - To achieve this, save game files are stored in the application's document
-    folder
 - The Archive view on the "Archive" tab lists previously saved games and
   provides the means to manage them as follows
   - Existing files are listed in a table view
