@@ -159,7 +159,12 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupFuego];
 
   [[[LoadOpeningBook alloc] init] submit];
-  [[[RestoreGameCommand alloc] init] submit];
+  // Run this command with a small delay so that this method can return and the
+  // system has time to finish the application launch cycle. Because the command
+  // runs synchronously and possibly takes a long time, it would be fatal to
+  // run it right now - the system might kill our app because we don't finish
+  // launching within the limited time given to us
+  [[[RestoreGameCommand alloc] init] submitAfterDelay:0.2];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success

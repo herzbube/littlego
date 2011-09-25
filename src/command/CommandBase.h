@@ -44,5 +44,6 @@
 
 - (id) init;
 - (bool) submit;
+- (void) submitAfterDelay:(NSTimeInterval)delay;
 
 @end

@@ -255,6 +255,11 @@ static PlayView* sharedPlayView = nil;
     self.updatesWereDelayed = true;
     return;
   }
+  // No game -> no board -> no drawing. This situation exists right after the
+  // application has lanuched and the initial game is created only after a
+  // small delay.
+  if (! [GoGame sharedGame])
+    return;
 
 //  NSLog(@"PlayView::drawRect:() starts");
   [self updateDrawParametersForRect:rect];

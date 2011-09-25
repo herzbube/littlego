@@ -102,4 +102,12 @@
   return [processor submitCommand:self];  // self is probably deallocated here!
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Invokes submit() after @a delay seconds.
+// -----------------------------------------------------------------------------
+- (void) submitAfterDelay:(NSTimeInterval)delay
+{
+  [self performSelector:@selector(submit) withObject:nil afterDelay:delay];
+}
+
 @end
