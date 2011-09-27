@@ -16,14 +16,20 @@
 
 
 // Forward declarations
-@class NSString;
+@class GtpLogModel;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSStringAdditions category enhances NSString by adding a number
-/// of useful class methods.
+/// @brief The GtpLogViewController class is responsible for managing user
+/// interaction on the "GTP Log" view.
 // -----------------------------------------------------------------------------
-@interface NSString(NSStringAdditions)
-+ (NSString*) UUIDString;
-- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
+@interface GtpLogViewController : UITableViewController
+{
+}
+
++ (GtpLogViewController*) controller;
+
+/// @brief The model object
+@property(retain) GtpLogModel* model;
+
 @end

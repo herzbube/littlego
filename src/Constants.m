@@ -37,8 +37,8 @@ NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
 NSString* sgfBackupFileName = @"backup.sgf";
 
 // GTP notifications
-NSString* gtpCommandSubmittedNotification = @"GtpCommandSubmitted";
-NSString* gtpResponseReceivedNotification = @"GtpResponseReceived";
+NSString* gtpCommandWillBeSubmittedNotification = @"GtpCommandWillBeSubmitted";
+NSString* gtpResponseWasReceivedNotification = @"GtpResponseWasReceived";
 NSString* gtpEngineRunningNotification = @"GtpEngineRunning";
 NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 // GoGame notifications
@@ -54,6 +54,9 @@ NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
 NSString* gameSavedToArchive = @"GameSavedToArchive";
 NSString* gameLoadedFromArchive = @"GameLoadedFromArchive";
 NSString* archiveContentChanged = @"ArchiveContentChanged";
+// GTP log related notifications
+NSString* gtpLogContentChanged = @"GtpLogContentChanged";
+NSString* gtpLogItemChanged = @"GtpLogItemChanged";
 
 /// GTP engine settings default values
 int fuegoMaxMemoryMinimum = 32;

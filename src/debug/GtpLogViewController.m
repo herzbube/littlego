@@ -16,50 +16,18 @@
 
 
 // Project includes
-#import "DebugViewController.h"
 #import "GtpLogViewController.h"
+#import "GtpLogItem.h"
+#import "GtpLogItemViewController.h"
 #import "GtpLogModel.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Debug" table view.
+/// @brief Class extension with private methods for GtpLogViewController.
 // -----------------------------------------------------------------------------
-enum DebugTableViewSection
-{
-  GtpSection,
-//  ApplicationLogSection,
-  MaxSection
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GtpSection.
-// -----------------------------------------------------------------------------
-enum GtpSectionItem
-{
-  GtpLogItem,
-  GtpClearLogItem,
-  GtpCommandsItem,
-  GtpSettingsItem,
-  MaxGtpSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ApplicationLogSection.
-// -----------------------------------------------------------------------------
-enum ApplicationLogSectionItem
-{
-  ApplicationLogItem,
-  ApplicationLogSettingsItem,
-  MaxApplicationLogSectionItem
-};
-
-
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DebugViewController.
-// -----------------------------------------------------------------------------
-@interface DebugViewController()
+@interface GtpLogViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -73,7 +41,6 @@ enum ApplicationLogSectionItem
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -82,22 +49,40 @@ enum ApplicationLogSectionItem
 //@}
 /// @name Action methods
 //@{
-- (void) viewGtpLog;
+- (void) composeCommand:(id)sender;
+- (void) viewLogItem:(GtpLogItem*)logItem;
 //@}
-/// @name Helpers
+/// @name Notification responders
 //@{
+- (void) gtpLogContentChanged:(NSNotification*)notification;
+- (void) gtpLogItemChanged:(NSNotification*)notification;
 //@}
 @end
 
 
-@implementation DebugViewController
+@implementation GtpLogViewController
+
+@synthesize model;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DebugViewController object.
+/// @brief Convenience constructor. Creates a GtpLogViewController instance of
+/// plain style.
+// -----------------------------------------------------------------------------
++ (GtpLogViewController*) controller
+{
+  GtpLogViewController* controller = [[GtpLogViewController alloc] initWithStyle:UITableViewStylePlain];
+  if (controller)
+    [controller autorelease];
+  return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GtpLogViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.model = nil;
   [super dealloc];
 }
 
@@ -108,6 +93,23 @@ enum ApplicationLogSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+
+  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  self.model = delegate.gtpLogModel;
+
+  self.navigationItem.title = @"GTP Log";
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                                         target:self
+                                                                                         action:@selector(composeCommand:)];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(gtpLogContentChanged:)
+                                               name:gtpLogContentChanged
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(gtpLogItemChanged:)
+                                               name:gtpLogItemChanged
+                                             object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -128,7 +130,7 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -136,35 +138,7 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
-  {
-    case GtpSection:
-      return MaxGtpSectionItem;
-//    case ApplicationLogSection:
-//      return MaxApplicationLogSectionItem;
-    default:
-      assert(0);
-      break;
-  }
-  return 0;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
-{
-  switch (section)
-  {
-    case GtpSection:
-      return @"GTP (Go Text Protocol)";
-//    case ApplicationLogSection:
-//      return @"Application Log";
-    default:
-      assert(0);
-      break;
-  }
-  return nil;
+  return self.model.itemCount;
 }
 
 // -----------------------------------------------------------------------------
@@ -172,53 +146,12 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  switch (indexPath.section)
-  {
-    case GtpSection:
-    {
-      switch (indexPath.row)
-      {
-        case GtpLogItem:
-          cell.textLabel.text = @"GTP log";
-          break;
-        case GtpClearLogItem:
-          cell.textLabel.text = @"Clear GTP log";
-          cell.accessoryType = UITableViewCellAccessoryNone;
-          break;
-        case GtpCommandsItem:
-          cell.textLabel.text = @"GTP commands";
-          break;
-        case GtpSettingsItem:
-          cell.textLabel.text = @"Settings";
-          break;
-        default:
-          assert(0);
-          break;
-      }
-      break;
-    }
-//    case ApplicationLogSection:
-//    {
-//      switch (indexPath.row)
-//      {
-//        case ApplicationLogItem:
-//          cell.textLabel.text = @"View application log";
-//          break;
-//        case ApplicationLogSettingsItem:
-//          cell.textLabel.text = @"Settings";
-//          break;
-//        default:
-//          assert(0);
-//          break;
-//      }
-//      break;
-//    }
-    default:
-      assert(0);
-      break;
-  }
+  GtpLogItem* logItem = [self.model itemAtIndex:indexPath.row];
+  cell.textLabel.text = logItem.commandString;
+  cell.detailTextLabel.text = logItem.timeStamp;
+  cell.imageView.image = [logItem imageRepresentingResponseStatus];
   return cell;
 }
 
@@ -228,45 +161,42 @@ enum ApplicationLogSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  [self viewLogItem:[self.model itemAtIndex:indexPath.row]];
+}
 
-  switch (indexPath.section)
-  {
-    case GtpSection:
-      switch (indexPath.row)
-    {
-      case GtpLogItem:
-        [self viewGtpLog];
-        break;
-      case GtpClearLogItem:
-      {
-        ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
-        [delegate.gtpLogModel clearLog];
-        break;
-      }
-      case GtpCommandsItem:
-        break;
-      case GtpSettingsItem:
-        break;
-      default:
-        assert(0);
-        break;
-    }
-      break;
-      break;
-//    case ApplicationLogSection:
-//      break;
-    default:
-      return;
-  }
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gtpLogContentChanged notification.
+// -----------------------------------------------------------------------------
+- (void) gtpLogContentChanged:(NSNotification*)notification
+{
+  [self.tableView reloadData];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays GtpLogViewController to allow the user to view the GTP
-/// command/response log.
+/// @brief Responds to the #gtpLogItemChanged notification.
 // -----------------------------------------------------------------------------
-- (void) viewGtpLog
+- (void) gtpLogItemChanged:(NSNotification*)notification
 {
-  GtpLogViewController* controller = [GtpLogViewController controller];
+  [self.tableView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "compose" button in the navigation
+/// item. Displays a view that allows the user to compose and submit a GTP
+/// command.
+// -----------------------------------------------------------------------------
+- (void) composeCommand:(id)sender
+{
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays GtpLogItemViewController to allow the user to view the
+/// details of item @a logItem.
+// -----------------------------------------------------------------------------
+- (void) viewLogItem:(GtpLogItem*)logItem
+{
+  GtpLogItemViewController* controller = [GtpLogItemViewController controllerWithLogItem:logItem];
   [self.navigationController pushViewController:controller animated:YES];
 }
 

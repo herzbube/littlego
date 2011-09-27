@@ -40,6 +40,7 @@
 @implementation GtpCommand
 
 @synthesize command;
+@synthesize submittingThread;
 @synthesize waitUntilDone;
 @synthesize response;
 @synthesize responseTarget;
@@ -92,6 +93,7 @@
     return nil;
 
   self.command = nil;
+  self.submittingThread = nil;
   self.waitUntilDone = false;
   self.response = nil;
   self.responseTarget = nil;
@@ -106,6 +108,7 @@
 - (void) dealloc
 {
   self.command = nil;
+  self.submittingThread = nil;
   self.response = nil;
   self.responseTarget = nil;
   self.responseTargetSelector = nil;

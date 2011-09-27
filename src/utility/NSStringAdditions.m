@@ -23,6 +23,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a string UUID. Example: C42B7FB8-F5DC-4D07-877E-AA583EFECF80.
+///
+/// The code for this method was copied more or less verbatim from
+/// http://www.cocoabuilder.com/archive/cocoa/217665-how-to-create-guid.html
 // -----------------------------------------------------------------------------
 + (NSString*) UUIDString
 {
@@ -30,6 +33,49 @@
   NSString* uuidString = (NSString*)CFUUIDCreateString(NULL, UUIDRef);
   CFRelease(UUIDRef);
   return [uuidString autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image whose sole content is a rendered version of the
+/// receiver.
+///
+/// If @a font is nil the font used for rendering is
+/// [UIFont systemFontOfSize:[UIFont labelFontSize]].
+///
+/// If @a drawShadow is true the rendered text floats on a light gray shadow.
+/// The image size increases slightly when a shadow is used.
+///
+/// The code for this method is based on
+/// http://stackoverflow.com/questions/2765537/how-do-i-use-the-nsstring-draw-functionality-to-create-a-uiimage-from-text
+// -----------------------------------------------------------------------------
+- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow
+{
+  if (! nil)
+    font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+  CGSize size = [self sizeWithFont:font];
+  const CGSize shadowOffset = CGSizeMake(1, 1);
+  // Increase the context size to avoid clipping the shadow
+  if (drawShadow)
+  {
+    size.width += shadowOffset.width;
+    size.height += shadowOffset.height;
+  }
+
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+  if (drawShadow)
+  {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    const CGFloat shadowBlur = 5.0;
+    UIColor* shadowColor = [UIColor grayColor];
+    // From now on, all objects drawn subsequently will be shadowed
+    CGContextSetShadowWithColor(context, shadowOffset, shadowBlur, shadowColor.CGColor);
+  }
+
+  [self drawAtPoint:CGPointMake(0, 0) withFont:font];
+  UIImage* outputImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();    
+
+  return outputImage;
 }
 
 @end

@@ -16,14 +16,28 @@
 
 
 // Forward declarations
-@class NSString;
+@class GtpLogItem;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSStringAdditions category enhances NSString by adding a number
-/// of useful class methods.
+/// @brief The GtpLogModel class is responsible for managing information that
+/// records the log of the GTP client/engine command/response exchange.
 // -----------------------------------------------------------------------------
-@interface NSString(NSStringAdditions)
-+ (NSString*) UUIDString;
-- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
+@interface GtpLogModel : UIViewController
+{
+}
+
+- (id) init;
+- (GtpLogItem*) itemAtIndex:(int)index;
+- (void) clearLog;
+
+/// @brief Number of objects in itemList.
+///
+/// This property exists purely as a convenience to clients, since the object
+/// count is also available from the itemList array.
+@property(readonly) int itemCount;
+/// @brief Array stores objects of type GtpLogItem. Items appear in the array
+/// in the order that their corresponding commands were submitted.
+@property(readonly, retain) NSArray* itemList;
+
 @end

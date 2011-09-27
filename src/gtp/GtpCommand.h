@@ -34,10 +34,8 @@
 /// GtpCommand can be executed synchronously or asynchronously (the default).
 /// In the latter case, a target object and selector may be specified that
 /// are invoked when the response to the command has been received. This
-/// callback always occurs in the main thread context. The assumtpion here is
-/// that the command was submitted in the main thread, and asynchronous
-/// execution was chosen because the main thread should remain responsive to
-/// user interaction.
+/// callback always occurs in the context of the thread that the command was
+/// submitted in.
 // -----------------------------------------------------------------------------
 @interface GtpCommand : NSObject
 {
@@ -49,6 +47,8 @@
 
 /// @brief The GTP command string, including arguments.
 @property(retain) NSString* command;
+/// @brief Thread in whose context the GTP command was submitted.
+@property(retain) NSThread* submittingThread;
 /// @brief True if execution should wait for the GTP response (i.e. command
 /// execution is synchronous).
 ///

@@ -48,6 +48,7 @@ static std::ifstream responseStream;
 //@}
 /// @name Private helper methods
 //@{
+- (void) mainLoop:(NSArray*)pipes;
 - (void) processCommand:(GtpCommand*)command;
 - (void) receive:(GtpResponse*)response;
 //@}
@@ -125,7 +126,7 @@ static std::ifstream responseStream;
   responseStream.open(pchOutputPipePath);
 
   // The timer is required because otherwise the run loop has no input source
-  NSDate* distantFuture = [NSDate distantFuture]; 
+  NSDate* distantFuture = [NSDate distantFuture];
   NSTimer* distantFutureTimer = [[NSTimer alloc] initWithFireDate:distantFuture
                                                          interval:1.0
                                                            target:self
@@ -188,7 +189,7 @@ static std::ifstream responseStream;
   }
 
   // Create the response object
-  NSString* nsResponse = [NSString stringWithCString:fullResponse.c_str() 
+  NSString* nsResponse = [NSString stringWithCString:fullResponse.c_str()
                                             encoding:[NSString defaultCStringEncoding]];
   GtpResponse* response = [GtpResponse response:nsResponse toCommand:command];
   command.response = response;
@@ -196,9 +197,13 @@ static std::ifstream responseStream;
   // the main thread
   [response retain];
 
-  // Notify the main thread of the response
-  if (! command.waitUntilDone)
-    [self performSelectorOnMainThread:@selector(receive:) withObject:response waitUntilDone:NO];
+  // It's important to call back the submitting thread asynchronously (i.e.
+  // waitUntilDone must be NO). If we were to call back synchronously we would
+  // get a deadlock when command.waitUntilDone is true.
+  [self performSelector:@selector(receive:)
+               onThread:command.submittingThread
+             withObject:response
+          waitUntilDone:NO];
 
   if (NSOrderedSame == [command.command compare:@"quit"])
   {
@@ -211,30 +216,32 @@ static std::ifstream responseStream;
 // -----------------------------------------------------------------------------
 /// @brief Submits @a command to the GtpEngine.
 ///
-/// This method is usually executed in the main thread's context. If
-/// @a command.waitUntilDone is false, this method returns immediately and does
-/// not wait for the GtpEngine's response.
+/// This method is usually (but not always) executed in the main thread's
+/// context. One notable example where this is executed in a secondary thread's
+/// context is the backup task just before the application is suspended.
+///
+/// If @a command.waitUntilDone is false, this method returns immediately and
+/// does not wait for the GtpEngine's response.
 // -----------------------------------------------------------------------------
 - (void) submit:(GtpCommand*)command
 {
-  // Synchronously notify observers
-  [[NSNotificationCenter defaultCenter] postNotificationName:gtpCommandSubmittedNotification object:command];
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpCommandWillBeSubmittedNotification object:command];
+  command.submittingThread = [NSThread currentThread];
   // Retain to make sure that object is still alive when the it "arrives" in
   // the secondary thread
   [command retain];
-  // Trigger secondary thread
-  [self performSelector:@selector(processCommand:) onThread:m_thread withObject:command waitUntilDone:command.waitUntilDone];
-  // Only if necessary: Undo retain message sent to the command object by
-  // processCommand:()
-  if (command.waitUntilDone)
-    [command.response autorelease];
+  [self performSelector:@selector(processCommand:)
+               onThread:m_thread
+             withObject:command
+          waitUntilDone:command.waitUntilDone];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Is invoked after @a response has been received from the GtpEngine
 /// for a GtpCommand whose @e waitUntilDone property is false.
 ///
-/// This method is always executed in the main thread's context.
+/// This method is executed in the context of the thread that submitted the GTP
+/// command.
 ///
 /// This method posts a notification to the default NSNotificationCenter so that
 /// clients that previously submitted a command will know when their expected
@@ -247,8 +254,7 @@ static std::ifstream responseStream;
 {
   // Undo retain message sent to the command object by processCommand:()
   [response autorelease];
-  // Synchronously notify observers
-  [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseReceivedNotification object:response];
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseWasReceivedNotification object:response];
   id responseTarget = response.command.responseTarget;
   if (responseTarget)
   {

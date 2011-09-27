@@ -68,7 +68,7 @@ enum GoGameState
 enum GoBoardDirection
 {
   LeftDirection,     ///< @brief Used for navigating to the left neighbour of a GoPoint.
-  RightDirection,    ///< @brief Used for navigating to the right neighbour of a GoPoint. 
+  RightDirection,    ///< @brief Used for navigating to the right neighbour of a GoPoint.
   UpDirection,       ///< @brief Used for navigating to the neighbour that is above a GoPoint.
   DownDirection,     ///< @brief Used for navigating to the neighbour that is below a GoPoint.
   NextDirection,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is Q19.
@@ -170,14 +170,14 @@ extern const int cellContentSliderHeight;
 /// @name GTP notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent when a command is submitted to the GTP engine. The GtpCommand
-/// instance that is submitted is associated with the notification.
+/// @brief Is sent just before a command is submitted to the GTP engine. The
+/// GtpCommand instance that is submitted is associated with the notification.
 ///
 /// @attention This notification may be delivered in a secondary thread.
-extern NSString* gtpCommandSubmittedNotification;
-/// @brief Is sent when a response is received from the GTP engine. The
+extern NSString* gtpCommandWillBeSubmittedNotification;
+/// @brief Is sent after a response is received from the GTP engine. The
 /// GtpResponse instance that was received is associated with the notification.
-extern NSString* gtpResponseReceivedNotification;
+extern NSString* gtpResponseWasReceivedNotification;
 /// @brief Is sent to indicate that the GTP engine is no longer idle.
 extern NSString* gtpEngineRunningNotification;
 /// @brief Is sent to indicate that the GTP engine is idle.
@@ -233,6 +233,20 @@ extern NSString* gameLoadedFromArchive;
 /// @brief Is sent to indicate that something about the content of the archive
 /// has changed (e.g. an .sgf file has been added, removed, renamed etc.).
 extern NSString* archiveContentChanged;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name GTP log related notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the something about the content of the
+/// GTP log has changed (e.g. a new GtpLogItem has been added, the log has
+/// been cleared, the log has rotated).
+extern NSString* gtpLogContentChanged;
+/// @brief Is sent to indicate that the information stored in a GtpLogItem
+/// object has changed. The GtpLogItem object is associated with the
+/// notification.
+extern NSString* gtpLogItemChanged;
 //@}
 
 // -----------------------------------------------------------------------------

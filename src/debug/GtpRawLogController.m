@@ -40,8 +40,8 @@
 //@}
 /// @name Notification responders
 //@{
-- (void) gtpCommandSubmitted:(NSNotification*)notification;
-- (void) gtpResponseReceived:(NSNotification*)notification;
+- (void) gtpCommandWillBeSubmitted:(NSNotification*)notification;
+- (void) gtpResponseWasReceived:(NSNotification*)notification;
 //@}
 /// @name Updaters
 //@{
@@ -82,12 +82,12 @@
   self.textCache = @"";
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(gtpCommandSubmitted:)
-                                               name:gtpCommandSubmittedNotification
+                                           selector:@selector(gtpCommandWillBeSubmitted:)
+                                               name:gtpCommandWillBeSubmittedNotification
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(gtpResponseReceived:)
-                                               name:gtpResponseReceivedNotification
+                                           selector:@selector(gtpResponseWasReceived:)
+                                               name:gtpResponseWasReceivedNotification
                                              object:nil];
 }
 
@@ -124,9 +124,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #gtpCommandSubmitted notification.
+/// @brief Responds to the #gtpCommandWillBeSubmitted notification.
 // -----------------------------------------------------------------------------
-- (void) gtpCommandSubmitted:(NSNotification*)notification
+- (void) gtpCommandWillBeSubmitted:(NSNotification*)notification
 {
   // TODO remove if really not needed; see gtpRsponseReceived for details
 //  GtpCommand* command = (GtpCommand*)[notification object];
@@ -136,9 +136,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #gtpResponseReceived notification.
+/// @brief Responds to the #gtpResponseWasReceived notification.
 // -----------------------------------------------------------------------------
-- (void) gtpResponseReceived:(NSNotification*)notification
+- (void) gtpResponseWasReceived:(NSNotification*)notification
 {
   // TODO we have to wait for the response so that we can print out command and
   // response in sequence; if we print them separately, the sequence will be

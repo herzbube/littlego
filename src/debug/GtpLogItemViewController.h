@@ -16,14 +16,28 @@
 
 
 // Forward declarations
-@class NSString;
+@class GtpLogItem;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSStringAdditions category enhances NSString by adding a number
-/// of useful class methods.
+/// @brief The GtpLogItemViewController class is responsible for managing user
+/// interaction on the "GTP Log Item" view.
+///
+/// The view is a grouped table view. It displays data encapsulated by a single
+/// GtpLogItem object.
+///
+/// @note GtpLogItemViewController keeps the item data displayed even if the
+/// item is removed from the Gtp log (e.g. because the log is cleared, or the
+/// item is rotated out of the log). The GtpLogItem object is deallocated when
+/// GtpLogItemViewController is dismissed.
 // -----------------------------------------------------------------------------
-@interface NSString(NSStringAdditions)
-+ (NSString*) UUIDString;
-- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
+@interface GtpLogItemViewController : UITableViewController
+{
+}
+
++ (GtpLogItemViewController*) controllerWithLogItem:(GtpLogItem*)logItem;
+
+/// @brief The model object
+@property(retain) GtpLogItem* logItem;
+
 @end

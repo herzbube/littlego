@@ -82,6 +82,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.archiveFolder = nil;
+  self.gameList = nil;
   [super dealloc];
 }
 
@@ -118,8 +120,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the number of save games that this model has information
-/// about.
+// Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (int) gameCount
 {

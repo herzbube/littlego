@@ -27,6 +27,7 @@
 @class SoundHandling;
 @class GoGame;
 @class ArchiveViewModel;
+@class GtpLogModel;
 
 
 // -----------------------------------------------------------------------------
@@ -84,6 +85,9 @@
 @property(retain) GoGame* game;
 /// @brief Model object that stores attributes used to manage the Archive view.
 @property(retain) ArchiveViewModel* archiveViewModel;
+/// @brief Model object that stores information about the GTP log, viewable on
+/// the Debug view.
+@property(retain) GtpLogModel* gtpLogModel;
 
 @end
 
