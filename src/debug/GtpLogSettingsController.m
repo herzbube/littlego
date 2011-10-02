@@ -16,48 +16,47 @@
 
 
 // Project includes
-#import "DebugViewController.h"
-#import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
+#import "GtpLogModel.h"
+#import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewSliderCell.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Debug" table view.
+/// @brief Enumerates the sections presented in the "Gtp Log Settings" table
+/// view.
 // -----------------------------------------------------------------------------
-enum DebugTableViewSection
+enum GtpLogSettingsTableViewSection
 {
-  GtpSection,
-//  ApplicationLogSection,
+  SettingsSection,
+  ClearLogSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GtpSection.
+/// @brief Enumerates items in the SettingsSection.
 // -----------------------------------------------------------------------------
-enum GtpSectionItem
+enum SettingsSectionItem
 {
-  GtpLogItem,
-  GtpCommandsItem,
-  GtpSettingsItem,
-  MaxGtpSectionItem
+  LogSizeItem,
+  MaxSettingsSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ApplicationLogSection.
+/// @brief Enumerates items in the ClearLogSection.
 // -----------------------------------------------------------------------------
-enum ApplicationLogSectionItem
+enum ClearLogSectionItem
 {
-  ApplicationLogItem,
-  ApplicationLogSettingsItem,
-  MaxApplicationLogSectionItem
+  ClearLogItem,
+  MaxClearLogSectionItem
 };
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DebugViewController.
+/// @brief Class extension with private methods for GtpLogSettingsController.
 // -----------------------------------------------------------------------------
-@interface DebugViewController()
+@interface GtpLogSettingsController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -71,32 +70,47 @@ enum ApplicationLogSectionItem
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Action methods
 //@{
-- (void) viewGtpLog;
-- (void) viewGtpSettings;
+- (void) logSizeDidChange:(id)sender;
 //@}
-/// @name Helpers
+/// @name Privately declared properties
 //@{
+@property(retain) GtpLogModel* model;
 //@}
 @end
 
 
-@implementation DebugViewController
+@implementation GtpLogSettingsController
+
+@synthesize model;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DebugViewController object.
+/// @brief Convenience constructor. Creates a GtpLogSettingsController instance
+/// of grouped style.
+// -----------------------------------------------------------------------------
++ (GtpLogSettingsController*) controller
+{
+  GtpLogSettingsController* controller = [[GtpLogSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
+  if (controller)
+    [controller autorelease];
+  return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GtpLogSettingsController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.model = nil;
   [super dealloc];
 }
 
@@ -107,6 +121,7 @@ enum ApplicationLogSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+  self.model = [ApplicationDelegate sharedDelegate].gtpLogModel;
 }
 
 // -----------------------------------------------------------------------------
@@ -137,10 +152,10 @@ enum ApplicationLogSectionItem
 {
   switch (section)
   {
-    case GtpSection:
-      return MaxGtpSectionItem;
-//    case ApplicationLogSection:
-//      return MaxApplicationLogSectionItem;
+    case SettingsSection:
+      return MaxSettingsSectionItem;
+    case ClearLogSection:
+      return MaxClearLogSectionItem;
     default:
       assert(0);
       break;
@@ -151,42 +166,23 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
-{
-  switch (section)
-  {
-    case GtpSection:
-      return @"GTP (Go Text Protocol)";
-//    case ApplicationLogSection:
-//      return @"Application Log";
-    default:
-      assert(0);
-      break;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case GtpSection:
+    case SettingsSection:
     {
       switch (indexPath.row)
       {
-        case GtpLogItem:
-          cell.textLabel.text = @"GTP log";
-          break;
-        case GtpCommandsItem:
-          cell.textLabel.text = @"GTP commands";
-          break;
-        case GtpSettingsItem:
-          cell.textLabel.text = @"Settings";
+        case LogSizeItem:
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(logSizeDidChange:)];
+          sliderCell.descriptionLabel.text = @"GTP log size";
+          sliderCell.slider.minimumValue = gtpLogSizeMinimum;
+          sliderCell.slider.maximumValue = gtpLogSizeMaximum;
+          sliderCell.value = self.model.gtpLogSize;
           break;
         default:
           assert(0);
@@ -194,22 +190,21 @@ enum ApplicationLogSectionItem
       }
       break;
     }
-//    case ApplicationLogSection:
-//    {
-//      switch (indexPath.row)
-//      {
-//        case ApplicationLogItem:
-//          cell.textLabel.text = @"View application log";
-//          break;
-//        case ApplicationLogSettingsItem:
-//          cell.textLabel.text = @"Settings";
-//          break;
-//        default:
-//          assert(0);
-//          break;
-//      }
-//      break;
-//    }
+    case ClearLogSection:
+    {
+      switch (indexPath.row)
+      {
+        case ClearLogItem:
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = @"Clear GTP log";
+          cell.accessoryType = UITableViewCellAccessoryNone;
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
     default:
       assert(0);
       break;
@@ -220,55 +215,32 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  CGFloat height = tableView.rowHeight;
+  if (SettingsSection == indexPath.section && LogSizeItem == indexPath.row)
+    height = [TableViewSliderCell rowHeightInTableView:tableView];
+  return height;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-  switch (indexPath.section)
-  {
-    case GtpSection:
-    {
-      switch (indexPath.row)
-      {
-        case GtpLogItem:
-          [self viewGtpLog];
-          break;
-        case GtpCommandsItem:
-          break;
-        case GtpSettingsItem:
-          [self viewGtpSettings];
-          break;
-        default:
-          assert(0);
-          break;
-      }
-      break;
-    }
-//    case ApplicationLogSection:
-//      break;
-    default:
-      return;
-  }
+  if (ClearLogSection == indexPath.section && ClearLogItem == indexPath.row)
+    [self.model clearLog];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays GtpLogViewController to allow the user to view the GTP
-/// command/response log.
+/// @brief Reacts to the user changing the GTP log size.
 // -----------------------------------------------------------------------------
-- (void) viewGtpLog
+- (void) logSizeDidChange:(id)sender
 {
-  GtpLogViewController* controller = [GtpLogViewController controller];
-  [self.navigationController pushViewController:controller animated:YES];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays GtpLogSettingsController to allow the user to view and
-/// modify settings related to the GTP command/response log.
-// -----------------------------------------------------------------------------
-- (void) viewGtpSettings
-{
-  GtpLogSettingsController* controller = [GtpLogSettingsController controller];
-  [self.navigationController pushViewController:controller animated:YES];
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.model.gtpLogSize = sliderCell.value;
 }
 
 @end

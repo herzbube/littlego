@@ -255,14 +255,22 @@ extern NSString* gtpLogItemChanged;
 /// @brief See GtpEngineSettings for attribute documentation.
 // -----------------------------------------------------------------------------
 //@{
-extern int fuegoMaxMemoryMinimum;
-extern int fuegoMaxMemoryMaximum;
-extern int fuegoMaxMemoryDefault;
-extern int fuegoThreadCountMinimum;
-extern int fuegoThreadCountMaximum;
-extern int fuegoThreadCountDefault;
-extern bool fuegoPonderingDefault;
-extern bool fuegoReuseSubtreeDefault;
+extern const int fuegoMaxMemoryMinimum;
+extern const int fuegoMaxMemoryMaximum;
+extern const int fuegoMaxMemoryDefault;
+extern const int fuegoThreadCountMinimum;
+extern const int fuegoThreadCountMaximum;
+extern const int fuegoThreadCountDefault;
+extern const bool fuegoPonderingDefault;
+extern const bool fuegoReuseSubtreeDefault;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Debug view settings default values
+// -----------------------------------------------------------------------------
+//@{
+extern const int gtpLogSizeMinimum;
+extern const int gtpLogSizeMaximum;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -331,4 +339,7 @@ extern NSString* fuegoReuseSubtreeKey;
 extern NSString* archiveViewKey;
 extern NSString* sortCriteriaKey;
 extern NSString* sortAscendingKey;
+// Debug view settings
+extern NSString* debugViewKey;
+extern NSString* gtpLogSizeKey;
 //@}

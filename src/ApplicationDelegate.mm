@@ -215,6 +215,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
+  [self.gtpLogModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -291,6 +292,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
+  [self.gtpLogModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

@@ -59,14 +59,18 @@ NSString* gtpLogContentChanged = @"GtpLogContentChanged";
 NSString* gtpLogItemChanged = @"GtpLogItemChanged";
 
 /// GTP engine settings default values
-int fuegoMaxMemoryMinimum = 32;
-int fuegoMaxMemoryMaximum = 512;
-int fuegoMaxMemoryDefault = 64;
-int fuegoThreadCountMinimum = 1;
-int fuegoThreadCountMaximum = 8;
-int fuegoThreadCountDefault = 1;
-bool fuegoPonderingDefault = true;
-bool fuegoReuseSubtreeDefault = true;
+int const fuegoMaxMemoryMinimum = 32;
+int const fuegoMaxMemoryMaximum = 512;
+int const fuegoMaxMemoryDefault = 64;
+int const fuegoThreadCountMinimum = 1;
+int const fuegoThreadCountMaximum = 8;
+int const fuegoThreadCountDefault = 1;
+bool const fuegoPonderingDefault = true;
+bool const fuegoReuseSubtreeDefault = true;
+
+// Debug view settings default values
+int const gtpLogSizeMinimum = 5;
+int const gtpLogSizeMaximum = 1000;
 
 // Resource file names
 NSString* openingBookResource = @"book.dat";
@@ -127,3 +131,6 @@ NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";
 NSString* sortAscendingKey = @"SortAscending";
+// Debug view settings
+NSString* debugViewKey = @"DebugView";
+NSString* gtpLogSizeKey = @"GtpLogSize";

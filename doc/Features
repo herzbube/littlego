@@ -94,7 +94,6 @@ Interacting with the GTP engine
 - The Debug view is a table view with a GTP section. The cells in that section
   are
   - View the GTP log
-  - Clear the GTP log
   - Manage canned GTP commands
   - Edit settings
 - GTP log
@@ -131,8 +130,6 @@ Interacting with the GTP engine
         command to the list of canned commands
   - The "raw" GTP log displays commands and responses in a scrollable text view
     with a fixed font.
-- Clearing the GTP log discards all GTP command/response items that are
-  currently in the log
 - Canned commands
   - Canned commands are listed as cells in a table view
   - The application comes with a predefined factory set of canned commands
@@ -149,7 +146,7 @@ Interacting with the GTP engine
     There is no "unlimited" setting so that memory usage remains tolerable.
   - Restore the factory set of "canned" GTP commands
   - Enable/disable making a sound when a GTP command is submitted by the user
-
+  - Clear the GTP log
 
 Managing the application log
 ----------------------------

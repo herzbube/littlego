@@ -37,6 +37,8 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) addItemToLog:(GtpCommand*)command;
+- (void) trimLog;
 - (void) enqueueItemWithNoResponse:(GtpLogItem*)logItem;
 - (GtpLogItem*) dequeueItemWithNoResponse;
 - (void) clearItemQueueWithNoResponse;
@@ -71,6 +73,7 @@
 @implementation GtpLogModel
 
 @synthesize itemList;
+@synthesize gtpLogSize;
 @synthesize itemQueueNoResponses;
 @synthesize dateFormatter;
 
@@ -97,6 +100,7 @@
                                              object:nil];
 
   self.itemList = [NSMutableArray arrayWithCapacity:0];
+  self.gtpLogSize = 100;
   self.itemQueueNoResponses = [NSMutableArray arrayWithCapacity:0];
 
   self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
@@ -120,20 +124,36 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes default values in this model with user defaults data.
+// -----------------------------------------------------------------------------
+- (void) readUserDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:debugViewKey];
+  self.gtpLogSize = [[dictionary valueForKey:gtpLogSizeKey] intValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Writes current values in this model to the user default system's
+/// application domain.
+// -----------------------------------------------------------------------------
+- (void) writeUserDefaults
+{
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithInt:self.gtpLogSize] forKey:gtpLogSizeKey];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setObject:dictionary forKey:debugViewKey];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #gtpCommandWillBeSubmitted notification.
 // -----------------------------------------------------------------------------
 - (void) gtpCommandWillBeSubmitted:(NSNotification*)notification
 {
   GtpCommand* command = (GtpCommand*)[notification object];
+  [self addItemToLog:command];
+  [self trimLog];
 
-  GtpLogItem* logItem = [[GtpLogItem alloc] init];
-  [(NSMutableArray*)itemList addObject:logItem];  // itemList has ownership
-  [logItem release];
-
-  [self enqueueItemWithNoResponse:logItem];
-
-  logItem.commandString = command.command;
-  logItem.timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:gtpLogContentChanged
                                                       object:nil];
@@ -145,13 +165,12 @@
 - (void) gtpResponseWasReceived:(NSNotification*)notification
 {
   GtpLogItem* logItem = [self dequeueItemWithNoResponse];
-  // A log item may not be available if the queue was cleared while a response
-  // was still outstanding. We are simply discarding the response now. Note that
-  // with the exception of the command's submission date we could recreate the
-  // entire GtpLogItem (the GtpResponse object has the original GtpCommand
-  // attached), but this would probably not be what the user wanted when he
-  // cleared the log in the first place.
-  if (! logItem)
+  assert(logItem != nil);
+
+  // Check if the item was kicked out of the log while the response was still
+  // outstanding. Stuff like clearing the log, or a massive amount of trimming,
+  // might have happened.
+  if (! [itemList containsObject:logItem])
   {
     NSLog(@"Discarding GTP response");
     return;
@@ -176,12 +195,66 @@
 }
 
 // -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setGtpLogSize:(int)newSize
+{
+  assert(newSize >= 1);
+  if (newSize < 1)
+    return;
+
+  int oldSize = gtpLogSize;
+  gtpLogSize = newSize;
+
+  if (newSize < oldSize)
+  {
+    [self trimLog];
+    [[NSNotificationCenter defaultCenter] postNotificationName:gtpLogContentChanged
+                                                        object:nil];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the log item object located at position @a index in the
 /// itemList array.
 // -----------------------------------------------------------------------------
 - (GtpLogItem*) itemAtIndex:(int)index
 {
   return [itemList objectAtIndex:index];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds an item that represents @a command to the log.
+// -----------------------------------------------------------------------------
+- (void) addItemToLog:(GtpCommand*)command
+{
+  GtpLogItem* logItem = [[GtpLogItem alloc] init];
+  [(NSMutableArray*)itemList addObject:logItem];  // itemList has ownership
+  [logItem release];
+
+  [self enqueueItemWithNoResponse:logItem];
+
+  logItem.commandString = command.command;
+  logItem.timeStamp = [self.dateFormatter stringFromDate:[NSDate date]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes as many of the oldest items from the log as are needed to
+/// bring the log size down to its maximum allowed size (property
+/// @e gtpLogSize).
+///
+/// Does nothing if the log size currently does not exceed the limit.
+// -----------------------------------------------------------------------------
+- (void) trimLog
+{
+  int numberOfItemsToDiscard = itemList.count - self.gtpLogSize;
+  if (numberOfItemsToDiscard <= 0)
+    return;
+
+  NSRange rangeToRemove;
+  rangeToRemove.location = 0;  // oldest items are at the front of the array
+  rangeToRemove.length = numberOfItemsToDiscard;
+  [(NSMutableArray*)itemList removeObjectsInRange:rangeToRemove];
 }
 
 // -----------------------------------------------------------------------------
@@ -223,7 +296,9 @@
 - (void) clearLog
 {
   [(NSMutableArray*)itemList removeAllObjects];
-  [self clearItemQueueWithNoResponse];
+  // Note: itemQueueNoResponses is not modified by design! If we were removing
+  // items from that queue, outstanding responses might become associated with
+  // the wrong GtpLogItem objects when they come in.
 
   [[NSNotificationCenter defaultCenter] postNotificationName:gtpLogContentChanged
                                                       object:nil];

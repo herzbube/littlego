@@ -64,6 +64,7 @@
 		CD0CCB8C142FFAFF00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
 		CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */; };
+		CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -224,6 +225,8 @@
 		CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogViewController.m; sourceTree = "<group>"; };
 		CD0CCC96143140E300A3F869 /* GtpLogItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogItemViewController.h; sourceTree = "<group>"; };
 		CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogItemViewController.m; sourceTree = "<group>"; };
+		CD0CCEC41439147C00A3F869 /* GtpLogSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogSettingsController.h; sourceTree = "<group>"; };
+		CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogSettingsController.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -524,6 +527,8 @@
 				CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */,
 				CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */,
 				CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */,
+				CD0CCEC41439147C00A3F869 /* GtpLogSettingsController.h */,
+				CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */,
 				CD0CCBF014311AD300A3F869 /* GtpLogViewController.h */,
 				CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */,
 				CD0CCB56142FDF3300A3F869 /* GtpRawLogController.h */,
@@ -981,6 +986,7 @@
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
+				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

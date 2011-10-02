@@ -28,10 +28,12 @@
 }
 
 - (id) init;
+- (void) readUserDefaults;
+- (void) writeUserDefaults;
 - (GtpLogItem*) itemAtIndex:(int)index;
 - (void) clearLog;
 
-/// @brief Number of objects in itemList.
+/// @brief Number of objects in @e itemList.
 ///
 /// This property exists purely as a convenience to clients, since the object
 /// count is also available from the itemList array.
@@ -39,5 +41,11 @@
 /// @brief Array stores objects of type GtpLogItem. Items appear in the array
 /// in the order that their corresponding commands were submitted.
 @property(readonly, retain) NSArray* itemList;
+/// @brief The size of the GTP log, i.e. the maximum number of objects that can
+/// be in @e itemList.
+///
+/// If a new item is about to be added to @e itemList that would exceed the
+/// limit, the oldest item is discarded first.
+@property int gtpLogSize;
 
 @end

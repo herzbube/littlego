@@ -126,5 +126,10 @@
 		<key>SortAscending</key>
 		<true/>
 	</dict>
+	<key>DebugView</key>
+	<dict>
+		<key>GtpLogSize</key>
+		<integer>100</integer>
+	</dict>
 </dict>
 </plist>
