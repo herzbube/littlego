@@ -120,7 +120,8 @@
         // -> this is probably not a coincidence, so we boldly use this indentation
         //    width for our calculations
         // TODO: move this calculation and comment somewhere else;
-        // tableviewslidercell has the same calculation
+        // tableviewslidercell and GtpLogItemViewController has the same
+        // calculation
         int contentViewWidth = cell.contentView.bounds.size.width - (2 * cell.indentationWidth);
         int contentViewHeight = cell.contentView.bounds.size.height;
 

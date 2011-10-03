@@ -81,6 +81,10 @@ enum ResponseStringSectionItem
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
+/// @name UITableViewDelegate protocol
+//@{
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+//@}
 /// @name Action methods
 //@{
 - (void) addToCannedCommands:(id)sender;
@@ -207,8 +211,11 @@ enum ResponseStringSectionItem
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   enum TableViewCellType cellType;
-  if (ResponseStringSection == indexPath.section && ResponseStringItem == indexPath.row)
-    cellType = TextFieldCellType;
+  if ((CommandSection == indexPath.section && CommandStringItem == indexPath.row)
+      || (ResponseStringSection == indexPath.section && ResponseStringItem == indexPath.row))
+  {
+    cellType = DefaultCellType;
+  }
   else
     cellType = Value1CellType;
   UITableViewCell* cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
@@ -221,8 +228,10 @@ enum ResponseStringSectionItem
       switch (indexPath.row)
       {
         case CommandStringItem:
-          cell.textLabel.text = @"Command";
-          cell.detailTextLabel.text = self.logItem.commandString;
+          cell.textLabel.text = self.logItem.commandString;
+          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
           break;
         case TimestampItem:
           cell.textLabel.text = @"Submitted on";
@@ -271,10 +280,10 @@ enum ResponseStringSectionItem
       {
         case ResponseStringItem:
         {
-          UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
-          textField.text = self.logItem.parsedResponseString;
-          textField.placeholder = @"None";
-          textField.enabled = NO;  // disable editing
+          cell.textLabel.text = self.logItem.parsedResponseString;
+          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
           break;
         }
         default:
@@ -288,6 +297,34 @@ enum ResponseStringSectionItem
       break;
   }
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
+  if (CommandSection == indexPath.section && CommandStringItem == indexPath.row)
+    cellText = self.logItem.commandString;
+  else if (ResponseStringSection == indexPath.section && ResponseStringItem == indexPath.row)
+    cellText = self.logItem.parsedResponseString;
+  else
+    return tableView.rowHeight;
+
+  // A cell height for an empty text doesn't look good
+  // -> return default height
+  if (0 == cellText.length)
+    return tableView.rowHeight;
+
+  CGFloat cellWidth = 280;  // TODO calculate this! the problem is that we don't have a cell object
+  UIFont* cellFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+  CGSize constraintSize = CGSizeMake(cellWidth, MAXFLOAT);
+  CGSize labelSize = [cellText sizeWithFont:cellFont
+                          constrainedToSize:constraintSize
+                              lineBreakMode:UILineBreakModeWordWrap];  // use same mode as in tableView:cellForRowAtIndexPath:()
+  // Add vertical padding
+  return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
 }
 
 // -----------------------------------------------------------------------------
