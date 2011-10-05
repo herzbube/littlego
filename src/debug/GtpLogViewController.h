@@ -23,12 +23,36 @@
 /// @brief The GtpLogViewController class is responsible for managing user
 /// interaction on the "GTP Log" view.
 ///
-/// If the last item in the log (= the cell at the bottom of the view) is
-/// currently visible, and a new item is added to the log, the view is
-/// automatically scrolled to the bottom so that it displays the new item.
+/// The "GTP Log" view actually consists of two views:
+/// - The frontside view is a table view that displays log items as table view
+///   cells. The user may drill down into each cell to view the details of the
+///   log item that backs that cell.
+/// - The backside view is a text view that displays log items as a raw textual
+///   log. There is no user interaction on this view except for scrolling.
 ///
-/// The mechanism how this automatic scrolling works can be described as
-/// follows:
+/// The user may switch between the two views by tapping a "flip" button in the
+/// controller's navigation item.
+///
+///
+/// @par Update strategies
+///
+/// The frontside view is updated continuously, even if it is currently not
+/// visible. There is no deeper reason for this, the implementation simply
+/// has grown this way.
+///
+/// The backside view is updated only if it is currently visible. When it
+/// becomes visible, its content is reloaded to keep up with updates that were
+/// missed while the view was not visible.
+///
+///
+/// @par Auto-scrolling
+///
+/// The following is true for both the frontside and the backside view: If the
+/// bottom of the view is currently visible, and a new item is added to the log,
+/// the view is automatically scrolled so that it displays the new item.
+///
+/// For the frontside (=table) view, the mechanism how this automatic scrolling
+/// works can be described as follows:
 /// - If a new item is added to the log, GtpLogViewController learns about the
 ///   event from receiving the notification #gtpLogContentChanged.
 /// - Automatic scrolling is therefore invoked by the (privately declared)
@@ -80,7 +104,7 @@
 ///     updateScheduledByGtpLogItemChanged is set, it therefore does *NOT* clear
 ///     lastRowIsVisible as its first operation
 // -----------------------------------------------------------------------------
-@interface GtpLogViewController : UITableViewController
+@interface GtpLogViewController : UIViewController
 {
 }
 
@@ -88,5 +112,9 @@
 
 /// @brief The model object
 @property(retain) GtpLogModel* model;
+/// @brief The frontside view. Log items are represented by table view cells.
+@property(nonatomic, retain) IBOutlet UITableView* frontSideView;
+/// @brief The backside view. Log items are represented by raw text.
+@property(nonatomic, retain) IBOutlet UITextView* backSideView;
 
 @end

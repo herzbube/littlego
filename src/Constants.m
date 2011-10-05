@@ -134,3 +134,4 @@ NSString* sortAscendingKey = @"SortAscending";
 // Debug view settings
 NSString* debugViewKey = @"DebugView";
 NSString* gtpLogSizeKey = @"GtpLogSize";
+NSString* gtpLogViewFrontSideIsVisibleKey = @"GtpLogViewFrontSideIsVisible";

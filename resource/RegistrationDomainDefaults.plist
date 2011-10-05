@@ -130,6 +130,8 @@
 	<dict>
 		<key>GtpLogSize</key>
 		<integer>100</integer>
+		<key>GtpLogViewFrontSideIsVisible</key>
+		<true/>
 	</dict>
 </dict>
 </plist>

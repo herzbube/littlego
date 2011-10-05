@@ -49,6 +49,7 @@
 //@}
 /// @name Action methods
 //@{
+- (void) flipView:(id)sender;
 - (void) composeCommand:(id)sender;
 - (void) viewLogItem:(GtpLogItem*)logItem;
 //@}
@@ -56,6 +57,18 @@
 //@{
 - (void) gtpLogContentChanged:(NSNotification*)notification;
 - (void) gtpLogItemChanged:(NSNotification*)notification;
+//@}
+/// @name Private helpers
+//@{
+- (void) setupNavigationItem;
+- (void) setupFrontSideView;
+- (void) setupBackSideView;
+- (void) reloadBackSideView;
+- (void) appendToBackSideView:(GtpLogItem*)logItem;
+- (void) updateBackSideView:(NSString*)newText;
+- (NSString*) rawLogStringForItem:(GtpLogItem*)logItem;
+- (void) scrollToBottomOfFrontSideView;
+- (void) scrollToBottomOfBackSideView;
 //@}
 /// @name Privately declared properties
 //@{
@@ -74,18 +87,20 @@
 @implementation GtpLogViewController
 
 @synthesize model;
+@synthesize frontSideView;
+@synthesize backSideView;
 @synthesize lastRowIsVisible;
 @synthesize updateScheduledByGtpLogItemChanged;
 @synthesize updateScheduledByGtpLogContentChanged;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GtpLogViewController instance of
-/// plain style.
+/// @brief Convenience constructor. Creates a GtpLogViewController instance
+/// that loads its frontside and backside view from a .nib file.
 // -----------------------------------------------------------------------------
 + (GtpLogViewController*) controller
 {
-  GtpLogViewController* controller = [[GtpLogViewController alloc] initWithStyle:UITableViewStylePlain];
+  GtpLogViewController* controller = [[GtpLogViewController alloc] initWithNibName:@"GtpLogView" bundle:nil];
   if (controller)
     [controller autorelease];
   return controller;
@@ -111,10 +126,9 @@
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.model = delegate.gtpLogModel;
 
-  self.navigationItem.title = @"GTP Log";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                                         target:self
-                                                                                         action:@selector(composeCommand:)];
+  [self setupNavigationItem];
+  [self setupFrontSideView];
+  [self setupBackSideView];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpLogContentChanged:)
@@ -125,9 +139,13 @@
                                                name:gtpLogItemChanged
                                              object:nil];
 
-  self.lastRowIsVisible = false;
-  self.updateScheduledByGtpLogItemChanged = false;
-  self.updateScheduledByGtpLogContentChanged = false;
+  if (self.model.gtpLogViewFrontSideIsVisible)
+    [self.view addSubview:frontSideView];
+  else
+  {
+    [self.view addSubview:backSideView];
+    [self reloadBackSideView];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -141,6 +159,127 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the navigation item of this view controller.
+// -----------------------------------------------------------------------------
+- (void) setupNavigationItem
+{
+  // 105.0 determined experimentally in IB
+  // 44.01 taken from examples on the Internet; this values seems to shift the
+  // toolbar up 1px for some reason
+  UIToolbar* toolbar = [[UIToolbar alloc]
+                        initWithFrame:CGRectMake(0.0f, 0.0f, 105.0f, 44.01f)];
+  NSMutableArray* buttons = [[NSMutableArray alloc] initWithCapacity:2];
+  UIBarButtonItem* compose = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                           target:self
+                                                                           action:@selector(composeCommand:)];
+  compose.style = UIBarButtonItemStyleBordered;
+  [buttons addObject:compose];
+  [compose release];
+  UIBarButtonItem* flip = [[UIBarButtonItem alloc] initWithTitle:@"Flip"
+                                                           style:UIBarButtonItemStyleBordered
+                                                          target:self
+                                                          action:@selector(flipView:)];
+  [buttons addObject:flip];
+  [flip release];
+  [toolbar setItems:buttons animated:NO];
+  [buttons release];
+  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:toolbar] autorelease];
+
+  self.navigationItem.title = @"GTP Log";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the frontside view of this controller.
+// -----------------------------------------------------------------------------
+- (void) setupFrontSideView
+{
+  self.lastRowIsVisible = false;
+  self.updateScheduledByGtpLogItemChanged = false;
+  self.updateScheduledByGtpLogContentChanged = false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the backside view of this controller.
+// -----------------------------------------------------------------------------
+- (void) setupBackSideView
+{
+  UIFont* oldFont = self.backSideView.font;
+  UIFont* newFont = [oldFont fontWithSize:oldFont.pointSize * 0.75];
+  self.backSideView.text = nil;
+  self.backSideView.font = newFont;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reloads the content of the backside view of this controller.
+// -----------------------------------------------------------------------------
+- (void) reloadBackSideView
+{
+  NSString* contentString = @"";
+  for (GtpLogItem* logItem in self.model.itemList)
+  {
+    // Ignore items with outstanding responses. This should happen only for the
+    // last item in the list. Information for that item will be appended to the
+    // backside view when the response comes in.
+    if (logItem.hasResponse)
+    {
+      NSString* rawLogString = [self rawLogStringForItem:logItem];
+      contentString = [contentString stringByAppendingString:rawLogString];
+    }
+  }
+  [self updateBackSideView:contentString];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Appends the information in @a logItem to the current content of the
+/// backside view of this controller.
+// -----------------------------------------------------------------------------
+- (void) appendToBackSideView:(GtpLogItem*)logItem
+{
+  // UIKit does not like being executed in a secondary thread
+  if ([NSThread currentThread] != [NSThread mainThread])
+    return;
+
+  NSString* rawLogString = [self rawLogStringForItem:logItem];
+  NSString* contentString = [self.backSideView.text stringByAppendingString:rawLogString];
+  [self updateBackSideView:contentString];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays @a newText in the backside view of this controller.
+///
+/// Automatically scrolls to the bottom of the view if the view already was at
+/// the bottom before the update.
+// -----------------------------------------------------------------------------
+- (void) updateBackSideView:(NSString*)newText
+{
+  // UIKit does not like being executed in a secondary thread
+  if ([NSThread currentThread] != [NSThread mainThread])
+    return;
+
+  bool scrollToBottom = false;
+  UIScrollView* scrollView = self.backSideView;
+  if (scrollView.contentOffset.y + scrollView.frame.size.height >= scrollView.contentSize.height)
+    scrollToBottom = true;
+
+  self.backSideView.text = newText;
+
+  if (scrollToBottom)
+    [self scrollToBottomOfBackSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a single string that represents the GTP command/response pair
+/// encapsulated by @a logItem.
+///
+/// The string is formatted with newlines in a fashion that makes it suitable
+/// for display in the raw log on the backside view of this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) rawLogStringForItem:(GtpLogItem*)logItem
+{
+  return [NSString stringWithFormat:@"%@\n%@\n\n", logItem.commandString, logItem.rawResponseString];
 }
 
 // -----------------------------------------------------------------------------
@@ -224,14 +363,17 @@
     // - "not too short" (so that reloadData() has time to do its work), and
     // - "not too long" (so that the delay does not get noticed by the user)
     NSTimeInterval delay = 0.1;
-    [self performSelector:@selector(scrollToBottom) withObject:nil afterDelay:delay];
+    [self performSelector:@selector(scrollToBottomOfFrontSideView) withObject:nil afterDelay:delay];
   }
 
   // Inform gtpLogItemChanged:() that an update has been scheduled by this
   // method.
   self.updateScheduledByGtpLogContentChanged = true;
 
-  [self.tableView reloadData];
+  [self.frontSideView reloadData];
+
+  if (! self.model.gtpLogViewFrontSideIsVisible)
+    [self reloadBackSideView];
 }
 
 // -----------------------------------------------------------------------------
@@ -239,6 +381,12 @@
 // -----------------------------------------------------------------------------
 - (void) gtpLogItemChanged:(NSNotification*)notification
 {
+  GtpLogItem* logItem = [notification object];
+
+  // Ignore updateScheduledByGtpLogContentChanged for backside view updating
+  if (! self.model.gtpLogViewFrontSideIsVisible)
+    [self appendToBackSideView:logItem];
+
   // If an update has already been scheduled by gtpLogContentChanged:() we don't
   // have to do anything - in fact the number of cells in self.tableView at this
   // time has already been reset, so we can't invoke
@@ -250,27 +398,76 @@
   // single item (not for scrolling).
   self.updateScheduledByGtpLogItemChanged = true;
 
-  GtpLogItem* logItem = [notification object];
   NSUInteger sectionIndex = 0;
   NSUInteger indexOfItem = [self.model.itemList indexOfObject:logItem];
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:indexOfItem inSection:sectionIndex];
   NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
-  [self.tableView reloadRowsAtIndexPaths:indexPaths
-                        withRowAnimation:UITableViewRowAnimationNone];
+  [self.frontSideView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Scrolls to the bottom of the view.
+/// @brief Scrolls to the bottom of the frontside view.
 // -----------------------------------------------------------------------------
-- (void) scrollToBottom
+- (void) scrollToBottomOfFrontSideView
 {
   NSUInteger lastRowSection = 0;
   NSUInteger lastRow = self.model.itemCount - 1;  // -1 because table view rows are zero-based
   NSIndexPath* lastRowIndexPath = [NSIndexPath indexPathForRow:lastRow
                                                      inSection:lastRowSection];
-  [self.tableView scrollToRowAtIndexPath:lastRowIndexPath
-                        atScrollPosition:UITableViewScrollPositionBottom
-                                animated:YES];
+  [self.frontSideView scrollToRowAtIndexPath:lastRowIndexPath
+                            atScrollPosition:UITableViewScrollPositionBottom
+                                    animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Scrolls to the bottom of the backside view.
+// -----------------------------------------------------------------------------
+- (void) scrollToBottomOfBackSideView
+{
+  // TODO This UITextView specific code does not work for unknown reasons. It
+  // did work in the past, though, when the Debug view consisted only of a
+  // UITextView.
+  NSRange endOfTextRange = NSMakeRange([self.backSideView.text length], 0);
+  [self.backSideView scrollRangeToVisible:endOfTextRange];
+
+  // The following general-purpose approach for scrolling in a UIScrollView
+  // does not work either
+//  CGPoint contentOffset = CGPointMake(0, 0);
+//  UIScrollView* scrollView = self.backSideView;
+//  contentOffset.y = scrollView.contentSize.height - scrollView.frame.size.height;
+//  if (contentOffset.y < 0)
+//    contentOffset.y = 0;
+//  [scrollView setContentOffset:contentOffset animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Flips the main table view over to the raw log view, and vice versa.
+// -----------------------------------------------------------------------------
+- (void) flipView:(id)sender
+{
+  [UIView beginAnimations:nil context:nil];
+  [UIView setAnimationDuration:0.75];
+
+  bool flipToFrontSideView = ! self.model.gtpLogViewFrontSideIsVisible;
+  if (flipToFrontSideView)
+  {
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
+    [backSideView removeFromSuperview];
+    [self.view addSubview:frontSideView];
+  }
+  else
+  {
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
+    [frontSideView removeFromSuperview];
+    [self.view addSubview:backSideView];
+    // Content must be reloaded in
+    [self reloadBackSideView];
+  }
+  [UIView commitAnimations];
+
+  // Remember which view is visible
+  self.model.gtpLogViewFrontSideIsVisible = flipToFrontSideView;
 }
 
 // -----------------------------------------------------------------------------

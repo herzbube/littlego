@@ -342,4 +342,5 @@ extern NSString* sortAscendingKey;
 // Debug view settings
 extern NSString* debugViewKey;
 extern NSString* gtpLogSizeKey;
+extern NSString* gtpLogViewFrontSideIsVisibleKey;
 //@}

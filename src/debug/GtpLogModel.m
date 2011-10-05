@@ -74,6 +74,7 @@
 
 @synthesize itemList;
 @synthesize gtpLogSize;
+@synthesize gtpLogViewFrontSideIsVisible;
 @synthesize itemQueueNoResponses;
 @synthesize dateFormatter;
 
@@ -101,6 +102,7 @@
 
   self.itemList = [NSMutableArray arrayWithCapacity:0];
   self.gtpLogSize = 100;
+  self.gtpLogViewFrontSideIsVisible = true;
   self.itemQueueNoResponses = [NSMutableArray arrayWithCapacity:0];
 
   self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
@@ -131,6 +133,7 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:debugViewKey];
   self.gtpLogSize = [[dictionary valueForKey:gtpLogSizeKey] intValue];
+  self.gtpLogViewFrontSideIsVisible = [[dictionary valueForKey:gtpLogViewFrontSideIsVisibleKey] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,6 +144,7 @@
 {
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithInt:self.gtpLogSize] forKey:gtpLogSizeKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.gtpLogViewFrontSideIsVisible] forKey:gtpLogViewFrontSideIsVisibleKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:debugViewKey];
 }

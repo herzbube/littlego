@@ -148,6 +148,7 @@ Interacting with the GTP engine
   - Enable/disable making a sound when a GTP command is submitted by the user
   - Clear the GTP log
 
+
 Managing the application log
 ----------------------------
 TODO

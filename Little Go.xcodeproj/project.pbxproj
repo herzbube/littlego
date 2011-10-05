@@ -56,7 +56,6 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
-		CD0CCB58142FDF3300A3F869 /* GtpRawLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */; };
 		CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DebugViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
@@ -65,6 +64,7 @@
 		CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
 		CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */; };
 		CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */; };
+		CD0CCF6C143A627000A3F869 /* GtpLogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD0CCF6B143A627000A3F869 /* GtpLogView.xib */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -213,8 +213,6 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBook.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBook.m; sourceTree = "<group>"; };
-		CD0CCB56142FDF3300A3F869 /* GtpRawLogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpRawLogController.h; sourceTree = "<group>"; };
-		CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpRawLogController.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		CD0CCB69142FE10900A3F869 /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogModel.h; sourceTree = "<group>"; };
@@ -227,6 +225,7 @@
 		CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogItemViewController.m; sourceTree = "<group>"; };
 		CD0CCEC41439147C00A3F869 /* GtpLogSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogSettingsController.h; sourceTree = "<group>"; };
 		CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogSettingsController.m; sourceTree = "<group>"; };
+		CD0CCF6B143A627000A3F869 /* GtpLogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GtpLogView.xib; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -531,8 +530,6 @@
 				CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */,
 				CD0CCBF014311AD300A3F869 /* GtpLogViewController.h */,
 				CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */,
-				CD0CCB56142FDF3300A3F869 /* GtpRawLogController.h */,
-				CD0CCB57142FDF3300A3F869 /* GtpRawLogController.m */,
 			);
 			path = debug;
 			sourceTree = "<group>";
@@ -747,6 +744,7 @@
 				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
 				CDBB0C0113426C56007C1C3E /* DocumentView.xib */,
 				CDE300F113578E54005235F2 /* Entitlements.plist */,
+				CD0CCF6B143A627000A3F869 /* GtpLogView.xib */,
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
 				CD1088621326CDAA00E83543 /* PlayView.xib */,
@@ -871,6 +869,7 @@
 				CDE4057B13EB09120091E719 /* SettingsView.xib in Resources */,
 				CDBF97E813EEBFD400476748 /* wood-on-wood-12.aiff in Resources */,
 				CDD48C6A141030E100188B6A /* ArchiveView.xib in Resources */,
+				CD0CCF6C143A627000A3F869 /* GtpLogView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -980,7 +979,6 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */,
-				CD0CCB58142FDF3300A3F869 /* GtpRawLogController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,

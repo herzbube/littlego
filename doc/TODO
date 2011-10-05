@@ -133,6 +133,9 @@ Priority 2 (nice to have)
   app for processing
 - Future improvements to the 3rdparty build process (see separate section
   further down)
+- GTP Log backside view loses the "savesgf" command when the application is
+  suspended, because the notification is delivered in the context of a
+  secondary thread
 
 
 Priority 3 (not important)
@@ -158,6 +161,12 @@ Priority 3 (not important)
 - Find a way to add the opening book to the project resources without
   depending on a fixed path (a fixed path will break if the project is
   compiled on a newer base SDK)
+- Automatic scrolling to the bottom of the GTP Log view does not always work
+  - It never works in the raw log
+  - It does not work in the table view in the following scenario: Suspend
+    application > Resume application > The "savesgf" command from the suspend
+    background task is not visible > Manually scroll down to make the command
+    visible > Generate another command > Auto-scroll does not work!
 
 
 Future improvements to the 3rdparty build process
