@@ -131,16 +131,13 @@ Interacting with the GTP engine
   - The "raw" GTP log displays commands and responses in a scrollable text view
     with a fixed font.
 - Canned commands
-  - Canned commands are listed as cells in a table view
   - The application comes with a predefined factory set of canned commands
-  - The user can delete and re-arrange commands by entering the table view's
-    editing mode (a standard iOS feature)
-  - A table view cell displays the command text
-  - Tapping a cell presents a detail view with the following information
-    - The command text in an editable text view
-    - A submit button in the navigation item. Tapping the button submits
-      the command as-is, i.e. there is no opportunity to further edit the
-      command (e.g. to add an argument)
+  - Canned commands are listed as cells in a table view
+  - Each table view cell displays the text of a single command
+  - An "edit" button allows to delete and re-arrange commands via the standard
+    iOS mechanism for table views
+  - An "add" button allows to add a new command to the list
+  - Tapping a cell presents a detail view that allows to edit the command string
 - Settings
   - Maximum number of GTP commands that are to be retained in the GTP log.
     There is no "unlimited" setting so that memory usage remains tolerable.

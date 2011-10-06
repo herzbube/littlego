@@ -28,6 +28,7 @@
 @class GoGame;
 @class ArchiveViewModel;
 @class GtpLogModel;
+@class GtpCommandModel;
 
 
 // -----------------------------------------------------------------------------
@@ -88,6 +89,9 @@
 /// @brief Model object that stores information about the GTP log, viewable on
 /// the Debug view.
 @property(retain) GtpLogModel* gtpLogModel;
+/// @brief Model object that stores canned GTP commands that can be managed and
+/// submitted on the Debug view.
+@property(retain) GtpCommandModel* gtpCommandModel;
 
 @end
 

@@ -126,12 +126,22 @@
 		<key>SortAscending</key>
 		<true/>
 	</dict>
-	<key>DebugView</key>
+	<key>GtpLogView</key>
 	<dict>
 		<key>GtpLogSize</key>
 		<integer>100</integer>
 		<key>GtpLogViewFrontSideIsVisible</key>
 		<true/>
 	</dict>
+	<key>GtpCannedCommands</key>
+	<array>
+		<string>version</string>
+		<string>list_commands</string>
+		<string>get_komi</string>
+		<string>list_handicap</string>
+		<string>list_moves</string>
+		<string>list_stones</string>
+		<string>showboard</string>
+	</array>
 </dict>
 </plist>

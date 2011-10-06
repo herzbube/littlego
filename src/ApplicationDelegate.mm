@@ -36,6 +36,7 @@
 #import "play/PlayViewModel.h"
 #import "play/SoundHandling.h"
 #import "archive/ArchiveViewModel.h"
+#import "debug/GtpCommandModel.h"
 #import "debug/GtpLogModel.h"
 #import "command/CommandProcessor.h"
 #import "command/LoadOpeningBook.h"
@@ -84,6 +85,7 @@
 @synthesize game;
 @synthesize archiveViewModel;
 @synthesize gtpLogModel;
+@synthesize gtpCommandModel;
 
 
 // -----------------------------------------------------------------------------
@@ -137,6 +139,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.game = nil;
   self.archiveViewModel = nil;
   self.gtpLogModel = nil;
+  self.gtpCommandModel = nil;
   [[CommandProcessor sharedProcessor] release];
   if (self == sharedDelegate)
     sharedDelegate = nil;
@@ -216,6 +219,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playViewModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
+  [self.gtpCommandModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -288,11 +292,13 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
+  self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
   [self.newGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
+  [self.gtpCommandModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

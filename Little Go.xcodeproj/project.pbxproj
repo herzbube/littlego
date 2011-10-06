@@ -83,6 +83,9 @@
 		CD3AE7841345164800B58E08 /* COPYING.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7821345164800B58E08 /* COPYING.html */; };
 		CD3AE7851345164800B58E08 /* COPYING.LESSER.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7831345164800B58E08 /* COPYING.LESSER.html */; };
 		CD3AE7A513451C3400B58E08 /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */; };
+		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
+		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
+		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
@@ -260,6 +263,10 @@
 		CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
+		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
+		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
+		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
+		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
@@ -520,6 +527,10 @@
 			children = (
 				CD0CCB68142FE10900A3F869 /* DebugViewController.h */,
 				CD0CCB69142FE10900A3F869 /* DebugViewController.m */,
+				CD613D98143CD1B70002759E /* GtpCommandModel.h */,
+				CD613D99143CD1B70002759E /* GtpCommandModel.m */,
+				CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */,
+				CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */,
 				CD0CCB78142FF82100A3F869 /* GtpLogItem.h */,
 				CD0CCB79142FF82100A3F869 /* GtpLogItem.m */,
 				CD0CCC96143140E300A3F869 /* GtpLogItemViewController.h */,
@@ -985,6 +996,8 @@
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
+				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
+				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,6 +1051,7 @@
 				CD05B612142F618B00214BBE /* LoadOpeningBook.m in Sources */,
 				CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCB8C142FFAFF00A3F869 /* GtpLogModel.m in Sources */,
+				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

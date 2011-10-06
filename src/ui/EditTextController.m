@@ -61,6 +61,7 @@
 
 @implementation EditTextController
 
+@synthesize context;
 @synthesize title;
 @synthesize delegate;
 @synthesize text;
@@ -99,13 +100,14 @@
     return nil;
 
   m_textField = nil;
+  self.context = nil;
   self.title = nil;
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
   self.acceptEmptyText = false;
   self.textHasChanged = false;
-  
+
   return self;
 }
 
@@ -114,6 +116,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.context = nil;
   self.title = nil;
   self.delegate = nil;
   self.text = nil;
@@ -136,7 +139,7 @@
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
-  
+
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.text];
 }
 
@@ -220,7 +223,7 @@
   m_textField.text = self.text;
   m_textField.placeholder = self.placeholder;
   m_textField.clearButtonMode = UITextFieldViewModeAlways;
-  
+
   return cell;
 }
 

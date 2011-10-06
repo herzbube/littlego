@@ -339,8 +339,10 @@ extern NSString* fuegoReuseSubtreeKey;
 extern NSString* archiveViewKey;
 extern NSString* sortCriteriaKey;
 extern NSString* sortAscendingKey;
-// Debug view settings
-extern NSString* debugViewKey;
+// GTP Log view settings
+extern NSString* gtpLogViewKey;
 extern NSString* gtpLogSizeKey;
 extern NSString* gtpLogViewFrontSideIsVisibleKey;
+// GTP canned commands settings
+extern NSString* gtpCannedCommandsKey;
 //@}

@@ -131,7 +131,9 @@ NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";
 NSString* sortAscendingKey = @"SortAscending";
-// Debug view settings
-NSString* debugViewKey = @"DebugView";
+// GTP Log view settings
+NSString* gtpLogViewKey = @"GtpLogView";
 NSString* gtpLogSizeKey = @"GtpLogSize";
 NSString* gtpLogViewFrontSideIsVisibleKey = @"GtpLogViewFrontSideIsVisible";
+// GTP canned commands settings
+NSString* gtpCannedCommandsKey = @"GtpCannedCommands";

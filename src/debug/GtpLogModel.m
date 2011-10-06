@@ -131,7 +131,7 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary* dictionary = [userDefaults dictionaryForKey:debugViewKey];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:gtpLogViewKey];
   self.gtpLogSize = [[dictionary valueForKey:gtpLogSizeKey] intValue];
   self.gtpLogViewFrontSideIsVisible = [[dictionary valueForKey:gtpLogViewFrontSideIsVisibleKey] boolValue];
 }
@@ -146,7 +146,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.gtpLogSize] forKey:gtpLogSizeKey];
   [dictionary setValue:[NSNumber numberWithBool:self.gtpLogViewFrontSideIsVisible] forKey:gtpLogViewFrontSideIsVisibleKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setObject:dictionary forKey:debugViewKey];
+  [userDefaults setObject:dictionary forKey:gtpLogViewKey];
 }
 
 // -----------------------------------------------------------------------------

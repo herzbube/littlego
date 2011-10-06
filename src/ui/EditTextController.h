@@ -73,6 +73,9 @@
 
 + (EditTextController*) controllerWithText:(NSString*)text title:(NSString*)title delegate:(id<EditTextDelegate>)delegate;
 
+/// @brief A context object that can be set by the client to identify the
+/// context or purpose that an instance of EditTextController was created for.
+@property(retain) id context;
 /// @brief The title to be displayed in the navigation item.
 @property(retain) NSString* title;
 /// @brief This is the delegate that will be informed when the user has

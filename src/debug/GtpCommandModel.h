@@ -15,40 +15,30 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GtpLogItem;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The GtpLogModel class is responsible for managing information that
-/// records the log of the GTP client/engine command/response exchange.
+/// @brief The GtpCommandModel class is responsible for managing canned
+/// (= predefined) GTP commands.
 // -----------------------------------------------------------------------------
-@interface GtpLogModel : NSObject
+@interface GtpCommandModel : NSObject
 {
 }
 
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
-- (GtpLogItem*) itemAtIndex:(int)index;
-- (void) clearLog;
+- (NSString*) commandStringAtIndex:(int)index;
+- (void) addCommand:(NSString*)commandString;
+- (void) replaceCommandAtIndex:(int)index withCommand:(NSString*)commandString;
+- (void) removeCommandAtIndex:(int)index;
+- (void) moveCommandAtIndex:(int)fromIndex toIndex:(int)toIndex;
 
-/// @brief Number of objects in @e itemList.
+/// @brief Number of commands in @e commandList.
 ///
 /// This property exists purely as a convenience to clients, since the object
-/// count is also available from the itemList array.
-@property(readonly) int itemCount;
-/// @brief Array stores objects of type GtpLogItem. Items appear in the array
-/// in the order that their corresponding commands were submitted.
-@property(readonly, retain) NSArray* itemList;
-/// @brief The size of the GTP log, i.e. the maximum number of objects that can
-/// be in @e itemList.
-///
-/// If a new item is about to be added to @e itemList that would exceed the
-/// limit, the oldest item is discarded first.
-@property int gtpLogSize;
-/// @brief True if the "GTP Log" view currently displays the frontside view,
-/// false if it displays the backside view.
-@property bool gtpLogViewFrontSideIsVisible;
+/// count is also available from the commandList array.
+@property(readonly) int commandCount;
+/// @brief Array stores objects of type NSString. Commands appear in the array
+/// in the order assigned to them by the user.
+@property(readonly, retain) NSArray* commandList;
 
 @end

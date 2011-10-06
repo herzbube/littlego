@@ -19,6 +19,7 @@
 #import "DebugViewController.h"
 #import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
+#import "GtpCommandViewController.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -81,6 +82,7 @@ enum ApplicationLogSectionItem
 /// @name Action methods
 //@{
 - (void) viewGtpLog;
+- (void) viewCannedGtpCommands;
 - (void) viewGtpSettings;
 //@}
 /// @name Helpers
@@ -234,6 +236,7 @@ enum ApplicationLogSectionItem
           [self viewGtpLog];
           break;
         case GtpCommandsItem:
+          [self viewCannedGtpCommands];
           break;
         case GtpSettingsItem:
           [self viewGtpSettings];
@@ -258,6 +261,16 @@ enum ApplicationLogSectionItem
 - (void) viewGtpLog
 {
   GtpLogViewController* controller = [GtpLogViewController controller];
+  [self.navigationController pushViewController:controller animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays GtpCommandViewController to allow the user to manage canned
+/// GTP commands.
+// -----------------------------------------------------------------------------
+- (void) viewCannedGtpCommands
+{
+  GtpCommandViewController* controller = [GtpCommandViewController controller];
   [self.navigationController pushViewController:controller animated:YES];
 }
 
