@@ -20,6 +20,7 @@
 #import "GtpLogItem.h"
 #import "GtpLogItemViewController.h"
 #import "GtpLogModel.h"
+#import "SubmitGtpCommandViewController.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -477,6 +478,8 @@
 // -----------------------------------------------------------------------------
 - (void) composeCommand:(id)sender
 {
+  SubmitGtpCommandViewController* controller = [SubmitGtpCommandViewController controller];
+  [self.navigationController pushViewController:controller animated:YES];
 }
 
 // -----------------------------------------------------------------------------

@@ -49,8 +49,8 @@
 /// @name UITextFieldDelegate protocol method.
 //@{
 - (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*) textField;
-- (BOOL) textFieldShouldReturn:(UITextField*) textField;
+- (BOOL) textFieldShouldClear:(UITextField*)textField;
+- (BOOL) textFieldShouldReturn:(UITextField*)textField;
 //@}
 /// @name Helpers
 //@{
@@ -249,7 +249,7 @@
 // -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldClear:(UITextField*) textField
+- (BOOL) textFieldShouldClear:(UITextField*)textField
 {
   self.navigationItem.rightBarButtonItem.enabled = NO;
   return YES;
@@ -258,7 +258,7 @@
 // -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldReturn:(UITextField*) textField
+- (BOOL) textFieldShouldReturn:(UITextField*)textField
 {
   if (! [self isTextAcceptable:textField.text])
     return NO;

@@ -363,7 +363,7 @@ enum FileAttributesSectionItem
   {
     [[ApplicationDelegate sharedDelegate] activateTab:PlayTab];
     // No animation necessary, the Play tab is now visible
-    [self.navigationController popViewControllerAnimated:false];
+    [self.navigationController popViewControllerAnimated:NO];
   }
 }
 
