@@ -27,6 +27,7 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 - (NSString*) commandStringAtIndex:(int)index;
+- (bool) hasCommand:(NSString*)commandString;
 - (void) addCommand:(NSString*)commandString;
 - (void) replaceCommandAtIndex:(int)index withCommand:(NSString*)commandString;
 - (void) removeCommandAtIndex:(int)index;

@@ -102,6 +102,20 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns true if @a commandString already exists in the commandList
+/// array.
+// -----------------------------------------------------------------------------
+- (bool) hasCommand:(NSString*)commandString
+{
+  for (NSString* iterCommandString in commandList)
+  {
+    if ([iterCommandString isEqualToString:commandString])
+      return true;
+  }
+  return false;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Adds the command string @a commandString to the end of the
 /// commandList array.
 // -----------------------------------------------------------------------------

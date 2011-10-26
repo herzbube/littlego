@@ -18,6 +18,8 @@
 // Project includes
 #import "GtpLogItemViewController.h"
 #import "GtpLogItem.h"
+#import "GtpCommandModel.h"
+#import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -342,6 +344,28 @@ enum ResponseStringSectionItem
 // -----------------------------------------------------------------------------
 - (void) addToCannedCommands:(id)sender
 {
+  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  GtpCommandModel* model = delegate.gtpCommandModel;
+  UIAlertView* alert;
+  if (! [model hasCommand:self.logItem.commandString])
+  {
+    [model addCommand:self.logItem.commandString];
+    alert = [[UIAlertView alloc] initWithTitle:@"Command added"
+                                       message:@"The command was added to the list of predefined commands."
+                                      delegate:nil
+                             cancelButtonTitle:nil
+                             otherButtonTitles:@"Ok", nil];
+  }
+  else
+  {
+    alert = [[UIAlertView alloc] initWithTitle:@"Command not added"
+                                       message:@"The command already exists in the list of predefined commands, it was not added a second time."
+                                      delegate:nil
+                             cancelButtonTitle:nil
+                             otherButtonTitles:@"Ok", nil];
+  }
+  alert.tag = AddToCannedCommandsAlertView;
+  [alert show];
 }
 
 @end
