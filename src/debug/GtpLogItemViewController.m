@@ -283,7 +283,9 @@ enum ResponseStringSectionItem
         case ResponseStringItem:
         {
           cell.textLabel.text = self.logItem.parsedResponseString;
-          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          // The normal font without bold'ness would be
+          // [UIFont systemFontOfSize:[UIFont labelFontSize]];
+          cell.textLabel.font = [UIFont fontWithName:@"CourierNewPSMT" size:[UIFont labelFontSize]];
           cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
           cell.textLabel.numberOfLines = 0;
           break;
