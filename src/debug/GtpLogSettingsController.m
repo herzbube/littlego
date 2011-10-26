@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GtpLogSettingsController.h"
+#import "GtpCommandModel.h"
 #import "GtpLogModel.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
@@ -31,6 +32,7 @@ enum GtpLogSettingsTableViewSection
 {
   SettingsSection,
   ClearLogSection,
+  ResetCannedCommandsSection,
   MaxSection
 };
 
@@ -52,6 +54,15 @@ enum ClearLogSectionItem
   MaxClearLogSectionItem
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ClearLogSection.
+// -----------------------------------------------------------------------------
+enum ResetCannedCommandsSectionItem
+{
+  ResetCannedCommandsItem,
+  MaxResetCannedCommandsSectionItem
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for GtpLogSettingsController.
@@ -70,6 +81,7 @@ enum ClearLogSectionItem
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -83,14 +95,16 @@ enum ClearLogSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(retain) GtpLogModel* model;
+@property(retain) GtpLogModel* logModel;
+@property(retain) GtpCommandModel* commandModel;
 //@}
 @end
 
 
 @implementation GtpLogSettingsController
 
-@synthesize model;
+@synthesize logModel;
+@synthesize commandModel;
 
 
 // -----------------------------------------------------------------------------
@@ -110,7 +124,8 @@ enum ClearLogSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.model = nil;
+  self.logModel = nil;
+  self.commandModel = nil;
   [super dealloc];
 }
 
@@ -121,7 +136,8 @@ enum ClearLogSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.model = [ApplicationDelegate sharedDelegate].gtpLogModel;
+  self.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
+  self.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
 }
 
 // -----------------------------------------------------------------------------
@@ -156,11 +172,24 @@ enum ClearLogSectionItem
       return MaxSettingsSectionItem;
     case ClearLogSection:
       return MaxClearLogSectionItem;
+    case ResetCannedCommandsSection:
+      return MaxResetCannedCommandsSectionItem;
     default:
       assert(0);
       break;
   }
   return 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (ResetCannedCommandsSection == section)
+    return @"Discards the current list of predefined commands and restores the factory default list that is shipped with the app.";
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -182,7 +211,7 @@ enum ClearLogSectionItem
           sliderCell.descriptionLabel.text = @"GTP log size";
           sliderCell.slider.minimumValue = gtpLogSizeMinimum;
           sliderCell.slider.maximumValue = gtpLogSizeMaximum;
-          sliderCell.value = self.model.gtpLogSize;
+          sliderCell.value = self.logModel.gtpLogSize;
           break;
         default:
           assert(0);
@@ -197,6 +226,21 @@ enum ClearLogSectionItem
         case ClearLogItem:
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
           cell.textLabel.text = @"Clear GTP log";
+          cell.accessoryType = UITableViewCellAccessoryNone;
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
+    case ResetCannedCommandsSection:
+    {
+      switch (indexPath.row)
+      {
+        case ResetCannedCommandsItem:
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = @"Reset predefined commands";
           cell.accessoryType = UITableViewCellAccessoryNone;
           break;
         default:
@@ -231,7 +275,9 @@ enum ClearLogSectionItem
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
   if (ClearLogSection == indexPath.section && ClearLogItem == indexPath.row)
-    [self.model clearLog];
+    [self.logModel clearLog];
+  else if (ResetCannedCommandsSection == indexPath.section && ResetCannedCommandsItem == indexPath.row)
+    [self.commandModel resetToFactorySettings];
 }
 
 // -----------------------------------------------------------------------------
@@ -240,7 +286,7 @@ enum ClearLogSectionItem
 - (void) logSizeDidChange:(id)sender
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.model.gtpLogSize = sliderCell.value;
+  self.logModel.gtpLogSize = sliderCell.value;
 }
 
 @end

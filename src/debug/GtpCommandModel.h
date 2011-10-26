@@ -32,6 +32,7 @@
 - (void) replaceCommandAtIndex:(int)index withCommand:(NSString*)commandString;
 - (void) removeCommandAtIndex:(int)index;
 - (void) moveCommandAtIndex:(int)fromIndex toIndex:(int)toIndex;
+- (void) resetToFactorySettings;
 
 /// @brief Number of commands in @e commandList.
 ///

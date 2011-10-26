@@ -155,4 +155,11 @@
   [commandToMove release];
 }
 
+- (void) resetToFactorySettings
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults removeObjectForKey:gtpCannedCommandsKey];
+  [self readUserDefaults];
+}
+
 @end

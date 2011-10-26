@@ -127,7 +127,8 @@ Interacting with the GTP engine
         retains the readability of formatted responses (e.g. the response to
         the "showboard" command)
       - The navigation item displays a button that can be used to add the
-        command to the list of canned commands
+        command to the list of canned commands; the button is displayed only if
+        the command does not yet exist in the list of canned commands
   - The "raw" GTP log displays commands and responses in a scrollable text view
     with a fixed font.
 - Canned commands
