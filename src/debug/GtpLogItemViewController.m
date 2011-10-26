@@ -136,9 +136,14 @@ enum ResponseStringSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"GTP Log Item";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                         target:self
-                                                                                         action:@selector(addToCannedCommands:)];
+
+  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  if (! [delegate.gtpCommandModel hasCommand:self.logItem.commandString])
+  {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                                           target:self
+                                                                                           action:@selector(addToCannedCommands:)];
+  }
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpLogItemChanged:)
@@ -348,26 +353,17 @@ enum ResponseStringSectionItem
 {
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   GtpCommandModel* model = delegate.gtpCommandModel;
-  UIAlertView* alert;
-  if (! [model hasCommand:self.logItem.commandString])
-  {
-    [model addCommand:self.logItem.commandString];
-    alert = [[UIAlertView alloc] initWithTitle:@"Command added"
-                                       message:@"The command was added to the list of predefined commands."
-                                      delegate:nil
-                             cancelButtonTitle:nil
-                             otherButtonTitles:@"Ok", nil];
-  }
-  else
-  {
-    alert = [[UIAlertView alloc] initWithTitle:@"Command not added"
-                                       message:@"The command already exists in the list of predefined commands, it was not added a second time."
-                                      delegate:nil
-                             cancelButtonTitle:nil
-                             otherButtonTitles:@"Ok", nil];
-  }
+  [model addCommand:self.logItem.commandString];
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Command added"
+                                                  message:@"The command was added to the list of predefined commands."
+                                                 delegate:nil
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"Ok", nil];
   alert.tag = AddToCannedCommandsAlertView;
   [alert show];
+
+  // Make sure that command cannot be added a second time
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 @end
