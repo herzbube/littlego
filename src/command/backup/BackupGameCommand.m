@@ -127,7 +127,7 @@
   void (^expirationHandler) (void) =
   ^(void)
   {
-    NSLog(@"BackupGameCommand: Background task expiration handler invoked");
+    DDLogInfo(@"BackupGameCommand: Background task expiration handler invoked");
     if (UIBackgroundTaskInvalid != self.backgroundTask)
     {
       UIApplication* app = [UIApplication sharedApplication];
@@ -190,7 +190,7 @@
 // -----------------------------------------------------------------------------
 - (void) savesgf
 {
-  NSLog(@"BackupGameCommand: Background task invoked");
+  DDLogInfo(@"BackupGameCommand: Background task invoked");
 
   // Secretly and heinously change the working directory so that the .sgf
   // file goes to a directory that the user cannot look into

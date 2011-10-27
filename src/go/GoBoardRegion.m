@@ -361,7 +361,7 @@
       keepFirstWithThisRegion = false;
       continue;
     }
-    NSLog(@"splitRegionIfRequired() creating new GoBoardRegion with these %d points:\n%@", subRegion.count, subRegion);
+    DDLogInfo(@"splitRegionIfRequired() creating new GoBoardRegion with these %d points:\n%@", subRegion.count, subRegion);
     [(NSMutableArray*)points removeObjectsInArray:subRegion];
     GoBoardRegion* newRegion = [GoBoardRegion regionWithPoints:subRegion];
     for (GoPoint* point in subRegion)

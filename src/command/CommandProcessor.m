@@ -87,7 +87,7 @@ static CommandProcessor* sharedProcessor = nil;
 // -----------------------------------------------------------------------------
 - (bool) submitCommand:(id<Command>)command
 {
-  NSLog(@"Executing %@", command);
+  DDLogInfo(@"Executing %@", command);
   bool result = [command doIt];
   [command release];
   return result;

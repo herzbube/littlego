@@ -7,7 +7,7 @@
 # |
 # | http://www.boost.org/
 # |
-# | See the main build script for more informatin.
+# | See the main build script for more information.
 # =========================================================================
 
 # General Boost variables
@@ -271,7 +271,7 @@ RUN_BJAM()
 }
 
 # +------------------------------------------------------------------------
-# | Builds and installs the software package.
+# | Builds the software package.
 # |
 # | This function expects that the current working directory is the root
 # | directory of the extracted source archive.

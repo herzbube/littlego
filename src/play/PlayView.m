@@ -261,7 +261,7 @@ static PlayView* sharedPlayView = nil;
   if (! [GoGame sharedGame])
     return;
 
-//  NSLog(@"PlayView::drawRect:() starts");
+//  DDLogInfo(@"PlayView::drawRect:() starts");
   [self updateDrawParametersForRect:rect];
   // The order in which draw methods are invoked is important, as each method
   // draws its objects as a new layer on top of the previous layers.
@@ -273,7 +273,7 @@ static PlayView* sharedPlayView = nil;
   [self drawSymbols];
   [self drawLabels];
   [self updateStatusLine];
-//  NSLog(@"PlayView::drawRect:() ends");
+//  DDLogInfo(@"PlayView::drawRect:() ends");
 }
 
 // -----------------------------------------------------------------------------
@@ -621,7 +621,7 @@ static PlayView* sharedPlayView = nil;
   CGPoint coordinates = [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
   CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, [[point.region color] CGColor]);
-  
+
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;

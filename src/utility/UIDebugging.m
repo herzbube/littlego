@@ -27,11 +27,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Inspects @a view, printing the view's characteristics (e.g. its
-/// frame) with NSLog to the debug output.
+/// frame) with DDLogInfo to the debug output.
 // -----------------------------------------------------------------------------
 + (void) inspect:(UIView*)view
 {
-  NSLog(@"Inspecting view %d: %@", view, view.description);
+  DDLogInfo(@"Inspecting view %d: %@", view, view.description);
 }
 
 // -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@
 {
   [self inspect:view];
   NSArray* subviews = view.subviews;
-  NSLog(@"Inspecting %d subviews of view %d", subviews.count, view);
+  DDLogInfo(@"Inspecting %d subviews of view %d", subviews.count, view);
   for (UIView* subview in subviews)
     [self inspect:subview];
 }
@@ -55,7 +55,7 @@
 {
   [self inspect:view];
   NSArray* subviews = view.subviews;
-  NSLog(@"Inspecting %d subviews of view %d", subviews.count, view);
+  DDLogInfo(@"Inspecting %d subviews of view %d", subviews.count, view);
   for (UIView* subview in subviews)
     [self inspectWithTree:subview];
 }

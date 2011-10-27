@@ -176,7 +176,7 @@
   // might have happened.
   if (! [itemList containsObject:logItem])
   {
-    NSLog(@"Discarding GTP response");
+    DDLogInfo(@"Discarding GTP response");
     return;
   }
 

@@ -57,7 +57,7 @@
     resp.rawResponse = response;
     resp.command = command;
     [resp autorelease];
-    NSLog(@"Received %@", resp);
+    DDLogInfo(@"Received %@", resp);
   }
   return resp;
 }

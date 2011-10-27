@@ -19,6 +19,9 @@
   #import <Foundation/Foundation.h>
   #import <UIKit/UIKit.h>
 
+  // Library includes
+  #include <cocoalumberjack/DDLog.h>
+
   // Project includes
   #import "Constants.h"
 #endif

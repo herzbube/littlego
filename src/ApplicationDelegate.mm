@@ -44,6 +44,9 @@
 #import "command/backup/CleanBackupCommand.h"
 #import "command/backup/RestoreGameCommand.h"
 
+// Library includes
+#include <cocoalumberjack/DDTTYLogger.h>
+
 // System includes
 #include <string>
 #include <vector>
@@ -154,6 +157,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+
   // Make the single instance of this class available as a "shared object", or
   // Singleton.
   sharedDelegate = self;

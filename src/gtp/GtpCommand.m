@@ -136,7 +136,7 @@
 // -----------------------------------------------------------------------------
 - (void) submit
 {
-  NSLog(@"Submitting %@", self);
+  DDLogInfo(@"Submitting %@", self);
   GtpClient* client = [ApplicationDelegate sharedDelegate].gtpClient;
   [client submit:self];
 }

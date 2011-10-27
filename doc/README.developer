@@ -116,15 +116,19 @@ A short overview of what the script does:
 
 Xcode build system configuration
 --------------------------------
-Important configuration settings in Xcode:
+Important configuration settings in Xcode (both for the "Little Go" and the
+"Unit tests" targets):
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
-- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
   Note: If a future version of Fuego requires additional Boost libraries, they
   must be added here.
-- GCC_PREPROCESSOR_DEFINITIONS = NDEBUG
-  Note: This macro is required because the project links against a release
-  build of Fuego.
+- GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute configurations)
+  GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
+  Note: The NDEBUG macro is required even for a debug build because the project
+  links against a release build of Fuego. Because of this NDEBUG becomes useless
+  for distinguishing between debug/release builds, so we need our own project
+  specific macro, in this case named LITTLEGO_NDEBUG.
 
 
 Platform notes
@@ -591,6 +595,11 @@ Installation
   that contains all the object files within Fuego's separate library files.
 
 
+CocoaLumberjack build/installation issues
+-----------------------------------------
+No issues, build works out of the box.
+
+
 Changes to the Fuego source code
 --------------------------------
 1) FuegoUtil::FuegoMain()
@@ -639,6 +648,13 @@ Patches are created like this:
 Patches are applied like this:
   cd fuego-1.0
   patch -p1 <fuego.patch
+
+
+CocoaLumberjack Patches
+-----------------------
+The only patch currently needed is the one that adds a static library Xcode
+project. This project is then used by the build to actually produce the
+libCocoaLumberjack.a file that Little Go links against.
 
 
 GTP engine settings

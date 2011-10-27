@@ -7,7 +7,7 @@
 # |
 # | http://fuego.sourceforge.net/
 # |
-# | See the main build script for more informatin.
+# | See the main build script for more information.
 # =========================================================================
 
 # Variables for downloading/extracting the source archive
@@ -72,7 +72,7 @@ BUILD_AND_INSTALL_SINGLE_LIB()
     return 1
   fi
   cd "$SINGLELIB_TEMPDIR"
-  find ../ -name libfuego\*.a | xargs -n 1 ar x 
+  find ../ -name libfuego\*.a | xargs -n 1 ar x
   if test $? -ne 0; then
     echo "Error extracting content from other static libraries"
     return 1
@@ -206,7 +206,7 @@ PRE_BUILD_STEPS_SOFTWARE()
 }
 
 # +------------------------------------------------------------------------
-# | Builds and installs the software package.
+# | Builds the software package.
 # |
 # | This function expects that the current working directory is the root
 # | directory of the extracted source archive.

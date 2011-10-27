@@ -269,6 +269,7 @@
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
+		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
@@ -779,10 +780,11 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
-				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
-				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDE3F584131147D800EC16CC /* build-boost.sh */,
+				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
+				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
+				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
 			);
 			path = script;
@@ -1096,6 +1098,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
 			};
@@ -1109,7 +1112,10 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
 				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/Info.plist;
 				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
@@ -1119,6 +1125,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;
@@ -1207,6 +1214,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";
@@ -1227,7 +1235,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"./3rdparty/install$(SDKROOT)/include",
@@ -1247,6 +1258,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";
@@ -1266,7 +1278,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"./3rdparty/install$(SDKROOT)/include",
@@ -1286,6 +1301,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Unit tests";
@@ -1315,7 +1331,10 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
 				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/Info.plist;
 				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
@@ -1325,6 +1344,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
+					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;

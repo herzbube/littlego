@@ -26,6 +26,23 @@
 extern const float gHalfPixel;
 //@}
 
+// -----------------------------------------------------------------------------
+/// @name Logging constants
+///
+/// @brief These constants need to be declared static instead of extern, so that
+/// they can be initialized with values. This is required so that the compiler
+/// can see the values when it encounters DDLog statements, which will enable it
+/// to optimize away unneeded DDLog statements which are above the log level
+/// threshold.
+// -----------------------------------------------------------------------------
+//@{
+#ifdef LITTLEGO_NDEBUG
+static const int ddLogLevel = LOG_LEVEL_OFF;
+#else
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+#endif
+//@}
+
 /// @brief Enumerates possible types of GoMove objects.
 enum GoMoveType
 {

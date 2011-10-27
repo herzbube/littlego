@@ -33,7 +33,7 @@
 # |     ARCHIVE_BASEURL as a base.
 # |   - ARCHIVE_FILE: Name that should be used to store the archive after it
 # |     was downloaded. Only a simple file name, not a path.
-# |   - ARCHIVE_CHECKSUM: SHA-512 checksum of the archive file.
+# |   - ARCHIVE_CHECKSUM: SHA-256 checksum of the archive file.
 # | - Script may define the following functions to execute software-specific
 # |   commands during the respective build step. Unless specified otherwise,
 # |   a function will be invoked without arguments and must return 0 for

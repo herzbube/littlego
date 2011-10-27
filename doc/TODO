@@ -17,9 +17,6 @@ Priority 1 (important)
   - Remove @synchronized where possible and make properties non-atomic
   - Review properties to see if any can be declared readonly in the public
     interface, then re-declared rewrite in the private class extension
-- Add logging; possibly replace asserts; definitely where abort criteria are met
-  - Use logging framework instead of NSLog
-  - Have a look at this: http://code.google.com/p/cocoalumberjack/
 - Testing
   - Test application shutdown to see whether there are no memory leaks
   - Add more unit tests
@@ -167,6 +164,13 @@ Priority 3 (not important)
     application > Resume application > The "savesgf" command from the suspend
     background task is not visible > Manually scroll down to make the command
     visible > Generate another command > Auto-scroll does not work!
+- In SubmitGtpCommandView.xib
+  - Use a larger font to display the command
+  - Use a UITextView to edit the command (or make the UITextField multi-line)
+  - Try to replace UIPickerView by something else; UITableView would be more
+    suitable, but so far I was unable to come up with a UITableView solution
+    that looks good
+- Play a "whoosh" sound when the user submits a GTP command
 
 
 Future improvements to the 3rdparty build process
@@ -211,9 +215,3 @@ Future improvements to the 3rdparty build process
   asking for trouble. If a solution is found, remove the hack in function
   INSTALL_STEPS_SOFTWARE() in build-fuego.sh which creates an SDK directory
   symlink as a workaround for this Xcode limitation.
-- In SubmitGtpCommandView.xib
-  - Use a larger font to display the command
-  - Use a UITextView to edit the command (or make the UITextField multi-line)
-  - Try to replace UIPickerView by something else; UITableView would be more
-    suitable, but so far I was unable to come up with a UITableView solution
-    that looks good
