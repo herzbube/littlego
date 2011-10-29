@@ -6,6 +6,24 @@ project, and also me, after I come back to the project after several months
 or years :-)
 
 
+Short guide on how to build and run Little Go
+---------------------------------------------
+1. Unpack the source tar ball or clone the Git repository (since you are
+   reading this document you probably have done this already)
+2. Launch Terminal.app and execute these commands:
+     cd /path/to/littlego
+     ./script/get-and-build-3rdparty-software.sh
+3. Wait until the script has downloaded and built all 3rdparty software packages
+   (see the section "3rdparty software build" further down for more details)
+4. Launch Xcode by opening "Little Go.xcodeproj"
+5. Set the SDK to "Simulator", the build configuration to "Debug" and the active
+   target to "Little Go"
+6. Run the following command from the menu
+     Build > Build and Debug
+7. Wait until the build has finished. The iPhone simulator application should
+   now launch and run Little Go.
+
+
 Folder structure
 ----------------
 <root>
