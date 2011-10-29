@@ -77,6 +77,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if (ComputerVsComputerGame != self.game.type)
+    return false;
+
   [self.game continue];
 
   if (self.game.isComputerThinking)

@@ -76,6 +76,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if (ComputerVsComputerGame != self.game.type)
+    return false;
+
   [self.game pause];
   return true;
 }

@@ -62,8 +62,6 @@ Version 0.5
 Version 0.4
 - Debug view
   - Send arbitrary commands to GTP engine
-  - View application log
-  - Make application log available in iTunes
 - Technical
   - Handle interruptions (phone call, application is suspended, etc)
 

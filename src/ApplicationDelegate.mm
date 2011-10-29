@@ -43,6 +43,8 @@
 #import "command/backup/BackupGameCommand.h"
 #import "command/backup/CleanBackupCommand.h"
 #import "command/backup/RestoreGameCommand.h"
+#import "command/game/PauseGameCommand.h"
+#import "go/GoGame.h"
 
 // Library includes
 #include <cocoalumberjack/DDTTYLogger.h>
@@ -194,6 +196,11 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationWillResignActive:(UIApplication*)application
 {
+  if (ComputerVsComputerGame == [GoGame sharedGame].type)
+  {
+    PauseGameCommand* command = [[PauseGameCommand alloc] init];
+    [command submit];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -236,8 +243,13 @@ static ApplicationDelegate* sharedDelegate = nil;
   [[[CleanBackupCommand alloc] init] submit];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Invoked to notify this delegate that system memory is running low,
+/// combined with the imperative request to free as much memory as possible.
+// -----------------------------------------------------------------------------
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
+  // unfortunately we can't do anything about the situation
 }
 
 // -----------------------------------------------------------------------------
