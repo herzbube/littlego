@@ -66,6 +66,10 @@ The minimum requirement for running this version of Little Go is iOS 4.2.
 It might be possible to make a build for earlier versions of iOS, but unless
 someone requests it I won't spend any time on this.
 
+Some features may not work correctly on devices that are not multitasking
+capable. One known instance is that the game currently in progress is not saved
+when the application is terminated.
+
 
 Special Thanks
 --------------

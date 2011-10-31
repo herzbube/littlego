@@ -37,14 +37,17 @@
 //@{
 - (void) computerPlayerThinkingStops:(NSNotification*)notification;
 //@}
-/// @brief The model that manages data used by this view.
+/// @name Privately declared properties
+//@{
 @property(assign) PlayViewModel* model;
 @property(assign) SystemSoundID playStoneSystemSound;
+//@}
 @end
 
 
 @implementation SoundHandling
 
+@synthesize disabled;
 @synthesize model;
 @synthesize playStoneSystemSound;
 
@@ -61,6 +64,7 @@
   if (! self)
     return nil;
 
+  self.disabled = false;
   // NSString and CFStringRef are toll-free bridged types, which allows to
   // simply cast NSString* into a CFStringRef.
   // TODO: We should use ApplicationDelegate.resourceBundle here, but how can
@@ -71,7 +75,7 @@
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.model = [delegate playViewModel];
-  
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
 
@@ -94,6 +98,9 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStops:(NSNotification*)notification
 {
+  if (self.disabled)
+    return;
+
   GoGame* game = [GoGame sharedGame];
   if (GameHasEnded == game.state)
     ;  // do not abort, this is the case where the computer has finished

@@ -207,6 +207,7 @@ static ApplicationDelegate* sharedDelegate = nil;
     PauseGameCommand* command = [[PauseGameCommand alloc] init];
     [command submit];
   }
+  self.soundHandling.disabled = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -215,6 +216,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidBecomeActive:(UIApplication*)application
 {
+  self.soundHandling.disabled = false;
   // Send this notification just in case something changed in the documents
   // folder since the app was deactivated. Note: This is not just laziness - if
   // the user really *DID* change something via the file sharing feature of

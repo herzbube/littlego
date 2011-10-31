@@ -35,10 +35,6 @@ Priority 1 (important)
   - Building against a release build of Fuego requires that the project needs
     to set the NDEBUG preprocessor macro, even if the project wants to make
     a debug build; this effectively prevents the use of assert()
-- Find out how to suspend the GTP engine's threads if the application moves to
-  the inactive state (phone call); maybe kill the threads, then restart the
-  engine and client at a later time? What about saving the .sgf file in such a
-  scenario?
 - Implement a gesture recognizer that reacts immediately to the first touch
   (UITapGestureRecognizer only recognizes the gesture when the finger leaves
   the screen)
@@ -46,7 +42,6 @@ Priority 1 (important)
   to Model; let GoGame adopt the Model protocol, and the various views and
   controllers adopt ModelObserver. This makes the different roles a little bit
   more explicit
-- Implement application state transitions as described in README.developer
 - When editing a player, and the player type is changed, the GTP Engine Settings
   section must be hidden/shown as appropriate; also the GtpEngineSettings
   object attached to the Player object must be set appropriately when the user
@@ -215,3 +210,7 @@ Future improvements to the 3rdparty build process
   asking for trouble. If a solution is found, remove the hack in function
   INSTALL_STEPS_SOFTWARE() in build-fuego.sh which creates an SDK directory
   symlink as a workaround for this Xcode limitation.
+- Add support for devices that are not capable of multitasking: The application
+  delegat needs to be enhanced with an applicationWillTerminate:() handler, and
+  BackupGameCommand needs to be fixed so that it does not use a background task
+  to write its temporary file.

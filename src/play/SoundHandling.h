@@ -25,11 +25,18 @@
 /// - The player whose turn it is, is human. If both players are computer
 ///   players, or if the computer has just played on behalf of the human
 ///   player, then no sound and/or vibration is triggered.
+///
+/// Sound and vibration may be temporarily disabled to prevent any disturbances,
+/// e.g. while the user is answering a phone call.
 // -----------------------------------------------------------------------------
 @interface SoundHandling : NSObject
 {
 }
 
 - (id) init;
+
+/// @brief If flag is set, no sound/vibration is triggered. Used to temporarily
+/// disable disturbances, e.g. while the user is answering a phone call.
+@property(getter=isDisabled) bool disabled;
 
 @end

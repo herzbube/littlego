@@ -267,10 +267,11 @@ Architecture and implementation notes
     helpless. Nothing special is done to keep the GTP engine running, or to
     shut it down - it is expected that the system simply suspends code
     execution at the appropriate time.
-  - When the application is terminated (applicationWillTerminate:), it performs
-    the same save operations as if it were being suspended.
-  - When the application resumes (applicationWillEnterForeground:) it does
-    nothing.
+  - When the application is terminated (applicationWillTerminate:), it does
+    nothing - the application is expected to always run on multitasking capable
+    devices.
+  - When the application resumes (applicationWillEnterForeground:) it clears
+    the temporary .sgf file that was written on suspend.
   - When the application becomes inactive (applicationWillResignActive:), it
     suppresses audio/vibration feedback so as not to disturb the user while the
     screen is locked (or an interruption is in progress). In addition, a
