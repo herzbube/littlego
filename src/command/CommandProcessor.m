@@ -89,6 +89,10 @@ static CommandProcessor* sharedProcessor = nil;
 {
   DDLogInfo(@"Executing %@", command);
   bool result = [command doIt];
+  if (result)
+    DDLogVerbose(@"Command execution succeeded (%@)", command);
+  else
+    DDLogError(@"Command execution failed (%@)", command);
   [command release];
   return result;
 }
