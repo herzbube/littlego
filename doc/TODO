@@ -72,8 +72,6 @@ Priority 1 (important)
     the word "archive"
   - Hide the file extension .sgf; it should be tacked on when the game is saved,
     and removed when the game list is displayed
-- Synchronous GTP commands are not logged in DebugView at the moment because
-  there is no notification for the response. Fix this.
 - LoadGameCommand is too slow - when a game with many moves on a large board is
   restored, the command takes many seconds to execute. The probable culprit is
   GoBoardRegion::splitRegionIfRequired().
@@ -119,8 +117,6 @@ Priority 2 (nice to have)
   discarded should not appear based on the GoGameState; instead it should
   appear based on some sort of "document dirty" flag - if a game has been
   saved to .sgf it is marked as "not dirty".
-- Add activity indicator to "load game" view in case loading the .sgf file
-  takes a long time
 - Add handler for .sgf files so that other apps can pass those files to the
   app for processing
 - Future improvements to the 3rdparty build process (see separate section

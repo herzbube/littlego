@@ -1,3 +1,17 @@
+Mon October 31 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.3
+- features
+  - the GTP log on the Debug view is now a table view (the raw log is still
+    available by switching to the view's "backside")
+  - arbitrary commands can now be submitted to the GTP engine
+  - GTP commands can be "canned" for later or repeated submission
+  - interruptions (e.g. a phone call) now pause a computer vs. computer game
+  - sound/vibration is temporarily disabled during an interruption
+- bugfixes
+  - none
+- technical changes
+  - add Cocoa Lumberjack logging framework
+
 Sun September 25 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.3
 - features

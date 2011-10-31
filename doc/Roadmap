@@ -59,7 +59,7 @@ Version 0.5
   - Proper scoring
   - Switch to "back side" of the view to see information about the current game
 
-Version 0.4
+Version 0.4 (October 31st 2011)
 - Debug view
   - Send arbitrary commands to GTP engine
 - Technical

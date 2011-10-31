@@ -25,12 +25,13 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.3.
+This is Little Go 0.4.
 
-The two most important new features in this release are support for saving and
-loading of games, and an option that allows memory consumption of the GTP engine
-to be limited so that the system does not kill the application because it uses
-up too much memory.
+The main feature in this release is the Debug view which has been completely
+rewritten: The GTP log is now a table view (the raw log is still available by
+switching to the view's "backside"), arbitrary commands can now be submitted to
+the GTP engine, and GTP commands can be "canned" for later or repeated
+submission.
 
 For more details see the ChangeLog document.
 
