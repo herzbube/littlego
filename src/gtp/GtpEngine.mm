@@ -104,13 +104,15 @@
   char outputPipeParameterName[255];
   char outputPipeParameterValue[255];
   char nobookParameterName[255];
+  char quietParameterName[255];
   sprintf(programName, "fuego");
   sprintf(inputPipeParameterName, "--input-pipe");
   sprintf(inputPipeParameterValue, "%s", pchInputPipePath);
   sprintf(outputPipeParameterName, "--output-pipe");
   sprintf(outputPipeParameterValue, "%s", pchOutputPipePath);
   sprintf(nobookParameterName, "--nobook");  // opening book is loaded separately from a project resource
-  int argc = 6;
+  sprintf(quietParameterName, "--quiet");  // don't print debug messages, otherwise the project's debugging console becomes overloaded
+  int argc = 7;
   char* argv[argc];
   argv[0] = programName;
   argv[1] = inputPipeParameterName;
@@ -118,6 +120,7 @@
   argv[3] = outputPipeParameterName;
   argv[4] = outputPipeParameterValue;
   argv[5] = nobookParameterName;
+  argv[6] = quietParameterName;
 
   try
   {
