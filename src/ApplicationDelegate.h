@@ -56,6 +56,7 @@
 + (ApplicationDelegate*) sharedDelegate;
 + (ApplicationDelegate*) newDelegate;
 
+- (void) setupLogging;
 - (void) setupFolders;
 - (void) setupResourceBundle;
 - (void) setupUserDefaults;

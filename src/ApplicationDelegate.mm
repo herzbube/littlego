@@ -48,6 +48,7 @@
 
 // Library includes
 #include <cocoalumberjack/DDTTYLogger.h>
+#include <cocoalumberjack/DDFileLogger.h>
 
 // System includes
 #include <string>
@@ -73,6 +74,10 @@
 - (void) applicationDidBecomeActive:(UIApplication*)application;
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application;
 //@}
+/// @name Privately declared properties
+//@{
+@property(retain) DDFileLogger* fileLogger;
+//@}
 @end
 
 
@@ -91,6 +96,7 @@
 @synthesize archiveViewModel;
 @synthesize gtpLogModel;
 @synthesize gtpCommandModel;
+@synthesize fileLogger;
 
 
 // -----------------------------------------------------------------------------
@@ -145,6 +151,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.archiveViewModel = nil;
   self.gtpLogModel = nil;
   self.gtpCommandModel = nil;
+  self.fileLogger = nil;
   [[CommandProcessor sharedProcessor] release];
   if (self == sharedDelegate)
     sharedDelegate = nil;
@@ -159,12 +166,11 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
-
   // Make the single instance of this class available as a "shared object", or
   // Singleton.
   sharedDelegate = self;
 
+  [self setupLogging];
   [self setupFolders];
   [self setupResourceBundle];
   [self setupUserDefaults];
@@ -250,6 +256,17 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
   // unfortunately we can't do anything about the situation
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up application logging.
+// -----------------------------------------------------------------------------
+- (void) setupLogging
+{
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
+  [DDLog addLogger:self.fileLogger];
+  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
 }
 
 // -----------------------------------------------------------------------------
