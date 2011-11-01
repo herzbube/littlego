@@ -25,13 +25,9 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.4.
+This is Little Go 0.5.
 
-The main feature in this release is the Debug view which has been completely
-rewritten: The GTP log is now a table view (the raw log is still available by
-switching to the view's "backside"), arbitrary commands can now be submitted to
-the GTP engine, and GTP commands can be "canned" for later or repeated
-submission.
+The main features in this release are xxx
 
 For more details see the ChangeLog document.
 
