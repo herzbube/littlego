@@ -18,6 +18,8 @@
 // Project includes
 #import "BoardSizeSelectionController.h"
 #import "PlayerSelectionController.h"
+#import "HandicapSelectionController.h"
+#import "KomiSelectionController.h"
 
 // System includes
 #import <UIKit/UIKit.h>
@@ -60,7 +62,7 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate, UIAlertViewDelegate>
+@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate, HandicapSelectionDelegate, KomiSelectionDelegate, UIAlertViewDelegate>
 {
 }
 
@@ -78,5 +80,9 @@
 @property(retain) Player* blackPlayer;
 /// @brief The currently selected player for white.
 @property(retain) Player* whitePlayer;
+/// @brief The currently selected handicap.
+@property int handicap;
+/// @brief The currently selected Komi.
+@property double komi;
 
 @end

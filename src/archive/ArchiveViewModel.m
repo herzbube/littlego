@@ -159,6 +159,8 @@
   NSMutableArray* localGameList = [NSMutableArray arrayWithCapacity:fileList.count];
   for (NSString* fileName in fileList)
   {
+    if ([fileName isEqualToString:@"Logs"])  // ignore logging framework folder
+      continue;
     NSString* filePath = [self.archiveFolder stringByAppendingPathComponent:fileName];
     NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
     ArchiveGame* game = [self gameWithFileName:fileName];

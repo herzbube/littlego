@@ -26,4 +26,5 @@
 @interface NSString(NSStringAdditions)
 + (NSString*) UUIDString;
 - (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
++ (NSString*) stringWithKomi:(double)komi;
 @end

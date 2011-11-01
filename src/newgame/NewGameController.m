@@ -19,6 +19,7 @@
 #import "NewGameController.h"
 #import "NewGameModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
@@ -115,6 +116,14 @@ enum KomiSectionItem
 //@{
 - (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
+/// @name HandicapSelectionDelegate protocol
+//@{
+- (void) handicapSelectionController:(HandicapSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
+/// @name KomiSelectionDelegate protocol
+//@{
+- (void) komiSelectionController:(KomiSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
 /// @name UIAlertViewDelegate protocol
 //@{
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
@@ -135,6 +144,8 @@ enum KomiSectionItem
 @synthesize blackPlayer;
 @synthesize whitePlayer;
 @synthesize loadGame;
+@synthesize handicap;
+@synthesize komi;
 
 
 // -----------------------------------------------------------------------------
@@ -160,6 +171,8 @@ enum KomiSectionItem
     controller.boardSize = newGameModel.boardSize;
     controller.blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
     controller.whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
+    controller.handicap = newGameModel.handicap;
+    controller.komi = newGameModel.komi;
   }
   return controller;
 }
@@ -287,6 +300,7 @@ enum KomiSectionItem
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   switch (indexPath.section)
   {
     case BoardSizeSection:
@@ -295,7 +309,6 @@ enum KomiSectionItem
         case BoardSizeItem:
           cell.textLabel.text = @"Board size";
           cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         default:
           assert(0);
@@ -318,7 +331,6 @@ enum KomiSectionItem
             assert(0);
             break;
         }
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         break;
       }
     case HandicapSection:
@@ -326,8 +338,7 @@ enum KomiSectionItem
       {
         case HandicapItem:
           cell.textLabel.text = @"Handicap";
-          cell.detailTextLabel.text = @"0";
-          cell.accessoryType = UITableViewCellAccessoryNone;
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.handicap];
         default:
           assert(0);
           break;
@@ -338,8 +349,7 @@ enum KomiSectionItem
       {
         case KomiItem:
           cell.textLabel.text = @"Komi";
-          cell.detailTextLabel.text = @"6½";
-          cell.accessoryType = UITableViewCellAccessoryNone;
+          cell.detailTextLabel.text = [NSString stringWithKomi:self.komi];
         default:
           assert(0);
           break;
@@ -387,9 +397,13 @@ enum KomiSectionItem
         break;
       }
     case HandicapSection:
-      return;
+      modalController = [[HandicapSelectionController controllerWithDelegate:self
+                                                             defaultHandicap:self.handicap] retain];
+      break;
     case KomiSection:
-      return;
+      modalController = [[KomiSelectionController controllerWithDelegate:self
+                                                             defaultKomi:self.komi] retain];
+      break;
     default:
       assert(0);
       return;
@@ -445,6 +459,44 @@ enum KomiSectionItem
       NSIndexPath* playerIndexPath = [NSIndexPath indexPathForRow:playerRow inSection:PlayersSection];
       UITableViewCell* playerCell = [self.tableView cellForRowAtIndexPath:playerIndexPath];
       [self updateCell:playerCell withPlayer:controller.player];
+      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief HandicapSelectionDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) handicapSelectionController:(HandicapSelectionController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (self.handicap != controller.handicap)
+    {
+      self.handicap = controller.handicap;
+      NSIndexPath* handicapIndexPath = [NSIndexPath indexPathForRow:0 inSection:HandicapSection];
+      UITableViewCell* handicapCell = [self.tableView cellForRowAtIndexPath:handicapIndexPath];
+      handicapCell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.handicap];
+      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief KomiSelectionDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) komiSelectionController:(KomiSelectionController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (self.komi != controller.komi)
+    {
+      self.komi = controller.komi;
+      NSIndexPath* komiIndexPath = [NSIndexPath indexPathForRow:0 inSection:KomiSection];
+      UITableViewCell* komiCell = [self.tableView cellForRowAtIndexPath:komiIndexPath];
+      komiCell.detailTextLabel.text = [NSString stringWithKomi:self.komi];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
     }
   }
@@ -510,6 +562,14 @@ enum KomiSectionItem
   model.boardSize = self.boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
+  // If an archived game is loaded, handicap and komi are taken from the
+  // archive; since the user did not make selections for those parameters, they
+  // cannot be persisted.
+  if (! self.loadGame)
+  {
+    model.handicap = self.handicap;
+    model.komi = self.komi;
+  }
 
   [self.delegate newGameController:self didStartNewGame:true];
 }

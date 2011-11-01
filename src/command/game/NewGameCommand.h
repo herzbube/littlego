@@ -28,6 +28,7 @@
 /// - Deallocate the old GoGame object (if it exists)
 /// - Create a new GoGame object
 /// - Set up the board in the GTP engine
+/// - Set up handicap and komi
 /// - If at least one of the players of the new game is a computer player:
 ///   Configure the GTP engine with settings obtained from the computer player
 ///
@@ -41,6 +42,7 @@
 - (id) init;
 
 @property(assign) bool shouldSetupGtpBoard;
+@property(assign) bool shouldSetupGtpHandicapAndKomi;
 @property(assign) bool shouldSetupComputerPlayer;
 @property(assign) bool shouldTriggerComputerPlayer;
 

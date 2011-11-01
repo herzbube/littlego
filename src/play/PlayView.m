@@ -576,6 +576,7 @@ static PlayView* sharedPlayView = nil;
     {
       switch ([GoGame sharedGame].state)
       {
+        case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
         case GameHasStarted:
           statusText = [[GoGame sharedGame].currentPlayer.player.name stringByAppendingString:@" is thinking..."];
           break;

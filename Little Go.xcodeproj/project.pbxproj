@@ -113,6 +113,8 @@
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CD8F920D143E6A4A006351DB /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */; };
+		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
+		CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -278,6 +280,10 @@
 		CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubmitGtpCommandViewController.h; sourceTree = "<group>"; };
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubmitGtpCommandView.xib; sourceTree = "<group>"; };
+		CD9AA709146028770012C3EA /* HandicapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandicapSelectionController.h; sourceTree = "<group>"; };
+		CD9AA70A146028770012C3EA /* HandicapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandicapSelectionController.m; sourceTree = "<group>"; };
+		CD9AA70B146028770012C3EA /* KomiSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KomiSelectionController.h; sourceTree = "<group>"; };
+		CD9AA70C146028770012C3EA /* KomiSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KomiSelectionController.m; sourceTree = "<group>"; };
 		CDA264AA132CF7EF00FAFC51 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		CDA264AB132CF7EF00FAFC51 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		CDA595AF1401383E00B250D8 /* Unit tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -639,6 +645,10 @@
 			children = (
 				CDFB49EE13F6AA7A00FAA5AF /* BoardSizeSelectionController.h */,
 				CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */,
+				CD9AA709146028770012C3EA /* HandicapSelectionController.h */,
+				CD9AA70A146028770012C3EA /* HandicapSelectionController.m */,
+				CD9AA70B146028770012C3EA /* KomiSelectionController.h */,
+				CD9AA70C146028770012C3EA /* KomiSelectionController.m */,
 				CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */,
 				CDAB5ED013E483DE00C4A4AA /* NewGameController.m */,
 				CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */,
@@ -1011,6 +1021,8 @@
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
+				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
+				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

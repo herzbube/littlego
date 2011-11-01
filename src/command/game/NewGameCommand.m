@@ -20,11 +20,14 @@
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
+#import "../../gtp/GtpResponse.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
 #import "../../player/GtpEngineSettings.h"
+#import "../../newgame/NewGameModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -39,6 +42,7 @@
 //@{
 - (void) newGame;
 - (void) setupGtpBoard;
+- (void) setupGtpHandicapAndKomi;
 - (void) setupComputerPlayer;
 - (void) triggerComputerPlayer;
 //@}
@@ -48,6 +52,7 @@
 @implementation NewGameCommand
 
 @synthesize shouldSetupGtpBoard;
+@synthesize shouldSetupGtpHandicapAndKomi;
 @synthesize shouldSetupComputerPlayer;
 @synthesize shouldTriggerComputerPlayer;
 
@@ -65,6 +70,7 @@
     return nil;
 
   self.shouldSetupGtpBoard = true;
+  self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayer = true;
 
@@ -87,6 +93,8 @@
   [self newGame];
   if (self.shouldSetupGtpBoard)
     [self setupGtpBoard];
+  if (self.shouldSetupGtpHandicapAndKomi)
+    [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)
     [self setupComputerPlayer];
   if (self.shouldTriggerComputerPlayer)
@@ -129,6 +137,51 @@
   GoBoard* board = [GoGame sharedGame].board;
   [[GtpCommand command:@"clear_board"] submit];
   [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.dimensions]] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs handicap and komi setup of the GTP engine using values
+/// obtained from NewGameModel.
+// -----------------------------------------------------------------------------
+- (void) setupGtpHandicapAndKomi
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  NewGameModel* model = appDelegate.newGameModel;
+  GoGame* game = [GoGame sharedGame];
+
+  // Setup handicap only if there is one. The GTP command "fixed_handicap"
+  // accepts only values >= 2.
+  if (model.handicap >= 2)
+  {
+    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", model.handicap]];
+    commandFixedHandicap.waitUntilDone = true;
+    [commandFixedHandicap submit];
+    if (commandFixedHandicap.response.status)
+    {
+      // The GTP specs say that "fixed_handicap" must return a vertex list, but
+      // currently Fuego does not return such a list
+      // -> therefore we have to get the handicap vertexes by issuing an
+      //    explicit query
+      NSString* handicapInfoFromGtp = commandFixedHandicap.response.parsedResponse;
+      if (handicapInfoFromGtp.length == 0)
+      {
+        GtpCommand* commandListHandicap = [GtpCommand command:@"list_handicap"];
+        commandListHandicap.waitUntilDone = true;
+        [commandListHandicap submit];
+        if (commandListHandicap.response.status)
+          handicapInfoFromGtp = commandListHandicap.response.parsedResponse;
+      }
+      [GoUtilities setupNewGame:game withGtpHandicap:handicapInfoFromGtp];
+    }
+  }
+
+  // There is no universal default value for komi, so to be on the sure side we
+  // always have to setup komi.
+  GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", model.komi]];
+  commandKomi.waitUntilDone = true;
+  [commandKomi submit];
+  if (commandKomi.response.status)
+    game.komi = model.komi;
 }
 
 // -----------------------------------------------------------------------------

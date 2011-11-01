@@ -49,8 +49,8 @@
 {
 @private
   enum GoBoardSize m_boardSize;
-  double m_komi;
   NSString* m_handicap;
+  NSString* m_komi;
   NSString* m_moves;
   NSString* m_oldCurrentDirectory;
   MBProgressHUD* m_progressHUD;

@@ -54,6 +54,7 @@
 @synthesize type;
 @synthesize board;
 @synthesize handicapPoints;
+@synthesize komi;
 @synthesize playerBlack;
 @synthesize playerWhite;
 @synthesize firstMove;
@@ -109,6 +110,7 @@ static GoGame* sharedGame = nil;
   // NewGameModel, but we don't really have to know about this)
   self.board = [GoBoard newGameBoard];
   self.handicapPoints = [NSArray array];
+  self.komi = 0;
   self.playerBlack = [GoPlayer newGameBlackPlayer];
   self.playerWhite = [GoPlayer newGameWhitePlayer];
   self.firstMove = nil;

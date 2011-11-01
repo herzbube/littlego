@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoPoint;
+@class GoGame;
 
 
 // -----------------------------------------------------------------------------
@@ -33,5 +34,6 @@
 }
 
 + (void) movePointToNewRegion:(GoPoint*)thePoint;
++ (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo;
 
 @end

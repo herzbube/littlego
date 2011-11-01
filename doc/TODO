@@ -77,6 +77,10 @@ Priority 1 (important)
   GoBoardRegion::splitRegionIfRequired().
 - Add versioning to user defaults so that existing preferences on the user's
   device can be upgraded when a new version of the app is installed
+- Fuego responds to "savesgf" by saving all moves, even those that have been
+  taken back with "undo"; find out if this is correct behaviour (the GTP specs
+  imply that it is not!) and do something about it... at the least put this on
+  the list of known bugs in the README.
 
 
 Priority 2 (nice to have)
@@ -162,7 +166,16 @@ Priority 3 (not important)
     suitable, but so far I was unable to come up with a UITableView solution
     that looks good
 - Play a "whoosh" sound when the user submits a GTP command
-
+- Allow free selection of komi values. The value of this is disputable, but an
+  implementation is presumably rather simple since komi is treated as a
+  numeric value everywhere
+- Allow handicap values greater than 9
+  - Fixing HandicapSelectionController is probably quite simple: Using a
+    TableViewSliderCell should do the trick. A clever idea is still needed how
+    the notice about the non-existing handicap 1 should be displayed.
+  - The bigger problem is that we would need to implement knowledge about
+    handicap stone placement because we can't use the GTP command
+    "fixed_handicap" (defined in the GTP specs) for handicap values > 9.
 
 Future improvements to the 3rdparty build process
 -------------------------------------------------

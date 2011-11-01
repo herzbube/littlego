@@ -63,6 +63,8 @@
 @property(retain) GoBoard* board;
 /// @brief List of GoPoint objects with handicap stones.
 @property(retain) NSArray* handicapPoints;
+/// @brief The komi used for this game.
+@property double komi;
 /// @brief The GoPlayer object that plays for black.
 @property(retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays for white.

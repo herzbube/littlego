@@ -19,6 +19,8 @@
 #import "GoUtilities.h"
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
+#import "GoGame.h"
+#import "GoBoard.h"
 
 
 @implementation GoUtilities
@@ -47,7 +49,7 @@
   thePoint.region = nil;
   [oldRegion removePoint:thePoint];  // possible side-effect: oldRegion might be
   // split into multiple GoBoardRegion objects
-  
+
   // Step 2: Attempt to add the point to the same region as one of its
   // neighbours. At the same time, merge regions if they can be joined.
   GoBoardRegion* newRegion = nil;
@@ -72,13 +74,51 @@
         [newRegion joinRegion:neighbour.region];
     }
   }
-  
+
   // Step 3: Still no region? The point forms its own new region!
   if (! newRegion)
   {
     newRegion = [GoBoardRegion regionWithPoint:thePoint];
     thePoint.region = newRegion;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the new game @a game with the handicap information stored in
+/// @a handicapInfo.
+///
+/// @a game must be in state #GameHasNotYetStarted.
+///
+/// @a handicapInfo is expected to contain information obtained from GTP.
+/// The expected format is: "vertex vertex vertex[...]"
+///
+/// @a handicapInfo may be empty to indicate that there is no handicap.
+// -----------------------------------------------------------------------------
++ (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo
+{
+  if (GameHasNotYetStarted != game.state)
+  {
+    NSException* exception = [NSException exceptionWithName:@"GameStateException"
+                                                     reason:@"The GoGame object is not in state GameHasNotYetStarted, but handicap can only be set up in this state."
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  if (0 == handicapInfo.length)
+    return;
+
+  GoBoard* board = game.board;
+
+  NSArray* vertexList = [handicapInfo componentsSeparatedByString:@" "];
+  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:vertexList.count];
+  for (NSString* vertex in vertexList)
+  {
+    GoPoint* point = [board pointAtVertex:vertex];
+    point.stoneState = BlackStone;
+    [GoUtilities movePointToNewRegion:point];
+    [handicapPoints addObject:point];
+  }
+  game.handicapPoints = handicapPoints;
 }
 
 @end

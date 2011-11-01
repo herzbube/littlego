@@ -58,7 +58,7 @@
 - (void) handleCommandSucceeded;
 - (void) handleCommandFailed;
 - (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize;
-- (void) setupHandicap:(NSString*)handicapFromGtp;
+- (void) setupKomi:(NSString*)komiFromGtp;
 - (void) setupMoves:(NSString*)movesFromGtp;
 - (void) triggerComputerPlayer;
 - (void) cleanup;
@@ -93,8 +93,8 @@
   self.whitePlayer = nil;
   self.waitUntilDone = false;
   m_boardSize = BoardSizeUndefined;
-  m_komi = 0;
   m_handicap = nil;
+  m_komi = nil;
   m_moves = nil;
   m_oldCurrentDirectory = nil;
 
@@ -110,6 +110,7 @@
   self.blackPlayer = nil;
   self.whitePlayer = nil;
   [m_handicap release];
+  [m_komi release];
   [m_moves release];
   [m_oldCurrentDirectory release];
   [super dealloc];
@@ -232,7 +233,7 @@
     return;
   }
 
-  m_komi = [response.parsedResponse doubleValue];
+  m_komi = [response.parsedResponse copy];
 
   // Submit the next GTP command
   NSString* commandString = @"list_handicap";
@@ -291,11 +292,9 @@
 - (void) handleCommandSucceeded
 {
   [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
-  [self setupHandicap:m_handicap];
+  [GoUtilities setupNewGame:[GoGame sharedGame] withGtpHandicap:m_handicap];
+  [self setupKomi:m_komi];
   [self setupMoves:m_moves];
-  // TODO: Add Komi
-//  [self triggerComputerPlayer];
-//  [self cleanup];
 }
 
 // -----------------------------------------------------------------------------
@@ -330,39 +329,32 @@
   // GTP command. We must not setup the board again, or we will lose all moves
   // that were just loaded.
   // If command failed, we must setup the board again to bring the application
-  // and the GTP engine into a defined state that matches
+  // and the GTP engine into a defined state
   command.shouldSetupGtpBoard = (! success);
+  // Ditto for handicap and komi
+  command.shouldSetupGtpHandicapAndKomi = (! success);
   command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
   [command submit];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the handicap for the new game, using the information in
-/// @a handicapFromGtp.
+/// @brief Sets up komi for the new game, using the information in
+/// @a komiFromGtp.
 ///
-/// Expected format for @a handicapFromGtp:
-///   "vertex vertex vertex[...]"
+/// Expected format for @a komiFromGtp is a fractional number (e.g. "6.5").
 ///
-/// @a handicapFromGtp may be empty to indicate that there is no handicap.
+/// @a komiFromGtp may be empty to indicate that there is no komi.
 // -----------------------------------------------------------------------------
-- (void) setupHandicap:(NSString*)handicapFromGtp
+- (void) setupKomi:(NSString*)komiFromGtp
 {
-  if (0 == m_handicap.length)
-    return;
+  double komi;
+  if (0 == komiFromGtp.length)
+    komi = 0;
+  else
+    komi = [komiFromGtp doubleValue];
 
   GoGame* game = [GoGame sharedGame];
-  GoBoard* board = game.board;
-
-  NSArray* vertexList = [m_handicap componentsSeparatedByString:@" "];
-  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:vertexList.count];
-  for (NSString* vertex in vertexList)
-  {
-    GoPoint* point = [board pointAtVertex:vertex];
-    point.stoneState = BlackStone;
-    [GoUtilities movePointToNewRegion:point];
-    [handicapPoints addObject:point];
-  }
-  game.handicapPoints = handicapPoints;
+  game.komi = komi;
 }
 
 // -----------------------------------------------------------------------------
