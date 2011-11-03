@@ -15,8 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
+// Project includes
+#import "GameInfoViewController.h"
 
 // Forward declarations
 @class PlayView;
@@ -31,11 +31,22 @@
 ///   This is used to place a stone on the board.
 /// - Tapping gesture on buttons that trigger a Go move
 /// - Tapping gesture on the "Game Actions" button
+///
+/// In addition, PlayViewController manages the transition to and from the
+/// "backside" view which displays information about the current game (including
+/// scoring information). The transition is usually triggered by the user
+/// tapping on a dedicated button. When the user wants to dismiss the game info
+/// view, PlayViewController transitions back to the "frontside" view, which is
+/// the main play view.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate>
 {
 }
 
+/// @brief The frontside view. A superview of @e playView.
+@property(nonatomic, retain) IBOutlet UIView* frontSideView;
+/// @brief The backside view with information about the current game.
+@property(nonatomic, retain) IBOutlet UIView* backSideView;
 /// @brief The view that PlayViewController is responsible for.
 @property(nonatomic, retain) IBOutlet PlayView* playView;
 /// @brief The toolbar that displays action buttons.
@@ -59,6 +70,9 @@
 /// @brief Dummy button that creates an expanding space between the "New"
 /// button and its predecessors.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* flexibleSpaceButton;
+/// @brief The "Game Info" button. Tapping this button flips the game view to
+/// display an alternate view with information about the game in progress.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* gameInfoButton;
 /// @brief The "Game Actions" button. Tapping this button displays an action
 /// sheet with actions that relate to Go games as a whole.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* gameActionsButton;

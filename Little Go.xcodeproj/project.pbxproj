@@ -86,6 +86,10 @@
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
+		CD721FD31460C174005EAC65 /* tabular.png in Resources */ = {isa = PBXBuildFile; fileRef = CD721FD11460C174005EAC65 /* tabular.png */; };
+		CD721FD41460C174005EAC65 /* tabular@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD721FD21460C174005EAC65 /* tabular@2x.png */; };
+		CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */; };
+		CD72205D14620C3A005EAC65 /* GameInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD72205C14620C3A005EAC65 /* GameInfoView.xib */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
@@ -272,6 +276,11 @@
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
+		CD721FD11460C174005EAC65 /* tabular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabular.png; sourceTree = "<group>"; };
+		CD721FD21460C174005EAC65 /* tabular@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabular@2x.png"; sourceTree = "<group>"; };
+		CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
+		CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
+		CD72205C14620C3A005EAC65 /* GameInfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameInfoView.xib; sourceTree = "<group>"; };
 		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
@@ -563,6 +572,8 @@
 		CD1088561326CBB300E83543 /* play */ = {
 			isa = PBXGroup;
 			children = (
+				CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */,
+				CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */,
 				CD10887B1326D2C100E83543 /* PlayView.h */,
 				CD10887C1326D2C100E83543 /* PlayView.m */,
 				CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */,
@@ -774,6 +785,7 @@
 				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
 				CDBB0C0113426C56007C1C3E /* DocumentView.xib */,
 				CDE300F113578E54005235F2 /* Entitlements.plist */,
+				CD72205C14620C3A005EAC65 /* GameInfoView.xib */,
 				CD0CCF6B143A627000A3F869 /* GtpLogView.xib */,
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
@@ -782,6 +794,8 @@
 				CDE4057A13EB09120091E719 /* SettingsView.xib */,
 				CD3AE7581344FD7D00B58E08 /* SourceCode.html */,
 				CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */,
+				CD721FD11460C174005EAC65 /* tabular.png */,
+				CD721FD21460C174005EAC65 /* tabular@2x.png */,
 				CDBF97E513EEBFD400476748 /* wood-on-wood-01.aiff */,
 				CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */,
 			);
@@ -903,6 +917,9 @@
 				CDD48C6A141030E100188B6A /* ArchiveView.xib in Resources */,
 				CD0CCF6C143A627000A3F869 /* GtpLogView.xib in Resources */,
 				CD8F920D143E6A4A006351DB /* SubmitGtpCommandView.xib in Resources */,
+				CD721FD31460C174005EAC65 /* tabular.png in Resources */,
+				CD721FD41460C174005EAC65 /* tabular@2x.png in Resources */,
+				CD72205D14620C3A005EAC65 /* GameInfoView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1023,6 +1040,7 @@
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
+				CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

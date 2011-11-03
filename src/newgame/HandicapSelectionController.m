@@ -286,7 +286,7 @@ enum TwoAndMoreHandicapSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting a board size.
+/// @brief Invoked when the user has finished selecting a handicap value.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
@@ -294,7 +294,7 @@ enum TwoAndMoreHandicapSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has cancelled selecting a board size.
+/// @brief Invoked when the user has cancelled selecting a handicap value.
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {

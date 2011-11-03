@@ -50,6 +50,7 @@
 - (void) undo:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
+- (void) gameInfo:(id)sender;
 - (void) gameActions:(id)sender;
 //@}
 /// @name Handlers for recognized gestures
@@ -59,6 +60,10 @@
 /// @name UIGestureRecognizerDelegate protocol
 //@{
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
+//@}
+/// @name GameInfoViewControllerDelegate protocol
+//@{
+- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller;
 //@}
 /// @name Notification responders
 //@{
@@ -77,14 +82,21 @@
 - (void) updateUndoButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
+- (void) updateGameInfoButtonState;
 - (void) updateGameActionsButtonState;
 - (void) updatePanningEnabled;
+//@}
+/// @name Private helpers
+//@{
+- (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
 @end
 
 
 @implementation PlayViewController
 
+@synthesize frontSideView;
+@synthesize backSideView;
 @synthesize playView;
 @synthesize toolbar;
 @synthesize playForMeButton;
@@ -93,6 +105,7 @@
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize flexibleSpaceButton;
+@synthesize gameInfoButton;
 @synthesize gameActionsButton;
 @synthesize panRecognizer;
 @synthesize panningEnabled;
@@ -104,6 +117,8 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.frontSideView = nil;
+  self.backSideView = nil;
   self.playView = nil;
   self.panRecognizer = nil;
   [super dealloc];
@@ -117,6 +132,8 @@
 {
   [super viewDidLoad];
 
+  [self.view addSubview:self.frontSideView];
+
   self.panningEnabled = false;
 
 	self.panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
@@ -124,6 +141,11 @@
 	[self.playView addGestureRecognizer:self.panRecognizer];
   self.panRecognizer.delegate = self;
   self.panRecognizer.maximumNumberOfTouches = 1;
+
+  self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabular.png"]
+                                                          style:UIBarButtonItemStyleBordered
+                                                         target:self
+                                                         action:@selector(gameInfo:)] autorelease];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
@@ -151,6 +173,8 @@
 {
   [super viewDidUnload];
 
+  self.frontSideView = nil;
+  self.backSideView = nil;
   self.playView = nil;
   self.panRecognizer = nil;
 }
@@ -205,6 +229,53 @@
 {
   ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
   [command submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Info" button. Flips the game view to
+/// display an alternate view with information about the game in progress.
+// -----------------------------------------------------------------------------
+- (void) gameInfo:(id)sender
+{
+  GameInfoViewController* controller = [[GameInfoViewController controllerWithDelegate:self] retain];
+  [self.backSideView addSubview:controller.view];
+  bool flipToFrontSideView = false;
+  [self flipToFrontSideView:flipToFrontSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
+{
+  bool flipToFrontSideView = true;
+  [self flipToFrontSideView:flipToFrontSideView];
+  [controller.view removeFromSuperview];
+  [controller release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Flips the main play view (on the frontside) over to the game info
+/// view (on the backside), and vice versa.
+// -----------------------------------------------------------------------------
+- (void) flipToFrontSideView:(bool)flipToFrontSideView
+{
+  [UIView beginAnimations:nil context:nil];
+  [UIView setAnimationDuration:0.75];
+
+  if (flipToFrontSideView)
+  {
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
+    [backSideView removeFromSuperview];
+    [self.view addSubview:frontSideView];
+  }
+  else
+  {
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
+    [frontSideView removeFromSuperview];
+    [self.view addSubview:backSideView];
+  }
+  [UIView commitAnimations];
 }
 
 // -----------------------------------------------------------------------------
@@ -360,6 +431,7 @@
       [toolbarItems addObject:self.pauseButton];
       [toolbarItems addObject:self.continueButton];
       [toolbarItems addObject:self.flexibleSpaceButton];
+      [toolbarItems addObject:self.gameInfoButton];
       [toolbarItems addObject:self.gameActionsButton];
       break;
     default:
@@ -367,6 +439,7 @@
       [toolbarItems addObject:self.passButton];
       [toolbarItems addObject:self.undoButton];
       [toolbarItems addObject:self.flexibleSpaceButton];
+      [toolbarItems addObject:self.gameInfoButton];
       [toolbarItems addObject:self.gameActionsButton];
       break;
   }
@@ -383,6 +456,7 @@
   [self updateUndoButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
+  [self updateGameInfoButtonState];
   [self updateGameActionsButtonState];
 }
 
@@ -536,6 +610,14 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Info" button.
+// -----------------------------------------------------------------------------
+- (void) updateGameInfoButtonState
+{
+  self.gameInfoButton.enabled = YES;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of the "Game Actions" button.
 // -----------------------------------------------------------------------------
 - (void) updateGameActionsButtonState
@@ -604,5 +686,6 @@
       break;
   }
 }
+
 
 @end

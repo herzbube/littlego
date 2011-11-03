@@ -243,7 +243,7 @@ enum NoHandicapGameSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the Komi value displayed by the cell at @a indexPath.
+/// @brief Returns the komi value displayed by the cell at @a indexPath.
 // -----------------------------------------------------------------------------
 - (double) komiValueForRowAtIndexPath:(NSIndexPath*)indexPath
 {
@@ -284,7 +284,7 @@ enum NoHandicapGameSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the index path of the cell that displays the Komi value
+/// @brief Returns the index path of the cell that displays the komi value
 /// @a komiValue
 // -----------------------------------------------------------------------------
 - (NSIndexPath*) indexPathForKomiValue:(double)komiValue
@@ -311,7 +311,7 @@ enum NoHandicapGameSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting a board size.
+/// @brief Invoked when the user has finished selecting komi value.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
@@ -319,7 +319,7 @@ enum NoHandicapGameSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has cancelled selecting a board size.
+/// @brief Invoked when the user has cancelled selecting a komi value.
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
