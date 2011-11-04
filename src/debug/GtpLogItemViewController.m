@@ -326,7 +326,7 @@ enum ResponseStringSectionItem
   if (0 == cellText.length)
     return tableView.rowHeight;
 
-  CGFloat cellWidth = 280;  // TODO calculate this! the problem is that we don't have a cell object
+  CGFloat cellWidth = cellContentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
   UIFont* cellFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
   CGSize constraintSize = CGSizeMake(cellWidth, MAXFLOAT);
   CGSize labelSize = [cellText sizeWithFont:cellFont

@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../ui/TableViewGridCell.h"
+
 // Forward declarations
 @class GameInfoViewController;
 
@@ -40,7 +43,7 @@
 /// this to work, the delegate must implement the protocol
 /// GameInfoViewControllerDelegate.
 // -----------------------------------------------------------------------------
-@interface GameInfoViewController : UIViewController
+@interface GameInfoViewController : UIViewController <TableViewGridCellDelegate>
 {
 }
 

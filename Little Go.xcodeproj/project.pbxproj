@@ -90,6 +90,7 @@
 		CD721FD41460C174005EAC65 /* tabular@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD721FD21460C174005EAC65 /* tabular@2x.png */; };
 		CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */; };
 		CD72205D14620C3A005EAC65 /* GameInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD72205C14620C3A005EAC65 /* GameInfoView.xib */; };
+		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD78034F132FE6E100E7843F /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
@@ -281,6 +282,8 @@
 		CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
 		CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
 		CD72205C14620C3A005EAC65 /* GameInfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameInfoView.xib; sourceTree = "<group>"; };
+		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
+		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
 		CD78034E132FE6E100E7843F /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
@@ -824,6 +827,8 @@
 				CD05B569142EA31700214BBE /* MBProgressHUD.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
+				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
+				CD72216814633F1D005EAC65 /* TableViewGridCell.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
 				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
 			);
@@ -1041,6 +1046,7 @@
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
 				CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */,
+				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

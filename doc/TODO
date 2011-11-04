@@ -86,7 +86,7 @@ Priority 1 (important)
 Priority 2 (nice to have)
 -------------------------
 - Transition to Xcode 4, mainly to get native git support
-- In PlayerSelectionController and SetingsViewController: Add human/computer
+- In PlayerSelectionController and SettingsViewController: Add human/computer
   symbol to the table view cell depending on the type of the player that the
   cell represents
 - Add a note to the "Edit player" view that explains why a player cannot be

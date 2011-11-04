@@ -134,16 +134,7 @@ static const int descriptionLabelWidth = 230;
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  // self.contentView still thinks it has the entire table view width, but in a
-  // table view with grouped style the available width will be less because the
-  // cell is set off from the view edges both on the left and the right
-  // -> through debugging we know that the offset happens to be the default
-  //    indentation width
-  // -> this is probably not a coincidence, so we boldly use this indentation
-  //    width for our calculations
-  int contentViewWidth = self.contentView.bounds.size.width - (2 * self.indentationWidth);
-
-  assert(descriptionLabelWidth < contentViewWidth);
+  assert(descriptionLabelWidth < cellContentViewWidth);
   CGRect descriptionLabelRect = CGRectMake(cellContentDistanceFromEdgeHorizontal, cellContentDistanceFromEdgeVertical, descriptionLabelWidth, cellContentLabelHeight);
   descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
   descriptionLabel.tag = SliderCellDescriptionLabelTag;
@@ -154,7 +145,7 @@ static const int descriptionLabelWidth = 230;
 
   int valueLabelX = descriptionLabelRect.origin.x + descriptionLabelRect.size.width + cellContentSpacingHorizontal;
   int valueLabelY = descriptionLabelRect.origin.y;
-  int valueLabelWidth = contentViewWidth - valueLabelX - cellContentDistanceFromEdgeHorizontal;
+  int valueLabelWidth = cellContentViewWidth - valueLabelX - cellContentDistanceFromEdgeHorizontal;
   assert(valueLabelWidth > 0);
   CGRect valueLabelRect = CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, cellContentLabelHeight);
   valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained

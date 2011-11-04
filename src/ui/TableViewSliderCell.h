@@ -49,7 +49,8 @@ enum SliderCellSubViewTag
 ///
 /// Notes and constraints:
 /// - Use the @e value property to set or get the integer value
-/// - Each UI element has its view tag set to a value from the SubViewTag enum
+/// - Each UI element has its view tag set to a value from the
+///   #SliderCellSubViewTag enum
 /// - The labels' width is fixed
 /// - The value label has room for roughly 3-4 characters
 /// - TableViewSliderCell was not designed to be used in editing mode

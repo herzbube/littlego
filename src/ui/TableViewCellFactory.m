@@ -18,6 +18,7 @@
 // Project includes
 #import "TableViewCellFactory.h"
 #import "TableViewSliderCell.h"
+#import "TableViewGridCell.h"
 #import "../utility/UIColorAdditions.h"
 
 // System includes
@@ -59,6 +60,9 @@
     case SliderCellType:
       cellID = @"SliderCellType";
       break;
+    case GridCellType:
+      cellID = @"Grid1CellType";
+      break;
     default:
       assert(0);
       return nil;
@@ -72,8 +76,15 @@
   switch (type)
   {
     case SliderCellType:
+    {
       cell = [TableViewSliderCell cellWithReuseIdentifier:cellID];
       break;
+    }
+    case GridCellType:
+    {
+      cell = [TableViewGridCell cellWithReuseIdentifier:cellID];
+      break;
+    }
     default:
     {
       UITableViewCellStyle cellStyle;
@@ -102,56 +113,50 @@
   switch (type)
   {
     case SwitchCellType:
-      {
-        // UISwitch ignores the frame, so we can conveniently use CGRectZero here
-        UISwitch* accessoryViewSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-        cell.accessoryView = accessoryViewSwitch;
-        [accessoryViewSwitch release];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        break;
-      }
+    {
+      // UISwitch ignores the frame, so we can conveniently use CGRectZero here
+      UISwitch* accessoryViewSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+      cell.accessoryView = accessoryViewSwitch;
+      [accessoryViewSwitch release];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
     case TextFieldCellType:
-      {
-        // self.contentView still thinks it has the entire table view width, but in a
-        // table view with grouped style the available width will be less because the
-        // cell is set off from the view edges both on the left and the right
-        // -> through debugging we know that the offset happens to be the default
-        //    indentation width
-        // -> this is probably not a coincidence, so we boldly use this indentation
-        //    width for our calculations
-        // TODO: move this calculation and comment somewhere else;
-        // tableviewslidercell and GtpLogItemViewController has the same
-        // calculation
-        int contentViewWidth = cell.contentView.bounds.size.width - (2 * cell.indentationWidth);
-        int contentViewHeight = cell.contentView.bounds.size.height;
+    {
+      // TODO: move this calculation and comment somewhere else;
+      // tableviewslidercell and GtpLogItemViewController has the same
+      // calculation
+      int cellContentViewHeight = cell.contentView.bounds.size.height;
 
-        int textFieldX = cellContentDistanceFromEdgeHorizontal;
-        int textFieldY = cellContentDistanceFromEdgeVertical;
-        int textFieldWidth = contentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
-        int textFieldHeight = contentViewHeight - 2 * cellContentDistanceFromEdgeVertical;
-        CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
-        UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
-        [cell.contentView addSubview:textField];
-        textField.textColor = [UIColor slateBlueColor];
-        // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
-        // moment we don't use it because the clear button is displayed
-        // overlaying the right border of the cell
-        textField.clearButtonMode = UITextFieldViewModeNever;
-        // Make the text field identifiable so that clients can get at it by
-        // sending "viewWithTag:" to the cell
-        textField.tag = TextFieldCellTextFieldTag;
-        // Properties from the UITextInputTraits protocol
-        textField.autocapitalizationType = YES;
-        textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        textField.enablesReturnKeyAutomatically = YES;
-        // The cell should never appear selected, instead we want the text field
-        // to become active when the cell is tapped
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        break;
-      }
+      int textFieldX = cellContentDistanceFromEdgeHorizontal;
+      int textFieldY = cellContentDistanceFromEdgeVertical;
+      int textFieldWidth = cellContentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
+      int textFieldHeight = cellContentViewHeight - 2 * cellContentDistanceFromEdgeVertical;
+      CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
+      UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
+      [cell.contentView addSubview:textField];
+      textField.textColor = [UIColor slateBlueColor];
+      // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
+      // moment we don't use it because the clear button is displayed
+      // overlaying the right border of the cell
+      textField.clearButtonMode = UITextFieldViewModeNever;
+      // Make the text field identifiable so that clients can get at it by
+      // sending "viewWithTag:" to the cell
+      textField.tag = TextFieldCellTextFieldTag;
+      // Properties from the UITextInputTraits protocol
+      textField.autocapitalizationType = YES;
+      textField.autocorrectionType = UITextAutocorrectionTypeNo;
+      textField.enablesReturnKeyAutomatically = YES;
+      // The cell should never appear selected, instead we want the text field
+      // to become active when the cell is tapped
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
     default:
+    {
       cell.accessoryType = UITableViewCellAccessoryNone;
       break;
+    }
   }
 
   // Return the finished product

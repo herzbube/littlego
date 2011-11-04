@@ -21,8 +21,9 @@ const float gHalfPixel = 0.5;
 // Go constants
 const enum GoBoardSize gDefaultBoardSize = BoardSize19;
 
-// Table cell constants
+// Table view cell constants
 // Note: Values determined experimentally by debugging a default UITableViewCell
+const int cellContentViewWidth = 300;
 const int cellContentDistanceFromEdgeHorizontal = 10;
 const int cellContentDistanceFromEdgeVertical = 11;
 // Values determined experimentally in Interface Builder
