@@ -86,5 +86,14 @@
 /// user. Returns nil if no score is available. The score becomes available
 /// only after the game state changes to #GameHasEnded.
 @property(retain) NSString* score;
+/// @brief Is true to indicate that the next GoMove object created should have
+/// its @e computerGenerated flag set to true.
+///
+/// TODO This is a nasty little hack to allow GoGame to set the GoMove object's
+/// flag before sending #goGameFirstMoveChanged or #goGameLastMoveChanged. This
+/// timing hack allows observers to check the GoMove object's flag when they
+/// react to one of those notifications. To remove this hack we need to do some
+/// redesigning...
+@property bool nextMoveIsComputerGenerated;
 
 @end

@@ -12,7 +12,6 @@ Priority 1 (important)
 ----------------------
 - Write makedist.sh script that creates a source distribution
 - Review weird memory management of GoBoardRegion.points
-- Special notification if computer player has passed or resigned
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
   - Review properties to see if any can be declared readonly in the public
@@ -128,6 +127,9 @@ Priority 2 (nice to have)
 - GTP Log backside view loses the "savesgf" command when the application is
   suspended, because the notification is delivered in the context of a
   secondary thread
+- Find a suitable trigger that allows TableViewGridCell to start querying its
+  delegate; currently the UITableViewDataSource must manually initiate the
+  querying process from within tableView:cellForRowAtIndexPath:().
 
 
 Priority 3 (not important)

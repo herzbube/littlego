@@ -62,6 +62,7 @@
 @synthesize state;
 @synthesize computerThinks;
 @synthesize score;
+@synthesize nextMoveIsComputerGenerated;
 
 
 // -----------------------------------------------------------------------------
@@ -107,16 +108,20 @@ static GoGame* sharedGame = nil;
   sharedGame = self;
 
   // Initialize members (some objects initialize themselves with values from
-  // NewGameModel, but we don't really have to know about this)
+  // NewGameModel, but we don't really have to know about this).
+  // Note: Where possible don't use "self" to prevent setter methods from
+  // triggering notifications.
   self.board = [GoBoard newGameBoard];
   self.handicapPoints = [NSArray array];
-  self.komi = 0;
+  komi = 0;
   self.playerBlack = [GoPlayer newGameBlackPlayer];
   self.playerWhite = [GoPlayer newGameWhitePlayer];
-  self.firstMove = nil;
-  self.lastMove = nil;
-  self.state = GameHasNotYetStarted;
-  self.computerThinks = false;
+  firstMove = nil;
+  lastMove = nil;
+  state = GameHasNotYetStarted;
+  computerThinks = false;
+  score = nil;
+  nextMoveIsComputerGenerated = false;
 
   bool blackPlayerIsHuman = self.playerBlack.player.human;
   bool whitePlayerIsHuman = self.playerWhite.player.human;
@@ -203,6 +208,7 @@ static GoGame* sharedGame = nil;
 {
   GoMove* move = [GoMove move:PlayMove by:self.currentPlayer after:self.lastMove];
   move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
+  move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -221,6 +227,7 @@ static GoGame* sharedGame = nil;
 - (void) pass
 {
   GoMove* move = [GoMove move:PassMove by:self.currentPlayer after:self.lastMove];
+  move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   if (! self.firstMove)
     self.firstMove = move;
@@ -244,6 +251,7 @@ static GoGame* sharedGame = nil;
 - (void) resign
 {
   GoMove* move = [GoMove move:ResignMove by:self.currentPlayer after:self.lastMove];
+  move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   if (! self.firstMove)
     self.firstMove = move;

@@ -272,6 +272,10 @@ static PlayView* sharedPlayView = nil;
   [self drawStones];
   [self drawSymbols];
   [self drawLabels];
+  // TODO Strictly speaking this updater should not be invoked as part of
+  // drawRect:(), afer all the status line is located outside of the game board
+  // rectangle. If the updater is removed here, fix the status line update for
+  // when the computer player has passed.
   [self updateStatusLine];
 //  DDLogInfo(@"PlayView::drawRect:() ends");
 }
@@ -591,6 +595,19 @@ static PlayView* sharedPlayView = nil;
           break;
         default:
           break;
+      }
+    }
+    else
+    {
+      GoMove* lastMove = [GoGame sharedGame].lastMove;
+      if (PassMove == lastMove.type && lastMove.computerGenerated)
+      {
+        // TODO fix when GoColor class is added
+        if (lastMove.player.black)
+          statusText = @"Black";
+        else
+          statusText = @"White";
+        statusText = [statusText stringByAppendingString:@" has passed"];
       }
     }
   }

@@ -235,7 +235,8 @@ extern NSString* goGameScoreChanged;
 /// about its next move.
 extern NSString* computerPlayerThinkingStarts;
 /// @brief Is sent to indicate that the computer player has stopped to think
-/// about its next move.
+/// about its next move. Occurs only after the move has actually been made, i.e.
+/// any GoGame notifications have already been delivered.
 extern NSString* computerPlayerThinkingStops;
 //@}
 

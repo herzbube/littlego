@@ -55,6 +55,7 @@
 @synthesize previous;
 @synthesize next;
 @synthesize capturedStones;
+@synthesize computerGenerated;
 
 
 // -----------------------------------------------------------------------------
@@ -103,6 +104,7 @@
   self.previous = nil;
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
+  self.computerGenerated = false;
 
   return self;
 }
