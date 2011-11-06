@@ -91,7 +91,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is triggered whenever the GTP engine responds to a command.
+/// @brief Is triggered when the GTP engine responds to the command submitted
+/// in doIt().
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {

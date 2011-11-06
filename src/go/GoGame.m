@@ -60,6 +60,7 @@
 @synthesize firstMove;
 @synthesize lastMove;
 @synthesize state;
+@synthesize reasonForGameHasEnded;
 @synthesize computerThinks;
 @synthesize score;
 @synthesize nextMoveIsComputerGenerated;
@@ -119,6 +120,7 @@ static GoGame* sharedGame = nil;
   firstMove = nil;
   lastMove = nil;
   state = GameHasNotYetStarted;
+  reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
   score = nil;
   nextMoveIsComputerGenerated = false;
@@ -236,7 +238,10 @@ static GoGame* sharedGame = nil;
   // Game state must change after any of the other things; this order is
   // important for observer notifications
   if (move.previous.type == PassMove)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
     self.state = GameHasEnded;
+  }
   else
   {
     if (GameHasNotYetStarted == self.state)
@@ -246,19 +251,11 @@ static GoGame* sharedGame = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #ResignMove.
+/// response to one of the players resigning the game.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  GoMove* move = [GoMove move:ResignMove by:self.currentPlayer after:self.lastMove];
-  move.computerGenerated = self.nextMoveIsComputerGenerated;
-
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
-
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
+  self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
   self.state = GameHasEnded;
 }
 

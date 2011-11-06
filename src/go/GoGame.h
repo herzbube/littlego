@@ -70,6 +70,10 @@
 /// @brief The GoPlayer object that plays for white.
 @property(retain) GoPlayer* playerWhite;
 /// @brief The player whose turn it is now.
+///
+/// After the game has ended, querying this property in some cases is a
+/// convenient way to find out who brought about the end of the game. For
+/// instance, if the game was resigned this denotes the player who resigned.
 @property(readonly, assign) GoPlayer* currentPlayer;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// the game is still in state #GameHasNotYetStarted.
@@ -79,6 +83,8 @@
 @property(retain) GoMove* lastMove;
 /// @brief The state of the game.
 @property enum GoGameState state;
+/// @brief The reason why the game has reached the state #GameHasEnded.
+@property enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// its next move.
 @property(getter=isComputerThinking) bool computerThinks;

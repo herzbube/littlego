@@ -18,7 +18,6 @@
 // Project includes
 #import "PlayMoveCommand.h"
 #import "ComputerPlayMoveCommand.h"
-#import "FinalScoreCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -169,7 +168,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is triggered whenever the GTP engine responds to a command.
+/// @brief Is triggered when the GTP engine responds to the command submitted
+/// in doIt().
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
@@ -179,19 +179,19 @@
     return;
   }
 
-  // Game may end due to two pass moves in a row
-  if (GameHasEnded == self.game.state)
+  // Let computer continue playing if the game state allows it and it is
+  // actually a computer player's turn
+  switch (self.game.state)
   {
-    FinalScoreCommand* command = [[FinalScoreCommand alloc] init];
-    [command submit];
-  }
-  else
-  {
-    if ([self.game isComputerPlayersTurn])
-    {
-      ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-      [command submit];
-    }
+    case GameHasEnded:  // game has ended as a result of the last move (e.g. 2x pass)
+      break;
+    default:
+      if ([self.game isComputerPlayersTurn])
+      {
+        ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+        [command submit];
+      }
+      break;
   }
 }
 

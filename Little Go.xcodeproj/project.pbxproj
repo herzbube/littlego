@@ -29,8 +29,6 @@
 		CD05A9BD1422ABFC00214BBE /* FinalScoreCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */; };
-		CD05AA251423BF0800214BBE /* ResignMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA241423BF0800214BBE /* ResignMoveCommand.m */; };
-		CD05AA2B1423C2A000214BBE /* ResignMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA241423BF0800214BBE /* ResignMoveCommand.m */; };
 		CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */; };
 		CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
@@ -194,8 +192,6 @@
 		CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerPlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9BB1422ABFC00214BBE /* FinalScoreCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinalScoreCommand.h; sourceTree = "<group>"; };
 		CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinalScoreCommand.m; sourceTree = "<group>"; };
-		CD05AA231423BF0800214BBE /* ResignMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResignMoveCommand.h; sourceTree = "<group>"; };
-		CD05AA241423BF0800214BBE /* ResignMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResignMoveCommand.m; sourceTree = "<group>"; };
 		CD05AA4F1423C4FD00214BBE /* UndoMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UndoMoveCommand.h; sourceTree = "<group>"; };
 		CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UndoMoveCommand.m; sourceTree = "<group>"; };
 		CD05AA701423D80500214BBE /* ContinueGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinueGameCommand.h; sourceTree = "<group>"; };
@@ -465,8 +461,6 @@
 				CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */,
 				CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */,
 				CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */,
-				CD05AA231423BF0800214BBE /* ResignMoveCommand.h */,
-				CD05AA241423BF0800214BBE /* ResignMoveCommand.m */,
 				CD05AA4F1423C4FD00214BBE /* UndoMoveCommand.h */,
 				CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */,
 			);
@@ -1018,7 +1012,6 @@
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05A9BD1422ABFC00214BBE /* FinalScoreCommand.m in Sources */,
-				CD05AA251423BF0800214BBE /* ResignMoveCommand.m in Sources */,
 				CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
@@ -1087,7 +1080,6 @@
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */,
-				CD05AA2B1423C2A000214BBE /* ResignMoveCommand.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CD05B136142A745500214BBE /* BackupGameCommand.m in Sources */,

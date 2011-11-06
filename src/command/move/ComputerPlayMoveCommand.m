@@ -17,7 +17,6 @@
 
 // Project includes
 #import "ComputerPlayMoveCommand.h"
-#import "ResignMoveCommand.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
@@ -102,7 +101,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is triggered whenever the GTP engine responds to a command.
+/// @brief Is triggered when the GTP engine responds to the command submitted
+/// in doIt().
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
@@ -112,12 +112,11 @@
     return;
   }
 
-  bool shouldResign = false;
   NSString* responseString = [response.parsedResponse lowercaseString];
   if ([responseString isEqualToString:@"pass"])
     [self.game pass];
   else if ([responseString isEqualToString:@"resign"])
-    shouldResign = true;  // wait until thinking state has been updated
+    [self.game resign];
   else
   {
     GoPoint* point = [self.game.board pointAtVertex:responseString];
@@ -131,28 +130,20 @@
   // important for observer notifications
   self.game.computerThinks = false;
 
-  if (shouldResign)
+  // Let computer continue playing if the game state allows it and it is
+  // actually a computer player's turn
+  switch (self.game.state)
   {
-    ResignMoveCommand* command = [[ResignMoveCommand alloc] init];
-    [command submit];
-  }
-  else
-  {
-    // Let computer continue playing if the game state allows it and it is
-    // actually a computer player's turn
-    switch (self.game.state)
-    {
-      case GameIsPaused:  // game has been paused while GTP was thinking about its last move
-      case GameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
-        break;
-      default:
-        if ([self.game isComputerPlayersTurn])
-        {
-          ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-          [command submit];
-        }
-        break;
-    }
+    case GameIsPaused:  // game has been paused while GTP was thinking about its last move
+    case GameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
+      break;
+    default:
+      if ([self.game isComputerPlayersTurn])
+      {
+        ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+        [command submit];
+      }
+      break;
   }
 }
 

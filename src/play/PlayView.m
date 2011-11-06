@@ -567,6 +567,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) updateStatusLine
 {
+  GoGame* game = [GoGame sharedGame];
   NSString* statusText = @"";
   if (self.crossHairPoint)
   {
@@ -576,22 +577,13 @@ static PlayView* sharedPlayView = nil;
   }
   else
   {
-    if ([GoGame sharedGame].isComputerThinking)
+    if (game.isComputerThinking)
     {
-      switch ([GoGame sharedGame].state)
+      switch (game.state)
       {
         case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
         case GameHasStarted:
-          statusText = [[GoGame sharedGame].currentPlayer.player.name stringByAppendingString:@" is thinking..."];
-          break;
-        case GameHasEnded:
-          // TODO how do we know that the score is being calculated??? this is
-          // secret knowledge of what happens at the end of the game when the
-          // computer is thinking... better to provide an explicit check in
-          // GoGame, or remove this explicit notification; it's probably better
-          // anyway to dump the text-based statusbar in favor of a graphical
-          // feedback of some sort
-          statusText = @"Calculating score...";
+          statusText = [game.currentPlayer.player.name stringByAppendingString:@" is thinking..."];
           break;
         default:
           break;
@@ -599,15 +591,51 @@ static PlayView* sharedPlayView = nil;
     }
     else
     {
-      GoMove* lastMove = [GoGame sharedGame].lastMove;
-      if (PassMove == lastMove.type && lastMove.computerGenerated)
+      switch (game.state)
       {
-        // TODO fix when GoColor class is added
-        if (lastMove.player.black)
-          statusText = @"Black";
-        else
-          statusText = @"White";
-        statusText = [statusText stringByAppendingString:@" has passed"];
+        case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
+        case GameHasStarted:
+        {
+          GoMove* lastMove = game.lastMove;
+          if (PassMove == lastMove.type && lastMove.computerGenerated)
+          {
+            // TODO fix when GoColor class is added
+            NSString* color;
+            if (lastMove.player.black)
+              color = @"Black";
+            else
+              color = @"White";
+            statusText = [NSString stringWithFormat:@"%@ has passed", color];
+          }
+          break;
+        }
+        case GameHasEnded:
+        {
+          switch (game.reasonForGameHasEnded)
+          {
+            case GoGameHasEndedReasonTwoPasses:
+            {
+              statusText = @"Game has ended by two consecutive pass moves";
+              break;
+            }
+            case GoGameHasEndedReasonResigned:
+            {
+              NSString* color;
+              // TODO fix when GoColor class is added
+              if (game.currentPlayer.black)
+                color = @"Black";
+              else
+                color = @"White";
+              statusText = [NSString stringWithFormat:@"Game has ended by resigning, %@ resigned", color];
+              break;
+            }
+            default:
+              break;
+          }
+          break;
+        }
+        default:
+          break;
       }
     }
   }
@@ -731,7 +759,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  // TODO do we need this?
+  [self updateStatusLine];
 }
 
 // -----------------------------------------------------------------------------

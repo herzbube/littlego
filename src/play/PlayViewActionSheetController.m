@@ -24,7 +24,6 @@
 #import "../archive/ArchiveViewModel.h"
 #import "../command/game/SaveGameCommand.h"
 #import "../command/game/NewGameCommand.h"
-#import "../command/move/ResignMoveCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -210,13 +209,12 @@ enum ActionSheetButton
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Resign" action sheet button.
-/// Generates a "Resign" move for the human player whose turn it currently is.
+/// Causes the human player whose turn it currently is to resign the game.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
   // TODO ask user for confirmation because this action cannot be undone
-  ResignMoveCommand* command = [[ResignMoveCommand alloc] init];
-  [command submit];
+  [[GoGame sharedGame] resign];
 }
 
 // -----------------------------------------------------------------------------

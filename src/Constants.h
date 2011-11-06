@@ -47,8 +47,7 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 enum GoMoveType
 {
   PlayMove,   ///< @brief The player played a stone in this move.
-  PassMove,   ///< @brief The player passed in this move.
-  ResignMove  ///< @brief The player resigned in this move.
+  PassMove    ///< @brief The player passed in this move.
 };
 
 /// @brief Enumerates the possible stone states of a GoPoint.
@@ -78,6 +77,27 @@ enum GoGameState
   GameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
   GameIsPaused,          ///< @brief Denotes a computer vs. computer game that is paused.
   GameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
+};
+
+/// @brief Enumerates the possible reasons why a GoGame has reached the state
+/// #GameHasEnded.
+enum GoGameHasEndedReason
+{
+  GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
+  GoGameHasEndedReasonTwoPasses,     ///< @brief The game ended due to two consecutive pass moves.
+  GoGameHasEndedReasonResigned,      ///< @brief The game ended due to one of the players resigning.
+  GoGameHasEndedReasonNoStonesLeft,  ///< @brief The game ended due to both players running out of stones.
+  GoGameHasEndedReasonTimeExceeded   ///< @brief The game ended due to one of the players having no time left.
+};
+
+/// @brief Enumerates the possible results of a game that has reached the state
+/// #GameHasEnded.
+enum GoGameResult
+{
+  GoGameResultNone,          ///< @brief The game has not been decided yet, usually because the game has not yet ended.
+  GoGameResultBlackHasWon,   ///< @brief Black has won the game.
+  GoGameResultWhiteHasWone,  ///< @brief White has won the game.
+  GoGameResultTie            ///< @brief The game is a tie.
 };
 
 /// @brief Enumerates the possible directions one can take to get from one
@@ -219,8 +239,8 @@ extern NSString* goGameStateChanged;
 /// removed by an undo.
 extern NSString* goGameFirstMoveChanged;
 /// @brief Is sent to indicate that the last move of the game has changed. May
-/// occur whenever a move is played (including pass and resign), or when the
-/// most recent move of the game is removed by an undo.
+/// occur whenever a move is played, or when the most recent move of the game
+/// is removed by an undo.
 extern NSString* goGameLastMoveChanged;
 /// @brief Is sent to indicate that a new score has been calculated. Typically
 /// occurs after the game has ended.

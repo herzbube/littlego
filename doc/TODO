@@ -113,8 +113,6 @@ Priority 2 (nice to have)
 - Add more preferences to tune Fuego (e.g. time limit for moves)
 - Provide informational feedback to user when low memory warnings are received
   -> this is about the time when a crash can be expected
-- Remove the move type ResignMove; instead add something like an enumeration
-  GoGameResult that can be added as another property to GoGame
 - Add a "swap players" option to the "new game" view
 - When a new game is started, the request to confirm if the old game can be
   discarded should not appear based on the GoGameState; instead it should
@@ -130,6 +128,8 @@ Priority 2 (nice to have)
 - Find a suitable trigger that allows TableViewGridCell to start querying its
   delegate; currently the UITableViewDataSource must manually initiate the
   querying process from within tableView:cellForRowAtIndexPath:().
+- Find out the rules about running out of stones. There currently is
+  GoGameHasEndedReasonNoStonesLeft in Constants.h which might need to be fixed.
 
 
 Priority 3 (not important)
