@@ -81,34 +81,87 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns a nicely formatted string for the komi value @a komi.
 ///
-/// The fractional part of @a komi is expected to be either 0.0, or 0.5.
+/// The string that is returned generally has the same format as described in
+/// the method documentation of stringWithFractionValue:().
 ///
-/// Generally, if the fractional part is 0.0, the string representation returned
-/// by this method omits the fraction. If the fractional part is 0.5, it is
-/// represented using the unicode character for "one half".
-///
-/// Examples: A komi value of 6.5 results in the string representation "6½".
-/// A komi value of 6.0 results in "6".
-///
-/// Special cases are komi values where the integral part is 0: A komi value 0.0
-/// is represented as "No komi", while the value 0.5 is represented as "½"
-/// (the integral part 0 is omitted).
+/// A special case is the value 0.0 which is represented as "No komi".
 // -----------------------------------------------------------------------------
 + (NSString*) stringWithKomi:(double)komi
 {
   if (0.0 == komi)
     return @"No komi";
-  else if (0.5 == komi)
-    return @"½";
-
-  double komiIntegerPart;
-  double komiFractionalPart = modf(komi, &komiIntegerPart);
-  if (0.0 == komiFractionalPart)
-    return [NSString stringWithFormat:@"%.0f", komiIntegerPart];
-  else if (0.5 == komiFractionalPart)
-    return [NSString stringWithFormat:@"%.0f½", komiIntegerPart];
   else
-    return [NSString stringWithFormat:@"%f", komi];  // got an unexpected fraction
+    return [NSString stringWithFractionValue:komi];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a nicely formatted string for the fraction value @a value.
+///
+/// The fractional part of @a value is expected to be one of the following:
+/// 0.0, 0.5, 0.25, 0.75, 0.2, 0.4, 0.6, 0.8, 0.125, 0.375, 0.625, 0.875,
+/// 0.1666..., 0.333..., 0.666..., or 0.8333...
+///
+/// Generally, if the fractional part is 0.0, the string representation returned
+/// by this method omits the fraction. If the fractional part is among those
+/// recognized by this method, it is represented using the corresponding unicode
+/// fraction character.
+///
+/// Examples: A value of 6.5 results in the string representation "6½". A value
+/// of 6.0 results in "6".
+///
+/// A special case are values whose integral part is 0 (e.g. 0.5): These values
+/// are represented with the integral part omitted (e.g. 0.5 becomes "½", @b not
+/// "0½").
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithFractionValue:(double)value
+{
+  static const double oneThird = 1.0 / 3.0;
+  static const double twoThirds = 2.0 / 3.0;
+  static const double oneSixth = 1.0 / 6.0;
+  static const double fiveSixths = 5.0 / 6.0;
+
+  double valueIntegerPart;
+  double valueFractionalPart = modf(value, &valueIntegerPart);
+  NSString* stringFractionalPart;
+  if (0.0 == valueFractionalPart)
+    return [NSString stringWithFormat:@"%.0f", valueIntegerPart];
+  else if (0.125 == valueFractionalPart)
+    stringFractionalPart = @"⅛";
+  else if (0.2 == valueFractionalPart)
+    stringFractionalPart = @"⅕";
+  else if (0.25 == valueFractionalPart)
+    stringFractionalPart = @"¼";
+  else if (0.375 == valueFractionalPart)
+    stringFractionalPart = @"⅜";
+  else if (0.4 == valueFractionalPart)
+    stringFractionalPart = @"⅖";
+  else if (0.5 == valueFractionalPart)
+    stringFractionalPart = @"½";
+  else if (0.6 == valueFractionalPart)
+    stringFractionalPart = @"⅗";
+  else if (0.625 == valueFractionalPart)
+    stringFractionalPart = @"⅝";
+  else if (0.75 == valueFractionalPart)
+    stringFractionalPart = @"¾";
+  else if (0.8 == valueFractionalPart)
+    stringFractionalPart = @"⅘";
+  else if (0.875 == valueFractionalPart)
+    stringFractionalPart = @"⅞";
+  else if (oneThird == valueFractionalPart)
+    stringFractionalPart = @"⅓";
+  else if (twoThirds == valueFractionalPart)
+    stringFractionalPart = @"⅔";
+  else if (oneSixth == valueFractionalPart)
+    stringFractionalPart = @"⅙";
+  else if (fiveSixths == valueFractionalPart)
+    stringFractionalPart = @"⅚";
+  else
+    return [NSString stringWithFormat:@"%f", value];  // got an unexpected fraction
+
+  if (0 == valueIntegerPart)
+    return stringFractionalPart;
+  else
+    return [NSString stringWithFormat:@"%.0f%@", valueIntegerPart, stringFractionalPart];
 }
 
 @end

@@ -20,8 +20,8 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../go/GoBoard.h"
 #import "../go/GoGame.h"
-#import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
+#import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
 
@@ -31,20 +31,20 @@
 // -----------------------------------------------------------------------------
 enum GameInfoTableViewSection
 {
-  GameResultSection,
+  GameStateSection,
   ScoreSection,
-  HandicapSection,
   GameInfoSection,
+  MoveStatisticsSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GameResultSection.
+/// @brief Enumerates items in the GameStateSection.
 // -----------------------------------------------------------------------------
-enum GameResultSectionItem
+enum GameStateSectionItem
 {
-  GameResultItem,
-  MaxGameResultSectionItem
+  GameStateItem,
+  MaxGameStateSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -55,8 +55,10 @@ enum ScoreSectionItem
   HeadingItem,
   KomiItem,
   CapturedItem,
+  DeadItem,
   TerritoryItem,
   TotalScoreItem,
+  ResultItem,
   MaxScoreSectionItem
 };
 
@@ -72,24 +74,28 @@ enum ScoreSectionColumn
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the HandicapSection.
-// -----------------------------------------------------------------------------
-enum HandicapSectionItem
-{
-  HandicapItem,
-  MaxHandicapSectionItem
-};
-
-// -----------------------------------------------------------------------------
 /// @brief Enumerates items in the GameInfoSection.
 // -----------------------------------------------------------------------------
 enum GameInfoSectionItem
 {
-  NumberOfMovesItem,
+  HandicapItem,
   BoardSizeItem,
   BlackPlayerItem,
   WhitePlayerItem,
   MaxGameInfoSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the MoveStatisticsSection.
+// -----------------------------------------------------------------------------
+enum MoveStatisticsSectionItem
+{
+  NumberOfMovesItem,
+  StonesPlayedByBlackItem,
+  StonesPlayedByWhiteItem,
+  PassMovesPlayedByBlackItem,
+  PassMovesPlayedByWhiteItem,
+  MaxMoveStatisticsSectionItem
 };
 
 
@@ -110,6 +116,7 @@ enum GameInfoSectionItem
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name TableViewGridCellDelegate protocol
@@ -127,8 +134,7 @@ enum GameInfoSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property double scoreBlackPlayer;
-@property double scoreWhitePlayer;
+@property(retain) GoScore* score;
 //@}
 @end
 
@@ -136,8 +142,7 @@ enum GameInfoSectionItem
 @implementation GameInfoViewController
 
 @synthesize delegate;
-@synthesize scoreBlackPlayer;
-@synthesize scoreWhitePlayer;
+@synthesize score;
 
 
 // -----------------------------------------------------------------------------
@@ -161,6 +166,7 @@ enum GameInfoSectionItem
 - (void) dealloc
 {
   self.delegate = nil;
+  self.score = nil;
   [super dealloc];
 }
 
@@ -172,9 +178,8 @@ enum GameInfoSectionItem
 {
   [super viewDidLoad];
 
-  assert(self.delegate != nil);
-  self.scoreBlackPlayer = -1;
-  self.scoreWhitePlayer = -1;
+  self.score = [GoScore scoreFromGame:[GoGame sharedGame]];
+  [self.score calculate];
 }
 
 // -----------------------------------------------------------------------------
@@ -205,19 +210,40 @@ enum GameInfoSectionItem
 {
   switch (section)
   {
-    case GameResultSection:
-      return MaxGameResultSectionItem;
+    case GameStateSection:
+      return MaxGameStateSectionItem;
     case ScoreSection:
       return MaxScoreSectionItem;
-    case HandicapSection:
-      return MaxHandicapSectionItem;
     case GameInfoSection:
       return MaxGameInfoSectionItem;
+    case MoveStatisticsSection:
+      return MaxMoveStatisticsSectionItem;
     default:
       assert(0);
       break;
   }
   return 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+{
+  switch (section)
+  {
+    case GameStateSection:
+      return @"Game state";
+    case ScoreSection:
+      return @"Scoring";
+    case GameInfoSection:
+      return @"Game information";
+    case MoveStatisticsSection:
+      return @"Move statistics";
+    default:
+      break;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -229,32 +255,29 @@ enum GameInfoSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case GameResultSection:
+    case GameStateSection:
     {
-      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-      cell.textLabel.text = @"Game result";
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       switch (game.state)
       {
         case GameHasNotYetStarted:
         {
-          cell.detailTextLabel.text = @"Game has not yet started";
+          cell.textLabel.text = @"Game has not yet started";
           break;
         }
         case GameHasStarted:
+        {
+          cell.textLabel.text = @"Game is in progress";
+          break;
+        }
         case GameIsPaused:
         {
-          cell.detailTextLabel.text = @"Game is in progress";
+          cell.textLabel.text = @"Game is paused";
           break;
         }
         case GameHasEnded:
         {
-          // TODO include whether a player has resigned
-          if (scoreBlackPlayer > scoreWhitePlayer)
-            cell.detailTextLabel.text = @"Black has won";
-          else if (scoreWhitePlayer > scoreBlackPlayer)
-            cell.detailTextLabel.text = @"White has won";
-          else
-            cell.detailTextLabel.text = @"Game is tied";
+          cell.textLabel.text = @"Game has ended";
           break;
         }
         default:
@@ -267,29 +290,27 @@ enum GameInfoSectionItem
     }
     case ScoreSection:
     {
-      cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
-      TableViewGridCell* gridCell = (TableViewGridCell*)cell;
-      // Remember which row this is so that the delegate methods know what to do
-      gridCell.tag = indexPath.row;
-      gridCell.delegate = self;
-      // Triggers delegate methods
-      [gridCell setupCellContent];
-      break;
-    }
-    case HandicapSection:
-    {
-      int handicapValue = game.handicapPoints.count;
-      if (0 == handicapValue)
+      switch (indexPath.row)
       {
-        cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-        cell.textLabel.text = @"Handicap";
-        cell.detailTextLabel.text = @"No handicap";
-      }
-      else
-      {
-        cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-        cell.textLabel.text = @"Handicap";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", handicapValue];
+        case ResultItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          // TODO include whether a player has resigned
+          cell.textLabel.text = [self.score resultString];
+          cell.textLabel.textAlignment = UITextAlignmentCenter;
+          break;
+        }
+        default:
+        {
+          cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
+          TableViewGridCell* gridCell = (TableViewGridCell*)cell;
+          // Remember which row this is so that the delegate methods know what to do
+          gridCell.tag = indexPath.row;
+          gridCell.delegate = self;
+          // Triggers delegate methods
+          [gridCell setupCellContent];
+          break;
+        }
       }
       break;
     }
@@ -298,17 +319,14 @@ enum GameInfoSectionItem
       cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
       switch (indexPath.row)
       {
-        case NumberOfMovesItem:
+        case HandicapItem:
         {
-          cell.textLabel.text = @"Number of moves";
-          int numberOfMoves = 0;
-          GoMove* move = game.firstMove;
-          while (move != nil)
-          {
-            ++numberOfMoves;
-            move = move.next;
-          }
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", numberOfMoves];
+          cell.textLabel.text = @"Handicap";
+          int handicapValue = game.handicapPoints.count;
+          if (0 == handicapValue)
+            cell.detailTextLabel.text = @"No handicap";
+          else
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", handicapValue];
           break;
         }
         case BoardSizeItem:
@@ -327,6 +345,49 @@ enum GameInfoSectionItem
         {
           cell.textLabel.text = @"White player";
           cell.detailTextLabel.text = game.playerWhite.player.name;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
+    case MoveStatisticsSection:
+    {
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      switch (indexPath.row)
+      {
+        case NumberOfMovesItem:
+        {
+          cell.textLabel.text = @"Total number of moves";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.numberOfMoves];
+          break;
+        }
+        case StonesPlayedByBlackItem:
+        {
+          cell.textLabel.text = @"Stones played by black";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.stonesPlayedByBlack];
+          break;
+        }
+        case StonesPlayedByWhiteItem:
+        {
+          cell.textLabel.text = @"Stones played by white";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.stonesPlayedByWhite];
+          break;
+        }
+        case PassMovesPlayedByBlackItem:
+        {
+          cell.textLabel.text = @"Pass moves played by black";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.passesPlayedByBlack];
+          break;
+        }
+        case PassMovesPlayedByWhiteItem:
+        {
+          cell.textLabel.text = @"Pass moves played by white";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.passesPlayedByWhite];
           break;
         }
         default:
@@ -398,10 +459,7 @@ enum GameInfoSectionItem
         case TitleColumn:
           return @"Komi";
         case WhitePlayerColumn:
-        {
-          GoGame* game = [GoGame sharedGame];
-          return [NSString stringWithKomi:game.komi];
-        }
+          return [NSString stringWithKomi:self.score.komi];
         default:
           assert(0);
           break;
@@ -413,11 +471,27 @@ enum GameInfoSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return @"";
+          return [NSString stringWithFormat:@"%d", self.score.capturedByBlack];
         case TitleColumn:
           return @"Captured";
         case WhitePlayerColumn:
-          return @"";
+          return [NSString stringWithFormat:@"%d", self.score.capturedByWhite];
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
+    case DeadItem:
+    {
+      switch (column)
+      {
+        case BlackPlayerColumn:
+          return [NSString stringWithFormat:@"%d", self.score.deadWhite];
+        case TitleColumn:
+          return @"Territory";
+        case WhitePlayerColumn:
+          return [NSString stringWithFormat:@"%d", self.score.deadBlack];
         default:
           assert(0);
           break;
@@ -429,11 +503,11 @@ enum GameInfoSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return @"";
+          return [NSString stringWithFormat:@"%d", self.score.territoryBlack];
         case TitleColumn:
           return @"Territory";
         case WhitePlayerColumn:
-          return @"";
+          return [NSString stringWithFormat:@"%d", self.score.territoryWhite];
         default:
           assert(0);
           break;
@@ -445,11 +519,11 @@ enum GameInfoSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return @"";
+          return [NSString stringWithFormat:@"%d", self.score.totalScoreBlack];
         case TitleColumn:
           return @"Score";
         case WhitePlayerColumn:
-          return @"";
+          return [NSString stringWithFractionValue:self.score.totalScoreWhite];
         default:
           assert(0);
           break;

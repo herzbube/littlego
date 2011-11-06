@@ -114,6 +114,7 @@
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
+		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CD8F920D143E6A4A006351DB /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -285,6 +286,8 @@
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
+		CD8EFD021466DA7200A700B1 /* GoScore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoScore.h; sourceTree = "<group>"; };
+		CD8EFD031466DA7200A700B1 /* GoScore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoScore.m; sourceTree = "<group>"; };
 		CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubmitGtpCommandViewController.h; sourceTree = "<group>"; };
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubmitGtpCommandView.xib; sourceTree = "<group>"; };
@@ -533,6 +536,8 @@
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
 				CD10882413255AA600E83543 /* GoPoint.m */,
+				CD8EFD021466DA7200A700B1 /* GoScore.h */,
+				CD8EFD031466DA7200A700B1 /* GoScore.m */,
 				CD05AB941425169500214BBE /* GoUtilities.h */,
 				CD05AB951425169500214BBE /* GoUtilities.m */,
 				CDBB0399133573CC007C1C3E /* GoVertex.h */,
@@ -1040,6 +1045,7 @@
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
 				CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */,
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
+				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

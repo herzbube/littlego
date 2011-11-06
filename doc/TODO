@@ -130,6 +130,15 @@ Priority 2 (nice to have)
   querying process from within tableView:cellForRowAtIndexPath:().
 - Find out the rules about running out of stones. There currently is
   GoGameHasEndedReasonNoStonesLeft in Constants.h which might need to be fixed.
+- Add handling for counting eyes in sekis during territory scoring. See
+  http://senseis.xmp.net/?TerritoryAndAreaScoring for details.
+- Add area scoring. See http://senseis.xmp.net/?Scoring and
+  http://senseis.xmp.net/?TerritoryAndAreaScoring for details. Make a user
+  default for the choice of which method of scoring should be used by default.
+  The reason: the user will likely be used to one or the other method, which
+  will influence his or her play (under territory scoring it costs a point to
+  play into one's own area, whereas under area scoring it costs a point not to
+  play on a neutral point).
 
 
 Priority 3 (not important)

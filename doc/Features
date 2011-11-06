@@ -38,14 +38,13 @@ Scoring and end of game
 - The game ends when one of the following events occurs:
   - One of the players resigns
   - Two Pass moves occur in a sequence
-  - Both players have no stones left
 - In Scoring mode the user cannot perform any actions that influence the game
   state (e.g. play a stone)
 - In Scoring mode, the Play view specially marks up black and white territories
 - On the Play view the user can mark stone groups as being dead; dead stone
   groups are specially marked up
 - Upon activaton of Scoring mode an initial suggestion for dead stone groups is
-  made by querying the Go engine (final_status_list dead)
+  made by querying the GTP engine (final_status_list dead)
 - Territory calculation is based on the information which stone groups are alive
   and which ones are dead
 - The final score is the result of adding up subscores from the following

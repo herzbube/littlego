@@ -94,10 +94,10 @@ enum GoGameHasEndedReason
 /// #GameHasEnded.
 enum GoGameResult
 {
-  GoGameResultNone,          ///< @brief The game has not been decided yet, usually because the game has not yet ended.
-  GoGameResultBlackHasWon,   ///< @brief Black has won the game.
-  GoGameResultWhiteHasWone,  ///< @brief White has won the game.
-  GoGameResultTie            ///< @brief The game is a tie.
+  GoGameResultNone,         ///< @brief The game has not been decided yet, usually because the game has not yet ended.
+  GoGameResultBlackHasWon,  ///< @brief Black has won the game.
+  GoGameResultWhiteHasWon,  ///< @brief White has won the game.
+  GoGameResultTie           ///< @brief The game is a tie.
 };
 
 /// @brief Enumerates the possible directions one can take to get from one
