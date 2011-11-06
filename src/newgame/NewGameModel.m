@@ -99,7 +99,7 @@
   [dictionary setValue:self.blackPlayerUUID forKey:blackPlayerKey];
   [dictionary setValue:self.whitePlayerUUID forKey:whitePlayerKey];
   [dictionary setValue:[NSNumber numberWithInt:self.handicap] forKey:handicapKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.komi] forKey:komiKey];
+  [dictionary setValue:[NSNumber numberWithDouble:self.komi] forKey:komiKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   // TODO: As far as I can tell, the assertion above is wrong, at least on the
