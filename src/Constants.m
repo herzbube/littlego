@@ -47,7 +47,6 @@ NSString* goGameNewCreated = @"GoGameNewCreated";
 NSString* goGameStateChanged = @"GoGameStateChanged";
 NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
 NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";
-NSString* goGameScoreChanged = @"GoGameScoreChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
@@ -58,6 +57,11 @@ NSString* archiveContentChanged = @"ArchiveContentChanged";
 // GTP log related notifications
 NSString* gtpLogContentChanged = @"GtpLogContentChanged";
 NSString* gtpLogItemChanged = @"GtpLogItemChanged";
+// Scoring related notifications
+NSString* goScoreScoringModeEnabled = @"GoScoreScoringModeEnabled";
+NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
+NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
+NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
 /// GTP engine settings default values
 int const fuegoMaxMemoryMinimum = 32;

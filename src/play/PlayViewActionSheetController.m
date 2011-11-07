@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayViewActionSheetController.h"
+#import "PlayViewModel.h"
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
@@ -35,6 +36,7 @@
 // -----------------------------------------------------------------------------
 enum ActionSheetButton
 {
+  ScoreButton,
   ResignButton,
   SaveGameButton,
   NewGameButton,
@@ -69,6 +71,7 @@ enum ActionSheetButton
 //@}
 /// @name Helpers
 //@{
+- (void) score;
 - (void) resign;
 - (void) saveGame;
 - (void) doSaveGame:(NSString*)fileName;
@@ -138,6 +141,11 @@ enum ActionSheetButton
     NSString* title = nil;
     switch (iterButtonIndex)
     {
+      case ScoreButton:
+        if (GameHasEnded == [GoGame sharedGame].state)
+          continue;
+        title = @"Score";
+        break;
       case ResignButton:
         if (ComputerVsComputerGame == [GoGame sharedGame].type)
           continue;
@@ -192,6 +200,9 @@ enum ActionSheetButton
   enum ActionSheetButton button = [object intValue];
   switch (button)
   {
+    case ScoreButton:
+      [self score];
+      break;
     case ResignButton:
       [self resign];
       break;
@@ -205,6 +216,16 @@ enum ActionSheetButton
       assert(0);
       break;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Score" action sheet button. Toggles
+/// scoring mode on play view.
+// -----------------------------------------------------------------------------
+- (void) score
+{
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  playViewModel.scoringMode = ! playViewModel.scoringMode;
 }
 
 // -----------------------------------------------------------------------------

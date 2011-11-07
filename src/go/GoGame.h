@@ -88,10 +88,6 @@
 /// @brief Returns true if the computer player is currently busy thinking about
 /// its next move.
 @property(getter=isComputerThinking) bool computerThinks;
-/// @brief Returns the game score as a string that can be displayed to the
-/// user. Returns nil if no score is available. The score becomes available
-/// only after the game state changes to #GameHasEnded.
-@property(retain) NSString* score;
 /// @brief Is true to indicate that the next GoMove object created should have
 /// its @e computerGenerated flag set to true.
 ///

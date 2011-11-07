@@ -19,9 +19,12 @@
 #import "PlayViewController.h"
 #import "PlayViewActionSheetController.h"
 #import "PlayView.h"
+#import "PlayViewModel.h"
+#import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
+#import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
@@ -52,6 +55,7 @@
 - (void) continue:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) gameActions:(id)sender;
+- (void) done:(id)sender;
 //@}
 /// @name Handlers for recognized gestures
 //@{
@@ -69,9 +73,12 @@
 //@{
 - (void) goGameNewCreated:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
-- (void) goGameScoreChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
+- (void) goScoreCalculationStarts:(NSNotification*)notification;
+- (void) goScoreCalculationEnds:(NSNotification*)notification;
 //@}
 /// @name Updaters
 //@{
@@ -84,11 +91,28 @@
 - (void) updateContinueButtonState;
 - (void) updateGameInfoButtonState;
 - (void) updateGameActionsButtonState;
+- (void) updateDoneButtonState;
 - (void) updatePanningEnabled;
+- (void) updateNavigationItemTitle;
 //@}
 /// @name Private helpers
 //@{
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
+//@}
+/// @name Privately declared properties
+//@{
+/// @brief The model that manages data used by the Play view.
+@property(assign) PlayViewModel* model;
+/// @brief The gesture recognizer used to detect the dragging, or panning,
+/// gesture.
+@property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
+/// @brief True if a panning gesture is currently allowed, false if not (e.g.
+/// while a computer player is thinking).
+@property(getter=isPanningEnabled) bool panningEnabled;
+/// @brief GoScore object used while the game info view is displayed scoring
+/// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
+/// obtained from elsewhere.
+@property(retain) GoScore* gameInfoScore;
 //@}
 @end
 
@@ -107,8 +131,11 @@
 @synthesize flexibleSpaceButton;
 @synthesize gameInfoButton;
 @synthesize gameActionsButton;
+@synthesize doneButton;
+@synthesize model;
 @synthesize panRecognizer;
 @synthesize panningEnabled;
+@synthesize gameInfoScore;
 
 
 // -----------------------------------------------------------------------------
@@ -120,7 +147,9 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
+  self.model = nil;
   self.panRecognizer = nil;
+  self.gameInfoScore = nil;
   [super dealloc];
 }
 
@@ -132,6 +161,8 @@
 {
   [super viewDidLoad];
 
+  self.model = [ApplicationDelegate sharedDelegate].playViewModel;
+
   [self.view addSubview:self.frontSideView];
 
   self.panningEnabled = false;
@@ -142,6 +173,7 @@
   self.panRecognizer.delegate = self;
   self.panRecognizer.maximumNumberOfTouches = 1;
 
+  self.gameInfoScore = nil;
   self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabular.png"]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
@@ -150,10 +182,13 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(goGameScoreChanged:) name:goGameScoreChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 
   // We invoke this to set up initial state because we did not get
   // get goGameNewCreated for the initial game (viewDidLoad gets called too
@@ -176,7 +211,9 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
+  self.model = nil;
   self.panRecognizer = nil;
+  self.gameInfoScore = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -237,7 +274,20 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
 {
-  GameInfoViewController* controller = [[GameInfoViewController controllerWithDelegate:self] retain];
+  GoScore* score;
+  if (self.model.scoringMode)
+    score = self.model.score;
+  else
+  {
+    assert(! self.gameInfoScore);
+    if (! self.gameInfoScore)
+    {
+      self.gameInfoScore = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:false];
+      [self.gameInfoScore calculateWaitUntilDone:true];
+    }
+    score = self.gameInfoScore;
+  }
+  GameInfoViewController* controller = [[GameInfoViewController controllerWithDelegate:self score:score] retain];
   [self.backSideView addSubview:controller.view];
   bool flipToFrontSideView = false;
   [self flipToFrontSideView:flipToFrontSideView];
@@ -252,6 +302,12 @@
   [self flipToFrontSideView:flipToFrontSideView];
   [controller.view removeFromSuperview];
   [controller release];
+  // Get rid of temporary scoring object
+  if (! self.model.scoringMode)
+  {
+    assert(self.gameInfoScore);
+    self.gameInfoScore = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -286,6 +342,15 @@
 {
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self];
   [controller showActionSheetFromView:self.playView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Done" button. Ends the currently
+/// active mode and returns to normal play mode.
+// -----------------------------------------------------------------------------
+- (void) done:(id)sender
+{
+  self.model.scoringMode = false;  // triggers notification to which this controller reacts
 }
 
 // -----------------------------------------------------------------------------
@@ -362,10 +427,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameStateChanged notification.
+/// @brief Responds to the #goGameNewCreated notification.
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
+  self.model.scoringMode = false;
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
@@ -378,25 +444,6 @@
 {
   [self updateButtonStates];
   [self updatePanningEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameScoreChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameScoreChanged:(NSNotification*)notification
-{
-  if ([GoGame sharedGame].state == GameHasEnded)
-  {
-    NSString* score = [GoGame sharedGame].score;
-    NSString* message = [@"Score = " stringByAppendingString:score];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game has ended"
-                                                    message:message
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"OK", nil];
-    alert.tag = GameHasEndedAlertView;
-    [alert show];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -419,29 +466,77 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeEnabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+{
+  [self populateToolbar];
+  [self updateButtonStates];
+  [self updatePanningEnabled];  // disable panning
+  [self updateNavigationItemTitle];
+  [self.model.score calculateWaitUntilDone:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeDisabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+{
+  [self populateToolbar];
+  [self updateButtonStates];
+  [self updatePanningEnabled];  // enable panning
+  [self updateNavigationItemTitle];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  [self updateButtonStates];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
+{
+  [self updateButtonStates];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Populates the toolbar with toolbar items that are appropriate for
 /// the #GoGameType currently in progress.
 // -----------------------------------------------------------------------------
 - (void) populateToolbar
 {
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
-  switch ([GoGame sharedGame].type)
+  if (self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
-      [toolbarItems addObject:self.pauseButton];
-      [toolbarItems addObject:self.continueButton];
-      [toolbarItems addObject:self.flexibleSpaceButton];
-      [toolbarItems addObject:self.gameInfoButton];
-      [toolbarItems addObject:self.gameActionsButton];
-      break;
-    default:
-      [toolbarItems addObject:self.playForMeButton];
-      [toolbarItems addObject:self.passButton];
-      [toolbarItems addObject:self.undoButton];
-      [toolbarItems addObject:self.flexibleSpaceButton];
-      [toolbarItems addObject:self.gameInfoButton];
-      [toolbarItems addObject:self.gameActionsButton];
-      break;
+    [toolbarItems addObject:self.gameInfoButton];
+    [toolbarItems addObject:self.flexibleSpaceButton];
+    [toolbarItems addObject:self.doneButton];
+  }
+  else
+  {
+    switch ([GoGame sharedGame].type)
+    {
+      case ComputerVsComputerGame:
+        [toolbarItems addObject:self.pauseButton];
+        [toolbarItems addObject:self.continueButton];
+        [toolbarItems addObject:self.flexibleSpaceButton];
+        [toolbarItems addObject:self.gameInfoButton];
+        [toolbarItems addObject:self.gameActionsButton];
+        break;
+      default:
+        [toolbarItems addObject:self.playForMeButton];
+        [toolbarItems addObject:self.passButton];
+        [toolbarItems addObject:self.undoButton];
+        [toolbarItems addObject:self.flexibleSpaceButton];
+        [toolbarItems addObject:self.gameInfoButton];
+        [toolbarItems addObject:self.gameActionsButton];
+        break;
+    }
   }
   self.toolbar.items = toolbarItems;
 }
@@ -458,6 +553,7 @@
   [self updateContinueButtonState];
   [self updateGameInfoButtonState];
   [self updateGameActionsButtonState];
+  [self updateDoneButtonState];
 }
 
 // -----------------------------------------------------------------------------
@@ -466,24 +562,27 @@
 - (void) updatePlayForMeButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
-      break;
-    default:
+    switch ([GoGame sharedGame].type)
     {
-      if ([GoGame sharedGame].isComputerThinking)
+      case ComputerVsComputerGame:
         break;
-      switch ([GoGame sharedGame].state)
+      default:
       {
-        case GameHasNotYetStarted:
-        case GameHasStarted:
-          enabled = YES;
+        if ([GoGame sharedGame].isComputerThinking)
           break;
-        default:
-          break;
+        switch ([GoGame sharedGame].state)
+        {
+          case GameHasNotYetStarted:
+          case GameHasStarted:
+            enabled = YES;
+            break;
+          default:
+            break;
+        }
+        break;
       }
-      break;
     }
   }
   self.playForMeButton.enabled = enabled;
@@ -495,24 +594,27 @@
 - (void) updatePassButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
-      break;
-    default:
+    switch ([GoGame sharedGame].type)
     {
-      if ([GoGame sharedGame].isComputerThinking)
+      case ComputerVsComputerGame:
         break;
-      switch ([GoGame sharedGame].state)
+      default:
       {
-        case GameHasNotYetStarted:
-        case GameHasStarted:
-          enabled = YES;
+        if ([GoGame sharedGame].isComputerThinking)
           break;
-        default:
-          break;
+        switch ([GoGame sharedGame].state)
+        {
+          case GameHasNotYetStarted:
+          case GameHasStarted:
+            enabled = YES;
+            break;
+          default:
+            break;
+        }
+        break;
       }
-      break;
     }
   }
   self.passButton.enabled = enabled;
@@ -524,34 +626,37 @@
 - (void) updateUndoButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
-      break;
-    default:
+    switch ([GoGame sharedGame].type)
     {
-      if ([GoGame sharedGame].isComputerThinking)
+      case ComputerVsComputerGame:
         break;
-      switch ([GoGame sharedGame].state)
+      default:
       {
-        case GameHasStarted:
+        if ([GoGame sharedGame].isComputerThinking)
+          break;
+        switch ([GoGame sharedGame].state)
         {
-          GoMove* lastMove = [GoGame sharedGame].lastMove;
-          if (lastMove == nil)
-            enabled = NO;                         // no move yet
-          else if (lastMove.player.player.human)
-            enabled = YES;                        // last move by human player
-          else if (lastMove.previous == nil)
-            enabled = NO;                         // last move by computer, but no other move before that
-          else
-            enabled = YES;                        // last move by computer, and another move before that
-                                                  // -> assume it's by a human player because game type has been checked before
-          break;
+          case GameHasStarted:
+          {
+            GoMove* lastMove = [GoGame sharedGame].lastMove;
+            if (lastMove == nil)
+              enabled = NO;                         // no move yet
+            else if (lastMove.player.player.human)
+              enabled = YES;                        // last move by human player
+            else if (lastMove.previous == nil)
+              enabled = NO;                         // last move by computer, but no other move before that
+            else
+              enabled = YES;                        // last move by computer, and another move before that
+            // -> assume it's by a human player because game type has been checked before
+            break;
+          }
+          default:
+            break;
         }
-        default:
-          break;
+        break;
       }
-      break;
     }
   }
   self.undoButton.enabled = enabled;
@@ -563,22 +668,25 @@
 - (void) updatePauseButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
+    switch ([GoGame sharedGame].type)
     {
-      switch ([GoGame sharedGame].state)
+      case ComputerVsComputerGame:
       {
-        case GameHasStarted:
-          enabled = YES;
-          break;
-        default:
-          break;
+        switch ([GoGame sharedGame].state)
+        {
+          case GameHasStarted:
+            enabled = YES;
+            break;
+          default:
+            break;
+        }
+        break;
       }
-      break;
+      default:
+        break;
     }
-    default:
-      break;
   }
   self.pauseButton.enabled = enabled;
 }
@@ -589,22 +697,25 @@
 - (void) updateContinueButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
+    switch ([GoGame sharedGame].type)
     {
-      switch ([GoGame sharedGame].state)
+      case ComputerVsComputerGame:
       {
-        case GameIsPaused:
-          enabled = YES;
-          break;
-        default:
-          break;
+        switch ([GoGame sharedGame].state)
+        {
+          case GameIsPaused:
+            enabled = YES;
+            break;
+          default:
+            break;
+        }
+        break;
       }
-      break;
+      default:
+        break;
     }
-    default:
-      break;
   }
   self.continueButton.enabled = enabled;
 }
@@ -614,7 +725,17 @@
 // -----------------------------------------------------------------------------
 - (void) updateGameInfoButtonState
 {
-  self.gameInfoButton.enabled = YES;
+  BOOL enabled = NO;
+  if (self.model.scoringMode)
+  {
+    if (! self.model.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
+  {
+    enabled = YES;
+  }
+  self.gameInfoButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
@@ -623,38 +744,55 @@
 - (void) updateGameActionsButtonState
 {
   BOOL enabled = NO;
-  switch ([GoGame sharedGame].type)
+  if (! self.model.scoringMode)
   {
-    case ComputerVsComputerGame:
+    switch ([GoGame sharedGame].type)
     {
-      switch ([GoGame sharedGame].state)
+      case ComputerVsComputerGame:
       {
-        case GameHasNotYetStarted:
-        case GameHasEnded:
-          enabled = YES;
-        case GameIsPaused:
-          // Computer may still be thinking
-          enabled = ! [GoGame sharedGame].isComputerThinking;
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-    default:
-    {
-      if ([GoGame sharedGame].isComputerThinking)
+        switch ([GoGame sharedGame].state)
+        {
+          case GameHasNotYetStarted:
+          case GameHasEnded:
+            enabled = YES;
+          case GameIsPaused:
+            // Computer may still be thinking
+            enabled = ! [GoGame sharedGame].isComputerThinking;
+            break;
+          default:
+            break;
+        }
         break;
-      switch ([GoGame sharedGame].state)
-      {
-        default:
-          enabled = YES;
-          break;
       }
-      break;
+      default:
+      {
+        if ([GoGame sharedGame].isComputerThinking)
+          break;
+        switch ([GoGame sharedGame].state)
+        {
+          default:
+            enabled = YES;
+            break;
+        }
+        break;
+      }
     }
   }
   self.gameActionsButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Done" button.
+// -----------------------------------------------------------------------------
+- (void) updateDoneButtonState
+{
+  BOOL enabled = NO;
+  if (self.model.scoringMode)
+  {
+    if (! self.model.score.scoringInProgress)
+      enabled = YES;
+  }
+  self.doneButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
@@ -662,6 +800,12 @@
 // -----------------------------------------------------------------------------
 - (void) updatePanningEnabled
 {
+  if (self.model.scoringMode)
+  {
+    self.panningEnabled = false;
+    return;
+  }
+
   GoGame* game = [GoGame sharedGame];
   if (! game)
   {
@@ -687,5 +831,9 @@
   }
 }
 
+- (void) updateNavigationItemTitle
+{
+  self.navigationItem.title = @"foo";
+}
 
 @end

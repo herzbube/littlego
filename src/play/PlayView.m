@@ -24,6 +24,7 @@
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
 #import "../go/GoPoint.h"
+#import "../go/GoScore.h"
 #import "../go/GoVertex.h"
 #import "../player/Player.h"
 #import "../utility/UIColorAdditions.h"
@@ -59,6 +60,8 @@
 - (void) drawEmpty:(GoPoint*)point;
 - (void) drawSymbols;
 - (void) drawLabels;
+- (void) drawTerritory;
+- (void) drawDeadStones;
 - (void) updateStatusLine;
 - (void) updateActivityIndicator;
 //@}
@@ -77,9 +80,12 @@
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
+- (void) goScoreCalculationStarts:(NSNotification*)notification;
+- (void) goScoreCalculationEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
-/// @name Internal helpers
+/// @name Private helpers
 //@{
 - (void) updateDrawParametersForRect:(CGRect)rect;
 - (void) delayedUpdate;
@@ -164,9 +170,7 @@ static PlayView* sharedPlayView = nil;
   [super awakeFromNib];
 
   sharedPlayView = self;
-
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
-  self.model = [delegate playViewModel];
+  self.model = [ApplicationDelegate sharedDelegate].playViewModel;
 
   self.previousDrawRect = CGRectNull;
   self.previousBoardDimension = 0;
@@ -194,6 +198,9 @@ static PlayView* sharedPlayView = nil;
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   // KVO observing
   [self.model addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.model addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
@@ -272,6 +279,12 @@ static PlayView* sharedPlayView = nil;
   [self drawStones];
   [self drawSymbols];
   [self drawLabels];
+  if (self.model.scoringMode)
+  {
+    [self drawTerritory];
+    [self drawDeadStones];
+  }
+
   // TODO Strictly speaking this updater should not be invoked as part of
   // drawRect:(), afer all the status line is located outside of the game board
   // rectangle. If the updater is removed here, fix the status line update for
@@ -562,6 +575,20 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Draws the territory layer in scoring mode.
+// -----------------------------------------------------------------------------
+- (void) drawTerritory
+{
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the dead stones layer in scoring mode.
+// -----------------------------------------------------------------------------
+- (void) drawDeadStones
+{
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the status line with text that provides feedback to the user
 /// about what's going on.
 // -----------------------------------------------------------------------------
@@ -591,51 +618,61 @@ static PlayView* sharedPlayView = nil;
     }
     else
     {
-      switch (game.state)
+      if (self.model.scoringMode)
       {
-        case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
-        case GameHasStarted:
+        if (self.model.score.scoringInProgress)
+          statusText = @"Scoring in progress...";
+        else
+          statusText = [NSString stringWithFormat:@"%@. Tap to mark dead stones.", [self.model.score resultString]];
+      }
+      else
+      {
+        switch (game.state)
         {
-          GoMove* lastMove = game.lastMove;
-          if (PassMove == lastMove.type && lastMove.computerGenerated)
+          case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
+          case GameHasStarted:
           {
-            // TODO fix when GoColor class is added
-            NSString* color;
-            if (lastMove.player.black)
-              color = @"Black";
-            else
-              color = @"White";
-            statusText = [NSString stringWithFormat:@"%@ has passed", color];
-          }
-          break;
-        }
-        case GameHasEnded:
-        {
-          switch (game.reasonForGameHasEnded)
-          {
-            case GoGameHasEndedReasonTwoPasses:
+            GoMove* lastMove = game.lastMove;
+            if (PassMove == lastMove.type && lastMove.computerGenerated)
             {
-              statusText = @"Game has ended by two consecutive pass moves";
-              break;
-            }
-            case GoGameHasEndedReasonResigned:
-            {
-              NSString* color;
               // TODO fix when GoColor class is added
-              if (game.currentPlayer.black)
+              NSString* color;
+              if (lastMove.player.black)
                 color = @"Black";
               else
                 color = @"White";
-              statusText = [NSString stringWithFormat:@"Game has ended by resigning, %@ resigned", color];
-              break;
+              statusText = [NSString stringWithFormat:@"%@ has passed", color];
             }
-            default:
-              break;
+            break;
           }
-          break;
+          case GameHasEnded:
+          {
+            switch (game.reasonForGameHasEnded)
+            {
+              case GoGameHasEndedReasonTwoPasses:
+              {
+                statusText = @"Game has ended by two consecutive pass moves";
+                break;
+              }
+              case GoGameHasEndedReasonResigned:
+              {
+                NSString* color;
+                // TODO fix when GoColor class is added
+                if (game.currentPlayer.black)
+                  color = @"Black";
+                else
+                  color = @"White";
+                statusText = [NSString stringWithFormat:@"Game has ended by resigning, %@ resigned", color];
+                break;
+              }
+              default:
+                break;
+            }
+            break;
+          }
+          default:
+            break;
         }
-        default:
-          break;
       }
     }
   }
@@ -648,10 +685,20 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) updateActivityIndicator
 {
-  if ([[GoGame sharedGame] isComputerThinking])
-    [self.activityIndicator startAnimating];
+  if (self.model.scoringMode)
+  {
+    if (self.model.score.scoringInProgress)
+      [self.activityIndicator startAnimating];
+    else
+      [self.activityIndicator stopAnimating];
+  }
   else
-    [self.activityIndicator stopAnimating];
+  {
+    if ([[GoGame sharedGame] isComputerThinking])
+      [self.activityIndicator startAnimating];
+    else
+      [self.activityIndicator stopAnimating];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -788,6 +835,33 @@ static PlayView* sharedPlayView = nil;
 {
   [self updateStatusLine];
   [self updateActivityIndicator];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeDisabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+{
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  [self updateStatusLine];
+  [self updateActivityIndicator];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
+{
+  [self updateStatusLine];
+  [self updateActivityIndicator];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------

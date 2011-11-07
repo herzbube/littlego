@@ -26,9 +26,7 @@
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
-		CD05A9BD1422ABFC00214BBE /* FinalScoreCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
-		CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */; };
 		CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */; };
 		CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
@@ -115,6 +113,7 @@
 		CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
+		CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CD8F920D143E6A4A006351DB /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -191,8 +190,6 @@
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerPlayMoveCommand.m; sourceTree = "<group>"; };
-		CD05A9BB1422ABFC00214BBE /* FinalScoreCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinalScoreCommand.h; sourceTree = "<group>"; };
-		CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FinalScoreCommand.m; sourceTree = "<group>"; };
 		CD05AA4F1423C4FD00214BBE /* UndoMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UndoMoveCommand.h; sourceTree = "<group>"; };
 		CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UndoMoveCommand.m; sourceTree = "<group>"; };
 		CD05AA701423D80500214BBE /* ContinueGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinueGameCommand.h; sourceTree = "<group>"; };
@@ -698,8 +695,6 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
-				CD05A9BB1422ABFC00214BBE /* FinalScoreCommand.h */,
-				CD05A9BC1422ABFC00214BBE /* FinalScoreCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBook.h */,
 				CD05B610142F618B00214BBE /* LoadOpeningBook.m */,
 			);
@@ -1016,7 +1011,6 @@
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
-				CD05A9BD1422ABFC00214BBE /* FinalScoreCommand.m in Sources */,
 				CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
@@ -1085,7 +1079,6 @@
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
-				CD05A9EC1422B02600214BBE /* FinalScoreCommand.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CD05B136142A745500214BBE /* BackupGameCommand.m in Sources */,
@@ -1100,6 +1093,7 @@
 				CD0CCB8C142FFAFF00A3F869 /* GtpLogModel.m in Sources */,
 				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
+				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

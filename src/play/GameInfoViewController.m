@@ -149,13 +149,14 @@ enum MoveStatisticsSectionItem
 /// @brief Convenience constructor. Creates a GameInfoViewController instance
 /// that loads its view from a .nib file.
 // -----------------------------------------------------------------------------
-+ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate
++ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score
 {
   GameInfoViewController* controller = [[GameInfoViewController alloc] initWithNibName:@"GameInfoView" bundle:nil];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
+    controller.score = score;
   }
   return controller;
 }
@@ -178,8 +179,6 @@ enum MoveStatisticsSectionItem
 {
   [super viewDidLoad];
 
-  self.score = [GoScore scoreFromGame:[GoGame sharedGame]];
-  [self.score calculate];
 }
 
 // -----------------------------------------------------------------------------
@@ -487,11 +486,17 @@ enum MoveStatisticsSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.deadWhite];
+          if (self.score.territoryScoresAvailable)
+            return [NSString stringWithFormat:@"%d", self.score.deadWhite];
+          else
+            return @"n/a";
         case TitleColumn:
-          return @"Territory";
+          return @"Dead";
         case WhitePlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.deadBlack];
+          if (self.score.territoryScoresAvailable)
+            return [NSString stringWithFormat:@"%d", self.score.deadBlack];
+          else
+            return @"n/a";
         default:
           assert(0);
           break;
@@ -503,11 +508,17 @@ enum MoveStatisticsSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.territoryBlack];
+          if (self.score.territoryScoresAvailable)
+            return [NSString stringWithFormat:@"%d", self.score.territoryBlack];
+          else
+            return @"n/a";
         case TitleColumn:
           return @"Territory";
         case WhitePlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.territoryWhite];
+          if (self.score.territoryScoresAvailable)
+            return [NSString stringWithFormat:@"%d", self.score.territoryWhite];
+          else
+            return @"n/a";
         default:
           assert(0);
           break;

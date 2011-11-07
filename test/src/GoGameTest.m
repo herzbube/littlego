@@ -47,7 +47,6 @@
   STAssertNil(m_game.lastMove, nil);
   STAssertEquals(GameHasNotYetStarted, m_game.state, @"game state test failed");
   STAssertFalse(m_game.isComputerThinking, nil);
-  STAssertNil(m_game.score, nil);
 }
 
 @end

@@ -62,7 +62,6 @@
 @synthesize state;
 @synthesize reasonForGameHasEnded;
 @synthesize computerThinks;
-@synthesize score;
 @synthesize nextMoveIsComputerGenerated;
 
 
@@ -122,7 +121,6 @@ static GoGame* sharedGame = nil;
   state = GameHasNotYetStarted;
   reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
-  score = nil;
   nextMoveIsComputerGenerated = false;
 
   bool blackPlayerIsHuman = self.playerBlack.player.human;
@@ -430,21 +428,6 @@ static GoGame* sharedGame = nil;
     else
       notificationName = computerPlayerThinkingStops;
     [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setScore:(NSString*)newValue
-{
-  @synchronized(self)
-  {
-    if ([score isEqualToString:newValue])
-      return;
-    [score release];
-    score = [newValue retain];
-    [[NSNotificationCenter defaultCenter] postNotificationName:goGameScoreChanged object:self];
   }
 }
 

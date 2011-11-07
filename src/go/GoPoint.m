@@ -51,6 +51,8 @@
 @synthesize starPoint;
 @synthesize stoneState;
 @synthesize region;
+@synthesize territoryColor;
+@synthesize deadStone;
 
 
 // -----------------------------------------------------------------------------
@@ -84,7 +86,7 @@
 
   self.vertex = aVertex;
   self.starPoint = false;
-  self.stoneState = NoStone;
+  self.stoneState = GoColorNone;
   left = nil;
   right = nil;
   above = nil;
@@ -92,6 +94,8 @@
   next = nil;
   previous = nil;
   neighbours = nil;
+  territoryColor = GoColorNone;
+  deadStone = false;
 
   return self;
 }
@@ -221,7 +225,7 @@
 // -----------------------------------------------------------------------------
 - (bool) hasStone
 {
-  return (NoStone != self.stoneState);
+  return (GoColorNone != self.stoneState);
 }
 
 // -----------------------------------------------------------------------------
@@ -231,7 +235,7 @@
 // -----------------------------------------------------------------------------
 - (bool) blackStone
 {
-  return (BlackStone == self.stoneState);
+  return (GoColorBlack == self.stoneState);
 }
 
 // -----------------------------------------------------------------------------

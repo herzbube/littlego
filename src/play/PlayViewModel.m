@@ -18,6 +18,8 @@
 // Project includes
 #import "PlayViewModel.h"
 #import "../utility/UIColorAdditions.h"
+#import "../go/GoGame.h"
+#import "../go/GoScore.h"
 
 
 // -----------------------------------------------------------------------------
@@ -27,6 +29,10 @@
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
+//@}
+/// @name Setters needed for posting notifications to notify our observers
+//@{
+- (void) setScoringMode:(bool)newMode;
 //@}
 @end
 
@@ -50,7 +56,8 @@
 @synthesize stoneRadiusPercentage;
 @synthesize crossHairColor;
 @synthesize crossHairPointDistanceFromFinger;
-
+@synthesize scoringMode;
+@synthesize score;
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayViewModel object with user defaults data.
@@ -81,6 +88,8 @@
   self.stoneRadiusPercentage = 1.0;
   self.crossHairColor = [UIColor greenColor];
   self.crossHairPointDistanceFromFinger = 2;
+  self.score = nil;
+  scoringMode = false;
 
   return self;
 }
@@ -90,6 +99,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.score = nil;
   [super dealloc];
 }
 
@@ -151,6 +161,28 @@
   // values.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:playViewKey];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setScoringMode:(bool)newMode
+{
+  if (scoringMode == newMode)
+    return;
+  scoringMode = newMode;
+  NSString* notificationName;
+  if (newMode)
+  {
+    self.score = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:true];
+    notificationName = goScoreScoringModeEnabled;
+  }
+  else
+  {
+    self.score = nil;
+    notificationName = goScoreScoringModeDisabled;
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

@@ -162,8 +162,8 @@
   assert(PlayMove == self.type);
   if (PlayMove != self.type)
     return;
-  assert(NoStone == newValue.stoneState);
-  if (NoStone != newValue.stoneState)
+  assert(GoColorNone == newValue.stoneState);
+  if (GoColorNone != newValue.stoneState)
     return;
 
   // ----------------------------------------------------------------------
@@ -176,9 +176,9 @@
 
   // Update the point's stone state *BEFORE* moving it to a new region
   if (self.player.black)
-    newValue.stoneState = BlackStone;
+    newValue.stoneState = GoColorBlack;
   else
-    newValue.stoneState = WhiteStone;
+    newValue.stoneState = GoColorWhite;
   [GoUtilities movePointToNewRegion:newValue];
 
   // Check neighbours for captures
@@ -196,7 +196,7 @@
       // If in the next iteration of the outer loop we find a neighbour in the
       // same captured group, the neighbour will already have its state reset,
       // and we will skip it
-      capture.stoneState = NoStone;
+      capture.stoneState = GoColorNone;
       [(NSMutableArray*)capturedStones addObject:capture];
     }
   }
@@ -218,18 +218,18 @@
   // Update stone state of captured stones *BEFORE* handling the actual point
   // of this move. This makes sure that GoUtilities::movePointToNewRegion:()
   // further down does not join regions incorrectly.
-  enum GoStoneState capturedStoneState;
+  enum GoColor capturedStoneColor;
   if (self.player.black)
-    capturedStoneState = WhiteStone;
+    capturedStoneColor = GoColorWhite;
   else
-    capturedStoneState = BlackStone;
+    capturedStoneColor = GoColorBlack;
   for (GoPoint* capture in self.capturedStones)
-    capture.stoneState = capturedStoneState;
+    capture.stoneState = capturedStoneColor;
 
   // Update the point's stone state *BEFORE* moving it to a new region
   GoPoint* thePoint = self.point;
   assert(thePoint);
-  thePoint.stoneState = NoStone;
+  thePoint.stoneState = GoColorNone;
   [GoUtilities movePointToNewRegion:thePoint];
 
   // Remove references from/to predecessor. This decreases the retain count of

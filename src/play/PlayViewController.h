@@ -76,11 +76,8 @@
 /// @brief The "Game Actions" button. Tapping this button displays an action
 /// sheet with actions that relate to Go games as a whole.
 @property(nonatomic, retain) IBOutlet UIBarButtonItem* gameActionsButton;
-/// @brief The gesture recognizer used to detect the dragging, or panning,
-/// gesture.
-@property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
-/// @brief True if a panning gesture is currently allowed, false if not (e.g.
-/// while a computer player is thinking).
-@property(getter=isPanningEnabled) bool panningEnabled;
+/// @brief The "Done" button. Tapping this button ends the currently active
+/// mode and returns to normal play mode.
+@property(nonatomic, retain) IBOutlet UIBarButtonItem* doneButton;
 
 @end

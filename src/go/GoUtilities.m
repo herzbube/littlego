@@ -114,7 +114,7 @@
   for (NSString* vertex in vertexList)
   {
     GoPoint* point = [board pointAtVertex:vertex];
-    point.stoneState = BlackStone;
+    point.stoneState = GoColorBlack;
     [GoUtilities movePointToNewRegion:point];
     [handicapPoints addObject:point];
   }

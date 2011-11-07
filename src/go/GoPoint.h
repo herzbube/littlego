@@ -68,8 +68,13 @@
 @property(getter=isStarPoint) bool starPoint;
 /// @brief Denotes whether a stone has been placed on the intersection that the
 /// GoPoint represents, and which color the stone has.
-@property enum GoStoneState stoneState;
+@property enum GoColor stoneState;
 /// @brief The region that the GoPoint belongs to. Is never nil.
 @property(retain) GoBoardRegion* region;
+/// @brief During scoring denotes which territory this GoPoint belongs to.
+@property enum GoColor territoryColor;
+/// @brief During scoring denotes whether the stone currently placed on this
+/// GoPoint is a dead stone. Is false if no stone is placed on this GoPoint.
+@property bool deadStone;
 
 @end

@@ -50,16 +50,13 @@ enum GoMoveType
   PassMove    ///< @brief The player passed in this move.
 };
 
-/// @brief Enumerates the possible stone states of a GoPoint.
-///
-/// @note It's important to have two states that distinguish the color of the
-/// stone placed on the GoPoint. Two states allow for efficient comparison
-/// whether two GoPoints have the potential to belong to the same GoBoardRegion.
-enum GoStoneState
+/// @brief Enumerates colors in Go. The values from this enumeration can be
+/// attributed to various things: stones, players, points, moves, etc.
+enum GoColor
 {
-  NoStone,     ///< @brief There is no stone on the GoPoint.
-  BlackStone,  ///< @brief There is a black stone on the GoPoint.
-  WhiteStone   ///< @brief There is a white stone on the GoPoint.
+  GoColorNone,   ///< @brief Used, among other things, to say that a GoPoint is empty and has no stone placed on it.
+  GoColorBlack,
+  GoColorWhite
 };
 
 /// @brief Enumerates the possible types of GoGame objects.
@@ -230,21 +227,26 @@ extern NSString* gtpEngineIdleNotification;
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is sent to indicate that a new GoGame has been created.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* goGameNewCreated;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
 /// i.e. the game has started or ended.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* goGameStateChanged;
 /// @brief Is sent to indicate that the first move of the game has changed. May
 /// occur when the first move of the game is played, or when the first move is
 /// removed by an undo.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* goGameFirstMoveChanged;
 /// @brief Is sent to indicate that the last move of the game has changed. May
 /// occur whenever a move is played, or when the most recent move of the game
 /// is removed by an undo.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* goGameLastMoveChanged;
-/// @brief Is sent to indicate that a new score has been calculated. Typically
-/// occurs after the game has ended.
-extern NSString* goGameScoreChanged;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -253,10 +255,14 @@ extern NSString* goGameScoreChanged;
 //@{
 /// @brief Is sent to indicate that the computer player has started to think
 /// about its next move.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* computerPlayerThinkingStarts;
 /// @brief Is sent to indicate that the computer player has stopped to think
 /// about its next move. Occurs only after the move has actually been made, i.e.
 /// any GoGame notifications have already been delivered.
+///
+/// The GoGame object is associated with the notification.
 extern NSString* computerPlayerThinkingStops;
 //@}
 
@@ -286,9 +292,31 @@ extern NSString* archiveContentChanged;
 /// been cleared, the log has rotated).
 extern NSString* gtpLogContentChanged;
 /// @brief Is sent to indicate that the information stored in a GtpLogItem
-/// object has changed. The GtpLogItem object is associated with the
-/// notification.
+/// object has changed.
+///
+//// The GtpLogItem object is associated with the notification.
 extern NSString* gtpLogItemChanged;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Scoring related notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that scoring mode has been enabled. Is sent
+/// before the first score is calculated.
+extern NSString* goScoreScoringModeEnabled;
+/// @brief Is sent to indicate that scoring mode has been disabled.
+extern NSString* goScoreScoringModeDisabled;
+/// @brief Is sent to indicate that the calculation of a new score is about to
+/// start.
+///
+/// The GoScore object is associated with the notification.
+extern NSString* goScoreCalculationStarts;
+/// @brief Is sent to indicate that a new score has been calculated and is
+/// available display.
+///
+/// The GoScore object is associated with the notification.
+extern NSString* goScoreCalculationEnds;
 //@}
 
 // -----------------------------------------------------------------------------

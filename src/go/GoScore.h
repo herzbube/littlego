@@ -17,25 +17,40 @@
 
 // Forward declarations
 @class GoGame;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
 /// @brief The GoScore class collects scoring information from a GoGame object.
-/// The game does not need to be in any particular state, particularly not in
-/// state #GameHasEnded.
+/// A controller must initiate scoring by invoking calculate(). Scoring occurs
+/// asynchronously in a secondary thread - when the new score has been
+/// calculated, GoScore posts the notification #goScoreCalculationEnds to the
+/// default NSNotificationCenter.
 ///
 /// @ingroup go
 ///
-/// A GoScore instance operates on a GoGame object that was specified during
-/// construction. Most of the scoring information is collected by simply
-/// inspecting the state of GoGame and its associated objects:
-/// - Komi is collected from GoGame
-/// - The number of captured stones is collected from GoMove objects
+/// A GoScore instance operates on the GoGame object that was specified during
+/// construction. The GoGame object does not need to be in any particular state,
+/// e.g. it is not necessary for the game to be in state #GameHasEnded.
 ///
-/// The difficult part is calculating the territory score: Neither Little Go nor
-/// the GTP engine are "clever" enough to find out which stone groups are truly
-/// dead, which means that the user must help out by interactively marking
-/// stones as dead or alive.
+/// Most of the scoring information is collected by simply inspecting the state
+/// of GoGame and its associated objects:
+/// - Komi is collected from GoGame
+/// - The number of captured stones as well as move statistics are collected
+///   from GoMove objects
+///
+/// Territory scoring is more complicated and a potentially time-consuming
+/// operation. For this reason, when a client creates a new GoScore object the
+/// client may request that no territory scoring be performed.
+///
+///
+/// @par Territory scoring
+///
+/// Territory can be scored only after the status of all stones on the board has
+/// been determined to be either dead or alive. Neither Little Go nor the GTP
+/// engine are "clever" enough to find out which stone groups are truly dead.
+/// This means that the user must help out by interactively marking stones as
+/// dead or alive.
 ///
 /// GoScore stores the information whether a stone is dead or alive in the
 /// GoPoint objects associated with the GoGame instance it operates on. The
@@ -50,6 +65,10 @@
 ///   records the new information in the appropriate GoPoint objects and
 ///   calculates the new score
 ///
+/// A controller is required to inform GoScore when the dead or alive status of
+/// a stone group changes. The controller does this by invoking togglePoint:().
+/// Afterwards the controller needs to invoke calculate() to get the new score.
+///
 /// @note GoScore currently only supports territory scoring without handling for
 /// counting eyes in seki.
 // -----------------------------------------------------------------------------
@@ -57,10 +76,18 @@
 {
 }
 
-+ (GoScore*) scoreFromGame:(GoGame*)game;
-- (void) calculate;
++ (GoScore*) scoreForGame:(GoGame*)game withTerritoryScores:(bool)withTerritoryScores;
+- (void) calculateWaitUntilDone:(bool)waitUntilDone;
+- (void) togglePoint:(GoPoint*)point;
 - (NSString*) resultString;
 
+// -----------------------------------------------------------------------------
+/// @name General properties
+// -----------------------------------------------------------------------------
+//@{
+@property bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
+@property bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
+//@}
 // -----------------------------------------------------------------------------
 /// @name Scoring properties
 // -----------------------------------------------------------------------------
@@ -72,7 +99,7 @@
 @property int deadWhite;             ///< @brief The number of dead white stones
 @property int territoryBlack;        ///< @brief Territory score for black
 @property int territoryWhite;        ///< @brief Territory score for white
-@property int totalScoreBlack;    ///< @brief The total score for black
+@property int totalScoreBlack;       ///< @brief The total score for black
 @property double totalScoreWhite;    ///< @brief The total score for white
 @property enum GoGameResult result;  ///< @brief The overall result of comparing @e totalScoreBlack and @e totalScoreWhite
 //@}
