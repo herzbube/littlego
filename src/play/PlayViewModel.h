@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GoScore;
-
-
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewModel class provides user defaults data to its clients
 /// that describes the UI characteristics of the Play view.
@@ -31,10 +27,6 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-// -----------------------------------------------------------------------------
-/// @name User defaults properties
-// -----------------------------------------------------------------------------
-//@{
 @property bool markLastMove;
 @property bool displayCoordinates;
 @property bool displayMoveNumbers;
@@ -50,23 +42,7 @@
 @property(retain) UIColor* starPointColor;
 @property int starPointRadius;
 @property float stoneRadiusPercentage;
-@property float alphaTerritoryColorBlack;
-@property float alphaTerritoryColorWhite;
-@property(retain) UIColor* deadStoneSymbolColor;
-@property float deadStoneSymbolPercentage;
 @property(retain) UIColor* crossHairColor;
 @property int crossHairPointDistanceFromFinger;
-//@}
-
-// -----------------------------------------------------------------------------
-/// @name Scoring properties
-// -----------------------------------------------------------------------------
-//@{
-/// @brief Is true if scoring mode is enabled on the Play view.
-@property bool scoringMode;
-/// @brief The GoScore object that provides scoring data while scoring mode is
-/// enabled. Is nil while scoring mode is disabled.
-@property(retain) GoScore* score;
-//@}
 
 @end

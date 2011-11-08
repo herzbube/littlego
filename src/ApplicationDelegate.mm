@@ -34,6 +34,7 @@
 #import "newgame/NewGameModel.h"
 #import "player/PlayerModel.h"
 #import "play/PlayViewModel.h"
+#import "play/ScoringModel.h"
 #import "play/SoundHandling.h"
 #import "archive/ArchiveViewModel.h"
 #import "debug/GtpCommandModel.h"
@@ -90,6 +91,7 @@
 @synthesize gtpEngine;
 @synthesize newGameModel;
 @synthesize playerModel;
+@synthesize scoringModel;
 @synthesize playViewModel;
 @synthesize soundHandling;
 @synthesize game;
@@ -146,6 +148,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.newGameModel = nil;
   self.playerModel = nil;
   self.playViewModel = nil;
+  self.scoringModel = nil;
   self.soundHandling = nil;
   self.game = nil;
   self.archiveViewModel = nil;
@@ -237,6 +240,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.newGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
+  [self.scoringModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
   [self.gtpCommandModel writeUserDefaults];
@@ -326,12 +330,14 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.newGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
+  self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
   [self.newGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];
+  [self.scoringModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
   [self.gtpCommandModel readUserDefaults];

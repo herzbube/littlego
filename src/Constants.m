@@ -106,10 +106,6 @@ NSString* normalLineWidthKey = @"NormalLineWidth";
 NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
-NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
-NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
-NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColorKey";
-NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentageKey";
 NSString* crossHairColorKey = @"CrossHairColor";
 NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
 // New game settings
@@ -146,3 +142,10 @@ NSString* gtpLogSizeKey = @"GtpLogSize";
 NSString* gtpLogViewFrontSideIsVisibleKey = @"GtpLogViewFrontSideIsVisible";
 // GTP canned commands settings
 NSString* gtpCannedCommandsKey = @"GtpCannedCommands";
+// Scoring settings
+NSString* scoringKey = @"Scoring";
+NSString* askGtpEngineForDeadStonesKey = @"AskGtpEngineForDeadStones";
+NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
+NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
+NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColorKey";
+NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentageKey";

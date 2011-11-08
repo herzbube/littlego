@@ -73,26 +73,6 @@
 /// @brief The activity indicator.
 @property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
 
-/// @brief The model that manages data used by this view.
-@property(assign) PlayViewModel* model;
-
-/// @name Dynamically calculated properties
-//@{
-@property CGRect previousDrawRect;
-@property int previousBoardDimension;
-@property bool portrait;
-@property int boardSize;
-@property int boardOuterMargin;  // distance to view edge
-@property int boardInnerMargin;  // distance to grid
-@property int topLeftBoardCornerX;
-@property int topLeftBoardCornerY;
-@property int topLeftPointX;
-@property int topLeftPointY;
-@property int pointDistance;
-@property int lineLength;
-@property int stoneRadius;
-//@}
-
 /// @name Cross-hair point properties
 //@{
 @property(retain) GoPoint* crossHairPoint;

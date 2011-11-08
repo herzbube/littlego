@@ -116,6 +116,8 @@
 		CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CD8F920D143E6A4A006351DB /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */; };
+		CD92EE961469EB83001EA980 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD92EE951469EB83001EA980 /* ScoringModel.m */; };
+		CD92EEA21469F0A9001EA980 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD92EE951469EB83001EA980 /* ScoringModel.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
 		CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
 		CDA264AC132CF7EF00FAFC51 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA264AB132CF7EF00FAFC51 /* Constants.m */; };
@@ -288,6 +290,8 @@
 		CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubmitGtpCommandViewController.h; sourceTree = "<group>"; };
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD8F920C143E6A4A006351DB /* SubmitGtpCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubmitGtpCommandView.xib; sourceTree = "<group>"; };
+		CD92EE941469EB83001EA980 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
+		CD92EE951469EB83001EA980 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
 		CD9AA709146028770012C3EA /* HandicapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandicapSelectionController.h; sourceTree = "<group>"; };
 		CD9AA70A146028770012C3EA /* HandicapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandicapSelectionController.m; sourceTree = "<group>"; };
 		CD9AA70B146028770012C3EA /* KomiSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KomiSelectionController.h; sourceTree = "<group>"; };
@@ -581,6 +585,8 @@
 				CD1088601326CD2400E83543 /* PlayViewController.m */,
 				CDE3028E1360BDD3005235F2 /* PlayViewModel.h */,
 				CDE3028F1360BDD3005235F2 /* PlayViewModel.m */,
+				CD92EE941469EB83001EA980 /* ScoringModel.h */,
+				CD92EE951469EB83001EA980 /* ScoringModel.m */,
 				CDBF976913EC66FE00476748 /* SoundHandling.h */,
 				CDBF976A13EC66FE00476748 /* SoundHandling.m */,
 			);
@@ -1040,6 +1046,7 @@
 				CD721FE31461E8FA005EAC65 /* GameInfoViewController.m in Sources */,
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
+				CD92EE961469EB83001EA980 /* ScoringModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1094,6 +1101,7 @@
 				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
+				CD92EEA21469F0A9001EA980 /* ScoringModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayView.h"
 #import "PlayViewModel.h"
+#import "ScoringModel.h"
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
@@ -93,6 +94,27 @@
 - (void) updateDrawParametersForRect:(CGRect)rect;
 - (void) delayedUpdate;
 //@}
+/// @name Dynamically calculated properties
+//@{
+@property CGRect previousDrawRect;
+@property int previousBoardDimension;
+@property bool portrait;
+@property int boardSize;
+@property int boardOuterMargin;  // distance to view edge
+@property int boardInnerMargin;  // distance to grid
+@property int topLeftBoardCornerX;
+@property int topLeftBoardCornerY;
+@property int topLeftPointX;
+@property int topLeftPointY;
+@property int pointDistance;
+@property int lineLength;
+@property int stoneRadius;
+//@}
+/// @name Other privately declared properties
+//@{
+@property(assign) PlayViewModel* playViewModel;
+@property(assign) ScoringModel* scoringModel;
+//@}
 @end
 
 
@@ -101,7 +123,8 @@
 @synthesize statusLine;
 @synthesize activityIndicator;
 
-@synthesize model;
+@synthesize playViewModel;
+@synthesize scoringModel;
 
 @synthesize previousDrawRect;
 @synthesize previousBoardDimension;
@@ -147,12 +170,13 @@ static PlayView* sharedPlayView = nil;
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.model removeObserver:self forKeyPath:@"markLastMove"];
-  [self.model removeObserver:self forKeyPath:@"displayCoordinates;"];
-  [self.model removeObserver:self forKeyPath:@"displayMoveNumbers"];
+  [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
   self.statusLine = nil;
   self.activityIndicator = nil;
-  self.model = nil;
+  self.playViewModel = nil;
+  self.scoringModel = nil;
   self.crossHairPoint = nil;
   if (self == sharedPlayView)
     sharedPlayView = nil;
@@ -173,7 +197,9 @@ static PlayView* sharedPlayView = nil;
   [super awakeFromNib];
 
   sharedPlayView = self;
-  self.model = [ApplicationDelegate sharedDelegate].playViewModel;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  self.playViewModel = delegate.playViewModel;
+  self.scoringModel = delegate.scoringModel;
 
   self.previousDrawRect = CGRectNull;
   self.previousBoardDimension = 0;
@@ -205,9 +231,9 @@ static PlayView* sharedPlayView = nil;
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   // KVO observing
-  [self.model addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
-  [self.model addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
-  [self.model addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -282,7 +308,7 @@ static PlayView* sharedPlayView = nil;
   [self drawStones];
   [self drawSymbols];
   [self drawLabels];
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
     [self drawTerritory];
     [self drawDeadStones];
@@ -319,9 +345,9 @@ static PlayView* sharedPlayView = nil;
     boardSizeBase = rect.size.width;
   else
     boardSizeBase = rect.size.height;
-  self.boardOuterMargin = floor(boardSizeBase * self.model.boardOuterMarginPercentage);
+  self.boardOuterMargin = floor(boardSizeBase * self.playViewModel.boardOuterMarginPercentage);
   self.boardSize = boardSizeBase - (self.boardOuterMargin * 2);
-  self.boardInnerMargin = floor(self.boardSize * self.model.boardInnerMarginPercentage);
+  self.boardInnerMargin = floor(self.boardSize * self.playViewModel.boardInnerMarginPercentage);
   // Don't use border here - rounding errors might cause improper centering
   self.topLeftBoardCornerX = floor((rect.size.width - self.boardSize) / 2);
   self.topLeftBoardCornerY = floor((rect.size.height - self.boardSize) / 2);
@@ -335,7 +361,7 @@ static PlayView* sharedPlayView = nil;
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
 
-  self.stoneRadius = floor(self.pointDistance / 2 * self.model.stoneRadiusPercentage);
+  self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
 }
 
 // -----------------------------------------------------------------------------
@@ -350,7 +376,7 @@ static PlayView* sharedPlayView = nil;
   // Convenience constructor: [UIColor groupTableViewBackgroundColor].
 
 //  CGContextRef context = UIGraphicsGetCurrentContext();
-//  CGContextSetFillColorWithColor(context, self.model.backgroundColor.CGColor);
+//  CGContextSetFillColorWithColor(context, self.playViewModel.backgroundColor.CGColor);
 //  CGContextFillRect(context, rect);
 }
 
@@ -360,7 +386,7 @@ static PlayView* sharedPlayView = nil;
 - (void) drawBoard
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, self.model.boardColor.CGColor);
+  CGContextSetFillColorWithColor(context, self.playViewModel.boardColor.CGColor);
   CGContextFillRect(context, CGRectMake(self.topLeftBoardCornerX + gHalfPixel,
                                         self.topLeftBoardCornerY + gHalfPixel,
                                         self.boardSize, self.boardSize));
@@ -392,24 +418,24 @@ static PlayView* sharedPlayView = nil;
       {
         CGContextAddLineToPoint(context, lineStartPointX + lineLength + gHalfPixel, lineStartPointY + gHalfPixel);
         if (lineStartPointY == crossHairCenter.y)
-          CGContextSetStrokeColorWithColor(context, self.model.crossHairColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.playViewModel.crossHairColor.CGColor);
         else
-          CGContextSetStrokeColorWithColor(context, self.model.lineColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.playViewModel.lineColor.CGColor);
         lineStartPointY += self.pointDistance;  // calculate for next iteration
       }
       else
       {
         CGContextAddLineToPoint(context, lineStartPointX + gHalfPixel, lineStartPointY + lineLength + gHalfPixel);
         if (lineStartPointX == crossHairCenter.x)
-          CGContextSetStrokeColorWithColor(context, self.model.crossHairColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.playViewModel.crossHairColor.CGColor);
         else
-          CGContextSetStrokeColorWithColor(context, self.model.lineColor.CGColor);
+          CGContextSetStrokeColorWithColor(context, self.playViewModel.lineColor.CGColor);
         lineStartPointX += self.pointDistance;  // calculate for next iteration
       }
       if (0 == lineCounter || ([GoGame sharedGame].board.dimensions - 1) == lineCounter)
-        CGContextSetLineWidth(context, self.model.boundingLineWidth);
+        CGContextSetLineWidth(context, self.playViewModel.boundingLineWidth);
       else
-        CGContextSetLineWidth(context, self.model.normalLineWidth);
+        CGContextSetLineWidth(context, self.playViewModel.normalLineWidth);
 
       CGContextStrokePath(context);
     }
@@ -422,7 +448,7 @@ static PlayView* sharedPlayView = nil;
 - (void) drawStarPoints
 {
   CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetFillColorWithColor(context, self.model.starPointColor.CGColor);
+	CGContextSetFillColorWithColor(context, self.playViewModel.starPointColor.CGColor);
 
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
@@ -432,7 +458,7 @@ static PlayView* sharedPlayView = nil;
     struct GoVertexNumeric numericVertex = starPoint.vertex.numeric;
     int starPointCenterPointX = self.topLeftPointX + (self.pointDistance * (numericVertex.x - 1));
     int starPointCenterPointY = self.topLeftPointY + (self.pointDistance * (numericVertex.y - 1));
-    CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, self.model.starPointRadius, startRadius, endRadius, clockwise);
+    CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, self.playViewModel.starPointRadius, startRadius, endRadius, clockwise);
     CGContextFillPath(context);
   }
 }
@@ -454,7 +480,7 @@ static PlayView* sharedPlayView = nil;
       // TODO create an isEqualToPoint:(GoPoint*)point in GoPoint
       if (self.crossHairPoint && [self.crossHairPoint.vertex isEqualToVertex:point.vertex])
       {
-        color = self.model.crossHairColor;
+        color = self.playViewModel.crossHairColor;
         crossHairStoneDrawn = true;
       }
       else if (point.blackStone)
@@ -534,7 +560,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawSymbols
 {
-  if (self.model.markLastMove && ! self.model.scoringMode)
+  if (self.playViewModel.markLastMove && ! self.scoringModel.scoringMode)
   {
     GoMove* lastMove = [GoGame sharedGame].lastMove;
     if (lastMove && PlayMove == lastMove.type)
@@ -552,7 +578,7 @@ static PlayView* sharedPlayView = nil;
       CGContextBeginPath(context);
       CGContextAddRect(context, lastMoveBox);
       CGContextSetStrokeColorWithColor(context, lastMoveBoxColor.CGColor);
-      CGContextSetLineWidth(context, self.model.normalLineWidth);
+      CGContextSetLineWidth(context, self.playViewModel.normalLineWidth);
       CGContextStrokePath(context);
     }
   }
@@ -571,8 +597,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawTerritory
 {
-  UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.model.alphaTerritoryColorBlack];
-  UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.model.alphaTerritoryColorWhite];
+  UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.scoringModel.alphaTerritoryColorBlack];
+  UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.scoringModel.alphaTerritoryColorWhite];
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
@@ -604,7 +630,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawDeadStones
 {
-  UIColor* deadStoneSymbolColor = self.model.deadStoneSymbolColor;
+  UIColor* deadStoneSymbolColor = self.scoringModel.deadStoneSymbolColor;
   bool insetCalculated;
   CGFloat inset;
   GoGame* game = [GoGame sharedGame];
@@ -622,7 +648,7 @@ static PlayView* sharedPlayView = nil;
     if (! insetCalculated)
     {
       insetCalculated = true;
-      inset = floor(innerSquare.size.width * (1.0 - self.model.deadStoneSymbolPercentage));
+      inset = floor(innerSquare.size.width * (1.0 - self.scoringModel.deadStoneSymbolPercentage));
     }
     innerSquare = CGRectInset(innerSquare, inset, inset);
 
@@ -633,7 +659,7 @@ static PlayView* sharedPlayView = nil;
     CGContextMoveToPoint(context, innerSquare.origin.x, innerSquare.origin.y + innerSquare.size.width);
     CGContextAddLineToPoint(context, innerSquare.origin.x + innerSquare.size.width, innerSquare.origin.y);
     CGContextSetStrokeColorWithColor(context, deadStoneSymbolColor.CGColor);
-    CGContextSetLineWidth(context, self.model.normalLineWidth);
+    CGContextSetLineWidth(context, self.playViewModel.normalLineWidth);
     CGContextStrokePath(context);
   }
 }
@@ -668,12 +694,12 @@ static PlayView* sharedPlayView = nil;
     }
     else
     {
-      if (self.model.scoringMode)
+      if (self.scoringModel.scoringMode)
       {
-        if (self.model.score.scoringInProgress)
+        if (self.scoringModel.score.scoringInProgress)
           statusText = @"Scoring in progress...";
         else
-          statusText = [NSString stringWithFormat:@"%@. Tap to mark dead stones.", [self.model.score resultString]];
+          statusText = [NSString stringWithFormat:@"%@. Tap to mark dead stones.", [self.scoringModel.score resultString]];
       }
       else
       {
@@ -735,9 +761,9 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) updateActivityIndicator
 {
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
-    if (self.model.score.scoringInProgress)
+    if (self.scoringModel.score.scoringInProgress)
       [self.activityIndicator startAnimating];
     else
       [self.activityIndicator stopAnimating];
@@ -987,7 +1013,7 @@ static PlayView* sharedPlayView = nil;
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
-  coordinates.y -= self.model.crossHairPointDistanceFromFinger * self.pointDistance;
+  coordinates.y -= self.playViewModel.crossHairPointDistanceFromFinger * self.pointDistance;
 
   // Check if cross-hair is outside the grid and should not be displayed. To
   // make the edge lines accessible in the same way as the inner lines,

@@ -379,10 +379,6 @@ extern NSString* normalLineWidthKey;
 extern NSString* starPointColorKey;
 extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
-extern NSString* deadStoneSymbolColorKey;
-extern NSString* deadStoneSymbolPercentageKey;
-extern NSString* alphaTerritoryColorBlackKey;
-extern NSString* alphaTerritoryColorWhiteKey;
 extern NSString* crossHairColorKey;
 extern NSString* crossHairPointDistanceFromFingerKey;
 // New game settings
@@ -419,4 +415,11 @@ extern NSString* gtpLogSizeKey;
 extern NSString* gtpLogViewFrontSideIsVisibleKey;
 // GTP canned commands settings
 extern NSString* gtpCannedCommandsKey;
+// Scoring settings
+extern NSString* scoringKey;
+extern NSString* askGtpEngineForDeadStonesKey;
+extern NSString* alphaTerritoryColorBlackKey;
+extern NSString* alphaTerritoryColorWhiteKey;
+extern NSString* deadStoneSymbolColorKey;
+extern NSString* deadStoneSymbolPercentageKey;
 //@}

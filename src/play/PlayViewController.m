@@ -19,7 +19,7 @@
 #import "PlayViewController.h"
 #import "PlayViewActionSheetController.h"
 #import "PlayView.h"
-#import "PlayViewModel.h"
+#import "ScoringModel.h"
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
@@ -101,8 +101,8 @@
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief The model that manages data used by the Play view.
-@property(assign) PlayViewModel* model;
+/// @brief The model that manages scoring-related data.
+@property(assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the dragging, or panning,
 /// gesture.
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
@@ -132,7 +132,7 @@
 @synthesize gameInfoButton;
 @synthesize gameActionsButton;
 @synthesize doneButton;
-@synthesize model;
+@synthesize scoringModel;
 @synthesize panRecognizer;
 @synthesize panningEnabled;
 @synthesize gameInfoScore;
@@ -147,7 +147,7 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
-  self.model = nil;
+  self.scoringModel = nil;
   self.panRecognizer = nil;
   self.gameInfoScore = nil;
   [super dealloc];
@@ -161,7 +161,7 @@
 {
   [super viewDidLoad];
 
-  self.model = [ApplicationDelegate sharedDelegate].playViewModel;
+  self.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
 
   [self.view addSubview:self.frontSideView];
 
@@ -211,7 +211,7 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
-  self.model = nil;
+  self.scoringModel = nil;
   self.panRecognizer = nil;
   self.gameInfoScore = nil;
 }
@@ -275,8 +275,8 @@
 - (void) gameInfo:(id)sender
 {
   GoScore* score;
-  if (self.model.scoringMode)
-    score = self.model.score;
+  if (self.scoringModel.scoringMode)
+    score = self.scoringModel.score;
   else
   {
     assert(! self.gameInfoScore);
@@ -303,7 +303,7 @@
   [controller.view removeFromSuperview];
   [controller release];
   // Get rid of temporary scoring object
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     assert(self.gameInfoScore);
     self.gameInfoScore = nil;
@@ -350,7 +350,7 @@
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  self.model.scoringMode = false;  // triggers notification to which this controller reacts
+  self.scoringModel.scoringMode = false;  // triggers notification to which this controller reacts
 }
 
 // -----------------------------------------------------------------------------
@@ -431,7 +431,7 @@
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
-  self.model.scoringMode = false;
+  self.scoringModel.scoringMode = false;
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
@@ -474,7 +474,7 @@
   [self updateButtonStates];
   [self updatePanningEnabled];  // disable panning
   [self updateNavigationItemTitle];
-  [self.model.score calculateWaitUntilDone:false];
+  [self.scoringModel.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -511,7 +511,7 @@
 - (void) populateToolbar
 {
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
     [toolbarItems addObject:self.gameInfoButton];
     [toolbarItems addObject:self.flexibleSpaceButton];
@@ -562,7 +562,7 @@
 - (void) updatePlayForMeButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -594,7 +594,7 @@
 - (void) updatePassButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -626,7 +626,7 @@
 - (void) updateUndoButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -668,7 +668,7 @@
 - (void) updatePauseButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -697,7 +697,7 @@
 - (void) updateContinueButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -726,9 +726,9 @@
 - (void) updateGameInfoButtonState
 {
   BOOL enabled = NO;
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
-    if (! self.model.score.scoringInProgress)
+    if (! self.scoringModel.score.scoringInProgress)
       enabled = YES;
   }
   else
@@ -744,7 +744,7 @@
 - (void) updateGameActionsButtonState
 {
   BOOL enabled = NO;
-  if (! self.model.scoringMode)
+  if (! self.scoringModel.scoringMode)
   {
     switch ([GoGame sharedGame].type)
     {
@@ -787,9 +787,9 @@
 - (void) updateDoneButtonState
 {
   BOOL enabled = NO;
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
-    if (! self.model.score.scoringInProgress)
+    if (! self.scoringModel.score.scoringInProgress)
       enabled = YES;
   }
   self.doneButton.enabled = enabled;
@@ -800,7 +800,7 @@
 // -----------------------------------------------------------------------------
 - (void) updatePanningEnabled
 {
-  if (self.model.scoringMode)
+  if (self.scoringModel.scoringMode)
   {
     self.panningEnabled = false;
     return;

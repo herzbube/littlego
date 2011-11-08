@@ -34,14 +34,6 @@
 		<integer>3</integer>
 		<key>StoneRadiusPercentage</key>
 		<real>0.9</real>
-		<key>AlphaTerritoryColorBlack</key>
-		<real>0.35</real>
-		<key>AlphaTerritoryColorWhite</key>
-		<real>0.6</real>
-		<key>DeadStoneSymbolColor</key>
-		<string>ff0000</string>
-		<key>DeadStoneSymbolPercentage</key>
-		<real>0.8</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
 		<key>CrossHairPointDistanceFromFinger</key>
@@ -151,5 +143,18 @@
 		<string>list_stones</string>
 		<string>showboard</string>
 	</array>
+	<key>Scoring</key>
+	<dict>
+		<key>AskGtpEngineForDeadStones</key>
+		<false/>
+		<key>AlphaTerritoryColorBlack</key>
+		<real>0.35</real>
+		<key>AlphaTerritoryColorWhite</key>
+		<real>0.6</real>
+		<key>DeadStoneSymbolColor</key>
+		<string>ff0000</string>
+		<key>DeadStoneSymbolPercentage</key>
+		<real>0.8</real>
+	</dict>
 </dict>
 </plist>

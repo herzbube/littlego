@@ -17,7 +17,7 @@
 
 // Project includes
 #import "PlayViewActionSheetController.h"
-#import "PlayViewModel.h"
+#import "ScoringModel.h"
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
@@ -224,8 +224,8 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) score
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  playViewModel.scoringMode = ! playViewModel.scoringMode;
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  scoringModel.scoringMode = ! scoringModel.scoringMode;
 }
 
 // -----------------------------------------------------------------------------

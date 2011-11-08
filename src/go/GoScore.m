@@ -22,9 +22,11 @@
 #import "GoMove.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
+#import "../ApplicationDelegate.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../utility/NSStringAdditions.h"
+#import "../play/ScoringModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -367,21 +369,24 @@
   }
 
   // Initialize dead stones
-  GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
-  command.waitUntilDone = true;
-  [command submit];
-  if (! command.response.status)
-    return true;  // although it's weird we can live with GTP not providing an initial list of dead stones
-  NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
-  for (NSString* vertex in deadStoneVertexList)
+  if ([ApplicationDelegate sharedDelegate].scoringModel.askGtpEngineForDeadStones)
   {
-    GoPoint* point = [board pointAtVertex:vertex];
-    if (! [point hasStone])
+    GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
+    command.waitUntilDone = true;
+    [command submit];
+    if (! command.response.status)
+      return true;  // although it's weird we can live with GTP not providing an initial list of dead stones
+    NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
+    for (NSString* vertex in deadStoneVertexList)
     {
-      assert(0);
-      return false;
+      GoPoint* point = [board pointAtVertex:vertex];
+      if (! [point hasStone])
+      {
+        assert(0);
+        return false;
+      }
+      point.deadStone = true;
     }
-    point.deadStone = true;
   }
 
   return true;

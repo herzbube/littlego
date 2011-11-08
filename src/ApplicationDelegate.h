@@ -24,6 +24,7 @@
 @class NewGameModel;
 @class PlayerModel;
 @class PlayViewModel;
+@class ScoringModel;
 @class SoundHandling;
 @class GoGame;
 @class ArchiveViewModel;
@@ -81,6 +82,8 @@
 @property(retain) PlayerModel* playerModel;
 /// @brief Model object that stores attributes used to manage the Play view.
 @property(retain) PlayViewModel* playViewModel;
+/// @brief Model object that stores attributes used for scoring.
+@property(retain) ScoringModel* scoringModel;
 /// @brief Object that handles sounds and vibration.
 @property(retain) SoundHandling* soundHandling;
 /// @brief Object that represents the game that is currently in progress.
