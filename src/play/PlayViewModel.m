@@ -54,10 +54,13 @@
 @synthesize starPointColor;
 @synthesize starPointRadius;
 @synthesize stoneRadiusPercentage;
+@synthesize deadStoneSymbolColor;
+@synthesize deadStoneSymbolPercentage;
 @synthesize crossHairColor;
 @synthesize crossHairPointDistanceFromFinger;
 @synthesize scoringMode;
 @synthesize score;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayViewModel object with user defaults data.
@@ -86,6 +89,8 @@
   self.starPointColor = [UIColor blackColor];
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 1.0;
+  self.deadStoneSymbolColor = [UIColor redColor];
+  self.deadStoneSymbolPercentage = 0.8;
   self.crossHairColor = [UIColor greenColor];
   self.crossHairPointDistanceFromFinger = 2;
   self.score = nil;
@@ -99,6 +104,12 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.backgroundColor = nil;
+  self.boardColor = nil;
+  self.lineColor = nil;
+  self.starPointColor = nil;
+  self.deadStoneSymbolColor = nil;
+  self.crossHairColor = nil;
   self.score = nil;
   [super dealloc];
 }
@@ -125,6 +136,8 @@
   self.starPointColor = [UIColor colorFromHexString:[dictionary valueForKey:starPointColorKey]];
   self.starPointRadius = [[dictionary valueForKey:starPointRadiusKey] intValue];
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
+  self.deadStoneSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:deadStoneSymbolColorKey]];
+  self.deadStoneSymbolPercentage = [[dictionary valueForKey:deadStoneSymbolPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
   self.crossHairPointDistanceFromFinger = [[dictionary valueForKey:crossHairPointDistanceFromFingerKey] intValue];
 }
@@ -155,6 +168,8 @@
   [dictionary setValue:[UIColor hexStringFromUIColor:self.starPointColor] forKey:starPointColorKey];
   [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:starPointRadiusKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
+  [dictionary setValue:[UIColor hexStringFromUIColor:self.deadStoneSymbolColor] forKey:deadStoneSymbolColorKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.deadStoneSymbolPercentage] forKey:deadStoneSymbolPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
   [dictionary setValue:[NSNumber numberWithInt:self.crossHairPointDistanceFromFinger] forKey:crossHairPointDistanceFromFingerKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed

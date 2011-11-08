@@ -34,6 +34,10 @@
 		<integer>3</integer>
 		<key>StoneRadiusPercentage</key>
 		<real>0.95</real>
+		<key>DeadStoneSymbolColor</key>
+		<string>ff0000</string>
+		<key>DeadStoneSymbolPercentage</key>
+		<real>0.8</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
 		<key>CrossHairPointDistanceFromFinger</key>

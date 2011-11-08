@@ -72,6 +72,7 @@
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
+- (CGRect) innerBoxFromPoint:(GoPoint*)point;
 //@}
 /// @name Notification responders
 //@{
@@ -531,23 +532,12 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawSymbols
 {
-  if (self.model.markLastMove)
+  if (self.model.markLastMove && ! self.model.scoringMode)
   {
     GoMove* lastMove = [GoGame sharedGame].lastMove;
     if (lastMove && PlayMove == lastMove.type)
     {
-      CGPoint lastMoveCoordinates = [self coordinatesFromVertex:lastMove.point.vertex];
-      // The symbol for marking the last move is a box inside the circle that
-      // represents the Go stone. Geometry tells us that in this scenario
-      //   a = r * sqrt(2)
-      // We subtract another 2 points because we don't want to touch the circle.
-      int lastMoveBoxSide = floor(self.stoneRadius * sqrt(2) - 2);
-      // The origin for Core Graphics is in the bottom-left corner!
-      CGRect lastMoveBox;
-      lastMoveBox.origin.x = floor((lastMoveCoordinates.x - (lastMoveBoxSide / 2))) + gHalfPixel;
-      lastMoveBox.origin.y = floor((lastMoveCoordinates.y - (lastMoveBoxSide / 2))) + gHalfPixel;
-      lastMoveBox.size.width = lastMoveBoxSide;
-      lastMoveBox.size.height = lastMoveBoxSide;
+      CGRect lastMoveBox = [self innerBoxFromPoint:lastMove.point];
       // TODO move color handling to a helper function; there is similar code
       // floating around somewhere else in this class
       UIColor* lastMoveBoxColor;
@@ -586,6 +576,38 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawDeadStones
 {
+  UIColor* deadStoneSymbolColor = self.model.deadStoneSymbolColor;
+  bool insetCalculated;
+  CGFloat inset;
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    if (! point.deadStone)
+      continue;
+    // The symbol for marking a dead stone is an "x"; we draw this as the two
+    // diagonals of the "inner box" square
+    CGRect box = [self innerBoxFromPoint:point];
+    // Make the diagonals shorter by making the square slightly smaller
+    // (the inset needs to be calculated only once per iteration)
+    if (! insetCalculated)
+    {
+      insetCalculated = true;
+      inset = floor(box.size.width * (1.0 - self.model.deadStoneSymbolPercentage));
+    }
+    box = CGRectInset(box, inset, inset);
+
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, box.origin.x, box.origin.y);
+    CGContextAddLineToPoint(context, box.origin.x + box.size.width, box.origin.y + box.size.width);
+    CGContextMoveToPoint(context, box.origin.x, box.origin.y + box.size.width);
+    CGContextAddLineToPoint(context, box.origin.x + box.size.width, box.origin.y);
+    CGContextSetStrokeColorWithColor(context, deadStoneSymbolColor.CGColor);
+    CGContextSetLineWidth(context, self.model.normalLineWidth);
+    CGContextStrokePath(context);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -791,6 +813,26 @@ static PlayView* sharedPlayView = nil;
     return [[GoGame sharedGame].board pointAtVertex:vertex.string];
   else
     return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square box inside the circle that
+/// represents the Go stone at @a point.
+// -----------------------------------------------------------------------------
+- (CGRect) innerBoxFromPoint:(GoPoint*)point
+{
+  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
+  // Geometry tells us that for the square with side length "a":
+  //   a = r * sqrt(2)
+  // We subtract another 2 points because we don't want to touch the circle.
+  int boxSideLength = floor(self.stoneRadius * sqrt(2) - 2);
+  // The origin for Core Graphics is in the bottom-left corner!
+  CGRect box;
+  box.origin.x = floor((coordinates.x - (boxSideLength / 2))) + gHalfPixel;
+  box.origin.y = floor((coordinates.y - (boxSideLength / 2))) + gHalfPixel;
+  box.size.width = boxSideLength;
+  box.size.height = boxSideLength;
+  return box;
 }
 
 // -----------------------------------------------------------------------------

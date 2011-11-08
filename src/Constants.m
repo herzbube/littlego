@@ -106,6 +106,8 @@ NSString* normalLineWidthKey = @"NormalLineWidth";
 NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
+NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColorKey";
+NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentageKey";
 NSString* crossHairColorKey = @"CrossHairColor";
 NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
 // New game settings

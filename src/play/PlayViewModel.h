@@ -50,6 +50,8 @@
 @property(retain) UIColor* starPointColor;
 @property int starPointRadius;
 @property float stoneRadiusPercentage;
+@property(retain) UIColor* deadStoneSymbolColor;
+@property float deadStoneSymbolPercentage;
 @property(retain) UIColor* crossHairColor;
 @property int crossHairPointDistanceFromFinger;
 //@}
