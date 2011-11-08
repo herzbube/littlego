@@ -54,6 +54,8 @@
 @synthesize starPointColor;
 @synthesize starPointRadius;
 @synthesize stoneRadiusPercentage;
+@synthesize alphaTerritoryColorBlack;
+@synthesize alphaTerritoryColorWhite;
 @synthesize deadStoneSymbolColor;
 @synthesize deadStoneSymbolPercentage;
 @synthesize crossHairColor;
@@ -89,6 +91,8 @@
   self.starPointColor = [UIColor blackColor];
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 1.0;
+  self.alphaTerritoryColorBlack = 0.3;
+  self.alphaTerritoryColorWhite = 0.3;
   self.deadStoneSymbolColor = [UIColor redColor];
   self.deadStoneSymbolPercentage = 0.8;
   self.crossHairColor = [UIColor greenColor];
@@ -136,6 +140,8 @@
   self.starPointColor = [UIColor colorFromHexString:[dictionary valueForKey:starPointColorKey]];
   self.starPointRadius = [[dictionary valueForKey:starPointRadiusKey] intValue];
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
+  self.alphaTerritoryColorBlack = [[dictionary valueForKey:alphaTerritoryColorBlackKey] floatValue];
+  self.alphaTerritoryColorWhite = [[dictionary valueForKey:alphaTerritoryColorWhiteKey] floatValue];
   self.deadStoneSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:deadStoneSymbolColorKey]];
   self.deadStoneSymbolPercentage = [[dictionary valueForKey:deadStoneSymbolPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
@@ -168,6 +174,8 @@
   [dictionary setValue:[UIColor hexStringFromUIColor:self.starPointColor] forKey:starPointColorKey];
   [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:starPointRadiusKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorBlack] forKey:alphaTerritoryColorBlackKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorWhite] forKey:alphaTerritoryColorWhiteKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.deadStoneSymbolColor] forKey:deadStoneSymbolColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.deadStoneSymbolPercentage] forKey:deadStoneSymbolPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];

@@ -381,6 +381,8 @@ extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* deadStoneSymbolColorKey;
 extern NSString* deadStoneSymbolPercentageKey;
+extern NSString* alphaTerritoryColorBlackKey;
+extern NSString* alphaTerritoryColorWhiteKey;
 extern NSString* crossHairColorKey;
 extern NSString* crossHairPointDistanceFromFingerKey;
 // New game settings

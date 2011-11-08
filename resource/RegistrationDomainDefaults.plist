@@ -33,7 +33,11 @@
 		<key>StarPointRadius</key>
 		<integer>3</integer>
 		<key>StoneRadiusPercentage</key>
-		<real>0.95</real>
+		<real>0.9</real>
+		<key>AlphaTerritoryColorBlack</key>
+		<real>0.35</real>
+		<key>AlphaTerritoryColorWhite</key>
+		<real>0.6</real>
 		<key>DeadStoneSymbolColor</key>
 		<string>ff0000</string>
 		<key>DeadStoneSymbolPercentage</key>

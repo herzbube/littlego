@@ -72,7 +72,9 @@
 - (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
 - (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
-- (CGRect) innerBoxFromPoint:(GoPoint*)point;
+- (CGRect) innerSquareAtPoint:(GoPoint*)point;
+- (CGRect) squareAtPoint:(GoPoint*)point;
+- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength;
 //@}
 /// @name Notification responders
 //@{
@@ -537,7 +539,7 @@ static PlayView* sharedPlayView = nil;
     GoMove* lastMove = [GoGame sharedGame].lastMove;
     if (lastMove && PlayMove == lastMove.type)
     {
-      CGRect lastMoveBox = [self innerBoxFromPoint:lastMove.point];
+      CGRect lastMoveBox = [self innerSquareAtPoint:lastMove.point];
       // TODO move color handling to a helper function; there is similar code
       // floating around somewhere else in this class
       UIColor* lastMoveBoxColor;
@@ -569,6 +571,32 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) drawTerritory
 {
+  UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.model.alphaTerritoryColorBlack];
+  UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.model.alphaTerritoryColorWhite];
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    UIColor* color;
+    switch (point.territoryColor)
+    {
+      case GoColorBlack:
+        color = colorBlack;
+        break;
+      case GoColorWhite:
+        color = colorWhite;
+        break;
+      default:
+        continue;
+    }
+    CGRect square = [self squareAtPoint:point];
+
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [color set];  // following fill and stroke operations use this color
+    UIRectFillUsingBlendMode(square, kCGBlendModeNormal);
+    CGContextStrokePath(context);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -588,22 +616,22 @@ static PlayView* sharedPlayView = nil;
       continue;
     // The symbol for marking a dead stone is an "x"; we draw this as the two
     // diagonals of the "inner box" square
-    CGRect box = [self innerBoxFromPoint:point];
+    CGRect innerSquare = [self innerSquareAtPoint:point];
     // Make the diagonals shorter by making the square slightly smaller
     // (the inset needs to be calculated only once per iteration)
     if (! insetCalculated)
     {
       insetCalculated = true;
-      inset = floor(box.size.width * (1.0 - self.model.deadStoneSymbolPercentage));
+      inset = floor(innerSquare.size.width * (1.0 - self.model.deadStoneSymbolPercentage));
     }
-    box = CGRectInset(box, inset, inset);
+    innerSquare = CGRectInset(innerSquare, inset, inset);
 
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, box.origin.x, box.origin.y);
-    CGContextAddLineToPoint(context, box.origin.x + box.size.width, box.origin.y + box.size.width);
-    CGContextMoveToPoint(context, box.origin.x, box.origin.y + box.size.width);
-    CGContextAddLineToPoint(context, box.origin.x + box.size.width, box.origin.y);
+    CGContextMoveToPoint(context, innerSquare.origin.x, innerSquare.origin.y);
+    CGContextAddLineToPoint(context, innerSquare.origin.x + innerSquare.size.width, innerSquare.origin.y + innerSquare.size.width);
+    CGContextMoveToPoint(context, innerSquare.origin.x, innerSquare.origin.y + innerSquare.size.width);
+    CGContextAddLineToPoint(context, innerSquare.origin.x + innerSquare.size.width, innerSquare.origin.y);
     CGContextSetStrokeColorWithColor(context, deadStoneSymbolColor.CGColor);
     CGContextSetLineWidth(context, self.model.normalLineWidth);
     CGContextStrokePath(context);
@@ -816,23 +844,48 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a rect that describes a square box inside the circle that
+/// @brief Returns a rect that describes a square inside the circle that
 /// represents the Go stone at @a point.
+///
+/// The square does not touch the circle, it is slighly inset.
 // -----------------------------------------------------------------------------
-- (CGRect) innerBoxFromPoint:(GoPoint*)point
+- (CGRect) innerSquareAtPoint:(GoPoint*)point
 {
   CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
   // Geometry tells us that for the square with side length "a":
   //   a = r * sqrt(2)
+  int sideLength = floor(self.stoneRadius * sqrt(2));
+  CGRect square = [self squareWithCenterPoint:coordinates sideLength:sideLength];
   // We subtract another 2 points because we don't want to touch the circle.
-  int boxSideLength = floor(self.stoneRadius * sqrt(2) - 2);
+  return CGRectInset(square, 1, 1);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square exactly surrounding the circle
+/// that represents the Go stone at @a point.
+///
+/// Two squares for adjacent points do not overlap, they exactly touch each
+/// other.
+// -----------------------------------------------------------------------------
+- (CGRect) squareAtPoint:(GoPoint*)point
+{
+  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
+  return [self squareWithCenterPoint:coordinates sideLength:self.pointDistance];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square whose center is at coordinate
+/// @a center and whose side length is @a sideLength.
+// -----------------------------------------------------------------------------
+- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength
+{
   // The origin for Core Graphics is in the bottom-left corner!
-  CGRect box;
-  box.origin.x = floor((coordinates.x - (boxSideLength / 2))) + gHalfPixel;
-  box.origin.y = floor((coordinates.y - (boxSideLength / 2))) + gHalfPixel;
-  box.size.width = boxSideLength;
-  box.size.height = boxSideLength;
-  return box;
+  CGRect square;
+  square.origin.x = floor((center.x - (sideLength / 2))) + gHalfPixel;
+  square.origin.y = floor((center.y - (sideLength / 2))) + gHalfPixel;
+  square.size.width = sideLength;
+  square.size.height = sideLength;
+  return square;
 }
 
 // -----------------------------------------------------------------------------

@@ -361,7 +361,10 @@
   GoBoard* board = game.board;
   GoPoint* point = [board pointAtVertex:@"A1"];
   for (; point = point.next; point != nil)
-    point.territoryColor = GoColorNone;
+  {
+    point.territoryColor = point.stoneState;
+    point.deadStone = false;
+  }
 
   // Initialize dead stones
   GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
