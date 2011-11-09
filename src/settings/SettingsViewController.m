@@ -19,6 +19,7 @@
 #import "SettingsViewController.h"
 #import "../ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
+#import "../play/ScoringModel.h"
 #import "../player/PlayerModel.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -30,6 +31,7 @@ enum SettingsTableViewSection
 {
   FeedbackSection,
   ViewSection,
+  ScoringSection,
   PlayersSection,
   MaxSection
 };
@@ -54,6 +56,15 @@ enum ViewSectionItem
 //  DisplayMoveNumbersItem,
 //  CrossHairPointDistanceFromFingerItem,
   MaxViewSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ScoringSection.
+// -----------------------------------------------------------------------------
+enum ScoringSectionItem
+{
+  AskGtpEngineForDeadStonesItem,
+  MaxScoringSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -97,6 +108,7 @@ enum PlayersSectionItem
 - (void) toggleMarkLastMove:(id)sender;
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
+- (void) toggleAskGtpEngineForDeadStones:(id)sender;
 //@}
 /// @name EditPlayerDelegate protocol
 //@{
@@ -107,10 +119,16 @@ enum PlayersSectionItem
 //@{
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
 //@}
-/// @name Helpers
+/// @name Private helpers
 //@{
 - (void) newPlayer;
 - (void) editPlayer:(Player*)player;
+//@}
+/// @name Privately declared properties
+//@{
+@property(assign) PlayViewModel* playViewModel;
+@property(assign) ScoringModel* scoringModel;
+@property(assign) PlayerModel* playerModel;
 //@}
 @end
 
@@ -118,6 +136,7 @@ enum PlayersSectionItem
 @implementation SettingsViewController
 
 @synthesize playViewModel;
+@synthesize scoringModel;
 @synthesize playerModel;
 
 
@@ -139,6 +158,7 @@ enum PlayersSectionItem
 
   ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
   self.playViewModel = delegate.playViewModel;
+  self.scoringModel = delegate.scoringModel;
   self.playerModel = delegate.playerModel;
 }
 
@@ -174,6 +194,8 @@ enum PlayersSectionItem
       return MaxFeedbackSectionItem;
     case ViewSection:
       return MaxViewSectionItem;
+    case ScoringSection:
+      return MaxScoringSectionItem;
     case PlayersSection:
       return MaxPlayersSectionItem + self.playerModel.playerCount;
     default:
@@ -194,6 +216,8 @@ enum PlayersSectionItem
       return @"Feedback when computer plays";
     case ViewSection:
       return @"View settings";
+    case ScoringSection:
+      return @"Scoring";
     case PlayersSection:
       return @"Players";
     default:
@@ -212,6 +236,7 @@ enum PlayersSectionItem
   switch (indexPath.section)
   {
     case FeedbackSection:
+    {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       switch (indexPath.row)
@@ -231,33 +256,34 @@ enum PlayersSectionItem
           break;
       }
       break;
+    }
     case ViewSection:
+    {
+      enum TableViewCellType cellType;
+      switch (indexPath.row)
       {
-        enum TableViewCellType cellType;
-        switch (indexPath.row)
-        {
 //          case CrossHairPointDistanceFromFingerItem:
 //            cellType = Value1CellType;
 //            break;
-          default:
-            cellType = SwitchCellType;
-            break;
-        }
-        cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-        UISwitch* accessoryView = nil;
-        if (SwitchCellType == cellType)
-        {
-          accessoryView = (UISwitch*)cell.accessoryView;
-          accessoryView.enabled = false;  // TODO enable when settings are implemented
-        }
-        switch (indexPath.row)
-        {
-          case MarkLastMoveItem:
-            cell.textLabel.text = @"Mark last move";
-            accessoryView.on = self.playViewModel.markLastMove;
-            accessoryView.enabled = YES;
-            [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
-            break;
+        default:
+          cellType = SwitchCellType;
+          break;
+      }
+      cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+      UISwitch* accessoryView = nil;
+      if (SwitchCellType == cellType)
+      {
+        accessoryView = (UISwitch*)cell.accessoryView;
+        accessoryView.enabled = false;  // TODO enable when settings are implemented
+      }
+      switch (indexPath.row)
+      {
+        case MarkLastMoveItem:
+          cell.textLabel.text = @"Mark last move";
+          accessoryView.on = self.playViewModel.markLastMove;
+          accessoryView.enabled = YES;
+          [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
+          break;
 //          case DisplayCoordinatesItem:
 //            cell.textLabel.text = @"Coordinates";
 //            accessoryView.on = self.playViewModel.displayCoordinates;
@@ -272,13 +298,24 @@ enum PlayersSectionItem
 //            cell.textLabel.text = @"Cross-hair distance";
 //            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
 //            break;
-          default:
-            assert(0);
-            break;
-        }
-        break;
+        default:
+          assert(0);
+          break;
       }
+      break;
+    }
+    case ScoringSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Find dead stones";
+      accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
+      accessoryView.enabled = YES;
+      [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case PlayersSection:
+    {
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       // TODO add icon to player entries to distinguish human from computer
@@ -290,11 +327,14 @@ enum PlayersSectionItem
       else
         assert(0);
       break;
+    }
     default:
+    {
       assert(0);
       break;
+    }
   }
-  
+
   return cell;
 }
 
@@ -304,10 +344,11 @@ enum PlayersSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  
+
   switch (indexPath.section)
   {
     case PlayersSection:
+    {
       if (indexPath.row < self.playerModel.playerCount)
         [self editPlayer:[self.playerModel.playerList objectAtIndex:indexPath.row]];
       if (indexPath.row == self.playerModel.playerCount)
@@ -315,8 +356,11 @@ enum PlayersSectionItem
       else
         assert(0);
       break;
+    }
     default:
-      return;
+    {
+      break;
+    }
   }
 }
 
@@ -368,6 +412,16 @@ enum PlayersSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.playViewModel.displayMoveNumbers = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Find dead stones" switch. Writes
+/// the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleAskGtpEngineForDeadStones:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.scoringModel.askGtpEngineForDeadStones = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

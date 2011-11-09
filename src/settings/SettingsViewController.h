@@ -19,13 +19,6 @@
 #import "EditPlayerController.h"
 #import "NewPlayerController.h"
 
-// System includes
-#import <UIKit/UIKit.h>
-
-// Forward declarations
-@class PlayViewModel;
-@class PlayerModel;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The SettingsViewController class is responsible for managing user
@@ -34,10 +27,5 @@
 @interface SettingsViewController : UITableViewController <EditPlayerDelegate, NewPlayerDelegate>
 {
 }
-
-/// @brief The model that manages data used by the PlayView.
-@property(assign) PlayViewModel* playViewModel;
-/// @brief The model that manages Player objects.
-@property(assign) PlayerModel* playerModel;
 
 @end

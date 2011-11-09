@@ -146,7 +146,7 @@
 	<key>Scoring</key>
 	<dict>
 		<key>AskGtpEngineForDeadStones</key>
-		<false/>
+		<true/>
 		<key>AlphaTerritoryColorBlack</key>
 		<real>0.35</real>
 		<key>AlphaTerritoryColorWhite</key>

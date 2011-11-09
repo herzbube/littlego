@@ -25,6 +25,7 @@
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
 #import "../go/GoScore.h"
+#import "../go/GoPoint.h"
 #import "../player/Player.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
