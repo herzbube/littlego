@@ -35,6 +35,15 @@
 //@{
 - (NSString*) description;
 //@}
+/// @name Privately declared properties
+//@{
+@property bool isLeftValid;
+@property bool isRightValid;
+@property bool isAboveValid;
+@property bool isBelowValid;
+@property bool isNextValid;
+@property bool isPreviousValid;
+//@}
 @end
 
 
@@ -53,6 +62,12 @@
 @synthesize region;
 @synthesize territoryColor;
 @synthesize deadStone;
+@synthesize isLeftValid;
+@synthesize isRightValid;
+@synthesize isAboveValid;
+@synthesize isBelowValid;
+@synthesize isNextValid;
+@synthesize isPreviousValid;
 
 
 // -----------------------------------------------------------------------------
@@ -96,6 +111,12 @@
   neighbours = nil;
   territoryColor = GoColorNone;
   deadStone = false;
+  isLeftValid = false;
+  isRightValid = false;
+  isAboveValid = false;
+  isBelowValid = false;
+  isNextValid = false;
+  isPreviousValid = false;
 
   return self;
 }
@@ -130,10 +151,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) left
 {
-  // TODO: Caching will not work if this point is at the left edge; the same is
-  // also true for the other directions.
-  if (! left)
+  if (! isLeftValid)
+  {
+    isLeftValid = true;
     left = [[GoGame sharedGame].board neighbourOf:self inDirection:LeftDirection];
+  }
   return left;
 }
 
@@ -144,8 +166,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) right
 {
-  if (! right)
+  if (! isRightValid)
+  {
     right = [[GoGame sharedGame].board neighbourOf:self inDirection:RightDirection];
+    isRightValid = true;
+  }
   return right;
 }
 
@@ -156,8 +181,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) above
 {
-  if (! above)
+  if (! isAboveValid)
+  {
     above = [[GoGame sharedGame].board neighbourOf:self inDirection:UpDirection];
+    isAboveValid = true;
+  }
   return above;
 }
 
@@ -168,8 +196,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) below
 {
-  if (! below)
+  if (! isBelowValid)
+  {
     below = [[GoGame sharedGame].board neighbourOf:self inDirection:DownDirection];
+    isBelowValid = true;
+  }
   return below;
 }
 
@@ -202,8 +233,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) next
 {
-  if (! next)
+  if (! isNextValid)
+  {
     next = [[GoGame sharedGame].board neighbourOf:self inDirection:NextDirection];
+    isNextValid = true;
+  }
   return next;
 }
 
@@ -214,8 +248,11 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) previous
 {
-  if (! previous)
+  if (! isPreviousValid)
+  {
     previous = [[GoGame sharedGame].board neighbourOf:self inDirection:PreviousDirection];
+    isPreviousValid = true;
+  }
   return previous;
 }
 
