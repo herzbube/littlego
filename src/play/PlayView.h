@@ -65,6 +65,7 @@
 + (PlayView*) sharedView;
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
+- (GoPoint*) pointAt:(CGPoint)coordinates;
 - (void) actionStarts;
 - (void) actionEnds;
 

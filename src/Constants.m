@@ -147,5 +147,5 @@ NSString* scoringKey = @"Scoring";
 NSString* askGtpEngineForDeadStonesKey = @"AskGtpEngineForDeadStones";
 NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
 NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
-NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColorKey";
-NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentageKey";
+NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColor";
+NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentage";

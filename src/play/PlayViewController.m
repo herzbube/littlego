@@ -60,6 +60,7 @@
 /// @name Handlers for recognized gestures
 //@{
 - (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
+- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
 //@}
 /// @name UIGestureRecognizerDelegate protocol
 //@{
@@ -93,7 +94,7 @@
 - (void) updateGameActionsButtonState;
 - (void) updateDoneButtonState;
 - (void) updatePanningEnabled;
-- (void) updateNavigationItemTitle;
+- (void) updateTappingEnabled;
 //@}
 /// @name Private helpers
 //@{
@@ -106,9 +107,14 @@
 /// @brief The gesture recognizer used to detect the dragging, or panning,
 /// gesture.
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
+/// @brief The gesture recognizer used to detect the tap gesture.
+@property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a panning gesture is currently allowed, false if not (e.g.
 /// while a computer player is thinking).
 @property(getter=isPanningEnabled) bool panningEnabled;
+/// @brief True if a tapping gesture is currently allowed, false if not (e.g.
+/// if scoring mode is not enabled).
+@property(getter=isTappingEnabled) bool tappingEnabled;
 /// @brief GoScore object used while the game info view is displayed scoring
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
@@ -134,7 +140,9 @@
 @synthesize doneButton;
 @synthesize scoringModel;
 @synthesize panRecognizer;
+@synthesize tapRecognizer;
 @synthesize panningEnabled;
+@synthesize tappingEnabled;
 @synthesize gameInfoScore;
 
 
@@ -149,6 +157,7 @@
   self.playView = nil;
   self.scoringModel = nil;
   self.panRecognizer = nil;
+  self.tapRecognizer = nil;
   self.gameInfoScore = nil;
   [super dealloc];
 }
@@ -166,12 +175,18 @@
   [self.view addSubview:self.frontSideView];
 
   self.panningEnabled = false;
+  self.tappingEnabled = false;
 
 	self.panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
 	[self.panRecognizer release];
 	[self.playView addGestureRecognizer:self.panRecognizer];
   self.panRecognizer.delegate = self;
   self.panRecognizer.maximumNumberOfTouches = 1;
+
+  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
+	[self.tapRecognizer release];
+	[self.playView addGestureRecognizer:self.tapRecognizer];
+  self.tapRecognizer.delegate = self;
 
   self.gameInfoScore = nil;
   self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabular.png"]
@@ -418,12 +433,43 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tapping gesture in the view's Go board area.
+// -----------------------------------------------------------------------------
+- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
+{
+  CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
+  GoPoint* deadStonePoint = [self.playView pointAt:tappingLocation];
+  if (! deadStonePoint || ! [deadStonePoint hasStone])
+    return;
+  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
+  switch (recognizerState)
+  {
+    case UIGestureRecognizerStateEnded:
+    {
+
+      [self.scoringModel.score togglePoint:deadStonePoint];
+      [self.scoringModel.score calculateWaitUntilDone:false];
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief UIGestureRecognizerDelegate protocol method. Disables gesture
 /// recognition while interactionEnabled() is false.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  return self.isPanningEnabled;
+  if (gestureRecognizer == self.panRecognizer)
+    return self.isPanningEnabled;
+  else if (gestureRecognizer == self.tapRecognizer)
+    return self.isTappingEnabled;
+  else
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -473,7 +519,7 @@
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];  // disable panning
-  [self updateNavigationItemTitle];
+  [self updateTappingEnabled];
   [self.scoringModel.score calculateWaitUntilDone:false];
 }
 
@@ -485,7 +531,7 @@
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];  // enable panning
-  [self updateNavigationItemTitle];
+  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -494,6 +540,7 @@
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
   [self updateButtonStates];
+  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -502,6 +549,7 @@
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   [self updateButtonStates];
+  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -831,9 +879,15 @@
   }
 }
 
-- (void) updateNavigationItemTitle
+// -----------------------------------------------------------------------------
+/// @brief Updates whether tapping is enabled.
+// -----------------------------------------------------------------------------
+- (void) updateTappingEnabled
 {
-  self.navigationItem.title = @"foo";
+  if (self.scoringModel.scoringMode)
+    self.tappingEnabled = ! self.scoringModel.score.scoringInProgress;
+  else
+    self.tappingEnabled = false;
 }
 
 @end

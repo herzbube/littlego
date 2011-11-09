@@ -1002,19 +1002,49 @@ static PlayView* sharedPlayView = nil;
 /// Determining "closest" works like this:
 /// - @a coordinates are slightly adjusted so that the intersection is not
 ///   directly under the user's fingertip
-/// - The closest intersection is the one whose distance to @a coordinates is
-///   less than half the distance between two adjacent intersections. This
-///   creates a "snap-to" effect when the user's panning fingertip crosses half
-///   the distance between two adjacent intersections.
-/// - If @a coordinates are a sufficient distance away from the Go board edges,
-///   there is no "closest" intersection
+/// - Otherwise the same rules as for pointAt:() apply - see that method's
+///   documentation.
 // -----------------------------------------------------------------------------
 - (GoPoint*) crossHairPointAt:(CGPoint)coordinates
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
   coordinates.y -= self.playViewModel.crossHairPointDistanceFromFinger * self.pointDistance;
+  return [self pointAt:coordinates];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Moves the cross-hair to the intersection identified by @a point,
+/// specifying whether an actual play move at the intersection would be legal.
+// -----------------------------------------------------------------------------
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
+{
+  if (crossHairPoint == point && crossHairPointIsLegalMove == isLegalMove)
+    return;
+
+  // TODO check if it's possible to update only a few rectangles
+  self.crossHairPoint = point;
+  self.crossHairPointIsLegalMove = isLegalMove;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoPoint object for the intersection that is closest to the
+/// view coordinates @a coordinates. Returns nil if there is no "closest"
+/// intersection.
+///
+/// Determining "closest" works like this:
+/// - The closest intersection is the one whose distance to @a coordinates is
+///   less than half the distance between two adjacent intersections
+///   - During panning this creates a "snap-to" effect when the user's panning
+///     fingertip crosses half the distance between two adjacent intersections.
+///   - For a tap this simply makes sure that the fingertip does not have to
+///     hit the exact coordinate of the intersection.
+/// - If @a coordinates are a sufficient distance away from the Go board edges,
+///   there is no "closest" intersection
+// -----------------------------------------------------------------------------
+- (GoPoint*) pointAt:(CGPoint)coordinates
+{
   // Check if cross-hair is outside the grid and should not be displayed. To
   // make the edge lines accessible in the same way as the inner lines,
   // a padding of half a point distance must be added.
@@ -1064,21 +1094,6 @@ static PlayView* sharedPlayView = nil;
     coordinates.y = self.topLeftPointY + self.pointDistance * floor((coordinates.y - self.topLeftPointY) / self.pointDistance);
     return [self pointFromCoordinates:coordinates];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Moves the cross-hair to the intersection identified by @a point,
-/// specifying whether an actual play move at the intersection would be legal.
-// -----------------------------------------------------------------------------
-- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
-{
-  if (crossHairPoint == point && crossHairPointIsLegalMove == isLegalMove)
-    return;
-
-  // TODO check if it's possible to update only a few rectangles
-  self.crossHairPoint = point;
-  self.crossHairPointIsLegalMove = isLegalMove;
-  [self delayedUpdate];
 }
 
 @end

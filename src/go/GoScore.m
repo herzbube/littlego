@@ -18,6 +18,7 @@
 // Project includes
 #import "GoScore.h"
 #import "GoBoard.h"
+#import "GoBoardRegion.h"
 #import "GoGame.h"
 #import "GoMove.h"
 #import "GoPlayer.h"
@@ -432,9 +433,13 @@
 {
   if (! territoryScoresAvailable)
     return;
-  if (! scoringInProgress)
+  if (scoringInProgress)
     return;
-  // TODO xxx implement
+  if (! [point hasStone])
+    return;
+  bool newDeadStoneState = ! point.deadStone;
+  for (GoPoint* deadStonePoint in point.region.points)
+    deadStonePoint.deadStone = newDeadStoneState;
 }
 
 @end
