@@ -36,8 +36,10 @@
 // -----------------------------------------------------------------------------
 //@{
 @property bool askGtpEngineForDeadStones;
+@property bool markDeadStonesIntelligently;
 @property float alphaTerritoryColorBlack;
 @property float alphaTerritoryColorWhite;
+@property float alphaTerritoryColorInconsistencyFound;
 @property(retain) UIColor* deadStoneSymbolColor;
 @property float deadStoneSymbolPercentage;
 //@}

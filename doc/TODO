@@ -80,6 +80,17 @@ Priority 1 (important)
   taken back with "undo"; find out if this is correct behaviour (the GTP specs
   imply that it is not!) and do something about it... at the least put this on
   the list of known bugs in the README.
+- Decide how the final implementation of the "intelligent" toggling feature in
+  GoScore should look like
+  - The original implementation toggled stones of the opposing color, which was
+    not such a good idea - it had too much effect on the board and made the
+    feature basically unusable.
+  - Currently the code that toggles stones of the opposing color is disabled;
+    it should be either removed entirely, or reactivated in a useful way
+  - One possible idea: Only turn stones from alive to dead, but not vice versa
+  - However the final solution looks like, update the GoScore class docs and
+    possibly other doc snippets in GoScore.m
+- Flip to the front view of the Play view when an archived game is loaded.
 
 
 Priority 2 (nice to have)
@@ -139,6 +150,12 @@ Priority 2 (nice to have)
   will influence his or her play (under territory scoring it costs a point to
   play into one's own area, whereas under area scoring it costs a point not to
   play on a neutral point).
+- Add generalized tableView:heightForRowAtIndexPath:() implementations to
+  TableViewCellFactory for a few cell types, analogous to a similar method
+  in TableViewSliderCell. This would be useful for calculations of variable
+  text label heights in case a text label displays a longish string.
+- Dynamically generate a navigation controller structure that displays documents
+  such as README or MANUAL.
 
 
 Priority 3 (not important)

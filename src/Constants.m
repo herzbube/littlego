@@ -32,6 +32,7 @@ const int cellContentSpacingVertical = 8;
 // Values also from IB
 const int cellContentLabelHeight = 21;
 const int cellContentSliderHeight = 23;
+const int cellContentSwitchWidth = 94;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -145,7 +146,9 @@ NSString* gtpCannedCommandsKey = @"GtpCannedCommands";
 // Scoring settings
 NSString* scoringKey = @"Scoring";
 NSString* askGtpEngineForDeadStonesKey = @"AskGtpEngineForDeadStones";
+NSString* markDeadStonesIntelligentlyKey = @"MarkDeadStonesIntelligently";
 NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
 NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
+NSString* alphaTerritoryColorInconsistencyFoundKey = @"AlphaTerritoryColorInconsistencyFound";
 NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColor";
 NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentage";

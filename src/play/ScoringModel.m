@@ -40,8 +40,10 @@
 @implementation ScoringModel
 
 @synthesize askGtpEngineForDeadStones;
+@synthesize markDeadStonesIntelligently;
 @synthesize alphaTerritoryColorBlack;
 @synthesize alphaTerritoryColorWhite;
+@synthesize alphaTerritoryColorInconsistencyFound;
 @synthesize deadStoneSymbolColor;
 @synthesize deadStoneSymbolPercentage;
 @synthesize scoringMode;
@@ -61,8 +63,10 @@
     return nil;
 
   self.askGtpEngineForDeadStones = false;
+  self.markDeadStonesIntelligently = false;
   self.alphaTerritoryColorBlack = 0.3;
   self.alphaTerritoryColorWhite = 0.3;
+  self.alphaTerritoryColorInconsistencyFound = 0.3;
   self.deadStoneSymbolColor = [UIColor redColor];
   self.deadStoneSymbolPercentage = 0.8;
   self.score = nil;
@@ -89,8 +93,10 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:scoringKey];
   self.askGtpEngineForDeadStones = [[dictionary valueForKey:askGtpEngineForDeadStonesKey] boolValue];
+  self.markDeadStonesIntelligently = [[dictionary valueForKey:markDeadStonesIntelligentlyKey] boolValue];
   self.alphaTerritoryColorBlack = [[dictionary valueForKey:alphaTerritoryColorBlackKey] floatValue];
   self.alphaTerritoryColorWhite = [[dictionary valueForKey:alphaTerritoryColorWhiteKey] floatValue];
+  self.alphaTerritoryColorInconsistencyFound = [[dictionary valueForKey:alphaTerritoryColorInconsistencyFoundKey] floatValue];
   self.deadStoneSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:deadStoneSymbolColorKey]];
   self.deadStoneSymbolPercentage = [[dictionary valueForKey:deadStoneSymbolPercentageKey] floatValue];
 }
@@ -107,8 +113,10 @@
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
   [dictionary setValue:[NSNumber numberWithBool:self.askGtpEngineForDeadStones] forKey:askGtpEngineForDeadStonesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.markDeadStonesIntelligently] forKey:markDeadStonesIntelligentlyKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorBlack] forKey:alphaTerritoryColorBlackKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorWhite] forKey:alphaTerritoryColorWhiteKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorInconsistencyFound] forKey:alphaTerritoryColorInconsistencyFoundKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.deadStoneSymbolColor] forKey:deadStoneSymbolColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.deadStoneSymbolPercentage] forKey:deadStoneSymbolPercentageKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];

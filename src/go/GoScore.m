@@ -337,6 +337,7 @@
   {
     GoBoardRegion* region = point.region;
     region.territoryColor = GoColorNone;
+    region.territoryInconsistencyFound = false;
     region.deadStoneGroup = false;
     region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
   }
@@ -429,6 +430,8 @@
   if (! [stoneGroup isStoneGroup])
     return;
 
+  bool markDeadStonesIntelligently = [ApplicationDelegate sharedDelegate].scoringModel.markDeadStonesIntelligently;
+
   // We use this array like a queue: We add GoBoardRegion objects to it that
   // need to be toggled, and we loop until the queue is empty. In each iteration
   // new GoBoardRegion objects may be added to the queue which will cause the
@@ -451,6 +454,11 @@
     bool newDeadState = ! stoneGroupToToggle.deadStoneGroup;
     stoneGroupToToggle.deadStoneGroup = newDeadState;
     enum GoColor colorOfStoneGroupToToggle = [stoneGroupToToggle color];
+
+    // If the user has decided that he does not need any help with toggling,
+    // we can abort the whole process now
+    if (! markDeadStonesIntelligently)
+      break;
 
     // Collect stone groups that are either directly adjacent to the stone
     // group we just toggled ("once removed"), or separated from it by an
@@ -499,8 +507,10 @@
       }
       else
       {
-        if (adjacentStoneGroupToExamine.deadStoneGroup == newDeadState)
-          [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
+        // TODO Decide what we should do with this disabled code and update the
+        // class documentation.
+//        if (adjacentStoneGroupToExamine.deadStoneGroup == newDeadState)
+//          [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
       }
     }
   }
@@ -554,7 +564,7 @@
             region.territoryColor = GoColorBlack;
             break;
           default:
-            return false;
+            return false;  // error! stone groups must be either black or white
         }
       }
     }
@@ -575,7 +585,7 @@
     for (GoBoardRegion* adjacentRegion in [emptyRegion adjacentRegions])
     {
       if (! [adjacentRegion isStoneGroup])
-        return false;  // inconsistency! regions adjacent to an empty region can only be stone groups
+        return false;  // error! regions adjacent to an empty region can only be stone groups
       if (adjacentRegion.deadStoneGroup)
       {
         deadSeen = true;
@@ -588,7 +598,7 @@
             whiteDeadSeen = true;
             break;
           default:
-            return false;  // inconsistency! stone group must be either black or white
+            return false;  // error! stone group must be either black or white
         }
       }
       else
@@ -603,11 +613,12 @@
             whiteAliveSeen = true;
             break;
           default:
-            return false;  // inconsistency! stone group must be either black or white
+            return false;  // error! stone group must be either black or white
         }
       }
     }
 
+    bool territoryInconsistencyFound = false;
     enum GoColor territoryColor = GoColorNone;
     if (! deadSeen)
     {
@@ -631,24 +642,25 @@
       if (blackDeadSeen)
       {
         if (blackAliveSeen)  // rules violation! cannot see both dead and alive stones of the same color
-          return false;
+          territoryInconsistencyFound = true;
         else if (whiteDeadSeen)  // rules violation! cannot see dead stones of both colors
-          return false;
+          territoryInconsistencyFound = true;
         else                     // ok, only dead stones of once color seen (we don't care whether the opposing color has alive stones)
           territoryColor = GoColorWhite;
       }
       else  // repeat of the block above, but for the opposing color
       {
         if (whiteAliveSeen)
-          return false;
+          territoryInconsistencyFound = true;
         else if (blackDeadSeen)
-          return false;
+          territoryInconsistencyFound = true;
         else
           territoryColor = GoColorBlack;
       }
     }
 
     emptyRegion.territoryColor = territoryColor;
+    emptyRegion.territoryInconsistencyFound = territoryInconsistencyFound;
   }
 
   return true;
@@ -719,7 +731,7 @@
             territoryBlack += regionSize;
             break;
           case GoColorWhite:
-            territoryWhite = regionSize;
+            territoryWhite += regionSize;
             break;
           default:
             break;

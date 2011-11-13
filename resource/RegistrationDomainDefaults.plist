@@ -147,10 +147,14 @@
 	<dict>
 		<key>AskGtpEngineForDeadStones</key>
 		<true/>
+		<key>MarkDeadStonesIntelligently</key>
+		<false/>
 		<key>AlphaTerritoryColorBlack</key>
 		<real>0.35</real>
 		<key>AlphaTerritoryColorWhite</key>
 		<real>0.6</real>
+		<key>AlphaTerritoryColorInconsistencyFound</key>
+		<real>0.3</real>
 		<key>DeadStoneSymbolColor</key>
 		<string>ff0000</string>
 		<key>DeadStoneSymbolPercentage</key>

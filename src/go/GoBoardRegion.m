@@ -57,6 +57,7 @@
 @synthesize randomColor;
 @synthesize scoringMode;
 @synthesize territoryColor;
+@synthesize territoryInconsistencyFound;
 @synthesize deadStoneGroup;
 @synthesize cachedSize;
 @synthesize cachedIsStoneGroup;
@@ -114,6 +115,7 @@
   self.randomColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
   self.scoringMode = false;
   self.territoryColor = GoColorNone;
+  self.territoryInconsistencyFound = false;
   self.deadStoneGroup = false;
   [self invalidateCache];
 

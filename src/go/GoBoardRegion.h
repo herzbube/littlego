@@ -79,6 +79,12 @@
 @property bool scoringMode;
 /// @brief During scoring denotes which territory this GoBoardRegion belongs to.
 @property enum GoColor territoryColor;
+/// @brief Flag is true if the territory scoring algorithm detected an
+/// inconsistency and was unable to assign a territory color to this region.
+///
+/// If this flag is true, the property @e territoryColor has value #GoColorNone.
+/// However, it cannot be concluded from this that the region is truly neutral.
+@property bool territoryInconsistencyFound;
 /// @brief During scoring denotes whether the stones in the stone group
 /// represented by this GoBoardRegion are dead or alive. Is false if this
 /// GoBoardRegion is not a stone group.

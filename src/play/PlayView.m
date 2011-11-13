@@ -600,6 +600,7 @@ static PlayView* sharedPlayView = nil;
 {
   UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.scoringModel.alphaTerritoryColorBlack];
   UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.scoringModel.alphaTerritoryColorWhite];
+  UIColor* colorInconsistencyFound = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:self.scoringModel.alphaTerritoryColorInconsistencyFound];
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
@@ -613,6 +614,12 @@ static PlayView* sharedPlayView = nil;
         break;
       case GoColorWhite:
         color = colorWhite;
+        break;
+      case GoColorNone:
+        if (point.region.territoryInconsistencyFound)
+          color = colorInconsistencyFound;
+        else
+          continue;
         break;
       default:
         continue;

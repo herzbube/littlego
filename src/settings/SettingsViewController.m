@@ -24,6 +24,9 @@
 #import "../ui/TableViewCellFactory.h"
 
 
+NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
+
+
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "Settings" table view.
 // -----------------------------------------------------------------------------
@@ -64,6 +67,7 @@ enum ViewSectionItem
 enum ScoringSectionItem
 {
   AskGtpEngineForDeadStonesItem,
+  MarkDeadStonesIntelligentlyItem,
   MaxScoringSectionItem
 };
 
@@ -99,6 +103,7 @@ enum PlayersSectionItem
 //@}
 /// @name UITableViewDelegate protocol
 //@{
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Action methods
@@ -109,6 +114,7 @@ enum PlayersSectionItem
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
 - (void) toggleAskGtpEngineForDeadStones:(id)sender;
+- (void) toggleMarkDeadStonesIntelligently:(id)sender;
 //@}
 /// @name EditPlayerDelegate protocol
 //@{
@@ -299,8 +305,10 @@ enum PlayersSectionItem
 //            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
 //            break;
         default:
+        {
           assert(0);
           break;
+        }
       }
       break;
     }
@@ -308,10 +316,30 @@ enum PlayersSectionItem
     {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-      cell.textLabel.text = @"Find dead stones";
       accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
       accessoryView.enabled = YES;
-      [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
+      switch (indexPath.row)
+      {
+        case AskGtpEngineForDeadStonesItem:
+        {
+          cell.textLabel.text = @"Find dead stones";
+          [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
+          break;
+        }
+        case MarkDeadStonesIntelligentlyItem:
+        {
+          cell.textLabel.text = markDeadStonesIntelligentlyText;
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
+          [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
       break;
     }
     case PlayersSection:
@@ -337,6 +365,33 @@ enum PlayersSectionItem
 
   return cell;
 }
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (ScoringSection != indexPath.section || MarkDeadStonesIntelligentlyItem != indexPath.row)
+    return tableView.rowHeight;
+
+  // Use the same strings as in tableView:cellForRowAtIndexPath:()
+  NSString* labelText = markDeadStonesIntelligentlyText;
+
+  // The label shares the cell with a UISwitch
+  CGFloat labelWidth = (cellContentViewWidth
+                        - 2 * cellContentDistanceFromEdgeHorizontal
+                        - cellContentSwitchWidth
+                        - cellContentSpacingHorizontal);
+  UIFont* labelFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+  CGSize constraintSize = CGSizeMake(labelWidth, MAXFLOAT);
+  CGSize labelSize = [labelText sizeWithFont:labelFont
+                           constrainedToSize:constraintSize
+                               lineBreakMode:UILineBreakModeWordWrap];  // use same mode as in tableView:cellForRowAtIndexPath:()
+
+  // Add vertical padding
+  return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
+}
+
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
@@ -422,6 +477,16 @@ enum PlayersSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.scoringModel.askGtpEngineForDeadStones = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Mark dead stones intelligently"
+/// switch. Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleMarkDeadStonesIntelligently:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.scoringModel.markDeadStonesIntelligently = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

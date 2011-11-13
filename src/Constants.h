@@ -202,6 +202,7 @@ extern const int cellContentSpacingVertical;
 // UI elements sizes
 extern const int cellContentLabelHeight;
 extern const int cellContentSliderHeight;
+extern const int cellContentSwitchWidth;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -418,8 +419,10 @@ extern NSString* gtpCannedCommandsKey;
 // Scoring settings
 extern NSString* scoringKey;
 extern NSString* askGtpEngineForDeadStonesKey;
+extern NSString* markDeadStonesIntelligentlyKey;
 extern NSString* alphaTerritoryColorBlackKey;
 extern NSString* alphaTerritoryColorWhiteKey;
+extern NSString* alphaTerritoryColorInconsistencyFoundKey;
 extern NSString* deadStoneSymbolColorKey;
 extern NSString* deadStoneSymbolPercentageKey;
 //@}
