@@ -45,6 +45,8 @@
 - (void) doCalculate;
 - (void) calculateEnds;
 - (bool) initializeBoard;
+- (bool) updateTerritoryColor;
+- (void) updateScoringProperties;
 - (NSArray*) parseDeadStoneGtpResponse:(NSString*)gtpResponse;
 //@}
 /// @name Privately declared properties
@@ -53,6 +55,15 @@
 @property(retain) NSOperationQueue* operationQueue;
 @property bool boardIsInitialized;
 @property bool lastCalculationHadError;
+/// @brief List with all GoBoardRegion objects that currently exist on the
+/// board.
+///
+/// This property exists for optimization reasons only: It contains a
+/// pre-calculated list that can be reused by various methods so that they don't
+/// have to re-calculate the list repeatedly (re-calculation is
+/// not-quite-cheap). This approach works because during scoring mode no
+/// changes to the board are possible.
+@property(retain) NSArray* allRegions;
 //@}
 @end
 
@@ -80,6 +91,7 @@
 @synthesize operationQueue;
 @synthesize boardIsInitialized;
 @synthesize lastCalculationHadError;
+@synthesize allRegions;
 
 
 // -----------------------------------------------------------------------------
@@ -118,6 +130,7 @@
   operationQueue = [[NSOperationQueue alloc] init];
   boardIsInitialized = false;
   lastCalculationHadError = false;
+  allRegions = nil;
   [self resetValues];
 
   return self;
@@ -129,6 +142,7 @@
 - (void) dealloc
 {
   self.operationQueue = nil;
+  self.allRegions = nil;
   [super dealloc];
 }
 
@@ -172,7 +186,7 @@
 {
   if (self.scoringInProgress)
     return;
-  self.scoringInProgress = true;
+  self.scoringInProgress = true;  // notify while we're still in the main thread context
 
   if (waitUntilDone)
     [self doCalculate];
@@ -201,9 +215,15 @@
     lastCalculationHadError = false;
     [self resetValues];
 
-    // Initialize board only if territory scores are requested
+    // Pre-calculate region list exactly once
+    if (! self.allRegions)
+      self.allRegions = self.game.board.regions;
+
+    // Do territory related stuff at the beginning - if any errors occur we can
+    // safely abort, without half of the values already having been calculated.
     if (territoryScoresAvailable)
     {
+      // Initialize board only once
       if (! boardIsInitialized)
       {
         bool success = [self initializeBoard];
@@ -214,69 +234,19 @@
         }
         boardIsInitialized = true;
       }
-    }
 
-    // Komi
-    komi = game.komi;
-
-    // Captured stones and move statistics
-    numberOfMoves = 0;
-    GoMove* move = game.firstMove;
-    while (move != nil)
-    {
-      ++numberOfMoves;
-      bool moveByBlack = move.player.black;
-      switch (move.type)
+      // Calculate territory colors every time
+      bool success = [self updateTerritoryColor];
+      if (! success)
       {
-        case PlayMove:
-        {
-          if (moveByBlack)
-          {
-            capturedByBlack += move.capturedStones.count;
-            ++stonesPlayedByBlack;
-          }
-          else
-          {
-            capturedByWhite += move.capturedStones.count;
-            ++stonesPlayedByWhite;
-          }
-          break;
-        }
-        case PassMove:
-        {
-          if (moveByBlack)
-            ++passesPlayedByBlack;
-          else
-            ++passesPlayedByWhite;
-          break;
-        }
-        default:
-          break;
+        lastCalculationHadError = true;
+        return;
       }
-      move = move.next;
     }
 
-    // Territory
-    // TODO
-    if (territoryScoresAvailable)
-    {
-      deadBlack = 0;
-      deadWhite = 0;
-      territoryBlack = 0;
-      territoryWhite = 0;
-    }
-
-    // Total score
-    totalScoreBlack = capturedByBlack + deadWhite + territoryBlack;
-    totalScoreWhite = komi + capturedByWhite + deadBlack + territoryWhite;
-
-    // Final result
-    if (totalScoreBlack > totalScoreWhite)
-      result = GoGameResultBlackHasWon;
-    else if (totalScoreWhite > totalScoreBlack)
-      result = GoGameResultWhiteHasWon;
-    else
-      result = GoGameResultTie;
+    // Now that territory calculations have finished, simply add up all the
+    // scores and statistics
+    [self updateScoringProperties];
   }
   @finally
   {
@@ -365,8 +335,10 @@
   GoPoint* point = [board pointAtVertex:@"A1"];
   for (; point = point.next; point != nil)
   {
-    point.territoryColor = point.stoneState;
-    point.deadStone = false;
+    GoBoardRegion* region = point.region;
+    region.territoryColor = GoColorNone;
+    region.deadStoneGroup = false;
+    region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
   }
 
   // Initialize dead stones
@@ -375,18 +347,30 @@
     GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
     command.waitUntilDone = true;
     [command submit];
-    if (! command.response.status)
-      return true;  // although it's weird we can live with GTP not providing an initial list of dead stones
-    NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
-    for (NSString* vertex in deadStoneVertexList)
+    if (command.response.status)
     {
-      GoPoint* point = [board pointAtVertex:vertex];
-      if (! [point hasStone])
+      NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
+      for (NSString* vertex in deadStoneVertexList)
       {
-        assert(0);
-        return false;
+        GoPoint* point = [board pointAtVertex:vertex];
+        if (! [point hasStone])
+        {
+          assert(0);
+          return false;
+        }
+        // TODO The next statement is problematic in two respects: 1) If the
+        // region has more than one point, we repeatedly set it to be dead,
+        // once for each vertex reported by the GTP engine. 2) We don't perform
+        // any kind of check if the vertex list reported by the GTP engine
+        // matches our regions.
+        point.region.deadStoneGroup = true;
       }
-      point.deadStone = true;
+    }
+    else
+    {
+      // Although we would prefer to get a response from the GTP engine, we can
+      // live without one
+      // -> do nothing and simply go on, ultimately returning success
     }
   }
 
@@ -420,26 +404,357 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Toggles the status of the stone group to which @a point belongs from
-/// alive to dead, or vice versa.
+/// @brief Toggles the status of the stone group @a stoneGroup from alive to
+/// dead, or vice versa.
 ///
-/// Invoking this method does not change the current scoring values. The client
-/// needs to separately invoke calculate() to get the updated score.
+/// Once the main stone group @a stoneGroup has been updated, this method also
+/// considers neighbouring regions and, if necessary, toggles the dead/alive
+/// state of other stone groups to remain consistent with the logic of the game
+/// rules. The overall effect might be a cascade of toggling operations that
+/// affects the entire board.
+///
+/// @note Invoking this method does not change the current scoring values. The
+/// client needs to separately invoke calculateWaitUntilDone:() to get the
+/// updated score.
 ///
 /// @note This method does nothing if territory scoring is not enabled on this
 /// GoScore object, or if a scoring operation is already in progress.
 // -----------------------------------------------------------------------------
-- (void) togglePoint:(GoPoint*)point
+- (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup
 {
   if (! territoryScoresAvailable)
     return;
   if (scoringInProgress)
     return;
-  if (! [point hasStone])
+  if (! [stoneGroup isStoneGroup])
     return;
-  bool newDeadStoneState = ! point.deadStone;
-  for (GoPoint* deadStonePoint in point.region.points)
-    deadStonePoint.deadStone = newDeadStoneState;
+
+  // We use this array like a queue: We add GoBoardRegion objects to it that
+  // need to be toggled, and we loop until the queue is empty. In each iteration
+  // new GoBoardRegion objects may be added to the queue which will cause the
+  // loop to run longer.
+  NSMutableArray* stoneGroupsToToggle = [NSMutableArray arrayWithCapacity:0];
+  // And this array is the guard that prevents an infinite loop: Whenever a
+  // GoBoardRegion object is processed by the loop, it puts the processed object
+  // into this array. Before the loop starts processing a GoBoardRegion object,
+  // though, it looks into the array to see if the object has already been
+  // processed in an earlier iteration.
+  NSMutableArray* regionsAlreadyProcessed = [NSMutableArray arrayWithCapacity:0];
+
+  [stoneGroupsToToggle addObject:stoneGroup];
+  [regionsAlreadyProcessed addObject:stoneGroup];
+  while (stoneGroupsToToggle.count > 0)
+  {
+    GoBoardRegion* stoneGroupToToggle = [stoneGroupsToToggle objectAtIndex:0];
+    [stoneGroupsToToggle removeObjectAtIndex:0];
+
+    bool newDeadState = ! stoneGroupToToggle.deadStoneGroup;
+    stoneGroupToToggle.deadStoneGroup = newDeadState;
+    enum GoColor colorOfStoneGroupToToggle = [stoneGroupToToggle color];
+
+    // Collect stone groups that are either directly adjacent to the stone
+    // group we just toggled ("once removed"), or separated from it by an
+    // intermediate empty region ("twice removed").
+    NSMutableArray* adjacentStoneGroupsToExamine = [NSMutableArray arrayWithCapacity:0];
+    for (GoBoardRegion* adjacentRegionOnceRemoved in [stoneGroupToToggle adjacentRegions])
+    {
+      if ([regionsAlreadyProcessed containsObject:adjacentRegionOnceRemoved])
+        continue;
+      [regionsAlreadyProcessed addObject:adjacentRegionOnceRemoved];
+      if ([adjacentRegionOnceRemoved color] != GoColorNone)
+        [adjacentStoneGroupsToExamine addObject:adjacentRegionOnceRemoved];
+      else
+      {
+        for (GoBoardRegion* adjacentRegionTwiceRemoved in [adjacentRegionOnceRemoved adjacentRegions])
+        {
+          if ([regionsAlreadyProcessed containsObject:adjacentRegionTwiceRemoved])
+            continue;
+          [regionsAlreadyProcessed addObject:adjacentRegionTwiceRemoved];
+          if ([adjacentRegionTwiceRemoved color] == GoColorNone)
+            assert(0);  // inconsistency! regions adjacent to an empty region cannot be empty, too
+          else
+            [adjacentStoneGroupsToExamine addObject:adjacentRegionTwiceRemoved];
+        }
+      }
+    }
+
+    // Now examine the collected stone groups and, if necessary, toggle their
+    // dead/alive state:
+    // - Stone groups of the same color need to get into the same state
+    // - Stone groups of the opposing color need to get into the opposite
+    //   state
+    // See the "Guidelines" section in the class documentation for details.
+    for (GoBoardRegion* adjacentStoneGroupToExamine in adjacentStoneGroupsToExamine)
+    {
+      if (! [adjacentStoneGroupToExamine isStoneGroup])
+      {
+        assert(0);  // error in loop above, we should have collected only stone groups
+        continue;
+      }
+      enum GoColor colorOfAdjacentStoneGroupToExamine = [adjacentStoneGroupToExamine color];
+      if (colorOfAdjacentStoneGroupToExamine == colorOfStoneGroupToToggle)
+      {
+        if (adjacentStoneGroupToExamine.deadStoneGroup != newDeadState)
+          [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
+      }
+      else
+      {
+        if (adjacentStoneGroupToExamine.deadStoneGroup == newDeadState)
+          [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief (Re)Calculates the territory color of all GoBoardRegion objects.
+/// Returns true if calculation was successful, false if not.
+///
+/// This method requires that the @e deadStoneGroup property of GoBoardRegion
+/// objects is correct and up-to-date.
+///
+/// Initial dead stones are set up by initializeBoard(). User interaction during
+/// scoring invokes toggleDeadStoneStateOfGroup:() to add more dead stones, or
+/// turn them back to alive.
+// -----------------------------------------------------------------------------
+- (bool) updateTerritoryColor
+{
+  // Regions that are truly empty, i.e. that do not have dead stones
+  NSMutableArray* emptyRegions = [NSMutableArray arrayWithCapacity:0];
+
+  // Pass 1: Set territory colors for stone groups. This is easy and can be
+  // done both for groups that are alive and dead. While we are at it, we can
+  // also collect empty regions, which will be processed in pass 2.
+  for (GoBoardRegion* region in self.allRegions)
+  {
+    if (! [region isStoneGroup])
+    {
+      // Setting territory color here is temporary, the final color will be
+      // determined in pass 2. We still need to do it, though, to erase traces
+      // from a previous scoring calculation.
+      region.territoryColor = GoColorNone;
+      [emptyRegions addObject:region];
+    }
+    else
+    {
+      // If the group is alive, it belongs to the territory of the color who
+      // played the stones in the group. This is important only for area
+      // scoring.
+      if (! region.deadStoneGroup)
+        region.territoryColor = [region color];
+      // If the group is dead, it belongs to the territory of the opposing color
+      else
+      {
+        switch ([region color])
+        {
+          case GoColorBlack:
+            region.territoryColor = GoColorWhite;
+            break;
+          case GoColorWhite:
+            region.territoryColor = GoColorBlack;
+            break;
+          default:
+            return false;
+        }
+      }
+    }
+  }
+
+  // Pass 2: Process empty regions. Here we examine the stone groups adjacent
+  // to each empty region to determine the empty region's final territory color.
+  // The rules are explained in detail in the class documentation in the
+  /// "Guidelines" section.
+  for (GoBoardRegion* emptyRegion in emptyRegions)
+  {
+    bool aliveSeen = false;
+    bool blackAliveSeen = false;
+    bool whiteAliveSeen = false;
+    bool deadSeen = false;
+    bool blackDeadSeen = false;
+    bool whiteDeadSeen = false;
+    for (GoBoardRegion* adjacentRegion in [emptyRegion adjacentRegions])
+    {
+      if (! [adjacentRegion isStoneGroup])
+        return false;  // inconsistency! regions adjacent to an empty region can only be stone groups
+      if (adjacentRegion.deadStoneGroup)
+      {
+        deadSeen = true;
+        switch ([adjacentRegion color])
+        {
+          case GoColorBlack:
+            blackDeadSeen = true;
+            break;
+          case GoColorWhite:
+            whiteDeadSeen = true;
+            break;
+          default:
+            return false;  // inconsistency! stone group must be either black or white
+        }
+      }
+      else
+      {
+        aliveSeen = true;
+        switch ([adjacentRegion color])
+        {
+          case GoColorBlack:
+            blackAliveSeen = true;
+            break;
+          case GoColorWhite:
+            whiteAliveSeen = true;
+            break;
+          default:
+            return false;  // inconsistency! stone group must be either black or white
+        }
+      }
+    }
+
+    enum GoColor territoryColor = GoColorNone;
+    if (! deadSeen)
+    {
+      if (! aliveSeen)  // ok, empty board
+        territoryColor = GoColorNone;
+      else
+      {
+        if (blackAliveSeen && whiteAliveSeen)  // ok, neutral territory
+          territoryColor = GoColorNone;
+        else  // ok, only one color has been seen, and all groups were alive
+        {
+          if (blackAliveSeen)
+            territoryColor = GoColorBlack;
+          else
+            territoryColor = GoColorWhite;
+        }
+      }
+    }
+    else
+    {
+      if (blackDeadSeen)
+      {
+        if (blackAliveSeen)  // rules violation! cannot see both dead and alive stones of the same color
+          return false;
+        else if (whiteDeadSeen)  // rules violation! cannot see dead stones of both colors
+          return false;
+        else                     // ok, only dead stones of once color seen (we don't care whether the opposing color has alive stones)
+          territoryColor = GoColorWhite;
+      }
+      else  // repeat of the block above, but for the opposing color
+      {
+        if (whiteAliveSeen)
+          return false;
+        else if (blackDeadSeen)
+          return false;
+        else
+          territoryColor = GoColorBlack;
+      }
+    }
+
+    emptyRegion.territoryColor = territoryColor;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief (Re)Calculates the scoring and move statistics properties of this
+/// GoScore object.
+///
+/// If territory scoring is enabled, this method requires that the
+/// @e deadStoneGroup and @e territoryColor properties of GoBoardRegion objects
+/// are correct and up-to-date.
+// -----------------------------------------------------------------------------
+- (void) updateScoringProperties
+{
+  // Komi
+  komi = game.komi;
+
+  // Captured stones and move statistics
+  numberOfMoves = 0;
+  GoMove* move = game.firstMove;
+  while (move != nil)
+  {
+    ++numberOfMoves;
+    bool moveByBlack = move.player.black;
+    switch (move.type)
+    {
+      case PlayMove:
+      {
+        if (moveByBlack)
+        {
+          capturedByBlack += move.capturedStones.count;
+          ++stonesPlayedByBlack;
+        }
+        else
+        {
+          capturedByWhite += move.capturedStones.count;
+          ++stonesPlayedByWhite;
+        }
+        break;
+      }
+      case PassMove:
+      {
+        if (moveByBlack)
+          ++passesPlayedByBlack;
+        else
+          ++passesPlayedByWhite;
+        break;
+      }
+      default:
+        break;
+    }
+    move = move.next;
+  }
+
+  // Territory & dead stones
+  if (territoryScoresAvailable)
+  {
+    for (GoBoardRegion* region in self.allRegions)
+    {
+      int regionSize = [region size];
+      // Territory: We only count dead stones and empty intersections
+      if (region.deadStoneGroup || ! [region isStoneGroup])
+      {
+        switch (region.territoryColor)
+        {
+          case GoColorBlack:
+            territoryBlack += regionSize;
+            break;
+          case GoColorWhite:
+            territoryWhite = regionSize;
+            break;
+          default:
+            break;
+        }
+      }
+
+      // Dead stones
+      if (region.deadStoneGroup)
+      {
+        switch ([region color])
+        {
+          case GoColorBlack:
+            deadBlack += regionSize;
+            break;
+          case GoColorWhite:
+            deadWhite += regionSize;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  // Total score
+  totalScoreBlack = capturedByBlack + deadWhite + territoryBlack;
+  totalScoreWhite = komi + capturedByWhite + deadBlack + territoryWhite;
+
+  // Final result
+  if (totalScoreBlack > totalScoreWhite)
+    result = GoGameResultBlackHasWon;
+  else if (totalScoreWhite > totalScoreBlack)
+    result = GoGameResultWhiteHasWon;
+  else
+    result = GoGameResultTie;
 }
 
 @end

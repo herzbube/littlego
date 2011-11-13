@@ -57,7 +57,11 @@
 /// @brief Numeric board dimension that corresponds to property @a size. For
 /// instance 19, if @e size has the enum value #BoardSize19.
 @property(readonly) int dimensions;
-// Getter implementation documents this property.
+/// @brief A list of GoPoint objects that refer to the star points for the
+/// current board size. The list has no particular order.
 @property(readonly, retain) NSArray* starPoints;
+/// @brief A list of all GoBoardRegion objects on this board. The list has no
+/// particular order.
+@property(readonly) NSArray* regions;
 
 @end

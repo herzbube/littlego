@@ -33,10 +33,20 @@
 //@{
 - (void) setPoints:(NSArray*)points;
 - (void) splitRegionIfRequired;
+- (void) fillCache;
+- (void) invalidateCache;
 //@}
 /// @name Other methods
 //@{
 - (NSString*) description;
+//@}
+/// @name Privately declared properties
+//@{
+@property int cachedSize;
+@property bool cachedIsStoneGroup;
+@property enum GoColor cachedColor;
+@property int cachedLiberties;
+@property(retain) NSArray* cachedAdjacentRegions;
 //@}
 @end
 
@@ -44,7 +54,16 @@
 @implementation GoBoardRegion
 
 @synthesize points;
-@synthesize color;
+@synthesize randomColor;
+@synthesize scoringMode;
+@synthesize territoryColor;
+@synthesize deadStoneGroup;
+@synthesize cachedSize;
+@synthesize cachedIsStoneGroup;
+@synthesize cachedColor;
+@synthesize cachedLiberties;
+@synthesize cachedAdjacentRegions;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
@@ -92,7 +111,11 @@
   CGFloat red = (CGFloat)random() / (CGFloat)RAND_MAX;
   CGFloat blue = (CGFloat)random() / (CGFloat)RAND_MAX;
   CGFloat green = (CGFloat)random() / (CGFloat)RAND_MAX;
-  self.color = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+  self.randomColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+  self.scoringMode = false;
+  self.territoryColor = GoColorNone;
+  self.deadStoneGroup = false;
+  [self invalidateCache];
 
   return self;
 }
@@ -104,6 +127,8 @@
 {
   [points release];
   points = nil;
+  self.randomColor = nil;
+  [self invalidateCache];
   [super dealloc];
 }
 
@@ -128,6 +153,9 @@
 {
   @synchronized(self)
   {
+    if (scoringMode)
+      return points;
+
     return [[points copy] autorelease];
   }
 }
@@ -151,6 +179,9 @@
 // -----------------------------------------------------------------------------
 - (int) size
 {
+  if (scoringMode)
+    return cachedSize;
+
   return [points count];
 }
 
@@ -212,6 +243,9 @@
 // -----------------------------------------------------------------------------
 - (bool) isStoneGroup
 {
+  if (scoringMode)
+    return cachedIsStoneGroup;
+
   if (0 == [points count])
     return false;
   GoPoint* point = [points objectAtIndex:0];
@@ -219,18 +253,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if this GoBoardRegion represents a stone group with
-/// color black. Otherwise returns false (note that false is also returned if
-/// this GoBoardRegion does not represent a stone group).
+/// @brief Returns the color of the stones in this GoBoardRegion, or
+/// #GoColorNone if this GoBoardRegion does not represent a stone group.
 // -----------------------------------------------------------------------------
-- (bool) hasBlackStones
+- (enum GoColor) color
 {
+  if (scoringMode)
+    return cachedColor;
+
   if (0 == [points count])
-    return false;  // todo throw exception? create subclass?
+    return GoColorNone;
   GoPoint* point = [points objectAtIndex:0];
-  if (! [point hasStone])
-    return false;  // todo throw exception? create subclass?
-  return point.blackStone;
+  return point.stoneState;
 }
 
 // -----------------------------------------------------------------------------
@@ -240,6 +274,9 @@
 // -----------------------------------------------------------------------------
 - (int) liberties
 {
+  if (scoringMode)
+    return cachedLiberties;
+
   if (! [self isStoneGroup])
     return -1;  // todo is there a plausible implementation for non-stone groups
 
@@ -257,6 +294,32 @@
     }
   }
   return [libertyPoints count];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of of GoBoardRegion objects that are direct neighbours
+/// of this GoBoardRegion.
+// -----------------------------------------------------------------------------
+- (NSArray*) adjacentRegions
+{
+  if (scoringMode)
+    return cachedAdjacentRegions;
+
+  NSMutableArray* adjacentRegions = [NSMutableArray arrayWithCapacity:0];
+  for (GoPoint* point in self.points)
+  {
+    for (GoPoint* neighbour in point.neighbours)
+    {
+      // Is the neighbour in an adjacent region?
+      GoBoardRegion* adjacentRegion = neighbour.region;
+      if (adjacentRegion == self)
+        continue;  // no
+      // Count the adjacent region if it hasn't been counted already
+      if (! [adjacentRegions containsObject:adjacentRegion])
+        [adjacentRegions addObject:adjacentRegion];
+    }
+  }
+  return adjacentRegions;
 }
 
 // -----------------------------------------------------------------------------
@@ -367,6 +430,53 @@
     for (GoPoint* point in subRegion)
       point.region = newRegion;
   }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setScoringMode:(bool)newScoringMode
+{
+  if (scoringMode == newScoringMode)
+    return;
+
+  // Fill the cache before updating scoringMode! This allows fillCache() to
+  // invoke normal members to gather the information
+  // -> members will check scoringMode and see that the mode is still disabled,
+  //    so they will perform their normal dynamic computing
+  // -> the result can then be stored in a special caching member whose value
+  //    will subsequently be returned by members once they see that the mode is
+  //    enabled
+  if (newScoringMode)
+    [self fillCache];
+  else
+    [self invalidateCache];
+
+  scoringMode = newScoringMode;
+}
+
+// -----------------------------------------------------------------------------
+/// Fills the information cache to be used while scoring mode is enabled.
+// -----------------------------------------------------------------------------
+- (void) fillCache
+{
+  cachedSize = [self size];
+  cachedIsStoneGroup = [self isStoneGroup];
+  cachedColor = [self color];
+  cachedLiberties = [self liberties];
+  self.cachedAdjacentRegions = [self adjacentRegions];  // use self to increase retain count
+}
+
+// -----------------------------------------------------------------------------
+/// Invalidates cached information gathered while scoring mode was enabled.
+// -----------------------------------------------------------------------------
+- (void) invalidateCache
+{
+  cachedSize = -1;
+  cachedIsStoneGroup = false;
+  cachedColor = GoColorNone;
+  cachedLiberties = -1;
+  self.cachedAdjacentRegions = nil;  // use self to decrease the retain count
 }
 
 @end

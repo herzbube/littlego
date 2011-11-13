@@ -60,8 +60,6 @@
 @synthesize starPoint;
 @synthesize stoneState;
 @synthesize region;
-@synthesize territoryColor;
-@synthesize deadStone;
 @synthesize isLeftValid;
 @synthesize isRightValid;
 @synthesize isAboveValid;
@@ -109,8 +107,6 @@
   next = nil;
   previous = nil;
   neighbours = nil;
-  territoryColor = GoColorNone;
-  deadStone = false;
   isLeftValid = false;
   isRightValid = false;
   isAboveValid = false;

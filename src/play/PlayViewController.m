@@ -438,25 +438,15 @@
 // -----------------------------------------------------------------------------
 - (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
 {
+  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
+  if (UIGestureRecognizerStateEnded != recognizerState)
+    return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
   GoPoint* deadStonePoint = [self.playView pointAt:tappingLocation];
   if (! deadStonePoint || ! [deadStonePoint hasStone])
     return;
-  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
-  switch (recognizerState)
-  {
-    case UIGestureRecognizerStateEnded:
-    {
-
-      [self.scoringModel.score togglePoint:deadStonePoint];
-      [self.scoringModel.score calculateWaitUntilDone:false];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
+  [self.scoringModel.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
+  [self.scoringModel.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------

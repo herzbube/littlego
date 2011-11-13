@@ -375,8 +375,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a list of GoPoint objects that refer to the star points for
-/// the current board size. The returned list has no particular order.
+// Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (NSArray*) starPoints
 {
@@ -404,11 +403,27 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:starPointsKey];
-  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.dimensions]; 
+  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.dimensions];
   NSString* starPointVertexListAsString = [dictionary valueForKey:boardSizeKey];
   if (starPointVertexListAsString == nil || [starPointVertexListAsString length] == 0)
     return [NSArray array];
   return [starPointVertexListAsString componentsSeparatedByString:@","];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) regions
+{
+  NSMutableArray* regionList = [NSMutableArray arrayWithCapacity:0];
+  GoPoint* point = [self pointAtVertex:@"A1"];
+  for (; point = point.next; point != nil)
+  {
+    GoBoardRegion* region = point.region;
+    if (! [regionList containsObject:region])
+      [regionList addObject:region];
+  }
+  return regionList;
 }
 
 @end

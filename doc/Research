@@ -467,3 +467,11 @@ void inspectNode(SgNode* node)
     ++propListIterator;
   }
 }
+
+
+Computer Go algorithms
+----------------------
+Collection of computer Go algorithms: http://senseis.xmp.net/?ComputerGoAlgorithms
+
+Problems that need to be solved:
+- Loading a game takes too long

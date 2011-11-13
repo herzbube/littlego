@@ -39,6 +39,18 @@
 /// GoBoardRegion is retained by its GoPoint objects (see the GoPoint::region
 /// property). A GoBoardRegion is therefore released when it is no longer
 /// referenced by any GoPoint objects.
+///
+///
+/// @par Scoring mode
+///
+/// GoBoardRegion assumes that if scoring mode is enabled (via setting of the
+/// correspondingly named property) the state of the Go board remains static,
+/// i.e. no stones are placed or removed. Operating under this assumption,
+/// GoBoardRegion starts to aggressively cache information that is otherwise
+/// computed dynamically. The benefit is improved performance during scoring.
+///
+/// Clients do not need to know or care about which pieces of information are
+/// cached, this is an implementation detail.
 // -----------------------------------------------------------------------------
 @interface GoBoardRegion : NSObject
 {
@@ -52,14 +64,24 @@
 - (void) removePoint:(GoPoint*)point;
 - (void) joinRegion:(GoBoardRegion*)region;
 - (bool) isStoneGroup;
-- (bool) hasBlackStones;
+- (enum GoColor) color;
 - (int) liberties;
+- (NSArray*) adjacentRegions;
 
 /// @brief List of GoPoint objects in this GoBoardRegion. The list is
 /// unordered.
 @property(assign) NSArray* points;
 /// @brief A random color that can be used to mark GoPoints in this
 /// GoBoardRegion. This is intended as a debugging aid.
-@property(retain) UIColor* color;
+@property(retain) UIColor* randomColor;
+/// @brief Flag is true if scoring mode is enabled. See class documentation for
+/// details.
+@property bool scoringMode;
+/// @brief During scoring denotes which territory this GoBoardRegion belongs to.
+@property enum GoColor territoryColor;
+/// @brief During scoring denotes whether the stones in the stone group
+/// represented by this GoBoardRegion are dead or alive. Is false if this
+/// GoBoardRegion is not a stone group.
+@property bool deadStoneGroup;
 
 @end

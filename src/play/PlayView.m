@@ -22,6 +22,7 @@
 #import "../ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoBoardRegion.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
 #import "../go/GoPoint.h"
@@ -605,7 +606,7 @@ static PlayView* sharedPlayView = nil;
   while (point = [enumerator nextObject])
   {
     UIColor* color;
-    switch (point.territoryColor)
+    switch (point.region.territoryColor)
     {
       case GoColorBlack:
         color = colorBlack;
@@ -638,7 +639,7 @@ static PlayView* sharedPlayView = nil;
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
-    if (! point.deadStone)
+    if (! point.region.deadStoneGroup)
       continue;
     // The symbol for marking a dead stone is an "x"; we draw this as the two
     // diagonals of the "inner box" square
@@ -789,7 +790,7 @@ static PlayView* sharedPlayView = nil;
   struct GoVertexNumeric numericVertex = point.vertex.numeric;
   CGPoint coordinates = [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
   CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetFillColorWithColor(context, [[point.region color] CGColor]);
+	CGContextSetFillColorWithColor(context, point.region.randomColor.CGColor);
 
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
