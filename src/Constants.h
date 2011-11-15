@@ -212,10 +212,12 @@ extern const int cellContentSwitchWidth;
 /// @brief Is sent just before a command is submitted to the GTP engine. The
 /// GtpCommand instance that is submitted is associated with the notification.
 ///
-/// @attention This notification may be delivered in a secondary thread.
+/// @attention This notification is delivered in a secondary thread.
 extern NSString* gtpCommandWillBeSubmittedNotification;
 /// @brief Is sent after a response is received from the GTP engine. The
 /// GtpResponse instance that was received is associated with the notification.
+///
+/// @attention This notification is delivered in a secondary thread.
 extern NSString* gtpResponseWasReceivedNotification;
 /// @brief Is sent to indicate that the GTP engine is no longer idle.
 extern NSString* gtpEngineRunningNotification;

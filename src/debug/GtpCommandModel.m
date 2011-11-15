@@ -155,6 +155,10 @@
   [commandToMove release];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Discards the current list of predefined commands and restores the
+/// factory default list that is shipped with the application.
+// -----------------------------------------------------------------------------
 - (void) resetToFactorySettings
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];

@@ -22,6 +22,27 @@
 // -----------------------------------------------------------------------------
 /// @brief The GtpLogModel class is responsible for managing information that
 /// records the log of the GTP client/engine command/response exchange.
+///
+/// GtpLogModel observes the application default notification centre for
+/// notifications posted by the GTP client when it submits commands to, or
+/// receives responses from, the GTP engine. These notificatins are delivered
+/// in the context of a secondary thread. The notifications carry with them the
+/// GtpCommand and GtpResponse objects which were used in the GTP client/engine
+/// communication, and which are now evaluated by GtpLogModel to generate
+/// entries in the log. Entries are represented by GtpLogItem objects.
+///
+/// Because regular clients access GtpLogModel from the main thread, but
+/// notifications are delivered in a secondary thread, there is a potential for
+/// thread safety issues. As a workaround, notification responders do not modify
+/// any GtpLogModel members directly. Instead they invoke a second set of
+/// responders in the main thread context, to which they then delegate all
+/// processing of GtpCommand and GtpResponse objects. Delegate responders are
+/// invoked asynchronously to prevent any deadlocks.
+///
+/// As a result, observers of GtpLogModel are completely decoupled from the
+/// activities that occur around GTP client and engine. There is a guarantee,
+/// though, that items will pop up in the log in the same order that commands
+/// were submitted to the GTP engine.
 // -----------------------------------------------------------------------------
 @interface GtpLogModel : NSObject
 {

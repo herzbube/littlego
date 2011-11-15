@@ -170,6 +170,10 @@ static std::ifstream responseStream;
   // Undo retain message sent to the command object by submit:()
   [command autorelease];
 
+  // Notify observers in the secondary thread context
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpCommandWillBeSubmittedNotification
+                                                      object:command];
+
   // Send the command to the engine
   if (nil == command.command || 0 == [command.command length])
     return;
@@ -195,7 +199,7 @@ static std::ifstream responseStream;
   GtpResponse* response = [GtpResponse response:nsResponse toCommand:command];
   command.response = response;
   // Retain to make sure that object is still alive when it "arrives" in
-  // the main thread
+  // the submitting thread
   [response retain];
 
   // It's important to call back the submitting thread asynchronously (i.e.
@@ -205,6 +209,10 @@ static std::ifstream responseStream;
                onThread:command.submittingThread
              withObject:response
           waitUntilDone:NO];
+
+  // Notify observers in the secondary thread context
+  [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseWasReceivedNotification
+                                                      object:response];
 
   if (NSOrderedSame == [command.command compare:@"quit"])
   {
@@ -226,9 +234,8 @@ static std::ifstream responseStream;
 // -----------------------------------------------------------------------------
 - (void) submit:(GtpCommand*)command
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:gtpCommandWillBeSubmittedNotification object:command];
   command.submittingThread = [NSThread currentThread];
-  // Retain to make sure that object is still alive when the it "arrives" in
+  // Retain to make sure that object is still alive when it "arrives" in
   // the secondary thread
   [command retain];
   [self performSelector:@selector(processCommand:)
@@ -239,23 +246,19 @@ static std::ifstream responseStream;
 
 // -----------------------------------------------------------------------------
 /// @brief Is invoked after @a response has been received from the GtpEngine
-/// for a GtpCommand whose @e waitUntilDone property is false.
+/// for a previously submitted GtpCommand.
+///
+/// Notifies the @e response.command.responseTarget if such an object has been
+/// set. The method invoked is response.command.responseTargetSelector, the
+/// argument passed is the GtpResponse object.
 ///
 /// This method is executed in the context of the thread that submitted the GTP
 /// command.
-///
-/// This method posts a notification to the default NSNotificationCenter so that
-/// clients that previously submitted a command will know when their expected
-/// response has come in.
-///
-/// This method also notifies the @e response.command.responseTarget if such an
-/// object has been set.
 // -----------------------------------------------------------------------------
 - (void) receive:(GtpResponse*)response
 {
-  // Undo retain message sent to the command object by processCommand:()
+  // Undo retain message sent to the response object by processCommand:()
   [response autorelease];
-  [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseWasReceivedNotification object:response];
   id responseTarget = response.command.responseTarget;
   if (responseTarget)
   {

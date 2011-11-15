@@ -37,6 +37,8 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) gtpCommandWillBeSubmittedDelegate:(GtpCommand*)command;
+- (void) gtpResponseWasReceivedDelegate:(GtpResponse*)response;
 - (void) addItemToLog:(GtpCommand*)command;
 - (void) trimLog;
 - (void) enqueueItemWithNoResponse:(GtpLogItem*)logItem;
@@ -151,14 +153,35 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #gtpCommandWillBeSubmitted notification.
+///
+/// This method is executed in a secondary thread. Delegates processing of the
+/// GtpCommand object associated with the notification to
+/// updateLogWithGtpCommand:(). See class documentation for details.
 // -----------------------------------------------------------------------------
 - (void) gtpCommandWillBeSubmitted:(NSNotification*)notification
 {
   GtpCommand* command = (GtpCommand*)[notification object];
+  // Retain to make sure that object is still alive when it "arrives" in
+  // the main thread
+  [command retain];
+  [self performSelector:@selector(gtpCommandWillBeSubmittedDelegate:)
+               onThread:[NSThread mainThread]
+             withObject:command
+          waitUntilDone:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Delegate method of gtpCommandWillBeSubmitted:(). This method is
+/// executed in the main thread. See class documentation for details.
+// -----------------------------------------------------------------------------
+- (void) gtpCommandWillBeSubmittedDelegate:(GtpCommand*)command
+{
+  // Undo retain message sent to the command object by
+  // gtpCommandWillBeSubmitted:()
+  [command autorelease];
+
   [self addItemToLog:command];
   [self trimLog];
-
-
   [[NSNotificationCenter defaultCenter] postNotificationName:gtpLogContentChanged
                                                       object:nil];
 }
@@ -168,6 +191,26 @@
 // -----------------------------------------------------------------------------
 - (void) gtpResponseWasReceived:(NSNotification*)notification
 {
+  GtpResponse* response = (GtpResponse*)[notification object];
+  // Retain to make sure that object is still alive when it "arrives" in
+  // the main thread
+  [response retain];
+  [self performSelector:@selector(gtpResponseWasReceivedDelegate:)
+               onThread:[NSThread mainThread]
+             withObject:response
+          waitUntilDone:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Delegate method of gtpCommandWillBeSubmitted:(). This method is
+/// executed in the main thread. See class documentation for details.
+// -----------------------------------------------------------------------------
+- (void) gtpResponseWasReceivedDelegate:(GtpResponse*)response
+{
+  // Undo retain message sent to the response object by
+  // gtpResponseWasReceived:()
+  [response autorelease];
+
   GtpLogItem* logItem = [self dequeueItemWithNoResponse];
   assert(logItem != nil);
 
@@ -180,7 +223,6 @@
     return;
   }
 
-  GtpResponse* response = (GtpResponse*)[notification object];
   logItem.hasResponse = true;
   logItem.responseStatus = response.status;
   logItem.parsedResponseString = [response parsedResponse];
