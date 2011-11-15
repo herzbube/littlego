@@ -135,6 +135,8 @@ enum ActionSheetButton
                                              destructiveButtonTitle:nil
                                                   otherButtonTitles:nil];
 
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+
   // Add buttons in the order that they appear in the ActionSheetButton enum
   for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
   {
@@ -144,12 +146,16 @@ enum ActionSheetButton
       case ScoreButton:
         if (GameHasEnded == [GoGame sharedGame].state)
           continue;
+        if (scoringModel.scoringMode)
+          continue;
         title = @"Score";
         break;
       case ResignButton:
         if (ComputerVsComputerGame == [GoGame sharedGame].type)
           continue;
         if (GameHasEnded == [GoGame sharedGame].state)
+          continue;
+        if (scoringModel.scoringMode)
           continue;
         title = @"Resign";
         break;

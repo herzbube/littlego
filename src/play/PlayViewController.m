@@ -481,6 +481,8 @@
 {
   [self updateButtonStates];
   [self updatePanningEnabled];
+  if (GameHasEnded == [GoGame sharedGame].state)
+    self.scoringModel.scoringMode = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -552,9 +554,11 @@
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   if (self.scoringModel.scoringMode)
   {
-    [toolbarItems addObject:self.gameInfoButton];
+    if (GameHasEnded != [GoGame sharedGame].state)
+      [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     [toolbarItems addObject:self.flexibleSpaceButton];
-    [toolbarItems addObject:self.doneButton];
+    [toolbarItems addObject:self.gameInfoButton];
+    [toolbarItems addObject:self.gameActionsButton];
   }
   else
   {
@@ -783,7 +787,12 @@
 - (void) updateGameActionsButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  if (self.scoringModel.scoringMode)
+  {
+    if (! self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
   {
     switch ([GoGame sharedGame].type)
     {
