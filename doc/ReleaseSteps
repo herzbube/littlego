@@ -47,12 +47,12 @@ Make a beta release (binary distribution only)
 - Most important is that the URL matches exactly the URL of the .ipa file as it
   is going to be available for download
 - Sensible values are
-  URL = http://www.herzbube.ch/software/littlego/0.1/littlego.ipa
-  Name = Little Go Beta Test
+  URL = http://www.herzbube.ch/software/littlego/0.1/littlego-0.1.ipa
+  Name = Little Go 0.1 Beta Test
 - You are now asked to specify a save location & name. This step creates both a
   .plist and an .ipa file, where the specified name serves as the base name for
   both files. Make sure to specify the same name as in the URL above (but
-  without the .ipa extension; e.g. "littlego").
+  without the .ipa extension; e.g. "littlego-0.1").
 - Make sure to get the "Ad Hoc Distribution Provisioning Profile" from the
   iOS Provisioning Portal. This profile is stored in a .mobileprovision file.
 - Upload the .plist, .ipa and .mobileprovision files to the server from where

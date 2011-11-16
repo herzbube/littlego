@@ -200,7 +200,6 @@
       [(NSMutableArray*)capturedStones addObject:capture];
     }
   }
-  // TODO do scoring here!
 }
 
 // -----------------------------------------------------------------------------

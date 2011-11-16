@@ -1,5 +1,26 @@
+Wed November 16 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.5
+- features
+  - when a new game is started it is now possible to select a handicap (up to
+    9 stones in fixed locations) and a komi value
+  - the user can now "flip" the Play view to see an Info view which displays
+    information about the current game
+  - new accurate scoring mode
+    - when activated, the user can now interactively mark stone groups on the
+      Play view as dead or alive
+    - territory scoring is based on stone groups' dead or alive status
+    - the Info view displays detailed tabular scoring information
+    - scoring mode is activated automatically when the game ends, or by the
+      user at any time during normal game play
+  - the status line on the Play view now displays a message if the computer
+    player passed
+- bugfixes
+  - the GTP log now displays all commands (previously some commands were lost)
+- technical changes
+  - none
+
 Mon October 31 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.3
+- release of version 0.4
 - features
   - the GTP log on the Debug view is now a table view (the raw log is still
     available by switching to the view's "backside")

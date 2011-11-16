@@ -27,7 +27,11 @@ Changes in this release
 -----------------------
 This is Little Go 0.5.
 
-The main features in this release are xxx
+The main feature in this release is the new scoring mode that assists the user
+with marking stone groups' as dead or alive, and, based on stone groups' dead or
+alive status, calculates an accurate territory score. The second important new
+feature is that when a new game is started it is now possible to select a
+handicap (up to 9 stones in fixed locations) and a komi value.
 
 For more details see the ChangeLog document.
 

@@ -38,13 +38,27 @@ Scoring and end of game
 - The game ends when one of the following events occurs:
   - One of the players resigns
   - Two Pass moves occur in a sequence
-- In Scoring mode the user cannot perform any actions that influence the game
-  state (e.g. play a stone)
-- In Scoring mode, the Play view specially marks up black and white territories
+- Actions available in Scoring mode
+  - In Scoring mode the user cannot perform any actions that influence the game
+    state (e.g. play a stone)
+  - Exceptions are the "new game" and "load game" actions: These discard the
+    entire game and automatically turn off Scoring mode.
+  - Actions that do not influence the game state are available even while
+    Scoring mode is active (e.g. save the game)
+- In Scoring mode, the Play view specially marks up black and white territories,
+  as well as empty territories where the state of adjacent dead stone groups
+  is inconsistent (e.g. there are dead stone groups for both black and white)
 - On the Play view the user can mark stone groups as being dead; dead stone
   groups are specially marked up
+- Stone groups marked as dead can be "unmarked", turning them back to alive
+  status
+- When the user changes the dead/alive state of a stone group, the application
+  assists by automatically marking adjacent stone groups of the same color with
+  the same dead/alive status. This feature is optional and can be turned on or
+  off in the user preferences.
 - Upon activaton of Scoring mode an initial suggestion for dead stone groups is
-  made by querying the GTP engine (final_status_list dead)
+  made by querying the GTP engine (final_status_list dead). This feature is
+  optional and can be turned on or off in the user preferences.
 - Territory calculation is based on the information which stone groups are alive
   and which ones are dead
 - The final score is the result of adding up subscores from the following
@@ -55,9 +69,19 @@ Scoring and end of game
   - Territory
 - The total score is displayed on the Play view; it is updated continuously
   whenever the user changes the dead/alive status of a stone group
-- The Info view displays detailed scoring information, breaking down the total
-  score into its separate categories as listed above
-- During normal game play, the Info view lists "?" for the territory score
+- The user may "flip" the Play view to see an Info view which displays the
+  following information
+  - Detailed scoring information, breaking down the total score into its
+    separate categories as listed above
+  - Information about the current game: Game state, board size, player names
+    and handicap
+  - Assorted move statistics
+- While the Info view is displayed, the only available action is to flip back
+  to the Play view
+- The Info view can also be displayed during normal game play (i.e. while not
+  in Scoring mode)
+- During normal game play, the Info view lists "not available" for categories
+  related to territory scoring
 
 
 Changing preferences
