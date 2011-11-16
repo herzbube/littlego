@@ -8,10 +8,9 @@ Before the release
 - If necessary, update the TODO file
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
-- Update the ChangeLog
+- Update the ChangeLog. A possible source for this is the git commit log.
 - Replace the "Changes in this release" section of the README with a collection
-  of the most important changes. A possible source for this is the git commit
-  log.
+  of the most important changes from the ChangeLog.
 - Update the "Known bugs" listed in the README
 - Change the release date in the following files:
   - Roadmap
@@ -74,8 +73,7 @@ Make the release
   - Go to terminal
   - Run the following commands
     cd <projectdir>
-    cd ..
-    tar cfz littlego-0.1.tar.gz --exclude littlego/3rdparty --exclude littlego/build --exclude littlego/doxygen/html littlego/*
+    ./script/makedist.sh 0.5
 - Generate the binary distribution and submit it to Apple
   - TODO
 - Wait for Apple to accept the submission and publish the new version in their

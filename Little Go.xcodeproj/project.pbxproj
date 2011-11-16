@@ -269,6 +269,7 @@
 		CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
+		CD3D5147147436C70098D8E0 /* makedist.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = makedist.sh; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -808,6 +809,7 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
+				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDE3F584131147D800EC16CC /* build-boost.sh */,
 				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,

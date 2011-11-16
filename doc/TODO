@@ -10,7 +10,6 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
-- Write makedist.sh script that creates a source distribution
 - Review weird memory management of GoBoardRegion.points
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
@@ -133,9 +132,6 @@ Priority 2 (nice to have)
   app for processing
 - Future improvements to the 3rdparty build process (see separate section
   further down)
-- GTP Log backside view loses the "savesgf" command when the application is
-  suspended, because the notification is delivered in the context of a
-  secondary thread
 - Find a suitable trigger that allows TableViewGridCell to start querying its
   delegate; currently the UITableViewDataSource must manually initiate the
   querying process from within tableView:cellForRowAtIndexPath:().

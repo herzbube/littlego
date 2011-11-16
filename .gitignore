@@ -6,5 +6,6 @@ Little Go.xcodeproj/*.mode1v3
 # Other files
 3rdparty/
 doxygen/html
+dist/
 .DS_Store
 
