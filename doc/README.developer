@@ -10,18 +10,21 @@ Short guide on how to build and run Little Go
 ---------------------------------------------
 1. Unpack the source tar ball or clone the Git repository (since you are
    reading this document you probably have done this already)
-2. Launch Terminal.app and execute these commands:
+2. Edit script/build-env.sh to match your development environment. For instance,
+   change the iOS Base SDK and deployment target versions.
+3. Launch Terminal.app and execute these commands:
      cd /path/to/littlego
      ./script/get-and-build-3rdparty-software.sh
-3. Wait until the script has downloaded and built all 3rdparty software packages
+4. Wait until the script has downloaded and built all 3rdparty software packages
    (see the section "3rdparty software build" further down for more details)
-4. Launch Xcode by opening "Little Go.xcodeproj"
-5. Set the SDK to "Simulator", the build configuration to "Debug" and the active
-   target to "Little Go"
-6. Run the following command from the menu
-     Build > Build and Debug
-7. Wait until the build has finished. The iPhone simulator application should
-   now launch and run Little Go.
+5. Launch Xcode by opening "Little Go.xcodeproj"
+6. Change iOS Base SDK and deployment target versions to match your development
+   environment
+7. Set the active build scheme to use
+   - Target = Little Go
+   - SDK = iPhone 4.2 Simulator
+   - Build configuration = Debug
+8. Build & run
 
 
 Folder structure
@@ -93,7 +96,7 @@ ReleaseSteps
 Other files
 -----------
 Little Go.xcodeproj
-  The Xcode project file. The format is "Xcode 3.1-compatible".
+  The Xcode project file. The format is "Xcode 3.2-compatible".
 
 resource/Info.plist
   The information property list file that describes the Little Go application
@@ -136,6 +139,7 @@ Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
+- IPHONEOS_DEPLOYMENT_TARGET = 4.2
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
@@ -155,8 +159,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
   moving target SDK. The latest release of the project was made with iOS 4.2.
-- The deployment target is not set, which means that it defaults to the same
-  version as the base SDK.
+- The deployment target is set to 4.2 so that the application keeps running on
+  iOS 4 devices.
 
 
 .xib design notes

@@ -72,6 +72,6 @@
 
 /// @brief Set this property to true to trigger termination of the secondary
 /// thread.
-@property(getter=shouldExit, setter=exit) bool shouldExit;
+@property(getter=shouldExit, setter=exit:) bool shouldExit;
 
 @end
