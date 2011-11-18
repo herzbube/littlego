@@ -36,8 +36,8 @@
 # Subsequent sections are based on settings in this section,
 # you should not need to change anything in these other sections.
 # ----------------------------------------------------------------------
-IPHONEOS_BASESDK_VERSION=4.2
-IPHONE_SIMULATOR_BASESDK_VERSION=4.1
+IPHONEOS_BASESDK_VERSION=5.0
+IPHONE_SIMULATOR_BASESDK_VERSION=5.0
 MACOSX_BASESDK_VERSION=10.6  # If you use 10.4u, set deployment target separately
 
 # Deployment target variables must be exported because they are actually
@@ -45,7 +45,7 @@ MACOSX_BASESDK_VERSION=10.6  # If you use 10.4u, set deployment target separatel
 # line.
 # Note: There is no deployment target for the simulator, it uses the one for
 # iPhoneOS
-export IPHONEOS_DEPLOYMENT_TARGET=$IPHONEOS_BASESDK_VERSION
+export IPHONEOS_DEPLOYMENT_TARGET=4.2
 export MACOSX_DEPLOYMENT_TARGET=$MACOSX_BASESDK_VERSION
 
 # These are converted to compiler flags later on via the MAKE_ARCH_CPPFLAGS
@@ -145,8 +145,8 @@ IPHONEOS_PREFIX="iPhoneOS"
 IPHONEOS_PLATFORMDIR="$PLATFORMS_BASEDIR/$IPHONEOS_PREFIX.platform"
 IPHONEOS_BASESDK_DIR="$IPHONEOS_PLATFORMDIR/Developer/SDKs/${IPHONEOS_PREFIX}${IPHONEOS_BASESDK_VERSION}.sdk"
 IPHONEOS_BINDIR="$IPHONEOS_PLATFORMDIR/Developer/usr/bin"
-IPHONEOS_CC="$IPHONEOS_BINDIR/gcc-$IPHONEOS_GCC_VERSION"
-IPHONEOS_CXX="$IPHONEOS_BINDIR/g++-$IPHONEOS_GCC_VERSION"
+IPHONEOS_CC="$IPHONEOS_BINDIR/llvm-gcc-$IPHONEOS_GCC_VERSION"
+IPHONEOS_CXX="$IPHONEOS_BINDIR/llvm-g++-$IPHONEOS_GCC_VERSION"
 IPHONEOS_PREFIXDIR="${PREFIX_BASEDIR}${IPHONEOS_BASESDK_DIR}"
 IPHONEOS_XCODEBUILD_SDKPREFIX="iphoneos"
 IPHONEOS_XCODEBUILD_SDKNAME="${IPHONEOS_XCODEBUILD_SDKPREFIX}${IPHONEOS_BASESDK_VERSION}"
