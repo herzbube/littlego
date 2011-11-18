@@ -77,17 +77,17 @@
 @property(readonly, assign) GoPlayer* currentPlayer;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// the game is still in state #GameHasNotYetStarted.
-@property(retain) GoMove* firstMove;
+@property(nonatomic, retain) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
 /// the game is still in state #GameHasNotYetStarted.
-@property(retain) GoMove* lastMove;
+@property(nonatomic, retain) GoMove* lastMove;
 /// @brief The state of the game.
-@property enum GoGameState state;
+@property(nonatomic) enum GoGameState state;
 /// @brief The reason why the game has reached the state #GameHasEnded.
 @property enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// its next move.
-@property(getter=isComputerThinking) bool computerThinks;
+@property(nonatomic, getter=isComputerThinking) bool computerThinks;
 /// @brief Is true to indicate that the next GoMove object created should have
 /// its @e computerGenerated flag set to true.
 ///

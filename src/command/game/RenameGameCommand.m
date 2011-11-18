@@ -36,7 +36,7 @@
 @implementation RenameGameCommand
 
 @synthesize game;
-@synthesize newFileName;
+@synthesize theNewFileName;
 
 
 // -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@
     return nil;
 
   self.game = aGame;
-  self.newFileName = aNewFileName;
+  self.theNewFileName = aNewFileName;
 
   return self;
 }
@@ -63,7 +63,7 @@
 - (void) dealloc
 {
   self.game = nil;
-  self.newFileName = nil;
+  self.theNewFileName = nil;
   [super dealloc];
 }
 
@@ -72,12 +72,12 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if ([self.game.fileName isEqualToString:self.newFileName])
+  if ([self.game.fileName isEqualToString:self.theNewFileName])
     return true;
 
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
-  NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:self.newFileName];
+  NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:self.theNewFileName];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
@@ -86,7 +86,7 @@
     // Must update the ArchiveGame before posting the notification. Reason: The
     // notification triggers an update cycle which tries to match ArchiveGame
     // objects to filesystem entries via their file names.
-    self.game.fileName = self.newFileName;
+    self.game.fileName = self.theNewFileName;
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   }
   return success;

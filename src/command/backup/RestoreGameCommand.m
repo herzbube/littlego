@@ -77,7 +77,7 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:sgfBackupFilePath])
   {
-    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
     PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
     Player* blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
     Player* whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];

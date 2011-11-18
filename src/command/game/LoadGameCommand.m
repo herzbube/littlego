@@ -319,7 +319,7 @@
 {
   // Configure NewGameModel with information that is used when NewGameCommand
   // creates a new GoGame object
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   model.boardSize = boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;

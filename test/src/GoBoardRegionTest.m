@@ -24,6 +24,9 @@
 #import <go/GoBoardRegion.h>
 #import <go/GoPoint.h>
 
+// Library includes
+#include <cocoalumberjack/DDTTYLogger.h>
+#include <cocoalumberjack/DDFileLogger.h>
 
 @implementation GoBoardRegionTest
 
@@ -43,6 +46,7 @@
   STAssertNotNil(pointA1, nil);
   GoBoardRegion* region = pointA1.region;
   STAssertNotNil(region, nil);
+  
   STAssertEquals(expectedRegionSize, [region size], nil);
   STAssertFalse([region isStoneGroup], nil);
   STAssertNotNil(region.points, nil);

@@ -57,7 +57,7 @@
 @property(readonly, retain) GoPlayer* player;
 /// @brief The GoPoint object registering where the stone was placed for this
 /// GoMove. Is nil if this GoMove is @e not a #PlayMove.
-@property(assign) GoPoint* point;
+@property(nonatomic, assign) GoPoint* point;
 /// @brief The predecessor to this GoMove object. nil if this is the first move
 /// of the game.
 @property(readonly, assign) GoMove* previous;  // do not retain, otherwise there would be a retain cycle

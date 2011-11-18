@@ -151,8 +151,8 @@
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-@property bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
-@property bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
+@property(nonatomic) bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
+@property(nonatomic) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 //@}
 // -----------------------------------------------------------------------------
 /// @name Scoring properties

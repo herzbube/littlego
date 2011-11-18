@@ -51,7 +51,7 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) newGameBlackPlayer
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
   Player* player = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
   return [GoPlayer blackPlayer:player];
@@ -63,7 +63,7 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) newGameWhitePlayer
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
   Player* player = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
   return [GoPlayer whitePlayer:player];

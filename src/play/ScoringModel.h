@@ -49,7 +49,7 @@
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is true if scoring mode is enabled on the Play view.
-@property bool scoringMode;
+@property(nonatomic) bool scoringMode;
 /// @brief The GoScore object that provides scoring data while scoring mode is
 /// enabled. Is nil while scoring mode is disabled.
 @property(retain) GoScore* score;

@@ -89,7 +89,7 @@
 @synthesize resourceBundle;
 @synthesize gtpClient;
 @synthesize gtpEngine;
-@synthesize newGameModel;
+@synthesize theNewGameModel;
 @synthesize playerModel;
 @synthesize scoringModel;
 @synthesize playViewModel;
@@ -145,7 +145,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.window = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;
-  self.newGameModel = nil;
+  self.theNewGameModel = nil;
   self.playerModel = nil;
   self.playViewModel = nil;
   self.scoringModel = nil;
@@ -237,7 +237,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) applicationDidEnterBackground:(UIApplication*)application
 {
   [[[BackupGameCommand alloc] init] submit];
-  [self.newGameModel writeUserDefaults];
+  [self.theNewGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
   [self.scoringModel writeUserDefaults];
@@ -327,14 +327,14 @@ static ApplicationDelegate* sharedDelegate = nil;
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
 
   // Create model objects and load values from the user defaults system
-  self.newGameModel = [[[NewGameModel alloc] init] autorelease];
+  self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
   self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
-  [self.newGameModel readUserDefaults];
+  [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.playViewModel readUserDefaults];
   [self.scoringModel readUserDefaults];

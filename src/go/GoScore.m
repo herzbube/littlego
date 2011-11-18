@@ -333,7 +333,7 @@
   // Initialize territory color
   GoBoard* board = game.board;
   GoPoint* point = [board pointAtVertex:@"A1"];
-  for (; point = point.next; point != nil)
+  for (; point != nil; point = point.next)
   {
     GoBoardRegion* region = point.region;
     region.territoryColor = GoColorNone;

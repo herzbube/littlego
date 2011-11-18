@@ -69,7 +69,7 @@
 // -----------------------------------------------------------------------------
 + (GoBoard*) newGameBoard
 {
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   return [GoBoard boardWithSize:model.boardSize];
 }
 
@@ -233,12 +233,11 @@
 {
   // Create an initial GoPoint and GoBoardRegion object
   GoPoint* point = [self pointAtVertex:@"A1"];
-  GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
-  point.region = region;
+  GoBoardRegion* region = [GoBoardRegion region];
 
   // On a clear board, the initial region contains all GoPoint objects.
   // Note: Moving to the next point creates the corresponding GoPoint object!
-  for (; point = point.next; point != nil)
+  for (; point != nil; point = point.next)
   {
     point.region = region;
     [region addPoint:point];
@@ -417,7 +416,7 @@
 {
   NSMutableArray* regionList = [NSMutableArray arrayWithCapacity:0];
   GoPoint* point = [self pointAtVertex:@"A1"];
-  for (; point = point.next; point != nil)
+  for (; point != nil; point = point.next)
   {
     GoBoardRegion* region = point.region;
     if (! [regionList containsObject:region])

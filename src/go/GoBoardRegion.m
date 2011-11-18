@@ -68,6 +68,18 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
+/// contains no GoPoint objects.
+// -----------------------------------------------------------------------------
++ (GoBoardRegion*) region
+{
+  GoBoardRegion* region = [[GoBoardRegion alloc] init];
+  if (region)
+    [region autorelease];
+  return region;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a GoBoardRegion instance that
 /// contains the GoPoint objects in @a points.
 // -----------------------------------------------------------------------------
 + (GoBoardRegion*) regionWithPoints:(NSArray*)points

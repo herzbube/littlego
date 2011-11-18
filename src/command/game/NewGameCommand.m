@@ -146,7 +146,7 @@
 - (void) setupGtpHandicapAndKomi
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NewGameModel* model = appDelegate.newGameModel;
+  NewGameModel* model = appDelegate.theNewGameModel;
   GoGame* game = [GoGame sharedGame];
 
   // Setup handicap only if there is one. The GTP command "fixed_handicap"

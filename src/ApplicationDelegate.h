@@ -77,7 +77,7 @@
 /// @brief The GTP engine instance.
 @property(retain) GtpEngine* gtpEngine;
 /// @brief Model object that stores attributes of a new game.
-@property(retain) NewGameModel* newGameModel;
+@property(retain) NewGameModel* theNewGameModel;
 /// @brief Model object that stores player data.
 @property(retain) PlayerModel* playerModel;
 /// @brief Model object that stores attributes used to manage the Play view.

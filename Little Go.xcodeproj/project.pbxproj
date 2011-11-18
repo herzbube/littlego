@@ -1259,6 +1259,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Unit tests";
+				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -1302,6 +1303,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Unit tests";
+				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;
 				ZERO_LINK = NO;
 			};
@@ -1344,6 +1346,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Unit tests";
+				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Distribute;

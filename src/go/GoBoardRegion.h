@@ -56,6 +56,7 @@
 {
 }
 
++ (GoBoardRegion*) region;
 + (GoBoardRegion*) regionWithPoints:(NSArray*)points;
 + (GoBoardRegion*) regionWithPoint:(GoPoint*)point;
 - (int) size;
@@ -76,7 +77,7 @@
 @property(retain) UIColor* randomColor;
 /// @brief Flag is true if scoring mode is enabled. See class documentation for
 /// details.
-@property bool scoringMode;
+@property(nonatomic) bool scoringMode;
 /// @brief During scoring denotes which territory this GoBoardRegion belongs to.
 @property enum GoColor territoryColor;
 /// @brief Flag is true if the territory scoring algorithm detected an

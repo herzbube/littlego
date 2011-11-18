@@ -67,7 +67,7 @@
 ///
 /// If a new item is about to be added to @e itemList that would exceed the
 /// limit, the oldest item is discarded first.
-@property int gtpLogSize;
+@property(nonatomic) int gtpLogSize;
 /// @brief True if the "GTP Log" view currently displays the frontside view,
 /// false if it displays the backside view.
 @property bool gtpLogViewFrontSideIsVisible;

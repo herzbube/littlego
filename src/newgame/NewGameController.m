@@ -166,7 +166,7 @@ enum KomiSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.loadGame = loadGame;
-    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].newGameModel;
+    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
     PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
     controller.boardSize = newGameModel.boardSize;
     controller.blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
@@ -557,7 +557,7 @@ enum KomiSectionItem
 {
   // Store the collected information in NewGameModel before informing the
   // delegate
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].newGameModel;
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   assert(model);
   model.boardSize = self.boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
