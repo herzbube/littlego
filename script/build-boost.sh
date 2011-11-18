@@ -71,7 +71,9 @@ COPY_MISSING_HEADERS()
   typeset HEADER_FILES="crt_externs.h bzlib.h"
   typeset HEADER_FILE
   for HEADER_FILE in $HEADER_FILES; do
-    cp "$IPHONE_SIMULATOR_BASESDK_DIR/usr/include/$HEADER_FILE" .
+    if test ! -f "$IPHONEOS_BASESDK_DIR/usr/include/$HEADER_FILE"; then
+      cp "$IPHONE_SIMULATOR_BASESDK_DIR/usr/include/$HEADER_FILE" .
+    fi
   done
 
   return 0
@@ -140,8 +142,8 @@ EOF
 }
 
 # +------------------------------------------------------------------------
-# | Run the bootstrap script in Boost's root directory to setup the build
-# | for the desired libraries.
+# | Run the bootstrap script in Boost's root directory to build the bjam
+# | executable and to setup the build for the desired libraries.
 # |
 # | Bootstrapping can be repeated without cleaning previous build results. Boost
 # | will simply re-configure its build configuration in project-config.jam,
@@ -160,7 +162,6 @@ EOF
 BOOTSTRAP_BOOST()
 {
   echo "Bootstrapping Boost..."
-  return 0
 
   typeset BOOTSTRAP_SCRIPT="bootstrap.sh"
   if test ! -f "$BOOTSTRAP_SCRIPT"; then
