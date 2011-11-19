@@ -20,11 +20,12 @@ Short guide on how to build and run Little Go
 5. Launch Xcode by opening "Little Go.xcodeproj"
 6. Change iOS Base SDK and deployment target versions to match your development
    environment
-7. Set the active build scheme to use
-   - Target = Little Go
-   - SDK = iPhone 4.2 Simulator
-   - Build configuration = Debug
-8. Build & run
+7. Make sure that you have a scheme that configures the target "Little Go" to
+   use the build configuration "Debug"
+8. Select that scheme, and the destination "iPhone 4.2 Simulator", from the
+   toolbar's scheme selector
+8. From the menu select Product > Run. The app should now be built in Debug
+   mode and launched inside the simulator.
 
 
 Folder structure
@@ -153,12 +154,27 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   specific macro, in this case named LITTLEGO_NDEBUG.
 
 
+Xcode schemes
+-------------
+Xcode build schemes are not part of the Little Go distribution, nor are they
+committed to the project's version control system. The following is a short
+overview of how I usually configure my schemes:
+- I let Xcode autocreate schemes. This results in one scheme for each of the
+  project's targets.
+- I then rename the "Little Go" scheme to "Little Go Debug", and disable the
+  "Archive" command.
+- I then duplicate "Little Go Debug", naming the new scheme "Little Go Release".
+  I re-enable the "Archive" command, and set all commands to use the "Release"
+  build configuration. The only exception is the "Archive" command, which I set
+  to use the "Distribute" build configuration.
+
+
 Platform notes
 --------------
 - The Xcode project is prepared to build Little Go both for iOS and for the
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
-  moving target SDK. The latest release of the project was made with iOS 4.2.
+  moving target SDK. The latest release of the project was made with iOS 5.0.
 - The deployment target is set to 4.2 so that the application keeps running on
   iOS 4 devices.
 

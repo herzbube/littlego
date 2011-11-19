@@ -22,7 +22,7 @@ Before the release
   2009-2011 instead of 2009-2010):
   - All source files
   - Info.plist
-- Set the active build configuration in Xcode to "Release" and build the project
+- In Xcode build the "Little Go" target using the "Release" build configuration,
   both for the simulator and for all target devices
 - If there are any warnings, fix them
 - Perform tests suitable to make sure that everything still works as intended
@@ -32,24 +32,26 @@ Before the release
 - Commit final changes (check with "git status" that nothing was forgotten)
 
 
-Make a beta release (binary distribution only)
-----------------------------------------------
-- Build the application for the iOS device (not the simulator) and the
-  "Distribution" configuration
-- In Xcode, select "Build and Archive" from the "Build" menu
-- This will open the "Organizer" window and display the archived application
-  build
-- Select the build, then click the "Share..." button
-- Select a code-signing identity (default should be OK), then click the
-  "Distribute for Enterprise..." button
-- A dialog opens that lets you fill in a few things about how you intend to
-  distribute the build
-- Most important is that the URL matches exactly the URL of the .ipa file as it
-  is going to be available for download
+Make a beta release (binary ad-hoc distribution only)
+-----------------------------------------------------
+- In the toolbar's scheme selector, activate the "Little Go Release" scheme and
+  the "iOS Device" destination
+- Select "Archive" from the "Build" menu
+- The application is now built using the "Distribute" build configuration. After
+  the build succeeds it is archived, then the "Organizer" window opens to
+  display the archive that was just created.
+- Select the archived build, then click the "Share..." button
+- From the list of content options, select "iOS App Store Package (.ipa)"
+- Select a code-signing identity (the default should be OK)
+- Click the "Next" button which will pop up a save dialog
+- Click the checkbox "Save for Enterprise Distribution"; this opens a pane that
+  lets you fill in a few things about how you intend to distribute the build
+- Most important is that what you enter in the "Application URL" field matches
+  exactly the URL of the .ipa file as it is going to be available for download
 - Sensible values are
-  URL = http://www.herzbube.ch/software/littlego/0.1/littlego-0.1.ipa
-  Name = Little Go 0.1 Beta Test
-- You are now asked to specify a save location & name. This step creates both a
+  - Application URL = http://www.herzbube.ch/software/littlego/0.1/littlego-0.1.ipa
+  - Title = Little Go 0.1 Beta Test
+- You must also specify a save location and a name. This step creates both a
   .plist and an .ipa file, where the specified name serves as the base name for
   both files. Make sure to specify the same name as in the URL above (but
   without the .ipa extension; e.g. "littlego-0.1").

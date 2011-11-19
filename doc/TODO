@@ -90,6 +90,14 @@ Priority 1 (important)
   - However the final solution looks like, update the GoScore class docs and
     possibly other doc snippets in GoScore.m
 - Flip to the front view of the Play view when an archived game is loaded.
+- Fix the following build warnings
+  - [BWARN]warning: iPhone apps with a deployment target lower than 4.3 should
+    include an armv6 architecture (current IPHONEOS_DEPLOYMENT_TARGET = "4.2",
+    ARCHS = "armv7").
+  - ld: warning: direct access in __ZN5boost6system12system_errorD1Ev to global
+    weak symbol __ZTVN5boost6system12system_errorE means the weak symbol cannot
+    be overridden at runtime. This was likely caused by different translation
+    units being compiled with different visibility settings.
 
 
 Priority 2 (nice to have)
