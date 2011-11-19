@@ -801,3 +801,34 @@ Design note for code that needs to work with files
   necessary; working with absolute paths often obviates this need
 - If the current working directory must indeed be changed, it should be changed
   back to the original location after the desired purpose has been achieved
+
+
+The version number
+------------------
+The application's version number is stored in the bundle's Info.plist file.
+According to Apple's "Information Property List Key Reference" (available at
+[1]), there are two keys that are relevant for versioning:
+- CFBundleShortVersionString: A string consisting of three period-separated
+  integers. This key refers to the so-called "release version number".
+  Apparently it is possible to localize this string, but why one would want to
+  do this is beyond me (also the specification "three period-separated integers"
+  in my opinion does not leave any room for localization). Xcode 4 displays the
+  value of this key on the "Summary" page of each target, as the field labeled
+  "Version".
+- CFBundleVersion: A monotonically increased string consisting of of one or
+  more period-separated integers. This refers to the so-called "build version
+  number". Xcode 4 displays the value of this key on the "Summary" page of each
+  target, as the field labeled "Build".
+
+For Little Go, I use CFBundleShortVersionString exclusively and ignore
+CFBundleVersion entirely. The main reason for this is the Xcode user guide,
+section "Building and Running Your Code", which recommends to fill in the
+"Version" field, which as we know corresponds to CFBundleShortVersionString,
+but does not talk about the "Build" field at all.
+
+This makes sense to me, especially since Little Go is a small project which
+has no need for build numbers. In addition, my previous experience with Mac OS X
+projects also supports usage of CFBundleShortVersionString only.
+
+[1] developer.apple.com/library/mac/#documentation/General/Reference/InfoPlistKeyReference/
+[2] http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/Xcode4UserGuide/Building/Building.html

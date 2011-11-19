@@ -122,7 +122,7 @@
 - (void) showAboutDocument:(NSString*)documentContent
 {
   NSString* bundleName = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-  NSString* bundleVersion = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleVersion"];
+  NSString* bundleVersion = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
   NSString* copyright = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
   documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%bundleName%"
                                                                withString:bundleName];
