@@ -10,7 +10,6 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
-- Review weird memory management of GoBoardRegion.points
 - Code cleanup
   - Remove @synchronized where possible and make properties non-atomic
   - Review properties to see if any can be declared readonly in the public

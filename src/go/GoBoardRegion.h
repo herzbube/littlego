@@ -71,7 +71,7 @@
 
 /// @brief List of GoPoint objects in this GoBoardRegion. The list is
 /// unordered.
-@property(assign) NSArray* points;
+@property(nonatomic, readonly, retain) NSArray* points;
 /// @brief A random color that can be used to mark GoPoints in this
 /// GoBoardRegion. This is intended as a debugging aid.
 @property(retain) UIColor* randomColor;

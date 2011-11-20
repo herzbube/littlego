@@ -28,5 +28,6 @@
 }
 
 - (void) testNewGame;
+- (void) testNewRegionWithPoints;
 
 @end

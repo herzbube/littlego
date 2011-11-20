@@ -62,4 +62,28 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the regionWithPoints:() convenience constructor.
+// -----------------------------------------------------------------------------
+- (void) testNewRegionWithPoints;
+{
+  GoBoard* board = m_game.board;
+  GoPoint* pointA1 = [board pointAtVertex:@"A1"];
+  GoPoint* pointF9 = [board pointAtVertex:@"F9"];
+  GoPoint* pointK13 = [board pointAtVertex:@"K13"];
+
+  NSMutableArray* inputArray = [NSMutableArray arrayWithObjects:pointA1, pointF9, pointK13, nil];
+  NSArray* expectedArray = [inputArray copy];
+  int expectedRegionSize = inputArray.count;
+
+  GoBoardRegion* region = [GoBoardRegion regionWithPoints:inputArray];
+  // Changing inputArray now must not have any influence on the region's
+  // content, i.e. we expect that GoBoardRegion made a copy of inputArray
+  [inputArray addObject:[board pointAtVertex:@"S17"]];
+  
+  STAssertNotNil(region.points, nil);
+  STAssertEquals(expectedRegionSize, [region size], nil);
+  STAssertTrue([expectedArray isEqualToArray:region.points], nil);
+}
+
 @end

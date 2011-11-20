@@ -31,7 +31,6 @@
 //@}
 /// @name Private helper methods
 //@{
-- (void) setPoints:(NSArray*)points;
 - (void) splitRegionIfRequired;
 - (void) fillCache;
 - (void) invalidateCache;
@@ -39,6 +38,10 @@
 /// @name Other methods
 //@{
 - (NSString*) description;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, readwrite, retain) NSArray* points;
 //@}
 /// @name Privately declared properties
 //@{
@@ -87,7 +90,10 @@
   GoBoardRegion* region = [[GoBoardRegion alloc] init];
   if (region)
   {
-    region.points = points;
+    // Make a copy of points so that the caller can reuse the object. In
+    // addition, the copy must be a mutable array so that addPoint:() and
+    // removePoint:() can make changes.
+    region.points = [NSMutableArray arrayWithArray:points];
     [region autorelease];
   }
   return region;
@@ -119,8 +125,8 @@
   self = [super init];
   if (! self)
     return nil;
-  points = [[NSMutableArray arrayWithCapacity:0] retain];
 
+  self.points = [NSMutableArray arrayWithCapacity:0];
   CGFloat red = (CGFloat)random() / (CGFloat)RAND_MAX;
   CGFloat blue = (CGFloat)random() / (CGFloat)RAND_MAX;
   CGFloat green = (CGFloat)random() / (CGFloat)RAND_MAX;
@@ -139,8 +145,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [points release];
-  points = nil;
+  self.points = nil;
   self.randomColor = nil;
   [self invalidateCache];
   [super dealloc];
@@ -157,34 +162,6 @@
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
   return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %d", self, points.count];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the (unordered) list of GoPoint objects in this
-/// GoBoardRegion.
-// -----------------------------------------------------------------------------
-- (NSArray*) points
-{
-  @synchronized(self)
-  {
-    if (scoringMode)
-      return points;
-
-    return [[points copy] autorelease];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets the list of GoPoint objects in this GoBoardRegion to
-/// @a newValue. No assumption is made about the order of objects in
-/// @a newValue.
-// -----------------------------------------------------------------------------
-- (void) setPoints:(NSArray*)newValue
-{
-  @synchronized(self)
-  {
-    [(NSMutableArray*)points setArray:newValue];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -245,7 +222,7 @@
 // -----------------------------------------------------------------------------
 - (void) joinRegion:(GoBoardRegion*)region
 {
-  for (GoPoint* point in [region points])
+  for (GoPoint* point in region.points)
   {
     point.region = self;
     [(NSMutableArray*)points addObject:point];
@@ -295,7 +272,7 @@
     return -1;  // todo is there a plausible implementation for non-stone groups
 
   NSMutableArray* libertyPoints = [NSMutableArray arrayWithCapacity:0];
-  for (GoPoint* point in self.points)
+  for (GoPoint* point in points)
   {
     for (GoPoint* neighbour in point.neighbours)
     {
@@ -320,7 +297,7 @@
     return cachedAdjacentRegions;
 
   NSMutableArray* adjacentRegions = [NSMutableArray arrayWithCapacity:0];
-  for (GoPoint* point in self.points)
+  for (GoPoint* point in points)
   {
     for (GoPoint* neighbour in point.neighbours)
     {
@@ -365,11 +342,11 @@
   if ([self isStoneGroup])
     return;
   // Split not possible if less than 2 points
-  if (self.points.count < 2)
+  if (points.count < 2)
     return;
 
   NSMutableArray* subRegions = [NSMutableArray arrayWithCapacity:0];
-  NSMutableArray* pointsToProcess = [self.points mutableCopy];
+  NSMutableArray* pointsToProcess = [points mutableCopy];
   while ([pointsToProcess count] > 0)
   {
     // Step 1: Create new subregion that contains the current point and its
