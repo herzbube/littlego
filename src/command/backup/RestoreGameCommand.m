@@ -82,7 +82,7 @@
     Player* blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
     Player* whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
 
-    LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath];
+    LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
     loadCommand.waitUntilDone = true;
     loadCommand.blackPlayer = blackPlayer;
     loadCommand.whitePlayer = whitePlayer;

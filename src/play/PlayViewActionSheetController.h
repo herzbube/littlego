@@ -34,8 +34,6 @@
 // -----------------------------------------------------------------------------
 @interface PlayViewActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate, EditTextDelegate>
 {
-@private
-  NSString* m_sgfFileName;
 }
 
 - (id) initWithModalMaster:(UIViewController*)aController;

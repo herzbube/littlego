@@ -128,7 +128,7 @@
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
   ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  cell.textLabel.text = game.fileName;
+  cell.textLabel.text = game.name;
   cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;

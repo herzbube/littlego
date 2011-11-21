@@ -74,8 +74,12 @@ enum ActionSheetButton
 - (void) score;
 - (void) resign;
 - (void) saveGame;
-- (void) doSaveGame:(NSString*)fileName;
+- (void) doSaveGame:(NSString*)gameName;
 - (void) newGame;
+//@}
+/// @name Privately declared properties
+//@{
+@property(retain) NSString* saveGameName;
 //@}
 @end
 
@@ -84,6 +88,7 @@ enum ActionSheetButton
 
 @synthesize modalMaster;
 @synthesize buttonIndexes;
+@synthesize saveGameName;
 
 
 // -----------------------------------------------------------------------------
@@ -100,9 +105,11 @@ enum ActionSheetButton
   self = [super init];
   if (! self)
     return nil;
-  m_sgfFileName = nil;
+  
+  self.saveGameName = nil;
   self.modalMaster = aController;
   self.buttonIndexes = [NSMutableDictionary dictionaryWithCapacity:MaxButton];
+  
   return self;
 }
 
@@ -112,11 +119,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  if (m_sgfFileName)
-  {
-    [m_sgfFileName release];
-    m_sgfFileName = nil;
-  }
+  self.saveGameName = nil;
   self.modalMaster = nil;
   self.buttonIndexes = nil;
   [super dealloc];
@@ -262,20 +265,20 @@ enum ActionSheetButton
   // - iii = Numeric counter starting with 1. The counter does not use prefix
   //         zeroes.
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* defaultFileName = nil;
-  NSString* defaultFilePath = nil;
+  NSString* defaultGameName = nil;
   NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
   int suffix = 1;
   while (true)
   {
-    defaultFileName = [NSString stringWithFormat:@"%@ %d.sgf", prefix, suffix];
-    defaultFilePath = [model.archiveFolder stringByAppendingPathComponent:defaultFileName];
+    defaultGameName = [NSString stringWithFormat:@"%@ %d", prefix, suffix];
+    NSString* defaultFileName = [defaultGameName stringByAppendingString:@".sgf"];
+    NSString* defaultFilePath = [model.archiveFolder stringByAppendingPathComponent:defaultFileName];
     if (! [fileManager fileExistsAtPath:defaultFilePath])
       break;
     suffix++;
   }
 
-  EditTextController* editTextController = [[EditTextController controllerWithText:defaultFileName title:@"File name" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName title:@"Game name" delegate:self] retain];
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -322,9 +325,8 @@ enum ActionSheetButton
       switch (alertView.tag)
       {
         case SaveGameAlertView:
-          [self doSaveGame:m_sgfFileName];
-          [m_sgfFileName release];
-          m_sgfFileName = nil;
+          [self doSaveGame:self.saveGameName];
+          self.saveGameName = nil;
           break;
         default:
           assert(0);
@@ -363,20 +365,18 @@ enum ActionSheetButton
   if (! didCancel)
   {
     ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-    NSString* sgfFilePath = [model.archiveFolder stringByAppendingPathComponent:editTextController.text];
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:sgfFilePath])
+    if ([model gameWithName:editTextController.text])
     {
-      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File already exists"
-                                                      message:@"Another game file with that name already exists. Do you want to overwrite that file?"
+      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game already exists"
+                                                      message:@"Another game with that name already exists. Do you want to overwrite that game?"
                                                      delegate:self
                                             cancelButtonTitle:@"No"
                                             otherButtonTitles:@"Yes", nil];
       alert.tag = SaveGameAlertView;
       [alert show];
-      // Remember file name for later use (should the user confirm the
+      // Remember game name for later use (should the user confirm the
       // overwrite).
-      m_sgfFileName = [editTextController.text retain];
+      self.saveGameName = editTextController.text;
     }
     else
     {
@@ -387,12 +387,12 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Performs the actual "save game" operation. The game is written to
-/// file @a fileName. If a file of that name already exists, it is overwritten.
+/// @brief Performs the actual "save game" operation. The saved game is named
+/// @a gameName. If a game with that name already exists, it is overwritten.
 // -----------------------------------------------------------------------------
-- (void) doSaveGame:(NSString*)fileName
+- (void) doSaveGame:(NSString*)gameName
 {
-  [[[SaveGameCommand alloc] initWithFile:fileName] submit];
+  [[[SaveGameCommand alloc] initWithSaveGame:gameName] submit];
 }
 
 @end

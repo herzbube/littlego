@@ -36,7 +36,7 @@
 @implementation RenameGameCommand
 
 @synthesize game;
-@synthesize theNewFileName;
+@synthesize theNewName;
 
 
 // -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@
 ///
 /// @note This is the designated initializer of RenameGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithGame:(ArchiveGame*)aGame newFileName:(NSString*)aNewFileName
+- (id) initWithGame:(ArchiveGame*)aGame newName:(NSString*)aNewName
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
@@ -52,7 +52,7 @@
     return nil;
 
   self.game = aGame;
-  self.theNewFileName = aNewFileName;
+  self.theNewName = aNewName;
 
   return self;
 }
@@ -63,7 +63,7 @@
 - (void) dealloc
 {
   self.game = nil;
-  self.theNewFileName = nil;
+  self.theNewName = nil;
   [super dealloc];
 }
 
@@ -72,12 +72,13 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if ([self.game.fileName isEqualToString:self.theNewFileName])
+  NSString* newFileName = [self.theNewName stringByAppendingString:@".sgf"];
+  if ([self.game.fileName isEqualToString:newFileName])
     return true;
 
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
-  NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:self.theNewFileName];
+  NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:newFileName];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
@@ -86,7 +87,7 @@
     // Must update the ArchiveGame before posting the notification. Reason: The
     // notification triggers an update cycle which tries to match ArchiveGame
     // objects to filesystem entries via their file names.
-    self.game.fileName = self.theNewFileName;
+    self.game.fileName = newFileName;
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   }
   return success;

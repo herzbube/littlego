@@ -21,10 +21,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The SaveGameCommand class is responsible for saving the current
-/// game to an .sgf file in the archive folder.
+/// game to the archive.
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
-/// command. If a file with the same name already exists, it is overwritten.
+/// command. If a game with the same name already exists, it is overwritten.
 ///
 /// SaveGameCommand executes synchronously.
 // -----------------------------------------------------------------------------
@@ -32,8 +32,10 @@
 {
 }
 
-- (id) initWithFile:(NSString*)aFileName;
+- (id) initWithSaveGame:(NSString*)aGameName;
 
-@property(retain) NSString* fileName;
+/// @brief The name under which the current game should be saved. This is not
+/// the file name!
+@property(retain) NSString* gameName;
 
 @end

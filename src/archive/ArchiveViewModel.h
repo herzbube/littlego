@@ -24,6 +24,11 @@
 /// @brief The ArchiveViewModel class provides data used to populate the Archive
 /// view, as well as user defaults data that describe how the data needs to be
 /// displayed (e.g. sorting criteria).
+///
+/// Although archived games ultimately refer to files, the UI presented to the
+/// user should not refer to them as such. With this in mind, the public
+/// interface of ArchiveViewModel does not include any file-related methods or
+/// properties.
 // -----------------------------------------------------------------------------
 @interface ArchiveViewModel : NSObject
 {
@@ -33,7 +38,7 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 - (ArchiveGame*) gameAtIndex:(int)index;
-- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
+- (ArchiveGame*) gameWithName:(NSString*)name;
 
 /// @brief Path to folder that contains files with archived games.
 @property(retain) NSString* archiveFolder;

@@ -26,32 +26,31 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Edit Player" table view.
+/// @brief Enumerates the sections presented in the "Edit Game" table view.
 // -----------------------------------------------------------------------------
 enum EditGameTableViewSection
 {
-  FileNameSection,
-  FileAttributesSection,
+  GameNameSection,
+  GameAttributesSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the FileNameSection.
+/// @brief Enumerates items in the GameNameSection.
 // -----------------------------------------------------------------------------
-enum FileNameSectionItem
+enum GameNameSectionItem
 {
-  FileNameItem,
-  MaxFileNameSectionItem
+  GameNameItem,
+  MaxGameNameSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the FileAttributesSection.
+/// @brief Enumerates items in the GameAttributesSection.
 // -----------------------------------------------------------------------------
-enum FileAttributesSectionItem
+enum GameAttributesSectionItem
 {
-  FileDateItem,
-  FileSizeItem,
-  MaxFileAttributesSectionItem,
+  LastSavedDateItem,
+  MaxGameAttributesSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -126,7 +125,6 @@ enum FileAttributesSectionItem
 - (void) dealloc
 {
   [self.game removeObserver:self forKeyPath:@"fileDate"];
-  [self.game removeObserver:self forKeyPath:@"fileSize"];
 
   self.game = nil;
   self.model = nil;
@@ -149,7 +147,6 @@ enum FileAttributesSectionItem
 
   // KVO observing
   [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
-  [self.game addObserver:self forKeyPath:@"fileSize" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -180,10 +177,10 @@ enum FileAttributesSectionItem
 {
   switch (section)
   {
-    case FileNameSection:
-      return MaxFileNameSectionItem;
-    case FileAttributesSection:
-      return MaxFileAttributesSectionItem;
+    case GameNameSection:
+      return MaxGameNameSectionItem;
+    case GameAttributesSection:
+      return MaxGameAttributesSectionItem;
     default:
       assert(0);
       break;
@@ -199,14 +196,14 @@ enum FileAttributesSectionItem
   UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
   switch (indexPath.section)
   {
-    case FileNameSection:
+    case GameNameSection:
     {
       switch (indexPath.row)
       {
-        case FileNameItem:
+        case GameNameItem:
         {
-          cell.textLabel.text = @"File name";
-          cell.detailTextLabel.text = self.game.fileName;
+          cell.textLabel.text = @"Game name";
+          cell.detailTextLabel.text = self.game.name;
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
@@ -216,18 +213,14 @@ enum FileAttributesSectionItem
       }
       break;
     }
-    case FileAttributesSection:
+    case GameAttributesSection:
     {
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       switch (indexPath.row)
       {
-        case FileDateItem:
+        case LastSavedDateItem:
           cell.textLabel.text = @"Last saved";
           cell.detailTextLabel.text = self.game.fileDate;
-          break;
-        case FileSizeItem:
-          cell.textLabel.text = @"File size (in KB)";
-          cell.detailTextLabel.text = self.game.fileSize;
           break;
         default:
           assert(0);
@@ -252,11 +245,11 @@ enum FileAttributesSectionItem
 
   switch (indexPath.section)
   {
-    case FileNameSection:
+    case GameNameSection:
     {
       switch (indexPath.row)
       {
-        case FileNameItem:
+        case GameNameItem:
           [self editGame];
           break;
         default:
@@ -279,11 +272,11 @@ enum FileAttributesSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Displays EditTextController to allow the user to change the
-/// archive game's file name.
+/// archive game's name.
 // -----------------------------------------------------------------------------
 - (void) editGame
 {
-  EditTextController* editTextController = [[EditTextController controllerWithText:self.game.fileName title:@"File name" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:self.game.name title:@"Game name" delegate:self] retain];
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -297,13 +290,13 @@ enum FileAttributesSectionItem
 // -----------------------------------------------------------------------------
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
-  ArchiveGame* aGame = [self.model gameWithFileName:text];
+  ArchiveGame* aGame = [self.model gameWithName:text];
   if (nil == aGame)
-    return true;  // ok, no file with the new name exists
+    return true;  // ok, no game with the new name exists
   else if (aGame == self.game)
     return true;  // ok, user has made no real changes
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File already exists"
-                                                  message:@"Please choose a different name. Another game file with that name already exists."
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game already exists"
+                                                  message:@"Please choose a different name. Another game with that name already exists."
                                                  delegate:self
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
@@ -320,7 +313,7 @@ enum FileAttributesSectionItem
   if (! didCancel)
   {
     RenameGameCommand* command = [[RenameGameCommand alloc] initWithGame:self.game
-                                                             newFileName:editTextController.text];
+                                                                 newName:editTextController.text];
     [command submit];
 
     [self.tableView reloadData];
@@ -351,7 +344,7 @@ enum FileAttributesSectionItem
   if (didStartNewGame)
   {
     NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
-    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath];
+    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath gameName:self.game.name];
     command.blackPlayer = controller.blackPlayer;
     command.whitePlayer = controller.whitePlayer;
     [command submit];

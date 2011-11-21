@@ -33,7 +33,7 @@
 
 @implementation SaveGameCommand
 
-@synthesize fileName;
+@synthesize gameName;
 
 
 // -----------------------------------------------------------------------------
@@ -41,14 +41,14 @@
 ///
 /// @note This is the designated initializer of SaveGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithFile:(NSString*)aFileName
+- (id) initWithSaveGame:(NSString*)aGameName
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  self.fileName = aFileName;
+  self.gameName = aGameName;
 
   return self;
 }
@@ -58,7 +58,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.fileName = nil;
+  self.gameName = nil;
   [super dealloc];
 }
 
@@ -67,7 +67,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (! self.fileName)
+  if (! self.gameName)
     return false;
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   if (! model)
@@ -77,7 +77,8 @@
   // destination is in the archive folder
   NSString* temporaryDirectory = NSTemporaryDirectory();
   NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
-  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.fileName];
+  NSString* fileName = [gameName stringByAppendingString:@".sgf"];
+  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:fileName];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
@@ -120,7 +121,7 @@
     return false;
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.fileName];
+  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.gameName];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;
 }

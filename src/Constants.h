@@ -275,14 +275,14 @@ extern NSString* computerPlayerThinkingStops;
 //@{
 /// @brief Is sent to indicate that the current game has been saved and a
 /// corresponding .sgf file has been placed in the archive. An NSString instance
-/// with the .sgf filename is associated with the notification.
+/// with the game name (not the file name) is associated with the notification.
 extern NSString* gameSavedToArchive;
 /// @brief Is sent to indicate that a game has been loaded from an .sgf file in
-/// the archive. An NSString instance with the .sgf filename is associated with
-/// the notification.
+/// the archive. An NSString instance with the game name (not the file name) is
+/// associated with the notification.
 extern NSString* gameLoadedFromArchive;
 /// @brief Is sent to indicate that something about the content of the archive
-/// has changed (e.g. an .sgf file has been added, removed, renamed etc.).
+/// has changed (e.g. a game has been added, removed, renamed etc.).
 extern NSString* archiveContentChanged;
 //@}
 

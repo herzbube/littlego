@@ -27,6 +27,10 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name Property accessors
+//@{
+- (NSString*) name;
+//@}
 @end
 
 
@@ -119,6 +123,14 @@
 - (NSComparisonResult) compare:(ArchiveGame*)aGame
 {
   return [self.fileName localizedCompare:aGame.fileName];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSString*) name
+{
+  return [fileName stringByReplacingOccurrencesOfString:@".sgf" withString:@""];
 }
 
 @end

@@ -63,12 +63,6 @@ Priority 1 (important)
     in less time)?
 - Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
   refuses an "undo" command.
-- Redesign archive-related user interface so that the "file" concept becomes
-  less prominent.
-  - Never talk about files, instead talk about games; if possible get rid of
-    the word "archive"
-  - Hide the file extension .sgf; it should be tacked on when the game is saved,
-    and removed when the game list is displayed
 - LoadGameCommand is too slow - when a game with many moves on a large board is
   restored, the command takes many seconds to execute. The probable culprit is
   GoBoardRegion::splitRegionIfRequired().

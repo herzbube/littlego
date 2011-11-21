@@ -34,6 +34,10 @@
 //@{
 - (void) archiveContentChanged:(NSNotification*)notification;
 //@}
+/// @name Private helpers
+//@{
+- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(readwrite, retain) NSArray* gameList;
@@ -137,6 +141,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the game object with name @a name.
+// -----------------------------------------------------------------------------
+- (ArchiveGame*) gameWithName:(NSString*)name
+{
+  NSString* fileName = [name stringByAppendingString:@".sgf"];
+  return [self gameWithFileName:fileName];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the game object with file name @a fileName.
 // -----------------------------------------------------------------------------
 - (ArchiveGame*) gameWithFileName:(NSString*)fileName
@@ -144,7 +157,7 @@
   for (ArchiveGame* game in gameList)
   {
     if ([game.fileName isEqualToString:fileName])
-         return game;
+      return game;
   }
   return nil;
 }

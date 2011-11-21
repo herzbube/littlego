@@ -73,6 +73,7 @@
 @synthesize filePath;
 @synthesize blackPlayer;
 @synthesize whitePlayer;
+@synthesize gameName;
 @synthesize waitUntilDone;
 
 
@@ -81,7 +82,7 @@
 ///
 /// @note This is the designated initializer of LoadGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithFilePath:(NSString*)aFilePath
+- (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
@@ -91,6 +92,7 @@
   self.filePath = aFilePath;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
+  self.gameName = aGameName;
   self.waitUntilDone = false;
   m_boardSize = BoardSizeUndefined;
   m_handicap = nil;
@@ -109,6 +111,7 @@
   self.filePath = nil;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
+  self.gameName = nil;
   [m_handicap release];
   [m_komi release];
   [m_moves release];
@@ -295,6 +298,7 @@
   [GoUtilities setupNewGame:[GoGame sharedGame] withGtpHandicap:m_handicap];
   [self setupKomi:m_komi];
   [self setupMoves:m_moves];
+  [[NSNotificationCenter defaultCenter] postNotificationName:gameLoadedFromArchive object:self.gameName];
 }
 
 // -----------------------------------------------------------------------------
