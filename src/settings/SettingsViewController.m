@@ -150,6 +150,10 @@ enum GtpEngineProfilesSectionItem
 //@{
 - (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController;
 //@}
+/// @name Notification responders
+//@{
+- (void) goGameNewCreated:(NSNotification*)notification;
+//@}
 /// @name Private helpers
 //@{
 - (void) newPlayer;
@@ -200,6 +204,9 @@ enum GtpEngineProfilesSectionItem
   // self.editButtonItem is a standard item provided by UIViewController, which
   // is linked to triggering the view's edit mode
   self.navigationItem.rightBarButtonItem = self.editButtonItem;
+  
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -501,6 +508,15 @@ enum GtpEngineProfilesSectionItem
         case GtpEngineProfilesSection:
         {
           GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
+          NSString* profileUUID = profile.uuid;
+          NSString* defaultProfileUUID = [self.gtpEngineProfileModel defaultProfile].uuid;
+          // Players that refer to the profile that is about to be deleted,
+          // are set to refer to the default profile instead
+          for (Player* player in self.playerModel.playerList)
+          {
+            if ([profileUUID isEqualToString:player.gtpEngineProfileUUID])
+              player.gtpEngineProfileUUID = defaultProfileUUID;
+          }
           [self.gtpEngineProfileModel remove:profile];
           break;
         }
@@ -811,5 +827,28 @@ enum GtpEngineProfilesSectionItem
   [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationNone];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameNewCreated notification.
+// -----------------------------------------------------------------------------
+- (void) goGameNewCreated:(NSNotification*)notification
+{
+  // Here we are dealing with the (forbidden) scenario that the user can delete
+  // a player that is associated with a running game. Imagine this:
+  // - We have 3 players, A, B and C
+  // - A game is currently running, with A and B playing
+  // - The setting view enters editing mode; since C is not playing, its cell
+  //   is marked as "deletable" (UITableViewCellEditingStyleDelete)
+  // - The user now switches away from the settings view to the play view,
+  //   where he deviously starts a new game with A and C playing
+  // - The user comes back to the settings view, which is still in editing
+  //   mode, with the cell for C still marked as deletable
+  // - The user deletes player C, which is forbidden!
+  // To prevent this from happening, we simply turn editing off if a new game
+  // is created.
+  if (self.tableView.editing)
+    [self setEditing:NO animated:YES];
+}
+
 
 @end
