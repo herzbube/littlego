@@ -64,15 +64,16 @@ NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
 NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
-/// GTP engine settings default values
-int const fuegoMaxMemoryMinimum = 32;
+/// GTP engine profile default values
+int const fuegoMaxMemoryMinimum = 16;
 int const fuegoMaxMemoryMaximum = 512;
-int const fuegoMaxMemoryDefault = 64;
+int const fuegoMaxMemoryDefault = 32;
 int const fuegoThreadCountMinimum = 1;
 int const fuegoThreadCountMaximum = 8;
 int const fuegoThreadCountDefault = 1;
 bool const fuegoPonderingDefault = true;
 bool const fuegoReuseSubtreeDefault = true;
+NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Debug view settings default values
 int const gtpLogSizeMinimum = 5;
@@ -118,17 +119,21 @@ NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
 // Players
 NSString* playerListKey = @"PlayerList";
-NSString* uuidKey = @"UUID";
-NSString* nameKey = @"Name";
+NSString* playerUUIDKey = @"UUID";
+NSString* playerNameKey = @"Name";
 NSString* isHumanKey = @"IsHuman";
+NSString* gtpEngineProfileReferenceKey = @"GtpEngineProfileUUID";
 NSString* statisticsKey = @"Statistics";
 NSString* gamesPlayedKey = @"GamesPlayed";
 NSString* gamesWonKey = @"GamesWon";
 NSString* gamesLostKey = @"GamesLost";
 NSString* gamesTiedKey = @"GamesTied";
 NSString* starPointsKey = @"StarPoints";
-// GTP engine settings
-NSString* gtpEngineSettingsKey = @"GtpEngineSettings";
+// GTP engine profiles
+NSString* gtpEngineProfileListKey = @"GtpEngineProfileList";
+NSString* gtpEngineProfileUUIDKey = @"UUID";
+NSString* gtpEngineProfileNameKey = @"Name";
+NSString* gtpEngineProfileDescriptionKey = @"Description";
 NSString* fuegoMaxMemoryKey = @"FuegoMaxMemory";
 NSString* fuegoThreadCountKey = @"FuegoThreadCount";
 NSString* fuegoPonderingKey = @"FuegoPondering";

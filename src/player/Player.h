@@ -17,7 +17,7 @@
 
 // Forward declarations
 @class PlayerStatistics;
-@class GtpEngineSettings;
+@class GtpEngineProfile;
 
 
 // -----------------------------------------------------------------------------
@@ -25,8 +25,19 @@
 /// player name, whether the player is human or computer, etc.).
 ///
 /// The difference between the Player and the GoPlayer class is that Player
-/// refers to an @e identity, whereas GoPlayer attaches that identity to the
-/// context of a Go game.
+/// refers to an @e identity, whereas GoPlayer refers to an anonymous black or
+/// white player. GoPlayer can be configured with a reference to a Player
+/// object, thus bringing the Player object's identity into the context of the
+/// concrete GoGame that the GoPlayer instance is associated with.
+///
+/// If a Player object represents a computer player (i.e. isHuman() returns
+/// false), the Player object has an associated collection of settings that
+/// define the behaviour of the GTP engine while this Player participates in a
+/// game. This collection of settings is called a "GTP engine profile". At
+/// runtime the convenience method gtpEngineProfile() returns an object that
+/// encapsulates the settings collection. The actual reference is stored in
+/// the property @e gtpEngineProfileUUID, which is read from and written to the
+/// user defaults system.
 // -----------------------------------------------------------------------------
 @interface Player : NSObject
 {
@@ -35,6 +46,7 @@
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 - (NSDictionary*) asDictionary;
+- (GtpEngineProfile*) gtpEngineProfile;
 
 /// @brief The player's UUID. This is a technical identifier guaranteed to be
 /// unique. This identifier is never displayed in the GUI.
@@ -44,16 +56,15 @@
 /// @brief True if this Player object represents a human player, false if it
 /// represents a computer player.
 @property(getter=isHuman) bool human;
+/// @brief UUID of the GTP engine profile used by this Player. This ID is used
+/// by gtpEngineProfile() to obtain and return a GtpEngineProfile object.
+///
+/// This property holds an empty string if this Player is not a computer player
+/// (i.e. isHuman() returns true).
+@property(retain) NSString* gtpEngineProfileUUID;
 /// @brief Reference to an object that stores statistics about the history of
 /// games played by this Player.
 @property(retain) PlayerStatistics* statistics;
-/// @brief Reference to an object that stores settings that define the behaviour
-/// of the GTP engine for this computer Player.
-///
-/// If this Player is not a computer player (i.e. isHuman() returns true), this
-/// property still references a settings object, but the referenced object's
-/// attribute values are undefined.
-@property(retain) GtpEngineSettings* gtpEngineSettings;
 /// @brief True if this Player object is taking part in the currently ongoing
 /// GoGame.
 @property(getter=isPlaying) bool playing;

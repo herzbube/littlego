@@ -323,9 +323,9 @@ extern NSString* goScoreCalculationEnds;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name GTP engine settings default values
+/// @name GTP engine profile default values
 ///
-/// @brief See GtpEngineSettings for attribute documentation.
+/// @brief See GtpEngineProfile for attribute documentation.
 // -----------------------------------------------------------------------------
 //@{
 extern const int fuegoMaxMemoryMinimum;
@@ -336,6 +336,10 @@ extern const int fuegoThreadCountMaximum;
 extern const int fuegoThreadCountDefault;
 extern const bool fuegoPonderingDefault;
 extern const bool fuegoReuseSubtreeDefault;
+/// @brief The hardcoded UUID of the default GTP engine profile. This profile
+/// is the fallback profile if no other profile is available or appropriate.
+/// The user cannot delete this profile.
+extern NSString* defaultGtpEngineProfileUUID;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -393,17 +397,21 @@ extern NSString* handicapKey;
 extern NSString* komiKey;
 // Players
 extern NSString* playerListKey;
-extern NSString* uuidKey;
-extern NSString* nameKey;
+extern NSString* playerUUIDKey;
+extern NSString* playerNameKey;
 extern NSString* isHumanKey;
+extern NSString* gtpEngineProfileReferenceKey;
 extern NSString* statisticsKey;
 extern NSString* gamesPlayedKey;
 extern NSString* gamesWonKey;
 extern NSString* gamesLostKey;
 extern NSString* gamesTiedKey;
 extern NSString* starPointsKey;
-// GTP engine settings
-extern NSString* gtpEngineSettingsKey;
+// GTP engine profiles
+extern NSString* gtpEngineProfileListKey;
+extern NSString* gtpEngineProfileUUIDKey;
+extern NSString* gtpEngineProfileNameKey;
+extern NSString* gtpEngineProfileDescriptionKey;
 extern NSString* fuegoMaxMemoryKey;
 extern NSString* fuegoThreadCountKey;
 extern NSString* fuegoPonderingKey;

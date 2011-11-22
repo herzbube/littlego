@@ -23,6 +23,7 @@
 @class GtpEngine;
 @class NewGameModel;
 @class PlayerModel;
+@class GtpEngineProfileModel;
 @class PlayViewModel;
 @class ScoringModel;
 @class SoundHandling;
@@ -80,6 +81,8 @@
 @property(retain) NewGameModel* theNewGameModel;
 /// @brief Model object that stores player data.
 @property(retain) PlayerModel* playerModel;
+/// @brief Model object that stores GTP engine profile data.
+@property(retain) GtpEngineProfileModel* gtpEngineProfileModel;
 /// @brief Model object that stores attributes used to manage the Play view.
 @property(retain) PlayViewModel* playViewModel;
 /// @brief Model object that stores attributes used for scoring.

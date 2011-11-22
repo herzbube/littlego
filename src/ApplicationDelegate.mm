@@ -32,6 +32,7 @@
 #import "gtp/GtpClient.h"
 #import "gtp/GtpEngine.h"
 #import "newgame/NewGameModel.h"
+#import "player/GtpEngineProfileModel.h"
 #import "player/PlayerModel.h"
 #import "play/PlayViewModel.h"
 #import "play/ScoringModel.h"
@@ -91,6 +92,7 @@
 @synthesize gtpEngine;
 @synthesize theNewGameModel;
 @synthesize playerModel;
+@synthesize gtpEngineProfileModel;
 @synthesize scoringModel;
 @synthesize playViewModel;
 @synthesize soundHandling;
@@ -147,6 +149,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpEngine = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
+  self.gtpEngineProfileModel = nil;
   self.playViewModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
@@ -239,6 +242,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [[[BackupGameCommand alloc] init] submit];
   [self.theNewGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
+  [self.gtpEngineProfileModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
   [self.scoringModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
@@ -329,6 +333,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Create model objects and load values from the user defaults system
   self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
+  self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
   self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
@@ -336,6 +341,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
+  [self.gtpEngineProfileModel readUserDefaults];
   [self.playViewModel readUserDefaults];
   [self.scoringModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];

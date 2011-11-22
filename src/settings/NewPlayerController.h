@@ -15,9 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
-
 // Forward declarations
 @class NewPlayerController;
 @class Player;

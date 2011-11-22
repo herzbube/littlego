@@ -15,8 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
+// Project includes
+#import "GtpEngineProfileSelectionController.h"
 
 // Forward declarations
 @class EditPlayerController;
@@ -28,10 +28,10 @@
 /// of EditPlayerController.
 // -----------------------------------------------------------------------------
 @protocol EditPlayerDelegate
-/// @brief This method is invoked after @a EditPlayerController has updated its
+/// @brief This method is invoked after @a editPlayerController has updated its
 /// player object with new information.
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-/// @brief This method is invoked after @a EditPlayerController has deleted its
+/// @brief This method is invoked after @a editPlayerController has deleted its
 /// player object.
 - (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
 @end
@@ -42,7 +42,7 @@
 /// interaction on the "Edit Player" view.
 ///
 /// The "Edit Player" view allows the user to edit the information associated
-/// with a player object. The view is a generic UITableView whose input elements
+/// with a Player object. The view is a generic UITableView whose input elements
 /// are created dynamically by EditPlayerController.
 ///
 /// EditPlayerController expects to be displayed by a navigation controller. For
@@ -54,7 +54,7 @@
 /// informed when the user makes any changes. For this to work, the delegate
 /// must implement the protocol EditPlayerDelegate.
 // -----------------------------------------------------------------------------
-@interface EditPlayerController : UITableViewController <UITextFieldDelegate>
+@interface EditPlayerController : UITableViewController <UITextFieldDelegate, GtpEngineProfileSelectionDelegate>
 {
 }
 

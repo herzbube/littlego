@@ -15,19 +15,30 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "EditGtpEngineProfileController.h"
-#import "EditPlayerController.h"
-#import "NewGtpEngineProfileController.h"
-#import "NewPlayerController.h"
+// Forward declarations
+@class GtpEngineProfile;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The SettingsViewController class is responsible for managing user
-/// interaction on the "Settings" view.
+/// @brief The GtpEngineProfileModel class manages GtpEngineProfile objects and
+/// provides clients with access to those objects. Data that makes up
+/// GtpEngineProfile objects is read from and written to the user defaults
+/// system.
 // -----------------------------------------------------------------------------
-@interface SettingsViewController : UITableViewController <EditPlayerDelegate, NewPlayerDelegate, EditGtpEngineProfileDelegate, NewGtpEngineProfileDelegate>
+@interface GtpEngineProfileModel : NSObject
 {
 }
+
+- (id) init;
+- (void) readUserDefaults;
+- (void) writeUserDefaults;
+- (NSString*) profileNameAtIndex:(int)index;
+- (void) add:(GtpEngineProfile*)profile;
+- (void) remove:(GtpEngineProfile*)profile;
+- (GtpEngineProfile*) profileWithUUID:(NSString*)uuid;
+- (GtpEngineProfile*) defaultProfile;
+
+@property(nonatomic, assign) int profileCount;
+@property(nonatomic, retain) NSArray* profileList;
 
 @end

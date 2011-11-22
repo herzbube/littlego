@@ -18,8 +18,10 @@
 // Project includes
 #import "Player.h"
 #import "PlayerStatistics.h"
-#import "GtpEngineSettings.h"
+#import "GtpEngineProfile.h"
+#import "GtpEngineProfileModel.h"
 #import "../utility/NSStringAdditions.h"
+#import "../ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -42,8 +44,8 @@
 @synthesize uuid;
 @synthesize name;
 @synthesize human;
+@synthesize gtpEngineProfileUUID;
 @synthesize statistics;
-@synthesize gtpEngineSettings;
 @synthesize playing;
 
 
@@ -61,8 +63,8 @@
 /// @a dictionary.
 ///
 /// If @a dictionary is @e nil, the Player object is human, has no name, and is
-/// associated with PlayerStatistics and GtpEngineSettings objects that have all
-/// attributes set to zero/undefined values. The UUID is randomly generated.
+/// associated with a PlayerStatistics object that has all attributes set to
+/// zero/undefined values. The UUID is randomly generated.
 ///
 /// Invoke the asDictionary() method to convert a Player object's user defaults
 /// attributes back into an NSDictionary suitable for storage in the user
@@ -81,23 +83,24 @@
     self.uuid = [NSString UUIDString];
     self.name = @"";
     self.human = true;
+    self.gtpEngineProfileUUID = @"";
     self.statistics = [[PlayerStatistics alloc] init];
     [self.statistics release];
-    self.gtpEngineSettings = [[GtpEngineSettings alloc] init];
-    [self.gtpEngineSettings release];
   }
   else
   {
-    self.uuid = (NSString*)[dictionary valueForKey:uuidKey];
-    self.name = (NSString*)[dictionary valueForKey:nameKey];
+    self.uuid = (NSString*)[dictionary valueForKey:playerUUIDKey];
+    self.name = (NSString*)[dictionary valueForKey:playerNameKey];
     // The value returned from the NSDictionary has the type NSCFBoolean. It
     // appears that this can be treated as an NSNumber object, from which we
     // can get the value by sending the message "boolValue".
     self.human = [[dictionary valueForKey:isHumanKey] boolValue];
+    if (self.human)
+      self.gtpEngineProfileUUID = @"";
+    else
+      self.gtpEngineProfileUUID = (NSString*)[dictionary valueForKey:gtpEngineProfileReferenceKey];
     NSDictionary* statisticsDictionary = (NSDictionary*)[dictionary valueForKey:statisticsKey];
     self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
-    NSDictionary* gtpEngineSettingsDictionary = (NSDictionary*)[dictionary valueForKey:gtpEngineSettingsKey];
-    self.gtpEngineSettings = [[GtpEngineSettings alloc] initWithDictionary:gtpEngineSettingsDictionary];
   }
   assert([self.uuid length] > 0);
 
@@ -113,8 +116,8 @@
 {
   self.uuid = nil;
   self.name = nil;
+  self.gtpEngineProfileUUID = nil;
   self.statistics = nil;
-  self.gtpEngineSettings = nil;
   [super dealloc];
 }
 
@@ -129,13 +132,32 @@
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
-  [dictionary setValue:self.uuid forKey:uuidKey];
-  [dictionary setValue:self.name forKey:nameKey];
+  [dictionary setValue:self.uuid forKey:playerUUIDKey];
+  [dictionary setValue:self.name forKey:playerNameKey];
   [dictionary setValue:[NSNumber numberWithBool:self.isHuman] forKey:isHumanKey];
-  [dictionary setValue:[self.statistics asDictionary] forKey:statisticsKey];
   if (! self.isHuman)
-    [dictionary setValue:[self.gtpEngineSettings asDictionary] forKey:gtpEngineSettingsKey];
+    [dictionary setValue:self.gtpEngineProfileUUID forKey:gtpEngineProfileReferenceKey];
+  [dictionary setValue:[self.statistics asDictionary] forKey:statisticsKey];
   return dictionary;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GtpEngineProfile object that this Player references via
+/// the @e gtpEngineProfileUUID property.
+///
+/// Returns nil if this Player is not a computer player (i.e. isHuman() returns
+/// true).
+///
+/// This is a convenience method so that clients do not need to know
+/// GtpEngineProfileModel, or how to obtain an instance of
+/// GtpEngineProfileModel.
+// -----------------------------------------------------------------------------
+- (GtpEngineProfile*) gtpEngineProfile
+{
+  if (self.isHuman)
+    return nil;
+  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  return [model profileWithUUID:self.gtpEngineProfileUUID];
 }
 
 @end

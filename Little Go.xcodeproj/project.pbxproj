@@ -125,6 +125,11 @@
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
+		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
+		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
+		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
+		CDB457A2147AEB700043EDE4 /* NewGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */; };
+		CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
@@ -151,8 +156,8 @@
 		CDEC283412F477360069F5B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEC283112F477360069F5B7 /* main.m */; };
 		CDEC28AA12F4A2BB0069F5B7 /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */; };
 		CDEC28AB12F4A2BB0069F5B7 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */; };
-		CDEF3BAF140A192F002D9C1C /* GtpEngineSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */; };
-		CDEF3BC2140A28B7002D9C1C /* GtpEngineSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */; };
+		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
+		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
 		CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CDEF3DD8140C55AB002D9C1C /* TableViewCellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */; };
@@ -306,6 +311,14 @@
 		CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
 		CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameController.h; sourceTree = "<group>"; };
 		CDAB5ED013E483DE00C4A4AA /* NewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameController.m; sourceTree = "<group>"; };
+		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
+		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
+		CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileController.h; sourceTree = "<group>"; };
+		CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileController.m; sourceTree = "<group>"; };
+		CDB457A0147AEB700043EDE4 /* NewGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGtpEngineProfileController.h; sourceTree = "<group>"; };
+		CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGtpEngineProfileController.m; sourceTree = "<group>"; };
+		CDB457A3147B17470043EDE4 /* GtpEngineProfileSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileSelectionController.h; sourceTree = "<group>"; };
+		CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileSelectionController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -363,8 +376,8 @@
 		CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		CDEC28AD12F4A3500069F5B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "get-and-build-3rdparty-software.sh"; sourceTree = "<group>"; };
-		CDEF3BAD140A192F002D9C1C /* GtpEngineSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineSettings.h; sourceTree = "<group>"; };
-		CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineSettings.m; sourceTree = "<group>"; };
+		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
+		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
 		CDEF3C76140A69A2002D9C1C /* UIDebugging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDebugging.m; sourceTree = "<group>"; };
 		CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewSliderCell.h; sourceTree = "<group>"; };
@@ -597,8 +610,14 @@
 		CD1088571326CBB300E83543 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
+				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDB457A3147B17470043EDE4 /* GtpEngineProfileSelectionController.h */,
+				CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */,
+				CDB457A0147AEB700043EDE4 /* NewGtpEngineProfileController.h */,
+				CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */,
 				CDFB49C613F6A84C00FAA5AF /* NewPlayerController.h */,
 				CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
@@ -724,8 +743,10 @@
 		CDE302811360BDA3005235F2 /* player */ = {
 			isa = PBXGroup;
 			children = (
-				CDEF3BAD140A192F002D9C1C /* GtpEngineSettings.h */,
-				CDEF3BAE140A192F002D9C1C /* GtpEngineSettings.m */,
+				CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */,
+				CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */,
+				CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */,
+				CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */,
 				CDE302821360BDA3005235F2 /* Player.h */,
 				CDE302831360BDA3005235F2 /* Player.m */,
 				CDE302841360BDA3005235F2 /* PlayerModel.h */,
@@ -1008,7 +1029,7 @@
 				CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */,
 				CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
-				CDEF3BAF140A192F002D9C1C /* GtpEngineSettings.m in Sources */,
+				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,
 				CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */,
 				CDEF3DD8140C55AB002D9C1C /* TableViewCellFactory.m in Sources */,
@@ -1052,6 +1073,10 @@
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
 				CD92EE961469EB83001EA980 /* ScoringModel.m in Sources */,
+				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
+				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CDB457A2147AEB700043EDE4 /* NewGtpEngineProfileController.m in Sources */,
+				CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1084,7 +1109,7 @@
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
-				CDEF3BC2140A28B7002D9C1C /* GtpEngineSettings.m in Sources */,
+				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
@@ -1107,6 +1132,7 @@
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
 				CD92EEA21469F0A9001EA980 /* ScoringModel.m in Sources */,
+				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,7 +26,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
-#import "../../player/GtpEngineSettings.h"
+#import "../../player/GtpEngineProfile.h"
 #import "../../newgame/NewGameModel.h"
 
 
@@ -195,11 +195,11 @@
   GoGame* game = [GoGame sharedGame];
   if (HumanVsHumanGame != game.type)
   {
-    Player* computerPlayerWithGtpSettings = game.playerBlack.player;
-    if (computerPlayerWithGtpSettings.isHuman)
+    Player* computerPlayerWithGtpProfile = game.playerBlack.player;
+    if (computerPlayerWithGtpProfile.isHuman)
     {
-      computerPlayerWithGtpSettings = game.playerWhite.player;
-      assert(! computerPlayerWithGtpSettings.isHuman);
+      computerPlayerWithGtpProfile = game.playerWhite.player;
+      assert(! computerPlayerWithGtpProfile.isHuman);
     }
     else
     {
@@ -207,7 +207,7 @@
       // alternatively let the user choose which player's settings should be
       // used
     }
-    [computerPlayerWithGtpSettings.gtpEngineSettings applySettings];
+    [[computerPlayerWithGtpProfile gtpEngineProfile] applyProfile];
   }
 }
 

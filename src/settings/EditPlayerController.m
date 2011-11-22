@@ -20,7 +20,7 @@
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
-#import "../player/GtpEngineSettings.h"
+#import "../player/GtpEngineProfile.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
@@ -32,8 +32,8 @@ enum EditPlayerTableViewSection
 {
   PlayerNameSection,
   IsHumanSection,
-  GtpEngineSettingsSection,
-  // If a section is added here (after the optional GtpEngineSettingsSection),
+  GtpEngineProfileSection,
+  // If a section is added here (after the optional GtpEngineProfileSection),
   // section handling in this class must be drastically changed!
   MaxSection
 };
@@ -57,15 +57,12 @@ enum IsHumanSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GtpEngineSettingsSection.
+/// @brief Enumerates items in the GtpEngineProfileSection.
 // -----------------------------------------------------------------------------
-enum GtpEngineSettingsSectionItem
+enum GtpEngineProfileSectionItem
 {
-  FuegoMaxMemoryItem,
-  FuegoThreadCountItem,
-  FuegoPonderingItem,
-  FuegoReuseSubtreeItem,
-  MaxGtpEngineSettingsSectionItem
+  GtpEngineProfileItem,
+  MaxGtpEngineProfileSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -85,10 +82,6 @@ enum GtpEngineSettingsSectionItem
 //@{
 - (void) delete:(id)sender;
 - (void) toggleIsHuman:(id)sender;
-- (void) togglePondering:(id)sender;
-- (void) toggleReuseSubtree:(id)sender;
-- (void) maxMemoryDidChange:(id)sender;
-- (void) threadCountDidChange:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -99,12 +92,15 @@ enum GtpEngineSettingsSectionItem
 //@}
 /// @name UITableViewDelegate protocol
 //@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITextFieldDelegate protocol method.
 //@{
 - (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+//@}
+/// @name GtpEngineProfileSelectionDelegate protocol
+//@{
+- (void) gtpEngineProfileSelectionController:(GtpEngineProfileSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
 /// @name Helpers
 //@{
@@ -184,7 +180,7 @@ enum GtpEngineSettingsSectionItem
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
   if (self.player.isHuman)
-    return MaxSection - 1;  // GTP engine settings is only for computer players
+    return MaxSection - 1;  // GTP engine profile is only for computer players
   else
     return MaxSection;
 }
@@ -200,8 +196,8 @@ enum GtpEngineSettingsSectionItem
       return MaxPlayerNameSectionItem;
     case IsHumanSection:
       return MaxIsHumanSectionItem;
-    case GtpEngineSettingsSection:
-      return MaxGtpEngineSettingsSectionItem;
+    case GtpEngineProfileSection:
+      return MaxGtpEngineProfileSectionItem;
     default:
       assert(0);
       break;
@@ -219,8 +215,8 @@ enum GtpEngineSettingsSectionItem
     case PlayerNameSection:
     case IsHumanSection:
       return nil;
-    case GtpEngineSettingsSection:
-      return @"GTP engine settings";
+    case GtpEngineProfileSection:
+      return @"GTP engine profile";
     default:
       assert(0);
       break;
@@ -278,64 +274,18 @@ enum GtpEngineSettingsSectionItem
       }
       break;
     }
-    case GtpEngineSettingsSection:
+    case GtpEngineProfileSection:
     {
-      enum TableViewCellType cellType;
-      switch (indexPath.row)
-      {
-        case FuegoMaxMemoryItem:
-        case FuegoThreadCountItem:
-          cellType = SliderCellType;
-          break;
-        default:
-          cellType = SwitchCellType;
-          break;
-      }
-      cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-      UISwitch* accessoryView = nil;
-      if (SwitchCellType == cellType)
-        accessoryView = (UISwitch*)cell.accessoryView;
-      switch (indexPath.row)
-      {
-        case FuegoMaxMemoryItem:
-        {
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
-          sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-          sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
-          sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
-          sliderCell.value = self.player.gtpEngineSettings.fuegoMaxMemory;
-          break;
-        }
-        case FuegoThreadCountItem:
-        {
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
-          sliderCell.descriptionLabel.text = @"Number of threads";
-          sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
-          sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
-          sliderCell.value = self.player.gtpEngineSettings.fuegoThreadCount;
-          break;
-        }
-        case FuegoPonderingItem:
-          cell.textLabel.text = @"Pondering";
-          accessoryView.on = self.player.gtpEngineSettings.fuegoPondering;
-          [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
-          break;
-        case FuegoReuseSubtreeItem:
-          cell.textLabel.text = @"Reuse subtree";
-          accessoryView.on = self.player.gtpEngineSettings.fuegoReuseSubtree;
-          [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
-          break;
-        default:
-          assert(0);
-          break;
-      }
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      cell.textLabel.text = [self.player gtpEngineProfile].name;
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     default:
+    {
       assert(0);
       break;
+    }
   }
 
   return cell;
@@ -344,36 +294,29 @@ enum GtpEngineSettingsSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  switch (indexPath.section)
-  {
-    case GtpEngineSettingsSection:
-    {
-      switch (indexPath.row)
-      {
-        case FuegoMaxMemoryItem:
-        case FuegoThreadCountItem:
-          height = [TableViewSliderCell rowHeightInTableView:tableView];
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-    default:
-      break;
-  }
-  return height;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  
+  switch (indexPath.section)
+  {
+    case GtpEngineProfileSection:
+    {
+      UIViewController* modalController = [[GtpEngineProfileSelectionController controllerWithDelegate:self
+                                                                                        defaultProfile:[self.player gtpEngineProfile]] retain];
+      UINavigationController* navigationController = [[UINavigationController alloc]
+                                                      initWithRootViewController:modalController];
+      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      [self presentModalViewController:navigationController animated:YES];
+      [navigationController release];
+      [modalController release];
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -424,30 +367,6 @@ enum GtpEngineSettingsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Ponder" switch. Updates the Player
-/// object with the new value.
-// -----------------------------------------------------------------------------
-- (void) togglePondering:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.player.gtpEngineSettings.fuegoPondering = accessoryView.on;
-
-  [self.delegate didChangePlayer:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Reuse subtree" switch. Updates the
-/// Player object with the new value.
-// -----------------------------------------------------------------------------
-- (void) toggleReuseSubtree:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.player.gtpEngineSettings.fuegoReuseSubtree = accessoryView.on;
-
-  [self.delegate didChangePlayer:self];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns true if the current Player object contains valid data so that
 /// editing can safely be stopped.
 // -----------------------------------------------------------------------------
@@ -457,25 +376,27 @@ enum GtpEngineSettingsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing Fuego's maximum amount of memory.
+/// @brief GtpEngineProfileSelectionDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) maxMemoryDidChange:(id)sender
+- (void) gtpEngineProfileSelectionController:(GtpEngineProfileSelectionController*)controller didMakeSelection:(bool)didMakeSelection
 {
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.player.gtpEngineSettings.fuegoMaxMemory = sliderCell.value;
+  if (didMakeSelection)
+  {
+    NSString* previousProfileUUID = self.player.gtpEngineProfileUUID;
+    if (! [previousProfileUUID isEqualToString:controller.profile.uuid])
+    {
+      self.player.gtpEngineProfileUUID = controller.profile.uuid;
 
-  [self.delegate didChangePlayer:self];
+      NSUInteger sectionIndex = GtpEngineProfileSection;
+      NSUInteger rowIndex = GtpEngineProfileItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing Fuego's number of threads.
-// -----------------------------------------------------------------------------
-- (void) threadCountDidChange:(id)sender
-{
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.player.gtpEngineSettings.fuegoThreadCount = sliderCell.value;
-
-  [self.delegate didChangePlayer:self];
-}
 
 @end

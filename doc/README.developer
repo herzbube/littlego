@@ -696,36 +696,35 @@ project. This project is then used by the build to actually produce the
 libCocoaLumberjack.a file that Little Go links against.
 
 
-GTP engine settings
+GTP engine profiles
 -------------------
-The application's UI exposes a few GTP engine settings to the user (see the
-GtpEngineSettings class for details). Conceptually the settings are attached to
-the Player class, thus defining the playing strength/behaviour of a computer
-player.
+The application's UI exposes a few GTP engine settings to the user. These are
+aggregated into a "profile" that can be attached to a computer player. The
+profile thus defines the playing strength/behaviour of the computer player.
+Aggregation of settings is implemented in the GtpEngineProfile class.
 
-One could argue that this design is wrong: Since we have only one GTP engine,
-the settings should be attached to GtpEngine. The point is valid, and the design
-error is exposed when we have a game with two computer players (which player's
-settings should be used to configure the GTP engine?). However, at the time
-being the concept of defining a computer player's strength via its GTP engine
-settings is simply too neat to abandon it.
-
-Settings are applied to the GTP engine only when a new game is started. The
-reason for this is mainly laziness - if we do it this way we don't have to
+Profile settings are applied to the GTP engine only when a new game is started.
+The reason for this is mainly laziness - if we do it this way we don't have to
 think about the consequences of changing fundamental parameters in mid-game.
 
 In a computer vs. computer game, where we have two computer players with
-potentially different settings, the black player's settings take precedence.
-Choosing black is arbitrary, white could take precedence just as well.
+potentially different settings, the user can choose which player's settings
+should take precedence. In a human vs. human game where no player has an
+attached profile, the settings from a hardcoded default profile are applied.
+The default profile can never be deleted by the user so that a fallback is
+always available.
 
 Notes about default values
-- fuegoMaxMemory = 64
+- fuegoMaxMemory = 32
   - I own an iPhone 3GS, and a 1st generation iPad, according to [2] both of
     them have 256 MB RAM
   - Tests on my iPhone 3GS have shown that 128 MB is too much - the app very
     quickly gets memory warnings and then is killed by the system
-  - 64 MB however, seems to be an acceptable value - I have run an entire
-    computer vs. computer game with that setting without any problems.
+  - 64 MB seems to be a more acceptable value - I have run an entire computer
+    vs. computer game with that setting without any problems. There were reports
+    from beta testers, though, that indicate that even 64 MB is too much
+  - 32 MB is therefore the conservative default value that should make sure
+    that new users don't get aggravated by unexpected crashes
 - fuegoThreadCount = 1
   - [1] recommends to set this to the number of cores
   - According to [2], the iOS devices I own only have one core

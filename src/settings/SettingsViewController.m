@@ -20,6 +20,7 @@
 #import "../ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../play/ScoringModel.h"
+#import "../player/GtpEngineProfileModel.h"
 #import "../player/PlayerModel.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -36,6 +37,7 @@ enum SettingsTableViewSection
   ViewSection,
   ScoringSection,
   PlayersSection,
+  GtpEngineProfilesSection,
   MaxSection
 };
 
@@ -80,6 +82,15 @@ enum PlayersSectionItem
   MaxPlayersSectionItem
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the GtpEngineProfilesSection.
+// -----------------------------------------------------------------------------
+enum GtpEngineProfilesSectionItem
+{
+  AddGtpEngineProfileItem,
+  MaxGtpEngineProfilesSectionItem
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for SettingsViewController.
@@ -99,6 +110,7 @@ enum PlayersSectionItem
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -125,16 +137,28 @@ enum PlayersSectionItem
 //@{
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
 //@}
+/// @name EditGtpEngineProfileDelegate protocol
+//@{
+- (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
+- (void) didDeleteProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
+//@}
+/// @name NewGtpEngineProfileDelegate protocol
+//@{
+- (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController;
+//@}
 /// @name Private helpers
 //@{
 - (void) newPlayer;
+- (void) newProfile;
 - (void) editPlayer:(Player*)player;
+- (void) editProfile:(GtpEngineProfile*)profile;
 //@}
 /// @name Privately declared properties
 //@{
 @property(assign) PlayViewModel* playViewModel;
 @property(assign) ScoringModel* scoringModel;
 @property(assign) PlayerModel* playerModel;
+@property(assign) GtpEngineProfileModel* gtpEngineProfileModel;
 //@}
 @end
 
@@ -144,6 +168,7 @@ enum PlayersSectionItem
 @synthesize playViewModel;
 @synthesize scoringModel;
 @synthesize playerModel;
+@synthesize gtpEngineProfileModel;
 
 
 // -----------------------------------------------------------------------------
@@ -166,6 +191,7 @@ enum PlayersSectionItem
   self.playViewModel = delegate.playViewModel;
   self.scoringModel = delegate.scoringModel;
   self.playerModel = delegate.playerModel;
+  self.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
 }
 
 // -----------------------------------------------------------------------------
@@ -204,6 +230,8 @@ enum PlayersSectionItem
       return MaxScoringSectionItem;
     case PlayersSection:
       return MaxPlayersSectionItem + self.playerModel.playerCount;
+    case GtpEngineProfilesSection:
+      return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
     default:
       assert(0);
       break;
@@ -226,11 +254,24 @@ enum PlayersSectionItem
       return @"Scoring";
     case PlayersSection:
       return @"Players";
+    case GtpEngineProfilesSection:
+      return @"GTP engine profiles";
     default:
       assert(0);
       break;
   }
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (GtpEngineProfilesSection == section)
+    return @"A GTP engine profile is a collection of technical settings that define how the GTP engine behaves when that profile is active. Profiles can be attached to computer players to adjust their playing strength.";
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -356,6 +397,18 @@ enum PlayersSectionItem
         assert(0);
       break;
     }
+    case GtpEngineProfilesSection:
+    {
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
+        cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:indexPath.row];
+      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
+        cell.textLabel.text = @"Add profile ...";
+      else
+        assert(0);
+      break;
+    }
     default:
     {
       assert(0);
@@ -408,6 +461,16 @@ enum PlayersSectionItem
         [self editPlayer:[self.playerModel.playerList objectAtIndex:indexPath.row]];
       if (indexPath.row == self.playerModel.playerCount)
         [self newPlayer];
+      else
+        assert(0);
+      break;
+    }
+    case GtpEngineProfilesSection:
+    {
+      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
+        [self editProfile:[self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row]];
+      if (indexPath.row == self.gtpEngineProfileModel.profileCount)
+        [self newProfile];
       else
         assert(0);
       break;
@@ -501,8 +564,7 @@ enum PlayersSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked after @a newPlayerController has created a
-/// new player object.
+/// @brief NewPlayerDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController
 {
@@ -523,8 +585,7 @@ enum PlayersSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked after @a EditPlayerController has updated its
-/// player object with new information.
+/// @brief EditPlayerDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController
 {
@@ -532,10 +593,57 @@ enum PlayersSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This method is invoked after @a EditPlayerController has deleted its
-/// player object.
+/// @brief EditPlayerDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) didDeletePlayer:(EditPlayerController*)editPlayerController
+{
+  [[self tableView] reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays NewGtpEngineProfileController to gather information
+/// required to create a new GtpEngineProfile.
+// -----------------------------------------------------------------------------
+- (void) newProfile;
+{
+  NewGtpEngineProfileController* newProfileController = [[NewGtpEngineProfileController controllerWithDelegate:self] retain];
+  [self.navigationController pushViewController:newProfileController animated:YES];
+  [newProfileController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NewGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController
+{
+  // Reloading the entire table view data is the cheapest way (in terms of code
+  // lines) to add a row for the new profile.
+  [[self tableView] reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays EditGtpEngineProfileController to allow the user to change
+/// profile information.
+// -----------------------------------------------------------------------------
+- (void) editProfile:(GtpEngineProfile*)profile
+{
+  EditGtpEngineProfileController* editProfileController = [[EditGtpEngineProfileController controllerForProfile:profile withDelegate:self] retain];
+  [self.navigationController pushViewController:editProfileController animated:YES];
+  [editProfileController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+{
+  [[self tableView] reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didDeleteProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
 {
   [[self tableView] reloadData];
 }
