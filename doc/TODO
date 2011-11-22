@@ -75,7 +75,6 @@ Priority 1 (important)
   - One possible idea: Only turn stones from alive to dead, but not vice versa
   - However the final solution looks like, update the GoScore class docs and
     possibly other doc snippets in GoScore.m
-- Flip to the front view of the Play view when an archived game is loaded.
 - Fix the following build warnings
   - [BWARN]warning: iPhone apps with a deployment target lower than 4.3 should
     include an armv6 architecture (current IPHONEOS_DEPLOYMENT_TARGET = "4.2",

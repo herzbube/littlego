@@ -129,8 +129,9 @@ enum MoveStatisticsSectionItem
 //@{
 - (void) done:(id)sender;
 //@}
-/// @name Private helpers
+/// @name Notification responders
 //@{
+- (void) goGameNewCreated:(NSNotification*)notification;
 //@}
 /// @name Privately declared properties
 //@{
@@ -166,6 +167,7 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.delegate = nil;
   self.score = nil;
   [super dealloc];
@@ -179,6 +181,8 @@ enum MoveStatisticsSectionItem
 {
   [super viewDidLoad];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -558,5 +562,14 @@ enum MoveStatisticsSectionItem
   [self.delegate gameInfoViewControllerDidFinish:self];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameNewCreated notification.
+// -----------------------------------------------------------------------------
+- (void) goGameNewCreated:(NSNotification*)notification
+{
+  // Dismiss the Info view when a new game is started. This typically occurs
+  // when a saved game is loaded from the archive.
+  [self done:nil];
+}
 
 @end
