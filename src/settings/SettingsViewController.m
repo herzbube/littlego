@@ -21,7 +21,9 @@
 #import "../play/PlayViewModel.h"
 #import "../play/ScoringModel.h"
 #import "../player/GtpEngineProfileModel.h"
+#import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
+#import "../player/Player.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -104,6 +106,7 @@ enum GtpEngineProfilesSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (void) setEditing:(BOOL)editing animated:(BOOL)animated;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -112,11 +115,14 @@ enum GtpEngineProfilesSectionItem
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
+- (BOOL) tableView:(UITableView*)tableView canEditRowAtIndexPath:(NSIndexPath*)indexPath;
+- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
+- (UITableViewCellEditingStyle) tableView:(UITableView*)tableView editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Action methods
 //@{
@@ -131,7 +137,6 @@ enum GtpEngineProfilesSectionItem
 /// @name EditPlayerDelegate protocol
 //@{
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-- (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
 //@}
 /// @name NewPlayerDelegate protocol
 //@{
@@ -140,7 +145,6 @@ enum GtpEngineProfilesSectionItem
 /// @name EditGtpEngineProfileDelegate protocol
 //@{
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
-- (void) didDeleteProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 //@}
 /// @name NewGtpEngineProfileDelegate protocol
 //@{
@@ -192,6 +196,10 @@ enum GtpEngineProfilesSectionItem
   self.scoringModel = delegate.scoringModel;
   self.playerModel = delegate.playerModel;
   self.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
+
+  // self.editButtonItem is a standard item provided by UIViewController, which
+  // is linked to triggering the view's edit mode
+  self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 // -----------------------------------------------------------------------------
@@ -205,6 +213,35 @@ enum GtpEngineProfilesSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called when the user taps the edit/done button.
+///
+/// We override this so that we can add rows to the table view for adding new
+/// players and GTP engine profiles (or remove those rows again when editing
+/// ends).
+// -----------------------------------------------------------------------------
+- (void) setEditing:(BOOL)editing animated:(BOOL)animated
+{
+  // Invoke super implementation, as per API documentation
+  [super setEditing:editing animated:animated];
+
+  NSIndexPath* indexPathAddPlayerRow = [NSIndexPath indexPathForRow:self.playerModel.playerCount
+                                                          inSection:PlayersSection];
+  NSIndexPath* indexPathAddProfileRow = [NSIndexPath indexPathForRow:self.gtpEngineProfileModel.profileCount
+                                                           inSection:GtpEngineProfilesSection];
+  NSArray* indexPaths = [NSArray arrayWithObjects:indexPathAddPlayerRow, indexPathAddProfileRow, nil];
+  if (editing)
+  {
+    [self.tableView insertRowsAtIndexPaths:indexPaths
+                          withRowAnimation:UITableViewRowAnimationBottom];
+  }
+  else
+  {
+    [self.tableView deleteRowsAtIndexPaths:indexPaths
+                          withRowAnimation:UITableViewRowAnimationBottom];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -229,9 +266,15 @@ enum GtpEngineProfilesSectionItem
     case ScoringSection:
       return MaxScoringSectionItem;
     case PlayersSection:
-      return MaxPlayersSectionItem + self.playerModel.playerCount;
+      if (self.tableView.editing)
+        return MaxPlayersSectionItem + self.playerModel.playerCount;
+      else
+        return self.playerModel.playerCount;
     case GtpEngineProfilesSection:
-      return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
+      if (self.tableView.editing)
+        return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
+      else
+        return self.gtpEngineProfileModel.profileCount;
     default:
       assert(0);
       break;
@@ -392,7 +435,7 @@ enum GtpEngineProfilesSectionItem
       if (indexPath.row < self.playerModel.playerCount)
         cell.textLabel.text = [self.playerModel playerNameAtIndex:indexPath.row];
       else if (indexPath.row == self.playerModel.playerCount)
-        cell.textLabel.text = @"Add player ...";
+        cell.textLabel.text = @"Add player ...";  // visible only during editing mode
       else
         assert(0);
       break;
@@ -404,7 +447,7 @@ enum GtpEngineProfilesSectionItem
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
         cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:indexPath.row];
       else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
-        cell.textLabel.text = @"Add profile ...";
+        cell.textLabel.text = @"Add profile ...";  // visible only during editing mode
       else
         assert(0);
       break;
@@ -417,6 +460,89 @@ enum GtpEngineProfilesSectionItem
   }
 
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (BOOL) tableView:(UITableView*)tableView canEditRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  switch (indexPath.section)
+  {
+    case PlayersSection:
+    case GtpEngineProfilesSection:
+      // Rows that are editable are indented, the delegate determines which
+      // editing style to use in tableView:editingStyleForRowAtIndexPath:()
+      return YES;
+    default:
+      break;
+  }
+  // Rows that are not editable are not indented
+  return NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  switch (editingStyle)
+  {
+    case UITableViewCellEditingStyleDelete:
+    {
+      switch (indexPath.section)
+      {
+        case PlayersSection:
+        {
+          Player* player = [self.playerModel.playerList objectAtIndex:indexPath.row];
+          [self.playerModel remove:player];
+          break;
+        }
+        case GtpEngineProfilesSection:
+        {
+          GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
+          [self.gtpEngineProfileModel remove:profile];
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      // Animate item deletion. Requires that in the meantime we have not
+      // triggered a reloadData().
+      [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+      break;
+    }
+    case UITableViewCellEditingStyleInsert:
+    {
+      switch (indexPath.section)
+      {
+        case PlayersSection:
+        {
+          [self newPlayer];
+          break;
+        }
+        case GtpEngineProfilesSection:
+        {
+          [self newProfile];
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
+    default:
+    {
+      assert(0);
+      return;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -445,7 +571,6 @@ enum GtpEngineProfilesSectionItem
   return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
 }
 
-
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -459,7 +584,7 @@ enum GtpEngineProfilesSectionItem
     {
       if (indexPath.row < self.playerModel.playerCount)
         [self editPlayer:[self.playerModel.playerList objectAtIndex:indexPath.row]];
-      if (indexPath.row == self.playerModel.playerCount)
+      else if (indexPath.row == self.playerModel.playerCount)
         [self newPlayer];
       else
         assert(0);
@@ -469,7 +594,7 @@ enum GtpEngineProfilesSectionItem
     {
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
         [self editProfile:[self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row]];
-      if (indexPath.row == self.gtpEngineProfileModel.profileCount)
+      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
         [self newProfile];
       else
         assert(0);
@@ -480,6 +605,53 @@ enum GtpEngineProfilesSectionItem
       break;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (UITableViewCellEditingStyle) tableView:(UITableView*)tableView editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  switch (indexPath.section)
+  {
+    case PlayersSection:
+    {
+      if (indexPath.row < self.playerModel.playerCount)
+      {
+        Player* player = [self.playerModel.playerList objectAtIndex:indexPath.row];
+        if (player.isPlaying)
+          return UITableViewCellEditingStyleNone;
+        else
+          return UITableViewCellEditingStyleDelete;
+      }
+      else if (indexPath.row == self.playerModel.playerCount)
+        return UITableViewCellEditingStyleInsert;
+      else
+        assert(0);
+      break;
+    }
+    case GtpEngineProfilesSection:
+    {
+      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
+      {
+        GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
+        if ([profile isDefaultProfile])
+          return UITableViewCellEditingStyleNone;
+        else
+          return UITableViewCellEditingStyleDelete;
+      }
+      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
+        return UITableViewCellEditingStyleInsert;
+      else
+        assert(0);
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+  return UITableViewCellEditingStyleNone;
 }
 
 // -----------------------------------------------------------------------------
@@ -568,9 +740,10 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController
 {
-  // Reloading the entire table view data is the cheapest way (in terms of code
-  // lines) to add a row for the new player.
-  [[self tableView] reloadData];
+  int newPlayerRow = self.playerModel.playerCount - 1;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newPlayerRow inSection:PlayersSection];
+  [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationTop];  
 }
 
 // -----------------------------------------------------------------------------
@@ -589,15 +762,10 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController
 {
-  [[self tableView] reloadData];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief EditPlayerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didDeletePlayer:(EditPlayerController*)editPlayerController
-{
-  [[self tableView] reloadData];
+  NSUInteger changedPlayerRow = [self.playerModel.playerList indexOfObject:editPlayerController.player];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:changedPlayerRow inSection:PlayersSection];
+  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 // -----------------------------------------------------------------------------
@@ -616,9 +784,10 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController
 {
-  // Reloading the entire table view data is the cheapest way (in terms of code
-  // lines) to add a row for the new profile.
-  [[self tableView] reloadData];
+  int newProfileRow = self.gtpEngineProfileModel.profileCount - 1;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newProfileRow inSection:GtpEngineProfilesSection];
+  [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationTop];  
 }
 
 // -----------------------------------------------------------------------------
@@ -637,15 +806,10 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
 {
-  [[self tableView] reloadData];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didDeleteProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
-{
-  [[self tableView] reloadData];
+  NSUInteger changedProfileRow = [self.gtpEngineProfileModel.profileList indexOfObject:editGtpEngineProfileController.profile];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:changedProfileRow inSection:GtpEngineProfilesSection];
+  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 @end

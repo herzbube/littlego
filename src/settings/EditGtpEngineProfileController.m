@@ -81,7 +81,6 @@ enum ProfileSettingsSectionItem
 //@}
 /// @name Action methods
 //@{
-- (void) delete:(id)sender;
 - (void) togglePondering:(id)sender;
 - (void) toggleReuseSubtree:(id)sender;
 - (void) maxMemoryDidChange:(id)sender;
@@ -163,14 +162,6 @@ enum ProfileSettingsSectionItem
   assert(self.delegate != nil);
 
   self.navigationItem.title = @"Edit Profile";
-  // Profile can be deleted only if it is not the default profile.
-  if (! [self.profile isDefaultProfile])
-  {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete"
-                                                                              style:UIBarButtonItemStyleDone
-                                                                             target:self
-                                                                             action:@selector(delete:)];
-  }
   self.navigationItem.leftBarButtonItem.enabled = [self isProfileValid];
 }
 
@@ -417,18 +408,6 @@ enum ProfileSettingsSectionItem
   // -> the user must simply continue editing until the profile name becomes
   //    valid
   return YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked when the user wants to delete the profile object.
-// -----------------------------------------------------------------------------
-- (void) delete:(id)sender
-{
-  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-  [model remove:self.profile];
-
-  [self.delegate didDeleteProfile:self];
-  [self.navigationController popViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------

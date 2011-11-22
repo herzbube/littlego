@@ -78,7 +78,6 @@ enum GtpEngineProfileSectionItem
 //@}
 /// @name Action methods
 //@{
-- (void) delete:(id)sender;
 - (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
@@ -150,13 +149,7 @@ enum GtpEngineProfileSectionItem
   assert(self.delegate != nil);
 
   self.navigationItem.title = @"Edit Player";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete"
-                                                                            style:UIBarButtonItemStyleDone
-                                                                           target:self
-                                                                           action:@selector(delete:)];
   self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
-  // Player can be deleted only if he is not currently playing a game
-  self.navigationItem.rightBarButtonItem.enabled = (! self.player.isPlaying);
 }
 
 // -----------------------------------------------------------------------------
@@ -347,19 +340,6 @@ enum GtpEngineProfileSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user wants to delete the player object.
-// -----------------------------------------------------------------------------
-- (void) delete:(id)sender
-{
-  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
-  assert(model);
-  [model remove:self.player];
-
-  [self.delegate didDeletePlayer:self];
-  [self.navigationController popViewControllerAnimated:YES];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Is Human" switch. Updates the Player
 /// object with the new value.
 // -----------------------------------------------------------------------------
@@ -407,6 +387,5 @@ enum GtpEngineProfileSectionItem
   }
   [self dismissModalViewControllerAnimated:YES];
 }
-
 
 @end

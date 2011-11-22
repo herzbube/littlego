@@ -28,9 +28,6 @@
 /// @brief This method is invoked after @a editGtpEngineProfileController has
 /// updated its profile object with new information.
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
-/// @brief This method is invoked after @a editGtpEngineProfileController has
-/// deleted its profile object.
-- (void) didDeleteProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 @end
 
 

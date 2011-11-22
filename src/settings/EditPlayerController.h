@@ -31,9 +31,6 @@
 /// @brief This method is invoked after @a editPlayerController has updated its
 /// player object with new information.
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-/// @brief This method is invoked after @a editPlayerController has deleted its
-/// player object.
-- (void) didDeletePlayer:(EditPlayerController*)editPlayerController;
 @end
 
 
