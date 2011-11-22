@@ -40,13 +40,6 @@ Known bugs
 ----------
 Loading a game on a large board and with many moves takes much too long.
 
-If the application is launched and automatically starts a human vs. human game,
-memory consumption of the GTP engine will not be limited. The technical reason
-for this is that no computer player was involved in the game. As soon as a game
-that involves a computer player is started, that computer player's memory
-consumption limit will be applied - and will remain in force (!) until the
-application is killed, or a different limit is applied.
-
 
 License and source code
 -----------------------

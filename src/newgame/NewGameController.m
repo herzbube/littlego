@@ -102,6 +102,7 @@ enum KomiSectionItem
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -297,6 +298,21 @@ enum KomiSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (PlayersSection == section)
+  {
+    if ([self.blackPlayer isHuman] && [self.whitePlayer isHuman])
+      return @"None of the players is a computer player. The default GTP engine profile will be active during the game.";
+    else if (! [self.blackPlayer isHuman] && ! [self.whitePlayer isHuman])
+      return @"Both players are computer players. The black player's GTP engine profile will be active during the game.";
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
@@ -426,10 +442,9 @@ enum KomiSectionItem
     if (self.boardSize != controller.boardSize)
     {
       self.boardSize = controller.boardSize;
-      NSIndexPath* boardSizeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BoardSizeSection];
-      UITableViewCell* boardSizeCell = [self.tableView cellForRowAtIndexPath:boardSizeIndexPath];
-      boardSizeCell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BoardSizeSection];
+      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
   [self dismissModalViewControllerAnimated:YES];
@@ -445,21 +460,13 @@ enum KomiSectionItem
     Player* previousPlayer = controller.blackPlayer ? self.blackPlayer : self.whitePlayer;
     if (previousPlayer != controller.player)
     {
-      int playerRow;
       if (controller.blackPlayer)
-      {
         self.blackPlayer = controller.player;
-        playerRow = BlackPlayerItem;
-      }
       else
-      {
         self.whitePlayer = controller.player;
-        playerRow = WhitePlayerItem;
-      }
-      NSIndexPath* playerIndexPath = [NSIndexPath indexPathForRow:playerRow inSection:PlayersSection];
-      UITableViewCell* playerCell = [self.tableView cellForRowAtIndexPath:playerIndexPath];
-      [self updateCell:playerCell withPlayer:controller.player];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:PlayersSection];
+      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
   [self dismissModalViewControllerAnimated:YES];
@@ -475,10 +482,9 @@ enum KomiSectionItem
     if (self.handicap != controller.handicap)
     {
       self.handicap = controller.handicap;
-      NSIndexPath* handicapIndexPath = [NSIndexPath indexPathForRow:0 inSection:HandicapSection];
-      UITableViewCell* handicapCell = [self.tableView cellForRowAtIndexPath:handicapIndexPath];
-      handicapCell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.handicap];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapSection];
+      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
   [self dismissModalViewControllerAnimated:YES];
@@ -494,10 +500,9 @@ enum KomiSectionItem
     if (self.komi != controller.komi)
     {
       self.komi = controller.komi;
-      NSIndexPath* komiIndexPath = [NSIndexPath indexPathForRow:0 inSection:KomiSection];
-      UITableViewCell* komiCell = [self.tableView cellForRowAtIndexPath:komiIndexPath];
-      komiCell.detailTextLabel.text = [NSString stringWithKomi:self.komi];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:KomiSection];
+      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
   [self dismissModalViewControllerAnimated:YES];

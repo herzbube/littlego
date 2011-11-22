@@ -49,7 +49,10 @@
 /// @brief The profile's description. A longer string that describes the
 /// profile's purpose and characteristics in human-readable terms. This property
 /// is displayed in the GUI only in places where a long string is appropriate.
-@property(nonatomic, retain) NSString* description;
+///
+/// This property is named "profileDescription" instead of just "description"
+/// to prevent a conflict with the description() debugging aid.
+@property(nonatomic, retain) NSString* profileDescription;
 /// @brief The maximum amount of memory in MB that the Fuego GTP engine is
 /// allowed to consume.
 @property(nonatomic) int fuegoMaxMemory;

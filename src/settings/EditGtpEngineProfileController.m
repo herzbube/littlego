@@ -275,7 +275,7 @@ enum ProfileSettingsSectionItem
           cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
           UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
           textField.delegate = self;
-          textField.text = self.profile.description;
+          textField.text = self.profile.profileDescription;
           textField.placeholder = @"Profile description";
           self.textFieldProfileDescription = textField;
           break;
@@ -402,7 +402,7 @@ enum ProfileSettingsSectionItem
   if (textField == self.textFieldProfileName)
     self.profile.name = newText;
   else if (textField == self.textFieldProfileDescription)
-    self.profile.description = newText;
+    self.profile.profileDescription = newText;
   else
   {
     assert(0);

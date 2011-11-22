@@ -29,6 +29,10 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name Private helpers
+//@{
+- (NSString*) description;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, readwrite, retain) NSString* uuid;
@@ -40,7 +44,7 @@
 
 @synthesize uuid;
 @synthesize name;
-@synthesize description;
+@synthesize profileDescription;
 @synthesize fuegoMaxMemory;
 @synthesize fuegoThreadCount;
 @synthesize fuegoPondering;
@@ -81,7 +85,7 @@
   {
     self.uuid = [NSString UUIDString];
     self.name = @"";
-    self.description = @"";
+    self.profileDescription = @"";
     self.fuegoMaxMemory = fuegoMaxMemoryDefault;
     self.fuegoThreadCount = fuegoThreadCountDefault;
     self.fuegoPondering = fuegoPonderingDefault;
@@ -91,7 +95,7 @@
   {
     self.uuid = (NSString*)[dictionary valueForKey:gtpEngineProfileUUIDKey];
     self.name = (NSString*)[dictionary valueForKey:gtpEngineProfileNameKey];
-    self.description = (NSString*)[dictionary valueForKey:gtpEngineProfileDescriptionKey];
+    self.profileDescription = (NSString*)[dictionary valueForKey:gtpEngineProfileDescriptionKey];
     self.fuegoMaxMemory = [[dictionary valueForKey:fuegoMaxMemoryKey] intValue];
     self.fuegoThreadCount = [[dictionary valueForKey:fuegoThreadCountKey] intValue];
     self.fuegoPondering = [[dictionary valueForKey:fuegoPonderingKey] boolValue];
@@ -109,9 +113,24 @@
 {
   self.uuid = nil;
   self.name = nil;
-  self.description = nil;
+  self.profileDescription = nil;
   [super dealloc];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GtpEngineProfile object.
+///
+/// This method is invoked when GtpEngineProfile needs to be represented as a
+/// string, i.e. by NSLog, or when the debugger command "po" is used on the
+/// object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GtpEngineProfile(%p): name = %@, uuid = %@", self, name, uuid];
+}
+
 
 // -----------------------------------------------------------------------------
 /// @brief Returns this GtpEngineProfile object's user defaults attributes as a
@@ -122,7 +141,7 @@
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:self.uuid forKey:gtpEngineProfileUUIDKey];
   [dictionary setValue:self.name forKey:gtpEngineProfileNameKey];
-  [dictionary setValue:self.description forKey:gtpEngineProfileDescriptionKey];
+  [dictionary setValue:self.profileDescription forKey:gtpEngineProfileDescriptionKey];
   [dictionary setValue:[NSNumber numberWithInt:self.fuegoMaxMemory] forKey:fuegoMaxMemoryKey];
   [dictionary setValue:[NSNumber numberWithInt:self.fuegoThreadCount] forKey:fuegoThreadCountKey];
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoPondering] forKey:fuegoPonderingKey];
@@ -135,6 +154,8 @@
 // -----------------------------------------------------------------------------
 - (void) applyProfile
 {
+  DDLogInfo(@"Applying GTP profile settings: %@", [self description]);
+
   NSString* commandString;
   GtpCommand* command;
 

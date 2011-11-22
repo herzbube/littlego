@@ -43,9 +43,6 @@ Priority 1 (important)
   section must be hidden/shown as appropriate; also the GtpEngineSettings
   object attached to the Player object must be set appropriately when the user
   has finished editing the player
-- Which GTP engine settings should be applied for a game with two human players?
-  Possible solution: Define a "default" set of GTP engine settings; computer
-  players can then be configured to use the default set, or t
 - Find out more about GTP engine settings. Using the knowledge gained,
   reconsider whether it still makes sense that GTP engine settings are applied
   only at the beginning of the game.

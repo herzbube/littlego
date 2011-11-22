@@ -26,6 +26,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
+#import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../newgame/NewGameModel.h"
 
@@ -189,23 +190,23 @@
 /// game's computer player.
 ///
 /// Prefers the black computer player if both players are computer players.
+/// If neither player is a computer player, the settings obtained from the
+/// default GTP engine profile are applied.
 // -----------------------------------------------------------------------------
 - (void) setupComputerPlayer
 {
   GoGame* game = [GoGame sharedGame];
-  if (HumanVsHumanGame != game.type)
+  if (HumanVsHumanGame == game.type)
+  {
+    [[[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile] applyProfile];
+  }
+  else
   {
     Player* computerPlayerWithGtpProfile = game.playerBlack.player;
     if (computerPlayerWithGtpProfile.isHuman)
     {
       computerPlayerWithGtpProfile = game.playerWhite.player;
       assert(! computerPlayerWithGtpProfile.isHuman);
-    }
-    else
-    {
-      // TODO notify user that we ignore the white player's settings;
-      // alternatively let the user choose which player's settings should be
-      // used
     }
     [[computerPlayerWithGtpProfile gtpEngineProfile] applyProfile];
   }

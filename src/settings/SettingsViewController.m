@@ -269,7 +269,7 @@ enum GtpEngineProfilesSectionItem
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
   if (GtpEngineProfilesSection == section)
-    return @"A GTP engine profile is a collection of technical settings that define how the GTP engine behaves when that profile is active. Profiles can be attached to computer players to adjust their playing strength.";
+    return @"A GTP engine profile is a collection of technical settings that define how the GTP engine behaves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default profile cannot be deleted.";
   else
     return nil;
 }
