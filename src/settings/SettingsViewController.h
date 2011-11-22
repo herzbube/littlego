@@ -18,15 +18,13 @@
 // Project includes
 #import "EditGtpEngineProfileController.h"
 #import "EditPlayerController.h"
-#import "NewGtpEngineProfileController.h"
-#import "NewPlayerController.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The SettingsViewController class is responsible for managing user
 /// interaction on the "Settings" view.
 // -----------------------------------------------------------------------------
-@interface SettingsViewController : UITableViewController <EditPlayerDelegate, NewPlayerDelegate, EditGtpEngineProfileDelegate, NewGtpEngineProfileDelegate>
+@interface SettingsViewController : UITableViewController <EditPlayerDelegate, EditGtpEngineProfileDelegate>
 {
 }
 

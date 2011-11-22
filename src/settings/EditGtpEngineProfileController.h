@@ -28,16 +28,28 @@
 /// @brief This method is invoked after @a editGtpEngineProfileController has
 /// updated its profile object with new information.
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
+/// @brief This method is invoked after @a editGtpEngineProfileController has
+/// created a new profile object.
+- (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 @end
 
 
 // -----------------------------------------------------------------------------
 /// @brief The EditGtpEngineProfileController class is responsible for managing
-/// user interaction on the "Edit Profile" view.
+/// user interaction on the "Edit/New Profile" view.
 ///
-/// The "Edit Profile" view allows the user to edit the information associated
-/// with a GtpEngineProfile object. The view is a generic UITableView whose
-/// input elements are created dynamically by EditGtpEngineProfileController.
+/// The "Edit/New Profile" view allows the user to edit the information
+/// associated with a GtpEngineProfile object. The view is a generic
+/// UITableView whose input elements are created dynamically by
+/// EditGtpEngineProfileController.  The controller runs in one of two modes,
+/// depending on which convenience constructor is used to create the controller
+/// instance:
+/// - Create mode: The profile whose attributes are edited does not exist yet,
+///   the user must tap a "create" button to confirm that the profile should be
+///   created.
+/// - Edit mode: The profile whose attributes are edited already exists. Changes
+///   cannot be undone, they are immediately written to the GtpEngineProfile
+///   model object.
 ///
 /// EditGtpEngineProfileController expects to be displayed by a navigation
 /// controller. For this reason it populates its own navigation item with
@@ -53,11 +65,15 @@
 }
 
 + (EditGtpEngineProfileController*) controllerForProfile:(GtpEngineProfile*)profile withDelegate:(id<EditGtpEngineProfileDelegate>)delegate;
++ (EditGtpEngineProfileController*) controllerWithDelegate:(id<EditGtpEngineProfileDelegate>)delegate;
 
 /// @brief This is the delegate that will be informed when the user makes any
 /// changes.
 @property(nonatomic, assign) id<EditGtpEngineProfileDelegate> delegate;
 /// @brief The model object
 @property(retain) GtpEngineProfile* profile;
+/// @brief Flag is true if the profile whose attributes are edited already
+/// exists, false if the profile still needs to be created.
+@property(nonatomic) bool profileExists;
 
 @end

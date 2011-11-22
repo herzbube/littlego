@@ -128,7 +128,6 @@
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
-		CDB457A2147AEB700043EDE4 /* NewGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */; };
 		CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -173,7 +172,6 @@
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
-		CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */; };
 		CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */; };
 		CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */; };
 /* End PBXBuildFile section */
@@ -315,8 +313,6 @@
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
 		CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileController.h; sourceTree = "<group>"; };
 		CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileController.m; sourceTree = "<group>"; };
-		CDB457A0147AEB700043EDE4 /* NewGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGtpEngineProfileController.h; sourceTree = "<group>"; };
-		CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGtpEngineProfileController.m; sourceTree = "<group>"; };
 		CDB457A3147B17470043EDE4 /* GtpEngineProfileSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileSelectionController.h; sourceTree = "<group>"; };
 		CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileSelectionController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
@@ -401,8 +397,6 @@
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
-		CDFB49C613F6A84C00FAA5AF /* NewPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewPlayerController.h; sourceTree = "<group>"; };
-		CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewPlayerController.m; sourceTree = "<group>"; };
 		CDFB49EE13F6AA7A00FAA5AF /* BoardSizeSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardSizeSelectionController.h; sourceTree = "<group>"; };
 		CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSizeSelectionController.m; sourceTree = "<group>"; };
 		CDFB4A1013F6AC3600FAA5AF /* PlayerSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerSelectionController.h; sourceTree = "<group>"; };
@@ -616,10 +610,6 @@
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
 				CDB457A3147B17470043EDE4 /* GtpEngineProfileSelectionController.h */,
 				CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */,
-				CDB457A0147AEB700043EDE4 /* NewGtpEngineProfileController.h */,
-				CDB457A1147AEB700043EDE4 /* NewGtpEngineProfileController.m */,
-				CDFB49C613F6A84C00FAA5AF /* NewPlayerController.h */,
-				CDFB49C713F6A84C00FAA5AF /* NewPlayerController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
 				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
 			);
@@ -1025,7 +1015,6 @@
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 				CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */,
 				CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */,
-				CDFB49C913F6A84C00FAA5AF /* NewPlayerController.m in Sources */,
 				CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */,
 				CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
@@ -1075,7 +1064,6 @@
 				CD92EE961469EB83001EA980 /* ScoringModel.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
-				CDB457A2147AEB700043EDE4 /* NewGtpEngineProfileController.m in Sources */,
 				CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

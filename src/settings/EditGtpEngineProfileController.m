@@ -81,6 +81,7 @@ enum ProfileSettingsSectionItem
 //@}
 /// @name Action methods
 //@{
+- (void) create:(id)sender;
 - (void) togglePondering:(id)sender;
 - (void) toggleReuseSubtree:(id)sender;
 - (void) maxMemoryDidChange:(id)sender;
@@ -118,6 +119,7 @@ enum ProfileSettingsSectionItem
 
 @synthesize delegate;
 @synthesize profile;
+@synthesize profileExists;
 @synthesize textFieldProfileName;
 @synthesize textFieldProfileDescription;
 
@@ -134,6 +136,25 @@ enum ProfileSettingsSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.profile = profile;
+    controller.profileExists = true;
+  }
+  return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates an EditGtpEngineProfileController
+/// instance of grouped style that is used to create a new GtpEngineProfile
+/// object and edit its attributes.
+// -----------------------------------------------------------------------------
++ (EditGtpEngineProfileController*) controllerWithDelegate:(id<EditGtpEngineProfileDelegate>)delegate
+{
+  EditGtpEngineProfileController* controller = [[EditGtpEngineProfileController alloc] initWithStyle:UITableViewStyleGrouped];
+  if (controller)
+  {
+    [controller autorelease];
+    controller.delegate = delegate;
+    controller.profile = [[[GtpEngineProfile alloc] init] autorelease];
+    controller.profileExists = false;
   }
   return controller;
 }
@@ -161,8 +182,20 @@ enum ProfileSettingsSectionItem
 
   assert(self.delegate != nil);
 
-  self.navigationItem.title = @"Edit Profile";
-  self.navigationItem.leftBarButtonItem.enabled = [self isProfileValid];
+  if (self.profileExists)
+  {
+    self.navigationItem.title = @"Edit Profile";
+    self.navigationItem.leftBarButtonItem.enabled = [self isProfileValid];
+  }
+  else
+  {
+    self.navigationItem.title = @"New Profile";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
+                                                                              style:UIBarButtonItemStyleDone
+                                                                             target:self
+                                                                             action:@selector(create:)];
+    self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -399,15 +432,35 @@ enum ProfileSettingsSectionItem
     assert(0);
     return YES;
   }
-  // Make sure that the editing view cannot be left, unless the profile name is
-  // valid
-  [self.navigationItem setHidesBackButton:! [self isProfileValid] animated:YES];
-  // Notify delegate that something about the profile object has changed
-  [self.delegate didChangeProfile:self];
+  if (self.profileExists)
+  {
+    // Make sure that the editing view cannot be left, unless the profile
+    // is valid
+    [self.navigationItem setHidesBackButton:! [self isProfileValid] animated:YES];
+    // Notify delegate that something about the profile object has changed
+    [self.delegate didChangeProfile:self];
+  }
+  else
+  {
+    // Make sure that the new profile cannot be added, unless it is valid
+    self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
+  }
   // Accept all changes, even those that make the profile name invalid
   // -> the user must simply continue editing until the profile name becomes
   //    valid
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user wants to create a new profile object using the
+/// data that has been entered so far.
+// -----------------------------------------------------------------------------
+- (void) create:(id)sender
+{
+  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  [model add:self.profile];
+
+  [self.delegate didCreateProfile:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -419,7 +472,8 @@ enum ProfileSettingsSectionItem
   UISwitch* accessoryView = (UISwitch*)sender;
   self.profile.fuegoPondering = accessoryView.on;
 
-  [self.delegate didChangeProfile:self];
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -431,17 +485,8 @@ enum ProfileSettingsSectionItem
   UISwitch* accessoryView = (UISwitch*)sender;
   self.profile.fuegoReuseSubtree = accessoryView.on;
 
-  [self.delegate didChangeProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if the current profile object contains valid data so
-/// that editing can safely be stopped.
-// -----------------------------------------------------------------------------
-- (bool) isProfileValid
-{
-  // TODO check for duplicate name
-  return (self.profile.name.length > 0);
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -452,7 +497,8 @@ enum ProfileSettingsSectionItem
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
   self.profile.fuegoMaxMemory = sliderCell.value;
 
-  [self.delegate didChangeProfile:self];
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -463,7 +509,18 @@ enum ProfileSettingsSectionItem
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
   self.profile.fuegoThreadCount = sliderCell.value;
 
-  [self.delegate didChangeProfile:self];
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the current profile object contains valid data so
+/// that editing can safely be stopped.
+// -----------------------------------------------------------------------------
+- (bool) isProfileValid
+{
+  // TODO check for duplicate name
+  return (self.profile.name.length > 0);
 }
 
 @end

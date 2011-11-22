@@ -78,6 +78,7 @@ enum GtpEngineProfileSectionItem
 //@}
 /// @name Action methods
 //@{
+- (void) create:(id)sender;
 - (void) toggleIsHuman:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
@@ -99,7 +100,7 @@ enum GtpEngineProfileSectionItem
 //@{
 - (void) gtpEngineProfileSelectionController:(GtpEngineProfileSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
-/// @name Helpers
+/// @name Private helpers
 //@{
 - (bool) isPlayerValid;
 //@}
@@ -110,11 +111,12 @@ enum GtpEngineProfileSectionItem
 
 @synthesize delegate;
 @synthesize player;
+@synthesize playerExists;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a EditPlayerController instance of
-/// grouped style that is used to edit @a player.
+/// @brief Convenience constructor. Creates an EditPlayerController instance of
+/// grouped style that is used to edit the attributes of @a player.
 // -----------------------------------------------------------------------------
 + (EditPlayerController*) controllerForPlayer:(Player*)player withDelegate:(id<EditPlayerDelegate>)delegate
 {
@@ -124,6 +126,25 @@ enum GtpEngineProfileSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.player = player;
+    controller.playerExists = true;
+  }
+  return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates an EditPlayerController instance of
+/// grouped style that is used to create a new Player object and edit its
+/// attributes.
+// -----------------------------------------------------------------------------
++ (EditPlayerController*) controllerWithDelegate:(id<EditPlayerDelegate>)delegate
+{
+  EditPlayerController* controller = [[EditPlayerController alloc] initWithStyle:UITableViewStyleGrouped];
+  if (controller)
+  {
+    [controller autorelease];
+    controller.delegate = delegate;
+    controller.player = [[[Player alloc] init] autorelease];
+    controller.playerExists = false;
   }
   return controller;
 }
@@ -148,8 +169,20 @@ enum GtpEngineProfileSectionItem
 
   assert(self.delegate != nil);
 
-  self.navigationItem.title = @"Edit Player";
-  self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+  if (self.playerExists)
+  {
+    self.navigationItem.title = @"Edit Player";
+    self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+  }
+  else
+  {
+    self.navigationItem.title = @"New Player";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
+                                                                              style:UIBarButtonItemStyleDone
+                                                                             target:self
+                                                                             action:@selector(create:)];
+    self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -328,15 +361,35 @@ enum GtpEngineProfileSectionItem
   // Compose the string as it would look like if the proposed change had already
   // been made
   self.player.name = [textField.text stringByReplacingCharactersInRange:range withString:string];
-  // Make sure that the editing view cannot be left, unless the player name is
-  // valid
-  [self.navigationItem setHidesBackButton:! [self isPlayerValid] animated:YES];
-  // Notify delegate that something about the player object has changed
-  [self.delegate didChangePlayer:self];
+  if (self.playerExists)
+  {
+    // Make sure that the editing view cannot be left, unless the player is
+    // valid
+    [self.navigationItem setHidesBackButton:! [self isPlayerValid] animated:YES];
+    // Notify delegate that something about the player object has changed
+    [self.delegate didChangePlayer:self];
+  }
+  else
+  {
+    // Make sure that the new player cannot be added, unless it is valid
+    self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+  }
   // Accept all changes, even those that make the player name invalid
   // -> the user must simply continue editing until the player name becomes
   //    valid
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user wants to create a new player object using the
+/// data that has been entered so far.
+// -----------------------------------------------------------------------------
+- (void) create:(id)sender
+{
+  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+  [model add:self.player];
+  
+  [self.delegate didCreatePlayer:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -348,7 +401,8 @@ enum GtpEngineProfileSectionItem
   UISwitch* accessoryView = (UISwitch*)sender;
   self.player.human = accessoryView.on;
 
-  [self.delegate didChangePlayer:self];
+  if (self.playerExists)
+    [self.delegate didChangePlayer:self];
 
   // Reloading the section works because it is always there - it just sometimes
   // has zero rows.

@@ -137,18 +137,12 @@ enum GtpEngineProfilesSectionItem
 /// @name EditPlayerDelegate protocol
 //@{
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-//@}
-/// @name NewPlayerDelegate protocol
-//@{
-- (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController;
+- (void) didCreatePlayer:(EditPlayerController*)editPlayerController;
 //@}
 /// @name EditGtpEngineProfileDelegate protocol
 //@{
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
-//@}
-/// @name NewGtpEngineProfileDelegate protocol
-//@{
-- (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController;
+- (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 //@}
 /// @name Notification responders
 //@{
@@ -741,21 +735,22 @@ enum GtpEngineProfilesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays NewPlayerController to gather information required to
+/// @brief Displays EditPlayerController to gather information required to
 /// create a new player.
 // -----------------------------------------------------------------------------
 - (void) newPlayer;
 {
-  NewPlayerController* newPlayerController = [[NewPlayerController controllerWithDelegate:self] retain];
-  [self.navigationController pushViewController:newPlayerController animated:YES];
-  [newPlayerController release];
+  EditPlayerController* editPlayerController = [[EditPlayerController controllerWithDelegate:self] retain];
+  [self.navigationController pushViewController:editPlayerController animated:YES];
+  [editPlayerController release];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief NewPlayerDelegate protocol method.
+/// @brief EditPlayerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didCreateNewPlayer:(NewPlayerController*)newPlayerController
+- (void) didCreatePlayer:(EditPlayerController*)editPlayerController
 {
+  [self.navigationController popViewControllerAnimated:YES];
   int newPlayerRow = self.playerModel.playerCount - 1;
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newPlayerRow inSection:PlayersSection];
   [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
@@ -785,21 +780,22 @@ enum GtpEngineProfilesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays NewGtpEngineProfileController to gather information
+/// @brief Displays EditGtpEngineProfileController to gather information
 /// required to create a new GtpEngineProfile.
 // -----------------------------------------------------------------------------
 - (void) newProfile;
 {
-  NewGtpEngineProfileController* newProfileController = [[NewGtpEngineProfileController controllerWithDelegate:self] retain];
-  [self.navigationController pushViewController:newProfileController animated:YES];
-  [newProfileController release];
+  EditGtpEngineProfileController* editProfileController = [[EditGtpEngineProfileController controllerWithDelegate:self] retain];
+  [self.navigationController pushViewController:editProfileController animated:YES];
+  [editProfileController release];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief NewGtpEngineProfileDelegate protocol method.
+/// @brief EditGtpEngineProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didCreateNewProfile:(NewGtpEngineProfileController*)newGtpEngineProfileController
+- (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
 {
+  [self.navigationController popViewControllerAnimated:YES];
   int newProfileRow = self.gtpEngineProfileModel.profileCount - 1;
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newProfileRow inSection:GtpEngineProfilesSection];
   [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
