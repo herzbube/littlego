@@ -33,8 +33,6 @@ enum EditPlayerTableViewSection
   PlayerNameSection,
   IsHumanSection,
   GtpEngineProfileSection,
-  // If a section is added here (after the optional GtpEngineProfileSection),
-  // section handling in this class must be drastically changed!
   MaxSection
 };
 
@@ -179,10 +177,11 @@ enum GtpEngineProfileSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  if (self.player.isHuman)
-    return MaxSection - 1;  // GTP engine profile is only for computer players
-  else
-    return MaxSection;
+  // Because we always display all sections we can reload sections, especially
+  // GtpEngineProfileSection when we toggle between human/not human. Because
+  // GtpEngineProfileSection will sometimes have zero rows, we get a nice
+  // animation of rows fading in/out.
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -197,7 +196,10 @@ enum GtpEngineProfileSectionItem
     case IsHumanSection:
       return MaxIsHumanSectionItem;
     case GtpEngineProfileSection:
-      return MaxGtpEngineProfileSectionItem;
+      if (self.player.isHuman)
+        return 0;  // GTP engine profile is only for computer players
+      else
+        return MaxGtpEngineProfileSectionItem;
     default:
       assert(0);
       break;
@@ -216,7 +218,10 @@ enum GtpEngineProfileSectionItem
     case IsHumanSection:
       return nil;
     case GtpEngineProfileSection:
-      return @"GTP engine profile";
+      if (self.player.isHuman)
+        return nil;
+      else
+        return @"GTP engine profile";
     default:
       assert(0);
       break;
@@ -364,6 +369,11 @@ enum GtpEngineProfileSectionItem
   self.player.human = accessoryView.on;
 
   [self.delegate didChangePlayer:self];
+
+  // Reloading the section works because it is always there - it just sometimes
+  // has zero rows.
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:GtpEngineProfileSection];
+  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
 }
 
 // -----------------------------------------------------------------------------

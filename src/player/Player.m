@@ -32,9 +32,13 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name Property accessors
+//@{
+- (void) setHuman:(bool)newValue;
+//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) NSString* uuid;
+@property(nonatomic, readwrite, retain) NSString* uuid;
 //@}
 @end
 
@@ -158,6 +162,28 @@
     return nil;
   GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
   return [model profileWithUUID:self.gtpEngineProfileUUID];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets whether this Player object represents a human player to
+/// @a newValue. As a side-effect, also adjusts @e gtpEngineProfileUUID.
+///
+/// If after the change this Player object represents a human player,
+/// @e gtpEngineProfileUUID is set to an empty string. Otherwise
+/// @e gtpEngineProfileUUID is set to reference the default GtpEngineProfile.
+// -----------------------------------------------------------------------------
+- (void) setHuman:(bool)newValue
+{
+  if (human == newValue)
+    return;
+  human = newValue;
+  if (human)
+    self.gtpEngineProfileUUID = @"";
+  else
+  {
+    GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+    self.gtpEngineProfileUUID = [model defaultProfile].uuid;
+  }
 }
 
 @end
