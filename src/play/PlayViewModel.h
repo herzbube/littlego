@@ -35,7 +35,6 @@
 @property(retain) UIColor* backgroundColor;
 @property(retain) UIColor* boardColor;
 @property float boardOuterMarginPercentage;
-@property float boardInnerMarginPercentage;
 @property(retain) UIColor* lineColor;
 @property int boundingLineWidth;
 @property int normalLineWidth;

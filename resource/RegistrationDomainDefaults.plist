@@ -20,8 +20,6 @@
 		<string>f3ac5f</string>
 		<key>BoardOuterMarginPercentage</key>
 		<real>0.02</real>
-		<key>BoardInnerMarginPercentage</key>
-		<real>0.02</real>
 		<key>LineColor</key>
 		<string>000000</string>
 		<key>BoundingLineWidth</key>

@@ -101,7 +101,6 @@ NSString* vibrateKey = @"Vibrate";
 NSString* backgroundColorKey = @"BackgroundColor";
 NSString* boardColorKey = @"BoardColor";
 NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
-NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
 NSString* lineColorKey = @"LineColor";
 NSString* boundingLineWidthKey = @"BoundingLineWidth";
 NSString* normalLineWidthKey = @"NormalLineWidth";

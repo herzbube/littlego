@@ -107,6 +107,7 @@
 @property int topLeftBoardCornerY;
 @property int topLeftPointX;
 @property int topLeftPointY;
+@property int numberOfCells;
 @property int pointDistance;
 @property int lineLength;
 @property int stoneRadius;
@@ -137,6 +138,7 @@
 @synthesize topLeftBoardCornerY;
 @synthesize topLeftPointX;
 @synthesize topLeftPointY;
+@synthesize numberOfCells;
 @synthesize pointDistance;
 @synthesize lineLength;
 @synthesize stoneRadius;
@@ -212,8 +214,10 @@ static PlayView* sharedPlayView = nil;
   self.topLeftBoardCornerY = 0;
   self.topLeftPointX = 0;
   self.topLeftPointY = 0;
+  self.numberOfCells = 0;
   self.pointDistance = 0;
   self.lineLength = 0;
+  self.stoneRadius = 0;
 
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
@@ -348,16 +352,15 @@ static PlayView* sharedPlayView = nil;
     boardSizeBase = rect.size.height;
   self.boardOuterMargin = floor(boardSizeBase * self.playViewModel.boardOuterMarginPercentage);
   self.boardSize = boardSizeBase - (self.boardOuterMargin * 2);
-  self.boardInnerMargin = floor(self.boardSize * self.playViewModel.boardInnerMarginPercentage);
+  self.numberOfCells = currentBoardDimension - 1;
+  // +1 to self.numberOfCells because we need one-half of a cell on both sides
+  // of the board (top/bottom or left/right) to draw a stone
+  self.pointDistance = floor(self.boardSize / (self.numberOfCells + 1));
+  self.boardInnerMargin = floor(self.pointDistance / 2);
   // Don't use border here - rounding errors might cause improper centering
   self.topLeftBoardCornerX = floor((rect.size.width - self.boardSize) / 2);
   self.topLeftBoardCornerY = floor((rect.size.height - self.boardSize) / 2);
-  // This is only an approximation - because fractions are lost by the
-  // subsequent point distance calculation, the final line length calculation
-  // must be based on the point distance
-  int lineLengthApproximation = self.boardSize - (self.boardInnerMargin * 2);
-  self.pointDistance = floor(lineLengthApproximation / ([GoGame sharedGame].board.dimensions - 1));
-  self.lineLength = self.pointDistance * (currentBoardDimension - 1);
+  self.lineLength = self.pointDistance * numberOfCells;
   // Don't use padding here, rounding errors mighth cause improper positioning
   self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;

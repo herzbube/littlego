@@ -35,6 +35,8 @@
 /// - Played stones (if any)
 /// - Symbols (if any)
 /// - Coordinate labels (if any)
+/// - Territory coloring (in scoring mode only)
+/// - Dead stone state (in scoring mode only)
 ///
 /// In addition, PlayView writes text into a status line and animates an
 /// activity indicator, to provide the user with feedback about operations
@@ -57,6 +59,38 @@
 /// @note All methods that require a view update should invoke delayedUpdate()
 /// instead of setNeedsDisplay() so that multiple updates can be coalesced into
 /// a single update, after one or more long-running actions have finished.
+///
+/// The following schematic illustrates the composition of the view for a
+/// (theoretical) 4x4 board. See the private implementation of PlayView for
+/// matching properties.
+///
+/// @verbatim
+/// +-----------------------screen--------------------+
+/// |                       boardOuterMargin          |
+/// |  +--------------------board------------------+  |
+/// |  |  /-\         /-\   boardInnerMargin       |  |
+/// |  | |-o-|-------|-o-|--grid---o-----------o   |  |
+/// |  |  \-/         \-/          |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |          /-\         /-\          |   |  |
+/// |  |   o---------|-o-|-------|-o-|---------o   |  |
+/// |  |   |          \-/         \-/          |   |  |
+/// |  |   |           |         ^   ^         |   |  |
+/// |  |   |           |         +---+         |   |  |
+/// |  |   |           |     stoneRadius*2     |   |  |
+/// |  |   o-----------o-----  (diameter)  ----o   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   o-----------o-----------o-----------o   |  |
+/// |  |               ^           ^               |  |
+/// |  +-----------    +-----------+    -----------+  |
+/// |                  pointDistance                  |
+/// +---   ^                                   ^   ---+
+///        +------------lineLength-------------+
+/// @endverbatim
 // -----------------------------------------------------------------------------
 @interface PlayView : UIView
 {

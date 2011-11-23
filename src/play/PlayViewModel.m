@@ -41,7 +41,6 @@
 @synthesize backgroundColor;
 @synthesize boardColor;
 @synthesize boardOuterMarginPercentage;
-@synthesize boardInnerMarginPercentage;
 @synthesize lineColor;
 @synthesize boundingLineWidth;
 @synthesize normalLineWidth;
@@ -72,7 +71,6 @@
   self.backgroundColor = [UIColor whiteColor];
   self.boardColor = [UIColor orangeColor];
   self.boardOuterMarginPercentage = 0.0;
-  self.boardInnerMarginPercentage = 0.0;
   self.lineColor = [UIColor blackColor];
   self.boundingLineWidth = 2;
   self.normalLineWidth = 1;
@@ -113,7 +111,6 @@
   self.backgroundColor = [UIColor colorFromHexString:[dictionary valueForKey:backgroundColorKey]];
   self.boardColor = [UIColor colorFromHexString:[dictionary valueForKey:boardColorKey]];
   self.boardOuterMarginPercentage = [[dictionary valueForKey:boardOuterMarginPercentageKey] floatValue];
-  self.boardInnerMarginPercentage = [[dictionary valueForKey:boardInnerMarginPercentageKey] floatValue];
   self.lineColor = [UIColor colorFromHexString:[dictionary valueForKey:lineColorKey]];
   self.boundingLineWidth = [[dictionary valueForKey:boundingLineWidthKey] intValue];
   self.normalLineWidth = [[dictionary valueForKey:normalLineWidthKey] intValue];
@@ -143,7 +140,6 @@
   [dictionary setValue:[UIColor hexStringFromUIColor:self.backgroundColor] forKey:backgroundColorKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.boardColor] forKey:boardColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.boardOuterMarginPercentage] forKey:boardOuterMarginPercentageKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.boardInnerMarginPercentage] forKey:boardInnerMarginPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.lineColor] forKey:lineColorKey];
   [dictionary setValue:[NSNumber numberWithInt:self.boundingLineWidth] forKey:boundingLineWidthKey];
   [dictionary setValue:[NSNumber numberWithInt:self.normalLineWidth] forKey:normalLineWidthKey];

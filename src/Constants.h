@@ -379,7 +379,6 @@ extern NSString* vibrateKey;
 extern NSString* backgroundColorKey;
 extern NSString* boardColorKey;
 extern NSString* boardOuterMarginPercentageKey;
-extern NSString* boardInnerMarginPercentageKey;
 extern NSString* lineColorKey;
 extern NSString* boundingLineWidthKey;
 extern NSString* normalLineWidthKey;
