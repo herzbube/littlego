@@ -22,6 +22,8 @@
 // -----------------------------------------------------------------------------
 /// @brief The NSStringAdditions category enhances NSString by adding a number
 /// of useful class methods.
+///
+/// @ingroup utility
 // -----------------------------------------------------------------------------
 @interface NSString(NSStringAdditions)
 + (NSString*) UUIDString;

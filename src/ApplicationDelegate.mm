@@ -47,6 +47,7 @@
 #import "command/backup/RestoreGameCommand.h"
 #import "command/game/PauseGameCommand.h"
 #import "go/GoGame.h"
+#import "utility/UserDefaultsUpdater.h"
 
 // Library includes
 #include <cocoalumberjack/DDTTYLogger.h>
@@ -329,6 +330,10 @@ static ApplicationDelegate* sharedDelegate = nil;
   NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
   NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+
+  // Upgrade user defaults data before the model objects access it. For this to
+  // work we need to have the registration defaults in place.
+  [UserDefaultsUpdater upgrade];
 
   // Create model objects and load values from the user defaults system
   self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];

@@ -24,6 +24,8 @@
 /// @brief The UIColorAdditions category enhances UIColor by adding string
 /// conversion methods, and a new predefined color "slate blue".
 ///
+/// @ingroup utility
+///
 /// Inspiration for this category comes from
 /// - String conversion: http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
 /// - Slate blue color: http://stackoverflow.com/questions/3943607/iphone-need-the-dark-blue-color-as-a-uicolor-used-on-tables-details-text-3366

@@ -369,6 +369,9 @@ extern NSString* playStoneSoundFileResource;
 /// @name Keys for user defaults
 // -----------------------------------------------------------------------------
 //@{
+// User Defaults versioning
+extern NSString* userDefaultsVersionRegistrationDomainKey;
+extern NSString* userDefaultsVersionApplicationDomainKey;
 // Play view settings
 extern NSString* playViewKey;
 extern NSString* markLastMoveKey;

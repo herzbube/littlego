@@ -19,6 +19,8 @@
 // -----------------------------------------------------------------------------
 /// @brief The UIDebugging class is a container for functions that help with
 /// debugging and inspecting UI elements.
+///
+/// @ingroup utility
 // -----------------------------------------------------------------------------
 @interface UIDebugging : NSObject
 {

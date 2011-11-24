@@ -6,9 +6,13 @@ This document lists the steps needed to make a project release.
 Before the release
 ------------------
 - If necessary, update the TODO file
+- If necessary, add an upgrade method to UserDefaultsUpdater
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
-- Update the ChangeLog. A possible source for this is the git commit log.
+- Update the ChangeLog
+  - The main source for this is the git commit log
+  - Also add notes about changes to the user defaults, especially if some of
+    the user's preferences are clobbered by UserDefaultsUpdater
 - Replace the "Changes in this release" section of the README with a collection
   of the most important changes from the ChangeLog.
 - Update the "Known bugs" listed in the README
@@ -17,7 +21,7 @@ Before the release
 - Make sure that the version number is up to date in the following files
   (it should have been bumped already after the last release was made):
   - README
-  - Info.plist
+  - Info.plist (can be changed in Xcode's summary page for the main target)
 - Make sure that the copyright year is up to date in the following files (e.g.
   2009-2011 instead of 2009-2010):
   - All source files

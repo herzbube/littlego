@@ -65,19 +65,19 @@ NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
 /// GTP engine profile default values
-int const fuegoMaxMemoryMinimum = 16;
-int const fuegoMaxMemoryMaximum = 512;
-int const fuegoMaxMemoryDefault = 32;
-int const fuegoThreadCountMinimum = 1;
-int const fuegoThreadCountMaximum = 8;
-int const fuegoThreadCountDefault = 1;
-bool const fuegoPonderingDefault = true;
-bool const fuegoReuseSubtreeDefault = true;
+const int fuegoMaxMemoryMinimum = 16;
+const int fuegoMaxMemoryMaximum = 512;
+const int fuegoMaxMemoryDefault = 32;
+const int fuegoThreadCountMinimum = 1;
+const int fuegoThreadCountMaximum = 8;
+const int fuegoThreadCountDefault = 1;
+const bool fuegoPonderingDefault = true;
+const bool fuegoReuseSubtreeDefault = true;
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Debug view settings default values
-int const gtpLogSizeMinimum = 5;
-int const gtpLogSizeMaximum = 1000;
+const int gtpLogSizeMinimum = 5;
+const int gtpLogSizeMaximum = 1000;
 
 // Resource file names
 NSString* openingBookResource = @"book.dat";
@@ -91,6 +91,9 @@ NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plis
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 
 // Keys for user defaults
+// User Defaults versioning
+NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
+NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
 // Play view settings
 NSString* playViewKey = @"PlayView";
 NSString* markLastMoveKey = @"MarkLastMove";

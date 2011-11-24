@@ -129,6 +129,8 @@
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
 		CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */; };
+		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
+		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBB0C0213426C56007C1C3E /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDBB0C0113426C56007C1C3E /* DocumentView.xib */; };
@@ -315,6 +317,8 @@
 		CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileController.m; sourceTree = "<group>"; };
 		CDB457A3147B17470043EDE4 /* GtpEngineProfileSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileSelectionController.h; sourceTree = "<group>"; };
 		CDB457A4147B17480043EDE4 /* GtpEngineProfileSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileSelectionController.m; sourceTree = "<group>"; };
+		CDB457AA147DB2010043EDE4 /* UserDefaultsUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDefaultsUpdater.h; sourceTree = "<group>"; };
+		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -726,6 +730,8 @@
 				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
 				CDEF3C75140A69A2002D9C1C /* UIDebugging.h */,
 				CDEF3C76140A69A2002D9C1C /* UIDebugging.m */,
+				CDB457AA147DB2010043EDE4 /* UserDefaultsUpdater.h */,
+				CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -1065,6 +1071,7 @@
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */,
+				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1121,6 +1128,7 @@
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
 				CD92EEA21469F0A9001EA980 /* ScoringModel.m in Sources */,
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
+				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

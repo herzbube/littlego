@@ -59,12 +59,14 @@ Priority 1 (important)
 - LoadGameCommand is too slow - when a game with many moves on a large board is
   restored, the command takes many seconds to execute. The probable culprit is
   GoBoardRegion::splitRegionIfRequired().
-- Add versioning to user defaults so that existing preferences on the user's
-  device can be upgraded when a new version of the app is installed
 - Fuego responds to "savesgf" by saving all moves, even those that have been
-  taken back with "undo"; find out if this is correct behaviour (the GTP specs
-  imply that it is not!) and do something about it... at the least put this on
-  the list of known bugs in the README.
+  taken back with "undo"; this is probably intended behaviour on the side of
+  Fuego's developers, but end users will certainly be surprised to see a move
+  they believe they have taken back, miraculously reappear when they load a
+  game. This behaviour should probably be announced somewhere in the README.
+  Arguing the behaviour's usefulness might be more successful if we had a
+  "redo" feature, which would let us explain the issue by redefining undo/redo
+  as move backward/forward in the game's move history.
 - Decide how the final implementation of the "intelligent" toggling feature in
   GoScore should look like
   - The original implementation toggled stones of the opposing color, which was
