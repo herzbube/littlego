@@ -64,6 +64,7 @@
 - (void) setupUserDefaults;
 - (void) setupGUI;
 - (void) setupFuego;
+- (void) writeUserDefaults;
 - (void) activateTab:(enum TabType)tabID;
 
 /// @brief The main application window.

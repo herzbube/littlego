@@ -156,7 +156,8 @@ enum AlertViewType
   RenameGameAlertView,
   LoadGameFailedAlertView,
   UndoMoveFailedAlertView,
-  AddToCannedCommandsAlertView
+  AddToCannedCommandsAlertView,
+  MemoryWarningAlertView
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
