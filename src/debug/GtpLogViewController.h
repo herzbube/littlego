@@ -111,7 +111,7 @@
 + (GtpLogViewController*) controller;
 
 /// @brief The model object
-@property(retain) GtpLogModel* model;
+@property(nonatomic, retain) GtpLogModel* model;
 /// @brief The frontside view. Log items are represented by table view cells.
 @property(nonatomic, retain) IBOutlet UITableView* frontSideView;
 /// @brief The backside view. Log items are represented by raw text.

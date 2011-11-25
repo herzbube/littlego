@@ -135,7 +135,7 @@ enum MoveStatisticsSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(retain) GoScore* score;
+@property(nonatomic, retain) GoScore* score;
 //@}
 @end
 

@@ -34,12 +34,12 @@
 
 /// @brief The name of the archived game. The value of this property should be
 /// displayed in the UI.
-@property(nonatomic, readonly) NSString* name;
+@property(nonatomic, assign, readonly) NSString* name;
 /// @brief The filename of the .sgf file.
-@property(retain) NSString* fileName;
+@property(nonatomic, retain) NSString* fileName;
 /// @brief The modification date of the .sgf file.
-@property(retain) NSString* fileDate;
+@property(nonatomic, retain) NSString* fileDate;
 /// @brief The size of the .sgf file.
-@property(retain) NSString* fileSize;
+@property(nonatomic, retain) NSString* fileSize;
 
 @end

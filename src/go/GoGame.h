@@ -58,23 +58,23 @@
 - (bool) isComputerPlayersTurn;
 
 /// @brief The type of this GoGame object.
-@property(readonly) enum GoGameType type;
+@property(nonatomic, assign, readonly) enum GoGameType type;
 /// @brief The GoBoard object associated with this GoGame instance.
-@property(retain) GoBoard* board;
+@property(nonatomic, retain) GoBoard* board;
 /// @brief List of GoPoint objects with handicap stones.
-@property(retain) NSArray* handicapPoints;
+@property(nonatomic, retain) NSArray* handicapPoints;
 /// @brief The komi used for this game.
-@property double komi;
+@property(nonatomic, assign) double komi;
 /// @brief The GoPlayer object that plays for black.
-@property(retain) GoPlayer* playerBlack;
+@property(nonatomic, retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays for white.
-@property(retain) GoPlayer* playerWhite;
+@property(nonatomic, retain) GoPlayer* playerWhite;
 /// @brief The player whose turn it is now.
 ///
 /// After the game has ended, querying this property in some cases is a
 /// convenient way to find out who brought about the end of the game. For
 /// instance, if the game was resigned this denotes the player who resigned.
-@property(readonly, assign) GoPlayer* currentPlayer;
+@property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// the game is still in state #GameHasNotYetStarted.
 @property(nonatomic, retain) GoMove* firstMove;
@@ -82,12 +82,12 @@
 /// the game is still in state #GameHasNotYetStarted.
 @property(nonatomic, retain) GoMove* lastMove;
 /// @brief The state of the game.
-@property(nonatomic) enum GoGameState state;
+@property(nonatomic, assign) enum GoGameState state;
 /// @brief The reason why the game has reached the state #GameHasEnded.
-@property enum GoGameHasEndedReason reasonForGameHasEnded;
+@property(nonatomic, assign) enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// its next move.
-@property(nonatomic, getter=isComputerThinking) bool computerThinks;
+@property(nonatomic, assign, getter=isComputerThinking) bool computerThinks;
 /// @brief Is true to indicate that the next GoMove object created should have
 /// its @e computerGenerated flag set to true.
 ///
@@ -96,6 +96,6 @@
 /// timing hack allows observers to check the GoMove object's flag when they
 /// react to one of those notifications. To remove this hack we need to do some
 /// redesigning...
-@property bool nextMoveIsComputerGenerated;
+@property(nonatomic, assign) bool nextMoveIsComputerGenerated;
 
 @end

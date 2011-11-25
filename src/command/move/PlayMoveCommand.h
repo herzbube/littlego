@@ -40,8 +40,8 @@
 - (id) initWithPoint:(GoPoint*)aPoint;
 - (id) initPass;
 
-@property(retain) GoGame* game;
-@property(assign) enum GoMoveType moveType;
-@property(retain) GoPoint* point;
+@property(nonatomic, retain) GoGame* game;
+@property(nonatomic, assign) enum GoMoveType moveType;
+@property(nonatomic, retain) GoPoint* point;
 
 @end

@@ -50,8 +50,8 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite) enum GoBoardSize size;
-@property(readwrite) int dimensions;
+@property(nonatomic, assign, readwrite) enum GoBoardSize size;
+@property(nonatomic, assign, readwrite) int dimensions;
 //@}
 - (NSArray*) starPointVertexes;
 @end

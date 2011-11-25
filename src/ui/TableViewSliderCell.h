@@ -65,19 +65,19 @@ enum SliderCellSubViewTag
 + (CGFloat) rowHeightInTableView:(UITableView*)tableView;
 - (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2;
 
-@property(readonly, retain) UILabel* descriptionLabel;
-@property(readonly, retain) UILabel* valueLabel;
-@property(readonly, retain) UISlider* slider;
-@property(nonatomic) int value;
+@property(nonatomic, retain, readonly) UILabel* descriptionLabel;
+@property(nonatomic, retain, readonly) UILabel* valueLabel;
+@property(nonatomic, retain, readonly) UISlider* slider;
+@property(nonatomic, assign) int value;
 /// @brief Delegate object that will be informed when the cell's integer
 /// value changes.
-@property(readonly, retain) id delegate;
+@property(nonatomic, retain, readonly) id delegate;
 /// @brief Is invoked when the cell's integer value changes, regardless of the
 /// source of the change.
-@property(readonly) SEL delegateActionValueDidChange;
+@property(nonatomic, assign, readonly) SEL delegateActionValueDidChange;
 /// @brief Is invoked when the user's interaction with the slider causes the
 /// cell's integer value to change.
-@property(readonly) SEL delegateActionSliderValueDidChange;
+@property(nonatomic, assign, readonly) SEL delegateActionSliderValueDidChange;
 //@}
 
 @end

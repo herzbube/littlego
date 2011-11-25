@@ -62,6 +62,6 @@
 /// collection.
 @property(nonatomic, assign) id<KomiSelectionDelegate> delegate;
 /// @brief The currently selected komi.
-@property double komi;
+@property(nonatomic, assign) double komi;
 
 @end

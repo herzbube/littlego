@@ -40,7 +40,7 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) NSArray* gameList;
+@property(nonatomic, retain, readwrite) NSArray* gameList;
 //@}
 @end
 

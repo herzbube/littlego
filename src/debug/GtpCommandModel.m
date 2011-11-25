@@ -29,7 +29,7 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) NSArray* commandList;
+@property(nonatomic, retain, readwrite) NSArray* commandList;
 //@}
 @end
 

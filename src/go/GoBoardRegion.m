@@ -41,15 +41,15 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(nonatomic, readwrite, retain) NSArray* points;
+@property(nonatomic, retain, readwrite) NSArray* points;
 //@}
 /// @name Privately declared properties
 //@{
-@property int cachedSize;
-@property bool cachedIsStoneGroup;
-@property enum GoColor cachedColor;
-@property int cachedLiberties;
-@property(retain) NSArray* cachedAdjacentRegions;
+@property(nonatomic, assign) int cachedSize;
+@property(nonatomic, assign) bool cachedIsStoneGroup;
+@property(nonatomic, assign) enum GoColor cachedColor;
+@property(nonatomic, assign) int cachedLiberties;
+@property(nonatomic, retain) NSArray* cachedAdjacentRegions;
 //@}
 @end
 

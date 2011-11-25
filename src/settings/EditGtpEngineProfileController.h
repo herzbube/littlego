@@ -71,9 +71,9 @@
 /// changes.
 @property(nonatomic, assign) id<EditGtpEngineProfileDelegate> delegate;
 /// @brief The model object
-@property(retain) GtpEngineProfile* profile;
+@property(nonatomic, retain) GtpEngineProfile* profile;
 /// @brief Flag is true if the profile whose attributes are edited already
 /// exists, false if the profile still needs to be created.
-@property(nonatomic) bool profileExists;
+@property(nonatomic, assign) bool profileExists;
 
 @end

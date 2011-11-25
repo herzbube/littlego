@@ -10,10 +10,6 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
-- Code cleanup
-  - Remove @synchronized where possible and make properties non-atomic
-  - Review properties to see if any can be declared readonly in the public
-    interface, then re-declared rewrite in the private class extension
 - Testing
   - Test application shutdown to see whether there are no memory leaks
   - Add more unit tests
@@ -142,6 +138,10 @@ Priority 2 (nice to have)
   text label heights in case a text label displays a longish string.
 - Dynamically generate a navigation controller structure that displays documents
   such as README or MANUAL.
+- Add UITextView support to EditTextController. Clients should be able to choose
+  whether to display a UITextView (for long texts) or a UITextField (for short
+  texts). EditGtpEngineProfileController currently has a private implementation
+  of a UITextView based input view that can serve as an example.
 
 
 Priority 3 (not important)

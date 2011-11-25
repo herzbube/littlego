@@ -97,25 +97,25 @@
 //@}
 /// @name Dynamically calculated properties
 //@{
-@property CGRect previousDrawRect;
-@property int previousBoardDimension;
-@property bool portrait;
-@property int boardSize;
-@property int boardOuterMargin;  // distance to view edge
-@property int boardInnerMargin;  // distance to grid
-@property int topLeftBoardCornerX;
-@property int topLeftBoardCornerY;
-@property int topLeftPointX;
-@property int topLeftPointY;
-@property int numberOfCells;
-@property int pointDistance;
-@property int lineLength;
-@property int stoneRadius;
+@property(nonatomic, assign) CGRect previousDrawRect;
+@property(nonatomic, assign) int previousBoardDimension;
+@property(nonatomic, assign) bool portrait;
+@property(nonatomic, assign) int boardSize;
+@property(nonatomic, assign) int boardOuterMargin;  // distance to view edge
+@property(nonatomic, assign) int boardInnerMargin;  // distance to grid
+@property(nonatomic, assign) int topLeftBoardCornerX;
+@property(nonatomic, assign) int topLeftBoardCornerY;
+@property(nonatomic, assign) int topLeftPointX;
+@property(nonatomic, assign) int topLeftPointY;
+@property(nonatomic, assign) int numberOfCells;
+@property(nonatomic, assign) int pointDistance;
+@property(nonatomic, assign) int lineLength;
+@property(nonatomic, assign) int stoneRadius;
 //@}
 /// @name Other privately declared properties
 //@{
-@property(assign) PlayViewModel* playViewModel;
-@property(assign) ScoringModel* scoringModel;
+@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) ScoringModel* scoringModel;
 //@}
 @end
 
@@ -160,11 +160,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 + (PlayView*) sharedView
 {
-  @synchronized(self)
-  {
-    assert(sharedPlayView != nil);
-    return sharedPlayView;
-  }
+  assert(sharedPlayView != nil);
+  return sharedPlayView;
 }
 
 // -----------------------------------------------------------------------------

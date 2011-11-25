@@ -51,10 +51,10 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(assign) GoGame* game;
-@property(retain) NSOperationQueue* operationQueue;
-@property bool boardIsInitialized;
-@property bool lastCalculationHadError;
+@property(nonatomic, assign) GoGame* game;
+@property(nonatomic, retain) NSOperationQueue* operationQueue;
+@property(nonatomic, assign) bool boardIsInitialized;
+@property(nonatomic, assign) bool lastCalculationHadError;
 /// @brief List with all GoBoardRegion objects that currently exist on the
 /// board.
 ///
@@ -63,7 +63,7 @@
 /// have to re-calculate the list repeatedly (re-calculation is
 /// not-quite-cheap). This approach works because during scoring mode no
 /// changes to the board are possible.
-@property(retain) NSArray* allRegions;
+@property(nonatomic, retain) NSArray* allRegions;
 //@}
 @end
 

@@ -365,6 +365,7 @@ Coding guidelines
 - Method names start with a lowercase letter
 - Member variables use the the prefix "m_" to distinguish them from variables
   that are local to a method
+- Use @property in preference to member variables
 - Spaces, no tabs
 - 2 spaces per indentation level
 - Opening/closing braces are placed on their own line
@@ -372,12 +373,35 @@ Coding guidelines
   they surround
 - Operators (e.g. "+" in string concatenations) are separated by spaces from
   their operands
+- Pointers: No space between the type name and the asterisk ("*"); e.g.
+  "NSString* foo", not "NSString *foo"
+- Use braces liberally to improve readability, but don't hesitate to omit them
+  in long if- or switch-clauses that use only one-line statements. Readability
+  is the most important aspect here - sometimes the right use of braces can
+  create a visual pattern that immediately tells the reader how the program
+  flows.
+- Only one variable declaration per line
+- Only one statement per line; long statements (e.g. method invocations with
+  many parameters) may span multiple lines
 - Lines should not be longer than 80 characters; for comment lines this limit
   is much stricter than for lines of code
 - Setter/getter methods should be named after the property they encapsulate
   (e.g. getter = icon(), setter = setIcon:())
-- Private methods of a class are declared in class extension which is declared
-  in the .m file
+- Private methods and properties of a class are declared in class extension
+  which is declared in the .m file
+- Consider making properties "readonly" in the public interface of a class, then
+  redeclare them as "readwrite" in the private interface in the .m file
+- Explicitly declare setter semantics, even if the default "assign" is in place
+- Use "nonatomic" unless the property really needs to be atomic
+- Find good names for variables, methods and classes; don't hesitate to use
+  long names; never (!) use abbreviations; don't use i, j, k for loop variables
+- Redeclare overrides inherited from a base class
+- Method signatures should start in column 0 and use spaces etc. as in the
+  following example:
+    - (NSString*) foo:(NSString*)bar;
+- Dont use side-effects, e.g.
+  - Never place ++/-- operators in the same line as an assignment
+  - Don't test a condition and make an assignment at the same time
 - Everything should be documented with Doxygen documentation blocks
 
 

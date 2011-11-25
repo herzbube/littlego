@@ -30,12 +30,12 @@
 - (NSDictionary*) asDictionary;
 
 /// @brief How many games have been played.
-@property int gamesPlayed;
+@property(nonatomic, assign) int gamesPlayed;
 /// @brief How many games have been won.
-@property int gamesWon;
+@property(nonatomic, assign) int gamesWon;
 /// @brief How many games have been lost.
-@property int gamesLost;
+@property(nonatomic, assign) int gamesLost;
 /// @brief How many games have been tied.
-@property int gamesTied;
+@property(nonatomic, assign) int gamesTied;
 
 @end

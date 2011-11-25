@@ -37,6 +37,8 @@
 - (void) endBackgroundSubTask;
 //@}
 /// @name Privately declared properties
+/// @brief Properties are declared atomic because multiple threads may access
+/// them at the same time.
 //@{
 @property(retain) GoGame* game;
 @property(assign) UIBackgroundTaskIdentifier backgroundTask;

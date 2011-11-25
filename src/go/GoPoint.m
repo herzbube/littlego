@@ -37,12 +37,12 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property bool isLeftValid;
-@property bool isRightValid;
-@property bool isAboveValid;
-@property bool isBelowValid;
-@property bool isNextValid;
-@property bool isPreviousValid;
+@property(nonatomic, assign) bool isLeftValid;
+@property(nonatomic, assign) bool isRightValid;
+@property(nonatomic, assign) bool isAboveValid;
+@property(nonatomic, assign) bool isBelowValid;
+@property(nonatomic, assign) bool isNextValid;
+@property(nonatomic, assign) bool isPreviousValid;
 //@}
 @end
 

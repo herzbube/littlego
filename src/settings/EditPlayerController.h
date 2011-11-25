@@ -75,6 +75,6 @@
 @property(nonatomic, retain) Player* player;
 /// @brief Flag is true if the player whose attributes are edited already
 /// exists, false if the player still needs to be created.
-@property(nonatomic) bool playerExists;
+@property(nonatomic, assign) bool playerExists;
 
 @end

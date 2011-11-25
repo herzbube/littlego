@@ -60,6 +60,6 @@
 /// collection.
 @property(nonatomic, assign) id<GtpEngineProfileSelectionDelegate> delegate;
 /// @brief The currently selected profile.
-@property(retain) GtpEngineProfile* profile;
+@property(nonatomic, retain) GtpEngineProfile* profile;
 
 @end

@@ -45,8 +45,8 @@
 
 /// @brief Reference to the ArchiveGame that this ViewGameController displays
 /// data for.
-@property(assign) ArchiveGame* game;
+@property(nonatomic, assign) ArchiveGame* game;
 /// @brief Model that manages all ArchiveGame objects.
-@property(assign) ArchiveViewModel* model;
+@property(nonatomic, assign) ArchiveViewModel* model;
 
 @end

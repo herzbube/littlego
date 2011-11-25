@@ -28,10 +28,10 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property enum GoBoardSize boardSize;
-@property(retain) NSString* blackPlayerUUID;
-@property(retain) NSString* whitePlayerUUID;
-@property int handicap;
-@property double komi;
+@property(nonatomic, assign) enum GoBoardSize boardSize;
+@property(nonatomic, retain) NSString* blackPlayerUUID;
+@property(nonatomic, retain) NSString* whitePlayerUUID;
+@property(nonatomic, assign) int handicap;
+@property(nonatomic, assign) double komi;
 
 @end

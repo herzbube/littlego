@@ -62,6 +62,6 @@
 /// collection.
 @property(nonatomic, assign) id<BoardSizeSelectionDelegate> delegate;
 /// @brief The currently selected board size.
-@property enum GoBoardSize boardSize;
+@property(nonatomic, assign) enum GoBoardSize boardSize;
 
 @end

@@ -41,8 +41,9 @@
 
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.
-@property(assign) UIViewController* modalMaster;
+@property(nonatomic, assign) UIViewController* modalMaster;
 /// @brief Maps action sheet button indexes to actions known by this controller.
 /// Key = action sheet button index, value = #ActionSheetButton enum value
-@property(retain) NSMutableDictionary* buttonIndexes;
+@property(nonatomic, retain) NSMutableDictionary* buttonIndexes;
+
 @end

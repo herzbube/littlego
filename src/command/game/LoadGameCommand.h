@@ -57,12 +57,12 @@
 - (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName;
 
 /// @brief Full path to the .sgf file to be loaded.
-@property(retain) NSString* filePath;
-@property(retain) Player* blackPlayer;
-@property(retain) Player* whitePlayer;
-@property(retain) NSString* gameName;
+@property(nonatomic, retain) NSString* filePath;
+@property(nonatomic, retain) Player* blackPlayer;
+@property(nonatomic, retain) Player* whitePlayer;
+@property(nonatomic, retain) NSString* gameName;
 /// @brief True if command execution should be synchronous. The default is
 /// false.
-@property bool waitUntilDone;
+@property(nonatomic, assign) bool waitUntilDone;
 
 @end

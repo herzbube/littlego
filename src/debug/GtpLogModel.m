@@ -47,7 +47,7 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) NSArray* itemList;
+@property(nonatomic, retain, readwrite) NSArray* itemList;
 //@}
 /// @name Private properties
 //@{
@@ -66,8 +66,8 @@
 /// queue as the GTP command submissions are pouring in. Whenever a GTP response
 /// is received, the GtpLogItem object at the front of the queue must be the
 /// one with the command that the response belongs to.
-@property(retain) NSMutableArray* itemQueueNoResponses;
-@property(retain) NSDateFormatter* dateFormatter;
+@property(nonatomic, retain) NSMutableArray* itemQueueNoResponses;
+@property(nonatomic, retain) NSDateFormatter* dateFormatter;
 //@}
 @end
 

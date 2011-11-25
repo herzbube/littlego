@@ -65,7 +65,7 @@ static NSString* gridLineColor = @"A9ABAD";
 - (id) initWithFrame:(CGRect)frame;
 - (void) dealloc;
 - (void) drawRect:(CGRect)rect;
-@property(retain) NSArray* gridLines;
+@property(nonatomic, retain) NSArray* gridLines;
 @end
 
 

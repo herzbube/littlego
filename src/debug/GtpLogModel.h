@@ -58,18 +58,18 @@
 ///
 /// This property exists purely as a convenience to clients, since the object
 /// count is also available from the itemList array.
-@property(readonly) int itemCount;
+@property(nonatomic, assign, readonly) int itemCount;
 /// @brief Array stores objects of type GtpLogItem. Items appear in the array
 /// in the order that their corresponding commands were submitted.
-@property(readonly, retain) NSArray* itemList;
+@property(nonatomic, retain, readonly) NSArray* itemList;
 /// @brief The size of the GTP log, i.e. the maximum number of objects that can
 /// be in @e itemList.
 ///
 /// If a new item is about to be added to @e itemList that would exceed the
 /// limit, the oldest item is discarded first.
-@property(nonatomic) int gtpLogSize;
+@property(nonatomic, assign) int gtpLogSize;
 /// @brief True if the "GTP Log" view currently displays the frontside view,
 /// false if it displays the backside view.
-@property bool gtpLogViewFrontSideIsVisible;
+@property(nonatomic, assign) bool gtpLogViewFrontSideIsVisible;
 
 @end

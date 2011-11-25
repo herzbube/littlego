@@ -158,10 +158,10 @@ enum GtpEngineProfilesSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(assign) PlayViewModel* playViewModel;
-@property(assign) ScoringModel* scoringModel;
-@property(assign) PlayerModel* playerModel;
-@property(assign) GtpEngineProfileModel* gtpEngineProfileModel;
+@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) ScoringModel* scoringModel;
+@property(nonatomic, assign) PlayerModel* playerModel;
+@property(nonatomic, assign) GtpEngineProfileModel* gtpEngineProfileModel;
 //@}
 @end
 

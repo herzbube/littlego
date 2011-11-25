@@ -36,11 +36,11 @@
 - (NSString*) parsedResponse;
 
 /// @brief The raw response string, which includes the status prefix.
-@property(readonly, retain) NSString* rawResponse;
+@property(nonatomic, retain, readonly) NSString* rawResponse;
 /// @brief The GtpCommand object that this GtpResponse "belongs" to.
-@property(readonly, retain) GtpCommand* command;
+@property(nonatomic, retain, readonly) GtpCommand* command;
 /// @brief The response status, i.e. whether command execution was successful
 /// (status is true) or not (status is false).
-@property(readonly) bool status;
+@property(nonatomic, assign, readonly) bool status;
 
 @end

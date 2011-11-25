@@ -73,33 +73,33 @@
 @property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
 /// @brief The bundle that contains the application's resources. This property
 /// exists to make the application more testable.
-@property(assign) NSBundle* resourceBundle;
+@property(nonatomic, assign) NSBundle* resourceBundle;
 /// @brief The GTP client instance.
-@property(retain) GtpClient* gtpClient;
+@property(nonatomic, retain) GtpClient* gtpClient;
 /// @brief The GTP engine instance.
-@property(retain) GtpEngine* gtpEngine;
+@property(nonatomic, retain) GtpEngine* gtpEngine;
 /// @brief Model object that stores attributes of a new game.
-@property(retain) NewGameModel* theNewGameModel;
+@property(nonatomic, retain) NewGameModel* theNewGameModel;
 /// @brief Model object that stores player data.
-@property(retain) PlayerModel* playerModel;
+@property(nonatomic, retain) PlayerModel* playerModel;
 /// @brief Model object that stores GTP engine profile data.
-@property(retain) GtpEngineProfileModel* gtpEngineProfileModel;
+@property(nonatomic, retain) GtpEngineProfileModel* gtpEngineProfileModel;
 /// @brief Model object that stores attributes used to manage the Play view.
-@property(retain) PlayViewModel* playViewModel;
+@property(nonatomic, retain) PlayViewModel* playViewModel;
 /// @brief Model object that stores attributes used for scoring.
-@property(retain) ScoringModel* scoringModel;
+@property(nonatomic, retain) ScoringModel* scoringModel;
 /// @brief Object that handles sounds and vibration.
-@property(retain) SoundHandling* soundHandling;
+@property(nonatomic, retain) SoundHandling* soundHandling;
 /// @brief Object that represents the game that is currently in progress.
-@property(retain) GoGame* game;
+@property(nonatomic, retain) GoGame* game;
 /// @brief Model object that stores attributes used to manage the Archive view.
-@property(retain) ArchiveViewModel* archiveViewModel;
+@property(nonatomic, retain) ArchiveViewModel* archiveViewModel;
 /// @brief Model object that stores information about the GTP log, viewable on
 /// the Debug view.
-@property(retain) GtpLogModel* gtpLogModel;
+@property(nonatomic, retain) GtpLogModel* gtpLogModel;
 /// @brief Model object that stores canned GTP commands that can be managed and
 /// submitted on the Debug view.
-@property(retain) GtpCommandModel* gtpCommandModel;
+@property(nonatomic, retain) GtpCommandModel* gtpCommandModel;
 
 @end
 

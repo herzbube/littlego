@@ -32,7 +32,7 @@
 
 - (id) initWithGame:(ArchiveGame*)aGame newName:(NSString*)aNewName;
 
-@property(retain) ArchiveGame* game;
-@property(retain) NSString* theNewName;
+@property(nonatomic, retain) ArchiveGame* game;
+@property(nonatomic, retain) NSString* theNewName;
 
 @end

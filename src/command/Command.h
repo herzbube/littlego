@@ -34,12 +34,12 @@
 ///
 /// This is a technical name that should not be displayed in the GUI. It might
 /// be used, for instance, for logging purposes.
-@property(retain) NSString* name;
+@property(nonatomic, retain) NSString* name;
 
 @required
 /// @brief True if the command's undo() method may be invoked. The default is
 /// false.
-@property(getter=isUndoable) bool undoable;
+@property(nonatomic, assign, getter=isUndoable) bool undoable;
 
 @end
 

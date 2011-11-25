@@ -41,7 +41,7 @@
 
 /// @brief The profile's UUID. This is a technical identifier guaranteed to be
 /// unique. This identifier is never displayed in the GUI.
-@property(nonatomic, readonly, retain) NSString* uuid;
+@property(nonatomic, retain, readonly) NSString* uuid;
 /// @brief The profile's name. A short string that uniquely identifies the
 /// profile and is displayed in the GUI in places where only short strings are
 /// appropriate.
@@ -55,13 +55,13 @@
 @property(nonatomic, retain) NSString* profileDescription;
 /// @brief The maximum amount of memory in MB that the Fuego GTP engine is
 /// allowed to consume.
-@property(nonatomic) int fuegoMaxMemory;
+@property(nonatomic, assign) int fuegoMaxMemory;
 /// @brief The number of threads that the Fuego GTP engine should use for its
 /// calculations.
-@property(nonatomic) int fuegoThreadCount;
+@property(nonatomic, assign) int fuegoThreadCount;
 /// @brief True if Fuego should play with pondering on.
-@property(nonatomic) bool fuegoPondering;
+@property(nonatomic, assign) bool fuegoPondering;
 /// @brief True if Fuego should reuse the subtree from the previous search.
-@property(nonatomic) bool fuegoReuseSubtree;
+@property(nonatomic, assign) bool fuegoReuseSubtree;
 
 @end

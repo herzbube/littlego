@@ -117,7 +117,7 @@ enum ProfileSettingsSectionItem
 //@{
 @property(nonatomic, retain) UITextView* textView;
 @property(nonatomic, retain) UIViewController* textViewController;
-@property(nonatomic) bool textViewControllerIsPushed;
+@property(nonatomic, assign) bool textViewControllerIsPushed;
 //@}
 @end
 

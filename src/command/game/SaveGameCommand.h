@@ -36,6 +36,6 @@
 
 /// @brief The name under which the current game should be saved. This is not
 /// the file name!
-@property(retain) NSString* gameName;
+@property(nonatomic, retain) NSString* gameName;
 
 @end

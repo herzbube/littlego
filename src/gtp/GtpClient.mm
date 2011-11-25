@@ -52,11 +52,16 @@ static std::ifstream responseStream;
 - (void) processCommand:(GtpCommand*)command;
 - (void) receive:(GtpResponse*)response;
 //@}
+/// @name Privately declared properties
+//@{
+@property(retain) NSThread* thread;
+//@}
 @end
 
 
 @implementation GtpClient
 
+@synthesize thread;
 @synthesize shouldExit;
 
 
@@ -87,8 +92,8 @@ static std::ifstream responseStream;
   self.shouldExit = false;
 
   // Create and start the thread
-  m_thread = [[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:pipes];
-  [m_thread start];
+  self.thread = [[[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:pipes] autorelease];
+  [self.thread start];
 
   // TODO: Clients that work with self returned here will invoke methods in
   // the context of the main thread. Find a clever/elegant solution so that
@@ -103,7 +108,7 @@ static std::ifstream responseStream;
 - (void) dealloc
 {
   // TODO implement stuff
-  [m_thread release];
+  self.thread = nil;
   [super dealloc];
 }
 
@@ -239,7 +244,7 @@ static std::ifstream responseStream;
   // the secondary thread
   [command retain];
   [self performSelector:@selector(processCommand:)
-               onThread:m_thread
+               onThread:self.thread
              withObject:command
           waitUntilDone:command.waitUntilDone];
 }

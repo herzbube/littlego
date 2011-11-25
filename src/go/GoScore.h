@@ -151,33 +151,33 @@
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-@property(nonatomic) bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
-@property(nonatomic) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
+@property(nonatomic, assign) bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
+@property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 //@}
 // -----------------------------------------------------------------------------
 /// @name Scoring properties
 // -----------------------------------------------------------------------------
 //@{
-@property double komi;
-@property int capturedByBlack;       ///< @brief The number of stones captured by black
-@property int capturedByWhite;       ///< @brief The number of stones captured by white
-@property int deadBlack;             ///< @brief The number of dead black stones
-@property int deadWhite;             ///< @brief The number of dead white stones
-@property int territoryBlack;        ///< @brief Territory score for black
-@property int territoryWhite;        ///< @brief Territory score for white
-@property int totalScoreBlack;       ///< @brief The total score for black
-@property double totalScoreWhite;    ///< @brief The total score for white
-@property enum GoGameResult result;  ///< @brief The overall result of comparing @e totalScoreBlack and @e totalScoreWhite
+@property(nonatomic, assign) double komi;
+@property(nonatomic, assign) int capturedByBlack;       ///< @brief The number of stones captured by black
+@property(nonatomic, assign) int capturedByWhite;       ///< @brief The number of stones captured by white
+@property(nonatomic, assign) int deadBlack;             ///< @brief The number of dead black stones
+@property(nonatomic, assign) int deadWhite;             ///< @brief The number of dead white stones
+@property(nonatomic, assign) int territoryBlack;        ///< @brief Territory score for black
+@property(nonatomic, assign) int territoryWhite;        ///< @brief Territory score for white
+@property(nonatomic, assign) int totalScoreBlack;       ///< @brief The total score for black
+@property(nonatomic, assign) double totalScoreWhite;    ///< @brief The total score for white
+@property(nonatomic, assign) enum GoGameResult result;  ///< @brief The overall result of comparing @e totalScoreBlack and @e totalScoreWhite
 //@}
 // -----------------------------------------------------------------------------
 /// @name Move statistics
 // -----------------------------------------------------------------------------
 //@{
-@property int numberOfMoves;
-@property int stonesPlayedByBlack;
-@property int stonesPlayedByWhite;
-@property int passesPlayedByBlack;
-@property int passesPlayedByWhite;
+@property(nonatomic, assign) int numberOfMoves;
+@property(nonatomic, assign) int stonesPlayedByBlack;
+@property(nonatomic, assign) int stonesPlayedByWhite;
+@property(nonatomic, assign) int passesPlayedByBlack;
+@property(nonatomic, assign) int passesPlayedByWhite;
 //@}
 
 @end

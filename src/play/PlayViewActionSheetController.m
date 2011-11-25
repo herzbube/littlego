@@ -79,7 +79,7 @@ enum ActionSheetButton
 //@}
 /// @name Privately declared properties
 //@{
-@property(retain) NSString* saveGameName;
+@property(nonatomic, retain) NSString* saveGameName;
 //@}
 @end
 

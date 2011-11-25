@@ -60,8 +60,8 @@
 /// collection.
 @property(nonatomic, assign) id<PlayerSelectionDelegate> delegate;
 /// @brief The currently selected player.
-@property(retain) Player* player;
+@property(nonatomic, retain) Player* player;
 /// @brief True if the selected player is going to play black.
-@property(assign) bool blackPlayer;
+@property(nonatomic, assign) bool blackPlayer;
 
 @end

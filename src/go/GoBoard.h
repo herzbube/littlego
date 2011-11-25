@@ -53,15 +53,15 @@
 
 /// @brief The board size, specifying the horizontal and vertical board
 /// dimensions.
-@property(readonly) enum GoBoardSize size;
+@property(nonatomic, assign, readonly) enum GoBoardSize size;
 /// @brief Numeric board dimension that corresponds to property @a size. For
 /// instance 19, if @e size has the enum value #BoardSize19.
-@property(readonly) int dimensions;
+@property(nonatomic, assign, readonly) int dimensions;
 /// @brief A list of GoPoint objects that refer to the star points for the
 /// current board size. The list has no particular order.
-@property(readonly, retain) NSArray* starPoints;
+@property(nonatomic, retain, readonly) NSArray* starPoints;
 /// @brief A list of all GoBoardRegion objects on this board. The list has no
 /// particular order.
-@property(readonly) NSArray* regions;
+@property(nonatomic, assign, readonly) NSArray* regions;
 
 @end

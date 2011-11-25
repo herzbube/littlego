@@ -73,14 +73,14 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property bool lastRowIsVisible;
-@property bool updateScheduledByGtpLogItemChanged;
+@property(nonatomic, assign) bool lastRowIsVisible;
+@property(nonatomic, assign) bool updateScheduledByGtpLogItemChanged;
 /// TODO This flag exists because we "know" that, if both gtpLogContentChanged
 /// and gtpLogItemChanged are sent shortly after each other,
 /// gtpLogContentChanged will always be sent first. This is deep knowledge of
 /// how GtpLogModel sends its notifications, and we should find a better way
 /// for handling update conflicts.
-@property bool updateScheduledByGtpLogContentChanged;
+@property(nonatomic, assign) bool updateScheduledByGtpLogContentChanged;
 //@}
 @end
 

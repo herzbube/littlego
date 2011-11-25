@@ -74,21 +74,21 @@
 @property(nonatomic, readonly, retain) NSArray* points;
 /// @brief A random color that can be used to mark GoPoints in this
 /// GoBoardRegion. This is intended as a debugging aid.
-@property(retain) UIColor* randomColor;
+@property(nonatomic, retain) UIColor* randomColor;
 /// @brief Flag is true if scoring mode is enabled. See class documentation for
 /// details.
-@property(nonatomic) bool scoringMode;
+@property(nonatomic, assign) bool scoringMode;
 /// @brief During scoring denotes which territory this GoBoardRegion belongs to.
-@property enum GoColor territoryColor;
+@property(nonatomic, assign) enum GoColor territoryColor;
 /// @brief Flag is true if the territory scoring algorithm detected an
 /// inconsistency and was unable to assign a territory color to this region.
 ///
 /// If this flag is true, the property @e territoryColor has value #GoColorNone.
 /// However, it cannot be concluded from this that the region is truly neutral.
-@property bool territoryInconsistencyFound;
+@property(nonatomic, assign) bool territoryInconsistencyFound;
 /// @brief During scoring denotes whether the stones in the stone group
 /// represented by this GoBoardRegion are dead or alive. Is false if this
 /// GoBoardRegion is not a stone group.
-@property bool deadStoneGroup;
+@property(nonatomic, assign) bool deadStoneGroup;
 
 @end

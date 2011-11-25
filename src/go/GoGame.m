@@ -44,7 +44,7 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite) enum GoGameType type;
+@property(nonatomic, assign, readwrite) enum GoGameType type;
 //@}
 @end
 
@@ -161,13 +161,10 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) setFirstMove:(GoMove*)newValue
 {
-  @synchronized(self)
-  {
-    if (firstMove == newValue)
-      return;
-    [firstMove release];
-    firstMove = [newValue retain];
-  }
+  if (firstMove == newValue)
+    return;
+  [firstMove release];
+  firstMove = [newValue retain];
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameFirstMoveChanged object:self];
 }
 
@@ -176,13 +173,10 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) setLastMove:(GoMove*)newValue
 {
-  @synchronized(self)
-  {
-    if (lastMove == newValue)
-      return;
-    [lastMove release];
-    lastMove = [newValue retain];
-  }
+  if (lastMove == newValue)
+    return;
+  [lastMove release];
+  lastMove = [newValue retain];
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameLastMoveChanged object:self];
 }
 
@@ -191,12 +185,9 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) setState:(enum GoGameState)newValue
 {
-  @synchronized(self)
-  {
-    if (state == newValue)
-      return;
-    state = newValue;
-  }
+  if (state == newValue)
+    return;
+  state = newValue;
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
 }
 
@@ -417,18 +408,15 @@ static GoGame* sharedGame = nil;
 // -----------------------------------------------------------------------------
 - (void) setComputerThinks:(bool)newValue
 {
-  @synchronized(self)
-  {
-    if (computerThinks == newValue)
-      return;
-    computerThinks = newValue;
-    NSString* notificationName;
-    if (newValue)
-      notificationName = computerPlayerThinkingStarts;
-    else
-      notificationName = computerPlayerThinkingStops;
-    [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
-  }
+  if (computerThinks == newValue)
+    return;
+  computerThinks = newValue;
+  NSString* notificationName;
+  if (newValue)
+    notificationName = computerPlayerThinkingStarts;
+  else
+    notificationName = computerPlayerThinkingStops;
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
 }
 
 @end

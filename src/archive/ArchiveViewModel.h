@@ -41,19 +41,19 @@
 - (ArchiveGame*) gameWithName:(NSString*)name;
 
 /// @brief Path to folder that contains files with archived games.
-@property(retain) NSString* archiveFolder;
+@property(nonatomic, retain) NSString* archiveFolder;
 /// @brief Number of objects in gameList.
 ///
 /// This property exists purely as a convenience to clients, since the object
 /// count is also available from the gameList array.
-@property(readonly) int gameCount;
+@property(nonatomic, assign, readonly) int gameCount;
 /// @brief Array stores objects of type ArchiveGame. The array is already
 /// ordered according to the sortCriteria and sortAscending properties.
-@property(readonly, retain) NSArray* gameList;
+@property(nonatomic, retain, readonly) NSArray* gameList;
 /// @brief Describes the criteria that was used to sort the objects in gameList.
-@property enum ArchiveSortCriteria sortCriteria;
+@property(nonatomic, assign) enum ArchiveSortCriteria sortCriteria;
 /// @brief True if objects in gameList are sorted ascending, false if they are
 /// sorted descending.
-@property bool sortAscending;
+@property(nonatomic, assign) bool sortAscending;
 
 @end

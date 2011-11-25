@@ -110,17 +110,17 @@
 
 /// @name Cross-hair point properties
 //@{
-@property(retain) GoPoint* crossHairPoint;
-@property bool crossHairPointIsLegalMove;
+@property(nonatomic, retain) GoPoint* crossHairPoint;
+@property(nonatomic, assign) bool crossHairPointIsLegalMove;
 //@}
 
 /// @name Update optimizing
 //@{
 /// @brief Number of "expensive" actions that are currently in progress. View
 /// updates are delayed while this number is >0.
-@property int actionsInProgress;
+@property(nonatomic, assign) int actionsInProgress;
 /// @brief Is true if updates were delayed because @e actionsInProgress was >0.
-@property bool updatesWereDelayed;
+@property(nonatomic, assign) bool updatesWereDelayed;
 //@}
 
 @end

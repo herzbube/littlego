@@ -56,20 +56,20 @@
 
 /// @brief Identifies the location of the intersection that the GoPoint
 /// represents.
-@property(retain) GoVertex* vertex;
-@property(readonly) GoPoint* left;
-@property(readonly) GoPoint* right;
-@property(readonly) GoPoint* above;
-@property(readonly) GoPoint* below;
-@property(readonly, retain) NSArray* neighbours;
-@property(readonly) GoPoint* next;
-@property(readonly) GoPoint* previous;
+@property(nonatomic, retain) GoVertex* vertex;
+@property(nonatomic, assign, readonly) GoPoint* left;
+@property(nonatomic, assign, readonly) GoPoint* right;
+@property(nonatomic, assign, readonly) GoPoint* above;
+@property(nonatomic, assign, readonly) GoPoint* below;
+@property(nonatomic, retain, readonly) NSArray* neighbours;
+@property(nonatomic, assign, readonly) GoPoint* next;
+@property(nonatomic, assign, readonly) GoPoint* previous;
 /// @brief Is true if the GoPoint is a star point.
-@property(getter=isStarPoint) bool starPoint;
+@property(nonatomic, assign, getter=isStarPoint) bool starPoint;
 /// @brief Denotes whether a stone has been placed on the intersection that the
 /// GoPoint represents, and which color the stone has.
-@property enum GoColor stoneState;
+@property(nonatomic, assign) enum GoColor stoneState;
 /// @brief The region that the GoPoint belongs to. Is never nil.
-@property(retain) GoBoardRegion* region;
+@property(nonatomic, retain) GoBoardRegion* region;
 
 @end

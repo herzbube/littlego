@@ -79,7 +79,7 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(retain) DDFileLogger* fileLogger;
+@property(nonatomic, retain) DDFileLogger* fileLogger;
 //@}
 @end
 
@@ -118,11 +118,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 + (ApplicationDelegate*) sharedDelegate
 {
-  @synchronized(self)
-  {
-    assert(sharedDelegate != nil);
-    return sharedDelegate;
-  }
+  assert(sharedDelegate != nil);
+  return sharedDelegate;
 }
 
 // -----------------------------------------------------------------------------

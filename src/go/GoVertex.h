@@ -55,9 +55,9 @@ struct GoVertexNumeric
 - (bool) isEqualToVertex:(GoVertex*)vertex;
 
 /// @brief The vertex in its human-readable string format.
-@property(readonly, retain) NSString* string;
+@property(nonatomic, retain, readonly) NSString* string;
 /// @brief The vertex in its numeric form, which is easier to process in
 /// calculations and iterations.
-@property(readonly) struct GoVertexNumeric numeric;
+@property(nonatomic, assign, readonly) struct GoVertexNumeric numeric;
 
 @end

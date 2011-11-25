@@ -38,7 +38,7 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(nonatomic, readwrite, retain) NSString* uuid;
+@property(nonatomic, retain, readwrite) NSString* uuid;
 //@}
 @end
 

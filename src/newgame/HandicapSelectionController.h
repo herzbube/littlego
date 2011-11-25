@@ -62,6 +62,6 @@
 /// collection.
 @property(nonatomic, assign) id<HandicapSelectionDelegate> delegate;
 /// @brief The currently selected handicap.
-@property int handicap;
+@property(nonatomic, assign) int handicap;
 
 @end

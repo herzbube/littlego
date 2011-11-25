@@ -37,6 +37,6 @@
 
 /// @brief If flag is set, no sound/vibration is triggered. Used to temporarily
 /// disable disturbances, e.g. while the user is answering a phone call.
-@property(getter=isDisabled) bool disabled;
+@property(nonatomic, assign, getter=isDisabled) bool disabled;
 
 @end

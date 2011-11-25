@@ -39,8 +39,8 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(assign) PlayViewModel* model;
-@property(assign) SystemSoundID playStoneSystemSound;
+@property(nonatomic, assign) PlayViewModel* model;
+@property(nonatomic, assign) SystemSoundID playStoneSystemSound;
 //@}
 @end
 

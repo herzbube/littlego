@@ -41,12 +41,12 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) UILabel* descriptionLabel;
-@property(readwrite, retain) UILabel* valueLabel;
-@property(readwrite, retain) UISlider* slider;
-@property(readwrite, retain) id delegate;
-@property(readwrite) SEL delegateActionValueDidChange;
-@property(readwrite) SEL delegateActionSliderValueDidChange;
+@property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
+@property(nonatomic, retain, readwrite) UILabel* valueLabel;
+@property(nonatomic, retain, readwrite) UISlider* slider;
+@property(nonatomic, retain, readwrite) id delegate;
+@property(nonatomic, assign, readwrite) SEL delegateActionValueDidChange;
+@property(nonatomic, assign, readwrite) SEL delegateActionSliderValueDidChange;
 //@}
 @end
 

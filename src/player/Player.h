@@ -50,12 +50,12 @@
 
 /// @brief The player's UUID. This is a technical identifier guaranteed to be
 /// unique. This identifier is never displayed in the GUI.
-@property(nonatomic, readonly, retain) NSString* uuid;
+@property(nonatomic, retain, readonly) NSString* uuid;
 /// @brief The player's name. This is displayed in the GUI.
 @property(nonatomic, retain) NSString* name;
 /// @brief True if this Player object represents a human player, false if it
 /// represents a computer player.
-@property(nonatomic, getter=isHuman) bool human;
+@property(nonatomic, assign, getter=isHuman) bool human;
 /// @brief UUID of the GTP engine profile used by this Player. This ID is used
 /// by gtpEngineProfile() to obtain and return a GtpEngineProfile object.
 ///
@@ -67,6 +67,6 @@
 @property(nonatomic, retain) PlayerStatistics* statistics;
 /// @brief True if this Player object is taking part in the currently ongoing
 /// GoGame.
-@property(nonatomic, getter=isPlaying) bool playing;
+@property(nonatomic, assign, getter=isPlaying) bool playing;
 
 @end

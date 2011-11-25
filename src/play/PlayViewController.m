@@ -104,7 +104,7 @@
 /// @name Privately declared properties
 //@{
 /// @brief The model that manages scoring-related data.
-@property(assign) ScoringModel* scoringModel;
+@property(nonatomic, assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the dragging, or panning,
 /// gesture.
 @property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
@@ -112,14 +112,14 @@
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a panning gesture is currently allowed, false if not (e.g.
 /// while a computer player is thinking).
-@property(getter=isPanningEnabled) bool panningEnabled;
+@property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
 /// @brief True if a tapping gesture is currently allowed, false if not (e.g.
 /// if scoring mode is not enabled).
-@property(getter=isTappingEnabled) bool tappingEnabled;
+@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 /// @brief GoScore object used while the game info view is displayed scoring
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
-@property(retain) GoScore* gameInfoScore;
+@property(nonatomic, retain) GoScore* gameInfoScore;
 //@}
 @end
 

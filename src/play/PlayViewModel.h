@@ -27,21 +27,21 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property bool markLastMove;
-@property bool displayCoordinates;
-@property bool displayMoveNumbers;
-@property bool playSound;
-@property bool vibrate;
-@property(retain) UIColor* backgroundColor;
-@property(retain) UIColor* boardColor;
-@property float boardOuterMarginPercentage;
-@property(retain) UIColor* lineColor;
-@property int boundingLineWidth;
-@property int normalLineWidth;
-@property(retain) UIColor* starPointColor;
-@property int starPointRadius;
-@property float stoneRadiusPercentage;
-@property(retain) UIColor* crossHairColor;
-@property int crossHairPointDistanceFromFinger;
+@property(nonatomic, assign) bool markLastMove;
+@property(nonatomic, assign) bool displayCoordinates;
+@property(nonatomic, assign) bool displayMoveNumbers;
+@property(nonatomic, assign) bool playSound;
+@property(nonatomic, assign) bool vibrate;
+@property(nonatomic, retain) UIColor* backgroundColor;
+@property(nonatomic, retain) UIColor* boardColor;
+@property(nonatomic, assign) float boardOuterMarginPercentage;
+@property(nonatomic, retain) UIColor* lineColor;
+@property(nonatomic, assign) int boundingLineWidth;
+@property(nonatomic, assign) int normalLineWidth;
+@property(nonatomic, retain) UIColor* starPointColor;
+@property(nonatomic, assign) int starPointRadius;
+@property(nonatomic, assign) float stoneRadiusPercentage;
+@property(nonatomic, retain) UIColor* crossHairColor;
+@property(nonatomic, assign) int crossHairPointDistanceFromFinger;
 
 @end

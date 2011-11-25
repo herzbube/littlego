@@ -38,11 +38,11 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite) enum GoMoveType type;
-@property(readwrite, retain) GoPlayer* player;
-@property(readwrite, assign) GoMove* previous;
-@property(readwrite, retain) GoMove* next;
-@property(readwrite, retain) NSArray* capturedStones;
+@property(nonatomic, assign, readwrite) enum GoMoveType type;
+@property(nonatomic, retain, readwrite) GoPlayer* player;
+@property(nonatomic, assign, readwrite) GoMove* previous;
+@property(nonatomic, retain, readwrite) GoMove* next;
+@property(nonatomic, retain, readwrite) NSArray* capturedStones;
 //@}
 @end
 

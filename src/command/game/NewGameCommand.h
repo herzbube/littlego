@@ -41,9 +41,9 @@
 
 - (id) init;
 
-@property(assign) bool shouldSetupGtpBoard;
-@property(assign) bool shouldSetupGtpHandicapAndKomi;
-@property(assign) bool shouldSetupComputerPlayer;
-@property(assign) bool shouldTriggerComputerPlayer;
+@property(nonatomic, assign) bool shouldSetupGtpBoard;
+@property(nonatomic, assign) bool shouldSetupGtpHandicapAndKomi;
+@property(nonatomic, assign) bool shouldSetupComputerPlayer;
+@property(nonatomic, assign) bool shouldTriggerComputerPlayer;
 
 @end

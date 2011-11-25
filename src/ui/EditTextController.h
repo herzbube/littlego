@@ -75,31 +75,31 @@
 
 /// @brief A context object that can be set by the client to identify the
 /// context or purpose that an instance of EditTextController was created for.
-@property(retain) id context;
+@property(nonatomic, retain) id context;
 /// @brief The title to be displayed in the navigation item.
-@property(retain) NSString* title;
+@property(nonatomic, retain) NSString* title;
 /// @brief This is the delegate that will be informed when the user has
 /// finished editing the text.
 @property(nonatomic, assign) id<EditTextDelegate> delegate;
 /// @brief When editing begins, this contains the default text. When editing
 /// finishes with the user tapping "done", this contains the text entered by the
 /// user.
-@property(retain) NSString* text;
+@property(nonatomic, retain) NSString* text;
 /// @brief Placeholder string that should be displayed instead of an empty
 /// text.
-@property(retain) NSString* placeholder;
+@property(nonatomic, retain) NSString* placeholder;
 /// @brief True if EditTextController should accept an empty text as valid
 /// input.
 ///
 /// If this property is false and the user clears the entire text, the user
 /// @e must cancel editing to leave the view.
-@property(assign) bool acceptEmptyText;
+@property(nonatomic, assign) bool acceptEmptyText;
 /// @brief True if the user has actually made changes to the text. False if the
 /// user has cancelled editing, or if there were no changes.
 ///
 /// This property is set after the user has finished editing the text. It is
 /// useful if the delegate needs to take special action if the user made actual
 /// changes.
-@property(assign) bool textHasChanged;
+@property(nonatomic, assign) bool textHasChanged;
 
 @end

@@ -45,6 +45,6 @@
 
 - (id) init;
 
-@property(retain) GoGame* game;
+@property(nonatomic, retain) GoGame* game;
 
 @end

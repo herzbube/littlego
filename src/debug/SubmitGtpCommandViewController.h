@@ -35,6 +35,6 @@
 /// @brief The text field used to edit the GTP command before it is submitted.
 @property(nonatomic, retain) IBOutlet UITextField* textField;
 /// @brief The model object
-@property(retain) GtpCommandModel* model;
+@property(nonatomic, retain) GtpCommandModel* model;
 
 @end

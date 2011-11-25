@@ -46,9 +46,9 @@
 - (void) submit;
 
 /// @brief The GTP command string, including arguments.
-@property(retain) NSString* command;
+@property(nonatomic, retain) NSString* command;
 /// @brief Thread in whose context the GTP command was submitted.
-@property(retain) NSThread* submittingThread;
+@property(nonatomic, retain) NSThread* submittingThread;
 /// @brief True if execution should wait for the GTP response (i.e. command
 /// execution is synchronous).
 ///
@@ -57,12 +57,12 @@
 ///
 /// If this property is true, @e responseTarget and @e responseTargetSelector
 /// are ignored.
-@property bool waitUntilDone;
+@property(nonatomic, assign) bool waitUntilDone;
 /// @brief The GtpResponse object that "belongs" to this GtpCommand.
 ///
 /// @note GtpCommand does not retain the response object to avoid a retain
 /// cycle.
-@property(readwrite, assign) GtpResponse* response;
+@property(nonatomic, assign, readwrite) GtpResponse* response;
 /// @brief The target on which @e selector is performed when the GTP response
 /// for this command is received.
 ///
@@ -70,10 +70,10 @@
 ///
 /// @note GtpCommand retains the response target to make sure that it is still
 /// alive when @e responseTargetSelector is to be performed.
-@property(retain) id responseTarget;
+@property(nonatomic, retain) id responseTarget;
 /// @brief The selector that is performed on @e target when the GTP response
 /// for this command is received. The selector must take a single GtpResponse*
 /// argument.
-@property(assign) SEL responseTargetSelector;
+@property(nonatomic, assign) SEL responseTargetSelector;
 
 @end

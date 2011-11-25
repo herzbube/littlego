@@ -45,12 +45,9 @@ static CommandProcessor* sharedProcessor = nil;
 // -----------------------------------------------------------------------------
 + (CommandProcessor*) sharedProcessor
 {
-  @synchronized(self)
-  {
-    if (! sharedProcessor)
-      sharedProcessor = [[CommandProcessor alloc] init];
-    return sharedProcessor;
-  }
+  if (! sharedProcessor)
+    sharedProcessor = [[CommandProcessor alloc] init];
+  return sharedProcessor;
 }
 
 // -----------------------------------------------------------------------------

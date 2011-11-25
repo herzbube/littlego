@@ -33,6 +33,6 @@
 + (GtpCommandViewController*) controller;
 
 /// @brief The model object
-@property(retain) GtpCommandModel* model;
+@property(nonatomic, retain) GtpCommandModel* model;
 
 @end

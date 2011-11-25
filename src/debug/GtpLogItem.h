@@ -27,25 +27,25 @@
 - (UIImage*) imageRepresentingResponseStatus;
 
 /// @brief The command that was submitted.
-@property(retain) NSString* commandString;
+@property(nonatomic, retain) NSString* commandString;
 /// @brief String representation of the timestamp when the command was
 /// submitted.
-@property(retain) NSString* timeStamp;
+@property(nonatomic, retain) NSString* timeStamp;
 /// @brief True if this GtpLogItem has response data for the command. If this
 /// property is false, the remaining response properties have undefined values.
-@property bool hasResponse;
+@property(nonatomic, assign) bool hasResponse;
 /// @brief True if the response indicates that command execution was successful,
 /// false if not.
 ///
 /// If @e hasResponse is false the value of this property is undefined
-@property bool responseStatus;
+@property(nonatomic, assign) bool responseStatus;
 /// @brief The parsed response string.
 ///
 /// If @e hasResponse is false the value of this property is undefined
-@property(retain) NSString* parsedResponseString;
+@property(nonatomic, retain) NSString* parsedResponseString;
 /// @brief The raw response string.
 ///
 /// If @e hasResponse is false the value of this property is undefined
-@property(retain) NSString* rawResponseString;
+@property(nonatomic, retain) NSString* rawResponseString;
 
 @end

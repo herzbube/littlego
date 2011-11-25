@@ -38,6 +38,6 @@
 + (GtpLogItemViewController*) controllerWithLogItem:(GtpLogItem*)logItem;
 
 /// @brief The model object
-@property(retain) GtpLogItem* logItem;
+@property(nonatomic, retain) GtpLogItem* logItem;
 
 @end

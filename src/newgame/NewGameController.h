@@ -73,16 +73,16 @@
 @property(nonatomic, assign) id<NewGameDelegate> delegate;
 /// @brief True if the intent for starting a new game is to load a game from
 /// the archive.
-@property(assign) bool loadGame;
+@property(nonatomic, assign) bool loadGame;
 /// @brief The currently selected board size.
-@property enum GoBoardSize boardSize;
+@property(nonatomic, assign) enum GoBoardSize boardSize;
 /// @brief The currently selected player for black.
-@property(retain) Player* blackPlayer;
+@property(nonatomic, retain) Player* blackPlayer;
 /// @brief The currently selected player for white.
-@property(retain) Player* whitePlayer;
+@property(nonatomic, retain) Player* whitePlayer;
 /// @brief The currently selected handicap.
-@property int handicap;
+@property(nonatomic, assign) int handicap;
 /// @brief The currently selected Komi.
-@property double komi;
+@property(nonatomic, assign) double komi;
 
 @end

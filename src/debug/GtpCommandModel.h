@@ -38,9 +38,9 @@
 ///
 /// This property exists purely as a convenience to clients, since the object
 /// count is also available from the commandList array.
-@property(readonly) int commandCount;
+@property(nonatomic, assign, readonly) int commandCount;
 /// @brief Array stores objects of type NSString. Commands appear in the array
 /// in the order assigned to them by the user.
-@property(readonly, retain) NSArray* commandList;
+@property(nonatomic, retain, readonly) NSArray* commandList;
 
 @end

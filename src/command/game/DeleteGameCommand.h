@@ -32,6 +32,6 @@
 
 - (id) initWithGame:(ArchiveGame*)aGame;
 
-@property(retain) ArchiveGame* game;
+@property(nonatomic, retain) ArchiveGame* game;
 
 @end

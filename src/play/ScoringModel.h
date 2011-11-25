@@ -35,13 +35,13 @@
 /// @name User defaults properties
 // -----------------------------------------------------------------------------
 //@{
-@property bool askGtpEngineForDeadStones;
-@property bool markDeadStonesIntelligently;
-@property float alphaTerritoryColorBlack;
-@property float alphaTerritoryColorWhite;
-@property float alphaTerritoryColorInconsistencyFound;
-@property(retain) UIColor* deadStoneSymbolColor;
-@property float deadStoneSymbolPercentage;
+@property(nonatomic, assign) bool askGtpEngineForDeadStones;
+@property(nonatomic, assign) bool markDeadStonesIntelligently;
+@property(nonatomic, assign) float alphaTerritoryColorBlack;
+@property(nonatomic, assign) float alphaTerritoryColorWhite;
+@property(nonatomic, assign) float alphaTerritoryColorInconsistencyFound;
+@property(nonatomic, retain) UIColor* deadStoneSymbolColor;
+@property(nonatomic, assign) float deadStoneSymbolPercentage;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -49,10 +49,10 @@
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is true if scoring mode is enabled on the Play view.
-@property(nonatomic) bool scoringMode;
+@property(nonatomic, assign) bool scoringMode;
 /// @brief The GoScore object that provides scoring data while scoring mode is
 /// enabled. Is nil while scoring mode is disabled.
-@property(retain) GoScore* score;
+@property(nonatomic, retain) GoScore* score;
 //@}
 
 @end

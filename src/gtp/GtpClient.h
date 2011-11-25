@@ -62,9 +62,6 @@
 // -----------------------------------------------------------------------------
 @interface GtpClient : NSObject
 {
-@private
-  /// @brief Secondary thread used to communicate with GtpEngine.
-  NSThread* m_thread;
 }
 
 + (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
@@ -72,6 +69,6 @@
 
 /// @brief Set this property to true to trigger termination of the secondary
 /// thread.
-@property(getter=shouldExit, setter=exit:) bool shouldExit;
+@property(assign, getter=shouldExit, setter=exit:) bool shouldExit;
 
 @end

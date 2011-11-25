@@ -28,6 +28,6 @@
 }
 
 /// @brief The model that manages data used by the ArchiveView.
-@property(assign) ArchiveViewModel* archiveViewModel;
+@property(nonatomic, assign) ArchiveViewModel* archiveViewModel;
 
 @end

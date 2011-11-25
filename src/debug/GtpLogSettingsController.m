@@ -95,8 +95,8 @@ enum ResetCannedCommandsSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(retain) GtpLogModel* logModel;
-@property(retain) GtpCommandModel* commandModel;
+@property(nonatomic, retain) GtpLogModel* logModel;
+@property(nonatomic, retain) GtpCommandModel* commandModel;
 //@}
 @end
 

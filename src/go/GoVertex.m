@@ -35,8 +35,8 @@
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(readwrite, retain) NSString* string;
-@property(readwrite) struct GoVertexNumeric numeric;
+@property(nonatomic, retain, readwrite) NSString* string;
+@property(nonatomic, assign, readwrite) struct GoVertexNumeric numeric;
 //@}
 @end
 
