@@ -25,6 +25,7 @@
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 
 
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
@@ -563,22 +564,11 @@ enum GtpEngineProfilesSectionItem
   if (ScoringSection != indexPath.section || MarkDeadStonesIntelligentlyItem != indexPath.row)
     return tableView.rowHeight;
 
-  // Use the same strings as in tableView:cellForRowAtIndexPath:()
-  NSString* labelText = markDeadStonesIntelligentlyText;
-
-  // The label shares the cell with a UISwitch
-  CGFloat labelWidth = (cellContentViewWidth
-                        - 2 * cellContentDistanceFromEdgeHorizontal
-                        - cellContentSwitchWidth
-                        - cellContentSpacingHorizontal);
-  UIFont* labelFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  CGSize constraintSize = CGSizeMake(labelWidth, MAXFLOAT);
-  CGSize labelSize = [labelText sizeWithFont:labelFont
-                           constrainedToSize:constraintSize
-                               lineBreakMode:UILineBreakModeWordWrap];  // use same mode as in tableView:cellForRowAtIndexPath:()
-
-  // Add vertical padding
-  return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
+  // Use the same string as in tableView:cellForRowAtIndexPath:()
+  return [UiUtilities tableView:tableView
+            heightForCellOfType:SwitchCellType
+                       withText:markDeadStonesIntelligentlyText
+         hasDisclosureIndicator:false];
 }
 
 // -----------------------------------------------------------------------------

@@ -60,7 +60,7 @@
 /// can be informed when the user makes any changes. For this to work, the
 /// delegate must implement the protocol EditGtpEngineProfileDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate>
+@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, UINavigationControllerDelegate>
 {
 }
 

@@ -204,6 +204,7 @@ extern const int cellContentSpacingVertical;
 extern const int cellContentLabelHeight;
 extern const int cellContentSliderHeight;
 extern const int cellContentSwitchWidth;
+extern const int cellDisclosureIndicatorWidth;
 //@}
 
 // -----------------------------------------------------------------------------

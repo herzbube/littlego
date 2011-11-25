@@ -21,6 +21,7 @@
 #import "GtpCommandModel.h"
 #import "../ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -321,19 +322,10 @@ enum ResponseStringSectionItem
   else
     return tableView.rowHeight;
 
-  // A cell height for an empty text doesn't look good
-  // -> return default height
-  if (0 == cellText.length)
-    return tableView.rowHeight;
-
-  CGFloat cellWidth = cellContentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
-  UIFont* cellFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  CGSize constraintSize = CGSizeMake(cellWidth, MAXFLOAT);
-  CGSize labelSize = [cellText sizeWithFont:cellFont
-                          constrainedToSize:constraintSize
-                              lineBreakMode:UILineBreakModeWordWrap];  // use same mode as in tableView:cellForRowAtIndexPath:()
-  // Add vertical padding
-  return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
+  return [UiUtilities tableView:tableView
+            heightForCellOfType:DefaultCellType
+                       withText:cellText
+         hasDisclosureIndicator:false];
 }
 
 // -----------------------------------------------------------------------------

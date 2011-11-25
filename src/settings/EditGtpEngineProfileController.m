@@ -22,6 +22,8 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../ui/UiUtilities.h"
+#import "../utility/UiColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -99,9 +101,13 @@ enum ProfileSettingsSectionItem
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name UITextFieldDelegate protocol method.
+/// @name UITextFieldDelegate protocol
 //@{
 - (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+//@}
+/// @name UINavigationControllerDelegate protocol
+//@{
+- (void) navigationController:(UINavigationController*)navigationController willShowViewController:(UIViewController*)viewController animated:(BOOL)animated;
 //@}
 /// @name Private helpers
 //@{
@@ -109,8 +115,9 @@ enum ProfileSettingsSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, assign) UITextField* textFieldProfileName;
-@property(nonatomic, assign) UITextField* textFieldProfileDescription;
+@property(nonatomic, retain) UITextView* textView;
+@property(nonatomic, retain) UIViewController* textViewController;
+@property(nonatomic) bool textViewControllerIsPushed;
 //@}
 @end
 
@@ -120,8 +127,9 @@ enum ProfileSettingsSectionItem
 @synthesize delegate;
 @synthesize profile;
 @synthesize profileExists;
-@synthesize textFieldProfileName;
-@synthesize textFieldProfileDescription;
+@synthesize textView;
+@synthesize textViewController;
+@synthesize textViewControllerIsPushed;
 
 
 // -----------------------------------------------------------------------------
@@ -167,8 +175,8 @@ enum ProfileSettingsSectionItem
 {
   self.delegate = nil;
   self.profile = nil;
-  self.textFieldProfileName = nil;
-  self.textFieldProfileDescription = nil;
+  self.textView = nil;
+  self.textViewController = nil;
   [super dealloc];
 }
 
@@ -180,7 +188,29 @@ enum ProfileSettingsSectionItem
 {
   [super viewDidLoad];
 
-  assert(self.delegate != nil);
+  // Try to make the text view look similar to a table view cell
+  self.textView = [[[UITextView alloc] init] autorelease];
+  self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+  self.textView.textColor = [UIColor slateBlueColor];
+  self.textView.contentInset = UIEdgeInsetsMake(cellContentDistanceFromEdgeVertical,
+                                                cellContentDistanceFromEdgeHorizontal,
+                                                cellContentDistanceFromEdgeVertical,
+                                                cellContentDistanceFromEdgeHorizontal);
+  self.textViewController = [[[UIViewController alloc] init] autorelease];
+  self.textViewController.view = textView;
+  self.textViewController.navigationItem.title = @"Edit description";
+  if (! self.navigationController.delegate)
+    self.navigationController.delegate = self;
+  else
+  {
+    // This may be a little bit harsh, but we really want to know if there
+    // was an implementation change and this class was not properly updated.
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Navigation controller already has a delegate"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  self.textViewControllerIsPushed = false;
 
   if (self.profileExists)
   {
@@ -247,6 +277,7 @@ enum ProfileSettingsSectionItem
   switch (section)
   {
     case ProfileNameSection:
+      return @"Profile name & description";
     case ProfileDescriptionSection:
       return nil;
     case ProfileSettingsSection:
@@ -278,7 +309,6 @@ enum ProfileSettingsSectionItem
           textField.delegate = self;
           textField.text = self.profile.name;
           textField.placeholder = @"Profile name";
-          self.textFieldProfileName = textField;
           break;
         }
         default:
@@ -295,13 +325,23 @@ enum ProfileSettingsSectionItem
       {
         case ProfileDescriptionItem:
         {
-          enum TableViewCellType cellType = TextFieldCellType;
+          enum TableViewCellType cellType = DefaultCellType;
           cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
-          textField.delegate = self;
-          textField.text = self.profile.profileDescription;
-          textField.placeholder = @"Profile description";
-          self.textFieldProfileDescription = textField;
+          if (self.profile.profileDescription.length > 0)
+          {
+            cell.textLabel.text = self.profile.profileDescription;
+            cell.textLabel.textColor = [UIColor slateBlueColor];
+          }
+          else
+          {
+            // Fake placeholder of UITextField
+            cell.textLabel.text = @"Profile description";
+            cell.textLabel.textColor = [UIColor lightGrayColor];
+          }
+          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
         default:
@@ -385,21 +425,40 @@ enum ProfileSettingsSectionItem
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
+    case ProfileDescriptionSection:
+    {
+      NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
+      if (ProfileNameSection == indexPath.section)
+        cellText = self.profile.name;
+      else
+        cellText = self.profile.profileDescription;
+      height = [UiUtilities tableView:tableView
+                  heightForCellOfType:DefaultCellType
+                             withText:cellText
+               hasDisclosureIndicator:true];
+      break;
+    }
     case ProfileSettingsSection:
     {
       switch (indexPath.row)
       {
         case FuegoMaxMemoryItem:
         case FuegoThreadCountItem:
+        {
           height = [TableViewSliderCell rowHeightInTableView:tableView];
           break;
+        }
         default:
+        {
           break;
+        }
       }
       break;
     }
     default:
+    {
       break;
+    }
   }
   return height;
 }
@@ -410,6 +469,13 @@ enum ProfileSettingsSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  
+  if (ProfileDescriptionSection == indexPath.section)
+  {
+    self.textView.text = self.profile.profileDescription;
+    [self.textView becomeFirstResponder];
+    [self.navigationController pushViewController:self.textViewController animated:YES];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -423,15 +489,7 @@ enum ProfileSettingsSectionItem
   // Compose the string as it would look like if the proposed change had already
   // been made
   NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
-  if (textField == self.textFieldProfileName)
-    self.profile.name = newText;
-  else if (textField == self.textFieldProfileDescription)
-    self.profile.profileDescription = newText;
-  else
-  {
-    assert(0);
-    return YES;
-  }
+  self.profile.name = newText;
   if (self.profileExists)
   {
     // Make sure that the editing view cannot be left, unless the profile
@@ -449,6 +507,32 @@ enum ProfileSettingsSectionItem
   // -> the user must simply continue editing until the profile name becomes
   //    valid
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) navigationController:(UINavigationController*)navigationController willShowViewController:(UIViewController*)viewController animated:(BOOL)animated
+{
+  if (viewController == self.textViewController)
+    self.textViewControllerIsPushed = true;
+  else if (viewController == self)
+  {
+    if (self.textViewControllerIsPushed)
+    {
+      self.textViewControllerIsPushed = false;
+      self.profile.profileDescription = self.textView.text;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileDescriptionItem inSection:ProfileDescriptionSection];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  else
+  {
+    // self is being popped, so we don't want to be the delegate any longer
+    self.navigationController.delegate = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------

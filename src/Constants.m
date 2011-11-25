@@ -33,6 +33,7 @@ const int cellContentSpacingVertical = 8;
 const int cellContentLabelHeight = 21;
 const int cellContentSliderHeight = 23;
 const int cellContentSwitchWidth = 94;
+const int cellDisclosureIndicatorWidth = 20;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
