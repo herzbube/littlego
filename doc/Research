@@ -365,6 +365,18 @@ Scoring
 - Possibly useful GTP commands: final_score (GoUctCommands::CmdFinalScore),
   final_status_list (GoUctCommands::CmdFinalStatusList),
   uct_score (GoUctCommands::CmdScore)
+- The main class in GoGui is CountScore (net.sf.gogui.go.CountScore.java)
+  - m_score = Array with board x/y coordinates as indices; each array element
+    has a GoColor Wert (BLACK/WHITE/EMPTY)
+  - m_dead = Marker of size X (= board size, e.g. 19)
+    - Marker is a one-dimensional array with boolean values
+    - Each point on the board has a constant index value which is used to access
+      the array element that corresponds to the point
+    - The Marker array size is constant, the size is chosen so that even with
+      the maximum board size each point always references a valid array element
+      (maximum board size is 25, array size is 25x25 = 625)
+  - compute() re-calculates the score after each change made by the user
+  - The result of compute() is placed into m_score
 
 Two computer players:
 - The "genmove" GTP command has an argument that allows to specify the color
@@ -374,12 +386,33 @@ Two computer players:
 Recommend a move
 - The "reg_genmove" GTP command generates a move, but does not play it
 
+Setup a position
+- The "gogui-setup" GTP command can be used to setup a position on the board
+  without making play moves. This command exists because GTP v2 does not define
+  such a command
+- The "gogui-setup_player" command is used to define the color that should play
+  first after a setup has been made. This command is submitted immediately
+  after gogui-setup
+
+Territory statistics
+- The "uct_stat_territory" GTP command displays territory statistics
+- For a detailed explanation of how to enable this, see
+  http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+- Apparently the result of this command is a percentage for each vertex, based
+  on which the sizes of the squares in the screenshot on the above page are
+  drawn
+- For scoring one could also define a threshold percentage above which a vertex
+  is counted as territory for a color
+
 Other useful stuff
 - The "go_point_info" GTP command allows to query Fuego about various properties
   of the specified point. One of the properties is whether the point would be a
   legal move for either black or white
 - The "is_legal" GTP command allows to query Fuego whether it would be legal for
   the specified player to play on the specified point
+- A lengthy GTP command can be interrupted by sending it "# interrupt" (info
+  from GoGui's help, chapter 10)
+
 
 
 Details on Fuego's smartgame module
@@ -469,9 +502,36 @@ void inspectNode(SgNode* node)
 }
 
 
-Computer Go algorithms
-----------------------
-Collection of computer Go algorithms: http://senseis.xmp.net/?ComputerGoAlgorithms
+Go topics
+---------
+Collection of computer Go algorithms:
+- http://senseis.xmp.net/?ComputerGoAlgorithms
 
-Problems that need to be solved:
-- Loading a game takes too long
+Scoring
+- http://senseis.xmp.net/?Scoring
+- http://senseis.xmp.net/?TerritoryAndAreaScoring
+- http://senseis.xmp.net/?InternationalRules
+
+Benson's Algorithm
+- http://senseis.xmp.net/?BensonSAlgorithm
+- http://senseis.xmp.net/?BensonsDefinitionOfUnconditionalLife%2FExamples
+- Fuego's GTP command for this is "go_safe_gfx benson". The result simply lists
+  all points for each color that are unconditionally alive. The client needs to
+  find out itself which points are connected. The result of the GTP command
+  looks like this:
+
+= BLACK F1 G1 H1 J1 F2 G2 H2 J2 F3 G3 H3 B5 C5 D5 E5 A6 B6 C6 A7 B7 C7 D7 A8 B8 C8 A9 B9 C9
+WHITE E8 F8 G8 H8 J8 E9 F9 G9 H9 J9
+COLOR #980098 D8 D9
+CIRCLE E7 D8 D9
+TEXT Solver: benson  B: 28 (34 %)  W: 10 (12 %)  Both: 38 (46 %)  Regions: 7
+
+  It is not clear what the CIRCLE and COLOR lines mean (probably is related to
+  displaying graphics). If one color has no points, the result looks like this:
+
+= BLACK F1 G1 H1 J1 F2 G2 H2 J2 F3 G3 H3 B5 C5 D5 E5 A6 B6 C6 A7 B7 C7 D7 A8 B8 C8 A9 B9 C9
+WHITE
+COLOR #980098 D8 D9
+CIRCLE E7 D8 D9
+TEXT Solver: benson  B: 28 (34 %)  W: 10 (12 %)  Both: 38 (46 %)  Regions: 7
+

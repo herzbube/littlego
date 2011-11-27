@@ -73,6 +73,7 @@ enum ScoringSectionItem
 {
   AskGtpEngineForDeadStonesItem,
   MarkDeadStonesIntelligentlyItem,
+  InconsistentTerritoryMarkupTypeItem,
   MaxScoringSectionItem
 };
 
@@ -145,6 +146,10 @@ enum GtpEngineProfilesSectionItem
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 - (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 //@}
+/// @name ItemPickerDelegate protocol
+//@{
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
 /// @name Notification responders
 //@{
 - (void) goGameNewCreated:(NSNotification*)notification;
@@ -155,6 +160,8 @@ enum GtpEngineProfilesSectionItem
 - (void) newProfile;
 - (void) editPlayer:(Player*)player;
 - (void) editProfile:(GtpEngineProfile*)profile;
+- (void) pickInconsistentTerritoryMarkupType;
+- (NSString*) inconsistentTerritoryMarkupTypeAsString:(enum InconsistentTerritoryMarkupType)markupType;
 //@}
 /// @name Privately declared properties
 //@{
@@ -400,24 +407,34 @@ enum GtpEngineProfilesSectionItem
     }
     case ScoringSection:
     {
-      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-      accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
-      accessoryView.enabled = YES;
       switch (indexPath.row)
       {
         case AskGtpEngineForDeadStonesItem:
-        {
-          cell.textLabel.text = @"Find dead stones";
-          [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
-          break;
-        }
         case MarkDeadStonesIntelligentlyItem:
         {
-          cell.textLabel.text = markDeadStonesIntelligentlyText;
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-          cell.textLabel.numberOfLines = 0;
-          [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
+          accessoryView.enabled = YES;
+          if (AskGtpEngineForDeadStonesItem == indexPath.row)
+          {
+            cell.textLabel.text = @"Find dead stones";
+            [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
+          }
+          else
+          {
+            cell.textLabel.text = markDeadStonesIntelligentlyText;
+            cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+            cell.textLabel.numberOfLines = 0;
+            [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
+          }
+          break;
+        }
+        case InconsistentTerritoryMarkupTypeItem:
+        {
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Inconsistent territory";
+          cell.detailTextLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
           break;
         }
         default:
@@ -580,6 +597,12 @@ enum GtpEngineProfilesSectionItem
 
   switch (indexPath.section)
   {
+    case ScoringSection:
+    {
+      if (InconsistentTerritoryMarkupTypeItem == indexPath.row)
+        [self pickInconsistentTerritoryMarkupType];
+      break;
+    }
     case PlayersSection:
     {
       if (indexPath.row < self.playerModel.playerCount)
@@ -836,5 +859,61 @@ enum GtpEngineProfilesSectionItem
     [self setEditing:NO animated:YES];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Displays ItemPickerController to allow the user to pick a new value
+/// for the InconsistentTerritoryMarkupType property.
+// -----------------------------------------------------------------------------
+- (void) pickInconsistentTerritoryMarkupType
+{
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeDotSymbol]];
+  [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeFillColor]];
+  UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                             title:@""
+                                                                indexOfDefaultItem:self.scoringModel.inconsistentTerritoryMarkupType
+                                                                          delegate:self];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:modalController];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self presentModalViewController:navigationController animated:YES];
+  [navigationController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (self.scoringModel.inconsistentTerritoryMarkupType != controller.indexOfSelectedItem)
+    {
+      self.scoringModel.inconsistentTerritoryMarkupType = controller.indexOfSelectedItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:InconsistentTerritoryMarkupTypeItem inSection:ScoringSection];
+      [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a short string for @a markupType that is suitable for display
+/// in a cell in the table view managed by this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) inconsistentTerritoryMarkupTypeAsString:(enum InconsistentTerritoryMarkupType)markupType
+{
+  switch (markupType)
+  {
+    case InconsistentTerritoryMarkupTypeDotSymbol:
+      return @"Dot symbol";
+    case InconsistentTerritoryMarkupTypeFillColor:
+      return @"Fill color";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
+}
 
 @end

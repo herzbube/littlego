@@ -31,10 +31,6 @@ Priority 1 (important)
 - Implement a gesture recognizer that reacts immediately to the first touch
   (UITapGestureRecognizer only recognizes the gesture when the finger leaves
   the screen)
-- Define protocols for ModelObserver and Model; move some methods from GoGame
-  to Model; let GoGame adopt the Model protocol, and the various views and
-  controllers adopt ModelObserver. This makes the different roles a little bit
-  more explicit
 - Find out more about GTP engine settings. Using the knowledge gained,
   reconsider whether it still makes sense that GTP engine settings are applied
   only at the beginning of the game.

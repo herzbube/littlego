@@ -43,9 +43,13 @@
 @synthesize markDeadStonesIntelligently;
 @synthesize alphaTerritoryColorBlack;
 @synthesize alphaTerritoryColorWhite;
-@synthesize alphaTerritoryColorInconsistencyFound;
 @synthesize deadStoneSymbolColor;
 @synthesize deadStoneSymbolPercentage;
+@synthesize inconsistentTerritoryMarkupType;
+@synthesize inconsistentTerritoryDotSymbolColor;
+@synthesize inconsistentTerritoryDotSymbolPercentage;
+@synthesize inconsistentTerritoryFillColor;
+@synthesize inconsistentTerritoryFillColorAlpha;
 @synthesize scoringMode;
 @synthesize score;
 
@@ -66,9 +70,13 @@
   self.markDeadStonesIntelligently = false;
   self.alphaTerritoryColorBlack = 0.3;
   self.alphaTerritoryColorWhite = 0.3;
-  self.alphaTerritoryColorInconsistencyFound = 0.3;
   self.deadStoneSymbolColor = [UIColor redColor];
   self.deadStoneSymbolPercentage = 0.8;
+  self.inconsistentTerritoryMarkupType = InconsistentTerritoryMarkupTypeDotSymbol;
+  self.inconsistentTerritoryDotSymbolColor = [UIColor redColor];
+  self.inconsistentTerritoryDotSymbolPercentage = 0.5;
+  self.inconsistentTerritoryFillColor = [UIColor redColor];
+  self.inconsistentTerritoryFillColorAlpha = 0.3;
   self.score = nil;
   scoringMode = false;  // don't use self to avoid triggering a notification
 
@@ -96,9 +104,13 @@
   self.markDeadStonesIntelligently = [[dictionary valueForKey:markDeadStonesIntelligentlyKey] boolValue];
   self.alphaTerritoryColorBlack = [[dictionary valueForKey:alphaTerritoryColorBlackKey] floatValue];
   self.alphaTerritoryColorWhite = [[dictionary valueForKey:alphaTerritoryColorWhiteKey] floatValue];
-  self.alphaTerritoryColorInconsistencyFound = [[dictionary valueForKey:alphaTerritoryColorInconsistencyFoundKey] floatValue];
   self.deadStoneSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:deadStoneSymbolColorKey]];
   self.deadStoneSymbolPercentage = [[dictionary valueForKey:deadStoneSymbolPercentageKey] floatValue];
+  self.inconsistentTerritoryMarkupType = [[dictionary valueForKey:inconsistentTerritoryMarkupTypeKey] intValue];
+  self.inconsistentTerritoryDotSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:inconsistentTerritoryDotSymbolColorKey]];
+  self.inconsistentTerritoryDotSymbolPercentage = [[dictionary valueForKey:inconsistentTerritoryDotSymbolPercentageKey] floatValue];
+  self.inconsistentTerritoryFillColor = [UIColor colorFromHexString:[dictionary valueForKey:inconsistentTerritoryFillColorKey]];
+  self.inconsistentTerritoryFillColorAlpha = [[dictionary valueForKey:inconsistentTerritoryFillColorAlphaKey] floatValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -116,9 +128,13 @@
   [dictionary setValue:[NSNumber numberWithBool:self.markDeadStonesIntelligently] forKey:markDeadStonesIntelligentlyKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorBlack] forKey:alphaTerritoryColorBlackKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorWhite] forKey:alphaTerritoryColorWhiteKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorInconsistencyFound] forKey:alphaTerritoryColorInconsistencyFoundKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.deadStoneSymbolColor] forKey:deadStoneSymbolColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.deadStoneSymbolPercentage] forKey:deadStoneSymbolPercentageKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.inconsistentTerritoryMarkupType] forKey:inconsistentTerritoryMarkupTypeKey];
+  [dictionary setValue:[UIColor hexStringFromUIColor:self.inconsistentTerritoryDotSymbolColor] forKey:inconsistentTerritoryDotSymbolColorKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryDotSymbolPercentage] forKey:inconsistentTerritoryDotSymbolPercentageKey];
+  [dictionary setValue:[UIColor hexStringFromUIColor:self.inconsistentTerritoryFillColor] forKey:inconsistentTerritoryFillColorKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryFillColorAlpha] forKey:inconsistentTerritoryFillColorAlphaKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:scoringKey];
 }

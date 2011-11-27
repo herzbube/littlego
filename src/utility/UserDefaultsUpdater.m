@@ -120,6 +120,9 @@ NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
   // too complicated to upgrade user-defined players and still show useful
   // combinations.
   [userDefaults removeObjectForKey:playerListKey];
+  // Remove all scoring user defaults. Too many changes in this dictionary,
+  // and only 2 beta-testers are affected by the loss of 2 keys.
+  [userDefaults removeObjectForKey:scoringKey];
 
   // Update the application domain version number
   const int newApplicationDomainVersion = 1;

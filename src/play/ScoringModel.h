@@ -39,9 +39,13 @@
 @property(nonatomic, assign) bool markDeadStonesIntelligently;
 @property(nonatomic, assign) float alphaTerritoryColorBlack;
 @property(nonatomic, assign) float alphaTerritoryColorWhite;
-@property(nonatomic, assign) float alphaTerritoryColorInconsistencyFound;
 @property(nonatomic, retain) UIColor* deadStoneSymbolColor;
 @property(nonatomic, assign) float deadStoneSymbolPercentage;
+@property(nonatomic, assign) enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType;
+@property(nonatomic, retain) UIColor* inconsistentTerritoryDotSymbolColor;
+@property(nonatomic, assign) float inconsistentTerritoryDotSymbolPercentage;
+@property(nonatomic, retain) UIColor* inconsistentTerritoryFillColor;
+@property(nonatomic, assign) float inconsistentTerritoryFillColorAlpha;
 //@}
 
 // -----------------------------------------------------------------------------

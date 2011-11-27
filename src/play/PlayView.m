@@ -29,6 +29,7 @@
 #import "../go/GoScore.h"
 #import "../go/GoVertex.h"
 #import "../player/Player.h"
+#import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -173,6 +174,8 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
+  [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
+
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.playViewModel = nil;
@@ -236,6 +239,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
+  [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -600,12 +604,37 @@ static PlayView* sharedPlayView = nil;
 {
   UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.scoringModel.alphaTerritoryColorBlack];
   UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.scoringModel.alphaTerritoryColorWhite];
-  UIColor* colorInconsistencyFound = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:self.scoringModel.alphaTerritoryColorInconsistencyFound];
-  GoGame* game = [GoGame sharedGame];
-  NSEnumerator* enumerator = [game.board pointEnumerator];
+  UIColor* colorInconsistencyFound;
+  enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
+  switch (inconsistentTerritoryMarkupType)
+  {
+    case InconsistentTerritoryMarkupTypeDotSymbol:
+    {
+      colorInconsistencyFound = self.scoringModel.inconsistentTerritoryDotSymbolColor;
+      break;
+    }
+    case InconsistentTerritoryMarkupTypeFillColor:
+    {
+      UIColor* fillColor = self.scoringModel.inconsistentTerritoryFillColor;
+      colorInconsistencyFound = [UIColor colorWithRed:fillColor.red
+                                                green:fillColor.green
+                                                 blue:fillColor.blue
+                                                alpha:self.scoringModel.inconsistentTerritoryFillColorAlpha];
+      break;
+    }
+    default:
+    {
+      DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
+      colorInconsistencyFound = nil;
+      break;
+    }
+  }
+
+  NSEnumerator* enumerator = [[GoGame sharedGame].board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
+    bool inconsistencyFound = false;
     UIColor* color;
     switch (point.region.territoryColor)
     {
@@ -617,19 +646,41 @@ static PlayView* sharedPlayView = nil;
         break;
       case GoColorNone:
         if (point.region.territoryInconsistencyFound)
+        {
+          inconsistencyFound = true;
           color = colorInconsistencyFound;
+        }
         else
           continue;
         break;
       default:
         continue;
     }
-    CGRect square = [self squareAtPoint:point];
 
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [color set];  // following fill and stroke operations use this color
-    UIRectFillUsingBlendMode(square, kCGBlendModeNormal);
-    CGContextStrokePath(context);
+    if (inconsistencyFound && InconsistentTerritoryMarkupTypeDotSymbol == inconsistentTerritoryMarkupType)
+    {
+      CGPoint coordinates = [self coordinatesFromPoint:point];
+      CGContextSetFillColorWithColor(context, color.CGColor);
+      const int startRadius = 0;
+      const int endRadius = 2 * M_PI;
+      const int clockwise = 0;
+      CGContextAddArc(context,
+                      coordinates.x + gHalfPixel,
+                      coordinates.y + gHalfPixel,
+                      self.stoneRadius * self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
+                      startRadius,
+                      endRadius,
+                      clockwise);
+      CGContextFillPath(context);
+    }
+    else
+    {
+      CGRect square = [self squareAtPoint:point];
+      [color set];  // all fill and stroke operations after this statement will use this color
+      UIRectFillUsingBlendMode(square, kCGBlendModeNormal);
+      CGContextStrokePath(context);
+    }
   }
 }
 
@@ -998,6 +1049,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
+  if (object == self.scoringModel && ! self.scoringModel.scoringMode)
+    return;
   // TODO check if it's possible to update only specific parts of the view
   [self delayedUpdate];
 }

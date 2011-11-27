@@ -147,6 +147,7 @@
 		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
+		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -346,6 +347,8 @@
 		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
 		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
+		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
+		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -845,6 +848,8 @@
 			children = (
 				CDFABCAB14194DA00065C93B /* EditTextController.h */,
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
+				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
+				CDDD525A1482DD9F0027476B /* ItemPickerController.m */,
 				CD05B568142EA31700214BBE /* MBProgressHUD.h */,
 				CD05B569142EA31700214BBE /* MBProgressHUD.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
@@ -1078,6 +1083,7 @@
 				CDB457A5147B17490043EDE4 /* GtpEngineProfileSelectionController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
+				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

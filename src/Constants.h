@@ -109,6 +109,13 @@ enum GoBoardDirection
   PreviousDirection  ///< @brief Same as NextDirection, but for iterating backwards.
 };
 
+/// @brief How should Play view mark up inconcistent territory during scoring?
+enum InconsistentTerritoryMarkupType
+{
+  InconsistentTerritoryMarkupTypeDotSymbol,  ///< @brief Mark up territory using a dot symbol
+  InconsistentTerritoryMarkupTypeFillColor   ///< @brief Mark up territory by filling it with a color
+};
+
 /// @brief Enumerates all existing tabs in the GUI.
 ///
 /// Values in this enumeration must match the "tag" property values of each
@@ -439,4 +446,9 @@ extern NSString* alphaTerritoryColorWhiteKey;
 extern NSString* alphaTerritoryColorInconsistencyFoundKey;
 extern NSString* deadStoneSymbolColorKey;
 extern NSString* deadStoneSymbolPercentageKey;
+extern NSString* inconsistentTerritoryMarkupTypeKey;
+extern NSString* inconsistentTerritoryDotSymbolColorKey;
+extern NSString* inconsistentTerritoryDotSymbolPercentageKey;
+extern NSString* inconsistentTerritoryFillColorKey;
+extern NSString* inconsistentTerritoryFillColorAlphaKey;
 //@}
