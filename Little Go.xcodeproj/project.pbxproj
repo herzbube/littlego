@@ -176,8 +176,6 @@
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
-		CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */; };
-		CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -407,10 +405,6 @@
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
-		CDFB49EE13F6AA7A00FAA5AF /* BoardSizeSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardSizeSelectionController.h; sourceTree = "<group>"; };
-		CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSizeSelectionController.m; sourceTree = "<group>"; };
-		CDFB4A1013F6AC3600FAA5AF /* PlayerSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerSelectionController.h; sourceTree = "<group>"; };
-		CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerSelectionController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -679,8 +673,6 @@
 		CDAB5EC613E4835900C4A4AA /* newgame */ = {
 			isa = PBXGroup;
 			children = (
-				CDFB49EE13F6AA7A00FAA5AF /* BoardSizeSelectionController.h */,
-				CDFB49EF13F6AA7A00FAA5AF /* BoardSizeSelectionController.m */,
 				CD9AA709146028770012C3EA /* HandicapSelectionController.h */,
 				CD9AA70A146028770012C3EA /* HandicapSelectionController.m */,
 				CD9AA70B146028770012C3EA /* KomiSelectionController.h */,
@@ -689,8 +681,6 @@
 				CDAB5ED013E483DE00C4A4AA /* NewGameController.m */,
 				CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */,
 				CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */,
-				CDFB4A1013F6AC3600FAA5AF /* PlayerSelectionController.h */,
-				CDFB4A1113F6AC3600FAA5AF /* PlayerSelectionController.m */,
 			);
 			path = newgame;
 			sourceTree = "<group>";
@@ -1031,8 +1021,6 @@
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 				CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */,
 				CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */,
-				CDFB49F013F6AA7A00FAA5AF /* BoardSizeSelectionController.m in Sources */,
-				CDFB4A1213F6AC3600FAA5AF /* PlayerSelectionController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,

@@ -109,13 +109,9 @@ enum KomiSectionItem
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name BoardSizeSelectionDelegate protocol
+/// @name ItemPickerDelegate protocol
 //@{
-- (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name PlayerSelectionDelegate protocol
-//@{
-- (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
 /// @name HandicapSelectionDelegate protocol
 //@{
@@ -390,83 +386,101 @@ enum KomiSectionItem
   switch (indexPath.section)
   {
     case BoardSizeSection:
-      modalController = [[BoardSizeSelectionController controllerWithDelegate:self
-                                                             defaultBoardSize:self.boardSize] retain];
+    {
+      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+      for (enum GoBoardSize boardSizeIndex = BoardSizeMin; boardSizeIndex <= BoardSizeMax; ++boardSizeIndex)
+        [itemList addObject:[GoBoard stringForSize:boardSizeIndex]];
+      ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                          title:@"Board size"
+                                                                             indexOfDefaultItem:self.boardSize
+                                                                                       delegate:self];
+      itemPickerController.context = indexPath;
+      modalController = itemPickerController;
       break;
+    }
     case PlayersSection:
+    {
+      PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+      Player* defaultPlayer;
+      if (indexPath.row == BlackPlayerItem)
+        defaultPlayer = self.blackPlayer;
+      else
+        defaultPlayer = self.whitePlayer;
+
+      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+      int indexOfDefaultPlayer = -1;
+      for (int playerIndex = 0; playerIndex < model.playerCount; ++playerIndex)
       {
-        Player* player;
-        bool selectBlackPlayer;
-        if (indexPath.row == BlackPlayerItem)
-        {
-          player = self.blackPlayer;
-          selectBlackPlayer = true;
-        }
-        else
-        {
-          player = self.whitePlayer;
-          selectBlackPlayer = false;
-        }
-        modalController = [[PlayerSelectionController controllerWithDelegate:self
-                                                               defaultPlayer:player
-                                                                 blackPlayer:selectBlackPlayer] retain];
-        break;
+        Player* player = [model.playerList objectAtIndex:playerIndex];
+        [itemList addObject:player.name];
+        if (player == defaultPlayer)
+          indexOfDefaultPlayer = playerIndex;
       }
+      ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                          title:@"Select player"
+                                                                             indexOfDefaultItem:indexOfDefaultPlayer
+                                                                                       delegate:self];
+      itemPickerController.context = indexPath;
+      modalController = itemPickerController;
+      break;
+    }
     case HandicapSection:
-      modalController = [[HandicapSelectionController controllerWithDelegate:self
-                                                             defaultHandicap:self.handicap] retain];
+    {
+      modalController = [HandicapSelectionController controllerWithDelegate:self
+                                                            defaultHandicap:self.handicap];
       break;
+    }
     case KomiSection:
-      modalController = [[KomiSelectionController controllerWithDelegate:self
-                                                             defaultKomi:self.komi] retain];
+    {
+      modalController = [KomiSelectionController controllerWithDelegate:self
+                                                            defaultKomi:self.komi];
       break;
+    }
     default:
+    {
       assert(0);
       return;
+    }
   }
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   [self presentModalViewController:navigationController animated:YES];
   [navigationController release];
-  [modalController release];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief BoardSizeSelectionDelegate protocol method.
+/// @brief ItemPickerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) boardSizeSelectionController:(BoardSizeSelectionController*)controller didMakeSelection:(bool)didMakeSelection
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
 {
   if (didMakeSelection)
   {
-    if (self.boardSize != controller.boardSize)
+    NSIndexPath* indexPathContext = controller.context;
+    if (BoardSizeSection == indexPathContext.section)
     {
-      self.boardSize = controller.boardSize;
-      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BoardSizeSection];
-      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+      if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+      {
+        self.boardSize = controller.indexOfSelectedItem;
+        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BoardSizeSection];
+        [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+      }
     }
-  }
-  [self dismissModalViewControllerAnimated:YES];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief PlayerSelectionDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) playerSelectionController:(PlayerSelectionController*)controller didMakeSelection:(bool)didMakeSelection
-{
-  if (didMakeSelection)
-  {
-    Player* previousPlayer = controller.blackPlayer ? self.blackPlayer : self.whitePlayer;
-    if (previousPlayer != controller.player)
+    else if (PlayersSection == indexPathContext.section)
     {
-      if (controller.blackPlayer)
-        self.blackPlayer = controller.player;
-      else
-        self.whitePlayer = controller.player;
-      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:PlayersSection];
-      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+      if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+      {
+        PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+        Player* newPlayer = [[model playerList] objectAtIndex:controller.indexOfSelectedItem];
+        if (BlackPlayerItem == indexPathContext.row)
+          self.blackPlayer = newPlayer;
+        else
+          self.whitePlayer = newPlayer;
+        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:PlayersSection];
+        [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+      }
     }
   }
   [self dismissModalViewControllerAnimated:YES];

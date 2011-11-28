@@ -16,13 +16,9 @@
 
 
 // Project includes
-#import "BoardSizeSelectionController.h"
-#import "PlayerSelectionController.h"
+#import "ItemPickerController.h"
 #import "HandicapSelectionController.h"
 #import "KomiSelectionController.h"
-
-// System includes
-#import <UIKit/UIKit.h>
 
 // Forward declarations
 @class NewGameController;
@@ -62,7 +58,7 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <BoardSizeSelectionDelegate, PlayerSelectionDelegate, HandicapSelectionDelegate, KomiSelectionDelegate, UIAlertViewDelegate>
+@interface NewGameController : UITableViewController <ItemPickerDelegate, HandicapSelectionDelegate, KomiSelectionDelegate, UIAlertViewDelegate>
 {
 }
 
