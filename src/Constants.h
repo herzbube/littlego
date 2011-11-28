@@ -113,7 +113,8 @@ enum GoBoardDirection
 enum InconsistentTerritoryMarkupType
 {
   InconsistentTerritoryMarkupTypeDotSymbol,  ///< @brief Mark up territory using a dot symbol
-  InconsistentTerritoryMarkupTypeFillColor   ///< @brief Mark up territory by filling it with a color
+  InconsistentTerritoryMarkupTypeFillColor,  ///< @brief Mark up territory by filling it with a color
+  InconsistentTerritoryMarkupTypeNeutral     ///< @brief Don't mark up territory
 };
 
 /// @brief Enumerates all existing tabs in the GUI.
@@ -144,6 +145,7 @@ enum GoBoardSize
   BoardSize15,
   BoardSize17,
   BoardSize19,
+  BoardSizeMin = BoardSize7,
   BoardSizeMax = BoardSize19,
   BoardSizeUndefined
 };

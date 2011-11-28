@@ -322,6 +322,8 @@ enum GtpEngineProfilesSectionItem
 {
   if (GtpEngineProfilesSection == section)
     return @"A GTP engine profile is a collection of technical settings that define how the GTP engine behaves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default profile cannot be deleted.";
+  else if (ScoringSection == section)
+    return @"The style to mark inconsistent territory. This is territory where something about the dead or alive state of neighbouring stones is inconsistent, thus making it impossible to determine whether the territory is black, white or neutral. For instance, the territory has neighbouring stones of both colors, but both colors are marked dead.";
   else
     return nil;
 }
@@ -868,10 +870,12 @@ enum GtpEngineProfilesSectionItem
   NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
   [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeDotSymbol]];
   [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeFillColor]];
-  UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                             title:@""
-                                                                indexOfDefaultItem:self.scoringModel.inconsistentTerritoryMarkupType
-                                                                          delegate:self];
+  [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeNeutral]];
+  ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                 title:@"Select style"
+                                                                    indexOfDefaultItem:self.scoringModel.inconsistentTerritoryMarkupType
+                                                                              delegate:self];
+  modalController.footerTitle = @"Select neutral to not mark inconsistent territory at all, thus making it look as if it were neutral territory. Select this option if you are confident that you don't need any help picking out inconsistencies.";
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -909,6 +913,8 @@ enum GtpEngineProfilesSectionItem
       return @"Dot symbol";
     case InconsistentTerritoryMarkupTypeFillColor:
       return @"Fill color";
+    case InconsistentTerritoryMarkupTypeNeutral:
+      return @"Neutral";
     default:
       assert(0);
       break;

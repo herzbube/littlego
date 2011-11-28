@@ -41,7 +41,9 @@
 //@}
 /// @name UITableViewDataSource protocol
 //@{
+- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -55,6 +57,7 @@
 
 @synthesize context;
 @synthesize title;
+@synthesize footerTitle;
 @synthesize delegate;
 @synthesize indexOfDefaultItem;
 @synthesize indexOfSelectedItem;
@@ -76,6 +79,7 @@
     [controller autorelease];
     controller.itemList = itemList;
     controller.title = title;
+    controller.footerTitle = nil;
     controller.indexOfDefaultItem = indexOfDefaultItem;
     controller.indexOfSelectedItem = indexOfDefaultItem;
     controller.delegate = delegate;
@@ -113,6 +117,7 @@
 {
   self.context = nil;
   self.title = nil;
+  self.footerTitle = nil;
   self.delegate = nil;
   self.itemList = nil;
   [super dealloc];
@@ -167,9 +172,25 @@
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
+- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
+{
+  return 1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
   return self.itemList.count;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  return self.footerTitle;
 }
 
 // -----------------------------------------------------------------------------

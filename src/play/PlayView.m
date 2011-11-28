@@ -622,6 +622,11 @@ static PlayView* sharedPlayView = nil;
                                                 alpha:self.scoringModel.inconsistentTerritoryFillColorAlpha];
       break;
     }
+    case InconsistentTerritoryMarkupTypeNeutral:
+    {
+      colorInconsistencyFound = nil;
+      break;
+    }
     default:
     {
       DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
@@ -645,13 +650,15 @@ static PlayView* sharedPlayView = nil;
         color = colorWhite;
         break;
       case GoColorNone:
-        if (point.region.territoryInconsistencyFound)
+        if (! point.region.territoryInconsistencyFound)
+          continue;  // territory is truly neutral, no markup needed
+        else if (InconsistentTerritoryMarkupTypeNeutral == inconsistentTerritoryMarkupType)
+          continue;  // territory is inconsistent, but user does not want markup
+        else
         {
           inconsistencyFound = true;
           color = colorInconsistencyFound;
         }
-        else
-          continue;
         break;
       default:
         continue;
