@@ -15,19 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "EditGtpEngineProfileController.h"
+#import "EditPlayerController.h"
+
 
 // -----------------------------------------------------------------------------
-/// @brief The SettingsViewController class is responsible for managing user
-/// interaction on the "Settings" view.
-///
-/// The "Settings" view is a very simple table view with only a few items that
-/// provide access to different collections of user preferences. Each collection
-/// is managed by its own table view controller, the task of
-/// SettingsViewController is merely to create those controllers and push them
-/// onto the main navigation controller.
+/// @brief The PlayerProfileSettingsController class is responsible for managing
+/// user interaction on the "Players & Profiles" user preferences view.
 // -----------------------------------------------------------------------------
-@interface SettingsViewController : UITableViewController
+@interface PlayerProfileSettingsController : UITableViewController <EditPlayerDelegate, EditGtpEngineProfileDelegate>
 {
 }
+
++ (PlayerProfileSettingsController*) controller;
 
 @end

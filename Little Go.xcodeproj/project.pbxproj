@@ -147,6 +147,9 @@
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
+		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
+		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
+		CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -344,6 +347,12 @@
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
 		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
+		CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerProfileSettingsController.h; sourceTree = "<group>"; };
+		CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerProfileSettingsController.m; sourceTree = "<group>"; };
+		CDDD525E14840A530027476B /* PlayViewSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewSettingsController.h; sourceTree = "<group>"; };
+		CDDD525F14840A530027476B /* PlayViewSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewSettingsController.m; sourceTree = "<group>"; };
+		CDDD526014840A530027476B /* ScoringSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringSettingsController.h; sourceTree = "<group>"; };
+		CDDD526114840A540027476B /* ScoringSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringSettingsController.m; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -609,6 +618,12 @@
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
+				CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */,
+				CDDD525E14840A530027476B /* PlayViewSettingsController.h */,
+				CDDD525F14840A530027476B /* PlayViewSettingsController.m */,
+				CDDD526014840A530027476B /* ScoringSettingsController.h */,
+				CDDD526114840A540027476B /* ScoringSettingsController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
 				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
 			);
@@ -1066,6 +1081,9 @@
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
+				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
+				CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */,
+				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
