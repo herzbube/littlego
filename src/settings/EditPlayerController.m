@@ -20,6 +20,7 @@
 #import "../ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
@@ -96,9 +97,9 @@ enum GtpEngineProfileSectionItem
 //@{
 - (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
 //@}
-/// @name GtpEngineProfileSelectionDelegate protocol
+/// @name ItemPickerDelegate protocol
 //@{
-- (void) gtpEngineProfileSelectionController:(GtpEngineProfileSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
 //@}
 /// @name Private helpers
 //@{
@@ -328,19 +329,31 @@ enum GtpEngineProfileSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  
+
   switch (indexPath.section)
   {
     case GtpEngineProfileSection:
     {
-      UIViewController* modalController = [[GtpEngineProfileSelectionController controllerWithDelegate:self
-                                                                                        defaultProfile:[self.player gtpEngineProfile]] retain];
+      GtpEngineProfile* defaultProfile = [self.player gtpEngineProfile];
+      GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+      int indexOfDefaultProfile = -1;
+      for (int profileIndex = 0; profileIndex < model.profileCount; ++profileIndex)
+      {
+        GtpEngineProfile* profile = [model.profileList objectAtIndex:profileIndex];
+        [itemList addObject:profile.name];
+        if (profile == defaultProfile)
+          indexOfDefaultProfile = profileIndex;
+      }
+      UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                 title:@"Select profile"
+                                                                    indexOfDefaultItem:indexOfDefaultProfile
+                                                                              delegate:self];
       UINavigationController* navigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:modalController];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
       [self presentModalViewController:navigationController animated:YES];
       [navigationController release];
-      [modalController release];
       break;
     }
     default:
@@ -420,16 +433,17 @@ enum GtpEngineProfileSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief GtpEngineProfileSelectionDelegate protocol method.
+/// @brief ItemPickerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) gtpEngineProfileSelectionController:(GtpEngineProfileSelectionController*)controller didMakeSelection:(bool)didMakeSelection
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
 {
   if (didMakeSelection)
   {
-    NSString* previousProfileUUID = self.player.gtpEngineProfileUUID;
-    if (! [previousProfileUUID isEqualToString:controller.profile.uuid])
+    if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
     {
-      self.player.gtpEngineProfileUUID = controller.profile.uuid;
+      GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+      GtpEngineProfile* newProfile = [[model profileList] objectAtIndex:controller.indexOfSelectedItem];
+      self.player.gtpEngineProfileUUID = newProfile.uuid;
 
       NSUInteger sectionIndex = GtpEngineProfileSection;
       NSUInteger rowIndex = GtpEngineProfileItem;
