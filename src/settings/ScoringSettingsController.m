@@ -117,6 +117,7 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.scoringModel = nil;
   [super dealloc];
 }
 

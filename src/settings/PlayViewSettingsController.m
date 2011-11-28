@@ -118,6 +118,7 @@ enum ViewSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.playViewModel = nil;
   [super dealloc];
 }
 

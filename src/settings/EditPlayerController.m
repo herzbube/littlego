@@ -87,6 +87,7 @@ enum GtpEngineProfileSectionItem
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -252,6 +253,25 @@ enum GtpEngineProfileSectionItem
     default:
       assert(0);
       break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (IsHumanSection == section)
+  {
+    if (self.player.isPlaying)
+      return @"This setting cannot be changed because the player currently participates in a game.";
+  }
+  else if (GtpEngineProfileSection == section)
+  {
+    // Display this notice only if we are not in "create" mode
+    if (self.playerExists && ! self.player.human)
+      return @"If the profile is changed the new settings are applied only after a new game with this player is started.";
   }
   return nil;
 }

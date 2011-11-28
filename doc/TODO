@@ -85,9 +85,6 @@ Priority 2 (nice to have)
 - In PlayerSelectionController and SettingsViewController: Add human/computer
   symbol to the table view cell depending on the type of the player that the
   cell represents
-- Add a note to the "Edit player" view that explains why a player cannot be
-  deleted, and some of his attributes cannot be changed, while he is
-  participating in the current game
 - While panning
   - If the location is invalid, display the reason in the status line
   - If placing a stone would capture other stones, mark up those stones

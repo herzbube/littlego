@@ -94,6 +94,7 @@ enum ProfileSettingsSectionItem
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -287,6 +288,17 @@ enum ProfileSettingsSectionItem
       break;
   }
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (ProfileSettingsSection == section)
+    return @"Changed settings are applied only after a new game with a player who uses this profile is started.";
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
