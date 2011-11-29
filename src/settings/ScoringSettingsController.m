@@ -22,7 +22,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
-
+// Constants
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
 
 
@@ -200,11 +200,11 @@ enum ScoringSectionItem
         {
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
           accessoryView.enabled = YES;
           if (AskGtpEngineForDeadStonesItem == indexPath.row)
           {
             cell.textLabel.text = @"Find dead stones";
+            accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
             [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
           }
           else
@@ -212,6 +212,7 @@ enum ScoringSectionItem
             cell.textLabel.text = markDeadStonesIntelligentlyText;
             cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
             cell.textLabel.numberOfLines = 0;
+            accessoryView.on = self.scoringModel.markDeadStonesIntelligently;
             [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
           }
           break;
