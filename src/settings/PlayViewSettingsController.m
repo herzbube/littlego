@@ -20,6 +20,10 @@
 #import "../ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
+
+// Constants
+NSString* placeStoneUnderFingerText = @"Place stone under finger";
 
 
 // -----------------------------------------------------------------------------
@@ -51,7 +55,7 @@ enum ViewSectionItem
   MarkLastMoveItem,
 //  DisplayCoordinatesItem,
 //  DisplayMoveNumbersItem,
-//  CrossHairPointDistanceFromFingerItem,
+  PlaceStoneUnderFingerItem,
   MaxViewSectionItem
 };
 
@@ -78,6 +82,7 @@ enum ViewSectionItem
 //@}
 /// @name UITableViewDelegate protocol
 //@{
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Action methods
@@ -87,6 +92,7 @@ enum ViewSectionItem
 - (void) toggleMarkLastMove:(id)sender;
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
+- (void) togglePlaceStoneUnderFinger:(id)sender;
 //@}
 /// @name Privately declared properties
 //@{
@@ -225,31 +231,17 @@ enum ViewSectionItem
     }
     case ViewSection:
     {
-      enum TableViewCellType cellType;
-      switch (indexPath.row)
-      {
-//          case CrossHairPointDistanceFromFingerItem:
-//            cellType = Value1CellType;
-//            break;
-        default:
-          cellType = SwitchCellType;
-          break;
-      }
-      cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-      UISwitch* accessoryView = nil;
-      if (SwitchCellType == cellType)
-      {
-        accessoryView = (UISwitch*)cell.accessoryView;
-        accessoryView.enabled = false;  // TODO enable when settings are implemented
-      }
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       switch (indexPath.row)
       {
         case MarkLastMoveItem:
+        {
           cell.textLabel.text = @"Mark last move";
           accessoryView.on = self.playViewModel.markLastMove;
-          accessoryView.enabled = YES;
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
           break;
+        }
 //          case DisplayCoordinatesItem:
 //            cell.textLabel.text = @"Coordinates";
 //            accessoryView.on = self.playViewModel.displayCoordinates;
@@ -264,6 +256,15 @@ enum ViewSectionItem
 //            cell.textLabel.text = @"Cross-hair distance";
 //            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
 //            break;
+        case PlaceStoneUnderFingerItem:
+        {
+          cell.textLabel.text = placeStoneUnderFingerText;
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
+          accessoryView.on = (self.playViewModel.crossHairPointDistanceFromFinger == 0);
+          [accessoryView addTarget:self action:@selector(togglePlaceStoneUnderFinger:) forControlEvents:UIControlEventValueChanged];
+          break;
+        }
         default:
         {
           assert(0);
@@ -280,6 +281,21 @@ enum ViewSectionItem
   }
 
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (ViewSection != indexPath.section || PlaceStoneUnderFingerItem != indexPath.row)
+    return tableView.rowHeight;
+
+  // Use the same string as in tableView:cellForRowAtIndexPath:()
+  return [UiUtilities tableView:tableView
+            heightForCellOfType:SwitchCellType
+                       withText:placeStoneUnderFingerText
+         hasDisclosureIndicator:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -338,6 +354,26 @@ enum ViewSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.playViewModel.displayMoveNumbers = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Place stone under finger" switch.
+/// Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) togglePlaceStoneUnderFinger:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  bool shouldPlaceStoneUnderFinger = accessoryView.on ? true : false;
+  if (shouldPlaceStoneUnderFinger)
+    self.playViewModel.crossHairPointDistanceFromFinger = 0;
+  else
+  {
+    // This works only because crossHairPointDefaultDistanceFromFinger is NOT 0.
+    // If the implementation of this user preference is changed from a toggling
+    // switch to a slider, the restriction on the constant is no longer
+    // necessary and its documentation should be updated.
+    self.playViewModel.crossHairPointDistanceFromFinger = crossHairPointDefaultDistanceFromFinger;
+  }
 }
 
 @end

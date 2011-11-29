@@ -78,7 +78,7 @@
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 1.0;
   self.crossHairColor = [UIColor greenColor];
-  self.crossHairPointDistanceFromFinger = 2;
+  self.crossHairPointDistanceFromFinger = crossHairPointDefaultDistanceFromFinger;
 
   return self;
 }

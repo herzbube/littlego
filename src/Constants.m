@@ -17,6 +17,7 @@
 
 // GUI constants
 const float gHalfPixel = 0.5;
+const int crossHairPointDefaultDistanceFromFinger = 2;
 
 // Go constants
 const enum GoBoardSize gDefaultBoardSize = BoardSize19;
