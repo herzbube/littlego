@@ -183,6 +183,15 @@ Priority 3 (not important)
   - The bigger problem is that we would need to implement knowledge about
     handicap stone placement because we can't use the GTP command
     "fixed_handicap" (defined in the GTP specs) for handicap values > 9.
+- Review design decision that GoPoint is retaining GoBoardRegion. There are
+  a few unpleasant workarounds for cases when GoBoardRegion is deallocated too
+  early due to GoPoint.region of the region's last point being set to nil, or
+  to some other region. Originally these cases could be ignored because
+  GoPoint.region was an atomic property, and the region received delayed
+  deallocation due to autorelease, but ignorance is no longer possible now that
+  all properties have been marked nonatomic and regions are deallocated
+  immediately.
+
 
 Future improvements to the 3rdparty build process
 -------------------------------------------------

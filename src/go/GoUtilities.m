@@ -45,10 +45,14 @@
 + (void) movePointToNewRegion:(GoPoint*)thePoint
 {
   // Step 1: Remove point from old region
-  GoBoardRegion* oldRegion = thePoint.region;
+  // Note: We must retain/autorelease to make sure that oldRegion still lives
+  // when we get to removePoint:() one line further down. If we don't retain
+  // and thePoint is the last point of oldRegion, setting thePoint.region to
+  // nil will drop oldRegion's retain count to zero and deallocate it.
+  GoBoardRegion* oldRegion = [[thePoint.region retain] autorelease];
   thePoint.region = nil;
   [oldRegion removePoint:thePoint];  // possible side-effect: oldRegion might be
-  // split into multiple GoBoardRegion objects
+                                     // split into multiple GoBoardRegion objects
 
   // Step 2: Attempt to add the point to the same region as one of its
   // neighbours. At the same time, merge regions if they can be joined.
@@ -70,8 +74,9 @@
     {
       // The stone has already joined a neighbouring region
       // -> now check if entire regions can be merged
-      if (neighbour.region != newRegion)
-        [newRegion joinRegion:neighbour.region];
+      GoBoardRegion* neighbourRegion = neighbour.region;
+      if (neighbourRegion != newRegion)
+        [newRegion joinRegion:neighbourRegion];
     }
   }
 

@@ -217,11 +217,20 @@
 /// in @a region are added to this GoBoardRegion.
 ///
 /// The GoBoardRegion reference of all GoPoint objects will be updated to this
-/// GoBoardRegion. As a result, @a region will be released and should not be
+/// GoBoardRegion. As a result, @a region will be deallocated and should not be
 /// used after this method returns.
 // -----------------------------------------------------------------------------
 - (void) joinRegion:(GoBoardRegion*)region
 {
+  // When the last point is assigned another region, the retain count of region
+  // will drop to zero and region will be deallocated. At this time, region will
+  // also deallocate its own points array. However, the loop still needs the
+  // array for the final iteration, in order to find out that the array has no
+  // more points and the loop condition has been reached. To keep the array
+  // alive we therefore need to temporarily retain the region. Alternatives
+  // would be to retain the array, or iterate over the array the old-fashioned
+  // way using an index counter...
+  [[region retain] autorelease];
   for (GoPoint* point in region.points)
   {
     point.region = self;
