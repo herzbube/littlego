@@ -66,6 +66,8 @@
 - (void) setupFuego;
 - (void) writeUserDefaults;
 - (void) activateTab:(enum TabType)tabID;
+- (NSString*) contentOfTextResource:(NSString*)resourceName;
+- (NSString*) resourceNameForTabType:(enum TabType)tabType;
 
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;

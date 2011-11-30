@@ -89,6 +89,8 @@ NSString* apacheLicenseDocumentResource = @"LICENSE.html";
 NSString* GPLDocumentResource = @"COPYING.html";
 NSString* LGPLDocumentResource = @"COPYING.LESSER.html";
 NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";
+NSString* readmeDocumentResource = @"README";
+NSString* manualDocumentResource = @"MANUAL";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 

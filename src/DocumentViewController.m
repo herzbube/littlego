@@ -18,6 +18,7 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
+#import "utility/DocumentGenerator.h"
 
 
 // -----------------------------------------------------------------------------
@@ -40,8 +41,11 @@
 /// @name Private helper methods
 //@{
 - (void) showAboutDocument:(NSString*)documentContent;
-- (NSString*) getResourceContent:(NSString*)resourceName;
-- (NSString*) resourceNameForTabType:(enum TabType)tabType;
+//@}
+/// @name Privately declared properties
+//@{
+@property(nonatomic, retain) NSString* titleString;
+@property(nonatomic, retain) NSString* htmlString;
 //@}
 @end
 
@@ -49,6 +53,26 @@
 @implementation DocumentViewController
 
 @synthesize webView;
+@synthesize titleString;
+@synthesize htmlString;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a DocumentViewController instance
+/// that displays @a title in its navigation item and @a htmlString in its web
+/// view.
+// -----------------------------------------------------------------------------
++ (DocumentViewController*) controllerWithTitle:(NSString*)title htmlString:(NSString*)htmlString
+{
+  DocumentViewController* controller = [[DocumentViewController alloc] initWithNibName:@"DocumentView" bundle:nil];
+  if (controller)
+  {
+    [controller autorelease];
+    controller.titleString = title;
+    controller.htmlString = htmlString;
+  }
+  return controller;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this DocumentViewController object.
@@ -72,17 +96,26 @@
 
   self.webView.delegate = self;
 
-  NSInteger tabType = self.tabBarItem.tag;
-  NSString* resourceName = [self resourceNameForTabType:tabType];
-  NSString* resourceContent = [self getResourceContent:resourceName];
-  switch (tabType)
+  if (self.titleString)
   {
-    case AboutTab:
-      [self showAboutDocument:resourceContent];
-      break;
-    default:
-      [self.webView loadHTMLString:resourceContent baseURL:nil];
-      break;
+    self.title = titleString;
+    [self.webView loadHTMLString:htmlString baseURL:nil];
+  }
+  else
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    NSInteger tabType = self.tabBarItem.tag;
+    NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
+    NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
+    switch (tabType)
+    {
+      case AboutTab:
+        [self showAboutDocument:resourceContent];
+        break;
+      default:
+        [self.webView loadHTMLString:resourceContent baseURL:nil];
+        break;
+    }
   }
 }
 
@@ -133,53 +166,4 @@
   [self.webView loadHTMLString:documentContent baseURL:nil];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Loads the content of the resource named @a resourceName.
-// -----------------------------------------------------------------------------
-- (NSString*) getResourceContent:(NSString*)resourceName
-{
-  if (! resourceName)
-    return @"";
-  NSURL* resourceURL = [[ApplicationDelegate sharedDelegate].resourceBundle URLForResource:resourceName
-                                                                             withExtension:nil];
-  NSStringEncoding usedEncoding;
-  NSError* error;
-  return [NSString stringWithContentsOfURL:resourceURL
-                              usedEncoding:&usedEncoding
-                                     error:&error];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps TabType values to resource file names. The name that is returned
-/// can be used with NSBundle to load the resource file's content.
-// -----------------------------------------------------------------------------
-- (NSString*) resourceNameForTabType:(enum TabType)tabType
-{
-  NSString* resourceName = nil;
-  switch (tabType)
-  {
-    case AboutTab:
-      resourceName = aboutDocumentResource;
-      break;
-    case SourceCodeTab:
-      resourceName = sourceCodeDocumentResource;
-      break;
-    case ApacheLicenseTab:
-      resourceName = apacheLicenseDocumentResource;
-      break;
-    case GPLTab:
-      resourceName = GPLDocumentResource;
-      break;
-    case LGPLTab:
-      resourceName = LGPLDocumentResource;
-      break;
-    case BoostLicenseTab:
-      resourceName = boostLicenseDocumentResource;
-      break;
-    default:
-      break;
-  }
-  return resourceName;
-}
-  
 @end

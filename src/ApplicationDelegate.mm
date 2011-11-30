@@ -459,4 +459,59 @@ static ApplicationDelegate* sharedDelegate = nil;
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Loads the content of the text resource named @a resourceName.
+// -----------------------------------------------------------------------------
+- (NSString*) contentOfTextResource:(NSString*)resourceName
+{
+  if (! resourceName)
+    return @"";
+  NSURL* resourceURL = [[ApplicationDelegate sharedDelegate].resourceBundle URLForResource:resourceName
+                                                                             withExtension:nil];
+  NSStringEncoding usedEncoding;
+  NSError* error;
+  return [NSString stringWithContentsOfURL:resourceURL
+                              usedEncoding:&usedEncoding
+                                     error:&error];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps TabType values to resource file names. The name that is returned
+/// can be used with NSBundle to load the resource file's content.
+// -----------------------------------------------------------------------------
+- (NSString*) resourceNameForTabType:(enum TabType)tabType
+{
+  NSString* resourceName = nil;
+  switch (tabType)
+  {
+    case AboutTab:
+      resourceName = aboutDocumentResource;
+      break;
+    case SourceCodeTab:
+      resourceName = sourceCodeDocumentResource;
+      break;
+    case ApacheLicenseTab:
+      resourceName = apacheLicenseDocumentResource;
+      break;
+    case GPLTab:
+      resourceName = GPLDocumentResource;
+      break;
+    case LGPLTab:
+      resourceName = LGPLDocumentResource;
+      break;
+    case BoostLicenseTab:
+      resourceName = boostLicenseDocumentResource;
+      break;
+    case ReadmeTab:
+      resourceName = readmeDocumentResource;
+      break;
+    case ManualTab:
+      resourceName = manualDocumentResource;
+      break;
+    default:
+      break;
+  }
+  return resourceName;
+}
+
 @end

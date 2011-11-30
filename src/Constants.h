@@ -141,7 +141,9 @@ enum TabType
   ApacheLicenseTab,
   GPLTab,
   LGPLTab,
-  BoostLicenseTab
+  BoostLicenseTab,
+  ReadmeTab,
+  ManualTab
 };
 
 /// @brief Enumerates the supported board sizes.
@@ -381,6 +383,8 @@ extern NSString* apacheLicenseDocumentResource;
 extern NSString* GPLDocumentResource;
 extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
+extern NSString* readmeDocumentResource;
+extern NSString* manualDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
 //@}

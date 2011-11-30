@@ -22,11 +22,16 @@
 // -----------------------------------------------------------------------------
 /// @brief The DocumentViewController class is responsible for loading an HTML
 /// resource file and displaying its content in the associated UIWebview object.
+/// Alternatively, a client may provide the HTML document content as a string to
+/// DocumentViewController upon creation.
 ///
 /// The GUI has a number of web views that display different documents such as
-/// the "About" information document. DocumentViewController recognizes which
-/// document it is supposed to load by examining the tag property of its
-/// associated view.
+/// the "About" information document. If DocumentViewController is instantiated
+/// from a .nib file, it recognizes which document it is supposed to load by
+/// examining the tag property of its associated view.
+///
+/// If DocumentViewController is instantiated via its convenience constructor,
+/// it just displays the provided HTML document.
 ///
 /// @todo Research how much memory this controller and its associated view are
 /// using. If possible, try to reduce the memory requirements (e.g. only create
@@ -36,6 +41,8 @@
 @interface DocumentViewController : UIViewController<UIWebViewDelegate>
 {
 }
+
++ (DocumentViewController*) controllerWithTitle:(NSString*)title htmlString:(NSString*)htmlString;
 
 /// @brief The view that this DocumentViewController is responsible for.
 @property(nonatomic, retain) IBOutlet UIWebView* webView;
