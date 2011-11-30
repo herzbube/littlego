@@ -261,7 +261,7 @@ enum ViewSectionItem
           cell.textLabel.text = placeStoneUnderFingerText;
           cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
           cell.textLabel.numberOfLines = 0;
-          accessoryView.on = (self.playViewModel.crossHairPointDistanceFromFinger == 0);
+          accessoryView.on = self.playViewModel.placeStoneUnderFinger;
           [accessoryView addTarget:self action:@selector(togglePlaceStoneUnderFinger:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -363,17 +363,7 @@ enum ViewSectionItem
 - (void) togglePlaceStoneUnderFinger:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  bool shouldPlaceStoneUnderFinger = accessoryView.on ? true : false;
-  if (shouldPlaceStoneUnderFinger)
-    self.playViewModel.crossHairPointDistanceFromFinger = 0;
-  else
-  {
-    // This works only because crossHairPointDefaultDistanceFromFinger is NOT 0.
-    // If the implementation of this user preference is changed from a toggling
-    // switch to a slider, the restriction on the constant is no longer
-    // necessary and its documentation should be updated.
-    self.playViewModel.crossHairPointDistanceFromFinger = crossHairPointDefaultDistanceFromFinger;
-  }
+  self.playViewModel.placeStoneUnderFinger = accessoryView.on;
 }
 
 @end

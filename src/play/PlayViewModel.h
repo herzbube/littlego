@@ -42,6 +42,6 @@
 @property(nonatomic, assign) int starPointRadius;
 @property(nonatomic, assign) float stoneRadiusPercentage;
 @property(nonatomic, retain) UIColor* crossHairColor;
-@property(nonatomic, assign) int crossHairPointDistanceFromFinger;
+@property(nonatomic, assign) bool placeStoneUnderFinger;
 
 @end

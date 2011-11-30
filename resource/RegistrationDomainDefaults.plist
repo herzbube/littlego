@@ -36,8 +36,8 @@
 		<real>0.9</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
-		<key>CrossHairPointDistanceFromFinger</key>
-		<string>2</string>
+		<key>PlaceStoneUnderFinger</key>
+		<false/>
 	</dict>
 	<key>NewGame</key>
 	<dict>

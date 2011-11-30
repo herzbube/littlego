@@ -25,6 +25,7 @@
 // -----------------------------------------------------------------------------
 //@{
 NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
+NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -113,13 +114,21 @@ NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
+  NSMutableDictionary* playViewDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:playViewKey]];
   // No longer used, inner margin is now calculated depending on the board size
-  [userDefaults removeObjectForKey:boardInnerMarginPercentageKey];
+  [playViewDictionary removeObjectForKey:boardInnerMarginPercentageKey];
+  // No longer used, distance is now calculated dynamically by PlayView
+  [playViewDictionary removeObjectForKey:crossHairPointDistanceFromFingerKey];
+  // New user preference
+  [playViewDictionary setValue:[NSNumber numberWithBool:NO] forKey:placeStoneUnderFingerKey];
+  [userDefaults setObject:playViewDictionary forKey:playViewKey];
+  
   // Remove all user-defined players. The registration domain defaults nicely
   // demonstrate how players and GTP engine profiles can be combined, and it's
   // too complicated to upgrade user-defined players and still show useful
   // combinations.
   [userDefaults removeObjectForKey:playerListKey];
+
   // Remove all scoring user defaults. Too many changes in this dictionary,
   // and only 2 beta-testers are affected by the loss of 2 keys.
   [userDefaults removeObjectForKey:scoringKey];

@@ -94,6 +94,7 @@
 /// @name Private helpers
 //@{
 - (void) updateDrawParametersForRect:(CGRect)rect;
+- (void) updateCrossHairPointDistanceFromFinger;
 - (void) delayedUpdate;
 //@}
 /// @name Dynamically calculated properties
@@ -112,6 +113,7 @@
 @property(nonatomic, assign) int pointDistance;
 @property(nonatomic, assign) int lineLength;
 @property(nonatomic, assign) int stoneRadius;
+@property(nonatomic, assign) float crossHairPointDistanceFromFinger;
 //@}
 /// @name Other privately declared properties
 //@{
@@ -146,6 +148,7 @@
 
 @synthesize crossHairPoint;
 @synthesize crossHairPointIsLegalMove;
+@synthesize crossHairPointDistanceFromFinger;
 
 @synthesize actionsInProgress;
 @synthesize updatesWereDelayed;
@@ -174,6 +177,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
+  [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
 
   self.statusLine = nil;
@@ -221,6 +225,7 @@ static PlayView* sharedPlayView = nil;
 
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
+  self.crossHairPointDistanceFromFinger = 0;
 
   self.actionsInProgress = 0;
   self.updatesWereDelayed = false;
@@ -239,7 +244,11 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"placeStoneUnderFinger" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
+  
+  // One-time initialization
+  [self updateCrossHairPointDistanceFromFinger];
 }
 
 // -----------------------------------------------------------------------------
@@ -367,6 +376,46 @@ static PlayView* sharedPlayView = nil;
   self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
 
   self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates self.crossHairPointDistanceFromFinger.
+///
+/// The calculation performed by this method depends on the following input
+/// parameters:
+/// - The value of the "place stone under fingertip" user preference
+/// - The current board size
+// -----------------------------------------------------------------------------
+- (void) updateCrossHairPointDistanceFromFinger
+{
+  if (self.playViewModel.placeStoneUnderFinger)
+  {
+    self.crossHairPointDistanceFromFinger = 0;
+  }
+  else
+  {
+    GoGame* game = [GoGame sharedGame];
+    float scaleFactor;
+    if (! game)
+      scaleFactor = 1.0;
+    else
+    {
+      // Distance from fingertip should scale with board size. The base for
+      // calculating the scale factor is the minimum board size.
+      int minBoardDimension = [GoBoard dimensionForSize:BoardSizeMin];
+      int currentBoardDimension = game.board.dimensions;
+      scaleFactor = 1.0 * currentBoardDimension / minBoardDimension;
+      // Straight scaling results in a scale factor that is too large for big
+      // boards, so we tune down the scale a little bit. The factor of 0.75 has
+      // been determined experimentally.
+      scaleFactor *= 0.75;
+      // The final scale factor must not drop below 1 because we don't want to
+      // get lower than crossHairPointDistanceFromFingerOnSmallestBoard.
+      if (scaleFactor < 1.0)
+        scaleFactor = 1.0;
+    }
+    self.crossHairPointDistanceFromFinger = crossHairPointDistanceFromFingerOnSmallestBoard * scaleFactor;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -985,6 +1034,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goGameNewCreated:(NSNotification*)notification
 {
+  [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [self delayedUpdate];
 }
 
@@ -1056,10 +1106,18 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == self.scoringModel && ! self.scoringModel.scoringMode)
-    return;
-  // TODO check if it's possible to update only specific parts of the view
-  [self delayedUpdate];
+  if (object == self.scoringModel)
+  {
+    if (self.scoringModel.scoringMode)
+      [self delayedUpdate];
+  }
+  else if (object == self.playViewModel)
+  {
+    if ([keyPath isEqualToString:@"placeStoneUnderFinger"])
+      [self updateCrossHairPointDistanceFromFinger];
+    else
+      [self delayedUpdate];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1068,8 +1126,9 @@ static PlayView* sharedPlayView = nil;
 /// intersection.
 ///
 /// Determining "closest" works like this:
-/// - @a coordinates are slightly adjusted so that the intersection is not
-///   directly under the user's fingertip
+/// - If the user has turned this on in the preferences, @a coordinates are
+///   slightly adjusted so that the intersection is not directly under the
+///   user's fingertip
 /// - Otherwise the same rules as for pointAt:() apply - see that method's
 ///   documentation.
 // -----------------------------------------------------------------------------
@@ -1077,7 +1136,7 @@ static PlayView* sharedPlayView = nil;
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
-  coordinates.y -= self.playViewModel.crossHairPointDistanceFromFinger * self.pointDistance;
+  coordinates.y -= self.crossHairPointDistanceFromFinger * self.pointDistance;
   return [self pointAt:coordinates];
 }
 

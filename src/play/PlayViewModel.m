@@ -48,7 +48,7 @@
 @synthesize starPointRadius;
 @synthesize stoneRadiusPercentage;
 @synthesize crossHairColor;
-@synthesize crossHairPointDistanceFromFinger;
+@synthesize placeStoneUnderFinger;
 
 
 // -----------------------------------------------------------------------------
@@ -78,7 +78,7 @@
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 1.0;
   self.crossHairColor = [UIColor greenColor];
-  self.crossHairPointDistanceFromFinger = crossHairPointDefaultDistanceFromFinger;
+  self.placeStoneUnderFinger = false;
 
   return self;
 }
@@ -118,7 +118,7 @@
   self.starPointRadius = [[dictionary valueForKey:starPointRadiusKey] intValue];
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
-  self.crossHairPointDistanceFromFinger = [[dictionary valueForKey:crossHairPointDistanceFromFingerKey] intValue];
+  self.placeStoneUnderFinger = [[dictionary valueForKey:placeStoneUnderFingerKey] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -147,7 +147,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:starPointRadiusKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.crossHairPointDistanceFromFinger] forKey:crossHairPointDistanceFromFingerKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.placeStoneUnderFinger] forKey:placeStoneUnderFingerKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];

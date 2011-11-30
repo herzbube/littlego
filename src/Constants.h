@@ -24,15 +24,10 @@
 /// @brief The value of this constant should be added to all drawing operations'
 /// parameters to prevent anti-aliasing. See README.developer for details.
 extern const float gHalfPixel;
-/// @brief How far from the fingertip the cross-hair point should be displayed
-/// by default when placing stones on the Play view. The unit used by this
-/// constant is "distances between two adjacent intersections".
-///
-/// The value of this constant must be greater than zero. This allows a simple
-/// UISwitch in the user preferences view to toggle between "directly under the
-/// finger" (cross-hair point distance from the fingertip is 0) and "not
-/// directly under the finger" (the value of this constant).
-extern const int crossHairPointDefaultDistanceFromFinger;
+/// @brief On the smallest board size, how far from the fingertip should the
+/// cross-hair point be displayed when placing stones on the Play view. The unit
+/// used by this constant is "distances between two adjacent intersections".
+extern const int crossHairPointDistanceFromFingerOnSmallestBoard;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -413,7 +408,7 @@ extern NSString* starPointColorKey;
 extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* crossHairColorKey;
-extern NSString* crossHairPointDistanceFromFingerKey;
+extern NSString* placeStoneUnderFingerKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* boardSizeKey;

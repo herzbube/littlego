@@ -17,7 +17,7 @@
 
 // GUI constants
 const float gHalfPixel = 0.5;
-const int crossHairPointDefaultDistanceFromFinger = 2;
+const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 
 // Go constants
 const enum GoBoardSize gDefaultBoardSize = BoardSize19;
@@ -115,7 +115,7 @@ NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
-NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
+NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 // New game settings
 NSString* newGameKey = @"NewGame";
 NSString* boardSizeKey = @"BoardSize";
