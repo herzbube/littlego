@@ -105,9 +105,8 @@
 //@{
 /// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
-/// @brief The gesture recognizer used to detect the dragging, or panning,
-/// gesture.
-@property(nonatomic, retain) UIPanGestureRecognizer* panRecognizer;
+/// @brief The gesture recognizer used to detect the long-press gesture.
+@property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
 /// @brief The gesture recognizer used to detect the tap gesture.
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a panning gesture is currently allowed, false if not (e.g.
@@ -140,7 +139,7 @@
 @synthesize gameActionsButton;
 @synthesize doneButton;
 @synthesize scoringModel;
-@synthesize panRecognizer;
+@synthesize longPressRecognizer;
 @synthesize tapRecognizer;
 @synthesize panningEnabled;
 @synthesize tappingEnabled;
@@ -157,7 +156,7 @@
   self.backSideView = nil;
   self.playView = nil;
   self.scoringModel = nil;
-  self.panRecognizer = nil;
+  self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
   [super dealloc];
@@ -178,11 +177,13 @@
   self.panningEnabled = false;
   self.tappingEnabled = false;
 
-	self.panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
-	[self.panRecognizer release];
-	[self.playView addGestureRecognizer:self.panRecognizer];
-  self.panRecognizer.delegate = self;
-  self.panRecognizer.maximumNumberOfTouches = 1;
+  self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
+	[self.longPressRecognizer release];
+	[self.playView addGestureRecognizer:self.longPressRecognizer];
+  self.longPressRecognizer.delegate = self;
+  self.longPressRecognizer.minimumPressDuration = 0;  // place stone immediately
+  CGFloat infiniteMovement = CGFLOAT_MAX;
+  self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
 
   self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
 	[self.tapRecognizer release];
@@ -228,7 +229,8 @@
   self.backSideView = nil;
   self.playView = nil;
   self.scoringModel = nil;
-  self.panRecognizer = nil;
+  self.longPressRecognizer = nil;
+  self.tapRecognizer = nil;
   self.gameInfoScore = nil;
 }
 
@@ -455,7 +457,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  if (gestureRecognizer == self.panRecognizer)
+  if (gestureRecognizer == self.longPressRecognizer)
     return self.isPanningEnabled;
   else if (gestureRecognizer == self.tapRecognizer)
     return self.isTappingEnabled;
