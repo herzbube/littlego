@@ -20,8 +20,11 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../go/GoBoard.h"
 #import "../go/GoGame.h"
+#import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
+#import "../go/GoPoint.h"
 #import "../go/GoScore.h"
+#import "../go/GoVertex.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
 
@@ -44,6 +47,8 @@ enum GameInfoTableViewSection
 enum GameStateSectionItem
 {
   GameStateItem,
+  LastMoveItem,
+  NextMoveItem,
   MaxGameStateSectionItem
 };
 
@@ -214,7 +219,10 @@ enum MoveStatisticsSectionItem
   switch (section)
   {
     case GameStateSection:
-      return MaxGameStateSectionItem;
+      if (GameHasEnded != [GoGame sharedGame].state)
+        return MaxGameStateSectionItem;
+      else
+        return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
     case ScoreSection:
       return MaxScoreSectionItem;
     case GameInfoSection:
@@ -260,27 +268,142 @@ enum MoveStatisticsSectionItem
   {
     case GameStateSection:
     {
-      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-      switch (game.state)
+      switch (indexPath.row)
       {
-        case GameHasNotYetStarted:
+        case GameStateItem:
         {
-          cell.textLabel.text = @"Game has not yet started";
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"State";
+          switch (game.state)
+          {
+            case GameHasNotYetStarted:
+            {
+              cell.detailTextLabel.text = @"Game has not yet started";
+              break;
+            }
+            case GameHasStarted:
+            {
+              cell.detailTextLabel.text = @"Game is in progress";
+              break;
+            }
+            case GameIsPaused:
+            {
+              cell.detailTextLabel.text = @"Game is paused";
+              break;
+            }
+            case GameHasEnded:
+            {
+              cell.detailTextLabel.text = @"Game has ended";
+              break;
+            }
+            default:
+            {
+              assert(0);
+              break;
+            }
+          }
           break;
         }
-        case GameHasStarted:
+        case LastMoveItem:
         {
-          cell.textLabel.text = @"Game is in progress";
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          NSString* colorOfCurrentPlayer;
+          NSString* colorOfOtherPlayer;
+          if (game.currentPlayer.isBlack)
+          {
+            colorOfCurrentPlayer = @"Black";
+            colorOfOtherPlayer = @"White";
+          }
+          else
+          {
+            colorOfCurrentPlayer = @"White";
+            colorOfOtherPlayer = @"Black";
+          }
+          if (GameHasEnded == game.state)
+          {
+            cell.textLabel.text = @"Reason";
+            switch (game.reasonForGameHasEnded)
+            {
+              case GoGameHasEndedReasonTwoPasses:
+              {
+                cell.detailTextLabel.text = @"Both players passed";
+                break;
+              }
+              case GoGameHasEndedReasonResigned:
+              {
+                cell.detailTextLabel.text = [colorOfCurrentPlayer stringByAppendingString:@" resigned"];
+                break;
+              }
+              default:
+              {
+                cell.detailTextLabel.text = @"Unknown";
+                assert(0);
+                break;
+              }
+            }
+          }
+          else
+          {
+            cell.textLabel.text = @"Last move";
+            switch (game.state)
+            {
+              case GameHasNotYetStarted:
+              {
+                cell.detailTextLabel.text = @"None";
+                break;
+              }
+              case GameHasStarted:
+              case GameIsPaused:
+              {
+                GoMove* lastMove = game.lastMove;
+                if (! lastMove)
+                {
+                  cell.detailTextLabel.text = @"None";  // all moves were taken back with undo
+                }
+                else
+                {
+                  switch (lastMove.type)
+                  {
+                    case PlayMove:
+                    {
+                      cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ played at %@",
+                                                   colorOfOtherPlayer,
+                                                   lastMove.point.vertex.string];
+                      break;
+                    }
+                    case PassMove:
+                    {
+                      cell.detailTextLabel.text = [colorOfOtherPlayer stringByAppendingString:@" passed"];
+                      break;
+                    }
+                    default:
+                    {
+                      cell.detailTextLabel.text = @"n/a";
+                      assert(0);
+                      break;
+                    }
+                  }
+                }
+                break;
+              }
+              default:
+              {
+                cell.detailTextLabel.text = @"n/a";
+                assert(0);
+                break;
+              }
+            }
+          }
           break;
         }
-        case GameIsPaused:
+        case NextMoveItem:
         {
-          cell.textLabel.text = @"Game is paused";
-          break;
-        }
-        case GameHasEnded:
-        {
-          cell.textLabel.text = @"Game has ended";
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Next move";
+          if (game.currentPlayer.isBlack)
+            cell.detailTextLabel.text = @"Black";
+          else
+            cell.detailTextLabel.text = @"White";
           break;
         }
         default:

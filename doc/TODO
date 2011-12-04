@@ -83,7 +83,11 @@ Priority 2 (nice to have)
   - Testability is sub-optimal. With the current implementation, test cases have
     to care about tearing down a GoGame instance before they can set up the
     next instance (similar to ApplicationDelegate)
-- Add more preferences to tune Fuego (e.g. time limit for moves)
+- Add more preferences to tune Fuego
+  - uct_param_player max_ponder_time xxx (has influence on how much memory can
+    be used, mention this in the MANUAL)
+  - Also nice would be a maximum time limit for its moves (without implementing
+    the whole system for time-based play)
 - Add a "swap players" option to the "new game" view
 - When a new game is started, the request to confirm if the old game can be
   discarded should not appear based on the GoGameState; instead it should
@@ -117,6 +121,11 @@ Priority 2 (nice to have)
   of a UITextView based input view that can serve as an example.
 - Display a message in the status line when the previous player has passed
   (currently works only for the computer player)
+- On startup try to find out if the app was killed because it used too much
+  memory. If this is the case, make sure that the app is not immediately killed
+  again because of the same problem. E.g. check which profile was active when
+  the app was killed, then temporarily lower max. memory. Don't forget to notify
+  the user.
 
 
 Priority 3 (not important)
