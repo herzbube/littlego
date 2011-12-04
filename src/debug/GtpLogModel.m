@@ -109,7 +109,9 @@
 
   self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
   [dateFormatter setLocale:[NSLocale currentLocale]];
-  [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+  // Use medium format so that we can see seconds - this way we can better
+  // gauge how long the engine takes for calculating its moves.
+  [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
   [dateFormatter setDateStyle:NSDateFormatterShortStyle];
 
   return self;
