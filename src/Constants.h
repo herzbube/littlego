@@ -131,14 +131,10 @@ enum TabType
   SettingsTab,
   ArchiveTab,
   DebugTab,
+  ManualTab,
   AboutTab,
   SourceCodeTab,
-  ApacheLicenseTab,
-  GPLTab,
-  LGPLTab,
-  BoostLicenseTab,
-  ReadmeTab,
-  ManualTab
+  LicensesTab
 };
 
 /// @brief Enumerates the supported board sizes.

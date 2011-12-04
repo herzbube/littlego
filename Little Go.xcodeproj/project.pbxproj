@@ -25,6 +25,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
+		CD00A353148C020B004E1A0C /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A352148C0206004E1A0C /* LicensesViewController.m */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -199,6 +200,8 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765070DF74369002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
+		CD00A351148C0202004E1A0C /* LicensesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LicensesViewController.h; sourceTree = "<group>"; };
+		CD00A352148C0206004E1A0C /* LicensesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LicensesViewController.m; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -789,6 +792,8 @@
 				CDA264AB132CF7EF00FAFC51 /* Constants.m */,
 				CD3AE7501344FBD100B58E08 /* DocumentViewController.h */,
 				CD3AE7511344FBD100B58E08 /* DocumentViewController.m */,
+				CD00A351148C0202004E1A0C /* LicensesViewController.h */,
+				CD00A352148C0206004E1A0C /* LicensesViewController.m */,
 				CDEC283112F477360069F5B7 /* main.m */,
 				CDEC282E12F477360069F5B7 /* Prefix.pch */,
 				CDDD526B1485C1640027476B /* SectionedDocumentViewController.h */,
@@ -1100,6 +1105,7 @@
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDDD526D1485C1720027476B /* SectionedDocumentViewController.m in Sources */,
+				CD00A353148C020B004E1A0C /* LicensesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

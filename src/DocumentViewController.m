@@ -46,6 +46,7 @@
 //@{
 @property(nonatomic, retain) NSString* titleString;
 @property(nonatomic, retain) NSString* htmlString;
+@property(nonatomic, retain) NSString* resourceName;
 //@}
 @end
 
@@ -55,6 +56,7 @@
 @synthesize webView;
 @synthesize titleString;
 @synthesize htmlString;
+@synthesize resourceName;
 
 
 // -----------------------------------------------------------------------------
@@ -70,6 +72,25 @@
     [controller autorelease];
     controller.titleString = title;
     controller.htmlString = htmlString;
+    controller.resourceName = nil;
+  }
+  return controller;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a DocumentViewController instance
+/// that displays @a title in its navigation item and the content of the
+/// resource named @a resourceName in its web view.
+// -----------------------------------------------------------------------------
++ (DocumentViewController*) controllerWithTitle:(NSString*)title resourceName:(NSString*)resourceName
+{
+  DocumentViewController* controller = [[DocumentViewController alloc] initWithNibName:@"DocumentView" bundle:nil];
+  if (controller)
+  {
+    [controller autorelease];
+    controller.titleString = title;
+    controller.htmlString = nil;
+    controller.resourceName = resourceName;
   }
   return controller;
 }
@@ -80,6 +101,9 @@
 - (void) dealloc
 {
   self.webView = nil;
+  self.titleString = nil;
+  self.htmlString = nil;
+  self.resourceName = nil;
   [super dealloc];
 }
 
@@ -87,8 +111,8 @@
 /// @brief Called after the controller’s view is loaded into memory, usually
 /// to perform additional initialization steps.
 ///
-/// This implementation triggers loading of the content of the HTML resource
-/// file into the UIWebView associatd with this controller.
+/// This implementation triggers loading of the HTML content into the UIWebView
+/// associated with this controller.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
@@ -96,17 +120,23 @@
 
   self.webView.delegate = self;
 
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (self.titleString)
   {
     self.title = titleString;
-    [self.webView loadHTMLString:htmlString baseURL:nil];
+    if (self.htmlString)
+      [self.webView loadHTMLString:htmlString baseURL:nil];
+    else
+    {
+      NSString* resourceContent = [appDelegate contentOfTextResource:self.resourceName];
+      [self.webView loadHTMLString:resourceContent baseURL:nil];
+    }
   }
   else
   {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     NSInteger tabType = self.tabBarItem.tag;
-    NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
-    NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
+    NSString* resourceNameForTabType = [appDelegate resourceNameForTabType:tabType];
+    NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
     switch (tabType)
     {
       case AboutTab:

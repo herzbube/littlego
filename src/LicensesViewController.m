@@ -16,18 +16,38 @@
 
 
 // Project includes
-#import "SectionedDocumentViewController.h"
+#import "LicensesViewController.h"
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
-#import "utility/DocumentGenerator.h"
 #import "ui/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
-/// SectionedDocumentViewController.
+/// @brief Enumerates the sections presented in the "Licenses" table view.
 // -----------------------------------------------------------------------------
-@interface SectionedDocumentViewController()
+enum LicensesTableViewSection
+{
+  LicensesSection,
+  MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the LicensesSection.
+// -----------------------------------------------------------------------------
+enum LicensesSectionItem
+{
+  ApacheLicenseItem,
+  GPLItem,
+  LGPLItem,
+  BoostLicenseItem,
+  MaxLicensesSectionItem
+};
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for LicensesViewController.
+// -----------------------------------------------------------------------------
+@interface LicensesViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -49,27 +69,22 @@
 //@}
 /// @name Private helpers
 //@{
-- (void) viewSectionAtIndex:(int)sectionIndex;
-//@}
-/// @name Privately declared properties
-//@{
-@property(nonatomic, retain) DocumentGenerator* documentGenerator;
+- (void) viewLicenseForRow:(int)row;
+- (NSString*) licenseTitleForRow:(int)row;
+- (NSString*) licenseResourceNameForRow:(int)row;
 //@}
 @end
 
 
-@implementation SectionedDocumentViewController
-
-@synthesize documentGenerator;
+@implementation LicensesViewController
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this SectionedDocumentViewController
+/// @brief Deallocates memory allocated by this LicensesViewController
 /// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.documentGenerator = nil;
   [super dealloc];
 }
 
@@ -80,21 +95,6 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NSInteger tabType = self.tabBarItem.tag;
-  NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
-  NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
-  switch (tabType)
-  {
-    case ManualTab:
-      self.documentGenerator = [[DocumentGenerator alloc] initWithFileContent:resourceContent];
-      break;
-    default:
-      assert(0);
-      self.documentGenerator = nil;
-      return;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -115,7 +115,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 1;
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -123,7 +123,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return [self.documentGenerator numberOfSections];
+  return MaxLicensesSectionItem;
 }
 
 // -----------------------------------------------------------------------------
@@ -132,7 +132,7 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [self.documentGenerator sectionTitle:indexPath.row];
+  cell.textLabel.text = [self licenseTitleForRow:indexPath.row];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
 }
@@ -143,19 +143,94 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewSectionAtIndex:indexPath.row];
+  [self viewLicenseForRow:indexPath.row];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Displays DocumentViewController with the content of the section at
 /// index position @a sectionIndex.
 // -----------------------------------------------------------------------------
-- (void) viewSectionAtIndex:(int)sectionIndex
+- (void) viewLicenseForRow:(int)row
 {
-  NSString* sectionTitle = [self.documentGenerator sectionTitle:sectionIndex];
-  NSString* sectionContent = [self.documentGenerator sectionContent:sectionIndex];
-  DocumentViewController* controller = [DocumentViewController controllerWithTitle:sectionTitle htmlString:sectionContent];
+  NSString* licenseTitle = [self licenseTitleForRow:row];
+  NSString* licenseResourceName = [self licenseResourceNameForRow:row];
+  DocumentViewController* controller = [DocumentViewController controllerWithTitle:licenseTitle
+                                                                      resourceName:licenseResourceName];
   [self.navigationController pushViewController:controller animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a title string that describes the license displayed in table
+/// view row @a row.
+// -----------------------------------------------------------------------------
+- (NSString*) licenseTitleForRow:(int)row
+{
+  switch (row)
+  {
+    case ApacheLicenseItem:
+    {
+      return @"Apache License";
+      break;
+    }
+    case GPLItem:
+    {
+      return @"GPL";
+      break;
+    }
+    case LGPLItem:
+    {
+      return @"LGPL";
+      break;
+    }
+    case BoostLicenseItem:
+    {
+      return @"Boost License";
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a title string that describes the license displayed in table
+/// view row @a row.
+// -----------------------------------------------------------------------------
+- (NSString*) licenseResourceNameForRow:(int)row
+{
+  switch (row)
+  {
+    case ApacheLicenseItem:
+    {
+      return apacheLicenseDocumentResource;
+      break;
+    }
+    case GPLItem:
+    {
+      return GPLDocumentResource;
+      break;
+    }
+    case LGPLItem:
+    {
+      return LGPLDocumentResource;
+      break;
+    }
+    case BoostLicenseItem:
+    {
+      return boostLicenseDocumentResource;
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
+  return nil;
 }
 
 @end

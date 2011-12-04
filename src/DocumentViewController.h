@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
-
-
 // -----------------------------------------------------------------------------
 /// @brief The DocumentViewController class is responsible for loading an HTML
 /// resource file and displaying its content in the associated UIWebview object.
@@ -30,8 +26,9 @@
 /// from a .nib file, it recognizes which document it is supposed to load by
 /// examining the tag property of its associated view.
 ///
-/// If DocumentViewController is instantiated via its convenience constructor,
-/// it just displays the provided HTML document.
+/// If DocumentViewController is instantiated via one of its convenience
+/// constructors, it either just displays the provided HTML document, or loads
+/// and displays the resource named in the constructor.
 ///
 /// @todo Research how much memory this controller and its associated view are
 /// using. If possible, try to reduce the memory requirements (e.g. only create
@@ -43,6 +40,7 @@
 }
 
 + (DocumentViewController*) controllerWithTitle:(NSString*)title htmlString:(NSString*)htmlString;
++ (DocumentViewController*) controllerWithTitle:(NSString*)title resourceName:(NSString*)resourceName;
 
 /// @brief The view that this DocumentViewController is responsible for.
 @property(nonatomic, retain) IBOutlet UIWebView* webView;
