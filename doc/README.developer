@@ -6,26 +6,29 @@ project, and also me, after I come back to the project after several months
 or years :-)
 
 
-Short guide on how to build and run Little Go
----------------------------------------------
+Quick-start guide on how to build and run Little Go
+---------------------------------------------------
 1. Unpack the source tar ball or clone the Git repository (since you are
    reading this document you probably have done this already)
-2. Edit script/build-env.sh to match your development environment. For instance,
+2. Install Xcode 4 if you haven't done so already. With Xcode 4 the build should
+   work out of the box, earlier or later Xcode versions probably require some
+   tinkering.
+3. Edit script/build-env.sh to match your development environment. For instance,
    change the iOS Base SDK and deployment target versions.
-3. Launch Terminal.app and execute these commands:
+4. Launch Terminal.app and execute these commands:
      cd /path/to/littlego
      ./script/get-and-build-3rdparty-software.sh
-4. Wait until the script has downloaded and built all 3rdparty software packages
+5. Wait until the script has downloaded and built all 3rdparty software packages
    (see the section "3rdparty software build" further down for more details)
-5. Launch Xcode by opening "Little Go.xcodeproj"
-6. Change iOS Base SDK and deployment target versions to match your development
+6. Launch Xcode by opening "Little Go.xcodeproj"
+7. Change iOS Base SDK and deployment target versions to match your development
    environment
-7. Make sure that you have a scheme that configures the target "Little Go" to
+8. Make sure that you have a scheme that configures the target "Little Go" to
    use the build configuration "Debug"
-8. Select that scheme, and the destination "iPhone 4.2 Simulator", from the
+9. Select that scheme, and the destination "iPhone 4.2 Simulator", from the
    toolbar's scheme selector
-8. From the menu select Product > Run. The app should now be built in Debug
-   mode and launched inside the simulator.
+10. From the menu select Product > Run. The app should now be built in Debug
+    mode and launched inside the simulator.
 
 
 Folder structure
@@ -551,9 +554,11 @@ sufficient.
 
 Compilation command
 -------------------
-The following lines represent the command to compile a single .cpp file in
-Debug configuration for the iPhoneSimulator platform. Every line contains one
-compiler switch or command-line argument.
+TODO: Update this section for Xcode 4.
+
+The following lines represent the command used by Xcode 3 to compile a single
+.cpp file in Debug configuration for the iPhoneSimulator platform. Every line
+contains one compiler switch or command-line argument.
 
 /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2
 -x c++
@@ -726,6 +731,8 @@ The application's UI exposes a few GTP engine settings to the user. These are
 aggregated into a "profile" that can be attached to a computer player. The
 profile thus defines the playing strength/behaviour of the computer player.
 Aggregation of settings is implemented in the GtpEngineProfile class.
+
+Note: In the UI we always use the term "profile", not "GTP engine profile".
 
 Profile settings are applied to the GTP engine only when a new game is started.
 The reason for this is mainly laziness - if we do it this way we don't have to

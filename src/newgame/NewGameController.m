@@ -299,9 +299,9 @@ enum KomiSectionItem
   if (PlayersSection == section)
   {
     if ([self.blackPlayer isHuman] && [self.whitePlayer isHuman])
-      return @"None of the players is a computer player. The default GTP engine profile will be active during the game.";
+      return @"None of the players is a computer player. The default profile will be active during the game. See \"Settings > Players & Profiles\".";
     else if (! [self.blackPlayer isHuman] && ! [self.whitePlayer isHuman])
-      return @"Both players are computer players. The black player's GTP engine profile will be active during the game.";
+      return @"Both players are computer players. The black player's profile will be active during the game. See \"Settings > Players & Profiles\".";
   }
   return nil;
 }

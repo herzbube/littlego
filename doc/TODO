@@ -20,14 +20,6 @@ Priority 1 (important)
       -> extract logic and make all methods trivial
     - GoGame; the main problem here is that GoGame relies on GTP responses
       -> we need to substitute GTP client and engine with mock objects
-- Give back to Fuego
-  - information about how to build for iPhone
-  - fix for the configure problem
-  - improvements to the Autoconf/Automake configuration, i.e. optional creation
-    of a unified library and optional installation of headers
-  - Building against a release build of Fuego requires that the project needs
-    to set the NDEBUG preprocessor macro, even if the project wants to make
-    a debug build; this effectively prevents the use of assert()
 - Find out more about GTP engine settings. Using the knowledge gained,
   reconsider whether it still makes sense that GTP engine settings are applied
   only at the beginning of the game.
@@ -66,14 +58,8 @@ Priority 1 (important)
   - One possible idea: Only turn stones from alive to dead, but not vice versa
   - However the final solution looks like, update the GoScore class docs and
     possibly other doc snippets in GoScore.m
-- Fix the following build warnings
-  - [BWARN]warning: iPhone apps with a deployment target lower than 4.3 should
-    include an armv6 architecture (current IPHONEOS_DEPLOYMENT_TARGET = "4.2",
-    ARCHS = "armv7").
-  - ld: warning: direct access in __ZN5boost6system12system_errorD1Ev to global
-    weak symbol __ZTVN5boost6system12system_errorE means the weak symbol cannot
-    be overridden at runtime. This was likely caused by different translation
-    units being compiled with different visibility settings.
+- Fix the following issues
+  - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
 
 
 Priority 2 (nice to have)
@@ -129,6 +115,8 @@ Priority 2 (nice to have)
   whether to display a UITextView (for long texts) or a UITextField (for short
   texts). EditGtpEngineProfileController currently has a private implementation
   of a UITextView based input view that can serve as an example.
+- Display a message in the status line when the previous player has passed
+  (currently works only for the computer player)
 
 
 Priority 3 (not important)

@@ -249,7 +249,7 @@ enum GtpEngineProfileSectionItem
       if (self.player.isHuman)
         return nil;
       else
-        return @"GTP engine profile";
+        return @"Profile";
     default:
       assert(0);
       break;

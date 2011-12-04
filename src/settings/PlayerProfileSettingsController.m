@@ -250,7 +250,7 @@ enum GtpEngineProfilesSectionItem
     case PlayersSection:
       return @"Players";
     case GtpEngineProfilesSection:
-      return @"GTP engine profiles";
+      return @"Profiles";
     default:
       assert(0);
       break;
@@ -266,7 +266,7 @@ enum GtpEngineProfilesSectionItem
   if (PlayersSection == section)
     return @"Players that are participating in the current game cannot be deleted.";
   else if (GtpEngineProfilesSection == section)
-    return @"A GTP engine profile is a collection of technical settings that define how the GTP engine behaves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default profile cannot be deleted.";
+    return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default profile cannot be deleted.";
   else
     return nil;
 }

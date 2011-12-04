@@ -265,7 +265,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // is probably going to be terminated in a moment.
   UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Low Memory"
                                                   message:@"Little Go uses too much memory, it may be terminated by the system in a moment!\n\n"
-                                                           " Consider lowering the computer player's memory consumption (Settings > GTP engine profiles)"
+                                                           " Consider lowering the computer player's memory consumption (Settings > Players & Profiles)"
                                                            " to prevent this warning from appearing in the future."
                                                  delegate:nil
                                         cancelButtonTitle:nil

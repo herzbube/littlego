@@ -619,6 +619,6 @@ Almost certainly the cause for this is that the currently active computer player
 profile has a "Maximum memory" value that is too high. You should find out which
 computer player is currently active (on the "Play" tab select the game info
 toolbar button), then go to that player's profile (under
-"Settings > GTP engine profiles") and lower the value for the "Maximum memory"
+"Settings > Players & Profiles") and lower the value for the "Maximum memory"
 setting. A value of 32 MB should be OK even for older devices such as an
 iPhone 3GS.
