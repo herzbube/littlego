@@ -123,6 +123,12 @@
 // -----------------------------------------------------------------------------
 - (void) parseFileContent:(NSString*)fileContent
 {
+  NSDataDetector* urlDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+  fileContent = [urlDetector stringByReplacingMatchesInString:fileContent
+                                                      options:0
+                                                        range:NSMakeRange(0, fileContent.length)
+                                                 withTemplate:@"<a href=\"$0\">$0</a>"];
+
   bool useNextLineAsSectionTitle = false;
   bool ignoreNextLineIfItIsSectionSeparator = false;
   NSString* sectionTitle = nil;
