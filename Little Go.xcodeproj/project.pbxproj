@@ -24,6 +24,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
+		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -197,6 +198,7 @@
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765070DF74369002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -800,6 +802,7 @@
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CDD48C62140EE7D000188B6A /* Features */,
+				CD00A34D1487F9CF004E1A0C /* MANUAL */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
@@ -967,6 +970,7 @@
 				CD721FD31460C174005EAC65 /* tabular.png in Resources */,
 				CD721FD41460C174005EAC65 /* tabular@2x.png in Resources */,
 				CD72205D14620C3A005EAC65 /* GameInfoView.xib in Resources */,
+				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -123,44 +123,61 @@
 // -----------------------------------------------------------------------------
 - (void) parseFileContent:(NSString*)fileContent
 {
-  bool firstSectionFound = false;
-  NSString* previousFileContentLine = nil;
+  bool useNextLineAsSectionTitle = false;
+  bool ignoreNextLineIfItIsSectionSeparator = false;
+  NSString* sectionTitle = nil;
   NSMutableArray* sectionContentLines = [NSMutableArray arrayWithCapacity:0];
+  
   NSArray* fileContentLines = [fileContent componentsSeparatedByString:@"\n"];
   for (NSString* fileContentLine in fileContentLines)
   {
     if ([fileContentLine hasPrefix:@"---"])
     {
-      NSString* sectionTitle;
-      if (! previousFileContentLine)
-        sectionTitle = @"Section foo";  // we have no real section title if the very first line in the file is a separator
-      else
-        sectionTitle = previousFileContentLine;
-      [self.sectionTitles addObject:sectionTitle];
-
-      if (! firstSectionFound)
-        firstSectionFound = true;
+      if (ignoreNextLineIfItIsSectionSeparator)
+      {
+        // ignore the line as requested
+      }
       else
       {
-        [sectionContentLines removeLastObject];  // last object is the title of the new section
-        NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
-        [self.sectionContents addObject:sectionContent];
-        [sectionContentLines removeAllObjects];
+        useNextLineAsSectionTitle = true;
+
+        if (sectionTitle)
+        {
+          // Ignore some sections with special titles
+          if (! [sectionTitle isEqualToString:@"Table of Contents"] &&
+              ! [sectionTitle isEqualToString:@"Purpose of this document"])
+          {
+            // Remember section title
+            [self.sectionTitles addObject:sectionTitle];
+            // Parse section content & remember parsed content
+            NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
+            [self.sectionContents addObject:sectionContent];
+          }
+          // Prepare for next section
+          sectionTitle = nil;
+          [sectionContentLines removeAllObjects];
+        }
       }
+    }
+    else if (useNextLineAsSectionTitle)
+    {
+      sectionTitle = fileContentLine;
+      useNextLineAsSectionTitle = false;
+      ignoreNextLineIfItIsSectionSeparator = true;
     }
     else
     {
-      if (firstSectionFound)
-        [sectionContentLines addObject:fileContentLine];
+      if (ignoreNextLineIfItIsSectionSeparator)
+        ignoreNextLineIfItIsSectionSeparator = false;
+      [sectionContentLines addObject:fileContentLine];
     }
-    previousFileContentLine = fileContentLine;
   }
-  if (firstSectionFound)
+  // Post-processing for last section in file
+  if (sectionTitle)
   {
-    [sectionContentLines removeLastObject];  // last object is the title of the new section
+    [self.sectionTitles addObject:sectionTitle];
     NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
     [self.sectionContents addObject:sectionContent];
-    [sectionContentLines removeAllObjects];
   }
 }
 
@@ -179,26 +196,145 @@
 {
   NSCharacterSet* whitespaceCharacterSet = [NSCharacterSet whitespaceCharacterSet];
 
-  // Initial value true causes leading empty lines to be skipped
-  bool previousLineWasEmptyLine = true;
-  NSString* sectionContent = @"<p>";
+  bool paragraphHasStarted = false;
+  bool listHasStarted = false;
+  bool listIsUnnumbered = true;
+  bool listItemHasStarted = false;
+  bool useNextLineAsSubsectionTitle = false;
+  bool ignoreNextLineIfItIsSubsectionSeparator = false;
+
+  NSString* sectionContent = @"";
   for (NSString* sectionContentLine in sectionContentLines)
   {
     sectionContentLine = [sectionContentLine stringByTrimmingCharactersInSet:whitespaceCharacterSet];
     if (0 == sectionContentLine.length)
     {
-      // Collapse multiple empty lines into one paragraph
-      if (! previousLineWasEmptyLine)
-        sectionContent = [sectionContent stringByAppendingString:@"</p><p>"];
-      previousLineWasEmptyLine = true;
+      // An empty line closes a previously opened paragraph or list, but does
+      // nothing if there is no list or paragraph open. This approach has the
+      // following effects:
+      // - Multiple empty lines in a row are "collapsed" into one
+      // - Empty lines at the beginning of the section are ignored
+      // - Empty lines after a subsection title are ignored
+      if (paragraphHasStarted)
+      {
+        paragraphHasStarted = false;
+        sectionContent = [sectionContent stringByAppendingString:@"</p>"];
+      }
+      else if (listHasStarted)
+      {
+        listHasStarted = false;
+        listItemHasStarted = false;
+        sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+        if (listIsUnnumbered)
+          sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
+        else
+          sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
+      }
     }
     else
     {
-      sectionContent = [NSString stringWithFormat:@"%@ %@", sectionContent, sectionContentLine];
-      previousLineWasEmptyLine = false;
+      if ([sectionContentLine hasPrefix:@"==="])
+      {
+        if (ignoreNextLineIfItIsSubsectionSeparator)
+        {
+          // ignore the line as requested
+        }
+        else
+        {
+          useNextLineAsSubsectionTitle = true;
+        }
+      }
+      else if (useNextLineAsSubsectionTitle)
+      {
+        useNextLineAsSubsectionTitle = false;
+        ignoreNextLineIfItIsSubsectionSeparator = true;
+        if (listHasStarted)
+        {
+          listHasStarted = false;
+          listItemHasStarted = false;
+          sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+          if (listIsUnnumbered)
+            sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
+          else
+            sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
+        }
+        else if (paragraphHasStarted)
+        {
+          paragraphHasStarted = false;
+          sectionContent = [sectionContent stringByAppendingString:@"</p>"];
+        }
+        sectionContent = [sectionContent stringByAppendingFormat:@"<p class=\"section-header\">%@</p>",
+                          sectionContentLine];
+      }
+      else
+      {
+        ignoreNextLineIfItIsSubsectionSeparator = false;
+
+        if ([sectionContentLine hasPrefix:@"- "] || [sectionContentLine hasPrefix:@"1. "])
+        {
+          if (paragraphHasStarted)
+          {
+            paragraphHasStarted = false;
+            sectionContent = [sectionContent stringByAppendingString:@"</p>"];
+          }
+          if ([sectionContentLine hasPrefix:@"- "])
+          {
+            listIsUnnumbered = true;
+            sectionContentLine = [sectionContentLine stringByReplacingCharactersInRange:NSMakeRange(0, 2) withString:@""];
+          }
+          else
+          {
+            listIsUnnumbered = false;
+            sectionContentLine = [sectionContentLine stringByReplacingCharactersInRange:NSMakeRange(0, 3) withString:@""];
+          }
+          if (! listHasStarted)
+          {
+            listHasStarted = true;
+            if (listIsUnnumbered)
+              sectionContent = [sectionContent stringByAppendingString:@"<ul>"];
+            else
+              sectionContent = [sectionContent stringByAppendingString:@"<ol>"];
+          }
+          if (listItemHasStarted)
+            sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+          else
+            listItemHasStarted = true;
+          sectionContent = [sectionContent stringByAppendingFormat:@"<li> %@",
+                            sectionContentLine];
+        }
+        else
+        {
+          if (listHasStarted)
+          {
+            // do nothing if a list has started, we're just adding lines to
+            // the current list entry
+          }
+          else if (! paragraphHasStarted)
+          {
+            paragraphHasStarted = true;
+            sectionContent = [sectionContent stringByAppendingString:@"<p class=\"section\">"];
+          }
+          sectionContent = [sectionContent stringByAppendingFormat:@" %@",
+                            sectionContentLine];
+        }
+      }
     }
   }
-  sectionContent = [sectionContent stringByAppendingString:@"</p>"];
+  if (listHasStarted)
+  {
+    listHasStarted = false;
+    listItemHasStarted = false;
+    sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+    if (listIsUnnumbered)
+      sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
+    else
+      sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
+  }
+  else if (paragraphHasStarted)
+  {
+    paragraphHasStarted = false;
+    sectionContent = [sectionContent stringByAppendingString:@"</p>"];
+  }
 
   return [NSString stringWithFormat:@""
           "<html>"
@@ -206,6 +342,8 @@
           "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>"
           "<style type=\"text/css\">"
           "body { font-family:helvetica; font-size: small; }"
+          "p.section-header { text-align: center; font-weight: bold; background-color: Lavender }"
+          "p.section { }"
           "</style>"
           "</head>"
           "<body>"

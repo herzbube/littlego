@@ -44,7 +44,7 @@ Version 0.7
 
 Version 0.6
 - Technical
-  - Upgrade project to Xcode 5
+  - Upgrade project to Xcode 4
   - Fix major remaining TODOs
   - Run app through Instruments
 - Artwork & media

@@ -28,9 +28,6 @@ Priority 1 (important)
   - Building against a release build of Fuego requires that the project needs
     to set the NDEBUG preprocessor macro, even if the project wants to make
     a debug build; this effectively prevents the use of assert()
-- Implement a gesture recognizer that reacts immediately to the first touch
-  (UITapGestureRecognizer only recognizes the gesture when the finger leaves
-  the screen)
 - Find out more about GTP engine settings. Using the knowledge gained,
   reconsider whether it still makes sense that GTP engine settings are applied
   only at the beginning of the game.
@@ -81,7 +78,6 @@ Priority 1 (important)
 
 Priority 2 (nice to have)
 -------------------------
-- Transition to Xcode 4, mainly to get native git support
 - In PlayerSelectionController and SettingsViewController: Add human/computer
   symbol to the table view cell depending on the type of the player that the
   cell represents
@@ -129,8 +125,6 @@ Priority 2 (nice to have)
   TableViewCellFactory for a few cell types, analogous to a similar method
   in TableViewSliderCell. This would be useful for calculations of variable
   text label heights in case a text label displays a longish string.
-- Dynamically generate a navigation controller structure that displays documents
-  such as README or MANUAL.
 - Add UITextView support to EditTextController. Clients should be able to choose
   whether to display a UITextView (for long texts) or a UITextField (for short
   texts). EditGtpEngineProfileController currently has a private implementation
@@ -142,14 +136,6 @@ Priority 3 (not important)
 - There is a nice HOWTO written by Apple that shows how to create Xcode
   documentation sets with Doxygen. Might be worthwile to check this out:
   http://developer.apple.com/tools/creatingdocsetswithdoxygen.html
-- In the iOS Simulator, using the mouse to pan outside the board sometimes
-  triggers a PlayMove. This seems to happen only when the left or right edges
-  are passed, and only in the simulator environment. In my opinion this is a bug
-  in the simulator and/or UIPanGestureRecognizer: The gesture recognizer sends
-  a message for state UIGestureRecognizerStateEnded while its locationInView:()
-  method still returns a valid, on-board position. I set this problem to a low
-  priority because the erroneous behaviour cannot be observed on the iPhone
-  device.
 - In a computer vs. computer game, consider automatically pausing the game if
   the user leaves the "Play" tab.
 - Update the Archive View if the user changes his locale in the system

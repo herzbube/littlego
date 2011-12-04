@@ -1,0 +1,624 @@
+--------------------------------------------------------------------------------
+Table of Contents
+--------------------------------------------------------------------------------
+1. Introduction
+2. How to play
+3. Players & Profiles
+4. Scoring
+5. Preferences
+6. The archive
+7. GTP engine
+8. Go rules
+9. Troubleshooting
+
+Note to editors: This file is parsed and displayed in game under the "Help" tab.
+For this to work, the content of this file must follow certain guidelines that
+are documented in DocumentGenerator.h.
+
+
+--------------------------------------------------------------------------------
+Introduction
+--------------------------------------------------------------------------------
+Little Go is an iOS application that lets you play the game of Go on the iPhone
+or iPad. If you don't know the rules of Go you can find an extremely short
+introduction in the last section in this help (titled "Go rules"). For a more
+thorough approach I recommend visiting one of the many websites dedicated to the
+game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
+
+Little Go lets you play the game against another human, or against the computer.
+The "How to play" section in this help will provide you with a good overview of
+what you can do when you see the game board. The computer player, by the way, is
+powered by the open-source software library Fuego (http://fuego.sourceforge.net/),
+which can be a pretty nasty opponent ☺ if you tune up its number-crunching
+power. The "Players & Profiles" help section tells you more about how to make
+Fuego stronger or weaker.
+
+When a game is over you will usually want to know who has won. Unfortunately,
+Little Go is not very smart about calculating the score - it relies quite
+heavily on your help with evaluating which stones on the board are alive and
+which ones are dead. The "Scoring" section has details about how all this
+stuff is supposed to work.
+
+When you save a game it will appear in the archive from where you can load it
+again at a later time, delete it, or transfer it via iTunes to your computer.
+Read "The archive" section for more information.
+
+Finally, if you are interested in the way how Little Go and Fuego talk to each
+other, you should study the technical information in the "GTP engine" section.
+
+
+
+--------------------------------------------------------------------------------
+How to play
+--------------------------------------------------------------------------------
+
+===================
+Starting a new game
+===================
+When you launch the app it displays the "Play" view with the game board and
+automatically start a new game using the settings that you gave it the last
+time you yourself started a new game. If this is the very first time that you
+run Little Go, it will start with a few default settings: A 9x9 board, no
+handicap, a komi of 6½ and a human vs. a computer player.
+
+To start a new game yourself, tap the "Action" button on the right-hand side
+of the toolbar at the top of the screen, then select "New game" from the menu
+that appears.
+
+===============
+Placing a stone
+===============
+Start placing a stone by pressing your fingertip near the intersection where you
+want the stone to end up. The stone immediately appears a short distance away
+away from your fingertip, but is not yet placed. Drag your finger around the
+screen until you are satisfied with the stone's location, then place the stone
+by taking away your finger from the screen. Voilà.
+
+If you are irritated because the stone does not appear directly under your
+fingertip, you can change this behaviour in the preferences under
+"Settings > Play view > Place stone under finger". You probably won't see the
+stone anymore because your fingertip covers it, but if you watch the status
+line below the game board you will see the coordinates of the intersection
+where the stone is placed should you release it now.
+
+===================
+The computer player
+===================
+If your opponent is a computer player, it will take over immediately after you
+have made your move. In the current version of Little Go you have to wait until
+the computer player has made its turn before you can take further actions. In a
+future version you will get the opportunity to interrupt the computer player.
+
+If you want to do something else while the computer is thinking, you can always
+switch to one of the other tabs (e.g. to read more of this help). If you would
+like to get a notification when the computer has made its move you can turn on
+audio/vibration feedback options under "Settings > Play view".
+
+You may have noticed that Little Go has two pre-configured computer players,
+"Fuego" and "Fuego (weak)". If you want to know more about the different playing
+strengths of computer players you should start reading the "Players & Profiles"
+help section.
+
+==========================
+Computer vs. Computer game
+==========================
+When you start a new game you can select two computer players to play against
+each other. Only the black player's profile is relevant, so it doesn't matter
+much which player you select to play white.
+
+In a computer vs. computer game you can't do much more than enjoy watching them
+battling it out ☺. If you want to interrupt the game you have to tap the "Pause"
+toolbar button. Once the computer player whose turn it currently is has finished
+its move, the "Action" toolbar button becomes enabled so that you can, for
+instance, start a new game. Tap the "Continue" toolbar button to let the players
+continue their match.
+
+A computer vs. computer game is automatically paused if the device's screen is
+locked, if you receive a phone call, or if some other interruption occurs. Also
+note that audio/vibration feedback preferences are ignored in a computer vs.
+computer game because you are merely a spectator and not actively participating
+in the game.
+
+=============
+Other actions
+=============
+If you don't know where to play, or are just lazy ☺, you can let the computer
+play for you by tapping the "Play for me" toolbar button.
+
+If you are not happy with the move, or if you just wanted to see where the
+computer would play, you can tap the "Undo" toolbar button. Of course, this
+also works for moves you made yourself. Note that to be able to undo your move,
+the computer player's move must be taken back as well. If the game is a human
+vs. human game, undo will take back only one move.
+
+Tapping the toolbar button with the "rows & columns" symbol will take you to the
+Game info view. This view tells you all sorts of interesting things about the
+game that is currently in progress. For instance you can see which player's
+turn it is, but probably the most interesting part is the "Scoring" table which
+tells you who would win if the game would end right now. Note that you need to
+activate "Scoring" mode or the table will not display any territory scores. See
+the "Scoring" help section for more information.
+
+
+--------------------------------------------------------------------------------
+Players & Profiles
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+You can manage both players and profiles under "Settings > Players & Profiles".
+
+There are two types of players: Human players and computer players. A human
+player only has a name, while a computer player is additionally associated with
+a profile.
+
+A profile is a collection of settings, each of which defines a certain technical
+aspect of how the computer calculates its moves. The combination of settings in
+a profile directly influences the computer's playing strength. By associating a
+weak or a strong profile with a computer player, you define whether it will be
+a weak or a strong opponent.
+
+To become active, a profile must be associated with a computer player, and that
+player must participate in a game. If you make changes to a profile, those
+changes will take effect only after you start a new game with a computer player
+which uses the profile.
+
+==============
+Maximum memory 
+==============
+This setting defines how much memory in MB the computer is allowed to use for
+its calculations. In general, the more memory it gets, the better the computer
+will play. There are a few things that you need to be aware of, though:
+
+- Most important is that your iPhone or iPad only has a limited amount of
+  memory, and Little Go must share this memory with all the other applications
+  that also run on the device. If iOS (the operating system running on your
+  device) finds that Little Go behaves badly and uses up too much memory, it
+  will terminate Little Go after a short delay so that the other applications
+  can continue running. To make a long story short: If you increase the maximum
+  memory setting, be extra careful to set a value that is not too high!
+- More threads (see below) usually need more memory to be effective
+- Faster processors need more memory because they can calculate more than slower
+  processors in the same amount of time
+
+=================
+Number of threads
+=================
+This setting defines how many calculations the computer is allowed to make in
+parallel. In general, the more threads it gets, the better the computer will
+play.
+
+However, the number of threads should not exceed the number of processor cores
+that your iPhone or iPad has. At best, too many threads will have no detrimental
+effect, but it may also be that playing strength suffers because the computer
+is taking up too much time switching between threads when instead it could make
+better use of this time in a single thread of straightforward calculations.
+
+Note that the iPhone 4S is the first iOS device that has a processor with 2
+cores, so on older devices you should leave the number of threads set to 1.
+
+=========
+Pondering
+=========
+This setting defines whether the computer is allowed to "think" while it is not
+his turn. Turning this setting on allows the computer to play better because it
+gets more time for its calculations.
+
+Because the processor uses up more energy, this will also affect your battery
+life, though.
+
+=============
+Reuse subtree
+=============
+This setting defines whether the computer is allowed to "remember" some of the
+results of its calculations from the last turn. Turning this setting off forces
+the computer to forget the results of its calculations once it has made its
+move. On its next move it will then need to re-calculate some of the very same
+results that it has just forgotten. Turning this setting on therefore makes the
+computer play stronger because it can use its allotted time for making new
+calculations.
+
+
+--------------------------------------------------------------------------------
+Scoring
+--------------------------------------------------------------------------------
+
+==============
+Game info view
+==============
+When the Go board is visible, the toolbar at the top of the screen contains a
+button with a "rows & columns" symbol. Tapping this button will "flip" the board
+and instead display some information about the game that is currently in
+progress. Probably the most interesting thing is the "Scoring" table which
+tells you who would win if the game would end right now.
+
+You will note that the final score is not really meaningful since the rows
+labelled "Dead" and "Territory" do not contain any numbers. To count dead stones
+and territory you have to activate Scoring mode
+
+============================
+How to activate Scoring mode
+============================
+To activate Scoring mode, flip back to the normal board view, tap the "Action"
+toolbar button, then select the "Scoring" item from the menu that pops up.
+
+Scoring mode can be activated at any time during normal game play, and it will
+activate automatically when the game ends for any reason (e.g. two pass moves
+in a sequence).
+
+While Scoring mode is active you cannot play moves or perform any other actions
+that influence the game state (exceptions are loading a game from the archive,
+or starting a new game). To leave Scoring mode and return to normal game play
+you can tap the toolbar button labelled "Done". If the game has already ended,
+though, you cannot leave Scoring mode until you start a new game or load a game
+from the archive.
+
+================
+Territory markup
+================
+When Scoring mode becomes active, Little Go (or better: Fuego in the background)
+takes a moment while trying to find suggestions for an initial set of dead
+stones. This feature is optional and can be turned off under
+"Settings > Scoring > Find dead stones".
+
+After the initial set of dead stones is determined, the board is divided up
+into what Little Go thinks are black and white territories:
+- Each color's territory is marked using a blackish or whitish translucent
+  overlay
+- Neutral territory is not marked at all
+- "Inconsistent" territory (see further down) is marked with a red dot symbol.
+
+===================
+Marking dead stones
+===================
+You can now tap a stone to mark it (and its group) as being dead. Territory
+coloring is immediately updated to display the new state. Note that the stones
+you marked as being dead are displayed with a small red "x" in the center.
+Stones marked as dead can be "unmarked" by tapping on them again, thus turning
+them back to alive status.
+
+Whenever you change the dead/alive state of one or more stones, the updated
+total score is displayed in the status line below the game board. To view the
+updated detail score you can flip the board over to the game info view.
+
+===================================
+Assistance with marking dead stones
+===================================
+If you have a game with many small stone groups that are all dead, marking them
+will quickly become tedious. You can get a bit of assistance by turning on an
+option under "Settings > Scoring > Mark dead stones intelligently".
+
+From now on, whenever you toggle the dead/alive status of a stone group, Little
+Go will help you by automatically toggling adjacent stone groups of the same
+color to the same dead/alive status.
+
+======================
+Inconsistent territory
+======================
+If Little Go finds an empty territory where the state of adjacent dead stone
+groups is inconsistent, it will mark that territory in a special way (a red dot
+symbol by default). The definition of "inconsistent" is:
+- There are dead stone groups for both black and white
+- There are both dead and alive stone groups of the same color
+
+The reason for marking up inconsistent territory is to give you notice that a
+stone group has probably been erroneously marked as dead or alive. Feel free to
+ignore the markup if this is just a transient problem while you are marking
+several stone groups and are on the way to a consistent state.
+
+If you don't like the "red dot symbol" way to mark inconsistencies, you can
+change the markup type under "Settings > Scoring > Inconsistent territory".
+The option "neutral" causes inconsistent territories to be marked as if they
+were neutral territories, in other words: not at all.
+
+For the purpose of calculating the score, inconsistent territory always counts
+as neutral territory. This is regardless of how inconsistencies are marked up.
+
+==========================
+Area vs. territory scoring
+==========================
+The Go world knows two scoring systems: Area scoring and territory scoring.
+Little Go currently only supports territory scoring.
+
+Details about the two scoring systems can be found at
+http://senseis.xmp.net/?Scoring
+
+
+--------------------------------------------------------------------------------
+Preferences
+--------------------------------------------------------------------------------
+On the "Settings" tab you can set a number of user preferences that Little Go
+will remember when the application is stopped and restarted.
+
+This help section does not enumerate the different preferences, rather they are
+explained in the appropriate context. For instance, all "Scoring" preferences
+are explained in the "Scoring" help section.
+
+
+--------------------------------------------------------------------------------
+The archive
+--------------------------------------------------------------------------------
+
+=============
+Saving a game
+=============
+When the Go board is visible, you can save the game that is currently in
+progress by tapping the "Action" toolbar button and selecing the "Save game"
+item from the menu that pops up. You must now specify a name, then tap the
+"Done" toolbar button to actually save the game.
+
+The default name for the saved game is always unique, i.e. there is no other
+game saved under that name, so that you can quickly tap "Done" and be ready to
+continue the game. If you accidentally type in a name that already exists you
+will be warned and you can choose whether or not you want to overwrite the old
+game.
+
+======================
+File sharing in iTunes
+======================
+You can transfer saved games to your computer via file sharing in iTunes:
+1. Select the device in the sidebar of iTunes
+1. Activate the "Apps" tab
+1. Scroll down to the bottom of the page
+1. Under the "File Sharing" section, you should see Little Go among the list
+   of applications that support file sharing
+1. Select Little Go to copy the saved games to your computer
+
+Of course you can also do the transfer the other way round. Saved games by the
+way are .sgf files that can be processed by many other applications.
+
+====================
+Managing the archive
+====================
+The "Archive" tab lists previously saved games, or games that were transferred
+to the device via file sharing in iTunes. Tap the "edit" toolbar button if you
+want to delete one or more saved games.
+
+When you tap the entry for a saved game, a detail view for that game is
+displayed. You can rename the game by tapping on its name. To load the game
+tap the "load" toolbar button.
+
+====================
+Loading a saved game
+====================
+When you view the details of a saved game on the "Archive" tab, you will find
+in the toolbar a button labelled "Load". Tapping the button will initiate the
+procedure to load the saved game, which overall is very similar to starting a
+new game from scratch. The difference is that you cannot choose board size, Komi
+or Handicap, as these parameters are part of the saved game.
+
+
+--------------------------------------------------------------------------------
+GTP engine
+--------------------------------------------------------------------------------
+
+======================
+Overview and a warning
+======================
+The computer player in Little Go is powered by the open-source software library
+Fuego (http://fuego.sourceforge.net/). Little Go and Fuego talk to each other
+via GTP - the Go Text Protocol. In the GTP context, Fuego is called the GTP
+engine, while Little Go is the GTP client.
+
+On the "Debug" tab you can observe the flow of communication between GTP client
+and engine. You can even interfere with it by injecting your own GTP commands.
+Be careful, though, not to disrupt normal operations: As the title suggests, the
+"Debug" tab options should only be used if something goes wrong during normal
+game play and you need GTP to investigate.
+
+
+=======
+GTP log
+=======
+The GTP log displays the last 100 GTP commands sent, and the responses received.
+The log size can be changed under "Debug > Settings > GTP log size". Commands
+are listed in the order in which they were submitted, the most recent command
+appears at the bottom of the log. The log is dynamically updated when a new
+GTP command/response is submitted to or received from the GTP engine. The log
+can be emptied under "Debug > Settings > Clear GTP log".
+
+Each log entry displays the name of the GTP command and the time when it was
+sent to the GTP engine. Log entries are also color-coded to mark which type of
+response was received by the GTP client: Green means a "success" response, red
+means a "failure" response, and a gray question mark ("?") means that the GTP
+client is still waiting for a response.
+
+The "flip" toolbar button can be used to switch between the table-oriented
+view and the "raw" view of the GTP log.
+
+The "new" toolbar button can be used to inject your own GTP command into the
+communication flow between GTP client and engine. Tapping the button displays
+a view where you can enter a command using free-form text, or you can select
+a command from a list of pre-defined commands. For more information about this
+see further down.
+
+=======================
+Viewing a GTP log entry
+=======================
+When you tap an entry in the GTP log, a detail view for that entry is displayed.
+Most of the information you see here is already available in the log itself.
+There is one more detail, though, and that is the detailed response string. Most
+of the time the response to a GTP command just consists of the success/failure
+status, but for some commands (e.g. "get_komi") the response contains more
+information that is only available on this view.
+
+The "+" toolbar button lets you add the command to the list of pre-defined
+commands. If there is no "+" button, the command is already pre-defined.
+
+====================
+Pre-defined commands
+====================
+On the "Debug" tab you can select the entry "GTP commands" to view and manage
+a list of pre-defined GTP commands. Usually these are often-used or complicated
+commands that you do not want to re-type every time you need to submit them.
+Commands are submitted in the GTP log view.
+
+The "edit" toolbar button lets you delete and re-arrange commands, while the
+"+" toolbar button allows you to add a new command to the list. Tapping an
+entry in the list presents a detail view where you can edit the command string.
+
+The application comes with a factory set of pre-defined commands which you can
+freely edit. To discard your current set and return to the factory set, select
+"Debug > Settings > Reset predefined commands".
+
+
+--------------------------------------------------------------------------------
+Go rules
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+This help section contains only a barebones and purely textual introduction to
+the rules of Go. Usually a few illustration are much more intelligible,
+therefore I strongly suggest that you visit one of the many websites dedicated
+to the game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
+
+=======
+Players
+=======
+The game is played by two players. One of them plays with black stones, the
+other with white stones. Usually black makes the first move, except when there
+is a handicap. This introduction does not cover handicap.
+
+=====
+Board
+=====
+The board is a grid of horizontal and vertical lines. The standard board size
+is 19x19, but smaller board sizes are good for teaching games or solving special
+Go problems. Little Go allows you to set a board size between 7x7 and 19x19.
+
+=============
+Intersections
+=============
+The lines of the board have intersections wherever they cross or touch each
+other. Each intersection is called a point. That includes the four corners,
+and the edges of the board. Stones are placed on points (intersections), which
+might seem unusual if you are coming from chess.
+
+=====
+Moves
+=====
+Players take alternate turns. When it is their turn, they make a move. A move
+usually consists of placing a stone. However, a player may also decide to pass,
+in which case it is the other player's turn. If both players pass, the game
+is over and the score is calculated to determine who has won the game.
+
+Note that stones can only be placed on empty points. Also note that it is not
+possible to move a stone once it has been placed.
+
+=========
+Liberties
+=========
+Each point (intersection) on the board has a number of lines leading away from
+it to adjacent points. When a stone is placed on a point, the number of lines
+leading away from it to unoccupied adjacent points are called its "liberties".
+
+For instance, in the beginning if a stone is placed in a corner it has 2
+liberties, if its placed on an edge line it has 3 liberties, and if it is
+placed somewhere in the middle of the board it has 4 liberties.
+
+Enemy stones that surround one of your stones take away liberties from that
+stone. If your stone has no liberties left it is captured. The opponent removes
+your stone from the board and places it in a box where at the end of the game
+it can be used for scoring. The point where your stone was is now unoccupied
+once more.
+
+============
+Stone groups
+============
+If you place stones next to each other so that they are connected through the
+lines leading away from the points they occupy, they form a stone group. Stones
+that are adjacent to each other diagonally are not connected through lines and
+therefore do not form a stone group.
+
+Stones in a group share their liberties. For instance, if you place a stone
+somewhere in the middle of the board it initially has 4 liberties. If you now
+place another stone on an adjacent point the two form a stone group and
+together have 6 liberties.
+
+Stones in a group must be captured as a group, i.e. the opponent must surround
+the entire group and take away all their liberties before he can capture them.
+If he succeeds, he captures the entire group and removes all stones from the
+board.
+
+============
+Suicide rule
+============
+It is forbidden to place a stone so that it has no liberties. For instance, it
+is forbidden to place a stone on a point that is surrounded on all sides by
+enemy stones.
+
+By extension, it is also forbidden to place a stone if it connects to a stone
+group and the entire stone group would have no liberties left.
+
+=========================
+Exception to Suicide rule
+=========================
+The exception to the Suicide rule is: You are allowed to place a suicidal stone
+if by placing it it takes away the last liberty of one or more enemy stones,
+thus making liberties for its own.
+
+
+=======================
+No Repetition (ko) rule
+=======================
+It is forbidden to play a move which repeats a previous board position. This
+rule prevents endless repetition in the face of alternating capturing moves due
+to the exception to the Suicide rule.
+
+Note that if some other moves are played in between, the same play may be
+available again as a legal move, because it will not be repeating the same
+board position.
+
+This rule is also called the "ko" rule.
+
+====
+Life
+====
+Taking all the above rules into account, it is possible to form stone groups
+that are impossible to capture under normal, alternating game play (also
+assuming no mistakes). These groups are called "alive".
+
+
+===================
+Purpose of the game
+===================
+The purpose of the game is to occupy or surround more points than the opponent.
+When the game ends (both players pass), your score is calculated by summing up
+the following:
+
+- Number of enemy stones that you captured during the game
+- Number of enemy dead stones on the board completely surrounded by your stones.
+  Your enemy's stones are dead if they are not "alive", i.e. if they could be
+  captured if you were to continue playing
+- Number of points completely surrounded by your stones, regardless of whether
+  they are empty or occupied by enemy dead stones
+
+Your opponent's score is calculated in the same way, only from his point of
+view. Whoever plays white adds komi to his score (komi is usually 6½ and is
+given to the white player as a bonus to compensate for the black player's
+advantage of first move).
+
+Whoever now has the higher score wins the game.
+
+
+--------------------------------------------------------------------------------
+Troubleshooting
+--------------------------------------------------------------------------------
+
+==================
+"Low Memory" alert
+==================
+If you see an alert titled "Low Memory" this is a sign that iOS just sent a
+memory warning to Little Go, indicating that the application uses up too much
+memory.
+
+Almost certainly the cause for this is that the currently active computer player
+profile has a "Maximum memory" value that is too high. You should find out which
+computer player is currently active (on the "Play" tab select the game info
+toolbar button), then go to that player's profile (under
+"Settings > GTP engine profiles") and lower the value for the "Maximum memory"
+setting. A value of 32 MB should be OK even for older devices such as an
+iPhone 3GS.

@@ -645,7 +645,7 @@
           territoryInconsistencyFound = true;
         else if (whiteDeadSeen)  // rules violation! cannot see dead stones of both colors
           territoryInconsistencyFound = true;
-        else                     // ok, only dead stones of once color seen (we don't care whether the opposing color has alive stones)
+        else                     // ok, only dead stones of one color seen (we don't care whether the opposing color has alive stones)
           territoryColor = GoColorWhite;
       }
       else  // repeat of the block above, but for the opposing color

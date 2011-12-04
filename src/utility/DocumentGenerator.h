@@ -33,13 +33,29 @@
 ///   content of the HTML document
 /// - The leadin for a section is a separator line that begins with 3 or more
 ///   dashes, i.e. "---"
-/// - The single line above the separator is the section title
+/// - The single line below the separator is the section title
+/// - If another separator line is found below the section title it is ignored
 /// - All lines below the separator, until either the next section title or
 ///   until end-of-file, form the section content
-/// - Empty lines within a section's content are used to generate HTML paragraph
-///   elements
-/// - Within a section's content, anchor elements are generated for a few
-///   recognized URL patterns (e.g. http[s]://)
+///
+/// DocumentGenerator parses the section content lines for a few patterns to
+/// generate the following markup within the section's HTML document:
+/// - Subsection titles
+///   - A specially marked up title paragraph is created if a separator line is
+///     found that begins with 3 or more equal signs, i.e. "==="
+///   - The single line below the separator is the subsection title
+///   - If another separator line is found below the subsection title it is
+///     ignored
+/// - An empty line, or a line that contains only whitespace, starts a new
+///   paragraph
+/// - Lists
+///   - A line that starts with "- " starts a new unnumberd list, or a new list
+///     item if a list has already been started by a previous item
+///   - The list is terminated by an empty line, or a line that contains only
+///     whitespace
+///   - Ditto for numbered lists, but the line must start with "1. "
+/// - A few recognized URL patterns (e.g. http[s]://) are used to create anchor
+///   HTML elements
 // -----------------------------------------------------------------------------
 @interface DocumentGenerator : NSObject
 {
