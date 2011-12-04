@@ -19,7 +19,7 @@
 #import "GtpLogItemViewController.h"
 #import "GtpLogItem.h"
 #import "GtpCommandModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 

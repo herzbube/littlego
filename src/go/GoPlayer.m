@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GoPlayer.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../newgame/NewGameModel.h"

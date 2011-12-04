@@ -18,7 +18,7 @@
 // Project includes
 #import "SoundHandling.h"
 #import "PlayViewModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 
 // System includes

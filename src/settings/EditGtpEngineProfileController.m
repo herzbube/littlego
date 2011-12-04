@@ -17,7 +17,7 @@
 
 // Project includes
 #import "EditGtpEngineProfileController.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../ui/TableViewCellFactory.h"

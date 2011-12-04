@@ -18,7 +18,7 @@
 // Project includes
 #import "GtpCommand.h"
 #import "GtpClient.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------

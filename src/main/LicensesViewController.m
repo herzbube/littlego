@@ -16,19 +16,38 @@
 
 
 // Project includes
-#import "ArchiveViewController.h"
-#import "ArchiveViewModel.h"
-#import "ArchiveGame.h"
-#import "ViewGameController.h"
-#import "../main/ApplicationDelegate.h"
+#import "LicensesViewController.h"
+#import "DocumentViewController.h"
+#import "ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../command/game/DeleteGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ArchiveViewController.
+/// @brief Enumerates the sections presented in the "Licenses" table view.
 // -----------------------------------------------------------------------------
-@interface ArchiveViewController()
+enum LicensesTableViewSection
+{
+  LicensesSection,
+  MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the LicensesSection.
+// -----------------------------------------------------------------------------
+enum LicensesSectionItem
+{
+  ApacheLicenseItem,
+  GPLItem,
+  LGPLItem,
+  BoostLicenseItem,
+  MaxLicensesSectionItem
+};
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for LicensesViewController.
+// -----------------------------------------------------------------------------
+@interface LicensesViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -43,34 +62,29 @@
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name Notification responders
+/// @name Private helpers
 //@{
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Helpers
-//@{
-- (void) viewGame:(ArchiveGame*)game;
+- (void) viewLicenseForRow:(int)row;
+- (NSString*) licenseTitleForRow:(int)row;
+- (NSString*) licenseResourceNameForRow:(int)row;
 //@}
 @end
 
 
-@implementation ArchiveViewController
-
-@synthesize archiveViewModel;
+@implementation LicensesViewController
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ArchiveViewController object.
+/// @brief Deallocates memory allocated by this LicensesViewController
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
   [super dealloc];
 }
 
@@ -81,15 +95,6 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
-  self.archiveViewModel = delegate.archiveViewModel;
-  // self.editButtonItem is a standard item provided by UIViewController, which
-  // is linked to triggering the view's edit mode
-  self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
-  // KVO observing
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -110,7 +115,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 1;
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -118,7 +123,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return self.archiveViewModel.gameCount;
+  return MaxLicensesSectionItem;
 }
 
 // -----------------------------------------------------------------------------
@@ -126,35 +131,10 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  cell.textLabel.text = game.name;
-  cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+  cell.textLabel.text = [self licenseTitleForRow:indexPath.row];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  assert(editingStyle == UITableViewCellEditingStyleDelete);
-  if (editingStyle != UITableViewCellEditingStyleDelete)
-    return;
-
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  DeleteGameCommand* command = [[DeleteGameCommand alloc] initWithGame:game];
-  // Temporarily disable KVO observer mechanism so that no table view update
-  // is triggered during command execution. Purpose: In a minute, we are going
-  // to manipulate the table view ourselves so that a nice animation is shown.
-  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
-  bool success = [command submit];
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
-  // Animate item deletion. Requires that in the meantime we have not triggered
-  // a reloadData().
-  if (success)
-    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
 }
 
 // -----------------------------------------------------------------------------
@@ -163,28 +143,94 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+  [self viewLicenseForRow:indexPath.row];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
+/// @brief Displays DocumentViewController with the content of the section at
+/// index position @a sectionIndex.
 // -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+- (void) viewLicenseForRow:(int)row
 {
-  // Invocation of most of the UITableViewDataSource methods is delayed until
-  // the table is displayed 
-  [self.tableView reloadData];
+  NSString* licenseTitle = [self licenseTitleForRow:row];
+  NSString* licenseResourceName = [self licenseResourceNameForRow:row];
+  DocumentViewController* controller = [DocumentViewController controllerWithTitle:licenseTitle
+                                                                      resourceName:licenseResourceName];
+  [self.navigationController pushViewController:controller animated:YES];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays ViewGameController to allow the user to view and/or change
-/// archive game information.
+/// @brief Returns a title string that describes the license displayed in table
+/// view row @a row.
 // -----------------------------------------------------------------------------
-- (void) viewGame:(ArchiveGame*)game
+- (NSString*) licenseTitleForRow:(int)row
 {
-  ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game model:self.archiveViewModel] retain];
-  [self.navigationController pushViewController:viewGameController animated:YES];
-  [viewGameController release];
+  switch (row)
+  {
+    case ApacheLicenseItem:
+    {
+      return @"Apache License";
+      break;
+    }
+    case GPLItem:
+    {
+      return @"GPL";
+      break;
+    }
+    case LGPLItem:
+    {
+      return @"LGPL";
+      break;
+    }
+    case BoostLicenseItem:
+    {
+      return @"Boost License";
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a title string that describes the license displayed in table
+/// view row @a row.
+// -----------------------------------------------------------------------------
+- (NSString*) licenseResourceNameForRow:(int)row
+{
+  switch (row)
+  {
+    case ApacheLicenseItem:
+    {
+      return apacheLicenseDocumentResource;
+      break;
+    }
+    case GPLItem:
+    {
+      return GPLDocumentResource;
+      break;
+    }
+    case LGPLItem:
+    {
+      return LGPLDocumentResource;
+      break;
+    }
+    case BoostLicenseItem:
+    {
+      return boostLicenseDocumentResource;
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
+  return nil;
 }
 
 @end

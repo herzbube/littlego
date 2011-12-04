@@ -20,7 +20,7 @@
 #import "CleanBackupCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
-#import "../../ApplicationDelegate.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../go/GoGame.h"
 #import "../../player/PlayerModel.h"
 #import "../../player/Player.h"

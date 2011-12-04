@@ -19,7 +19,7 @@
 #import "SaveGameCommand.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
-#import "../../ApplicationDelegate.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../archive/ArchiveViewModel.h"
 
 

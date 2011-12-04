@@ -21,7 +21,7 @@
 #import "GtpLogItemViewController.h"
 #import "GtpLogModel.h"
 #import "SubmitGtpCommandViewController.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 
 

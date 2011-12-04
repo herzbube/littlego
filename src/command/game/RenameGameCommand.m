@@ -17,7 +17,7 @@
 
 // Project includes
 #import "RenameGameCommand.h"
-#import "../../ApplicationDelegate.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../archive/ArchiveGame.h"
 #import "../../archive/ArchiveViewModel.h"
 

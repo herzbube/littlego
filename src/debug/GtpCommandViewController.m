@@ -18,7 +18,7 @@
 // Project includes
 #import "GtpCommandViewController.h"
 #import "GtpCommandModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 

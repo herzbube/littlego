@@ -19,7 +19,7 @@
 #import "BaseTestCase.h"
 
 // Application includes
-#import <ApplicationDelegate.h>
+#import <main/ApplicationDelegate.h>
 #import <go/GoGame.h>
 #import <command/game/NewGameCommand.h>
 

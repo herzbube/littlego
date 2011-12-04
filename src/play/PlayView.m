@@ -19,7 +19,7 @@
 #import "PlayView.h"
 #import "PlayViewModel.h"
 #import "ScoringModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
 #import "../go/GoBoardRegion.h"

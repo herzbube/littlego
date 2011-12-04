@@ -23,7 +23,7 @@
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoVertex.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../player/Player.h"
 
 

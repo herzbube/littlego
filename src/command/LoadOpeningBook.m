@@ -17,7 +17,7 @@
 
 // Project includes
 #import "LoadOpeningBook.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 

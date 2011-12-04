@@ -17,7 +17,7 @@
 
 // Project includes
 #import "EditPlayerController.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../player/GtpEngineProfileModel.h"

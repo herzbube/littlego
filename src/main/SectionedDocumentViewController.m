@@ -16,19 +16,18 @@
 
 
 // Project includes
-#import "ArchiveViewController.h"
-#import "ArchiveViewModel.h"
-#import "ArchiveGame.h"
-#import "ViewGameController.h"
-#import "../main/ApplicationDelegate.h"
+#import "SectionedDocumentViewController.h"
+#import "DocumentViewController.h"
+#import "ApplicationDelegate.h"
+#import "../utility/DocumentGenerator.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../command/game/DeleteGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ArchiveViewController.
+/// @brief Class extension with private methods for
+/// SectionedDocumentViewController.
 // -----------------------------------------------------------------------------
-@interface ArchiveViewController()
+@interface SectionedDocumentViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -43,34 +42,34 @@
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name Notification responders
+/// @name Private helpers
 //@{
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
+- (void) viewSectionAtIndex:(int)sectionIndex;
 //@}
-/// @name Helpers
+/// @name Privately declared properties
 //@{
-- (void) viewGame:(ArchiveGame*)game;
+@property(nonatomic, retain) DocumentGenerator* documentGenerator;
 //@}
 @end
 
 
-@implementation ArchiveViewController
+@implementation SectionedDocumentViewController
 
-@synthesize archiveViewModel;
+@synthesize documentGenerator;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ArchiveViewController object.
+/// @brief Deallocates memory allocated by this SectionedDocumentViewController
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
+  self.documentGenerator = nil;
   [super dealloc];
 }
 
@@ -82,14 +81,20 @@
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
-  self.archiveViewModel = delegate.archiveViewModel;
-  // self.editButtonItem is a standard item provided by UIViewController, which
-  // is linked to triggering the view's edit mode
-  self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
-  // KVO observing
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  NSInteger tabType = self.tabBarItem.tag;
+  NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
+  NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
+  switch (tabType)
+  {
+    case ManualTab:
+      self.documentGenerator = [[DocumentGenerator alloc] initWithFileContent:resourceContent];
+      break;
+    default:
+      assert(0);
+      self.documentGenerator = nil;
+      return;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -118,7 +123,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return self.archiveViewModel.gameCount;
+  return [self.documentGenerator numberOfSections];
 }
 
 // -----------------------------------------------------------------------------
@@ -126,35 +131,10 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  cell.textLabel.text = game.name;
-  cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+  cell.textLabel.text = [self.documentGenerator sectionTitle:indexPath.row];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  assert(editingStyle == UITableViewCellEditingStyleDelete);
-  if (editingStyle != UITableViewCellEditingStyleDelete)
-    return;
-
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  DeleteGameCommand* command = [[DeleteGameCommand alloc] initWithGame:game];
-  // Temporarily disable KVO observer mechanism so that no table view update
-  // is triggered during command execution. Purpose: In a minute, we are going
-  // to manipulate the table view ourselves so that a nice animation is shown.
-  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
-  bool success = [command submit];
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
-  // Animate item deletion. Requires that in the meantime we have not triggered
-  // a reloadData().
-  if (success)
-    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
 }
 
 // -----------------------------------------------------------------------------
@@ -163,28 +143,19 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+  [self viewSectionAtIndex:indexPath.row];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
+/// @brief Displays DocumentViewController with the content of the section at
+/// index position @a sectionIndex.
 // -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+- (void) viewSectionAtIndex:(int)sectionIndex
 {
-  // Invocation of most of the UITableViewDataSource methods is delayed until
-  // the table is displayed 
-  [self.tableView reloadData];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays ViewGameController to allow the user to view and/or change
-/// archive game information.
-// -----------------------------------------------------------------------------
-- (void) viewGame:(ArchiveGame*)game
-{
-  ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game model:self.archiveViewModel] retain];
-  [self.navigationController pushViewController:viewGameController animated:YES];
-  [viewGameController release];
+  NSString* sectionTitle = [self.documentGenerator sectionTitle:sectionIndex];
+  NSString* sectionContent = [self.documentGenerator sectionContent:sectionIndex];
+  DocumentViewController* controller = [DocumentViewController controllerWithTitle:sectionTitle htmlString:sectionContent];
+  [self.navigationController pushViewController:controller animated:YES];
 }
 
 @end

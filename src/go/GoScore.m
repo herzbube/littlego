@@ -23,7 +23,7 @@
 #import "GoMove.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../utility/NSStringAdditions.h"

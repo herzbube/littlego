@@ -21,7 +21,7 @@
 #import "GtpEngineProfile.h"
 #import "GtpEngineProfileModel.h"
 #import "../utility/NSStringAdditions.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------

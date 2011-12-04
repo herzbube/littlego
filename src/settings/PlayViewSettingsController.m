@@ -17,7 +17,7 @@
 
 // Project includes
 #import "PlayViewSettingsController.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"

@@ -20,7 +20,7 @@
 #import "PlayViewActionSheetController.h"
 #import "PlayView.h"
 #import "ScoringModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"

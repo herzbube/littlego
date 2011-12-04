@@ -18,7 +18,7 @@
 // Project includes
 #import "PlayViewActionSheetController.h"
 #import "ScoringModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"

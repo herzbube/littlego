@@ -19,7 +19,7 @@
 #import "ViewGameController.h"
 #import "ArchiveGame.h"
 #import "ArchiveViewModel.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"

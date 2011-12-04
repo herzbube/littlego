@@ -28,7 +28,7 @@
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
-#import "../ApplicationDelegate.h"
+#import "../main/ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
 #import "../gtp/GtpCommand.h"
 
