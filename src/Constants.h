@@ -134,7 +134,8 @@ enum TabType
   ManualTab,
   AboutTab,
   SourceCodeTab,
-  LicensesTab
+  LicensesTab,
+  CreditsTab
 };
 
 /// @brief Enumerates the supported board sizes.
@@ -376,6 +377,7 @@ extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
 extern NSString* manualDocumentResource;
+extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
 //@}

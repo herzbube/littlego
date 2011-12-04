@@ -501,6 +501,9 @@ static ApplicationDelegate* sharedDelegate = nil;
     case SourceCodeTab:
       resourceName = sourceCodeDocumentResource;
       break;
+    case CreditsTab:
+      resourceName = creditsDocumentResource;
+      break;
     default:
       break;
   }

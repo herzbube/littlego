@@ -5,7 +5,6 @@ Table of Contents
 3. Known bugs
 4. License and source code
 5. Platforms
-6. Special Thanks
 
 
 What is it?
@@ -63,25 +62,3 @@ someone requests it I won't spend any time on this.
 Some features may not work correctly on devices that are not multitasking
 capable. One known instance is that the game currently in progress is not saved
 when the application is terminated.
-
-
-Special Thanks
---------------
-The Fuego project and its developers, for creating a freely usable Go engine
-in the first place, but also for encouraging me to use their engine despite
-some legal uncertainties regarding the LGPL license.
-
-Sen:te, for creating the beautiful app Goban (http://www.sente.ch/software/goban/)
-and making it available free of charge. Goban is one of my much-loved Mac OS X
-applications, and for a long time I had hoped that it would be ported to iOS.
-Unfortunately, this never happened, so I had to come up with something of my
-own - the result is Little Go. Although Little Go will never match Goban in
-terms of style, elegance and execution, you might recognize one or two
-similarities between the two programs :-)
-
-The Sensei's Library (http://senseis.xmp.net/), for providing a wealth of
-information on Go that I could consult whenever I had any doubts about one of
-the rules and concepts of the game.
-
-The two iPhone apps Tetsuki and Goban (the latter not by Sen:te), for
-inspiration how to design certain aspects of Little Go's user interface.

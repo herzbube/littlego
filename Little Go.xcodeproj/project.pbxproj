@@ -26,6 +26,7 @@
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
 		CD00A353148C020B004E1A0C /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A352148C0206004E1A0C /* LicensesViewController.m */; };
+		CD00A355148C1D6D004E1A0C /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = CD00A354148C1D6D004E1A0C /* Credits.html */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -202,6 +203,7 @@
 		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CD00A351148C0202004E1A0C /* LicensesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LicensesViewController.h; sourceTree = "<group>"; };
 		CD00A352148C0206004E1A0C /* LicensesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LicensesViewController.m; sourceTree = "<group>"; };
+		CD00A354148C1D6D004E1A0C /* Credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Credits.html; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -827,6 +829,7 @@
 				CD3AE7A413451C3400B58E08 /* BoostSoftwareLicense.html */,
 				CD3AE7821345164800B58E08 /* COPYING.html */,
 				CD3AE7831345164800B58E08 /* COPYING.LESSER.html */,
+				CD00A354148C1D6D004E1A0C /* Credits.html */,
 				CDEC28A712F4A2BB0069F5B7 /* DebugView.xib */,
 				CDBB0C0113426C56007C1C3E /* DocumentView.xib */,
 				CDE300F113578E54005235F2 /* Entitlements.plist */,
@@ -976,6 +979,7 @@
 				CD721FD41460C174005EAC65 /* tabular@2x.png in Resources */,
 				CD72205D14620C3A005EAC65 /* GameInfoView.xib in Resources */,
 				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
+				CD00A355148C1D6D004E1A0C /* Credits.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
