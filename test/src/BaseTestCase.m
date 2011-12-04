@@ -36,8 +36,21 @@
   m_delegate = [[ApplicationDelegate newDelegate] retain];
   STAssertNotNil(m_delegate, @"Unable to create ApplicationDelegate object in setUp()");
 
+  // The log file for unit tests run in the simulator environment is located in
+  // ~/Library/Application Support/iPhone Simulator/Documents/Logs
+  [m_delegate setupLogging];
+
   m_delegate.resourceBundle = [NSBundle bundleForClass:[self class]];
   STAssertNotNil(m_delegate.resourceBundle, @"Unable to determine unit test bundle in setUp()");
+
+  [m_delegate setupRegistrationDomain];
+  // Tests are expecing a 19x19 board, so make sure that this board size is
+  // used regardless of what the values in the registration domain say
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
+  [newGameDictionary setValue:[NSNumber numberWithInt:BoardSize19] forKey:boardSizeKey];
+  [userDefaults setObject:newGameDictionary forKey:newGameKey];
+  // Initialize models after we have fiddled with the user defaults data
   [m_delegate setupUserDefaults];
 
   [[[NewGameCommand alloc] init] submit];

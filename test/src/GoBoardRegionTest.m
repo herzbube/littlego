@@ -24,9 +24,6 @@
 #import <go/GoBoardRegion.h>
 #import <go/GoPoint.h>
 
-// Library includes
-#include <cocoalumberjack/DDTTYLogger.h>
-#include <cocoalumberjack/DDFileLogger.h>
 
 @implementation GoBoardRegionTest
 

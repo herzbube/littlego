@@ -42,7 +42,7 @@
 	<key>NewGame</key>
 	<dict>
 		<key>BoardSize</key>
-		<integer>6</integer>
+		<integer>1</integer>
 		<key>BlackPlayer</key>
 		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
 		<key>WhitePlayer</key>

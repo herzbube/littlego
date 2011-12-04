@@ -177,6 +177,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupLogging];
   [self setupFolders];
   [self setupResourceBundle];
+  [self setupRegistrationDomain];
   [self setupUserDefaults];
   [self setupGUI];
   [self setupFuego];
@@ -325,16 +326,23 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the registration domain in the user defaults system. This
+/// must be done before application models are initialized with data from the
+/// user defaults.
+// -----------------------------------------------------------------------------
+- (void) setupRegistrationDomain
+{
+  NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
+  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the various application models with values from the user
 /// defaults system.
 // -----------------------------------------------------------------------------
 - (void) setupUserDefaults
 {
-  // Set up application defaults *BEFORE* loading user defaults
-  NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
-  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
-  [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-
   // Upgrade user defaults data before the model objects access it. For this to
   // work we need to have the registration defaults in place.
   [UserDefaultsUpdater upgrade];

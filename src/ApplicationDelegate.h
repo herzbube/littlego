@@ -61,6 +61,7 @@
 - (void) setupLogging;
 - (void) setupFolders;
 - (void) setupResourceBundle;
+- (void) setupRegistrationDomain;
 - (void) setupUserDefaults;
 - (void) setupGUI;
 - (void) setupFuego;
