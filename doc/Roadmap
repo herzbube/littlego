@@ -32,25 +32,26 @@ Version 1.x
   - Stones
   - Board
 
-Version 0.8
+Version 0.9
 - Play view
   - Coordinate labels
   - Display move numbers
   - Suggest move
 
-Version 0.7
+Version 0.8
 - iPad version
 - React to device orientation changes
 
-Version 0.6
-- Technical
-  - Upgrade project to Xcode 4
-  - Fix major remaining TODOs
-  - Run app through Instruments
+Version 0.7
 - Artwork & media
   - Application icon
   - Launch image
 - Publish app to the App Store
+
+Version 0.6 (December 4 2011)
+- Technical
+  - Upgrade project to Xcode 4
+  - Fix major remaining TODOs
 
 Version 0.5 (November 16 2011)
 - New game properties

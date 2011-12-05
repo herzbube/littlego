@@ -40,7 +40,7 @@ Make a beta release (binary ad-hoc distribution only)
 -----------------------------------------------------
 - In the toolbar's scheme selector, activate the "Little Go Release" scheme and
   the "iOS Device" destination
-- Select "Archive" from the "Build" menu
+- Select "Archive" from the "Product" menu
 - The application is now built using the "Distribute" build configuration. After
   the build succeeds it is archived, then the "Organizer" window opens to
   display the archive that was just created.

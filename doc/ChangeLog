@@ -1,3 +1,34 @@
+Sun December 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.6
+- features
+  - a stone is now displayed immediately when fingertip touches the board
+  - GTP engine settings are now managed in profiles (instead of as player
+    attributes)
+  - an alert is displayed, and game and user preferences are now saved as an
+    emergency when iOS sends a memory warning
+  - the game info view now displays entries for "last move" and "next move"
+  - cross-hair point distance from fingertip is now scaled based on board size
+  - default board size is now 9x9 (down from 19x19)
+  - new "Help" and "Credits" documents
+  - all license documents are now displayed in their own table view
+- user preferences
+  - all user-defined players are removed on upgrade
+  - all scoring user defaults are lost on upgrade
+  - new user preferences for "inconsistent territory" (scoring) and
+    "place stone under finger" (play view)
+  - reorganization of Settings view into topical sections
+- bugfixes
+  - changing a player's type (human/computer) now shows/hides the profile as
+    appropriate
+  - game info view is now dismissed when a game is loaded
+  - play view now correctly calculates board edge thickness
+  - user preference "mark dead stones intelligently" is now displayed correctly
+- technical changes
+  - upgrade project to Xcode 4
+  - user defaults are now versioned
+  - the GTP log now displays seconds
+  - a lot of code cleanup
+
 Wed November 16 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.5
 - features

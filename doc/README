@@ -24,15 +24,19 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.5.
+This is Little Go 0.6.
 
-The main feature in this release is the new scoring mode that assists the user
-with marking stone groups' as dead or alive, and, based on stone groups' dead or
-alive status, calculates an accurate territory score. The second important new
-feature is that when a new game is started it is now possible to select a
-handicap (up to 9 stones in fixed locations) and a komi value.
+The main focus of this release has been on bugfixing and cleanup in preparation
+of the upcoming release to the App Store. Nevertheless, quite a few things have
+accumulated that could also be seen as features. A great improvement is that a
+stone is now displayed immediately when the fingertip touches the board. Another
+important change, although more conceptual, is that GTP engine settings are now
+managed in profiles instead of as direct player attributes.
 
-For more details see the ChangeLog document.
+As usual the ChangeLog document has all the details.
+
+Please note that on upgrade you will lose all user-defined players and all
+scoring preferences.
 
 
 Known bugs
