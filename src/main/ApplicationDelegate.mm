@@ -389,6 +389,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
   self.soundHandling = [[SoundHandling alloc] init];
+  // Disable edit button in the "more" navigation controller
+  self.tabBarController.customizableViewControllers = [NSArray array];
 }
 
 // -----------------------------------------------------------------------------

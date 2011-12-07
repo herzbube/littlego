@@ -25,13 +25,13 @@ introduction in the last section in this help (titled "Go rules"). For a more
 thorough approach I recommend visiting one of the many websites dedicated to the
 game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
 
-Little Go lets you play the game against another human, or against the computer.
-The "How to play" section in this help will provide you with a good overview of
-what you can do when you see the game board. The computer player, by the way, is
-powered by the open-source software library Fuego (http://fuego.sourceforge.net/),
-which can be a pretty nasty opponent ☺ if you tune up its number-crunching
-power. The "Players & Profiles" help section tells you more about how to make
-Fuego stronger or weaker.
+You can play the game against another human (in "hot-seat" mode), or against the
+computer. The "How to play" section in this help will provide you with a good
+overview of what you can do when you see the game board. The computer player, by
+the way, is powered by the open-source software library Fuego
+(http://fuego.sourceforge.net/), which can be a pretty nasty opponent ☺ if you
+tune up its number-crunching power. The "Players & Profiles" help section tells
+you more about how to make Fuego stronger or weaker.
 
 When a game is over you will usually want to know who has won. Unfortunately,
 Little Go is not very smart about calculating the score - it relies quite
@@ -113,11 +113,11 @@ its move, the "Action" toolbar button becomes enabled so that you can, for
 instance, start a new game. Tap the "Continue" toolbar button to let the players
 continue their match.
 
-A computer vs. computer game is automatically paused if the device's screen is
-locked, if you receive a phone call, or if some other interruption occurs. Also
-note that audio/vibration feedback preferences are ignored in a computer vs.
-computer game because you are merely a spectator and not actively participating
-in the game.
+A computer vs. computer game is automatically paused when the device's screen is
+locked, when you receive a phone call, or whenever some other interruption
+occurs. Also note that audio/vibration feedback preferences are ignored in a
+computer vs. computer game because you are merely a spectator and not actively
+participating in the game.
 
 =============
 Other actions
@@ -472,8 +472,9 @@ Overview
 ========
 This help section contains only a barebones and purely textual introduction to
 the rules of Go. Usually a few illustration are much more intelligible,
-therefore I strongly suggest that you visit one of the many websites dedicated
-to the game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
+therefore I strongly suggest that to learn the rules you visit one of the many
+websites dedicated to the game; my personal favourite is "Sensei's Library"
+(http://senseis.xmp.net/).
 
 =======
 Players
@@ -579,7 +580,15 @@ Life
 ====
 Taking all the above rules into account, it is possible to form stone groups
 that are impossible to capture under normal, alternating game play (also
-assuming no mistakes). These groups are called "alive".
+assuming the defending player makes no mistakes). If such a group is formed it
+is called "alive". A group that lives usually surrounds two or more separate
+areas of empty points. These areas are called "eyes".
+
+The concepts of "life" and "eyes" are not actually rules, they are just a
+natural consequence of following the three rules about liberties, suicide and
+ko. Nevertheless, it is essential to understand "life" and "eyes" to become
+better at playing Go. Playing a few games, making mistakes and learning from
+them usually is the best teacher.
 
 
 ===================

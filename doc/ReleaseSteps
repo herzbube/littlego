@@ -74,6 +74,7 @@ Make the release
   git tag -s -m "tagging release x.y" x.y <commit hash>
 - Update the blessed repository
   cd <projectdir>
+  git push
   git push --tags
 - Generate the source distribution
   - Go to terminal
