@@ -161,6 +161,8 @@
 		CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
 		CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
 		CDBF97E813EEBFD400476748 /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */; };
+		CDC2DD841494E85700F6D750 /* appicon-iphone-fuseki-8x8.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */; };
+		CDC2DD861494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */; };
 		CDD48C6A141030E100188B6A /* ArchiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDD48C69141030E100188B6A /* ArchiveView.xib */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -382,6 +384,8 @@
 		CDBF979E13EC750C00476748 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		CDBF97E513EEBFD400476748 /* wood-on-wood-01.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-01.aiff"; sourceTree = "<group>"; };
 		CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
+		CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone-fuseki-8x8.png"; sourceTree = "<group>"; };
+		CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone-fuseki-8x8@2x.png"; sourceTree = "<group>"; };
 		CDD48C62140EE7D000188B6A /* Features */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Features; sourceTree = "<group>"; };
 		CDD48C69141030E100188B6A /* ArchiveView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveView.xib; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
@@ -498,6 +502,8 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
+				CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */,
+				CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */,
 				CD1087701323D07800E83543 /* LICENSE */,
 				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
@@ -1060,6 +1066,8 @@
 				CD2A6E0B1491586B001D4AAE /* 49-play@2x.png in Resources */,
 				CD2A6E0D1492D7A3001D4AAE /* gopass.png in Resources */,
 				CD2A6E0F1492E1D6001D4AAE /* gopass@2x.png in Resources */,
+				CDC2DD841494E85700F6D750 /* appicon-iphone-fuseki-8x8.png in Resources */,
+				CDC2DD861494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

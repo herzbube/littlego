@@ -60,6 +60,35 @@ Priority 1 (important)
     possibly other doc snippets in GoScore.m
 - Fix the following issues
   - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
+- Set deployment target to iOS 4.3 for 3rd party build (and check out if using
+  llvm fixes the linker warning)
+- Loading a game does not work if a computer vs. computer game is in progress
+- Make application launch faster so that the application can be run through
+  Instruments (currently this is not possible, the app is terminated by iOS
+  because with Instruments it takes too long to launch). Possible approach:
+  - Launch Fuego from a secondary thread
+    - We need a call back to know when things are ready so that new game can be
+      started 
+    - Alternatively: Don't start new game automatically
+  - The startup cycle would look like this
+    - Delegate startup method is called
+      - Method creates a HUD progress bar
+      - Method creates a secondary thread that performs init steps
+      - Method returns
+    - The secondary thread does its stuff and notifies the HUD about its
+      progress
+    - When it finishes, the secondary thread somehow notifies the main thread
+      that it has finished
+    - The secondary thread either terminates itself (operation queue?), or the
+      main thread calls shouldExit = true
+    - The main thread removes the HUD
+    - The main either executes the restoregame or the newgame command
+  - .nib question
+    - The main .nib with the tab bar controller should be loaded right at the
+      beginning so that a matching startup image can be displayed
+    - Loading of the play view should maybe be delayed? wWen is it loaded now?
+      How does it (and its controller) react when important objects (models
+      etc.) are not present?
 
 
 Priority 2 (nice to have)
@@ -126,6 +155,26 @@ Priority 2 (nice to have)
   again because of the same problem. E.g. check which profile was active when
   the app was killed, then temporarily lower max. memory. Don't forget to notify
   the user.
+- Instead of displaying a warning about which profile is used in the "New game"
+  view for computer vs. computer games, or human vs. human games,  it's
+  probably better to always display the profile name that is used - simpler and
+  more consistent. Also investigage if displaying the profile name would be an
+  improvement.
+- Add territory statistics from Fuego to gauge who owns an area
+  - Could also be used for scoring since it provides a percentage value for
+    each point
+  - If percentage is above a threshold, the point belongs to the color
+  - Statistic numbers are available from the most recent search in the tree;
+    they reflect the result of the search
+  - Statistics gathering requires only minimal memory
+- Suggestions by Martin
+  - Show number of playouts per second (what's this exactly?)
+  - Use some gfx commands
+- Create new app icons with a smaller Fuseki pattern
+  - Allows to place the border lines further inside the icon, so that they are
+    not cut off by the rounded corners applied to the icon by iOS
+  - Also allows to create additional search results icons (29x29 for iPhone and
+    50x50 for iPad)
 
 
 Priority 3 (not important)
@@ -174,6 +223,14 @@ Priority 3 (not important)
   deallocation due to autorelease, but ignorance is no longer possible now that
   all properties have been marked nonatomic and regions are deallocated
   immediately.
+- When a profile is edited, display the players that use it. In the default
+  profile add a note that this is used for human vs. human games.
+- When a player is displayed, add a button below the profile that allows to
+  directly jump to the profile detail view
+- Add user preference whether the screen should be locked in a computer vs.
+  computer game.
+- When the application is launched and a backup .sgf is found: Ask the user for
+  confirmation whether the game should be restored
 
 
 Future improvements to the 3rdparty build process
