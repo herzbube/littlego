@@ -631,3 +631,18 @@ toolbar button), then go to that player's profile (under
 "Settings > Players & Profiles") and lower the value for the "Maximum memory"
 setting. A value of 32 MB should be OK even for older devices such as an
 iPhone 3GS.
+
+======================
+Loading a game is SLOW
+======================
+This is a known bug. It will be fixed in one of the next releases of Little Go.
+
+===================================================
+I cannot load a game, the "load" button is disabled
+===================================================
+When you view the details of a saved game on the "Archive" tab, the "load"
+button is disabled as long as the computer is busy thinking (either for itself,
+or on behalf of a human player who has triggered the "play for me" function).
+If a computer vs. computer game is currently in progress, you have to pause the
+game for the button to become enabled. This limitation should be removed in one
+of the next releases of Little Go.

@@ -23,6 +23,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
+#import "../go/GoGame.h"
 
 
 // -----------------------------------------------------------------------------
@@ -87,12 +88,15 @@ enum GameAttributesSectionItem
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameStateChanged:(NSNotification*)notification;
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Helpers
 //@{
 - (void) editGame;
 - (void) loadGame;
+- (void) updateLoadButtonState;
 //@}
 @end
 
@@ -124,6 +128,7 @@ enum GameAttributesSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.game removeObserver:self forKeyPath:@"fileDate"];
 
   self.game = nil;
@@ -144,7 +149,12 @@ enum GameAttributesSectionItem
                                                                             style:UIBarButtonItemStylePlain
                                                                            target:self
                                                                            action:@selector(loadGame)];
+  [self updateLoadButtonState];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   // KVO observing
   [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
 }
@@ -263,6 +273,23 @@ enum GameAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameStateChanged notification.
+// -----------------------------------------------------------------------------
+- (void) goGameStateChanged:(NSNotification*)notification
+{
+  [self updateLoadButtonState];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts and
+/// #computerPlayerThinkingStops notifications.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  [self updateLoadButtonState];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
@@ -358,6 +385,47 @@ enum GameAttributesSectionItem
     // No animation necessary, the Play tab is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "load game" button.
+///
+/// The button is disabled if a computer player is currently thinking, or if a
+/// computer vs. computer game is not paused. With this measure we avoid the
+/// complicated multi-thread handling of the situation where we need to wait for
+/// the computer player to finish thinking before we can discard the current
+/// game in favour of the game to be loaded.
+// -----------------------------------------------------------------------------
+- (void) updateLoadButtonState
+{
+  BOOL enableButton = NO;
+  GoGame* goGame = [GoGame sharedGame];
+  switch (goGame.type)
+  {
+    case ComputerVsComputerGame:
+    {
+      switch (goGame.state)
+      {
+        case GameIsPaused:
+        case GameHasEnded:
+          if (! goGame.isComputerThinking)
+            enableButton = YES;
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    case ComputerVsHumanGame:
+    {
+      if (! goGame.isComputerThinking)
+        enableButton = YES;
+      break;
+    }
+    default:
+      break;
+  }
+  self.navigationItem.rightBarButtonItem.enabled = enableButton;
 }
 
 @end

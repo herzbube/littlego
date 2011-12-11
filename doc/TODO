@@ -89,6 +89,15 @@ Priority 1 (important)
     - Loading of the play view should maybe be delayed? wWen is it loaded now?
       How does it (and its controller) react when important objects (models
       etc.) are not present?
+- Once the "interrupt" feature has been implemented, do not disable the
+  "load game" button in ViewGameController if a computer player is currently
+  thinking
+  - Also update the help if this is implemented
+  - We probably also need to do something about the case where a human player
+    has triggered the "play for me" function. In a human vs. human game, there
+    is only one pending computer move, but in a human vs. computer game there
+    TWO pending computer moves - but there is no "pause" function that can be
+    used to prevent the second computer move after the interrupt has been sent.
 
 
 Priority 2 (nice to have)

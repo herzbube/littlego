@@ -43,6 +43,10 @@ Known bugs
 ----------
 Loading a game on a large board and with many moves takes much too long.
 
+A game cannot be loaded if the computer is currently thinking (either for
+itself, or on behalf of a human player who has triggered the "play for me"
+function).
+
 
 License and source code
 -----------------------
