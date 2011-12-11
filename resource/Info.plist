@@ -48,5 +48,11 @@
 	<string>MainWindow</string>
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
+	<key>UILaunchImageFile</key>
+	<string>LaunchImage</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

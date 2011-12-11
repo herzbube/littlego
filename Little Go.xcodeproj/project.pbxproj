@@ -163,6 +163,8 @@
 		CDBF97E813EEBFD400476748 /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */; };
 		CDC2DD841494E85700F6D750 /* appicon-iphone-fuseki-8x8.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */; };
 		CDC2DD861494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */; };
+		CDC2DD891495176000F6D750 /* LaunchImage.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD871495176000F6D750 /* LaunchImage.png */; };
+		CDC2DD8A1495176000F6D750 /* LaunchImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC2DD881495176000F6D750 /* LaunchImage@2x.png */; };
 		CDD48C6A141030E100188B6A /* ArchiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDD48C69141030E100188B6A /* ArchiveView.xib */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -386,6 +388,8 @@
 		CDBF97E613EEBFD400476748 /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
 		CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone-fuseki-8x8.png"; sourceTree = "<group>"; };
 		CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone-fuseki-8x8@2x.png"; sourceTree = "<group>"; };
+		CDC2DD871495176000F6D750 /* LaunchImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchImage.png; sourceTree = "<group>"; };
+		CDC2DD881495176000F6D750 /* LaunchImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage@2x.png"; sourceTree = "<group>"; };
 		CDD48C62140EE7D000188B6A /* Features */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Features; sourceTree = "<group>"; };
 		CDD48C69141030E100188B6A /* ArchiveView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveView.xib; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
@@ -904,6 +908,8 @@
 				CD2A6E0E1492E1D6001D4AAE /* gopass@2x.png */,
 				CD0CCF6B143A627000A3F869 /* GtpLogView.xib */,
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
+				CDC2DD871495176000F6D750 /* LaunchImage.png */,
+				CDC2DD881495176000F6D750 /* LaunchImage@2x.png */,
 				CDEC28A812F4A2BB0069F5B7 /* MainWindow.xib */,
 				CD1088621326CDAA00E83543 /* PlayView.xib */,
 				CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */,
@@ -1068,6 +1074,8 @@
 				CD2A6E0F1492E1D6001D4AAE /* gopass@2x.png in Resources */,
 				CDC2DD841494E85700F6D750 /* appicon-iphone-fuseki-8x8.png in Resources */,
 				CDC2DD861494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png in Resources */,
+				CDC2DD891495176000F6D750 /* LaunchImage.png in Resources */,
+				CDC2DD8A1495176000F6D750 /* LaunchImage@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

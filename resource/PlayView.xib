@@ -157,7 +157,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Welcome to Little Go!</string>
+						<string key="IBUIText"/>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -882,7 +882,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{23, 17}</string>
+				<string>{23, 20}</string>
 				<string>{10, 14}</string>
 				<string>{7, 14}</string>
 				<string>{20, 20}</string>

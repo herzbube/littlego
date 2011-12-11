@@ -202,10 +202,12 @@ documentation is to source code:
   .xib must match the values of the enumeration TabType, which is defined in
   Constants.h.
 
+
 Info.plist notes
 ----------------
 - See section "The version number"
 - See section "Application icons"
+- See section "Launch images"
 
 
 UI elements design notes
@@ -510,8 +512,9 @@ of user input.
 controllers, and how they can be combined to make a nice and efficient UI. Worth
 mentioning are the two sections of special interest that cover animations and
 modal view controllers. Table views are such an important topic that an entire
-guide [11] has been written about them. Last but not least, [12] provides a
-useful all-in-one-page overview of the UI elements and styles available in iOS.
+guide [11] has been written about them. Last but not least, the section "iOS UI
+Element Usage Guidelines" in [12] provides a useful all-in-one-page overview of
+the UI elements and styles available in iOS.
 
 Observing various model objects for user preferences changes can be elegantly
 solved using the Key-Value Observing (KVO) technique, which in turn is based on
@@ -534,27 +537,33 @@ Tasks that should run while the app is in the background are also explained in
 which are required for background tasks, a side-trip to [19] and [20] should be
 sufficient.
 
+The finishing touch for an app before it is released to the App Store requires
+a set of application icons, at least one launch image and an Info.plist file
+with that is properly set up. Information on how to get these tasks done can be
+found in section "App-Related Resources" of [18], in section "Custom Icon and
+Image Creation Guidelines" of [12], and in [21].
 
-[1]  iOS Reference Library > Guides > The Objective-C Programming Language > Declared Properties
-[2]  iOS Reference Library > Guides > Threading Programming Guide
-[3]  iOS Reference Library > Guides > Timer Programming Topics
-[4]  iOS Reference Library > Guides > User Defaults Programming Topics
-[5]  iOS Reference Library > Guides > Resource Programming Guide
-[6]  iOS Reference Library > Guides > Drawing and Printing Guide for iOS
-[7]  iOS Reference Library > Guides > Quartz 2D Programming Guide
-[8]  iOS Reference Library > Guides > Event Handling Guide for iOS
-[9]  iOS Reference Library > Guides > View Programming Guide for iOS
-[10] iOS Reference Library > Guides > View Controller Programming Guide for iOS
-[11] iOS Reference Library > Guides > Table View Programming Guide for iOS
-[12] iOS Reference Library > Guides > iOS Human Interface Guidelines > iOS UI Element Usage Guidelines
-[13] iOS Reference Library > Guides > Key-Value Observing Programming Guide
-[14] iOS Reference Library > Guides > Key-Value Coding Programming Guide
-[15] iOS Reference Library > Reference > System Sound Services Reference
-[16] iOS Reference Library > Guides > Multimedia Programming Guide
+[1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
+[2]  iOS Developer Library > Guides > Threading Programming Guide
+[3]  iOS Developer Library > Guides > Timer Programming Topics
+[4]  iOS Developer Library > Guides > User Defaults Programming Topics
+[5]  iOS Developer Library > Guides > Resource Programming Guide
+[6]  iOS Developer Library > Guides > Drawing and Printing Guide for iOS
+[7]  iOS Developer Library > Guides > Quartz 2D Programming Guide
+[8]  iOS Developer Library > Guides > Event Handling Guide for iOS
+[9]  iOS Developer Library > Guides > View Programming Guide for iOS
+[10] iOS Developer Library > Guides > View Controller Programming Guide for iOS
+[11] iOS Developer Library > Guides > Table View Programming Guide for iOS
+[12] iOS Developer Library > Guides > iOS Human Interface Guidelines (aka "HIG")
+[13] iOS Developer Library > Guides > Key-Value Observing Programming Guide
+[14] iOS Developer Library > Guides > Key-Value Coding Programming Guide
+[15] iOS Developer Library > Reference > System Sound Services Reference
+[16] iOS Developer Library > Guides > Multimedia Programming Guide
 [17] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html
-[18] iOS Reference Library > Guides > iOS Application Programming Guide
-[19] iOS Reference Library > Getting Started > A Short Practical Guide to Blocks
-[20] iOS Reference Library > Guides > Blocks Programming Topics
+[18] iOS Developer Library > Guides > iOS Application Programming Guide
+[19] iOS Developer Library > Getting Started > A Short Practical Guide to Blocks
+[20] iOS Developer Library > Guides > Blocks Programming Topics
+[21] iOS Developer Library > Reference > Information Property List Key Reference
 
 
 Compilation command
@@ -914,10 +923,6 @@ projects also supports usage of CFBundleShortVersionString only.
 
 Application icons
 -----------------
-References
-- iOS App Programming Guide > App-Related Resources > App Icons
-- Information Property List Key Reference > Core Foundation Keys
-
 Application icons are specified using various keys in the bundle's Info.plist
 file. Some notes about the keys:
 - The app does not support iOS versions prior to 4.3, so there is no need to
@@ -964,3 +969,17 @@ about the consequences. This means:
 - Another consequence is that Xcode adds explicit filenames to Info.plist, i.e.
   it is not possible to take advantage of the system's automatic detection
   mechanism to find the retina display icon (suffix "@2x").
+
+
+Launch images
+-------------
+Launch images are specified using various keys in the bundle's Info.plist
+file. Unlike with application icons, I had no trouble specifying just the base
+image name and let iOS do the rest for me. Specifically:
+- Use the key "UILaunchImageFile" and set the base name to "LaunchImage"
+- iOS will automatically tack on the file extension ".png", and it will also
+  automatically find the retina display image by adding the suffix "@2x".
+
+Note that in Xcode 4 the launch images do not show up on the main target's
+summary page. Apparently Xcode does not support iOS' automatic way of finding
+alternative images.
