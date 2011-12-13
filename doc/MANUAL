@@ -401,22 +401,22 @@ Fuego (http://fuego.sourceforge.net/). Little Go and Fuego talk to each other
 via GTP - the Go Text Protocol. In the GTP context, Fuego is called the GTP
 engine, while Little Go is the GTP client.
 
-On the "Debug" tab you can observe the flow of communication between GTP client
-and engine. You can even interfere with it by injecting your own GTP commands.
-Be careful, though, not to disrupt normal operations: As the title suggests, the
-"Debug" tab options should only be used if something goes wrong during normal
-game play and you need GTP to investigate.
+On the "Diagnostics" tab you can observe the flow of communication between GTP
+client and engine. You can even interfere with it by injecting your own GTP
+commands. Be careful, though, not to disrupt normal operations: As the title
+suggests, the "Diagnostics" tab options should only be used if something goes
+wrong during normal game play and you need GTP to investigate.
 
 
 =======
 GTP log
 =======
 The GTP log displays the last 100 GTP commands sent, and the responses received.
-The log size can be changed under "Debug > Settings > GTP log size". Commands
-are listed in the order in which they were submitted, the most recent command
-appears at the bottom of the log. The log is dynamically updated when a new
-GTP command/response is submitted to or received from the GTP engine. The log
-can be emptied under "Debug > Settings > Clear GTP log".
+The log size can be changed under "Diagnostics > Settings > GTP log size".
+Commands are listed in the order in which they were submitted, the most recent
+command appears at the bottom of the log. The log is dynamically updated when a
+new GTP command/response is submitted to or received from the GTP engine. The
+log can be emptied under "Diagnostics > Settings > Clear GTP log".
 
 Each log entry displays the name of the GTP command and the time when it was
 sent to the GTP engine. Log entries are also color-coded to mark which type of
@@ -449,10 +449,10 @@ commands. If there is no "+" button, the command is already pre-defined.
 ====================
 Pre-defined commands
 ====================
-On the "Debug" tab you can select the entry "GTP commands" to view and manage
-a list of pre-defined GTP commands. Usually these are often-used or complicated
-commands that you do not want to re-type every time you need to submit them.
-Commands are submitted in the GTP log view.
+On the "Diagnostics" tab you can select the entry "GTP commands" to view and
+manage a list of pre-defined GTP commands. Usually these are often-used or
+complicated commands that you do not want to re-type every time you need to
+submit them. Commands are submitted in the GTP log view.
 
 The "edit" toolbar button lets you delete and re-arrange commands, while the
 "+" toolbar button allows you to add a new command to the list. Tapping an
@@ -460,7 +460,7 @@ entry in the list presents a detail view where you can edit the command string.
 
 The application comes with a factory set of pre-defined commands which you can
 freely edit. To discard your current set and return to the factory set, select
-"Debug > Settings > Reset predefined commands".
+"Diagnostics > Settings > Reset predefined commands".
 
 
 --------------------------------------------------------------------------------

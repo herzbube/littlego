@@ -89,8 +89,6 @@
 		CD2A6DE914901E69001D4AAE /* 20-gear-2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DE714901E68001D4AAE /* 20-gear-2@2x.png */; };
 		CD2A6DF2149020BA001D4AAE /* 33-cabinet.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DEA149020B9001D4AAE /* 33-cabinet.png */; };
 		CD2A6DF3149020BA001D4AAE /* 33-cabinet@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DEB149020B9001D4AAE /* 33-cabinet@2x.png */; };
-		CD2A6DF6149020BA001D4AAE /* 110-bug.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DEE149020BA001D4AAE /* 110-bug.png */; };
-		CD2A6DF7149020BA001D4AAE /* 110-bug@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DEF149020BA001D4AAE /* 110-bug@2x.png */; };
 		CD2A6DFC14903025001D4AAE /* 213-reply.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DFA14903025001D4AAE /* 213-reply.png */; };
 		CD2A6DFD14903025001D4AAE /* 213-reply@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6DFB14903025001D4AAE /* 213-reply@2x.png */; };
 		CD2A6E0114912AAC001D4AAE /* computer-play.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2A6E0014912AAB001D4AAE /* computer-play.png */; };
@@ -198,6 +196,8 @@
 		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
+		CDF51D0F1497F9B7009BB718 /* 79-medical-bag.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF51D0D1497F9B7009BB718 /* 79-medical-bag.png */; };
+		CDF51D101497F9B7009BB718 /* 79-medical-bag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF51D0E1497F9B7009BB718 /* 79-medical-bag@2x.png */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -314,8 +314,6 @@
 		CD2A6DE714901E68001D4AAE /* 20-gear-2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "20-gear-2@2x.png"; sourceTree = "<group>"; };
 		CD2A6DEA149020B9001D4AAE /* 33-cabinet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "33-cabinet.png"; sourceTree = "<group>"; };
 		CD2A6DEB149020B9001D4AAE /* 33-cabinet@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "33-cabinet@2x.png"; sourceTree = "<group>"; };
-		CD2A6DEE149020BA001D4AAE /* 110-bug.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "110-bug.png"; sourceTree = "<group>"; };
-		CD2A6DEF149020BA001D4AAE /* 110-bug@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "110-bug@2x.png"; sourceTree = "<group>"; };
 		CD2A6DFA14903025001D4AAE /* 213-reply.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "213-reply.png"; sourceTree = "<group>"; };
 		CD2A6DFB14903025001D4AAE /* 213-reply@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "213-reply@2x.png"; sourceTree = "<group>"; };
 		CD2A6E0014912AAB001D4AAE /* computer-play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-play.png"; sourceTree = "<group>"; };
@@ -458,6 +456,8 @@
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
+		CDF51D0D1497F9B7009BB718 /* 79-medical-bag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "79-medical-bag.png"; sourceTree = "<group>"; };
+		CDF51D0E1497F9B7009BB718 /* 79-medical-bag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "79-medical-bag@2x.png"; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -885,8 +885,8 @@
 				CD2A6E051491586A001D4AAE /* 48-pause@2x.png */,
 				CD2A6E061491586B001D4AAE /* 49-play.png */,
 				CD2A6E071491586B001D4AAE /* 49-play@2x.png */,
-				CD2A6DEE149020BA001D4AAE /* 110-bug.png */,
-				CD2A6DEF149020BA001D4AAE /* 110-bug@2x.png */,
+				CDF51D0D1497F9B7009BB718 /* 79-medical-bag.png */,
+				CDF51D0E1497F9B7009BB718 /* 79-medical-bag@2x.png */,
 				CD2A6DFA14903025001D4AAE /* 213-reply.png */,
 				CD2A6DFB14903025001D4AAE /* 213-reply@2x.png */,
 				CDBB0C0A13426DAB007C1C3E /* About.html */,
@@ -1060,8 +1060,6 @@
 				CD2A6DE914901E69001D4AAE /* 20-gear-2@2x.png in Resources */,
 				CD2A6DF2149020BA001D4AAE /* 33-cabinet.png in Resources */,
 				CD2A6DF3149020BA001D4AAE /* 33-cabinet@2x.png in Resources */,
-				CD2A6DF6149020BA001D4AAE /* 110-bug.png in Resources */,
-				CD2A6DF7149020BA001D4AAE /* 110-bug@2x.png in Resources */,
 				CD2A6DFC14903025001D4AAE /* 213-reply.png in Resources */,
 				CD2A6DFD14903025001D4AAE /* 213-reply@2x.png in Resources */,
 				CD2A6E0114912AAC001D4AAE /* computer-play.png in Resources */,
@@ -1076,6 +1074,8 @@
 				CDC2DD861494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png in Resources */,
 				CDC2DD891495176000F6D750 /* LaunchImage.png in Resources */,
 				CDC2DD8A1495176000F6D750 /* LaunchImage@2x.png in Resources */,
+				CDF51D0F1497F9B7009BB718 /* 79-medical-bag.png in Resources */,
+				CDF51D101497F9B7009BB718 /* 79-medical-bag@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -138,6 +138,7 @@ enum ResetCannedCommandsSectionItem
   [super viewDidLoad];
   self.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
   self.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+  self.navigationItem.title = @"GTP Settings";
 }
 
 // -----------------------------------------------------------------------------

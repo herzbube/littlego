@@ -62,7 +62,6 @@ Priority 1 (important)
   - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
 - Set deployment target to iOS 4.3 for 3rd party build (and check out if using
   llvm fixes the linker warning)
-- Loading a game does not work if a computer vs. computer game is in progress
 - Make application launch faster so that the application can be run through
   Instruments (currently this is not possible, the app is terminated by iOS
   because with Instruments it takes too long to launch). Possible approach:
@@ -164,6 +163,8 @@ Priority 2 (nice to have)
   again because of the same problem. E.g. check which profile was active when
   the app was killed, then temporarily lower max. memory. Don't forget to notify
   the user.
+  - We can't use memory warnings for this because we don't get a recovery
+    message when memory conditions normalize
 - Instead of displaying a warning about which profile is used in the "New game"
   view for computer vs. computer games, or human vs. human games,  it's
   probably better to always display the profile name that is used - simpler and

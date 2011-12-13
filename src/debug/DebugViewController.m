@@ -157,12 +157,11 @@ enum ApplicationLogSectionItem
 {
   switch (section)
   {
-    case GtpSection:
-      return @"GTP (Go Text Protocol)";
+//    case GtpSection:
+//      return @"GTP (Go Text Protocol)";
 //    case ApplicationLogSection:
 //      return @"Application Log";
     default:
-      assert(0);
       break;
   }
   return nil;
