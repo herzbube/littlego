@@ -82,7 +82,7 @@
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.archiveViewModel = delegate.archiveViewModel;
   // self.editButtonItem is a standard item provided by UIViewController, which
   // is linked to triggering the view's edit mode
