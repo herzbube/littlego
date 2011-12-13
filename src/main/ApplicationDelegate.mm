@@ -257,21 +257,22 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
-  // Save whatever data we can before the system kills the applicatin
+  DDLogWarn(@"ApplicationDelegate received memory warning");
+  // Save whatever data we can before the system kills the application
   [[[BackupGameCommand alloc] init] submit];
   [self writeUserDefaults];
   // Even though we can't really do anything about the situation, we still need
   // to notify the user so that he knows what's going on, or why the application
   // is probably going to be terminated in a moment.
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Low Memory"
-                                                  message:@"Little Go uses too much memory, it may be terminated by the system in a moment!\n\n"
-                                                           " Consider lowering the computer player's memory consumption (Settings > Players & Profiles)"
-                                                           " to prevent this warning from appearing in the future."
-                                                 delegate:nil
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = MemoryWarningAlertView;
-  [alert show];
+//  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Low Memory"
+//                                                  message:@"Little Go uses too much memory, it may be terminated by the system in a moment!\n\n"
+//                                                           " Consider lowering the computer player's memory consumption (Settings > Players & Profiles)"
+//                                                           " to prevent this warning from appearing in the future."
+//                                                 delegate:nil
+//                                        cancelButtonTitle:nil
+//                                        otherButtonTitles:@"Ok", nil];
+//  alert.tag = MemoryWarningAlertView;
+//  [alert show];
 }
 
 // -----------------------------------------------------------------------------

@@ -185,6 +185,15 @@ Priority 2 (nice to have)
     not cut off by the rounded corners applied to the icon by iOS
   - Also allows to create additional search results icons (29x29 for iPhone and
     50x50 for iPad)
+- Add user preference for what should happen when a memory warning is received
+  - Remain silent (the default)
+  - Display alert
+  - Take away memory from Fuego
+- Add user preference for what should happen if a backup game is found on
+  startup
+  - Load the game
+  - Display alert with an option that lets the user decline to load the game
+  - Silently ignore the backup (equivalent to "do not backup")
 
 
 Priority 3 (not important)
