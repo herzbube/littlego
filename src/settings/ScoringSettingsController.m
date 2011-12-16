@@ -129,7 +129,7 @@ enum ScoringSectionItem
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.scoringModel = delegate.scoringModel;
   
   self.title = @"Scoring settings";

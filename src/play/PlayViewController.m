@@ -73,6 +73,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameNewCreated:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
@@ -99,10 +100,13 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
 /// @name Privately declared properties
 //@{
+/// @brief True if this controller has been set up is now "ready for action".
+@property(nonatomic, assign) bool controllerReadyForAction;
 /// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the long-press gesture.
@@ -125,6 +129,7 @@
 
 @implementation PlayViewController
 
+@synthesize controllerReadyForAction;
 @synthesize frontSideView;
 @synthesize backSideView;
 @synthesize playView;
@@ -170,7 +175,32 @@
 {
   [super viewDidLoad];
 
-  self.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  if (! delegate.applicationReadyForAction)
+  {
+    self.controllerReadyForAction = false;
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
+  }
+  else
+  {
+    [self makeControllerReadyForAction];
+    self.controllerReadyForAction = true;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up this controller and makes it "ready for action".
+// -----------------------------------------------------------------------------
+- (void) makeControllerReadyForAction
+{
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  self.scoringModel = delegate.scoringModel;
+  if (! self.scoringModel)
+  {
+    DDLogError(@"PlayViewController::makeControllerReadyForAction(): Unable to find the ScoringModel object");
+    assert(0);
+  }
 
   [self.view addSubview:self.frontSideView];
 
@@ -463,6 +493,18 @@
     return self.isTappingEnabled;
   else
     return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #applicationIsReadyForAction notification.
+// -----------------------------------------------------------------------------
+- (void) applicationIsReadyForAction:(NSNotification*)notification
+{
+  // We only need this notification once
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
+  
+  [self makeControllerReadyForAction];
+  self.controllerReadyForAction = true;
 }
 
 // -----------------------------------------------------------------------------

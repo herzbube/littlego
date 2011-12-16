@@ -220,6 +220,18 @@ extern const int cellDisclosureIndicatorWidth;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Application notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent after the application delegate has finished setting up the
+/// application (includes creating all objects that are important for the
+/// application's lifecycle). The application is now "ready for action".
+///
+/// This notification is sent exactly once.
+extern NSString* applicationIsReadyForAction;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name GTP notifications
 // -----------------------------------------------------------------------------
 //@{

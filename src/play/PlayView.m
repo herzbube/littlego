@@ -81,6 +81,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameNewCreated:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) goGameFirstMoveChanged:(NSNotification*)notification;
@@ -93,6 +94,7 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) makeViewReadyForDrawing;
 - (void) updateDrawParametersForRect:(CGRect)rect;
 - (void) updateCrossHairPointDistanceFromFinger;
 - (void) delayedUpdate;
@@ -117,6 +119,7 @@
 //@}
 /// @name Other privately declared properties
 //@{
+@property(nonatomic, assign) bool viewReadyForDrawing;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 //@}
@@ -130,6 +133,7 @@
 
 @synthesize playViewModel;
 @synthesize scoringModel;
+@synthesize viewReadyForDrawing;
 
 @synthesize previousDrawRect;
 @synthesize previousBoardDimension;
@@ -191,8 +195,21 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is called after an PlayView object has been allocated and initialized
-/// from PlayView.xib
+/// @brief Is invoked after an PlayView object has been allocated and
+/// initialized from PlayView.xib. This happens at least once during application
+/// launch, but may occur again later on if the view is unloaded and then
+/// reloaded due to a memory warning.
+///
+/// Attempts to set up the view and make it ready for drawing. If this method
+/// is invoked the very first time during application launch, the attempt fails
+/// because the application delegate has not yet created all the objects that
+/// are necessary for the application lifecycle. The delegate will send us a
+/// notification as soon as it has finished its setup task, which will then
+/// trigger the view setup.
+///
+/// If this method is invoked again later during the application's lifetime,
+/// the setup attempt will succeed because all the necessary objects are already
+/// there.
 ///
 /// @note This is a method from the UINibLoadingAdditions category (an addition
 /// to NSObject, defined in UINibLoading.h). Although it has the same purpose,
@@ -204,9 +221,34 @@ static PlayView* sharedPlayView = nil;
   [super awakeFromNib];
 
   sharedPlayView = self;
+
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  if (! delegate.applicationReadyForAction)
+  {
+    self.viewReadyForDrawing = false;
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
+  }
+  else
+  {
+    [self makeViewReadyForDrawing];
+    self.viewReadyForDrawing = true;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the view and makes it ready for drawing.
+// -----------------------------------------------------------------------------
+- (void) makeViewReadyForDrawing
+{
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playViewModel = delegate.playViewModel;
   self.scoringModel = delegate.scoringModel;
+  if (! self.playViewModel)
+  {
+    DDLogError(@"PlayView::makeViewReadyForDrawing(): Unable to find the PlayViewModel object");
+    assert(0);
+  }
 
   self.previousDrawRect = CGRectNull;
   self.previousBoardDimension = 0;
@@ -298,9 +340,16 @@ static PlayView* sharedPlayView = nil;
 - (void) drawRect:(CGRect)rect
 {
   // Guard against
+  // - updates triggered while the view is still uninitialized and not yet ready
+  //   for drawing (occurs during application launch)
   // - updates triggered by UIKit
   // - updates that were triggered by delayedUpdate() before actionsInProgress
   //   was increased
+  if (! self.viewReadyForDrawing)
+  {
+    self.updatesWereDelayed = true;
+    return;
+  }
   if (self.actionsInProgress > 0)
   {
     self.updatesWereDelayed = true;
@@ -1027,6 +1076,20 @@ static PlayView* sharedPlayView = nil;
   square.size.width = sideLength;
   square.size.height = sideLength;
   return square;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #applicationIsReadyForAction notification.
+// -----------------------------------------------------------------------------
+- (void) applicationIsReadyForAction:(NSNotification*)notification
+{
+  // We only need this notification once
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
+
+  [self makeViewReadyForDrawing];
+  self.viewReadyForDrawing = true;
+  
+  [self setNeedsDisplay];
 }
 
 // -----------------------------------------------------------------------------

@@ -102,7 +102,7 @@
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.model = delegate.gtpCommandModel;
 
   [self setupNavigationItem];

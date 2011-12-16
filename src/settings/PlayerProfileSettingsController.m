@@ -152,7 +152,7 @@ enum GtpEngineProfilesSectionItem
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playerModel = delegate.playerModel;
   self.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
 

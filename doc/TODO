@@ -62,32 +62,6 @@ Priority 1 (important)
   - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
 - Set deployment target to iOS 4.3 for 3rd party build (and check out if using
   llvm fixes the linker warning)
-- Make application launch faster so that the application can be run through
-  Instruments (currently this is not possible, the app is terminated by iOS
-  because with Instruments it takes too long to launch). Possible approach:
-  - Launch Fuego from a secondary thread
-    - We need a call back to know when things are ready so that new game can be
-      started 
-    - Alternatively: Don't start new game automatically
-  - The startup cycle would look like this
-    - Delegate startup method is called
-      - Method creates a HUD progress bar
-      - Method creates a secondary thread that performs init steps
-      - Method returns
-    - The secondary thread does its stuff and notifies the HUD about its
-      progress
-    - When it finishes, the secondary thread somehow notifies the main thread
-      that it has finished
-    - The secondary thread either terminates itself (operation queue?), or the
-      main thread calls shouldExit = true
-    - The main thread removes the HUD
-    - The main either executes the restoregame or the newgame command
-  - .nib question
-    - The main .nib with the tab bar controller should be loaded right at the
-      beginning so that a matching startup image can be displayed
-    - Loading of the play view should maybe be delayed? wWen is it loaded now?
-      How does it (and its controller) react when important objects (models
-      etc.) are not present?
 - Once the "interrupt" feature has been implemented, do not disable the
   "load game" button in ViewGameController if a computer player is currently
   thinking

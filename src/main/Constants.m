@@ -40,6 +40,8 @@ const int cellDisclosureIndicatorWidth = 20;
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
 NSString* sgfBackupFileName = @"backup.sgf";
 
+// Application notifications
+NSString* applicationIsReadyForAction = @"ApplicationIsReadyForAction";
 // GTP notifications
 NSString* gtpCommandWillBeSubmittedNotification = @"GtpCommandWillBeSubmitted";
 NSString* gtpResponseWasReceivedNotification = @"GtpResponseWasReceived";

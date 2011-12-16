@@ -136,7 +136,7 @@ enum ViewSectionItem
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playViewModel = delegate.playViewModel;
   
   self.title = @"Play view settings";

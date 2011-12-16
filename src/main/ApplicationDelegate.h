@@ -15,8 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
+// Project includes
+#import "../ui/MBProgressHUD.h"
 
 // Forward declarations
 @class GtpClient;
@@ -44,7 +44,7 @@
 /// The single instance of ApplicationDelegate is available to clients via the
 /// class method sharedDelegate().
 // -----------------------------------------------------------------------------
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate>
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate, MBProgressHUDDelegate>
 {
 @private
   /// @name Outlets
@@ -63,6 +63,7 @@
 - (void) setupResourceBundle;
 - (void) setupRegistrationDomain;
 - (void) setupUserDefaults;
+- (void) setupSound;
 - (void) setupGUI;
 - (void) setupFuego;
 - (void) writeUserDefaults;
@@ -74,6 +75,14 @@
 @property(nonatomic, retain) IBOutlet UIWindow* window;
 /// @brief The main application controller.
 @property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+/// @brief Is false during application launch, and shortly afterwards while this
+/// delegate is still setting up objects that are important for the application
+/// lifecycle.
+///
+/// Becomes true after the application delegate has finished setting everything
+/// up. Just after this flag becomes true, the notification
+/// #applicationIsReadyForAction is posted to the global notification center.
+@property(nonatomic, assign) bool applicationReadyForAction;
 /// @brief The bundle that contains the application's resources. This property
 /// exists to make the application more testable.
 @property(nonatomic, assign) NSBundle* resourceBundle;

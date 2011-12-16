@@ -73,7 +73,7 @@
   AudioServicesCreateSystemSoundID(playStoneURLRef, &playStoneSystemSound);
   CFRelease(playStoneURLRef);
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.model = [delegate playViewModel];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];

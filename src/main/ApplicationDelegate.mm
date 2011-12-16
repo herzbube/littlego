@@ -77,6 +77,15 @@
 - (void) applicationDidBecomeActive:(UIApplication*)application;
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application;
 //@}
+/// @name MBProgressHUDDelegate protocol
+//@{
+- (void) hudWasHidden:(MBProgressHUD*)progressHUD;
+//@}
+/// @name Private helpers
+//@{
+- (void) launchAsynchronously;
+- (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD;
+//@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) DDFileLogger* fileLogger;
@@ -88,6 +97,7 @@
 
 @synthesize window;
 @synthesize tabBarController;
+@synthesize applicationReadyForAction;
 @synthesize resourceBundle;
 @synthesize gtpClient;
 @synthesize gtpEngine;
@@ -133,6 +143,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 + (ApplicationDelegate*) newDelegate
 {
   sharedDelegate = [[[ApplicationDelegate alloc] init] autorelease];
+  sharedDelegate.applicationReadyForAction = false;
   return sharedDelegate;
 }
 
@@ -174,21 +185,13 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
-  [self setupLogging];
-  [self setupFolders];
-  [self setupResourceBundle];
-  [self setupRegistrationDomain];
-  [self setupUserDefaults];
-  [self setupGUI];
-  [self setupFuego];
+  // Clients need to see that we are not yet ready. Flag will become true when
+  // secondary thread has finished setup.
+  self.applicationReadyForAction = false;
 
-  [[[LoadOpeningBook alloc] init] submit];
-  // Run this command with a small delay so that this method can return and the
-  // system has time to finish the application launch cycle. Because the command
-  // runs synchronously and possibly takes a long time, it would be fatal to
-  // run it right now - the system might kill our app because we don't finish
-  // launching within the limited time given to us
-  [[[RestoreGameCommand alloc] init] submitAfterDelay:0.2];
+  // Delegate setup to secondary thread so that the application launches as
+  // quickly as possible
+  [self launchAsynchronously];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -383,13 +386,20 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the objects used to manage sound and vibration.
+// -----------------------------------------------------------------------------
+- (void) setupSound
+{
+  self.soundHandling = [[SoundHandling alloc] init];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the objects used to manage the GUI.
 // -----------------------------------------------------------------------------
 - (void) setupGUI
 {
   [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
-  self.soundHandling = [[SoundHandling alloc] init];
   // Disable edit button in the "more" navigation controller
   self.tabBarController.customizableViewControllers = [NSArray array];
 }
@@ -511,6 +521,94 @@ static ApplicationDelegate* sharedDelegate = nil;
       break;
   }
   return resourceName;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Spins off a secondary thread which will perform the application
+/// setup, then returns immediately.
+// -----------------------------------------------------------------------------
+- (void) launchAsynchronously
+{
+  // Must be invoked so that MainWindow.xib is loaded. After this method returns
+  // the launch image will go away and the main window will come to the front.
+  // If this setup is performed inside the secondary thread, the main window
+  // is not ready when the launch image goes away and the user will see a white
+  // screen.
+  [self setupGUI];
+
+  UIView* theSuperView = self.tabBarController.view;
+  MBProgressHUD* progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
+  [theSuperView addSubview:progressHUD];
+  progressHUD.mode = MBProgressHUDModeDeterminate;
+  progressHUD.determinateStyle = MBDeterminateStyleBar;
+  progressHUD.dimBackground = YES;
+  progressHUD.delegate = self;
+  progressHUD.labelText = @"Starting up...";
+  [progressHUD showWhileExecuting:@selector(launchWithProgressHUD:) onTarget:self withObject:progressHUD animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the entire application setup.
+///
+/// @note This method runs in a secondary thread. For every setup operation
+/// that is performed, the progress view in @e progressHUD is updated by one
+/// step.
+// -----------------------------------------------------------------------------
+- (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD
+{
+  const int totalSteps = 10;
+  const float stepIncrease = 1.0 / totalSteps;
+  float progress = 0.0;
+
+  [self setupLogging];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  [self setupFolders];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+  
+  [self setupResourceBundle];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+  
+  [self setupRegistrationDomain];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+  
+  [self setupUserDefaults];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  [self setupSound];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  [self setupFuego];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  self.applicationReadyForAction = true;
+  [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  [[[LoadOpeningBook alloc] init] submit];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+
+  [[[RestoreGameCommand alloc] init] submit];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MBProgressHUDDelegate method
+// -----------------------------------------------------------------------------
+- (void) hudWasHidden:(MBProgressHUD*)progressHUD
+{
+  [progressHUD removeFromSuperview];
+  [progressHUD release];
 }
 
 @end

@@ -138,7 +138,7 @@ enum ResponseStringSectionItem
 
   self.navigationItem.title = @"GTP Log Item";
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   if (! [delegate.gtpCommandModel hasCommand:self.logItem.commandString])
   {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
@@ -343,7 +343,7 @@ enum ResponseStringSectionItem
 // -----------------------------------------------------------------------------
 - (void) addToCannedCommands:(id)sender
 {
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   GtpCommandModel* model = delegate.gtpCommandModel;
   [model addCommand:self.logItem.commandString];
   UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Command added"

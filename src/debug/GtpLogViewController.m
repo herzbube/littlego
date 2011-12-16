@@ -124,7 +124,7 @@
 {
   [super viewDidLoad];
 
-  ApplicationDelegate* delegate = [UIApplication sharedApplication].delegate;
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.model = delegate.gtpLogModel;
 
   [self setupNavigationItem];

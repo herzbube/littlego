@@ -416,14 +416,12 @@ enum GameAttributesSectionItem
       }
       break;
     }
-    case ComputerVsHumanGame:
+    default:
     {
       if (! goGame.isComputerThinking)
         enableButton = YES;
       break;
     }
-    default:
-      break;
   }
   self.navigationItem.rightBarButtonItem.enabled = enableButton;
 }
