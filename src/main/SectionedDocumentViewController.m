@@ -88,7 +88,7 @@
   switch (tabType)
   {
     case ManualTab:
-      self.documentGenerator = [[DocumentGenerator alloc] initWithFileContent:resourceContent];
+      self.documentGenerator = [[[DocumentGenerator alloc] initWithFileContent:resourceContent] autorelease];
       break;
     default:
       assert(0);
@@ -108,6 +108,7 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+  self.documentGenerator = nil;
 }
 
 // -----------------------------------------------------------------------------

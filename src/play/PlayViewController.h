@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameInfoViewController.h"
+#import "PlayViewActionSheetController.h"
 
 // Forward declarations
 @class PlayView;
@@ -39,7 +40,7 @@
 /// view, PlayViewController transitions back to the "frontside" view, which is
 /// the main play view.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate>
 {
 }
 

@@ -59,10 +59,7 @@
 /// are ignored.
 @property(nonatomic, assign) bool waitUntilDone;
 /// @brief The GtpResponse object that "belongs" to this GtpCommand.
-///
-/// @note GtpCommand does not retain the response object to avoid a retain
-/// cycle.
-@property(nonatomic, assign, readwrite) GtpResponse* response;
+@property(nonatomic, retain, readwrite) GtpResponse* response;
 /// @brief The target on which @e selector is performed when the GTP response
 /// for this command is received.
 ///

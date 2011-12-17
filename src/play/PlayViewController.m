@@ -17,7 +17,6 @@
 
 // Project includes
 #import "PlayViewController.h"
-#import "PlayViewActionSheetController.h"
 #import "PlayView.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
@@ -70,6 +69,10 @@
 /// @name GameInfoViewControllerDelegate protocol
 //@{
 - (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller;
+//@}
+/// @name PlayViewActionSheetDelegate protocol
+//@{
+- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
 //@}
 /// @name Notification responders
 //@{
@@ -359,6 +362,14 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief PlayViewActionSheetDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
+{
+  [controller release];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Flips the main play view (on the frontside) over to the game info
 /// view (on the backside), and vice versa.
 // -----------------------------------------------------------------------------
@@ -388,7 +399,7 @@
 // -----------------------------------------------------------------------------
 - (void) gameActions:(id)sender
 {
-  PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self];
+  PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self delegate:self];
   [controller showActionSheetFromView:self.playView];
 }
 

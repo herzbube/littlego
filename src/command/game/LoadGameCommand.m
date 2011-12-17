@@ -136,10 +136,30 @@
   NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:self.filePath])
+  {
+    [self handleCommandFailed];
     return false;
+  }
+  // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()
+  // further down will abort the copy attempt. A temporary file possibly exists
+  // if a previous file operation failed to properly clean up.
+  if ([fileManager fileExistsAtPath:sgfTemporaryFilePath])
+  {
+    NSError* error;
+    BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:&error];
+    if (! success)
+    {
+      DDLogError(@"LoadGameCommand::doIt(): Failed to remove temporary file %@, reason: %@", sgfTemporaryFileName, [error localizedDescription]);
+      [self handleCommandFailed];
+      return false;
+    }
+  }
   BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:nil];
   if (! success)
+  {
+    [self handleCommandFailed];
     return false;
+  }
 
   m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
   [fileManager changeCurrentDirectoryPath:temporaryDirectory];

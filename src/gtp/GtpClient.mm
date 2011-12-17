@@ -50,7 +50,7 @@ static std::ifstream responseStream;
 //@{
 - (void) mainLoop:(NSArray*)pipes;
 - (void) processCommand:(GtpCommand*)command;
-- (void) receive:(GtpResponse*)response;
+- (void) notifyResponseTarget:(GtpResponse*)response;
 //@}
 /// @name Privately declared properties
 //@{
@@ -167,8 +167,9 @@ static std::ifstream responseStream;
 /// - Wait for the response from the GtpEngine (blocks)
 /// - Creates a GtpResponse object using the response received from the
 ///   GtpEngine
-/// - Invokes receive:() with the GtpResponse object in the context of the main
-///   thread
+/// - If requested, invokes notifyResponseTarget:() to notify an observer
+///   object that the response has been received; the notification occurs in
+///   the context of the thread that submitted the command
 // -----------------------------------------------------------------------------
 - (void) processCommand:(GtpCommand*)command
 {
@@ -203,17 +204,20 @@ static std::ifstream responseStream;
                                             encoding:[NSString defaultCStringEncoding]];
   GtpResponse* response = [GtpResponse response:nsResponse toCommand:command];
   command.response = response;
-  // Retain to make sure that object is still alive when it "arrives" in
-  // the submitting thread
-  [response retain];
 
-  // It's important to call back the submitting thread asynchronously (i.e.
-  // waitUntilDone must be NO). If we were to call back synchronously we would
-  // get a deadlock when command.waitUntilDone is true.
-  [self performSelector:@selector(receive:)
-               onThread:command.submittingThread
-             withObject:response
-          waitUntilDone:NO];
+  if (response.command.responseTarget)
+  {
+    // Retain to make sure that object is still alive when it "arrives" in
+    // the submitting thread
+    [command retain];
+    // It's important to call back the submitting thread asynchronously (i.e.
+    // waitUntilDone must be NO). If we were to call back synchronously we would
+    // get a deadlock when command.waitUntilDone is true.
+    [self performSelector:@selector(notifyResponseTarget:)
+                 onThread:command.submittingThread
+               withObject:command
+            waitUntilDone:NO];
+  }
 
   // Notify observers in the secondary thread context
   [[NSNotificationCenter defaultCenter] postNotificationName:gtpResponseWasReceivedNotification
@@ -250,25 +254,24 @@ static std::ifstream responseStream;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked after @a response has been received from the GtpEngine
-/// for a previously submitted GtpCommand.
+/// @brief Notifies the observer object @e command.responseTarget that a
+/// response to @a command has been received from the GtpEngine.
 ///
-/// Notifies the @e response.command.responseTarget if such an object has been
-/// set. The method invoked is response.command.responseTargetSelector, the
-/// argument passed is the GtpResponse object.
+/// The method invoked is @e command.responseTargetSelector, the argument
+/// passed is the GtpResponse object.
 ///
-/// This method is executed in the context of the thread that submitted the GTP
-/// command.
+/// This method is executed in the context of the thread that submitted
+/// @a command.
 // -----------------------------------------------------------------------------
-- (void) receive:(GtpResponse*)response
+- (void) notifyResponseTarget:(GtpCommand*)command
 {
-  // Undo retain message sent to the response object by processCommand:()
-  [response autorelease];
-  id responseTarget = response.command.responseTarget;
+  // Undo retain message sent to the command object by processCommand:()
+  [command autorelease];
+  id responseTarget = command.responseTarget;
   if (responseTarget)
   {
-    [responseTarget performSelector:response.command.responseTargetSelector
-                         withObject:response];
+    [responseTarget performSelector:command.responseTargetSelector
+                         withObject:command.response];
   }
 }
 

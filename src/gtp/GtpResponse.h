@@ -38,7 +38,10 @@
 /// @brief The raw response string, which includes the status prefix.
 @property(nonatomic, retain, readonly) NSString* rawResponse;
 /// @brief The GtpCommand object that this GtpResponse "belongs" to.
-@property(nonatomic, retain, readonly) GtpCommand* command;
+///
+/// @note GtpResponse does not retain the command object to avoid a retain
+/// cycle.
+@property(nonatomic, assign, readonly) GtpCommand* command;
 /// @brief The response status, i.e. whether command execution was successful
 /// (status is true) or not (status is false).
 @property(nonatomic, assign, readonly) bool status;

@@ -61,7 +61,6 @@
 }
 
 - (id) initWithFileContent:(NSString*)fileContent;
-- (int) numberOfSections;
 - (NSString*) sectionTitle:(int)sectionIndex;
 - (NSString*) sectionContent:(int)sectionIndex;
 

@@ -413,6 +413,7 @@
       }
     }
   }
+  [pointsToProcess release];
 
   if ([subRegions count] == 1)  // no split occurred
     return;

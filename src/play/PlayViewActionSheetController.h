@@ -19,6 +19,21 @@
 #import "../newgame/NewGameController.h"
 #import "../ui/EditTextController.h"
 
+// Forward declarations
+@class PlayViewActionSheetController;
+
+
+// -----------------------------------------------------------------------------
+/// @brief The PlayViewActionSheetDelegate protocol must be implemented by the
+/// delegate of PlayViewActionSheetController.
+// -----------------------------------------------------------------------------
+@protocol PlayViewActionSheetDelegate
+/// @brief This method is invoked when the user has finished working with
+/// @a controller. The implementation is responsible for releasing
+/// @a controller.
+- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
+@end
+
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewActionSheetController class is responsible for managing
@@ -36,9 +51,12 @@
 {
 }
 
-- (id) initWithModalMaster:(UIViewController*)aController;
+- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<PlayViewActionSheetDelegate>)aDelegate;
 - (void) showActionSheetFromView:(UIView*)view;
 
+/// @brief This is the delegate that will be informed when
+/// PlayViewActionSheetController has finished its task.
+@property(nonatomic, assign) id<PlayViewActionSheetDelegate> delegate;
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.
 @property(nonatomic, assign) UIViewController* modalMaster;

@@ -35,7 +35,7 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* rawResponse;
-@property(nonatomic, retain, readwrite) GtpCommand* command;
+@property(nonatomic, assign, readwrite) GtpCommand* command;
 //@}
 @end
 

@@ -32,10 +32,6 @@
 - (void) parseFileContent:(NSString*)fileContent;
 - (NSString*) parseSectionContentLines:(NSArray*)sectionContentLines;
 //@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, assign, readwrite) int numberOfSections;
-//@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) NSMutableArray* sectionTitles;
@@ -65,7 +61,6 @@
   if (! self)
     return nil;
 
-  self.numberOfSections = 0;
   self.sectionTitles = [NSMutableArray arrayWithCapacity:0];
   self.sectionContents = [NSMutableArray arrayWithCapacity:0];
 

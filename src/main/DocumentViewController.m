@@ -18,7 +18,6 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
-#import "../utility/DocumentGenerator.h"
 
 
 // -----------------------------------------------------------------------------

@@ -86,6 +86,7 @@ enum ActionSheetButton
 
 @implementation PlayViewActionSheetController
 
+@synthesize delegate;
 @synthesize modalMaster;
 @synthesize buttonIndexes;
 @synthesize saveGameName;
@@ -97,19 +98,23 @@ enum ActionSheetButton
 /// @a aController refers to a view controller based on which modal view
 /// controllers can be displayed.
 ///
+/// @a delegate is the delegate object that will be informed when this
+/// controller has finished its task.
+///
 /// @note This is the designated initializer of PlayViewActionSheetController.
 // -----------------------------------------------------------------------------
-- (id) initWithModalMaster:(UIViewController*)aController
+- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<PlayViewActionSheetDelegate>)aDelegate
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  
+
+  self.delegate = aDelegate;
   self.saveGameName = nil;
   self.modalMaster = aController;
   self.buttonIndexes = [NSMutableDictionary dictionaryWithCapacity:MaxButton];
-  
+
   return self;
 }
 
@@ -119,6 +124,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.delegate = nil;
   self.saveGameName = nil;
   self.modalMaster = nil;
   self.buttonIndexes = nil;
@@ -197,13 +203,16 @@ enum ActionSheetButton
 /// displayed when the "Action" button was tapped.
 ///
 /// We could also implement actionSheet:clickedButtonAtIndex:(), but visually
-/// it looks slighly better to do UI stuff (e.g. display "new game" modal view)
+/// it looks better to do UI stuff (e.g. display "new game" modal view)
 /// *AFTER* the alert sheet has been dismissed.
 // -----------------------------------------------------------------------------
 - (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
   if (actionSheet.cancelButtonIndex == buttonIndex)
+  {
+    [self.delegate playViewActionSheetControllerDidFinish:self];
     return;
+  }
   id object = [self.buttonIndexes objectForKey:[NSNumber numberWithInt:buttonIndex]];
   assert(object != nil);
   enum ActionSheetButton button = [object intValue];
@@ -235,6 +244,7 @@ enum ActionSheetButton
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
   scoringModel.scoringMode = ! scoringModel.scoringMode;
+  [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -245,6 +255,7 @@ enum ActionSheetButton
 {
   // TODO ask user for confirmation because this action cannot be undone
   [[GoGame sharedGame] resign];
+  [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -337,6 +348,7 @@ enum ActionSheetButton
     default:
       break;
   }
+  [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -347,6 +359,7 @@ enum ActionSheetButton
   if (didStartNewGame)
     [[[NewGameCommand alloc] init] submit];
   [self.modalMaster dismissModalViewControllerAnimated:YES];
+  [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -362,6 +375,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 {
+  bool playViewActionSheetControllerDidFinish = true;
   if (! didCancel)
   {
     ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
@@ -377,6 +391,8 @@ enum ActionSheetButton
       // Remember game name for later use (should the user confirm the
       // overwrite).
       self.saveGameName = editTextController.text;
+      // We are not yet finished, user must still confirm/reject the overwrite
+      playViewActionSheetControllerDidFinish = false;
     }
     else
     {
@@ -384,6 +400,8 @@ enum ActionSheetButton
     }
   }
   [self.modalMaster dismissModalViewControllerAnimated:YES];
+  if (playViewActionSheetControllerDidFinish)
+    [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
