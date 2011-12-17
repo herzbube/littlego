@@ -873,7 +873,7 @@ static PlayView* sharedPlayView = nil;
           case GameHasStarted:
           {
             GoMove* lastMove = game.lastMove;
-            if (PassMove == lastMove.type && lastMove.computerGenerated)
+            if (PassMove == lastMove.type)
             {
               // TODO fix when GoColor class is added
               NSString* color;
