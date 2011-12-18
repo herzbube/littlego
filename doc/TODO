@@ -48,16 +48,6 @@ Priority 1 (important)
   Arguing the behaviour's usefulness might be more successful if we had a
   "redo" feature, which would let us explain the issue by redefining undo/redo
   as move backward/forward in the game's move history.
-- Decide how the final implementation of the "intelligent" toggling feature in
-  GoScore should look like
-  - The original implementation toggled stones of the opposing color, which was
-    not such a good idea - it had too much effect on the board and made the
-    feature basically unusable.
-  - Currently the code that toggles stones of the opposing color is disabled;
-    it should be either removed entirely, or reactivated in a useful way
-  - One possible idea: Only turn stones from alive to dead, but not vice versa
-  - However the final solution looks like, update the GoScore class docs and
-    possibly other doc snippets in GoScore.m
 - Fix the following issues
   - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
 - Set deployment target to iOS 4.3 for 3rd party build (and check out if using
@@ -224,6 +214,8 @@ Priority 3 (not important)
   computer game.
 - When the application is launched and a backup .sgf is found: Ask the user for
   confirmation whether the game should be restored
+- Undoing a move in a human vs. computer game causes two updates in PlayView
+  because two moves are taken back; there should only be one update
 
 
 Future improvements to the 3rdparty build process

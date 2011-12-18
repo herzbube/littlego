@@ -65,10 +65,12 @@
 ///   handles user input
 ///   - toggleDeadStoneStateOfGroup:() stores the information whether stones are
 ///     dead or alive in GoBoardRegion objects' @e deadStoneGroup property.
-///   - To remain consistent with Go rules, toggleDeadStoneStateOfGroup:()
-///     changes the @e deadStoneGroup property not only of the GoBoardRegion
+///   - If the user has turned the "mark stones intelligently" feature on in
+///     the user preferences, toggleDeadStoneStateOfGroup:() assists the user
+///     by changing the @e deadStoneGroup property not only of the GoBoardRegion
 ///     that is passed as a parameter, but also of adjacent GoBoardRegion
-///     objects. See the "Guidelines" section below for details.
+///     objects. See the "Mark dead stones intelligently" section below for
+///     details.
 /// # calculateWaitUntilDone:() is invoked by the controller object that handles
 ///   user input. This initiates the actual scoring process which consists of
 ///   two more steps.
@@ -89,12 +91,15 @@
 /// @note When GoScore calculates a score for the first time, it asks the GTP
 /// engine for an initial list of dead stones. It is expected that the GTP
 /// engine at least detects dead stones surrounded by unconditionally alive
-/// groups. This query can be suppressed by the user in the GUI.
+/// groups. This query can be suppressed by the user in the user preferences.
 ///
 ///
-/// @par Guidelines for territory scoring
+/// @par Mark dead stones intelligently
 ///
-/// toggleDeadStoneStateOfGroup:() is implemented to follow these guidelines:
+/// If the user has turned this feature on in the user preferences,
+/// toggleDeadStoneStateOfGroup:() changes the @e deadStoneGroup property not
+/// only of the GoBoardRegion that is passed as a parameter, but also of
+/// adjacent GoBoardRegion objects. The reasoning is this:
 /// - Marking a stone group as dead means that the owning color has conceded
 ///   that the group is in opposing territory.
 /// - However, it is not possible to have two or more stone groups of the same
@@ -106,14 +111,20 @@
 ///   the rule above, it toggles them to dead/alive as appropriate.
 /// - For instance, if the user marks a black stone group to be dead, other
 ///   black stone groups in the same territory are also automatically marked
-///   dead (if they are not dead already), and white stone groups in the same
-///   territory are turned back to be alive (if they are dead).
-/// - The overall effect might be a cascade of toggling operations that affects
-///   the entire board.
+///   dead (if they are not dead already)
+/// - The original implementation of this feature would also examine white stone
+///   groups in the same territory and turn them back to be alive if they were
+///   dead. The result of this, however, was a cascade of toggling operations
+///   that, after a few repetitions, would affect the entire board. The feature
+///   effectively became unusable, so toggleDeadStoneStateOfGroup:() was limited
+///   to look only at groups of the same color as the group that is passed as
+///   a parameter.
 ///
-/// Since updateTerritoryColor() can rely on toggleDeadStoneStateOfGroup:()
-/// enforcing the guidelines above, its implementation becomes rather simple
-/// and consists of two passes:
+///
+/// @par Determining territory color
+///
+/// The implementation of updateTerritoryColor() is rather simple and consists
+/// of two passes:
 /// # Territory colors for stone groups can easily be determined by looking at
 ///   the stone group's color
 ///   - If the group is alive, the points in the group belong to the color
@@ -132,11 +143,11 @@
 ///   - If at least one adjacent stone group is dead, the empty region belongs
 ///     to the opposing color's territory.
 ///   - In the last case, updateTerritoryColor() makes a final check to see
-///     that the guidelines outlined above for toggleDeadStoneStateOfGroup:()
-///     are not violated. If they are violated unexpectedly,
-///     updateTerritoryColor() aborts its calculation and reports an error to
-///     the overall scoring process so that the problem can be made visible to
-///     the user.
+///     if there are any inconsistencies (stone groups of the same color that
+///     are alive, or stones groups of the opposing color that are also dead).
+///   - If inconsistencies are found the empty region is marked accordingly so
+///     that the problem can be made visible to user. For scoring purposes, the
+///     empty region is considered to be neutral.
 // -----------------------------------------------------------------------------
 @interface GoScore : NSObject
 {

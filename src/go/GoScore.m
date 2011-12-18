@@ -141,6 +141,17 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  if (territoryScoresAvailable)
+  {
+    GoBoard* board = game.board;
+    GoPoint* point = [board pointAtVertex:@"A1"];
+    for (; point != nil; point = point.next)
+    {
+      GoBoardRegion* region = point.region;
+      region.scoringMode = false;  // forget cached values
+    }
+  }
+
   self.operationQueue = nil;
   self.allRegions = nil;
   [super dealloc];
@@ -411,8 +422,9 @@
 /// Once the main stone group @a stoneGroup has been updated, this method also
 /// considers neighbouring regions and, if necessary, toggles the dead/alive
 /// state of other stone groups to remain consistent with the logic of the game
-/// rules. The overall effect might be a cascade of toggling operations that
-/// affects the entire board.
+/// rules. This feature is optional and the user can turn it off in the user
+/// preferences. For details read the class documentation, section "Mark dead
+/// stones intelligently".
 ///
 /// @note Invoking this method does not change the current scoring values. The
 /// client needs to separately invoke calculateWaitUntilDone:() to get the
@@ -489,9 +501,11 @@
     // Now examine the collected stone groups and, if necessary, toggle their
     // dead/alive state:
     // - Stone groups of the same color need to get into the same state
-    // - Stone groups of the opposing color need to get into the opposite
-    //   state
-    // See the "Guidelines" section in the class documentation for details.
+    // - In theory, stone groups of the opposing color need to get into the
+    //   opposite state, but doing this has too much effect, so for the moment
+    //   we ignore the opposing color
+    // See the "Mark dead stones intelligently" section in the class
+    // documentation for details.
     for (GoBoardRegion* adjacentStoneGroupToExamine in adjacentStoneGroupsToExamine)
     {
       if (! [adjacentStoneGroupToExamine isStoneGroup])
@@ -505,13 +519,6 @@
         if (adjacentStoneGroupToExamine.deadStoneGroup != newDeadState)
           [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
       }
-      else
-      {
-        // TODO Decide what we should do with this disabled code and update the
-        // class documentation.
-//        if (adjacentStoneGroupToExamine.deadStoneGroup == newDeadState)
-//          [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
-      }
     }
   }
 }
@@ -520,8 +527,9 @@
 /// @brief (Re)Calculates the territory color of all GoBoardRegion objects.
 /// Returns true if calculation was successful, false if not.
 ///
-/// This method requires that the @e deadStoneGroup property of GoBoardRegion
-/// objects is correct and up-to-date.
+/// This method looks at the @e deadStoneGroup property of GoBoardRegion
+/// objects. For details see the class documentation, paragraph "Determining
+/// territory color".
 ///
 /// Initial dead stones are set up by initializeBoard(). User interaction during
 /// scoring invokes toggleDeadStoneStateOfGroup:() to add more dead stones, or
@@ -572,8 +580,6 @@
 
   // Pass 2: Process empty regions. Here we examine the stone groups adjacent
   // to each empty region to determine the empty region's final territory color.
-  // The rules are explained in detail in the class documentation in the
-  /// "Guidelines" section.
   for (GoBoardRegion* emptyRegion in emptyRegions)
   {
     bool aliveSeen = false;
