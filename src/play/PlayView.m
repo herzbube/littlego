@@ -795,7 +795,7 @@ static PlayView* sharedPlayView = nil;
 - (void) drawDeadStones
 {
   UIColor* deadStoneSymbolColor = self.scoringModel.deadStoneSymbolColor;
-  bool insetCalculated;
+  bool insetCalculated = false;
   CGFloat inset;
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
