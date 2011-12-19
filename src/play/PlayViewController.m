@@ -774,6 +774,7 @@
       {
         switch ([GoGame sharedGame].state)
         {
+          case GameHasNotYetStarted:
           case GameHasStarted:
             enabled = YES;
             break;

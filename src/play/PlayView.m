@@ -850,6 +850,7 @@ static PlayView* sharedPlayView = nil;
       {
         case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
         case GameHasStarted:
+        case GameIsPaused:          // although game is paused, computer may still be thinking
           statusText = [game.currentPlayer.player.name stringByAppendingString:@" is thinking..."];
           break;
         default:
