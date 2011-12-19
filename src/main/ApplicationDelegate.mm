@@ -41,7 +41,7 @@
 #import "../debug/GtpCommandModel.h"
 #import "../debug/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
-#import "../command/LoadOpeningBook.h"
+#import "../command/LoadOpeningBookCommand.h"
 #import "../command/backup/BackupGameCommand.h"
 #import "../command/backup/CleanBackupCommand.h"
 #import "../command/backup/RestoreGameCommand.h"
@@ -205,6 +205,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 /// Known events that trigger this:
 /// - Screen locking
 /// - Modifying an app's document folder via iTunes' "File sharing" feature
+///   (only prior to iOS 5)
 /// - Any interrupt (e.g. incoming phone call, calling up the multitasking UI)
 /// - Anything that will put the app in the background
 // -----------------------------------------------------------------------------
@@ -230,6 +231,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // the user really *DID* change something via the file sharing feature of
   // iTunes, we won't be notified in any special way. The only thing that
   // happens in such a case is deactivation and reactivation.
+  // Update for iOS 5: This no longer works in iOS 5
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
 }
 
@@ -529,11 +531,11 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) launchAsynchronously
 {
-  // Must be invoked so that MainWindow.xib is loaded. After this method returns
-  // the launch image will go away and the main window will come to the front.
-  // If this setup is performed inside the secondary thread, the main window
-  // is not ready when the launch image goes away and the user will see a white
-  // screen.
+  // Must be invoked so that MainWindow.xib is loaded. Shortly after this method
+  // returns the launch image will go away and the main window will come to the
+  // front. If setupGui() were performed inside the secondary thread, the main
+  // window would not be ready when the launch image goes away and the user
+  // would see a white screen.
   [self setupGUI];
 
   UIView* theSuperView = self.tabBarController.view;
@@ -543,7 +545,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   progressHUD.determinateStyle = MBDeterminateStyleBar;
   progressHUD.dimBackground = YES;
   progressHUD.delegate = self;
-  progressHUD.labelText = @"Starting up...";
+  progressHUD.labelText = @"Just a moment, please...";
   [progressHUD showWhileExecuting:@selector(launchWithProgressHUD:) onTarget:self withObject:progressHUD animated:YES];
 }
 
@@ -556,7 +558,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD
 {
-  const int totalSteps = 10;
+  const int totalSteps = 9;
   const float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
@@ -593,22 +595,25 @@ static ApplicationDelegate* sharedDelegate = nil;
   progress += stepIncrease;
   progressHUD.progress = progress;
 
-  [[[LoadOpeningBook alloc] init] submit];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [[[RestoreGameCommand alloc] init] submit];
+  [[[LoadOpeningBookCommand alloc] init] submit];
   progress += stepIncrease;
   progressHUD.progress = progress;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief MBProgressHUDDelegate method
+///
+/// This method runs in the main thread.
 // -----------------------------------------------------------------------------
 - (void) hudWasHidden:(MBProgressHUD*)progressHUD
 {
   [progressHUD removeFromSuperview];
   [progressHUD release];
+
+  // Important: We must execute this command in the context of a thread that
+  // survives the entire command execution - see the class documentation of
+  // RestoreGameCommand for the reason why.
+  [[[RestoreGameCommand alloc] init] submit];
 }
 
 @end

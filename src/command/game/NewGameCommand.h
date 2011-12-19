@@ -29,11 +29,17 @@
 /// - Create a new GoGame object
 /// - Set up the board in the GTP engine
 /// - Set up handicap and komi
-/// - If at least one of the players of the new game is a computer player:
-///   Configure the GTP engine with settings obtained from the computer player
+/// - Configure the GTP engine with settings obtained from a profile
+/// - Trigger the computer player, if it is his turn to move, by executing a
+///   ComputerPlayMoveCommand instance
 ///
 /// A client may suppress some of these steps by clearing the corresponding
 /// property flag before a NewGameCommand object is executed.
+///
+/// @attention If @e shouldTriggerComputerPlayer is true, the calling thread
+/// must survive long enough for ComputerPlayMoveCommand to complete, otherwise
+/// the GTP client will be unable to deliver the GTP response and the
+/// application will hang forever.
 // -----------------------------------------------------------------------------
 @interface NewGameCommand : CommandBase
 {

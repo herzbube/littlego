@@ -37,6 +37,14 @@
 /// game.
 ///
 /// @see BackupGameCommand.
+///
+/// @attention In some cases execution of RestoreGameCommand will not wait for
+/// all operations to complete before control is returned to the caller. The
+/// calling thread must therefore be sufficiently long-lived (preferrably the
+/// main thread) to make sure that all responses to asynchronous GTP commands
+/// can be delivered. If care is not taken, the application may hang forever!
+/// Refer to the class documentation of NewGameCommand and LoadGameCommand for
+/// additional information.
 // -----------------------------------------------------------------------------
 @interface RestoreGameCommand : CommandBase
 {

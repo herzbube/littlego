@@ -38,10 +38,18 @@
 ///   file (handicap, komi, moves)
 /// - Setup the game with the information gathered via GTP
 /// - Notify observers that a game has been loaded
+/// - Trigger the computer player, if it is his turn to move, by executing a
+///   ComputerPlayMoveCommand instance
 ///
 /// If the @e waitUntilDone property is set to true (by default it's false) the
-/// entire sequence of operations will be executed synchronously. This may take
-/// a long time.
+/// entire sequence of operations will be executed synchronously. The exception
+/// is the last step, i.e. triggering the computer player: Execution of
+/// LoadGameCommand will not wait for this step to complete before control is
+/// returned to the caller.
+///
+/// @attention The calling thread therefore must survive long enough for
+/// ComputerPlayMoveCommand to complete, otherwise the GTP client will be unable
+/// to deliver the GTP response and the application will hang forever.
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand : CommandBase <MBProgressHUDDelegate>
 {

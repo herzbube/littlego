@@ -16,31 +16,24 @@
 
 
 // Project includes
-#import "../CommandBase.h"
-
-// Forward declarations
-@class GoGame;
+#import "CommandBase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The ComputerPlayMoveCommand class is responsible for letting the
-/// computer player make a move (even if it is not his turn).
+/// @brief The LoadOpeningBookCommand class is responsible for submitting a
+/// "book_load" command to the GTP engine. Command execution occurs
+/// synchronously.
 ///
-/// ComputerPlayMoveCommand submits a "genmove" command to the GTP engine, then
-/// updates GoGame so that it generates a GoMove of the appropriate type for
-/// the player whose turn it is (not necessarily a computer player).
+/// The opening book file used as the command argument is a project resource
+/// with hard-coded name, i.e. there is no support for variable opening books.
 ///
-/// Another ComputerPlayMoveCommand is submitted automatically if it is now
-/// the computer player's turn to move.
-///
-/// @note The GTP command is executed asynchronously.
+/// @note If variable opening books are implemented, make sure to thoroughly
+/// test file names that are not "book.dat", and files that do not contain
+/// opening book data. Preliminary tests suggest that esp. the latter case may
+/// not be handled properly by Fuego.
 // -----------------------------------------------------------------------------
-@interface ComputerPlayMoveCommand : CommandBase
+@interface LoadOpeningBookCommand : CommandBase
 {
 }
-
-- (id) init;
-
-@property(nonatomic, retain) GoGame* game;
 
 @end

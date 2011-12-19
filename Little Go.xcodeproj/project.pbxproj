@@ -60,8 +60,8 @@
 		CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
 		CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
-		CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
-		CD05B612142F618B00214BBE /* LoadOpeningBook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBook.m */; };
+		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
+		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DebugViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
@@ -268,8 +268,8 @@
 		CD05B20F142BC4AF00214BBE /* GtpUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpUtilities.m; sourceTree = "<group>"; };
 		CD05B568142EA31700214BBE /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
-		CD05B60F142F618B00214BBE /* LoadOpeningBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBook.h; sourceTree = "<group>"; };
-		CD05B610142F618B00214BBE /* LoadOpeningBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBook.m; sourceTree = "<group>"; };
+		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
+		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		CD0CCB69142FE10900A3F869 /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
 		CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogModel.h; sourceTree = "<group>"; };
@@ -388,7 +388,6 @@
 		CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone-fuseki-8x8@2x.png"; sourceTree = "<group>"; };
 		CDC2DD871495176000F6D750 /* LaunchImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchImage.png; sourceTree = "<group>"; };
 		CDC2DD881495176000F6D750 /* LaunchImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage@2x.png"; sourceTree = "<group>"; };
-		CDD48C62140EE7D000188B6A /* Features */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Features; sourceTree = "<group>"; };
 		CDD48C69141030E100188B6A /* ArchiveView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveView.xib; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
@@ -468,6 +467,7 @@
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
+		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -799,8 +799,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
-				CD05B60F142F618B00214BBE /* LoadOpeningBook.h */,
-				CD05B610142F618B00214BBE /* LoadOpeningBook.m */,
+				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
+				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
 			);
 			path = command;
 			sourceTree = "<group>";
@@ -862,13 +862,13 @@
 			isa = PBXGroup;
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
-				CDD48C62140EE7D000188B6A /* Features */,
 				CD00A34D1487F9CF004E1A0C /* MANUAL */,
 				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
 				CDEC288312F477E70069F5B7 /* Research */,
 				CDEC288412F477E70069F5B7 /* Roadmap */,
+				CDFF8A87149E2F2900E75B71 /* TESTING */,
 				CDEC288512F477E70069F5B7 /* TODO */,
 			);
 			path = doc;
@@ -1175,7 +1175,7 @@
 				CD05B121142A60A700214BBE /* RestoreGameCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
-				CD05B611142F618B00214BBE /* LoadOpeningBook.m in Sources */,
+				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
@@ -1252,7 +1252,7 @@
 				CD05B146142A750C00214BBE /* PlayView.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */,
-				CD05B612142F618B00214BBE /* LoadOpeningBook.m in Sources */,
+				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCB8C142FFAFF00A3F869 /* GtpLogModel.m in Sources */,
 				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
