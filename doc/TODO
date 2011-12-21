@@ -61,6 +61,10 @@ Priority 1 (important)
     is only one pending computer move, but in a human vs. computer game there
     TWO pending computer moves - but there is no "pause" function that can be
     used to prevent the second computer move after the interrupt has been sent.
+- Add a permanent secondary thread that can be used for the safe execution of
+  asynchronous commands. This should then be used to clean up some of the
+  clunky "thread juggling" that takes place in various places (application
+  startup, possibly LoadGameCommand and BackupGameCommand)
 
 
 Priority 2 (nice to have)
@@ -158,6 +162,12 @@ Priority 2 (nice to have)
   - Load the game
   - Display alert with an option that lets the user decline to load the game
   - Silently ignore the backup (equivalent to "do not backup")
+- Find a way how to get notified in iOS 5 when the user manipulates files via
+  iTunes file sharing. Prior to iOS 5 the applicationDidBecomeActive:() method
+  in the app delegate did the trick, but this no longer works. Also see
+  http://stackoverflow.com/questions/6139369/is-there-a-way-to-get-notified-when-the-user-drags-a-file-into-itunes-file-shari
+  If something can be found, remove the corresponding entry in the
+  Troubleshooting section of the MANUAL
 
 
 Priority 3 (not important)
@@ -216,6 +226,8 @@ Priority 3 (not important)
   confirmation whether the game should be restored
 - Undoing a move in a human vs. computer game causes two updates in PlayView
   because two moves are taken back; there should only be one update
+- TableViewSliderCell: Labels should use the default table view cell background
+  color (currently they use white as the background color)
 
 
 Future improvements to the 3rdparty build process

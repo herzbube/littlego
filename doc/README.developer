@@ -149,12 +149,17 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
   Note: If a future version of Fuego requires additional Boost libraries, they
   must be added here.
-- GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute configurations)
+- GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
   links against a release build of Fuego. Because of this NDEBUG becomes useless
   for distinguishing between debug/release builds, so we need our own project
   specific macro, in this case named LITTLEGO_NDEBUG.
+- The build configurations "Distribute_AdHoc" and "Distribute_AppStore" are
+  duplicates of the "Release" build configuration, with the single exception of
+  the code-signing identity (found in the "Code Signing" section). Whenever a
+  change is made to one of the three configurations, the other two
+  configurations must be kept in sync!
 
 
 Xcode schemes
@@ -162,14 +167,19 @@ Xcode schemes
 Xcode build schemes are not part of the Little Go distribution, nor are they
 committed to the project's version control system. The following is a short
 overview of how I usually configure my schemes:
-- I let Xcode autocreate schemes. This results in one scheme for each of the
+- Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
-- I then rename the "Little Go" scheme to "Little Go Debug", and disable the
-  "Archive" command.
-- I then duplicate "Little Go Debug", naming the new scheme "Little Go Release".
-  I re-enable the "Archive" command, and set all commands to use the "Release"
-  build configuration. The only exception is the "Archive" command, which I set
-  to use the "Distribute" build configuration.
+- Rename the "Little Go" scheme to "Little Go Debug", and disable the "Archive"
+  command. Also make sure that all actions except "Profile" use the "Debug"
+  build configuration
+- Duplicate "Little Go Debug", naming the new scheme "Little Go Release". Leave
+  the "Archive" action disabled. Change all actions to use the "Release" build
+  configuration
+- Duplicate "Little Go Debug", naming the new scheme "Little Go AdHoc
+  Distribution". Enable the "Archive" command. Change all actions to use the
+  "Distribute_AdHoc" build configuration.
+- Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
+  actions use the "Distribute_AppStore" build configuration
 
 
 Platform notes
@@ -907,15 +917,9 @@ According to Apple's "Information Property List Key Reference" (available at
   number". Xcode 4 displays the value of this key on the "Summary" page of each
   target, as the field labeled "Build".
 
-For Little Go, I use CFBundleShortVersionString exclusively and ignore
-CFBundleVersion entirely. The main reason for this is the Xcode user guide,
-section "Building and Running Your Code", which recommends to fill in the
-"Version" field, which as we know corresponds to CFBundleShortVersionString,
-but does not talk about the "Build" field at all.
-
-This makes sense to me, especially since Little Go is a small project which
-has no need for build numbers. In addition, my previous experience with Mac OS X
-projects also supports usage of CFBundleShortVersionString only.
+Although I don't have a use for CFBundleVersion, and the Xcode user guide
+(section "Building and Running Your Code") does not even mention it, the App
+Store validation process forces me to add this key to Info.plist.
 
 [1] developer.apple.com/library/mac/#documentation/General/Reference/InfoPlistKeyReference/
 [2] http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/Xcode4UserGuide/Building/Building.html

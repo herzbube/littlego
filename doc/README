@@ -24,19 +24,14 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.6.
+This is Little Go 0.7.
 
-The main focus of this release has been on bugfixing and cleanup in preparation
-of the upcoming release to the App Store. Nevertheless, quite a few things have
-accumulated that could also be seen as features. A great improvement is that a
-stone is now displayed immediately when the fingertip touches the board. Another
-important change, although more conceptual, is that GTP engine settings are now
-managed in profiles instead of as direct player attributes.
+This release adds no new features, but fixes a couple of serious bugs. Other
+than that, the main work that has been done is the addition of artwork such as
+an application icon, and in-game icons for the tab bar and the toolbar on the
+game view.
 
 As usual the ChangeLog document has all the details.
-
-Please note that on upgrade you will lose all user-defined players and all
-scoring preferences.
 
 
 Known bugs
@@ -62,7 +57,7 @@ Platforms
 Currently Little Go is available for the iPhone only. Later on, an iPad version
 is planned as well.
 
-The minimum requirement for running this version of Little Go is iOS 4.2.
+The minimum requirement for running this version of Little Go is iOS 4.3.
 
 It might be possible to make a build for earlier versions of iOS, but unless
 someone requests it I won't spend any time on this.

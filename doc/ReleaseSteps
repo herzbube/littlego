@@ -22,29 +22,39 @@ Before the release
   (it should have been bumped already after the last release was made):
   - README
   - Info.plist (can be changed in Xcode's summary page for the main target)
+- Increase CFBundleVersion in Info.plist (Xcode also makes this available on
+  the summary page of the project, as the field labelled "Build")
 - Make sure that the copyright year is up to date in the following files (e.g.
   2009-2011 instead of 2009-2010):
   - All source files
   - Info.plist
-- In Xcode build the "Little Go" target using the "Release" build configuration,
-  both for the simulator and for all target devices
-- If there are any warnings, fix them
-- Perform tests suitable to make sure that everything still works as intended
-  -> DO THIS OUTSIDE OF THE DEVELOPMENT ENVIRONMENT (= Xcode), i.e. install and
-     the application on real target devices, then launch it while not connected
-     to Xcode
+- In Xcode select the "Little Go Release" scheme, then make a build for the
+  simulator and for all target devices. If there are any warnings, fix them.
+- Using the same scheme, select Product > Archive to make a distribution build,
+  then run that build through the tests described in the TESTING document
 - Commit final changes (check with "git status" that nothing was forgotten)
 
 
-Make a beta release (binary ad-hoc distribution only)
------------------------------------------------------
-- In the toolbar's scheme selector, activate the "Little Go Release" scheme and
-  the "iOS Device" destination
-- Select "Archive" from the "Product" menu
-- The application is now built using the "Distribute" build configuration. After
-  the build succeeds it is archived, then the "Organizer" window opens to
-  display the archive that was just created.
-- Select the archived build, then click the "Share..." button
+Create an archive
+-----------------
+- In the toolbar's scheme selector, activate one of the two schemes
+    Little Go AdHoc Distribution
+      or
+    Little Go AppStore Distribution
+  Which one depends on what you want to do with the archive.
+- In both cases, select the "iOS Device" destination
+- From the menu, select Product > Archive
+- The application is now built using either the "Distribute_AdHoc" or the
+  "Distribute_AppStore" build configuration
+- After the build succeeds it is archived, then the "Organizer" window opens to
+  display the archive that was just created
+- Give it a useful name, e.g. "Little Go 0.7 AppStore Distribution"
+
+
+Make an ad-hoc distribution (beta release)
+------------------------------------------
+- In Xcode in the Organizer window, select the archived build, then click the
+  "Share..." button
 - From the list of content options, select "iOS App Store Package (.ipa)"
 - Select a code-signing identity (the default should be OK)
 - Click the "Next" button which will pop up a save dialog
@@ -53,12 +63,12 @@ Make a beta release (binary ad-hoc distribution only)
 - Most important is that what you enter in the "Application URL" field matches
   exactly the URL of the .ipa file as it is going to be available for download
 - Sensible values are
-  - Application URL = http://www.herzbube.ch/software/littlego/0.1/littlego-0.1.ipa
-  - Title = Little Go 0.1 Beta Test
+  - Application URL = http://www.herzbube.ch/software/littlego/0.7/littlego-0.7.ipa
+  - Title = Little Go 0.7 Beta Test
 - You must also specify a save location and a name. This step creates both a
   .plist and an .ipa file, where the specified name serves as the base name for
   both files. Make sure to specify the same name as in the URL above (but
-  without the .ipa extension; e.g. "littlego-0.1").
+  without the .ipa extension; e.g. "littlego-0.7").
 - Make sure to get the "Ad Hoc Distribution Provisioning Profile" from the
   iOS Provisioning Portal. This profile is stored in a .mobileprovision file.
 - Upload the .plist, .ipa and .mobileprovision files to the server from where
@@ -67,39 +77,50 @@ Make a beta release (binary ad-hoc distribution only)
   download links
 
 
-Make the release
-----------------
-- Tag and sign the release
+Make an AppStore distribution (production release)
+--------------------------------------------------
+- Log in to iTunes Connect
+- Add the new application version under "Manage apps"
+- When everything is ready, click "Ready to Upload Binary"
+- Step through the wizard and answer a few questions. After the wizard is
+  finished and you return to the app's version information screen, the app
+  status should now be "Waiting for Upload".
+- In Xcode in the Organizer window, select the archived build, then click the
+  "Validate..." button
+- Select a code-signing identity (the default should be OK)
+- Wait a few moments for the validation result
+- If validation was successful, select "Submit..." in the Organizer window
+- The archive is now uploaded
+- After the upload has finished, the app's status in iTunes Connect should now
+  have changed to "Upload Received" 
+- Wait for Apple to accept the submission and publish the new version in their
+  App Store
+
+
+Make the source code distribution
+---------------------------------
+- Once the release is official, tag and sign it in Git
   cd <projectdir>
   git tag -s -m "tagging release x.y" x.y <commit hash>
 - Update the blessed repository
   cd <projectdir>
   git push
   git push --tags
-- Generate the source distribution
-  - Go to terminal
-  - Run the following commands
-    cd <projectdir>
-    ./script/makedist.sh 0.5
-- Generate the binary distribution and submit it to Apple
-  - TODO
-- Wait for Apple to accept the submission and publish the new version in their
-  App Store
-- Make the source distributions available on the project website
+- Make the tar ball
+  cd <projectdir>
+  ./script/makedist.sh 0.7
+- Make the source distribution available on the project website
   - Create a new directory in the public web space
   - Copy ChangeLog, README and tar ball (.tar.gz) into the new directory
-  - Update tar ball symlinks in the "current" directory
   - Double-check that third party source code tar balls are also available for
     download
 - Add the new version number to the bug tracker so that issues can be reported
-  once the release has been made public
 - Update the project website to announce the new release
 
 
 After the release
 -----------------
 - Cleanup
-  cd <projectdir>
-  rm -r dist build
+  rm -rf ~/Library/Developer/Xcode/DerivedData/Little_Go-*
 - Bump the version number to the next planned release; check above under
   "Before the release" which files are affected

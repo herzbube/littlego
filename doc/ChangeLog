@@ -1,3 +1,22 @@
+Tue December 20 2011   "Patrick Näf" <herzbube@herzbube.ch>
+- release of version 0.7
+- this is the first release published to the App Store
+- features
+  - added application, tab bar and toolbar icons
+  - no longer display an alert when a memory warning is received from iOS
+  - rename "Debug" tab to "Diagnostics"
+- user preferences
+  - none
+- bugfixes
+  - dead stones are now always marked correctly (they were not marked correctly
+    in release builds due to an uninitialized variable)
+  - enabling scoring mode in mid-game made further game play impossible; this
+    has been fixed
+- technical changes
+  - eliminated various memory leaks
+  - application startup now mostly happens in a secondary thread; this makes
+    it possible to run the application through Instruments
+
 Sun December 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.6
 - features

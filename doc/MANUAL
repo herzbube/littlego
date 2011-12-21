@@ -28,7 +28,7 @@ game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
 You can play the game against another human (in "hot-seat" mode), or against the
 computer. The "How to play" section in this help will provide you with a good
 overview of what you can do when you see the game board. The computer player, by
-the way, is powered by the open-source software library Fuego
+the way, is powered by the open source software library Fuego
 (http://fuego.sourceforge.net/), which can be a pretty nasty opponent ☺ if you
 tune up its number-crunching power. The "Players & Profiles" help section tells
 you more about how to make Fuego stronger or weaker.
@@ -396,7 +396,7 @@ GTP engine
 ======================
 Overview and a warning
 ======================
-The computer player in Little Go is powered by the open-source software library
+The computer player in Little Go is powered by the open source software library
 Fuego (http://fuego.sourceforge.net/). Little Go and Fuego talk to each other
 via GTP - the Go Text Protocol. In the GTP context, Fuego is called the GTP
 engine, while Little Go is the GTP client.
@@ -405,7 +405,7 @@ On the "Diagnostics" tab you can observe the flow of communication between GTP
 client and engine. You can even interfere with it by injecting your own GTP
 commands. Be careful, though, not to disrupt normal operations: As the title
 suggests, the "Diagnostics" tab options should only be used if something goes
-wrong during normal game play and you need GTP to investigate.
+wrong during normal game play and you need GTP to investigate the problem.
 
 
 =======
@@ -488,7 +488,7 @@ Board
 =====
 The board is a grid of horizontal and vertical lines. The standard board size
 is 19x19, but smaller board sizes are good for teaching games or solving special
-Go problems. Little Go allows you to set a board size between 7x7 and 19x19.
+Go problems. Little Go allows you to set any board size between 7x7 and 19x19.
 
 =============
 Intersections
@@ -516,8 +516,8 @@ Each point (intersection) on the board has a number of lines leading away from
 it to adjacent points. When a stone is placed on a point, the number of lines
 leading away from it to unoccupied adjacent points are called its "liberties".
 
-For instance, in the beginning if a stone is placed in a corner it has 2
-liberties, if its placed on an edge line it has 3 liberties, and if it is
+For instance, if a stone is placed in a corner at the start of the game it has 2
+liberties, if it is placed on an edge line it has 3 liberties, and if it is
 placed somewhere in the middle of the board it has 4 liberties.
 
 Enemy stones that surround one of your stones take away liberties from that
@@ -612,24 +612,43 @@ advantage of first move).
 
 Whoever now has the higher score wins the game.
 
+An important note about dead stones: You and your opponent must agree on which
+stones are dead! If your opponent does not agree with your judgment, you must
+continue the game until the situation in doubt has been settled to both players'
+satisfaction. While you are new to the game you often will not see what the
+final outcome of a situation in doubt will be, so you will spend a lot of time
+in the end game on playouts. This is perfectly OK because you will learn from
+the experience. Once you get more experienced, though, less situations will have
+to be played out, making the end game less time consuming (and possible less
+tedious for your more experience opponent).
+
+=========
+Etiquette
+=========
+Some of the pleasure of playing Go (when played against a fellow human) comes
+from following certain points of etiquette that have developed over the long
+history and tradition of the game. In Little Go, most of the time you will play
+against the computer, so there is not much point in going into the details of
+this subject. If you are keen on reading more, though, I would like to refer you
+once more to Sensei's Library (http://senseis.xmp.net/?GoEtiquette).
+
 
 --------------------------------------------------------------------------------
 Troubleshooting
 --------------------------------------------------------------------------------
 
-==================
-"Low Memory" alert
-==================
-If you see an alert titled "Low Memory" this is a sign that iOS just sent a
-memory warning to Little Go, indicating that the application uses up too much
-memory.
-
-Almost certainly the cause for this is that the currently active computer player
-profile has a "Maximum memory" value that is too high. You should find out which
-computer player is currently active (on the "Play" tab select the game info
-toolbar button), then go to that player's profile (under
+=============
+Memory issues
+=============
+If you experience a sudden crash, a probable cause is that the currently active
+computer player profile has a "Maximum memory" value that is too high. You
+should find out which computer player is currently active (on the "Play" tab
+select the game info toolbar button), then go to that player's profile (under
 "Settings > Players & Profiles") and lower the value for the "Maximum memory"
-setting. A value of 32 MB should be OK even for older devices such as an
+setting.
+
+The profiles that are actively used by players when you first install Little Go
+all have a value of 32 MB. This should be OK even for older devices such as an
 iPhone 3GS.
 
 ======================
@@ -646,3 +665,12 @@ or on behalf of a human player who has triggered the "play for me" function).
 If a computer vs. computer game is currently in progress, you have to pause the
 game for the button to become enabled. This limitation should be removed in one
 of the next releases of Little Go.
+
+===================================================
+File sharing via iTunes does not update the archive
+===================================================
+Since iOS 5, if you add or remove files via iTunes file sharing, the archive
+view does not update automatically. This is a known problem and I will try to
+find a fix for this. In the meantime, a simple workaround is to temporarily
+lock the device. After the device is unlocked again, the archive view will
+update itself.

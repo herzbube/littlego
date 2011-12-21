@@ -1325,7 +1325,6 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -1376,6 +1375,101 @@
 				ZERO_LINK = NO;
 			};
 			name = Release;
+		};
+		CD89232B149FDC8A00A94A7B /* Distribute_AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Patrick Naf Moser";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4D567E27-D791-461C-9CB0-E31E1358ADCE";
+				SDKROOT = iphoneos;
+			};
+			name = Distribute_AppStore;
+		};
+		CD89232C149FDC8A00A94A7B /* Distribute_AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = resource/Entitlements.plist;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
+				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
+				INFOPLIST_FILE = resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
+				OTHER_LDFLAGS = (
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
+					"-lCocoaLumberjack",
+				);
+				PRODUCT_NAME = "Little Go";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribute_AppStore;
+		};
+		CD89232D149FDC8A00A94A7B /* Distribute_AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = doxygen;
+				ZERO_LINK = NO;
+			};
+			name = Distribute_AppStore;
+		};
+		CD89232E149FDC8A00A94A7B /* Distribute_AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					"./3rdparty/install$(SDKROOT)/include",
+					./src,
+				);
+				INFOPLIST_FILE = test/resource/Info.plist;
+				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					SenTestingKit,
+					"-framework",
+					UIKit,
+					"-lfuego",
+					"-lboost_system",
+					"-lboost_thread",
+					"-lboost_filesystem",
+					"-lboost_program_options",
+					"-lCocoaLumberjack",
+				);
+				PRODUCT_NAME = "Unit tests";
+				TEST_AFTER_BUILD = YES;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Distribute_AppStore;
 		};
 		CDA595B11401384000B250D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1461,7 +1555,7 @@
 			};
 			name = Release;
 		};
-		CDA595B31401384000B250D8 /* Distribute */ = {
+		CDA595B31401384000B250D8 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1501,9 +1595,9 @@
 				TEST_AFTER_BUILD = YES;
 				WRAPPER_EXTENSION = octest;
 			};
-			name = Distribute;
+			name = Distribute_AdHoc;
 		};
-		CDE3010D1357942E005235F2 /* Distribute */ = {
+		CDE3010D1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1515,9 +1609,9 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 			};
-			name = Distribute;
+			name = Distribute_AdHoc;
 		};
-		CDE3010E1357942E005235F2 /* Distribute */ = {
+		CDE3010E1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1540,11 +1634,10 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Distribute;
+			name = Distribute_AdHoc;
 		};
-		CDE3010F1357942E005235F2 /* Distribute */ = {
+		CDE3010F1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1552,7 +1645,7 @@
 				PRODUCT_NAME = doxygen;
 				ZERO_LINK = NO;
 			};
-			name = Distribute;
+			name = Distribute_AdHoc;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1562,7 +1655,8 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
-				CDE3010E1357942E005235F2 /* Distribute */,
+				CD89232C149FDC8A00A94A7B /* Distribute_AppStore */,
+				CDE3010E1357942E005235F2 /* Distribute_AdHoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1572,7 +1666,8 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
-				CDE3010D1357942E005235F2 /* Distribute */,
+				CD89232B149FDC8A00A94A7B /* Distribute_AppStore */,
+				CDE3010D1357942E005235F2 /* Distribute_AdHoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1582,7 +1677,8 @@
 			buildConfigurations = (
 				CD3AE857134A333D00B58E08 /* Debug */,
 				CD3AE858134A333D00B58E08 /* Release */,
-				CDE3010F1357942E005235F2 /* Distribute */,
+				CD89232D149FDC8A00A94A7B /* Distribute_AppStore */,
+				CDE3010F1357942E005235F2 /* Distribute_AdHoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1592,7 +1688,8 @@
 			buildConfigurations = (
 				CDA595B11401384000B250D8 /* Debug */,
 				CDA595B21401384000B250D8 /* Release */,
-				CDA595B31401384000B250D8 /* Distribute */,
+				CD89232E149FDC8A00A94A7B /* Distribute_AppStore */,
+				CDA595B31401384000B250D8 /* Distribute_AdHoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
