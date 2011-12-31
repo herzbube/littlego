@@ -694,7 +694,7 @@
     bool moveByBlack = move.player.black;
     switch (move.type)
     {
-      case PlayMove:
+      case GoMoveTypePlay:
       {
         if (moveByBlack)
         {
@@ -708,7 +708,7 @@
         }
         break;
       }
-      case PassMove:
+      case GoMoveTypePass:
       {
         if (moveByBlack)
           ++passesPlayedByBlack;

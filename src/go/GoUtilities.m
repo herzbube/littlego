@@ -92,7 +92,7 @@
 /// @brief Sets up the new game @a game with the handicap information stored in
 /// @a handicapInfo.
 ///
-/// @a game must be in state #GameHasNotYetStarted.
+/// @a game must be in state #GoGameStateGameHasNotYetStarted.
 ///
 /// @a handicapInfo is expected to contain information obtained from GTP.
 /// The expected format is: "vertex vertex vertex[...]"
@@ -101,10 +101,10 @@
 // -----------------------------------------------------------------------------
 + (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo
 {
-  if (GameHasNotYetStarted != game.state)
+  if (GoGameStateGameHasNotYetStarted != game.state)
   {
     NSException* exception = [NSException exceptionWithName:@"GameStateException"
-                                                     reason:@"The GoGame object is not in state GameHasNotYetStarted, but handicap can only be set up in this state."
+                                                     reason:@"The GoGame object is not in state GoGameStateGameHasNotYetStarted, but handicap can only be set up in this state."
                                                    userInfo:nil];
     @throw exception;
   }

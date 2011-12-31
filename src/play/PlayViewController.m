@@ -536,7 +536,7 @@
 {
   [self updateButtonStates];
   [self updatePanningEnabled];
-  if (GameHasEnded == [GoGame sharedGame].state)
+  if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
     self.scoringModel.scoringMode = true;
 }
 
@@ -609,7 +609,7 @@
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   if (self.scoringModel.scoringMode)
   {
-    if (GameHasEnded != [GoGame sharedGame].state)
+    if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
       [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     [toolbarItems addObject:self.flexibleSpaceButton];
     [toolbarItems addObject:self.gameInfoButton];
@@ -619,7 +619,7 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
         [toolbarItems addObject:self.pauseButton];
         [toolbarItems addObject:self.continueButton];
         [toolbarItems addObject:self.flexibleSpaceButton];
@@ -664,7 +664,7 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
         break;
       default:
       {
@@ -672,8 +672,8 @@
           break;
         switch ([GoGame sharedGame].state)
         {
-          case GameHasNotYetStarted:
-          case GameHasStarted:
+          case GoGameStateGameHasNotYetStarted:
+          case GoGameStateGameHasStarted:
             enabled = YES;
             break;
           default:
@@ -696,7 +696,7 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
         break;
       default:
       {
@@ -704,8 +704,8 @@
           break;
         switch ([GoGame sharedGame].state)
         {
-          case GameHasNotYetStarted:
-          case GameHasStarted:
+          case GoGameStateGameHasNotYetStarted:
+          case GoGameStateGameHasStarted:
             enabled = YES;
             break;
           default:
@@ -728,7 +728,7 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
         break;
       default:
       {
@@ -736,7 +736,7 @@
           break;
         switch ([GoGame sharedGame].state)
         {
-          case GameHasStarted:
+          case GoGameStateGameHasStarted:
           {
             GoMove* lastMove = [GoGame sharedGame].lastMove;
             if (lastMove == nil)
@@ -770,12 +770,12 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
       {
         switch ([GoGame sharedGame].state)
         {
-          case GameHasNotYetStarted:
-          case GameHasStarted:
+          case GoGameStateGameHasNotYetStarted:
+          case GoGameStateGameHasStarted:
             enabled = YES;
             break;
           default:
@@ -800,11 +800,11 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
       {
         switch ([GoGame sharedGame].state)
         {
-          case GameIsPaused:
+          case GoGameStateGameIsPaused:
             enabled = YES;
             break;
           default:
@@ -852,14 +852,14 @@
   {
     switch ([GoGame sharedGame].type)
     {
-      case ComputerVsComputerGame:
+      case GoGameTypeComputerVsComputer:
       {
         switch ([GoGame sharedGame].state)
         {
-          case GameHasNotYetStarted:
-          case GameHasEnded:
+          case GoGameStateGameHasNotYetStarted:
+          case GoGameStateGameHasEnded:
             enabled = YES;
-          case GameIsPaused:
+          case GoGameStateGameIsPaused:
             // Computer may still be thinking
             enabled = ! [GoGame sharedGame].isComputerThinking;
             break;
@@ -917,7 +917,7 @@
     return;
   }
 
-  if (ComputerVsComputerGame == game.type)
+  if (GoGameTypeComputerVsComputer == game.type)
   {
     self.panningEnabled = false;
     return;
@@ -925,11 +925,11 @@
 
   switch (game.state)
   {
-    case GameHasNotYetStarted:
-    case GameHasStarted:
+    case GoGameStateGameHasNotYetStarted:
+    case GoGameStateGameHasStarted:
       self.panningEnabled = ! [game isComputerThinking];
       break;
-    default:  // specifically GameHasEnded
+    default:  // specifically GoGameStateGameHasEnded
       self.panningEnabled = false;
       break;
   }

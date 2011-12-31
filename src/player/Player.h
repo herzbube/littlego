@@ -67,6 +67,6 @@
 @property(nonatomic, retain) PlayerStatistics* statistics;
 /// @brief True if this Player object is taking part in the currently ongoing
 /// GoGame.
-@property(nonatomic, assign, getter=isPlaying) bool playing;
+@property(nonatomic, assign, readonly, getter=isPlaying) bool playing;
 
 @end

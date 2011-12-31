@@ -108,25 +108,36 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  // De-allocate the old game *BEFORE* creating a new one. Go objects attached
-  // to the old game need to be able to access their instance using GoGame's
-  // class method sharedGame().
-  // TODO: Remove this comment and statement as soon as Go objects no longer
-  // rely on sharedGame().
-  appDelegate.game = nil;
-  if ([GoGame sharedGame])
-  {
-    NSException* exception = [NSException exceptionWithName:@"SharedGameException"
-                                                     reason:@"The shared GoGame object was not deallocated as expected."
-                                                   userInfo:nil];
-    @throw exception;
-  }
 
+  // Create the new GoGame object
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
   GoGame* newGame = [GoGame newGame];
+
+  // Replace the delegate's reference; an old GoGame object is now deallocated
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   appDelegate.game = newGame;
+
+  // Configure the new GoGame object
+  newGame.board = [GoBoard newGameBoard];
+  newGame.playerBlack = [GoPlayer newGameBlackPlayer];
+  newGame.playerWhite = [GoPlayer newGameWhitePlayer];
+  bool blackPlayerIsHuman = newGame.playerBlack.player.human;
+  bool whitePlayerIsHuman = newGame.playerWhite.player.human;
+  if (blackPlayerIsHuman && whitePlayerIsHuman)
+    newGame.type = GoGameTypeHumanVsHuman;
+  else if (! blackPlayerIsHuman && ! whitePlayerIsHuman)
+    newGame.type = GoGameTypeComputerVsComputer;
+  else
+    newGame.type = GoGameTypeComputerVsHuman;
+  
+  // Configure dependent objects
+  [newGame.board setupBoard];
+
+  // Send this only after GoGame and its dependents have been fully configured.
+  // Receivers will probably want to know stuff like the board size and what
+  // game type this is.
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameNewCreated object:newGame];
 }
 
 // -----------------------------------------------------------------------------
@@ -196,7 +207,7 @@
 - (void) setupComputerPlayer
 {
   GoGame* game = [GoGame sharedGame];
-  if (HumanVsHumanGame == game.type)
+  if (GoGameTypeHumanVsHuman == game.type)
   {
     [[[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile] applyProfile];
   }

@@ -17,14 +17,12 @@
 
 // Project includes
 #import "GoGame.h"
-#import "GoBoard.h"
 #import "GoPlayer.h"
 #import "GoMove.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
-#import "GoVertex.h"
-#import "../main/ApplicationDelegate.h"
 #import "../player/Player.h"
+#import "../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -41,10 +39,6 @@
 - (void) setFirstMove:(GoMove*)newValue;
 - (void) setLastMove:(GoMove*)newValue;
 - (void) setComputerThinks:(bool)newValue;
-//@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, assign, readwrite) enum GoGameType type;
 //@}
 @end
 
@@ -66,16 +60,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Shared instance of GoGame.
-// -----------------------------------------------------------------------------
-static GoGame* sharedGame = nil;
-
-// -----------------------------------------------------------------------------
 /// @brief Returns the shared GoGame object that represents the current game.
 // -----------------------------------------------------------------------------
 + (GoGame*) sharedGame;
 {
-  return sharedGame;
+  return [ApplicationDelegate sharedDelegate].game;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,10 +74,6 @@ static GoGame* sharedGame = nil;
 + (GoGame*) newGame
 {
   GoGame* newGame = [[[GoGame alloc] init] autorelease];
-  assert(newGame == sharedGame);
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameNewCreated object:newGame];
-
   return newGame;
 }
 
@@ -104,38 +89,20 @@ static GoGame* sharedGame = nil;
   if (! self)
     return nil;
 
-  // Make sure that this instance of GoGame is globally available
-  sharedGame = self;
-
-  // Initialize members (some objects initialize themselves with values from
-  // NewGameModel, but we don't really have to know about this).
-  // Note: Where possible don't use "self" to prevent setter methods from
+  // Where possible don't use "self" to prevent setter methods from
   // triggering notifications.
-  self.board = [GoBoard newGameBoard];
+  type = GoGameTypeUnknown;
+  board = nil;
   self.handicapPoints = [NSArray array];
   komi = 0;
-  self.playerBlack = [GoPlayer newGameBlackPlayer];
-  self.playerWhite = [GoPlayer newGameWhitePlayer];
+  playerBlack = nil;
+  playerWhite = nil;
   firstMove = nil;
   lastMove = nil;
-  state = GameHasNotYetStarted;
+  state = GoGameStateGameHasNotYetStarted;
   reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
   nextMoveIsComputerGenerated = false;
-
-  bool blackPlayerIsHuman = self.playerBlack.player.human;
-  bool whitePlayerIsHuman = self.playerWhite.player.human;
-  if (blackPlayerIsHuman && whitePlayerIsHuman)
-    self.type = HumanVsHumanGame;
-  else if (! blackPlayerIsHuman && ! whitePlayerIsHuman)
-    self.type = ComputerVsComputerGame;
-  else
-    self.type = ComputerVsHumanGame;
-
-  // Post-initialization, after everything else has been set up (especially the
-  // shared game instance and a reference to the GoBoard object must have been
-  // set up)
-  [self.board setupBoard];
 
   return self;
 }
@@ -151,8 +118,6 @@ static GoGame* sharedGame = nil;
   self.playerWhite = nil;
   self.firstMove = nil;
   self.lastMove = nil;
-  if (self == sharedGame)
-    sharedGame = nil;
   [super dealloc];
 }
 
@@ -193,11 +158,11 @@ static GoGame* sharedGame = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #PlayMove.
+/// response to one of the players making a #GoMoveTypePlay.
 // -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)aPoint
 {
-  GoMove* move = [GoMove move:PlayMove by:self.currentPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:GoMoveTypePlay by:self.currentPlayer after:self.lastMove];
   move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
@@ -207,17 +172,17 @@ static GoGame* sharedGame = nil;
 
   // Game state must change after any of the other things; this order is
   // important for observer notifications
-  if (GameHasNotYetStarted == self.state)
-    self.state = GameHasStarted;  // don't set this state if game is currently paused
+  if (GoGameStateGameHasNotYetStarted == self.state)
+    self.state = GoGameStateGameHasStarted;  // don't set this state if game is currently paused
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #PassMove.
+/// response to one of the players making a #GoMoveTypePass.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
-  GoMove* move = [GoMove move:PassMove by:self.currentPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   if (! self.firstMove)
@@ -226,15 +191,15 @@ static GoGame* sharedGame = nil;
 
   // Game state must change after any of the other things; this order is
   // important for observer notifications
-  if (move.previous.type == PassMove)
+  if (move.previous.type == GoMoveTypePass)
   {
     self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
-    self.state = GameHasEnded;
+    self.state = GoGameStateGameHasEnded;
   }
   else
   {
-    if (GameHasNotYetStarted == self.state)
-      self.state = GameHasStarted;  // don't set this state if game is currently paused
+    if (GoGameStateGameHasNotYetStarted == self.state)
+      self.state = GoGameStateGameHasStarted;  // don't set this state if game is currently paused
   }
 }
 
@@ -245,7 +210,7 @@ static GoGame* sharedGame = nil;
 - (void) resign
 {
   self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
-  self.state = GameHasEnded;
+  self.state = GoGameStateGameHasEnded;
 }
 
 // -----------------------------------------------------------------------------
@@ -267,9 +232,9 @@ static GoGame* sharedGame = nil;
 
   // No game state change
   // - Since we are able to undo moves, this clearly means that we are in state
-  //   GameHasStarted
+  //   GoGameStateGameHasStarted
   // - But undoing a move will never cause the game to revert to state
-  //   GameHasNotYetStarted
+  //   GoGameStateGameHasNotYetStarted
 }
 
 // -----------------------------------------------------------------------------
@@ -287,8 +252,8 @@ static GoGame* sharedGame = nil;
 - (void) pause
 {
   assert(ComputerVsComputerGame == self.type);
-  assert(GameHasStarted == self.state);
-  self.state = GameIsPaused;
+  assert(GoGameStateGameHasStarted == self.state);
+  self.state = GoGameStateGameIsPaused;
 }
 
 // -----------------------------------------------------------------------------
@@ -300,8 +265,8 @@ static GoGame* sharedGame = nil;
 - (void) continue
 {
   assert(ComputerVsComputerGame == self.type);
-  assert(GameIsPaused == self.state);
-  self.state = GameHasStarted;
+  assert(GoGameStateGameIsPaused == self.state);
+  self.state = GoGameStateGameHasStarted;
 }
 
 // -----------------------------------------------------------------------------

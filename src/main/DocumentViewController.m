@@ -138,7 +138,7 @@
     NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
     switch (tabType)
     {
-      case AboutTab:
+      case TabTypeAbout:
         [self showAboutDocument:resourceContent];
         break;
       default:

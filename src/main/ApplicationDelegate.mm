@@ -211,7 +211,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationWillResignActive:(UIApplication*)application
 {
-  if (ComputerVsComputerGame == [GoGame sharedGame].type)
+  if (GoGameTypeComputerVsComputer == game.type)
   {
     PauseGameCommand* command = [[PauseGameCommand alloc] init];
     [command submit];
@@ -507,16 +507,16 @@ static ApplicationDelegate* sharedDelegate = nil;
   NSString* resourceName = nil;
   switch (tabType)
   {
-    case ManualTab:
+    case TabTypeManual:
       resourceName = manualDocumentResource;
       break;
-    case AboutTab:
+    case TabTypeAbout:
       resourceName = aboutDocumentResource;
       break;
-    case SourceCodeTab:
+    case TabTypeSourceCode:
       resourceName = sourceCodeDocumentResource;
       break;
-    case CreditsTab:
+    case TabTypeCredits:
       resourceName = creditsDocumentResource;
       break;
     default:

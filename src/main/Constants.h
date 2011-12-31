@@ -50,8 +50,8 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 /// @brief Enumerates possible types of GoMove objects.
 enum GoMoveType
 {
-  PlayMove,   ///< @brief The player played a stone in this move.
-  PassMove    ///< @brief The player passed in this move.
+  GoMoveTypePlay,   ///< @brief The player played a stone in this move.
+  GoMoveTypePass    ///< @brief The player passed in this move.
 };
 
 /// @brief Enumerates colors in Go. The values from this enumeration can be
@@ -66,22 +66,23 @@ enum GoColor
 /// @brief Enumerates the possible types of GoGame objects.
 enum GoGameType
 {
-  ComputerVsHumanGame,     ///< @brief A computer and a human player play against each other.
-  ComputerVsComputerGame,  ///< @brief Two computer players play against each other.
-  HumanVsHumanGame         ///< @brief Two human players play against each other.
+  GoGameTypeUnknown,             ///< @brief Unknown game type.
+  GoGameTypeComputerVsHuman,     ///< @brief A computer and a human player play against each other.
+  GoGameTypeComputerVsComputer,  ///< @brief Two computer players play against each other.
+  GoGameTypeHumanVsHuman         ///< @brief Two human players play against each other.
 };
 
 /// @brief Enumerates the possible states of a GoGame.
 enum GoGameState
 {
-  GameHasNotYetStarted,  ///< @brief Denotes a new game that is ready to begin.
-  GameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
-  GameIsPaused,          ///< @brief Denotes a computer vs. computer game that is paused.
-  GameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
+  GoGameStateGameHasNotYetStarted,  ///< @brief Denotes a new game that is ready to begin.
+  GoGameStateGameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
+  GoGameStateGameIsPaused,          ///< @brief Denotes a computer vs. computer game that is paused.
+  GoGameStateGameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
 };
 
 /// @brief Enumerates the possible reasons why a GoGame has reached the state
-/// #GameHasEnded.
+/// #GoGameStateGameHasEnded.
 enum GoGameHasEndedReason
 {
   GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
@@ -92,7 +93,7 @@ enum GoGameHasEndedReason
 };
 
 /// @brief Enumerates the possible results of a game that has reached the state
-/// #GameHasEnded.
+/// #GoGameStateGameHasEnded.
 enum GoGameResult
 {
   GoGameResultNone,         ///< @brief The game has not been decided yet, usually because the game has not yet ended.
@@ -105,12 +106,12 @@ enum GoGameResult
 /// GoPoint to another neighbouring GoPoint.
 enum GoBoardDirection
 {
-  LeftDirection,     ///< @brief Used for navigating to the left neighbour of a GoPoint.
-  RightDirection,    ///< @brief Used for navigating to the right neighbour of a GoPoint.
-  UpDirection,       ///< @brief Used for navigating to the neighbour that is above a GoPoint.
-  DownDirection,     ///< @brief Used for navigating to the neighbour that is below a GoPoint.
-  NextDirection,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is Q19.
-  PreviousDirection  ///< @brief Same as NextDirection, but for iterating backwards.
+  GoBoardDirectionLeft,     ///< @brief Used for navigating to the left neighbour of a GoPoint.
+  GoBoardDirectionRight,    ///< @brief Used for navigating to the right neighbour of a GoPoint.
+  GoBoardDirectionUp,       ///< @brief Used for navigating to the neighbour that is above a GoPoint.
+  GoBoardDirectionDown,     ///< @brief Used for navigating to the neighbour that is below a GoPoint.
+  GoBoardDirectionNext,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is Q19.
+  GoBoardDirectionPrevious  ///< @brief Same as #GoBoardDirectionNext, but for iterating backwards.
 };
 
 /// @brief How should Play view mark up inconcistent territory during scoring?
@@ -127,30 +128,30 @@ enum InconsistentTerritoryMarkupType
 /// TabBarItem in MainWindow.xib.
 enum TabType
 {
-  PlayTab,
-  SettingsTab,
-  ArchiveTab,
-  DebugTab,
-  ManualTab,
-  AboutTab,
-  SourceCodeTab,
-  LicensesTab,
-  CreditsTab
+  TabTypePlay,
+  TabTypeSettings,
+  TabTypeArchive,
+  TabTypeDebug,
+  TabTypeManual,
+  TabTypeAbout,
+  TabTypeSourceCode,
+  TabTypeLicenses,
+  TabTypeCredits
 };
 
 /// @brief Enumerates the supported board sizes.
 enum GoBoardSize
 {
-  BoardSize7,
-  BoardSize9,
-  BoardSize11,
-  BoardSize13,
-  BoardSize15,
-  BoardSize17,
-  BoardSize19,
-  BoardSizeMin = BoardSize7,
-  BoardSizeMax = BoardSize19,
-  BoardSizeUndefined
+  GoBoardSize7,
+  GoBoardSize9,
+  GoBoardSize11,
+  GoBoardSize13,
+  GoBoardSize15,
+  GoBoardSize17,
+  GoBoardSize19,
+  GoBoardSizeMin = GoBoardSize7,
+  GoBoardSizeMax = GoBoardSize19,
+  GoBoardSizeUndefined
 };
 /// @brief Default board size that should be used if no sensible user default
 /// is available.
@@ -162,30 +163,30 @@ extern const enum GoBoardSize gDefaultBoardSize;
 /// that manages several alert views knows how to distinguish between them.
 enum AlertViewType
 {
-  GameHasEndedAlertView,
-  NewGameAlertView,
-  SaveGameAlertView,
-  RenameGameAlertView,
-  LoadGameFailedAlertView,
-  UndoMoveFailedAlertView,
-  AddToCannedCommandsAlertView,
-  MemoryWarningAlertView
+  AlertViewTypeGameHasEnded,
+  AlertViewTypeNewGame,
+  AlertViewTypeSaveGame,
+  AlertViewTypeRenameGame,
+  AlertViewTypeLoadGameFailed,
+  AlertViewTypeUndoMoveFailed,
+  AlertViewTypeAddToCannedCommands,
+  AlertViewTypeMemoryWarning
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
 /// #AlertViewType.
 enum AlertViewButtonType
 {
-  OkAlertViewButton = 0,  ///< @brief Used as the single button in a simple alert view
-  NoAlertViewButton = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
-  YesAlertViewButton = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
+  AlertViewButtonTypeOk = 0,  ///< @brief Used as the single button in a simple alert view
+  AlertViewButtonTypeNo = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
+  AlertViewButtonTypeYes = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
 };
 
 /// @brief Enumerates the supported sort criteria on the Archive view.
 enum ArchiveSortCriteria
 {
-  FileNameArchiveSort,
-  FileDateArchiveSort
+  ArchiveSortCriteriaFileName,
+  ArchiveSortCriteriaFileDate
 };
 
 // -----------------------------------------------------------------------------
@@ -255,7 +256,9 @@ extern NSString* gtpEngineIdleNotification;
 /// @name GoGame notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that a new GoGame has been created.
+/// @brief Is sent to indicate that a new GoGame object has been created. This
+/// notification is sent after the GoGame object and its dependent objects (e.g.
+/// GoBoard) have been fully configured.
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* goGameNewCreated;

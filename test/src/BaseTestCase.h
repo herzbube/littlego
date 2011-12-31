@@ -26,6 +26,18 @@
 // -----------------------------------------------------------------------------
 /// @brief The BaseTestCase class implements setUp() and tearDown() to provide
 /// subclasses with a useful default test environment.
+///
+/// The default test environment looks like this:
+/// - An application delegate object is created. The object is available through
+///   the instance variable m_delegate.
+/// - The logging subsystem is initialized
+/// - The user defaults system is initialized with the main application's
+///   registration domain data and a "new game" board size of 19x19 (regardless
+///   of what the registration domain data contains)
+/// - All of the main application's model objects are created and initialized
+///   with user defaults data
+/// - A new GoGame object is created by submitting a NewGameCommand instance.
+///   The object is available through the instance variable m_game.
 // -----------------------------------------------------------------------------
 @interface BaseTestCase : SenTestCase
 {

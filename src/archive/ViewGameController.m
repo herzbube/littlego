@@ -327,7 +327,7 @@ enum GameAttributesSectionItem
                                                  delegate:self
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
-  alert.tag = RenameGameAlertView;
+  alert.tag = AlertViewTypeRenameGame;
   [alert show];
   return false;
 }
@@ -381,7 +381,7 @@ enum GameAttributesSectionItem
   [self dismissModalViewControllerAnimated:YES];
   if (didStartNewGame)
   {
-    [[ApplicationDelegate sharedDelegate] activateTab:PlayTab];
+    [[ApplicationDelegate sharedDelegate] activateTab:TabTypePlay];
     // No animation necessary, the Play tab is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }
@@ -402,12 +402,12 @@ enum GameAttributesSectionItem
   GoGame* goGame = [GoGame sharedGame];
   switch (goGame.type)
   {
-    case ComputerVsComputerGame:
+    case GoGameTypeComputerVsComputer:
     {
       switch (goGame.state)
       {
-        case GameIsPaused:
-        case GameHasEnded:
+        case GoGameStateGameIsPaused:
+        case GoGameStateGameHasEnded:
           if (! goGame.isComputerThinking)
             enableButton = YES;
           break;

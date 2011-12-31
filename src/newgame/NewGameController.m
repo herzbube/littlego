@@ -230,15 +230,15 @@ enum KomiSectionItem
   GoGame* game = [GoGame sharedGame];
   switch (game.state)
   {
-    case GameHasStarted:
-    case GameIsPaused:
+    case GoGameStateGameHasStarted:
+    case GoGameStateGameIsPaused:
     {
       UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
                                                       message:@"Are you sure you want to start a new game and discard the game in progress?"
                                                      delegate:self
                                             cancelButtonTitle:@"No"
                                             otherButtonTitles:@"Yes", nil];
-      alert.tag = NewGameAlertView;
+      alert.tag = AlertViewTypeNewGame;
       [alert show];
       break;
     }
@@ -388,7 +388,7 @@ enum KomiSectionItem
     case BoardSizeSection:
     {
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-      for (enum GoBoardSize boardSizeIndex = BoardSizeMin; boardSizeIndex <= BoardSizeMax; ++boardSizeIndex)
+      for (enum GoBoardSize boardSizeIndex = GoBoardSizeMin; boardSizeIndex <= GoBoardSizeMax; ++boardSizeIndex)
         [itemList addObject:[GoBoard stringForSize:boardSizeIndex]];
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                           title:@"Board size"
@@ -557,9 +557,9 @@ enum KomiSectionItem
 {
   switch (buttonIndex)
   {
-    case NoAlertViewButton:
+    case AlertViewButtonTypeNo:
       break;
-    case YesAlertViewButton:
+    case AlertViewButtonTypeYes:
       [self newGame];
       break;
     default:

@@ -87,7 +87,7 @@
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (tabType)
   {
-    case ManualTab:
+    case TabTypeManual:
       self.documentGenerator = [[[DocumentGenerator alloc] initWithFileContent:resourceContent] autorelease];
       break;
     default:

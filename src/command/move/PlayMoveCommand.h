@@ -28,8 +28,8 @@
 /// or a pass move for a human player.
 ///
 /// PlayMoveCommand submits a "play" command to the GTP engine, then updates
-/// GoGame so that it generates a GoMove of type #PlayMove or #PassMove for the
-/// human player whose turn it is.
+/// GoGame so that it generates a GoMove of type #GoMoveTypePlay or
+/// #GoMoveTypePass for the human player whose turn it is.
 ///
 /// The computer player is triggered if it is now its turn to move.
 // -----------------------------------------------------------------------------

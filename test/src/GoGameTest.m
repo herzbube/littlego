@@ -38,14 +38,14 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  STAssertEquals(ComputerVsHumanGame, m_game.type, @"game type test failed");
+  STAssertEquals(GoGameTypeComputerVsHuman, m_game.type, @"game type test failed");
   STAssertNotNil(m_game.board, nil);
   STAssertNotNil(m_game.playerBlack, nil);
   STAssertNotNil(m_game.playerWhite, nil);
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
   STAssertNil(m_game.firstMove, nil);
   STAssertNil(m_game.lastMove, nil);
-  STAssertEquals(GameHasNotYetStarted, m_game.state, @"game state test failed");
+  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, @"game state test failed");
   STAssertFalse(m_game.isComputerThinking, nil);
 }
 

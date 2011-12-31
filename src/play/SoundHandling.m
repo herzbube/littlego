@@ -102,7 +102,7 @@
     return;
 
   GoGame* game = [GoGame sharedGame];
-  if (GameHasEnded == game.state)
+  if (GoGameStateGameHasEnded == game.state)
     ;  // do not abort, this is the case where the computer has finished
        // calculating the score
   else if ([game isComputerPlayersTurn])

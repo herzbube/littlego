@@ -58,7 +58,7 @@
 - (bool) isComputerPlayersTurn;
 
 /// @brief The type of this GoGame object.
-@property(nonatomic, assign, readonly) enum GoGameType type;
+@property(nonatomic, assign) enum GoGameType type;
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(nonatomic, retain) GoBoard* board;
 /// @brief List of GoPoint objects with handicap stones.
@@ -76,14 +76,14 @@
 /// instance, if the game was resigned this denotes the player who resigned.
 @property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
 /// @brief The GoMove object that represents the first move of the game. nil if
-/// the game is still in state #GameHasNotYetStarted.
+/// the game is still in state #GoGameStateGameHasNotYetStarted.
 @property(nonatomic, retain) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
-/// the game is still in state #GameHasNotYetStarted.
+/// the game is still in state #GoGameStateGameHasNotYetStarted.
 @property(nonatomic, retain) GoMove* lastMove;
 /// @brief The state of the game.
 @property(nonatomic, assign) enum GoGameState state;
-/// @brief The reason why the game has reached the state #GameHasEnded.
+/// @brief The reason why the game has reached the state #GoGameStateGameHasEnded.
 @property(nonatomic, assign) enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// its next move.

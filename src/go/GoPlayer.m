@@ -115,10 +115,6 @@
   self.player = aPlayer;
   self.black = true;
 
-  // Mark the Player object as taking part in a game. This assumes that GoPlayer
-  // objects are created only when a new GoGame is started.
-  self.player.playing = true;
-
   return self;
 }
 
@@ -127,7 +123,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.player.playing = false;
   self.player = nil;
   [super dealloc];
 }

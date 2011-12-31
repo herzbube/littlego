@@ -29,7 +29,7 @@
 @interface GoMove()
 /// @name Initialization and deallocation
 //@{
-- (id) init:(enum GoMoveType)initType by:(GoPlayer*)initPlayer;
+- (id) init:(enum GoMoveType)aType by:(GoPlayer*)aPlayer;
 - (void) dealloc;
 //@}
 /// @name Other methods
@@ -84,22 +84,22 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoMove object. The GoMove has type @a type, is
-/// associated with @a initPlayer, and has no predecessor or successor GoMove.
+/// @brief Initializes a GoMove object. The GoMove has type @a aType, is
+/// associated with @a aPlayer, and has no predecessor or successor GoMove.
 ///
 /// @note This is the designated initializer of GoMove.
 // -----------------------------------------------------------------------------
-- (id) init:(enum GoMoveType)initType by:(GoPlayer*)initPlayer
+- (id) init:(enum GoMoveType)aType by:(GoPlayer*)aPlayer
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  assert(initPlayer != nil);
+  assert(aPlayer != nil);
 
-  self.type = initType;
-  self.player = initPlayer;
+  self.type = aType;
+  self.player = aPlayer;
   self.point = nil;
   self.previous = nil;
   self.next = nil;
@@ -141,7 +141,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Associates the GoPoint @a newValue with this GoMove. This GoMove
-/// must be of type #PlayMove.
+/// must be of type #GoMoveTypePlay.
 ///
 /// Invoking this method effectively places a stone at GoPoint @a newValue. The
 /// caller must have checked whether placing the stone at @a newValue is a
@@ -159,8 +159,8 @@
 - (void) setPoint:(GoPoint*)newValue
 {
   // Perform a few cheap precondition checks
-  assert(PlayMove == self.type);
-  if (PlayMove != self.type)
+  assert(GoMoveTypePlay == self.type);
+  if (GoMoveTypePlay != self.type)
     return;
   assert(GoColorNone == newValue.stoneState);
   if (GoColorNone != newValue.stoneState)
@@ -204,14 +204,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Reverts the board to the state it had before this GoMove was played.
-/// Does nothing if this GoMove is not of type #PlayMove.
+/// Does nothing if this GoMove is not of type #GoMoveTypePlay.
 ///
 /// As a side-effect of this method, GoBoardRegions may become fragmented
 /// and/or multiple GoBoardRegions may merge with other regions.
 // -----------------------------------------------------------------------------
 - (void) undo
 {
-  if (PlayMove != self.type)
+  if (GoMoveTypePlay != self.type)
     return;
 
   // Update stone state of captured stones *BEFORE* handling the actual point

@@ -30,8 +30,9 @@
 /// Undoing moves is not possible in a computer vs. computer game.
 ///
 /// UndoMoveCommand submits an "undo" command to the GTP engine, then updates
-/// GoGame so that discards the last GoMove of type #PlayMove or #PassMove that
-/// has been made by any player. Resigning the game cannot be undone.
+/// GoGame so that discards the last GoMove of type #GoMoveTypePlay or
+/// #GoMoveTypePass that has been made by any player. Resigning the game cannot
+/// be undone.
 ///
 /// If the move that was discarded was made by a computer player, it is assumed
 /// that this move was a response to a move made by a human player (this

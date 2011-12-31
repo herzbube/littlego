@@ -48,7 +48,7 @@
   // used regardless of what the values in the registration domain say
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
-  [newGameDictionary setValue:[NSNumber numberWithInt:BoardSize19] forKey:boardSizeKey];
+  [newGameDictionary setValue:[NSNumber numberWithInt:GoBoardSize19] forKey:boardSizeKey];
   [userDefaults setObject:newGameDictionary forKey:newGameKey];
   // Initialize models after we have fiddled with the user defaults data
   [m_delegate setupUserDefaults];

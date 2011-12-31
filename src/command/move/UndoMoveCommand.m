@@ -65,8 +65,8 @@
   if (! sharedGame)
     return nil;
   enum GoGameState gameState = sharedGame.state;
-  assert(GameHasEnded != gameState);
-  if (GameHasEnded == gameState)
+  assert(GoGameStateGameHasEnded != gameState);
+  if (GoGameStateGameHasEnded == gameState)
     return nil;
 
   self.game = sharedGame;
@@ -147,7 +147,7 @@
                                                  delegate:nil
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
-  alert.tag = UndoMoveFailedAlertView;
+  alert.tag = AlertViewTypeUndoMoveFailed;
   [alert show];
 }
 

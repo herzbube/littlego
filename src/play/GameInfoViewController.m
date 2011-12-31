@@ -219,7 +219,7 @@ enum MoveStatisticsSectionItem
   switch (section)
   {
     case GameStateSection:
-      if (GameHasEnded != [GoGame sharedGame].state)
+      if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
         return MaxGameStateSectionItem;
       else
         return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
@@ -276,22 +276,22 @@ enum MoveStatisticsSectionItem
           cell.textLabel.text = @"State";
           switch (game.state)
           {
-            case GameHasNotYetStarted:
+            case GoGameStateGameHasNotYetStarted:
             {
               cell.detailTextLabel.text = @"Game has not yet started";
               break;
             }
-            case GameHasStarted:
+            case GoGameStateGameHasStarted:
             {
               cell.detailTextLabel.text = @"Game is in progress";
               break;
             }
-            case GameIsPaused:
+            case GoGameStateGameIsPaused:
             {
               cell.detailTextLabel.text = @"Game is paused";
               break;
             }
-            case GameHasEnded:
+            case GoGameStateGameHasEnded:
             {
               cell.detailTextLabel.text = @"Game has ended";
               break;
@@ -319,7 +319,7 @@ enum MoveStatisticsSectionItem
             colorOfCurrentPlayer = @"White";
             colorOfOtherPlayer = @"Black";
           }
-          if (GameHasEnded == game.state)
+          if (GoGameStateGameHasEnded == game.state)
           {
             cell.textLabel.text = @"Reason";
             switch (game.reasonForGameHasEnded)
@@ -347,13 +347,13 @@ enum MoveStatisticsSectionItem
             cell.textLabel.text = @"Last move";
             switch (game.state)
             {
-              case GameHasNotYetStarted:
+              case GoGameStateGameHasNotYetStarted:
               {
                 cell.detailTextLabel.text = @"None";
                 break;
               }
-              case GameHasStarted:
-              case GameIsPaused:
+              case GoGameStateGameHasStarted:
+              case GoGameStateGameIsPaused:
               {
                 GoMove* lastMove = game.lastMove;
                 if (! lastMove)
@@ -364,14 +364,14 @@ enum MoveStatisticsSectionItem
                 {
                   switch (lastMove.type)
                   {
-                    case PlayMove:
+                    case GoMoveTypePlay:
                     {
                       cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ played at %@",
                                                    colorOfOtherPlayer,
                                                    lastMove.point.vertex.string];
                       break;
                     }
-                    case PassMove:
+                    case GoMoveTypePass:
                     {
                       cell.detailTextLabel.text = [colorOfOtherPlayer stringByAppendingString:@" passed"];
                       break;

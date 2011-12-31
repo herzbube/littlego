@@ -30,9 +30,9 @@
 /// player who made the move. The player object can be queried for the color of
 /// the move.
 ///
-/// If a GoMove object is of type#PlayMove it also has an associated GoPoint
-/// object which registers where the stone was placed. The GoPoint object is
-/// assigned (soon) after construction.
+/// If a GoMove object is of type #GoMoveTypePlay it also has an associated
+/// GoPoint object which registers where the stone was placed. The GoPoint
+/// object is assigned (soon) after construction.
 ///
 /// @note Assignment of a GoPoint object is a non-trivial operation that
 /// triggers the mechanism for placing a stone.
@@ -56,7 +56,7 @@
 /// @brief The player who made this GoMove.
 @property(nonatomic, retain, readonly) GoPlayer* player;
 /// @brief The GoPoint object registering where the stone was placed for this
-/// GoMove. Is nil if this GoMove is @e not a #PlayMove.
+/// GoMove. Is nil if this GoMove is @e not a #GoMoveTypePlay.
 @property(nonatomic, assign) GoPoint* point;
 /// @brief The predecessor to this GoMove object. nil if this is the first move
 /// of the game.

@@ -59,7 +59,7 @@
   assert(aPoint);
   if (! aPoint)
     return nil;
-  self = [self initWithMoveType:PlayMove];
+  self = [self initWithMoveType:GoMoveTypePlay];
   self.point = aPoint;
   return self;
 }
@@ -69,7 +69,7 @@
 // -----------------------------------------------------------------------------
 - (id) initPass
 {
-  return [self initWithMoveType:PassMove];
+  return [self initWithMoveType:GoMoveTypePass];
 }
 
 // -----------------------------------------------------------------------------
@@ -90,8 +90,8 @@
   if (! sharedGame)
     return nil;
   enum GoGameState gameState = sharedGame.state;
-  assert(GameHasEnded != gameState);
-  if (GameHasEnded == gameState)
+  assert(GoGameStateGameHasEnded != gameState);
+  if (GoGameStateGameHasEnded == gameState)
     return nil;
 
   self.game = sharedGame;
@@ -134,10 +134,10 @@
   // actual stone is set due to the model update).
   switch (self.moveType)
   {
-    case PlayMove:
+    case GoMoveTypePlay:
       [self.game play:point];
       break;
-    case PassMove:
+    case GoMoveTypePass:
       [self.game pass];
       break;
     default:
@@ -150,10 +150,10 @@
   commandString = [commandString stringByAppendingString:@" "];
   switch (self.moveType)
   {
-    case PlayMove:
+    case GoMoveTypePlay:
       commandString = [commandString stringByAppendingString:point.vertex.string];
       break;
-    case PassMove:
+    case GoMoveTypePass:
       commandString = [commandString stringByAppendingString:@"pass"];
       break;
     default:
@@ -183,7 +183,7 @@
   // actually a computer player's turn
   switch (self.game.state)
   {
-    case GameHasEnded:  // game has ended as a result of the last move (e.g. 2x pass)
+    case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. 2x pass)
       break;
     default:
       if ([self.game isComputerPlayersTurn])

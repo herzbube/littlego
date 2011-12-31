@@ -153,16 +153,16 @@ enum ActionSheetButton
     switch (iterButtonIndex)
     {
       case ScoreButton:
-        if (GameHasEnded == [GoGame sharedGame].state)
+        if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
           continue;
         if (scoringModel.scoringMode)
           continue;
         title = @"Score";
         break;
       case ResignButton:
-        if (ComputerVsComputerGame == [GoGame sharedGame].type)
+        if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
           continue;
-        if (GameHasEnded == [GoGame sharedGame].state)
+        if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
           continue;
         if (scoringModel.scoringMode)
           continue;
@@ -329,13 +329,13 @@ enum ActionSheetButton
 {
   switch (buttonIndex)
   {
-    case NoAlertViewButton:
+    case AlertViewButtonTypeNo:
       break;
-    case YesAlertViewButton:
+    case AlertViewButtonTypeYes:
     {
       switch (alertView.tag)
       {
-        case SaveGameAlertView:
+        case AlertViewTypeSaveGame:
           [self doSaveGame:self.saveGameName];
           self.saveGameName = nil;
           break;
@@ -386,7 +386,7 @@ enum ActionSheetButton
                                                      delegate:self
                                             cancelButtonTitle:@"No"
                                             otherButtonTitles:@"Yes", nil];
-      alert.tag = SaveGameAlertView;
+      alert.tag = AlertViewTypeSaveGame;
       [alert show];
       // Remember game name for later use (should the user confirm the
       // overwrite).

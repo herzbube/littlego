@@ -62,8 +62,8 @@
   if (! sharedGame)
     return nil;
   enum GoGameState gameState = sharedGame.state;
-  assert(GameHasEnded != gameState);
-  if (GameHasEnded == gameState)
+  assert(GoGameStateGameHasEnded != gameState);
+  if (GoGameStateGameHasEnded == gameState)
     return nil;
 
   self.game = sharedGame;
@@ -134,8 +134,8 @@
   // actually a computer player's turn
   switch (self.game.state)
   {
-    case GameIsPaused:  // game has been paused while GTP was thinking about its last move
-    case GameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
+    case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
+    case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
       break;
     default:
       if ([self.game isComputerPlayersTurn])

@@ -70,7 +70,7 @@
   self.archiveFolder = [paths objectAtIndex:0];
 
   self.gameList = [NSMutableArray arrayWithCapacity:0];
-  self.sortCriteria = FileNameArchiveSort;
+  self.sortCriteria = ArchiveSortCriteriaFileName;
   self.sortAscending = true;
 
   [self updateGameList];

@@ -92,21 +92,21 @@
 {
   switch (size)
   {
-    case BoardSizeUndefined:
+    case GoBoardSizeUndefined:
       return @"Undefined";
-    case BoardSize7:
+    case GoBoardSize7:
       return @"7";
-    case BoardSize9:
+    case GoBoardSize9:
       return @"9";
-    case BoardSize11:
+    case GoBoardSize11:
       return @"11";
-    case BoardSize13:
+    case GoBoardSize13:
       return @"13";
-    case BoardSize15:
+    case GoBoardSize15:
       return @"15";
-    case BoardSize17:
+    case GoBoardSize17:
       return @"17";
-    case BoardSize19:
+    case GoBoardSize19:
       return @"19";
     default:
       assert(false);
@@ -117,27 +117,27 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the numeric dimension that corresponds to @a size. For
-/// instance, 19 will be returned for the enum value #BoardSize19.
+/// instance, 19 will be returned for the enum value #GoBoardSize19.
 // -----------------------------------------------------------------------------
 + (int) dimensionForSize:(enum GoBoardSize)size
 {
   switch (size)
   {
-    case BoardSizeUndefined:
+    case GoBoardSizeUndefined:
       return 0;
-    case BoardSize7:
+    case GoBoardSize7:
       return 7;
-    case BoardSize9:
+    case GoBoardSize9:
       return 9;
-    case BoardSize11:
+    case GoBoardSize11:
       return 11;
-    case BoardSize13:
+    case GoBoardSize13:
       return 13;
-    case BoardSize15:
+    case GoBoardSize15:
       return 15;
-    case BoardSize17:
+    case GoBoardSize17:
       return 17;
-    case BoardSize19:
+    case GoBoardSize19:
       return 19;
     default:
       assert(false);
@@ -148,31 +148,31 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the board size that corresponds to the numeric @a dimension.
-/// For instance, #BoardSize19 will be returned for the numeric value 19.
+/// For instance, #GoBoardSize19 will be returned for the numeric value 19.
 // -----------------------------------------------------------------------------
 + (enum GoBoardSize) sizeForDimension:(int)dimension
 {
   switch (dimension)
   {
     case 7:
-      return BoardSize7;
+      return GoBoardSize7;
     case 9:
-      return BoardSize9;
+      return GoBoardSize9;
     case 11:
-      return BoardSize11;
+      return GoBoardSize11;
     case 13:
-      return BoardSize13;
+      return GoBoardSize13;
     case 15:
-      return BoardSize15;
+      return GoBoardSize15;
     case 17:
-      return BoardSize17;
+      return GoBoardSize17;
     case 19:
-      return BoardSize19;
+      return GoBoardSize19;
     default:
       assert(false);
       break;
   }
-  return BoardSizeUndefined;
+  return GoBoardSizeUndefined;
 }
 
 // -----------------------------------------------------------------------------
@@ -315,8 +315,8 @@
 /// if @a point is at the left edge of the board, it has no left neighbour,
 /// which will cause a nil value to be returned.
 ///
-/// @note #NextDirection and #PreviousDirection are intended to iterate over
-/// all existing GoPoint objects.
+/// @note #GoBoardDirectionNext and #GoBoardDirectionPrevious are intended to
+/// iterate over all existing GoPoint objects.
 ///
 /// @internal This is the backend for the GoPoint directional properties (e.g.
 /// GoPoint::left()).
@@ -326,27 +326,27 @@
   struct GoVertexNumeric numericVertex = point.vertex.numeric;
   switch (direction)
   {
-    case LeftDirection:
+    case GoBoardDirectionLeft:
       numericVertex.x--;
       if (numericVertex.x < 1)
         return nil;
       break;
-    case RightDirection:
+    case GoBoardDirectionRight:
       numericVertex.x++;
       if (numericVertex.x > self.dimensions)
         return nil;
       break;
-    case UpDirection:
+    case GoBoardDirectionUp:
       numericVertex.y++;
       if (numericVertex.y > self.dimensions)
         return nil;
       break;
-    case DownDirection:
+    case GoBoardDirectionDown:
       numericVertex.y--;
       if (numericVertex.y < 1)
         return nil;
       break;
-    case NextDirection:
+    case GoBoardDirectionNext:
       numericVertex.x++;
       if (numericVertex.x > self.dimensions)
       {
@@ -356,7 +356,7 @@
           return nil;
       }
       break;
-    case PreviousDirection:
+    case GoBoardDirectionPrevious:
       numericVertex.x--;
       if (numericVertex.x < 1)
       {

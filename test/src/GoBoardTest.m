@@ -31,7 +31,7 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  enum GoBoardSize expectedBoardSize = BoardSize19;
+  enum GoBoardSize expectedBoardSize = GoBoardSize19;
   int expectedBoardDimensions = 19;
 
   GoBoard* board = m_game.board;
@@ -106,34 +106,34 @@
   GoBoard* board = m_game.board;
   STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
 
-  enum GoBoardDirection direction = LeftDirection;
-  for (; direction <= PreviousDirection; ++direction)
+  enum GoBoardDirection direction = GoBoardDirectionLeft;
+  for (; direction <= GoBoardDirectionPrevious; ++direction)
   {
     int expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
     NSString* initialVertex;
     switch (direction)
     {
-      case LeftDirection:
+      case GoBoardDirectionLeft:
         expectedNumberOfPoints = expectedBoardDimensions;
         initialVertex = @"T8";
         break;
-      case RightDirection:
+      case GoBoardDirectionRight:
         expectedNumberOfPoints = expectedBoardDimensions;
         initialVertex = @"A14";
         break;
-      case UpDirection:
+      case GoBoardDirectionUp:
         expectedNumberOfPoints = expectedBoardDimensions;
         initialVertex = @"Q1";
         break;
-      case DownDirection:
+      case GoBoardDirectionDown:
         expectedNumberOfPoints = expectedBoardDimensions;
         initialVertex = @"J19";
         break;
-      case NextDirection:
+      case GoBoardDirectionNext:
         expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
         initialVertex = @"A1";
         break;
-      case PreviousDirection:
+      case GoBoardDirectionPrevious:
         expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
         initialVertex = @"T19";
         break;

@@ -144,7 +144,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #LeftDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionLeft. Returns nil if this GoPoint object
 /// is located at the left edge of the Go board.
 // -----------------------------------------------------------------------------
 - (GoPoint*) left
@@ -152,21 +152,21 @@
   if (! isLeftValid)
   {
     isLeftValid = true;
-    left = [self.board neighbourOf:self inDirection:LeftDirection];
+    left = [self.board neighbourOf:self inDirection:GoBoardDirectionLeft];
   }
   return left;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #RightDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionRight. Returns nil if this GoPoint object
 /// is located at the right edge of the Go board.
 // -----------------------------------------------------------------------------
 - (GoPoint*) right
 {
   if (! isRightValid)
   {
-    right = [self.board neighbourOf:self inDirection:RightDirection];
+    right = [self.board neighbourOf:self inDirection:GoBoardDirectionRight];
     isRightValid = true;
   }
   return right;
@@ -174,14 +174,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #UpDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionUp. Returns nil if this GoPoint object
 /// is located at the upper edge of the Go board.
 // -----------------------------------------------------------------------------
 - (GoPoint*) above
 {
   if (! isAboveValid)
   {
-    above = [self.board neighbourOf:self inDirection:UpDirection];
+    above = [self.board neighbourOf:self inDirection:GoBoardDirectionUp];
     isAboveValid = true;
   }
   return above;
@@ -189,14 +189,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #DownDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionDown. Returns nil if this GoPoint object
 /// is located at the lower edge of the Go board.
 // -----------------------------------------------------------------------------
 - (GoPoint*) below
 {
   if (! isBelowValid)
   {
-    below = [self.board neighbourOf:self inDirection:DownDirection];
+    below = [self.board neighbourOf:self inDirection:GoBoardDirectionDown];
     isBelowValid = true;
   }
   return below;
@@ -204,8 +204,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of up to 4 GoPoint objects that are the direct
-/// neighbours of this GoPoint object in #LeftDirection, #RightDirection,
-/// #UpDirection and #DownDirection. The returned list has no particular order.
+/// neighbours of this GoPoint object in #GoBoardDirectionLeft,
+/// #GoBoardDirectionRight, #GoBoardDirectionUp and #GoBoardDirectionDown. The
+/// returned list has no particular order.
 // -----------------------------------------------------------------------------
 - (NSArray*) neighbours
 {
@@ -226,14 +227,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #NextDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionNext. Returns nil if this GoPoint object
 /// is the last GoPoint of the sequence.
 // -----------------------------------------------------------------------------
 - (GoPoint*) next
 {
   if (! isNextValid)
   {
-    next = [self.board neighbourOf:self inDirection:NextDirection];
+    next = [self.board neighbourOf:self inDirection:GoBoardDirectionNext];
     isNextValid = true;
   }
   return next;
@@ -241,14 +242,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPoint object that is the direct neighbour of this
-/// GoPoint object in #PreviousDirection. Returns nil if this GoPoint object
+/// GoPoint object in #GoBoardDirectionPrevious. Returns nil if this GoPoint object
 /// is the first GoPoint of the sequence.
 // -----------------------------------------------------------------------------
 - (GoPoint*) previous
 {
   if (! isPreviousValid)
   {
-    previous = [self.board neighbourOf:self inDirection:PreviousDirection];
+    previous = [self.board neighbourOf:self inDirection:GoBoardDirectionPrevious];
     isPreviousValid = true;
   }
   return previous;

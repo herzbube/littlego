@@ -451,7 +451,7 @@ static PlayView* sharedPlayView = nil;
     {
       // Distance from fingertip should scale with board size. The base for
       // calculating the scale factor is the minimum board size.
-      int minBoardDimension = [GoBoard dimensionForSize:BoardSizeMin];
+      int minBoardDimension = [GoBoard dimensionForSize:GoBoardSizeMin];
       int currentBoardDimension = game.board.dimensions;
       scaleFactor = 1.0 * currentBoardDimension / minBoardDimension;
       // Straight scaling results in a scale factor that is too large for big
@@ -666,7 +666,7 @@ static PlayView* sharedPlayView = nil;
   if (self.playViewModel.markLastMove && ! self.scoringModel.scoringMode)
   {
     GoMove* lastMove = [GoGame sharedGame].lastMove;
-    if (lastMove && PlayMove == lastMove.type)
+    if (lastMove && GoMoveTypePlay == lastMove.type)
     {
       CGRect lastMoveBox = [self innerSquareAtPoint:lastMove.point];
       // TODO move color handling to a helper function; there is similar code
@@ -848,9 +848,9 @@ static PlayView* sharedPlayView = nil;
     {
       switch (game.state)
       {
-        case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
-        case GameHasStarted:
-        case GameIsPaused:          // although game is paused, computer may still be thinking
+        case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
+        case GoGameStateGameHasStarted:
+        case GoGameStateGameIsPaused:          // although game is paused, computer may still be thinking
           statusText = [game.currentPlayer.player.name stringByAppendingString:@" is thinking..."];
           break;
         default:
@@ -870,11 +870,11 @@ static PlayView* sharedPlayView = nil;
       {
         switch (game.state)
         {
-          case GameHasNotYetStarted:  // game state is set to started only after the GTP response is received
-          case GameHasStarted:
+          case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
+          case GoGameStateGameHasStarted:
           {
             GoMove* lastMove = game.lastMove;
-            if (PassMove == lastMove.type)
+            if (GoMoveTypePass == lastMove.type)
             {
               // TODO fix when GoColor class is added
               NSString* color;
@@ -886,7 +886,7 @@ static PlayView* sharedPlayView = nil;
             }
             break;
           }
-          case GameHasEnded:
+          case GoGameStateGameHasEnded:
           {
             switch (game.reasonForGameHasEnded)
             {

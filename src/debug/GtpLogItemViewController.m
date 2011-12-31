@@ -351,7 +351,7 @@ enum ResponseStringSectionItem
                                                  delegate:nil
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
-  alert.tag = AddToCannedCommandsAlertView;
+  alert.tag = AlertViewTypeAddToCannedCommands;
   [alert show];
 
   // Make sure that command cannot be added a second time

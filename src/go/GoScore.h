@@ -35,7 +35,8 @@
 ///
 /// A GoScore instance operates on the GoGame object that was specified during
 /// construction. The GoGame object does not need to be in any particular state,
-/// e.g. it is not necessary for the game to be in state #GameHasEnded.
+/// e.g. it is not necessary for the game to be in state
+/// #GoGameStateGameHasEnded.
 ///
 /// Most of the scoring information is collected by simply inspecting the state
 /// of GoGame and its associated objects:

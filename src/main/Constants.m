@@ -20,7 +20,7 @@ const float gHalfPixel = 0.5;
 const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 
 // Go constants
-const enum GoBoardSize gDefaultBoardSize = BoardSize19;
+const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
 
 // Table view cell constants
 // Note: Values determined experimentally by debugging a default UITableViewCell

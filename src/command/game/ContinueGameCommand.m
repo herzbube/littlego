@@ -54,8 +54,8 @@
   if (! sharedGame)
     return nil;
   enum GoGameState gameState = sharedGame.state;
-  assert(GameIsPaused == gameState);
-  if (GameIsPaused != gameState)
+  assert(GoGameStateGameIsPaused == gameState);
+  if (GoGameStateGameIsPaused != gameState)
     return nil;
 
   self.game = sharedGame;
@@ -77,7 +77,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (ComputerVsComputerGame != self.game.type)
+  if (GoGameTypeComputerVsComputer != self.game.type)
     return false;
 
   [self.game continue];

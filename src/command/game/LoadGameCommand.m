@@ -94,7 +94,7 @@
   self.whitePlayer = nil;
   self.gameName = aGameName;
   self.waitUntilDone = false;
-  m_boardSize = BoardSizeUndefined;
+  m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
   m_komi = nil;
   m_moves = nil;
@@ -504,7 +504,7 @@
                                                  delegate:nil
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
-  alert.tag = LoadGameFailedAlertView;
+  alert.tag = AlertViewTypeLoadGameFailed;
   [alert show];
 }
 

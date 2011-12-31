@@ -22,6 +22,8 @@
 #import "GtpEngineProfileModel.h"
 #import "../utility/NSStringAdditions.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoGame.h"
+#import "../go/GoPlayer.h"
 
 
 // -----------------------------------------------------------------------------
@@ -50,7 +52,6 @@
 @synthesize human;
 @synthesize gtpEngineProfileUUID;
 @synthesize statistics;
-@synthesize playing;
 
 
 // -----------------------------------------------------------------------------
@@ -107,8 +108,6 @@
     self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
   }
   assert([self.uuid length] > 0);
-
-  self.playing = false;
 
   return self;
 }
@@ -184,6 +183,21 @@
     GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
     self.gtpEngineProfileUUID = [model defaultProfile].uuid;
   }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (bool) isPlaying
+{
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return false;
+  else if ([self.uuid isEqualToString:game.playerBlack.player.uuid])
+    return true;
+  else if ([self.uuid isEqualToString:game.playerWhite.player.uuid])
+    return true;
+  return false;
 }
 
 @end
