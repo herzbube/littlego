@@ -301,7 +301,7 @@
   GoPoint* point = [m_vertexDict objectForKey:vertex];
   if (! point)
   {
-    point = [GoPoint pointAtVertex:[GoVertex vertexFromString:vertex]];
+    point = [GoPoint pointAtVertex:[GoVertex vertexFromString:vertex] onBoard:self];
     [m_vertexDict setObject:point forKey:vertex];
   }
   return point;

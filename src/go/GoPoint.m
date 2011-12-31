@@ -17,7 +17,6 @@
 
 // Project includes
 #import "GoPoint.h"
-#import "GoGame.h"
 #import "GoBoard.h"
 #import "GoVertex.h"
 
@@ -28,7 +27,7 @@
 @interface GoPoint()
 /// @name Initialization and deallocation
 //@{
-- (id) initWithVertex:(GoVertex*)aVertex;
+- (id) initWithVertex:(GoVertex*)aVertex onBoard:(GoBoard*)aBoard;
 - (void) dealloc;
 //@}
 /// @name Other methods
@@ -50,6 +49,7 @@
 @implementation GoPoint
 
 @synthesize vertex;
+@synthesize board;
 @synthesize left;
 @synthesize right;
 @synthesize above;
@@ -72,9 +72,9 @@
 /// @brief Convenience constructor. Creates a GoPoint instance located at the
 /// intersection identified by @a vertex.
 // -----------------------------------------------------------------------------
-+ (GoPoint*) pointAtVertex:(GoVertex*)vertex
++ (GoPoint*) pointAtVertex:(GoVertex*)vertex onBoard:(GoBoard*)board
 {
-  GoPoint* point = [[GoPoint alloc] initWithVertex:vertex];
+  GoPoint* point = [[GoPoint alloc] initWithVertex:vertex onBoard:board];
   if (point)
   {
     point.vertex = vertex;
@@ -90,7 +90,7 @@
 ///
 /// @note This is the designated initializer of GoPoint.
 // -----------------------------------------------------------------------------
-- (id) initWithVertex:(GoVertex*)aVertex
+- (id) initWithVertex:(GoVertex*)aVertex onBoard:(GoBoard*)aBoard
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -98,6 +98,7 @@
     return nil;
 
   self.vertex = aVertex;
+  self.board = aBoard;
   self.starPoint = false;
   self.stoneState = GoColorNone;
   left = nil;
@@ -123,6 +124,7 @@
 - (void) dealloc
 {
   self.vertex = nil;
+  self.board = nil;
   [neighbours release];
   [super dealloc];
 }
@@ -150,7 +152,7 @@
   if (! isLeftValid)
   {
     isLeftValid = true;
-    left = [[GoGame sharedGame].board neighbourOf:self inDirection:LeftDirection];
+    left = [self.board neighbourOf:self inDirection:LeftDirection];
   }
   return left;
 }
@@ -164,7 +166,7 @@
 {
   if (! isRightValid)
   {
-    right = [[GoGame sharedGame].board neighbourOf:self inDirection:RightDirection];
+    right = [self.board neighbourOf:self inDirection:RightDirection];
     isRightValid = true;
   }
   return right;
@@ -179,7 +181,7 @@
 {
   if (! isAboveValid)
   {
-    above = [[GoGame sharedGame].board neighbourOf:self inDirection:UpDirection];
+    above = [self.board neighbourOf:self inDirection:UpDirection];
     isAboveValid = true;
   }
   return above;
@@ -194,7 +196,7 @@
 {
   if (! isBelowValid)
   {
-    below = [[GoGame sharedGame].board neighbourOf:self inDirection:DownDirection];
+    below = [self.board neighbourOf:self inDirection:DownDirection];
     isBelowValid = true;
   }
   return below;
@@ -231,7 +233,7 @@
 {
   if (! isNextValid)
   {
-    next = [[GoGame sharedGame].board neighbourOf:self inDirection:NextDirection];
+    next = [self.board neighbourOf:self inDirection:NextDirection];
     isNextValid = true;
   }
   return next;
@@ -246,7 +248,7 @@
 {
   if (! isPreviousValid)
   {
-    previous = [[GoGame sharedGame].board neighbourOf:self inDirection:PreviousDirection];
+    previous = [self.board neighbourOf:self inDirection:PreviousDirection];
     isPreviousValid = true;
   }
   return previous;
@@ -294,16 +296,6 @@
     }
     return liberties;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if playing a stone on the intersection represented by
-/// this GoPoint would be legal. This includes checking for suicide moves and
-/// Ko situations.
-// -----------------------------------------------------------------------------
-- (bool) isLegalMove
-{
-  return [[GoGame sharedGame] isLegalMove:self];
 }
 
 // -----------------------------------------------------------------------------

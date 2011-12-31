@@ -82,16 +82,6 @@ Priority 2 (nice to have)
     and display in the status line how many stones would be captured
   - If placing a stone would set a group (your own or an enemy group) to
     atari, mark up that group
-- Go objects should not rely on a globally unique GoGame instance (the shared
-  game instance). The following major drawbacks result from this reliance:
-  - The shared game instance is nothing but a glorified global variable. It
-    introduces a hidden dependency between the implementation of GoGame (the
-    initializer which sets the global variable), the other Go classes (which
-    access the global variable), and ApplicationDelegate (which must take care
-    to deallocate GoGame before creating a new instance)
-  - Testability is sub-optimal. With the current implementation, test cases have
-    to care about tearing down a GoGame instance before they can set up the
-    next instance (similar to ApplicationDelegate)
 - Add more preferences to tune Fuego
   - uct_param_player max_ponder_time xxx (has influence on how much memory can
     be used, mention this in the MANUAL)

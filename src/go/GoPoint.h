@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoVertex;
+@class GoBoard;
 @class GoBoardRegion;
 
 
@@ -47,16 +48,17 @@
 {
 }
 
-+ (GoPoint*) pointAtVertex:(GoVertex*)vertex;
++ (GoPoint*) pointAtVertex:(GoVertex*)vertex onBoard:(GoBoard*)board;
 - (bool) hasStone;
 - (bool) blackStone;
 - (int) liberties;
-- (bool) isLegalMove;
 - (bool) isEqualToPoint:(GoPoint*)point;
 
 /// @brief Identifies the location of the intersection that the GoPoint
 /// represents.
 @property(nonatomic, retain) GoVertex* vertex;
+/// @brief The GoBoard object that the GoPoint is associated with.
+@property(nonatomic, assign) GoBoard* board;
 @property(nonatomic, assign, readonly) GoPoint* left;
 @property(nonatomic, assign, readonly) GoPoint* right;
 @property(nonatomic, assign, readonly) GoPoint* above;
