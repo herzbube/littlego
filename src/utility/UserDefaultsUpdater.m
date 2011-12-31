@@ -72,8 +72,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
     while (applicationDomainVersion < registrationDomainVersion)
     {
       // Incrementally perform upgrades. We allow for gaps in the user defaults
-      // versioning scheme, e.g. a new application version may go from user
-      // defaults
+      // versioning scheme.
       ++applicationDomainVersion;
       NSString* upgradeMethodName = [NSString stringWithFormat:@"upgradeToVersion%d", applicationDomainVersion];
       SEL upgradeSelector = NSSelectorFromString(upgradeMethodName);
@@ -86,6 +85,9 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
         // do we react to failure?
         [[UserDefaultsUpdater class] performSelector:upgradeSelector];
         ++numberOfUpgradesPerformed;
+        // Update the application domain version number
+        [userDefaults setValue:[NSNumber numberWithInt:applicationDomainVersion]
+                        forKey:userDefaultsVersionApplicationDomainKey];
       }
     }
   }
@@ -132,11 +134,6 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
   // Remove all scoring user defaults. Too many changes in this dictionary,
   // and only 2 beta-testers are affected by the loss of 2 keys.
   [userDefaults removeObjectForKey:scoringKey];
-
-  // Update the application domain version number
-  const int newApplicationDomainVersion = 1;
-  [userDefaults setValue:[NSNumber numberWithInt:newApplicationDomainVersion]
-                  forKey:userDefaultsVersionApplicationDomainKey];
 }
 
 @end

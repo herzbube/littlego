@@ -20,21 +20,6 @@ Priority 1 (important)
       -> extract logic and make all methods trivial
     - GoGame; the main problem here is that GoGame relies on GTP responses
       -> we need to substitute GTP client and engine with mock objects
-- Find out more about GTP engine settings. Using the knowledge gained,
-  reconsider whether it still makes sense that GTP engine settings are applied
-  only at the beginning of the game.
-  - Is it correct that "pondering" means that the engine is doing calculations
-    while the human player takes his time for his turn, thus increasing its
-    playing strength because it had more time for its calculations?
-  - What does "reuse subtree" mean anyway?
-  - Is actual memory consumption lowered on the spot when "max. memory" is set
-    to a lower value? (would be useful to handle low-memory warnings)
-  - When pondering is disabled and then re-enabled, does Fuego continue with its
-    calculations where it left off? (would be useful to handle interruptions
-    such as phone calls)
-  - Does lowering the thread count degrade playing strength in any way (except
-    of course that with matching hardware Fuego may be able to calculate more
-    in less time)?
 - Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
   refuses an "undo" command.
 - LoadGameCommand is too slow - when a game with many moves on a large board is
@@ -65,6 +50,25 @@ Priority 1 (important)
   asynchronous commands. This should then be used to clean up some of the
   clunky "thread juggling" that takes place in various places (application
   startup, possibly LoadGameCommand and BackupGameCommand)
+- Allow to store and retrieve "New game" settings; this makes the process of
+  starting a new game much quicker if one frequently starts new games with
+  different settings
+- Make sure that "reuse subtree" is always enabled when pondering is enabled
+- Swap the "Diagnostics" and "Help" tab
+- Move the "Troubleshooting" section in the MANUAL document to the top for
+  improved visibility
+- Move content of the "Known bugs" section in the README document to the
+  "Troubleshooting" section in the MANUAL document
+- Add a "FAQ" section at the top of the MANUAL document. Two FAQs are: "How do
+  I change the board size?" and "Why is the touch calibration off?".
+- Add keywords "바둑" and "computer go" to the App Store entry
+- Add a note to the "max memory" option that warns about the danger of setting
+  this value too high
+- "New game" is not visible enough, and/or people are confused because they
+  don't know where they can change the board size. One possible solution for
+  this could be to display the "New game" (or "Load game", see TODO entry under
+  priority 2) screen on app startup instead of automatically starting a new
+  game. This should be made into a user preference.
 
 
 Priority 2 (nice to have)
@@ -92,7 +96,9 @@ Priority 2 (nice to have)
   - uct_param_player max_ponder_time xxx (has influence on how much memory can
     be used, mention this in the MANUAL)
   - Also nice would be a maximum time limit for its moves (without implementing
-    the whole system for time-based play)
+    the whole system for time-based play). If Fuego does not have such a
+    feature, it can be implemented in Little Go by sending an "interrupt" after
+    a timer has elapsed.
 - Add a "swap players" option to the "new game" view
 - When a new game is started, the request to confirm if the old game can be
   discarded should not appear based on the GoGameState; instead it should
@@ -168,6 +174,9 @@ Priority 2 (nice to have)
   http://stackoverflow.com/questions/6139369/is-there-a-way-to-get-notified-when-the-user-drags-a-file-into-itunes-file-shari
   If something can be found, remove the corresponding entry in the
   Troubleshooting section of the MANUAL
+- Apply GTP engine profile settings immediately instead of only at the beginning
+  of a new game. Refer to [1] for details on how the various settings interact.
+  [1] https://sourceforge.net/apps/trac/fuego/wiki/FAQ3
 
 
 Priority 3 (not important)

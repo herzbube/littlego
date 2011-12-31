@@ -535,3 +535,22 @@ COLOR #980098 D8 D9
 CIRCLE E7 D8 D9
 TEXT Solver: benson  B: 28 (34 %)  W: 10 (12 %)  Both: 38 (46 %)  Regions: 7
 
+
+Fuego playing strength
+----------------------
+Essential parameters for modifying Fuego's playing strenght are described here:
+  https://sourceforge.net/apps/trac/fuego/wiki/FAQ1
+  https://sourceforge.net/apps/trac/fuego/wiki/FAQ3
+
+Copy & paste templates:
+- Start Fuego
+  ~/Documents/dev/littlego/3rdparty/install/Developer/SDKs/MacOSX10.6.sdk/bin/fuego
+- Observe Fuego's memory usage with "top". The following example refers to the
+  Mac OS X 10.6 version of the "top" command.
+  top -stats pid,command,rsize,vsize,rshrd,rprvt,vprvt -pid 54439
+- GTP commands
+  uct_param_player ponder 1
+  uct_max_memory 500000000
+  uct_param_player reuse_subtree 1
+  loadsgf /Users/patrick/Documents/go-games/19x19/pw6-gokifu-20110915-Choi_Cheolhan-Kim_Kiyoung.sgf
+

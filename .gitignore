@@ -1,5 +1,5 @@
 # Build products
-build/
+DerivedData/
 # Xcode files
 Little Go.xcodeproj/*.pbxuser
 Little Go.xcodeproj/*.mode1v3

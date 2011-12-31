@@ -18,8 +18,7 @@ Before the release
 - Update the "Known bugs" listed in the README
 - Change the release date in the following files:
   - Roadmap
-- Make sure that the version number is up to date in the following files
-  (it should have been bumped already after the last release was made):
+- Make sure that the version number is up to date in the following files:
   - README
   - Info.plist (can be changed in Xcode's summary page for the main target)
 - Increase CFBundleVersion in Info.plist (Xcode also makes this available on
@@ -114,6 +113,7 @@ Make the source code distribution
   - Copy ChangeLog, README and tar ball (.tar.gz) into the new directory
   - Double-check that third party source code tar balls are also available for
     download
+  - Update the "download latest" link on http://www.herzbube.ch/software
 - Add the new version number to the bug tracker so that issues can be reported
 - Update the project website to announce the new release
 
