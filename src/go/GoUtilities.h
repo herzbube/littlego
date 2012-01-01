@@ -36,5 +36,6 @@
 + (void) movePointToNewRegion:(GoPoint*)thePoint;
 + (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize;
 + (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game;
++ (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize;
 
 @end

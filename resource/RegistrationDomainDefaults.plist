@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>1</integer>
+	<integer>2</integer>
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
