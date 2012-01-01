@@ -21,6 +21,7 @@
 #import "GoPoint.h"
 #import "GoGame.h"
 #import "GoBoard.h"
+#import "GoVertex.h"
 
 
 @implementation GoUtilities
@@ -89,41 +90,174 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the new game @a game with the handicap information stored in
-/// @a handicapInfo.
+/// @brief Returns an (unordered) list of NSString objects that denote vertices
+/// for the specified @a handicap and @a boardSize.
 ///
-/// @a game must be in state #GoGameStateGameHasNotYetStarted.
+/// For board sizes greater than 7x7, @a handicap must be between 2 and 9. For
+/// board size 7x7, @a handicap must be between 2 and 4. The limits are
+/// inclusive.
 ///
-/// @a handicapInfo is expected to contain information obtained from GTP.
-/// The expected format is: "vertex vertex vertex[...]"
+/// The handicap positions returned by this method correspond to those specified
+/// in section 4.1.1 of the GTP v2 specification.
+/// http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:fixed-handicap-placement
 ///
-/// @a handicapInfo may be empty to indicate that there is no handicap.
+/// Handicap stone distribution for handicaps 1-5:
+/// @verbatim
+/// 3   2
+///   5
+/// 1   4
+/// @endverbatim
+///
+/// Handicap stone distribution for handicaps 6-7:
+/// @verbatim
+/// 3   2
+/// 5 7 6
+/// 1   4
+/// @endverbatim
+///
+/// Handicap stone distribution for handicaps 8-9:
+/// @verbatim
+/// 3 8 2
+/// 5 9 6
+/// 1 7 4
+/// @endverbatim
 // -----------------------------------------------------------------------------
-+ (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo
++ (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize
 {
-  if (GoGameStateGameHasNotYetStarted != game.state)
+  static const int maxHandicaps[GoBoardSizeMax + 1] = {4, 9, 9, 9, 9, 9, 9};
+  static const int edgeDistances[GoBoardSizeMax + 1] = {3, 3, 3, 4, 4, 4, 4};
+
+  NSMutableArray* handicapVertices = [NSMutableArray arrayWithCapacity:0];
+  if (0 == handicap)
+    return handicapVertices;
+
+  if (handicap < 2 || handicap > maxHandicaps[boardSize])
   {
-    NSException* exception = [NSException exceptionWithName:@"GameStateException"
-                                                     reason:@"The GoGame object is not in state GoGameStateGameHasNotYetStarted, but handicap can only be set up in this state."
+    NSException* exception = [NSException exceptionWithName:NSRangeException
+                                                     reason:[NSString stringWithFormat:@"Specified handicap %d is out of range for GoBoardSize %d", handicap, boardSize]
                                                    userInfo:nil];
     @throw exception;
   }
 
-  if (0 == handicapInfo.length)
-    return;
+  int boardDimension = [GoBoard dimensionForSize:boardSize];
+  int edgeDistance = edgeDistances[boardSize];
+  int lineClose = edgeDistance;
+  int lineFar = boardDimension - edgeDistance + 1;
+  int lineMiddle = lineClose + ((lineFar - lineClose) / 2);
 
+  for (int handicapIter = 1; handicapIter <= handicap; ++handicapIter)
+  {
+    struct GoVertexNumeric numericVertex;
+    switch (handicapIter)
+    {
+      case 1:
+      {
+        numericVertex.x = lineClose;
+        numericVertex.y = lineClose;
+        break;
+      }
+      case 2:
+      {
+        numericVertex.x = lineFar;
+        numericVertex.y = lineFar;
+        break;
+      }
+      case 3:
+      {
+        numericVertex.x = lineClose;
+        numericVertex.y = lineFar;
+        break;
+      }
+      case 4:
+      {
+        numericVertex.x = lineFar;
+        numericVertex.y = lineClose;
+        break;
+      }
+      case 5:
+      {
+        if (handicapIter == handicap)
+        {
+          numericVertex.x = lineMiddle;
+          numericVertex.y = lineMiddle;
+        }
+        else
+        {
+          numericVertex.x = lineClose;
+          numericVertex.y = lineMiddle;
+        }
+        break;
+      }
+      case 6:
+      {
+        numericVertex.x = lineFar;
+        numericVertex.y = lineMiddle;
+        break;
+      }
+      case 7:
+      {
+        if (handicapIter == handicap)
+        {
+          numericVertex.x = lineMiddle;
+          numericVertex.y = lineMiddle;
+        }
+        else
+        {
+          numericVertex.x = lineMiddle;
+          numericVertex.y = lineClose;
+        }
+        break;
+      }
+      case 8:
+      {
+        numericVertex.x = lineMiddle;
+        numericVertex.y = lineFar;
+        break;
+      }
+      case 9:
+      {
+        numericVertex.x = lineMiddle;
+        numericVertex.y = lineMiddle;
+        break;
+      }
+      default:
+      {
+        assert(0);
+        break;
+      }
+    }
+    GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
+    [handicapVertices addObject:vertex.string];
+  }
+
+  return handicapVertices;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an (unordered) list of GoPoint objects for the specified
+/// @a handicap and board associated with @a game.
+///
+/// See verticesForHandicap:boardSize:() for details.
+// -----------------------------------------------------------------------------
++ (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game
+{
   GoBoard* board = game.board;
+  if (! board)
+  {
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"No GoBoard object associated with specified GoGame"
+                                                   userInfo:nil];
+    @throw exception;
+  }
 
-  NSArray* vertexList = [handicapInfo componentsSeparatedByString:@" "];
-  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:vertexList.count];
-  for (NSString* vertex in vertexList)
+  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
+  NSArray* handicapVertices = [GoUtilities verticesForHandicap:handicap boardSize:board.size];
+  for (NSString* vertex in handicapVertices)
   {
     GoPoint* point = [board pointAtVertex:vertex];
-    point.stoneState = GoColorBlack;
-    [GoUtilities movePointToNewRegion:point];
     [handicapPoints addObject:point];
   }
-  game.handicapPoints = handicapPoints;
+  return handicapPoints;
 }
 
 @end

@@ -58,6 +58,7 @@
 - (void) handleCommandSucceeded;
 - (void) handleCommandFailed;
 - (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize;
+- (void) setupHandicap:(NSString*)handicapFromGtp;
 - (void) setupKomi:(NSString*)komiFromGtp;
 - (void) setupMoves:(NSString*)movesFromGtp;
 - (void) triggerComputerPlayer;
@@ -315,7 +316,7 @@
 - (void) handleCommandSucceeded
 {
   [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
-  [GoUtilities setupNewGame:[GoGame sharedGame] withGtpHandicap:m_handicap];
+  [self setupHandicap:m_handicap];
   [self setupKomi:m_komi];
   [self setupMoves:m_moves];
   [[NSNotificationCenter defaultCenter] postNotificationName:gameLoadedFromArchive object:self.gameName];
@@ -359,6 +360,38 @@
   command.shouldSetupGtpHandicapAndKomi = (! success);
   command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
   [command submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up handicap for the new game, using the information in
+/// @a handicapFromGtp.
+///
+/// Expected format for @a handicapFromGtp is: "vertex vertex vertex[...]"
+///
+/// @a handicapFromGtp may be empty to indicate that there is no handicap.
+// -----------------------------------------------------------------------------
+- (void) setupHandicap:(NSString*)handicapFromGtp
+{
+  GoGame* game = [GoGame sharedGame];
+  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
+  if (0 == handicapFromGtp.length)
+  {
+    // do nothing, just leave the empty array to be applied to the GoGame
+    // instance; this is important because the GoGame instance might have been
+    // set up by NewGameCommand with a different default handicap
+  }
+  else
+  {
+    GoBoard* board = game.board;
+    NSArray* handicapVertices = [handicapFromGtp componentsSeparatedByString:@" "];
+    for (NSString* vertex in handicapVertices)
+    {
+      GoPoint* point = [board pointAtVertex:vertex];
+      [handicapPoints addObject:point];
+    }
+  }
+  // GoGame takes care to place black stones on the points
+  game.handicapPoints = handicapPoints;
 }
 
 // -----------------------------------------------------------------------------

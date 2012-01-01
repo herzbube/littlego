@@ -27,20 +27,30 @@
 ///
 /// @ingroup go
 ///
-/// Only one instance of GoGame can exist at the same time. This instance can
-/// be accessed by invoking the class method sharedGame().
-///
-/// Currently the shared game instance is made available early on during the
-/// GoGame initialization process so that other Go objects, which are also
-/// created during GoGame initialization, may access the shared instance. There
-/// is a todo with the intention to change this behaviour!
-///
 /// GoGame can be viewed as taking the role of a model in an MVC pattern that
 /// includes the views and controllers on the Play tab of the GUI. Clients that
 /// run one of the various commands (e.g. PlayMoveCommand) will trigger updates
 /// in GoGame that can be observed by registering with the default
 /// NSNotificationCenter. See Constants.h for a list of notifications that can
 /// be observed.
+///
+/// Although it is possible to create multiple instances of GoGame, there is
+/// usually no point in doing so, except for unit testing purposes. During the
+/// normal course of the applications's lifetime the following situations can
+/// therefore be observed:
+/// - No GoGame object exists: This is the case only for a brief period while
+///   the application starts up.
+/// - One GoGame object exists: This situtation exists during most of the
+///   application's lifetime. This GoGame instance represents the game that is
+///   currently in progress or that has just ended. The instance can be accessed
+///   by invoking the class method sharedGame().
+/// - Two GoGame objects exist: This situation occurs only for a brief moment
+///   while a new game is being started. One of the GoGame objects is the game
+///   that is going to be discarded, but is still available via sharedGame().
+///   The other GoGame objects is the new game that is still in the process of
+///   being configured. Access to this new GoGame object is not available yet.
+///   The new GoGame object becomes officially available via sharedGame() when
+///   the notification #goGameNewCreated is being sent.
 // -----------------------------------------------------------------------------
 @interface GoGame : NSObject
 {
@@ -62,6 +72,12 @@
 /// @brief The GoBoard object associated with this GoGame instance.
 @property(nonatomic, retain) GoBoard* board;
 /// @brief List of GoPoint objects with handicap stones.
+///
+/// Setting this property causes a black stone to be set on the GoPoint objects
+/// in the specified list.
+///
+/// Setting this property throws an exception if this GoGame object is not
+/// state #GoGameStateGameHasNotYetStarted.
 @property(nonatomic, retain) NSArray* handicapPoints;
 /// @brief The komi used for this game.
 @property(nonatomic, assign) double komi;

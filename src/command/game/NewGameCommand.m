@@ -108,7 +108,6 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-
   // Create the new GoGame object
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
@@ -119,7 +118,10 @@
   appDelegate.game = newGame;
 
   // Configure the new GoGame object
+  NewGameModel* newGameModel = appDelegate.theNewGameModel;
   newGame.board = [GoBoard newGameBoard];
+  newGame.komi = newGameModel.komi;
+  newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
   newGame.playerBlack = [GoPlayer newGameBlackPlayer];
   newGame.playerWhite = [GoPlayer newGameWhitePlayer];
   bool blackPlayerIsHuman = newGame.playerBlack.player.human;
@@ -130,7 +132,7 @@
     newGame.type = GoGameTypeComputerVsComputer;
   else
     newGame.type = GoGameTypeComputerVsHuman;
-  
+
   // Configure dependent objects
   [newGame.board setupBoard];
 
@@ -153,47 +155,30 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Performs handicap and komi setup of the GTP engine using values
-/// obtained from NewGameModel.
+/// obtained from the current GoGame.
 // -----------------------------------------------------------------------------
 - (void) setupGtpHandicapAndKomi
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NewGameModel* model = appDelegate.theNewGameModel;
   GoGame* game = [GoGame sharedGame];
 
   // Setup handicap only if there is one. The GTP command "fixed_handicap"
-  // accepts only values >= 2.
-  if (model.handicap >= 2)
+  // accepts only values >= 2. This should not be a problem since our own
+  // handicap selection screen does not offer to select handicap 1.
+  int handicap = game.handicapPoints.count;
+  if (handicap >= 2)
   {
-    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", model.handicap]];
+    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", handicap]];
     commandFixedHandicap.waitUntilDone = true;
     [commandFixedHandicap submit];
-    if (commandFixedHandicap.response.status)
-    {
-      // The GTP specs say that "fixed_handicap" must return a vertex list, but
-      // currently Fuego does not return such a list
-      // -> therefore we have to get the handicap vertexes by issuing an
-      //    explicit query
-      NSString* handicapInfoFromGtp = commandFixedHandicap.response.parsedResponse;
-      if (handicapInfoFromGtp.length == 0)
-      {
-        GtpCommand* commandListHandicap = [GtpCommand command:@"list_handicap"];
-        commandListHandicap.waitUntilDone = true;
-        [commandListHandicap submit];
-        if (commandListHandicap.response.status)
-          handicapInfoFromGtp = commandListHandicap.response.parsedResponse;
-      }
-      [GoUtilities setupNewGame:game withGtpHandicap:handicapInfoFromGtp];
-    }
+    assert(commandFixedHandicap.response.status);
   }
 
   // There is no universal default value for komi, so to be on the sure side we
   // always have to setup komi.
-  GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", model.komi]];
+  GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
   commandKomi.waitUntilDone = true;
   [commandKomi submit];
-  if (commandKomi.response.status)
-    game.komi = model.komi;
+  assert(commandKomi.response.status);
 }
 
 // -----------------------------------------------------------------------------
@@ -206,11 +191,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupComputerPlayer
 {
+  GtpEngineProfile* profile = nil;
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeHumanVsHuman == game.type)
-  {
-    [[[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile] applyProfile];
-  }
+    profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
   else
   {
     Player* computerPlayerWithGtpProfile = game.playerBlack.player;
@@ -219,8 +203,9 @@
       computerPlayerWithGtpProfile = game.playerWhite.player;
       assert(! computerPlayerWithGtpProfile.isHuman);
     }
-    [[computerPlayerWithGtpProfile gtpEngineProfile] applyProfile];
+    profile = [computerPlayerWithGtpProfile gtpEngineProfile];
   }
+  [profile applyProfile];
 }
 
 // -----------------------------------------------------------------------------

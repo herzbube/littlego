@@ -40,13 +40,18 @@
 {
   STAssertEquals(GoGameTypeComputerVsHuman, m_game.type, @"game type test failed");
   STAssertNotNil(m_game.board, nil);
+  NSUInteger handicapCount = 0;
+  STAssertEquals(m_game.handicapPoints.count, handicapCount, nil);
+  STAssertEquals(m_game.komi, 6.5, nil);
   STAssertNotNil(m_game.playerBlack, nil);
   STAssertNotNil(m_game.playerWhite, nil);
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
   STAssertNil(m_game.firstMove, nil);
   STAssertNil(m_game.lastMove, nil);
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, @"game state test failed");
+  STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   STAssertFalse(m_game.isComputerThinking, nil);
+  STAssertFalse(m_game.nextMoveIsComputerGenerated, nil);
 }
 
 @end

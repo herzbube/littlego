@@ -21,6 +21,7 @@
 #import "GoMove.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
+#import "GoUtilities.h"
 #import "../player/Player.h"
 #import "../main/ApplicationDelegate.h"
 
@@ -382,6 +383,44 @@
   else
     notificationName = computerPlayerThinkingStops;
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setHandicapPoints:(NSArray*)newValue
+{
+  if (GoGameStateGameHasNotYetStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:@"GameStateException"
+                                                     reason:@"The GoGame object is not in state GoGameStateGameHasNotYetStarted, but handicap can only be set up in this state."
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  if (handicapPoints == newValue)
+    return;
+
+  // Reset previously set handicap points
+  if (handicapPoints)
+  {
+    [handicapPoints autorelease];
+    for (GoPoint* point in handicapPoints)
+    {
+      point.stoneState = GoColorNone;
+      [GoUtilities movePointToNewRegion:point];
+    }
+  }
+
+  handicapPoints = [newValue retain];
+  if (handicapPoints)
+  {
+    for (GoPoint* point in handicapPoints)
+    {
+      point.stoneState = GoColorBlack;
+      [GoUtilities movePointToNewRegion:point];
+    }
+  }
 }
 
 @end

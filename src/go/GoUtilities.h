@@ -34,6 +34,7 @@
 }
 
 + (void) movePointToNewRegion:(GoPoint*)thePoint;
-+ (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo;
++ (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize;
++ (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game;
 
 @end
