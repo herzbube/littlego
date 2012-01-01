@@ -425,9 +425,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupMoves:(NSString*)movesFromGtp
 {
+  NSArray* moveList;
   if (0 == movesFromGtp.length)
-    return;
-  NSArray* moveList = [movesFromGtp componentsSeparatedByString:@", "];
+    moveList = [NSArray array];
+  else
+    moveList = [movesFromGtp componentsSeparatedByString:@", "];
 
   UIView* theSuperView = [ApplicationDelegate sharedDelegate].tabBarController.view;
 	m_progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
