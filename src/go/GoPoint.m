@@ -71,9 +71,20 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPoint instance located at the
 /// intersection identified by @a vertex.
+///
+/// Raises an @e NSInvalidArgumentException if either @a aVertex or @a aBoard
+/// is nil.
 // -----------------------------------------------------------------------------
 + (GoPoint*) pointAtVertex:(GoVertex*)vertex onBoard:(GoBoard*)board
 {
+  if (! vertex || ! board)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"GoVertex or GoBoard argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoPoint* point = [[GoPoint alloc] initWithVertex:vertex onBoard:board];
   if (point)
   {

@@ -26,8 +26,8 @@
 @implementation GoBoardTest
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the initial state of a GoBoard object after it has been
-/// created by GoGame.
+/// @brief Checks the initial state of a GoBoard object after after a new GoGame
+/// has been created.
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
