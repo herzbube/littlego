@@ -72,6 +72,10 @@
 /// GoPoint represents, and which color the stone has.
 @property(nonatomic, assign) enum GoColor stoneState;
 /// @brief The region that the GoPoint belongs to. Is never nil.
+///
+/// You should never need to change this property by yourself. Instead invoke
+/// methods in GoBoardRegion such as GoBoardRegion::addPoint:() or
+/// GoBoardRegion::removePoint:().
 @property(nonatomic, retain) GoBoardRegion* region;
 
 @end

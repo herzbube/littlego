@@ -28,6 +28,17 @@
 }
 
 - (void) testNewGame;
-- (void) testNewRegionWithPoints;
+- (void) testRegion;
+- (void) testRegionWithPoints;
+- (void) testRegionWithPoint;
+- (void) testAddPoint;
+- (void) testRemovePoint;
+- (void) testJoinRegion;
+- (void) testIsStoneGroup;
+- (void) testColor;
+- (void) testLiberties;
+- (void) testAdjacentRegions;
+- (void) testScoringMode;
+- (void) testDeallocation;
 
 @end

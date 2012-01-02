@@ -270,10 +270,7 @@
   // On a clear board, the initial region contains all GoPoint objects.
   // Note: Moving to the next point creates the corresponding GoPoint object!
   for (; point != nil; point = point.next)
-  {
-    point.region = region;
     [region addPoint:point];
-  }
 }
 
 // -----------------------------------------------------------------------------

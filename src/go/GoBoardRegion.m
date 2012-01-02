@@ -84,16 +84,29 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
 /// contains the GoPoint objects in @a points.
+///
+/// The GoPoint objects in @a points are added to the new GoBoardRegion instance
+/// by invoking addPoint:(). The GoBoardRegion reference of those GoPoint
+/// objects is therefore updated automatically to the new GoBoardRegion. See
+/// addObject:() for details.
+///
+/// Raises an @e NSInvalidArgumentException if @a points is nil.
 // -----------------------------------------------------------------------------
 + (GoBoardRegion*) regionWithPoints:(NSArray*)points
 {
+  if (! points)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Points argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoBoardRegion* region = [[GoBoardRegion alloc] init];
   if (region)
   {
-    // Make a copy of points so that the caller can reuse the object. In
-    // addition, the copy must be a mutable array so that addPoint:() and
-    // removePoint:() can make changes.
-    region.points = [NSMutableArray arrayWithArray:points];
+    for (GoPoint* point in points)
+      [region addPoint:point];
     [region autorelease];
   }
   return region;
@@ -102,16 +115,24 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
 /// contains the single GoPoint object @a point.
+///
+/// @a point is added to the new GoBoardRegion instance by invoking addPoint:().
+/// The GoBoardRegion reference of @a point is therefore updated automatically
+/// to the new GoBoardRegion. See addObject:() for details.
+///
+/// Raises an @e NSInvalidArgumentException if @a point is nil.
 // -----------------------------------------------------------------------------
 + (GoBoardRegion*) regionWithPoint:(GoPoint*)point
 {
-  GoBoardRegion* region = [[GoBoardRegion alloc] init];
-  if (region)
+  if (! point)
   {
-    [region addPoint:point];
-    [region autorelease];
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
   }
-  return region;
+
+  return [GoBoardRegion regionWithPoints:[NSArray arrayWithObject:point]];
 }
 
 // -----------------------------------------------------------------------------
@@ -187,29 +208,89 @@
 // -----------------------------------------------------------------------------
 /// @brief Adds @a point to this GoBoardRegion.
 ///
-/// @a point must be removed from its previous GoBoardRegion by separately
-/// invoking GoBoardRegion::removePoint:().
+/// The GoBoardRegion reference of @a point is updated to this GoBoardRegion.
+/// If @a point has a reference to another GoBoardRegion object, @a point is
+/// first removed from that GoBoardRegion by invoking removePoint:(). If
+/// @a point was the last point in that region, the other GoBoardRegion object
+/// is deallocated.
+///
+/// Raises an @e NSInvalidArgumentException if @a point is nil, if it already
+/// references this GoBoardRegion, or if its @e stoneState property does not
+/// match the @e stoneState properties of other GoPoint objects already in this
+/// region.
 // -----------------------------------------------------------------------------
 - (void) addPoint:(GoPoint*)point
 {
+  // We could rely on NSMutableArray to catch this, but it's better to be
+  // explicit and catch this right at the beginning
+  if (! point)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  GoBoardRegion* previousRegion = point.region;
+  if (self == previousRegion)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point is already associated with this GoBoardRegion"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (points.count > 0)
+  {
+    GoPoint* otherPoint = [points objectAtIndex:0];
+    if (otherPoint.stoneState != point.stoneState)
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Point argument's stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", point.stoneState, otherPoint.stoneState]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  if (previousRegion)
+    [previousRegion removePoint:point];  // side-effect: sets point.region to nil
   [(NSMutableArray*)points addObject:point];
-  // TODO: Check if we can say "point.region = self" here; this would be
-  // analogous to what we do in joinRegion:() further down. If this is not
-  // possible, document why. If this is possible, also update the doxygen docs
-  // of this method, and possibly also the class docs.
+  point.region = self;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Removes @a point from this GoBoardRegion.
 ///
+/// The GoBoardRegion reference of @a point is updated to nil. If @point is the
+/// last point in this region, this GoBoardRegion is deallocated.
+///
 /// Invoking this method may cause this GoBoardRegion to fragment, i.e. other
 /// GoBoardRegion objects may come into existence because GoPoint objects within
 /// this GoBoardRegion are no longer adjacent.
+///
+/// Raises an @e NSInvalidArgumentException if @a point does not reference this
+/// GoBoardRegion.
 // -----------------------------------------------------------------------------
 - (void) removePoint:(GoPoint*)point
 {
+  GoBoardRegion* previousRegion = point.region;
+  if (self != previousRegion)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point is not associated with this GoBoardRegion"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   [(NSMutableArray*)points removeObject:point];
-  [self splitRegionIfRequired];
+  // Check points array NOW because the next statement might deallocate this
+  // GoBoardRegion, including the array
+  bool lastPoint = (0 == points.count);
+  // If point is the last point in this region, the next statement is going to
+  // deallocate this GoBoardRegion
+  point.region = nil;
+  // Do post-processing only if we didn't remove the last point, i.e. if this
+  // GoBoardRegion object is still alive
+  if (! lastPoint)
+    [self splitRegionIfRequired];
 }
 
 // -----------------------------------------------------------------------------
@@ -219,23 +300,41 @@
 /// The GoBoardRegion reference of all GoPoint objects will be updated to this
 /// GoBoardRegion. As a result, @a region will be deallocated and should not be
 /// used after this method returns.
+///
+/// Raises an @e NSInvalidArgumentException if @a region is nil, if it is the
+/// same as this GoBoardRegion, or if the @e stoneState property of its GoPoint
+/// members does not match the @e stoneState properties of GoPoint objects
+/// already in this region.
 // -----------------------------------------------------------------------------
 - (void) joinRegion:(GoBoardRegion*)region
 {
-  // When the last point is assigned another region, the retain count of region
-  // will drop to zero and region will be deallocated. At this time, region will
-  // also deallocate its own points array. However, the loop still needs the
-  // array for the final iteration, in order to find out that the array has no
-  // more points and the loop condition has been reached. To keep the array
-  // alive we therefore need to temporarily retain the region. Alternatives
-  // would be to retain the array, or iterate over the array the old-fashioned
-  // way using an index counter...
-  [[region retain] autorelease];
-  for (GoPoint* point in region.points)
+  if (! region)
   {
-    point.region = self;
-    [(NSMutableArray*)points addObject:point];
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Region argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
   }
+  if (self == region)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Region argument is the same as this GoBoardRegion object"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  // Iterate over a copy of the array to be safe from modifications of the
+  // array. Such modifications occur because addPoint:() below causes the point
+  // to be removed from the other region.
+  // Note: The copy, by the way, also solves the problem that the array is
+  // deallocated when the last point is removed from the other region. If we
+  // were using the original array, the loop would access the deallocated array
+  // in its final iteration (the one where it would normally find out that the
+  // loop condition has been reached), causing the application to crash.
+  NSArray* pointsCopy = [region.points copy];
+  for (GoPoint* point in pointsCopy)
+    [self addPoint:point];
+  [pointsCopy release];
 }
 
 // -----------------------------------------------------------------------------
@@ -269,7 +368,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the number of liberties of the stone group that this
-/// GoBoardRegion represents. Returns -1 if this GoBoardRegion does not
+/// GoBoardRegion represents.
+///
+/// Raises an @e NSInternalInconsistencyException if this GoBoardRegion does not
 /// represent a stone group.
 // -----------------------------------------------------------------------------
 - (int) liberties
@@ -278,7 +379,12 @@
     return cachedLiberties;
 
   if (! [self isStoneGroup])
-    return -1;  // todo is there a plausible implementation for non-stone groups
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"GoBoardRegion does not represent a stone group"
+                                                   userInfo:nil];
+    @throw exception;
+  }
 
   NSMutableArray* libertyPoints = [NSMutableArray arrayWithCapacity:0];
   for (GoPoint* point in points)
@@ -314,6 +420,8 @@
       GoBoardRegion* adjacentRegion = neighbour.region;
       if (adjacentRegion == self)
         continue;  // no
+      if (! adjacentRegion)
+        continue;  // no (this is weird, but at the moment we try to be graceful about it)
       // Count the adjacent region if it hasn't been counted already
       if (! [adjacentRegions containsObject:adjacentRegion])
         [adjacentRegions addObject:adjacentRegion];
@@ -427,9 +535,7 @@
     }
     DDLogInfo(@"splitRegionIfRequired() creating new GoBoardRegion with these %d points:\n%@", subRegion.count, subRegion);
     [(NSMutableArray*)points removeObjectsInArray:subRegion];
-    GoBoardRegion* newRegion = [GoBoardRegion regionWithPoints:subRegion];
-    for (GoPoint* point in subRegion)
-      point.region = newRegion;
+    [GoBoardRegion regionWithPoints:subRegion];
   }
 }
 

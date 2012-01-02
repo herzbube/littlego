@@ -46,12 +46,12 @@
 + (void) movePointToNewRegion:(GoPoint*)thePoint
 {
   // Step 1: Remove point from old region
-  // Note: We must retain/autorelease to make sure that oldRegion still lives
-  // when we get to removePoint:() one line further down. If we don't retain
-  // and thePoint is the last point of oldRegion, setting thePoint.region to
-  // nil will drop oldRegion's retain count to zero and deallocate it.
+  // Note: We must retain/autorelease to make sure that oldRegion survives
+  // invocation of removePoint:() one line further down. If we don't retain
+  // and thePoint is the last point of oldRegion, invoking removePoint:() will
+  // cause thePoint's reference to oldRegion to be removed, which in turn will
+  // cause oldRegion's retain count to drop to zero, deallocating it.
   GoBoardRegion* oldRegion = [[thePoint.region retain] autorelease];
-  thePoint.region = nil;
   [oldRegion removePoint:thePoint];  // possible side-effect: oldRegion might be
                                      // split into multiple GoBoardRegion objects
 
@@ -68,7 +68,6 @@
     {
       // Join the region of one of the neighbours
       newRegion = neighbour.region;
-      thePoint.region = newRegion;
       [newRegion addPoint:thePoint];
     }
     else
@@ -83,10 +82,7 @@
 
   // Step 3: Still no region? The point forms its own new region!
   if (! newRegion)
-  {
     newRegion = [GoBoardRegion regionWithPoint:thePoint];
-    thePoint.region = newRegion;
-  }
 }
 
 // -----------------------------------------------------------------------------

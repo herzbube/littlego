@@ -38,6 +38,11 @@
 ///   with user defaults data
 /// - A new GoGame object is created by submitting a NewGameCommand instance.
 ///   The object is available through the instance variable m_game.
+///
+/// Also note that setUp() guarantees that there are no pending autorelease
+/// messages when test execution commences. The reason: setUp() wraps an
+/// NSAutoReleasePool around its initialization, then drains the pool after
+/// initialization is complete.
 // -----------------------------------------------------------------------------
 @interface BaseTestCase : SenTestCase
 {
