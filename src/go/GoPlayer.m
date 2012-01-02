@@ -36,6 +36,11 @@
 //@{
 - (NSString*) description;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) Player* player;
+@property(nonatomic, assign, readwrite, getter=isBlack) bool black;
+//@}
 @end
 
 
@@ -72,9 +77,19 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color black and refers to @a player.
+///
+/// Raises an @e NSInvalidArgumentException if @a player is nil.
 // -----------------------------------------------------------------------------
 + (GoPlayer*) blackPlayer:(Player*)player
 {
+  if (! player)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Player argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoPlayer* goPlayer = [[GoPlayer alloc] initWithPlayer:player];
   if (goPlayer)
   {
@@ -87,9 +102,19 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color white and refers to @a player.
+///
+/// Raises an @e NSInvalidArgumentException if @a player is nil.
 // -----------------------------------------------------------------------------
 + (GoPlayer*) whitePlayer:(Player*)player
 {
+  if (! player)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Player argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoPlayer* goPlayer = [[GoPlayer alloc] initWithPlayer:player];
   if (goPlayer)
   {
@@ -151,6 +176,5 @@
   else
     return @"W";
 }
-
 
 @end

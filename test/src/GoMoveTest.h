@@ -20,23 +20,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoBoardTest class contains unit tests that exercise the GoBoard
+/// @brief The GoMoveTest class contains unit tests that exercise the GoMove
 /// class.
 // -----------------------------------------------------------------------------
-@interface GoBoardTest : BaseTestCase
+@interface GoMoveTest : BaseTestCase
 {
 }
 
-- (void) testInitialState;
-- (void) testNewGameBoard;
-- (void) testBoardWithSize;
-- (void) testStringForSize;
-- (void) testDimensionForSize;
-- (void) testSizeForDimension;
-- (void) testPointEnumerator;
-- (void) testPointAtVertex;
-- (void) testNeighbourOfInDirection;
-- (void) testStarPoints;
-- (void) testRegions;
+- (void) testMoveByAfter;
+- (void) testPoint;
+- (void) testCapturedStones;
+- (void) testUndo;
 
 @end

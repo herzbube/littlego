@@ -38,9 +38,9 @@
 
 /// @brief Reference to player object that stores information about that
 /// player's identity.
-@property(nonatomic, retain) Player* player;
+@property(nonatomic, retain, readonly) Player* player;
 /// @brief The color taken by the player.
-@property(nonatomic, assign, getter=isBlack) bool black;
+@property(nonatomic, assign, readonly, getter=isBlack) bool black;
 /// @brief Returns a string that corresponds to the color taken by the
 /// player. "B" for black, "W" for white.
 @property(nonatomic, assign, readonly) NSString* colorString;

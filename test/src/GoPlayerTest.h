@@ -20,23 +20,15 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoBoardTest class contains unit tests that exercise the GoBoard
+/// @brief The GoPlayerTest class contains unit tests that exercise the GoPlayer
 /// class.
 // -----------------------------------------------------------------------------
-@interface GoBoardTest : BaseTestCase
+@interface GoPlayerTest : BaseTestCase
 {
 }
 
 - (void) testInitialState;
-- (void) testNewGameBoard;
-- (void) testBoardWithSize;
-- (void) testStringForSize;
-- (void) testDimensionForSize;
-- (void) testSizeForDimension;
-- (void) testPointEnumerator;
-- (void) testPointAtVertex;
-- (void) testNeighbourOfInDirection;
-- (void) testStarPoints;
-- (void) testRegions;
+- (void) testNewGamePlayer;
+- (void) testBlackWhitePlayer;
 
 @end

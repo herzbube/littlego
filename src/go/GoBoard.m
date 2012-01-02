@@ -41,6 +41,7 @@
 //@{
 - (id) initWithSize:(enum GoBoardSize)boardSize;
 - (void) dealloc;
+- (void) setupBoard;
 - (void) setupGoPoints;
 - (void) setupStarPoints;
 //@}
@@ -75,9 +76,20 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoard instance of size @a size.
+///
+/// Raises an @e NSInvalidArgumentException if @a size is #GoBoardSizeUndefined
+/// or otherwise invalid.
 // -----------------------------------------------------------------------------
 + (GoBoard*) boardWithSize:(enum GoBoardSize)size;
 {
+  if (0 == [GoBoard dimensionForSize:size])
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoBoard* board = [[GoBoard alloc] initWithSize:size];
   if (board)
     [board autorelease];
@@ -87,13 +99,14 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns a string representation of @a size that is suitable
 /// for displaying in the UI.
+///
+/// Returns the string "Undefined" if @a size is #GoBoardSizeUndefined or
+/// otherwise invalid.
 // -----------------------------------------------------------------------------
 + (NSString*) stringForSize:(enum GoBoardSize)size
 {
   switch (size)
   {
-    case GoBoardSizeUndefined:
-      return @"Undefined";
     case GoBoardSize7:
       return @"7";
     case GoBoardSize9:
@@ -108,23 +121,22 @@
       return @"17";
     case GoBoardSize19:
       return @"19";
+    case GoBoardSizeUndefined:
     default:
-      assert(false);
-      break;
+      return @"Undefined";
   }
-  return nil;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the numeric dimension that corresponds to @a size. For
 /// instance, 19 will be returned for the enum value #GoBoardSize19.
+///
+/// Returns 0 if @a size is #GoBoardSizeUndefined or otherwise invalid.
 // -----------------------------------------------------------------------------
 + (int) dimensionForSize:(enum GoBoardSize)size
 {
   switch (size)
   {
-    case GoBoardSizeUndefined:
-      return 0;
     case GoBoardSize7:
       return 7;
     case GoBoardSize9:
@@ -139,16 +151,17 @@
       return 17;
     case GoBoardSize19:
       return 19;
+    case GoBoardSizeUndefined:
     default:
-      assert(false);
-      break;
+      return 0;
   }
-  return -1;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the board size that corresponds to the numeric @a dimension.
 /// For instance, #GoBoardSize19 will be returned for the numeric value 19.
+///
+/// Returns #GoBoardSizeUndefined if @a dimension is not recognized.
 // -----------------------------------------------------------------------------
 + (enum GoBoardSize) sizeForDimension:(int)dimension
 {
@@ -169,10 +182,8 @@
     case 19:
       return GoBoardSize19;
     default:
-      assert(false);
-      break;
+      return GoBoardSizeUndefined;
   }
-  return GoBoardSizeUndefined;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,6 +202,8 @@
   self.dimensions = [GoBoard dimensionForSize:boardSize];
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
   starPoints = nil;
+
+  [self setupBoard];
 
   return self;
 }
@@ -214,12 +227,11 @@
 // -----------------------------------------------------------------------------
 /// @brief Sets up this GoBoard.
 ///
-/// This is a post-initalization setup routine. It performs initialization that
-/// cannot be done during initWithSize:() because it requires that this GoBoard
-/// object is known to the shared GoGame instance.
+/// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupBoard
 {
+  // Order of invocation is important
   [self setupGoPoints];
   [self setupStarPoints];
 }
@@ -227,10 +239,30 @@
 // -----------------------------------------------------------------------------
 /// @brief Creates all GoPoint objects that belong to a single GoBoardRegion.
 ///
-/// This is a post-initalization setup routine.
+/// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupGoPoints
 {
+  // Implementation note: It is tempting to create only a single GoPoint at A1
+  // and let lazy initialization in pointAtVertex:() figure out the reset. This
+  // poses the problem, though, that the lazy initialiation part of
+  // pointAtVertex:() would become quite expensive, because it would need to be
+  // able to handle the scenario that a GoPoint is created at a time when the
+  // initial big GoBoardRegion has already become fragmented into smaller
+  // regions. Let's consider the tradeoffs between the two variants:
+  //   1) Performing expensive setup operation during initialization of GoBoard
+  //   2) Performing expensive operation during lazy initialization of a GoPoint
+  // Creation of a GoBoard object is a relatively rare event (once per new
+  // game), whereas creation of a GoPoint object happens much more often (up to
+  // 381 times on a 19x19 board). From this point of view alone, I would already
+  // say that variant 1 is probably more efficient than variant 2. But what's
+  // even more important than pure efficiency is that in variant 1 the handling
+  // of a single GoBoardRegion is very simple and straightforward, whereas in
+  // variant 2 we would need to handle many regions, requiring a more difficult
+  // implementation whose maintenance is much more prone to errors.
+  //
+  // Bottom line: Let's KISS :-)
+
   // Create an initial GoPoint and GoBoardRegion object
   GoPoint* point = [self pointAtVertex:@"A1"];
   GoBoardRegion* region = [GoBoardRegion region];
@@ -247,7 +279,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Determines all GoPoint objects that are star points.
 ///
-/// This is a post-initalization setup routine.
+/// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupStarPoints
 {

@@ -41,8 +41,10 @@
 /// successor (next()) GoMove object. This represents the fact that a game
 /// can be seen as a series of moves.
 ///
-/// GoMove objects are immutable, i.e. they cannot be changed once they have
-/// been initialized.
+/// GoMove has undo support. Invoking undo() reverts the board to the state it
+/// had before the GoMove was played. Invoking undo() also removes references
+/// from/to the predecessor GoMove, which usually causes the GoMove to be
+/// deallocated.
 // -----------------------------------------------------------------------------
 @interface GoMove : NSObject
 {

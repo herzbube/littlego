@@ -133,9 +133,6 @@
   else
     newGame.type = GoGameTypeComputerVsHuman;
 
-  // Configure dependent objects
-  [newGame.board setupBoard];
-
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what
   // game type this is.

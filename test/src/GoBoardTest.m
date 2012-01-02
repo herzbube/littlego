@@ -21,6 +21,17 @@
 // Application includes
 #import <go/GoGame.h>
 #import <go/GoBoard.h>
+#import <main/ApplicationDelegate.h>
+#import <newGame/NewGameModel.h>
+#import <command/game/NewGameCommand.h>
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoBoard.
+// -----------------------------------------------------------------------------
+@interface GoBoardTest()
+- (void) checkBoardState:(GoBoard*)board expectedBoardSize:(enum GoBoardSize)expectedBoardSize;
+@end
 
 
 @implementation GoBoardTest
@@ -32,12 +43,75 @@
 - (void) testInitialState
 {
   enum GoBoardSize expectedBoardSize = GoBoardSize19;
-  int expectedBoardDimensions = 19;
+  [self checkBoardState:m_game.board expectedBoardSize:expectedBoardSize];
+}
 
-  GoBoard* board = m_game.board;
-  STAssertNotNil(board, nil);
-  STAssertEquals(expectedBoardSize, board.size, nil);
-  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
+// -----------------------------------------------------------------------------
+/// @brief Exercises the newGameBoard() convenience constructor.
+// -----------------------------------------------------------------------------
+- (void) testNewGameBoard
+{
+  enum GoBoardSize expectedBoardSize = GoBoardSize13;
+
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.boardSize = expectedBoardSize;
+  GoBoard* board = [GoBoard newGameBoard];
+
+  [self checkBoardState:board expectedBoardSize:expectedBoardSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the boardWithSize:() convenience constructor.
+// -----------------------------------------------------------------------------
+- (void) testBoardWithSize
+{
+  enum GoBoardSize expectedBoardSize = GoBoardSize9;
+  GoBoard* board = [GoBoard boardWithSize:expectedBoardSize];
+  [self checkBoardState:board expectedBoardSize:expectedBoardSize];
+
+  STAssertThrowsSpecificNamed([GoBoard boardWithSize:GoBoardSizeUndefined],
+                              NSException, NSInvalidArgumentException, @"GoBoardSizeUndefined");
+  STAssertThrowsSpecificNamed([GoBoard boardWithSize:(enum GoBoardSize)42],
+                              NSException, NSInvalidArgumentException, @"evil cast");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the stringForSize:() class method.
+// -----------------------------------------------------------------------------
+- (void) testStringForSize
+{
+  static const int arraySize = GoBoardSizeMax + 3;
+  static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, 42};
+  static NSString* expectedBoardSizeStrings[arraySize] = {@"7", @"9", @"11", @"13", @"15", @"17", @"19", @"Undefined", @"Undefined"};
+
+  for (int index = 0; index < arraySize; ++index)
+    STAssertTrue([expectedBoardSizeStrings[index] isEqualToString:[GoBoard stringForSize:boardSizes[index]]], expectedBoardSizeStrings[index]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the dimensionForSize:() class method.
+// -----------------------------------------------------------------------------
+- (void) testDimensionForSize
+{
+  static const int arraySize = GoBoardSizeMax + 3;
+  static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, 42};
+  static const int expectedBoardSizes[arraySize] = {7, 9, 11, 13, 15, 17, 19, 0, 0};
+
+  for (int index = 0; index < arraySize; ++index)
+    STAssertEquals(expectedBoardSizes[index], [GoBoard dimensionForSize:boardSizes[index]], [GoBoard stringForSize:boardSizes[index]]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the sizeForDimension:() class method.
+// -----------------------------------------------------------------------------
+- (void) testSizeForDimension
+{
+  static const int arraySize = GoBoardSizeMax + 4;
+  static const int boardDimensions[arraySize] = {7, 9, 11, 13, 15, 17, 19, 42, -1, 0};
+  static const int expectedBoardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, GoBoardSizeUndefined, GoBoardSizeUndefined};
+
+  for (int index = 0; index < arraySize; ++index)
+    STAssertEquals(expectedBoardSizes[index], [GoBoard sizeForDimension:boardDimensions[index]], nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -168,7 +242,52 @@
   // rudimentary tests here
   NSArray* starPoints = m_game.board.starPoints;
   STAssertNotNil(starPoints, nil);
-  STAssertEquals(expectedNumberOfStarPoints, [starPoints count], nil);
+  STAssertEquals(expectedNumberOfStarPoints, starPoints.count, nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e regions property.
+// -----------------------------------------------------------------------------
+- (void) testRegions
+{
+  NSUInteger expectedNumberOfRegions = 1;
+
+  NSArray* regions = m_game.board.regions;
+  STAssertNotNil(regions, nil);
+  STAssertEquals(expectedNumberOfRegions, regions.count, nil);
+
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.boardSize = GoBoardSize9;
+  newGameModel.handicap = 5;
+  expectedNumberOfRegions = 1 + newGameModel.handicap;
+  [[[NewGameCommand alloc] init] submit];
+  m_game = m_delegate.game;
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that checks the initial state of @a board after
+/// its creation.
+// -----------------------------------------------------------------------------
+- (void) checkBoardState:(GoBoard*)board expectedBoardSize:(enum GoBoardSize)expectedBoardSize
+{
+  int expectedBoardDimensions = [GoBoard dimensionForSize:expectedBoardSize];
+  int expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+
+  STAssertNotNil(board, nil);
+  STAssertEquals(expectedBoardSize, board.size, nil);
+  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
+
+  int numberOfPoints = 0;
+  NSEnumerator* enumerator = [board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    ++numberOfPoints;
+    if (numberOfPoints > expectedNumberOfPoints)
+      break;
+  }
+  STAssertEquals(expectedNumberOfPoints, numberOfPoints, nil);
 }
 
 @end
