@@ -465,6 +465,12 @@
             else
               return true;  // no Ko -> capturing is possible -> the move is legal
           }
+          else
+          {
+            // Since it can't be Ko, and we *CAN* capture the group, the move
+            // is legal.
+            return true;
+          }
         }
       }
     }
