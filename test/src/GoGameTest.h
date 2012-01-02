@@ -29,5 +29,22 @@
 
 - (void) testSharedGame;
 - (void) testInitialState;
+- (void) testNewGame;
+- (void) testType;
+- (void) testBoard;
+- (void) testHandicapPoints;
+- (void) testCurrentPlayer;
+- (void) testFirstMove;
+- (void) testLastMove;
+- (void) testState;
+- (void) testReasonForGameHasEnded;
+- (void) testPlay;
+- (void) testPass;
+- (void) testResign;
+- (void) testUndo;
+- (void) testPause;
+- (void) testContinue;
+- (void) testIsLegalMove;
+- (void) testIsComputerPlayersTurn;
 
 @end

@@ -76,8 +76,11 @@
 /// Setting this property causes a black stone to be set on the GoPoint objects
 /// in the specified list.
 ///
-/// Setting this property throws an exception if this GoGame object is not
-/// state #GoGameStateGameHasNotYetStarted.
+/// Raises an @e NSInternalInconsistencyException if this property is set while
+/// this GoGame object is not in state #GoGameStateGameHasNotYetStarted.
+///
+/// Raises @e NSInvalidArgumentException if this property is set with a nil
+/// value.
 @property(nonatomic, retain) NSArray* handicapPoints;
 /// @brief The komi used for this game.
 @property(nonatomic, assign) double komi;

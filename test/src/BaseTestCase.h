@@ -32,8 +32,10 @@
 ///   the instance variable m_delegate.
 /// - The logging subsystem is initialized
 /// - The user defaults system is initialized with the main application's
-///   registration domain data and a "new game" board size of 19x19 (regardless
-///   of what the registration domain data contains)
+///   registration domain data
+/// - In addition, user defaults are set up with a "new game" board size of
+///   19x19 and two human players (regardless of what the registration domain
+///   data contains)
 /// - All of the main application's model objects are created and initialized
 ///   with user defaults data
 /// - A new GoGame object is created by submitting a NewGameCommand instance.

@@ -94,7 +94,7 @@
   // triggering notifications.
   type = GoGameTypeUnknown;
   board = nil;
-  self.handicapPoints = [NSArray array];
+  handicapPoints = [[NSArray array] retain];
   komi = 0;
   playerBlack = nil;
   playerWhite = nil;
@@ -114,7 +114,14 @@
 - (void) dealloc
 {
   self.board = nil;
-  self.handicapPoints = nil;
+  // Don't use self.handicapPoints, because setHandicapPoints:() is not
+  // intelligent enough to detect that it is called during deallocation and
+  // will throw an exception if the game state is not what it expects
+  if (handicapPoints)
+  {
+    [handicapPoints release];
+    handicapPoints = nil;
+  }
   self.playerBlack = nil;
   self.playerWhite = nil;
   self.firstMove = nil;
@@ -160,11 +167,51 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players making a #GoMoveTypePlay.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
+/// or #GoGameStateGameHasStarted.
+///
+/// Raises @e NSInvalidArgumentException if @a aPoint is nil, if isLegalMove:()
+/// returns false for @a aPoint, or if an exception occurs while actually
+/// playing on @a aPoint.
 // -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)aPoint
 {
+  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! aPoint)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! [self isLegalMove:aPoint])
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point argument is not a legal move"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoMove* move = [GoMove move:GoMoveTypePlay by:self.currentPlayer after:self.lastMove];
-  move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
+  @try
+  {
+    move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
+  }
+  @catch (NSException* exception)
+  {
+    NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
+                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on point argument. Exception message = %@", [exception reason]]
+                                                      userInfo:nil];
+    @throw newException;
+  }
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   if (! self.firstMove)
@@ -180,9 +227,21 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players making a #GoMoveTypePass.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
+/// or #GoGameStateGameHasStarted.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
+  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
@@ -207,9 +266,21 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players resigning the game.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
+/// or #GoGameStateGameHasStarted.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
+  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  
   self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
   self.state = GoGameStateGameHasEnded;
 }
@@ -217,9 +288,29 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players taking back his move.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
+/// there are no moves that can be taken back (typically because all moves have
+/// already been taken back).
 // -----------------------------------------------------------------------------
 - (void) undo
 {
+  if (GoGameStateGameHasStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Undo is possible only while GoGame object is in state GoGameStateGameHasStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! self.firstMove)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"No moves to undo"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   GoMove* undoMove = self.lastMove;
   GoMove* newLastMove = undoMove.previous;  // get this reference before it disappears
   [undoMove undo];  // many side-effects here (e.g. region handling) !!!
@@ -249,11 +340,28 @@
 /// to stop its thinking once the "genmove" command has been sent. The only
 /// way how to handle this in a graceful way is to let the GTP engine finish
 /// its thinking.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
+/// this GoGame object is not of type #GoGameTypeComputerVsComputer.
 // -----------------------------------------------------------------------------
 - (void) pause
 {
-  assert(ComputerVsComputerGame == self.type);
-  assert(GoGameStateGameHasStarted == self.state);
+  if (GoGameStateGameHasStarted != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Pause is possible only while GoGame object is in state GoGameStateGameHasStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (GoGameTypeComputerVsComputer != self.type)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Pause is possible only in a computer vs. computer game"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   self.state = GoGameStateGameIsPaused;
 }
 
@@ -262,21 +370,48 @@
 /// against each other.
 ///
 /// Essentially, this method triggers the next computer player move.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameIsPaused, or if
+/// this GoGame object is not of type #GoGameTypeComputerVsComputer.
 // -----------------------------------------------------------------------------
 - (void) continue
 {
-  assert(ComputerVsComputerGame == self.type);
-  assert(GoGameStateGameIsPaused == self.state);
+  if (GoGameStateGameIsPaused != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Continue is possible only while GoGame object is in state GoGameStateGameIsPaused"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (GoGameTypeComputerVsComputer != self.type)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Continue is possible only in a computer vs. computer game"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   self.state = GoGameStateGameHasStarted;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if playing a stone on the intersection represented by
-/// @a point would be legal. This includes checking for suicide moves and
-/// Ko situations.
+/// @a point would be legal for the current player. This includes checking for
+/// suicide moves and Ko situations.
+///
+/// Raises @e NSInvalidArgumentException if @a aPoint is nil.
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point
 {
+  if (! point)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   // We could use the Fuego-specific GTP command "go_point_info" to obtain
   // the desired information, but parsing the response would require some
   // effort, is prone to fail when Fuego changes its response format, and
@@ -284,9 +419,7 @@
   // by a Ko, so we would have to derive this information from the other parts
   // of the response.
   // -> it's better to implement this in our own terms
-  if (! point)
-    return false;
-  else if ([point hasStone])
+  if ([point hasStone])
     return false;
   else if ([point liberties] > 0)
     return true;
@@ -392,13 +525,20 @@
 {
   if (GoGameStateGameHasNotYetStarted != self.state)
   {
-    NSException* exception = [NSException exceptionWithName:@"GameStateException"
-                                                     reason:@"The GoGame object is not in state GoGameStateGameHasNotYetStarted, but handicap can only be set up in this state."
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"Handicap can only be set while GoGame object is in state GoGameStateGameHasNotYetStarted"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! newValue)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Point list argument is nil"
                                                    userInfo:nil];
     @throw exception;
   }
 
-  if (handicapPoints == newValue)
+  if ([handicapPoints isEqualToArray:newValue])
     return;
 
   // Reset previously set handicap points
@@ -412,7 +552,7 @@
     }
   }
 
-  handicapPoints = [newValue retain];
+  handicapPoints = [newValue copy];
   if (handicapPoints)
   {
     for (GoPoint* point in handicapPoints)

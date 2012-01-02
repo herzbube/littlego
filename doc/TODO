@@ -10,6 +10,7 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
+- Add global exception handler that "gracefully" shuts down the application
 - Testing
   - Test application shutdown to see whether there are no memory leaks
   - Add more unit tests
@@ -167,6 +168,8 @@ Priority 2 (nice to have)
 - Apply GTP engine profile settings immediately instead of only at the beginning
   of a new game. Refer to [1] for details on how the various settings interact.
   [1] https://sourceforge.net/apps/trac/fuego/wiki/FAQ3
+- GoGame::setState() should check for correctness of the state machine. Also
+  add more unit tests if this is implemented.
 
 
 Priority 3 (not important)

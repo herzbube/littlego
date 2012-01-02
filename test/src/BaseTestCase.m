@@ -49,6 +49,10 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
   [newGameDictionary setValue:[NSNumber numberWithInt:GoBoardSize19] forKey:boardSizeKey];
+  // Tests are expecting a human vs. human game. Assuming that the registration
+  // domain sets up the black player to be human, we make sure that the white
+  // player is also human.
+  [newGameDictionary setValue:[newGameDictionary valueForKey:blackPlayerKey] forKey:whitePlayerKey];
   [userDefaults setObject:newGameDictionary forKey:newGameKey];
   // Initialize models after we have fiddled with the user defaults data
   [m_delegate setupUserDefaults];
