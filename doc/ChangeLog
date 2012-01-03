@@ -1,3 +1,17 @@
+Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
+- release of bugfix version 0.7.1
+- bugfixes
+  - loading a game with no moves is now handled correctly (previously the app
+    would hang and needed to be manually killed to get into a usable state
+    again)
+  - capturing moves that "almost" create a Ko are now correctly recognized as
+    legal moves (e.g. black A1, white A2, black D1, white B2, black C2,
+    white C1, previously the black move on B1 was thought to be illegal)
+  - it is no longer possible to place stones outside the board in the top-left
+    and top-right corners
+  - board size 7x7 no longer allows handicaps greater than 4 (selecting such
+    a handicap previously would result in no handicap being set at all)
+
 Tue December 20 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.7
 - this is the first release published to the App Store

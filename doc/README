@@ -24,14 +24,10 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.7.
+This is Little Go 0.7.1.
 
-This release adds no new features, but fixes a couple of serious bugs. Other
-than that, the main work that has been done is the addition of artwork such as
-an application icon, and in-game icons for the tab bar and the toolbar on the
-game view.
-
-As usual the ChangeLog document has all the details.
+This is a pure bugfix release which squashes a couple of serious bugs. See the
+ChangeLog document for the details.
 
 
 Known bugs
