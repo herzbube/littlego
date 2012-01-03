@@ -35,5 +35,6 @@
 
 + (void) movePointToNewRegion:(GoPoint*)thePoint;
 + (void) setupNewGame:(GoGame*)game withGtpHandicap:(NSString*)handicapInfo;
++ (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize;
 
 @end

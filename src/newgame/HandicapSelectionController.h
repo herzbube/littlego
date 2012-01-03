@@ -56,7 +56,7 @@
 {
 }
 
-+ (HandicapSelectionController*) controllerWithDelegate:(id<HandicapSelectionDelegate>)delegate defaultHandicap:(int)handicap;
++ (HandicapSelectionController*) controllerWithDelegate:(id<HandicapSelectionDelegate>)delegate defaultHandicap:(int)handicap maximumHandicap:(int)maximumHandicap;
 
 /// @brief This is the delegate that will be informed about the result of data
 /// collection.

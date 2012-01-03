@@ -126,4 +126,18 @@
   game.handicapPoints = handicapPoints;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the maximum handicap for the specified @a boardSize.
+// -----------------------------------------------------------------------------
++ (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize
+{
+  switch (boardSize)
+  {
+    case BoardSize7:
+      return 4;
+    default:
+      return 9;
+  }
+}
+
 @end

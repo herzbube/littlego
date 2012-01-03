@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UserDefaultsUpdater.h"
+#import "../go/GoUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,6 +34,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 // -----------------------------------------------------------------------------
 @interface UserDefaultsUpdater()
 + (void) upgradeToVersion1;
++ (void) upgradeToVersion2;
 @end
 
 
@@ -137,6 +139,29 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
   const int newApplicationDomainVersion = 1;
   [userDefaults setValue:[NSNumber numberWithInt:newApplicationDomainVersion]
                   forKey:userDefaultsVersionApplicationDomainKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 2.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion2
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // The previous app version had a bug that might have allowed the user to
+  // select a handicap for new games that was greater than the maximum handicap
+  // allowed by certain small board sizes. If the illegal value managed to get
+  // into the user defaults sysem we need to fix it here.
+  NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
+  enum GoBoardSize boardSize = [[newGameDictionary valueForKey:boardSizeKey] intValue];
+  int handicap = [[newGameDictionary valueForKey:handicapKey] intValue];
+  int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:boardSize];
+  if (handicap > maximumHandicap)
+  {
+    [newGameDictionary setValue:[NSNumber numberWithInt:maximumHandicap] forKey:handicapKey];
+    [userDefaults setObject:newGameDictionary forKey:newGameKey];
+  }
 }
 
 @end

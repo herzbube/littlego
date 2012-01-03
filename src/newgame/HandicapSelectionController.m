@@ -45,9 +45,9 @@ enum NoHandicapSectionItem
 // -----------------------------------------------------------------------------
 enum TwoAndMoreHandicapSectionItem
 {
-  MinimumHandicapItem = 2,
-  MaximumHandicapItem = 9,
-  MaxTwoAndMoreHandicapSectionItem = (MaximumHandicapItem - MinimumHandicapItem + 1)
+  MinimumHandicapItem = 2
+  // MaximumHandicapItem does not exist, it's calculated dynamically using the
+  // maximum handicap that has been specified on construction
 };
 
 
@@ -85,6 +85,10 @@ enum TwoAndMoreHandicapSectionItem
 - (int) handicapValueForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (NSIndexPath*) indexPathForHandicapValue:(int)handicapValue;
 //@}
+/// @name Privately declared properties
+//@{
+@property(nonatomic, assign) int maximumHandicap;
+//@}
 @end
 
 
@@ -92,13 +96,14 @@ enum TwoAndMoreHandicapSectionItem
 
 @synthesize delegate;
 @synthesize handicap;
+@synthesize maximumHandicap;
 
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a HandicapSelectionController
 /// instance of grouped style.
 // -----------------------------------------------------------------------------
-+ (HandicapSelectionController*) controllerWithDelegate:(id<HandicapSelectionDelegate>)delegate defaultHandicap:(int)handicap
++ (HandicapSelectionController*) controllerWithDelegate:(id<HandicapSelectionDelegate>)delegate defaultHandicap:(int)handicap  maximumHandicap:(int)maximumHandicap
 {
   HandicapSelectionController* controller = [[HandicapSelectionController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
@@ -106,6 +111,7 @@ enum TwoAndMoreHandicapSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.handicap = handicap;
+    controller.maximumHandicap = maximumHandicap;
   }
   return controller;
 }
@@ -173,7 +179,7 @@ enum TwoAndMoreHandicapSectionItem
     case NoHandicapSection:
       return MaxNoHandicapSectionItem;
     case TwoAndMoreHandicapSection:
-      return MaxTwoAndMoreHandicapSectionItem;
+      return (self.maximumHandicap - MinimumHandicapItem + 1);
     default:
       assert(0);
       break;
@@ -253,7 +259,7 @@ enum TwoAndMoreHandicapSectionItem
     case TwoAndMoreHandicapSection:
     {
       handicapValue = MinimumHandicapItem + indexPath.row;
-      assert(handicapValue >= MinimumHandicapItem && handicapValue <= MaximumHandicapItem);
+      assert(handicapValue >= MinimumHandicapItem && handicapValue <= self.maximumHandicap);
       break;
     }
     default:
@@ -280,7 +286,7 @@ enum TwoAndMoreHandicapSectionItem
   {
     section = TwoAndMoreHandicapSection;
     row = handicapValue - MinimumHandicapItem;
-    assert(handicapValue >= MinimumHandicapItem && handicapValue <= MaximumHandicapItem);
+    assert(handicapValue >= MinimumHandicapItem && handicapValue <= self.maximumHandicap);
   }
   return [NSIndexPath indexPathForRow:row inSection:section];
 }

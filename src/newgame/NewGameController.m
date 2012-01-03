@@ -23,6 +23,7 @@
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
@@ -426,8 +427,10 @@ enum KomiSectionItem
     }
     case HandicapSection:
     {
+      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.boardSize];
       modalController = [HandicapSelectionController controllerWithDelegate:self
-                                                            defaultHandicap:self.handicap];
+                                                            defaultHandicap:self.handicap
+                                                            maximumHandicap:maximumHandicap];
       break;
     }
     case KomiSection:
@@ -462,8 +465,19 @@ enum KomiSectionItem
       if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
       {
         self.boardSize = controller.indexOfSelectedItem;
+        NSRange indexSetRange = NSMakeRange(BoardSizeSection, 1);
+
+        // Adjust handicap if the current handicap exceeds the maximum allowed
+        // handicap for the new board size
+        int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.boardSize];
+        if (self.handicap > maximumHandicap)
+        {
+          self.handicap = maximumHandicap;
+          indexSetRange.length = HandicapSection - indexSetRange.location + 1;
+        }
+
         self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BoardSizeSection];
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
         [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
       }
     }
