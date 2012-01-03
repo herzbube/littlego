@@ -1236,48 +1236,60 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointAt:(CGPoint)coordinates
 {
-  // Check if cross-hair is outside the grid and should not be displayed. To
-  // make the edge lines accessible in the same way as the inner lines,
-  // a padding of half a point distance must be added.
   int halfPointDistance = floor(self.pointDistance / 2);
+  bool coordinatesOutOfRange = false;
+
+  // Check if coordinates are outside the grid on the x-axis and cannot be
+  // mapped to a point. To make the edge lines accessible in the same way as
+  // the inner lines, a padding of half a point distance must be added.
   if (coordinates.x < self.topLeftPointX)
   {
     if (coordinates.x < self.topLeftPointX - halfPointDistance)
-      coordinates = CGPointZero;
+      coordinatesOutOfRange = true;
     else
       coordinates.x = self.topLeftPointX;
   }
   else if (coordinates.x > self.topLeftPointX + self.lineLength)
   {
     if (coordinates.x > self.topLeftPointX + self.lineLength + halfPointDistance)
-      coordinates = CGPointZero;
+      coordinatesOutOfRange = true;
     else
       coordinates.x = self.topLeftPointX + self.lineLength;
+  }
+  else
+  {
+    // Adjust so that the snap-to calculation below switches to the next vertex
+    // when the coordinates are half-way through the distance to that vertex
+    coordinates.x += halfPointDistance;
+  }
+
+  // Unless the x-axis checks have already found the coordinates to be out of
+  // range, we now perform the same checks as above on the y-axis
+  if (coordinatesOutOfRange)
+  {
+    // Coordinates are already out of range, no more checks necessary
   }
   else if (coordinates.y < self.topLeftPointY)
   {
     if (coordinates.y < self.topLeftPointY - halfPointDistance)
-      coordinates = CGPointZero;
+      coordinatesOutOfRange = true;
     else
       coordinates.y = self.topLeftPointY;
   }
   else if (coordinates.y > self.topLeftPointY + self.lineLength)
   {
     if (coordinates.y > self.topLeftPointY + self.lineLength + halfPointDistance)
-      coordinates = CGPointZero;
+      coordinatesOutOfRange = true;
     else
       coordinates.y = self.topLeftPointY + self.lineLength;
   }
   else
   {
-    // Adjust so that the snap-to calculation below switches to the next vertex
-    // when the cross-hair has moved half-way through the distance to that vertex
-    coordinates.x += halfPointDistance;
     coordinates.y += halfPointDistance;
   }
 
-  // Snap to the nearest vertex if the coordinates were valid
-  if (0 == coordinates.x && 0 == coordinates.y)
+  // Snap to the nearest vertex, unless the coordinates were out of range
+  if (coordinatesOutOfRange)
     return nil;
   else
   {
