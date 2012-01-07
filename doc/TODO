@@ -11,16 +11,6 @@ the Roadmap document.
 Priority 1 (important)
 ----------------------
 - Add global exception handler that "gracefully" shuts down the application
-- Testing
-  - Test application shutdown to see whether there are no memory leaks
-  - Add more unit tests
-    - GoPlayer
-    - GoMove, GoPoint, GoBoardRegion; the main problem here is that certain
-      methods in these classes have large side-effects, while other methods
-      are utterly trivial
-      -> extract logic and make all methods trivial
-    - GoGame; the main problem here is that GoGame relies on GTP responses
-      -> we need to substitute GTP client and engine with mock objects
 - Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
   refuses an "undo" command.
 - LoadGameCommand is too slow - when a game with many moves on a large board is
@@ -36,8 +26,6 @@ Priority 1 (important)
   as move backward/forward in the game's move history.
 - Fix the following issues
   - https://bugs.herzbube.ch/show_bug.cgi?id=131 (linker warning)
-- Set deployment target to iOS 4.3 for 3rd party build (and check out if using
-  llvm fixes the linker warning)
 - Once the "interrupt" feature has been implemented, do not disable the
   "load game" button in ViewGameController if a computer player is currently
   thinking
@@ -170,6 +158,16 @@ Priority 2 (nice to have)
   [1] https://sourceforge.net/apps/trac/fuego/wiki/FAQ3
 - GoGame::setState() should check for correctness of the state machine. Also
   add more unit tests if this is implemented.
+- Testing
+  - Add mock objects for GTP client and engine to the frequently run unit test
+    suite so that computer player behaviour can be simulated
+  - Add a new suite of unit tests that is run only on demand (not on every build
+    of the main target). These tests should contain tests for the real GTP
+    client/engine. Notable test to be implemented: Check if GTP engine returns
+    the same vertices for "fixed_handicap" as we implement in GoUtilities.
+  - Add unit tests for GoUtilities, GoScore (load .sgf files with known scores)
+    is pre-determined)
+  - Test application shutdown to see whether there are no memory leaks
 
 
 Priority 3 (not important)
