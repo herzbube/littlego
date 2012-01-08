@@ -210,16 +210,6 @@
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		CD2A6DD0148C4454001D4AAE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CDA595AE1401383E00B250D8;
-			remoteInfo = "Unit tests";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -988,7 +978,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				CD2A6DD1148C4454001D4AAE /* PBXTargetDependency */,
 			);
 			name = "Little Go";
 			productName = "Little Go";
@@ -1285,14 +1274,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		CD2A6DD1148C4454001D4AAE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CDA595AE1401383E00B250D8 /* Unit tests */;
-			targetProxy = CD2A6DD0148C4454001D4AAE /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {

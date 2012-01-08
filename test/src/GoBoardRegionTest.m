@@ -81,46 +81,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the regionWithPoints:() convenience constructor.
-// -----------------------------------------------------------------------------
-- (void) testRegionWithPoints
-{
-  GoBoard* board = m_game.board;
-  GoPoint* pointA1 = [board pointAtVertex:@"A1"];
-  GoPoint* pointF9 = [board pointAtVertex:@"F9"];
-  GoPoint* pointK13 = [board pointAtVertex:@"K13"];
-  GoBoardRegion* mainRegion = pointA1.region;
-  int expectedBoardDimensions = 19;
-  int expectedMainRegionSize = pow(expectedBoardDimensions, 2);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-
-  NSMutableArray* inputArray = [NSMutableArray arrayWithObjects:pointA1, pointF9, pointK13, nil];
-  int expectedRegionSize = inputArray.count;
-  expectedMainRegionSize -= expectedRegionSize;
-
-  GoBoardRegion* region = [GoBoardRegion regionWithPoints:inputArray];
-  // Changing inputArray now must not have any influence on the region's
-  // content, i.e. we expect that GoBoardRegion made a copy of inputArray
-  [inputArray addObject:[board pointAtVertex:@"S17"]];
-
-  STAssertNotNil(region.points, nil);
-  STAssertEquals(expectedRegionSize, [region size], nil);
-  STAssertTrue([region hasPoint:pointA1], nil);
-  STAssertTrue([region hasPoint:pointF9], nil);
-  STAssertTrue([region hasPoint:pointK13], nil);
-  STAssertEquals(region, pointA1.region, nil);
-  STAssertEquals(region, pointF9.region, nil);
-  STAssertEquals(region, pointK13.region, nil);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertFalse([mainRegion hasPoint:pointA1], nil);
-  STAssertFalse([mainRegion hasPoint:pointF9], nil);
-  STAssertFalse([mainRegion hasPoint:pointK13], nil);
-
-  STAssertThrowsSpecificNamed([GoBoardRegion regionWithPoints:nil],
-                              NSException, NSInvalidArgumentException, @"array is nil");
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the regionWithPoint() convenience constructor.
 // -----------------------------------------------------------------------------
 - (void) testRegionWithPoint
@@ -593,18 +553,7 @@
   STAssertEquals(region2, point1.region, nil);
   [pool drain];
 
-  // Test 2: Excercise GoBoardRegion::regionWithPoints:(). This causes region2
-  // to be deallocated. The concept is the same as with test 1 above.
-  pool = [[NSAutoreleasePool alloc] init];
-  NSArray* points = [NSArray arrayWithObjects:point1, point2, nil];
-  GoBoardRegion* region3 = [GoBoardRegion regionWithPoints:points];
-  [pool drain];
-  pool = [[NSAutoreleasePool alloc] init];
-  STAssertEquals(region3, point1.region, nil);
-  STAssertEquals(region3, point2.region, nil);
-  [pool drain];
-
-  // Test 3: Excercise GoBoardRegion::regionWithPoint:(). This causes region3
+  // Test 2: Excercise GoBoardRegion::regionWithPoint:(). This causes region3
   // to be deallocated.
   pool = [[NSAutoreleasePool alloc] init];
   GoBoardRegion* region4 = [GoBoardRegion regionWithPoint:point1];
@@ -617,7 +566,7 @@
   STAssertEquals(region5, point2.region, nil);
   [pool drain];
 
-  // Excercise GoBoardRegion::removePoint:(). This causes region4 to be
+  // Test 3: Excercise GoBoardRegion::removePoint:(). This causes region4 to be
   // deallocated.
   pool = [[NSAutoreleasePool alloc] init];
   [region4 removePoint:point1];
@@ -628,7 +577,7 @@
   STAssertEquals(region6, point1.region, nil);
   [pool drain];
 
-  // Excercise GoBoardRegion::joinRegion:(). This causes region5 to be
+  // Test 4: Excercise GoBoardRegion::joinRegion:(). This causes region5 to be
   // deallocated.
   pool = [[NSAutoreleasePool alloc] init];
   [region6 joinRegion:region5];

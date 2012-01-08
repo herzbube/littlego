@@ -208,7 +208,7 @@
   @catch (NSException* exception)
   {
     NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
-                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on point argument. Exception message = %@", [exception reason]]
+                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on point. Exception message = %@", [exception reason]]
                                                       userInfo:nil];
     @throw newException;
   }

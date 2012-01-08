@@ -57,7 +57,6 @@
 }
 
 + (GoBoardRegion*) region;
-+ (GoBoardRegion*) regionWithPoints:(NSArray*)points;
 + (GoBoardRegion*) regionWithPoint:(GoPoint*)point;
 - (int) size;
 - (bool) hasPoint:(GoPoint*)point;

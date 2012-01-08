@@ -29,7 +29,6 @@
 
 - (void) testNewGame;
 - (void) testRegion;
-- (void) testRegionWithPoints;
 - (void) testRegionWithPoint;
 - (void) testAddPoint;
 - (void) testRemovePoint;

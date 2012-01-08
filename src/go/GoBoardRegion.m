@@ -31,7 +31,10 @@
 //@}
 /// @name Private helper methods
 //@{
-- (void) splitRegionIfRequired;
+- (void) moveSubRegion:(NSArray*)subRegion fromMainRegion:(GoBoardRegion*)mainRegion;
+- (void) removeSubRegion:(NSArray*)subRegion;
+- (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint;
+- (void) fillSubRegion:(NSMutableArray*)subRegion containingPoint:(GoPoint*)point;
 - (void) fillCache;
 - (void) invalidateCache;
 //@}
@@ -83,37 +86,6 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
-/// contains the GoPoint objects in @a points.
-///
-/// The GoPoint objects in @a points are added to the new GoBoardRegion instance
-/// by invoking addPoint:(). The GoBoardRegion reference of those GoPoint
-/// objects is therefore updated automatically to the new GoBoardRegion. See
-/// addObject:() for details.
-///
-/// Raises an @e NSInvalidArgumentException if @a points is nil.
-// -----------------------------------------------------------------------------
-+ (GoBoardRegion*) regionWithPoints:(NSArray*)points
-{
-  if (! points)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Points argument is nil"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  GoBoardRegion* region = [[GoBoardRegion alloc] init];
-  if (region)
-  {
-    for (GoPoint* point in points)
-      [region addPoint:point];
-    [region autorelease];
-  }
-  return region;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GoBoardRegion instance that
 /// contains the single GoPoint object @a point.
 ///
 /// @a point is added to the new GoBoardRegion instance by invoking addPoint:().
@@ -132,7 +104,13 @@
     @throw exception;
   }
 
-  return [GoBoardRegion regionWithPoints:[NSArray arrayWithObject:point]];
+  GoBoardRegion* region = [[GoBoardRegion alloc] init];
+  if (region)
+  {
+    [region addPoint:point];
+    [region autorelease];
+  }
+  return region;
 }
 
 // -----------------------------------------------------------------------------
@@ -259,8 +237,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Removes @a point from this GoBoardRegion.
 ///
-/// The GoBoardRegion reference of @a point is updated to nil. If @point is the
-/// last point in this region, this GoBoardRegion is deallocated.
+/// The GoBoardRegion reference of @a point is updated to nil. If @a point is
+/// the last point in this region, this GoBoardRegion is deallocated.
 ///
 /// Invoking this method may cause this GoBoardRegion to fragment, i.e. other
 /// GoBoardRegion objects may come into existence because GoPoint objects within
@@ -290,7 +268,7 @@
   // Do post-processing only if we didn't remove the last point, i.e. if this
   // GoBoardRegion object is still alive
   if (! lastPoint)
-    [self splitRegionIfRequired];
+    [self splitRegionAfterRemovingPoint:point];
 }
 
 // -----------------------------------------------------------------------------
@@ -436,8 +414,8 @@
 ///
 /// Additional GoBoardRegion objects are created by this method if it detects
 /// that this GoBoardRegion has fragmented into smaller, non-adjacent sets of
-/// GoPoint objects. No assumption is made about the reason why the
-/// fragmentation occurred.
+/// GoPoint objects. The reason why fragmentation might have occurred is that
+/// @a removedPoint has been removed from this GoBoardRegion.
 ///
 /// This method does nothing and returns immediately if this GoBoardRegion
 /// represents a stone group. The reason for this is efficieny, combined with
@@ -445,14 +423,8 @@
 /// a regular fashion. A stone group can only be captured as a whole, in which
 /// case the entire GoBoardRegion "converts" from being a stone group to being
 /// an empty area.
-///
-/// @note This method should be called after making changes to the content of a
-/// GoBoardRegion (usually after removing a GoPoint object).
-///
-/// @todo The implementatin of this method is rather brute-force... try to find
-/// a more elegant solution, or document why there is no such solution.
 // -----------------------------------------------------------------------------
-- (void) splitRegionIfRequired
+- (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint
 {
   // Stone groups can never fragment, they are only captured as a whole which
   // leaves the region unchanged
@@ -462,81 +434,172 @@
   if (points.count < 2)
     return;
 
+  // Because the point that has been removed is the splitting point, we iterate
+  // the point's neighbours to see if they are still connected
   NSMutableArray* subRegions = [NSMutableArray arrayWithCapacity:0];
-  NSMutableArray* pointsToProcess = [points mutableCopy];
-  while ([pointsToProcess count] > 0)
+  for (GoPoint* neighbourOfRemovedPoint in removedPoint.neighbours)
   {
-    // Step 1: Create new subregion that contains the current point and its
-    // neighbours that are also in self (the main region)
-    GoPoint* pointToProcess = [pointsToProcess objectAtIndex:0];
+    // We are not interested in the neighbour if it is not in our region
+    if (! [self hasPoint:neighbourOfRemovedPoint])
+      continue;
+    // Check if the current neighbour is connected to one of the other
+    // neighbours that have been previously processed
+    bool isNeighbourConnected = false;
+    for (NSArray* subRegion in subRegions)
+    {
+      if ([subRegion containsObject:neighbourOfRemovedPoint])
+      {
+        isNeighbourConnected = true;
+        break;
+      }
+    }
+    if (isNeighbourConnected)
+      continue;
+    // If the neighbour is not connected, we can create a new subregion that
+    // contains the current neighbour and its neighbours that are also in self
+    // (the main region)
     NSMutableArray* newSubRegion = [NSMutableArray arrayWithCapacity:0];
-    [newSubRegion addObject:pointToProcess];
-    for (GoPoint* neighbour in pointToProcess.neighbours)
-    {
-      if (! [self hasPoint:neighbour])
-        continue;
-      [newSubRegion addObject:neighbour];
-    }
-    [pointsToProcess removeObject:pointToProcess];
+    [subRegions addObject:newSubRegion];
+    [self fillSubRegion:newSubRegion containingPoint:neighbourOfRemovedPoint];
 
-    // Step 2: Check if there is at least one common point between the new
-    // subregion from step 1, and any previously created subregions. If so,
-    // the two subregions can be joined
-    NSMutableArray* joinableSubRegions = [NSMutableArray arrayWithCapacity:0];
-    for (NSMutableArray* previousSubRegion in subRegions)
-    {
-      for (GoPoint* newPoint in newSubRegion)
-      {
-        if ([previousSubRegion containsObject:newPoint])
-        {
-          [joinableSubRegions addObject:previousSubRegion];
-          break;
-        }
-      }
-    }
+    // If the new subregion has the same size as self (the main region),
+    // then it effectively is the same thing as self. There won't be any more
+    // splits, so we can skip processing the remaining neighbours.
+    if (points.count == newSubRegion.count)
+      break;
 
-    // Step 3: Permanently keep the new subregion if it can't be joined,
-    // otherwise join all subregions that were found to be adjacent
-    if (0 == [joinableSubRegions count])
-    {
-      [subRegions addObject:newSubRegion];
-      continue;
-    }
-    // Treat the new subregion the same as the other ones
-    [joinableSubRegions addObject:newSubRegion];
-    // Keep the first of the already existing subregions
-    NSMutableArray* subRegiontoKeep = nil;
-    for (NSMutableArray* joinableSubRegion in joinableSubRegions)
-    {
-      if (! subRegiontoKeep)
-      {
-        subRegiontoKeep = joinableSubRegion;
-        continue;
-      }
-      [subRegions removeObject:joinableSubRegion];
-      for (GoPoint* joinablePoint in joinableSubRegion)
-      {
-        if (! [subRegiontoKeep containsObject:joinablePoint])
-          [subRegiontoKeep addObject:joinablePoint];
-      }
-    }
+    // At this point we know that newSubRegion does not contain all the points
+    // of self (the main region), so a split is certain to occur. We can
+    // optimize by immediately removing the points of newSubRegion from self
+    // (the main region) so that the next iteration will find less objects in
+    // self.points and will therefore process more quickly.
+    [[GoBoardRegion region] moveSubRegion:newSubRegion fromMainRegion:self];
+    DDLogInfo(@"splitRegionAfterRemovingPoint:(): Created new subregion with %d points", newSubRegion.count);
   }
-  [pointsToProcess release];
+}
 
-  if ([subRegions count] == 1)  // no split occurred
-    return;
-  bool keepFirstWithThisRegion = true;
-  for (NSMutableArray* subRegion in subRegions)
+// -----------------------------------------------------------------------------
+/// @brief Recursively adds GoPoint objects to @a subRegion that are connected
+/// with @a point and that, together, form a subregion of this GoBoardRegion.
+///
+/// @note This is a private backend helper method for
+/// splitRegionAfterRemovingPoint:().
+// -----------------------------------------------------------------------------
+- (void) fillSubRegion:(NSMutableArray*)subRegion containingPoint:(GoPoint*)point
+{
+  [subRegion addObject:point];
+  for (GoPoint* neighbour in point.neighbours)
   {
-    if (keepFirstWithThisRegion)
-    {
-      keepFirstWithThisRegion = false;
+    if ([subRegion containsObject:neighbour])
       continue;
-    }
-    DDLogInfo(@"splitRegionIfRequired() creating new GoBoardRegion with these %d points:\n%@", subRegion.count, subRegion);
-    [(NSMutableArray*)points removeObjectsInArray:subRegion];
-    [GoBoardRegion regionWithPoints:subRegion];
+    if (! [self hasPoint:neighbour])
+      continue;
+    [self fillSubRegion:subRegion containingPoint:neighbour];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the GoPoint objects in @a subRegion to this GoBoardRegion. The
+/// GoPoint objects currently must be part of @a mainRegion.
+///
+/// The purpose of this method is to provide a light-weight alternative to
+/// removePoint:(). removePoint:() is heavy-weight because it applies expensive
+/// region-fragmentation logic to the GoBoardRegion from which the GoPoint
+/// object is removed.
+///
+/// In contrast, this method does not apply the region-fragmentation logic: it
+/// simply assumes the GoPoint objects in @a subRegion are connected and form a
+/// subregion of @a mainRegion. Operating under this assumption, GoPoint objects
+/// in @a subRegion can simply be bulk-removed from @a mainRegion and bulk-added
+/// to this GoBoardRegion. The only thing that is done in addition is updating
+/// the GoBoardRegion reference of the GoPoint objects being moved.
+///
+/// @a note The assumption that GoPoint objects in @a subRegion are connected
+/// is not checked for efficiency reasons, again with the goal to keep this
+/// method as light-weight as possible.
+///
+/// @note If @a mainRegion is empty after all GoPoint objects have been moved,
+/// it is deallocated. The effect is the same as if joinRegion:() had been
+/// called.
+///
+/// Raises an @e NSInvalidArgumentException if @a subRegion or @a mainRegion are
+/// nil, if the GoPoint objects in @a subRegion do not reference @a mainRegion,
+/// or if their @e stoneState property does not match the @e stoneState
+/// properties of other GoPoint objects already in this region.
+///
+/// @note This is a private backend helper method for
+/// splitRegionAfterRemovingPoint:().
+// -----------------------------------------------------------------------------
+- (void) moveSubRegion:(NSArray*)subRegion fromMainRegion:(GoBoardRegion*)mainRegion
+{
+  if (! subRegion)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"subRegion argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! mainRegion)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"mainRegion argument is nil"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  
+  if (0 == subRegion.count)
+    return;
+  
+  // We only check the attributes of the first point of the subregion, assuming
+  // that it is representative for the other points in the array. We don't check
+  // all points for efficiency reasons!
+  GoPoint* firstPointOfSubRegion = [subRegion objectAtIndex:0];
+  GoBoardRegion* previousRegion = firstPointOfSubRegion.region;
+  if (mainRegion != previousRegion)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Points of subregion do not reference specified main region"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (points.count > 0)
+  {
+    GoPoint* otherPoint = [points objectAtIndex:0];
+    if (otherPoint.stoneState != firstPointOfSubRegion.stoneState)
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Subregion points' stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", firstPointOfSubRegion.stoneState, otherPoint.stoneState]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  // Bulk-remove subRegion. Note that mainRegion may be deallocated by this
+  // operation, so we don't use it after the method invocation returns.
+  [mainRegion removeSubRegion:subRegion];
+
+  // Bulk-add subRegion
+  [(NSMutableArray*)points addObjectsFromArray:subRegion];
+  for (GoPoint* point in subRegion)
+    point.region = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes GoPoint objects in @a subRegion from this GoBoardRegion
+/// without applying any region-fragmentation logic to this GoBoardRegion.
+///
+/// The GoBoardRegion reference of all GoPoint objects in @a subRegion is
+/// updated to nil. If this GoBoardRegion does not contain any other points
+/// than those in @a subRegion, this GoBoardRegion is deallocated.
+///
+/// @note This is a private backend helper method for
+/// moveSubRegion:fromMainRegion:().
+// -----------------------------------------------------------------------------
+- (void) removeSubRegion:(NSArray*)subRegion
+{
+  [(NSMutableArray*)points removeObjectsInArray:subRegion];
+  for (GoPoint* point in subRegion)
+    point.region = nil;
 }
 
 // -----------------------------------------------------------------------------
