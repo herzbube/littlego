@@ -13,9 +13,6 @@ Priority 1 (important)
 - Add global exception handler that "gracefully" shuts down the application
 - Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
   refuses an "undo" command.
-- LoadGameCommand is too slow - when a game with many moves on a large board is
-  restored, the command takes many seconds to execute. The probable culprit is
-  GoBoardRegion::splitRegionIfRequired().
 - Fuego responds to "savesgf" by saving all moves, even those that have been
   taken back with "undo"; this is probably intended behaviour on the side of
   Fuego's developers, but end users will certainly be surprised to see a move

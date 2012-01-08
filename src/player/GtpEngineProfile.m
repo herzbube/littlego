@@ -19,6 +19,7 @@
 #import "GtpEngineProfile.h"
 #import "../utility/NSStringAdditions.h"
 #import "../gtp/GtpCommand.h"
+#import "../gtp/GtpUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -166,12 +167,13 @@
   commandString = [NSString stringWithFormat:@"uct_param_search number_threads %d", self.fuegoThreadCount];
   command = [GtpCommand command:commandString];
   [command submit];
-  commandString = [NSString stringWithFormat:@"uct_param_player ponder %d", (self.fuegoPondering ? 1 : 0)];
-  command = [GtpCommand command:commandString];
-  [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_player reuse_subtree %d", (self.fuegoReuseSubtree ? 1 : 0)];
   command = [GtpCommand command:commandString];
   [command submit];
+  if (self.fuegoPondering)
+    [GtpUtilities startPondering];
+  else
+    [GtpUtilities stopPondering];
 }
 
 // -----------------------------------------------------------------------------

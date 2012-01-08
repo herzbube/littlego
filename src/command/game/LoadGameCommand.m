@@ -128,8 +128,8 @@
   if (! self.filePath || ! self.blackPlayer || ! self.whitePlayer)
     return false;
 
-  // Disable play view updates while this command executes its multiple steps
-  [[PlayView sharedView] actionStarts];
+  [[PlayView sharedView] actionStarts];  // disable play view updates
+  [GtpUtilities stopPondering];
 
   // Need to work with temporary file whose name is known and guaranteed to not
   // contain any characters that are prohibited by GTP
@@ -358,7 +358,14 @@
   command.shouldSetupGtpBoard = (! success);
   // Ditto for handicap and komi
   command.shouldSetupGtpHandicapAndKomi = (! success);
-  command.shouldTriggerComputerPlayer = false;  // we have to do this ourselves after setting up handicap + moves
+  // We have to do this ourselves, after setting up handicap + moves
+  command.shouldTriggerComputerPlayer = false;
+  // We want the load game command to proceed as quickly as possible, therefore
+  // we set up the computer player ourselves, at the very end just before we
+  // trigger the computer player. If we would allow the computer player to be
+  // set up earlier, it might start pondering, taking away precious CPU cycles
+  // from the already slow load game command.
+  command.shouldSetupComputerPlayer = false;
   [command submit];
 }
 
@@ -529,6 +536,7 @@
   [progressHUD removeFromSuperview];
   [progressHUD release];
   [self autorelease];
+  [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
   [self cleanup];
 }

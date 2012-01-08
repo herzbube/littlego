@@ -651,11 +651,6 @@ The profiles that are actively used by players when you first install Little Go
 all have a value of 32 MB. This should be OK even for older devices such as an
 iPhone 3GS.
 
-======================
-Loading a game is SLOW
-======================
-This is a known bug. It will be fixed in one of the next releases of Little Go.
-
 ===================================================
 I cannot load a game, the "load" button is disabled
 ===================================================

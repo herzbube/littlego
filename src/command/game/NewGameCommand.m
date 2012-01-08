@@ -21,13 +21,12 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../gtp/GtpUtilities.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
-#import "../../player/GtpEngineProfileModel.h"
-#import "../../player/GtpEngineProfile.h"
 #import "../../newgame/NewGameModel.h"
 
 
@@ -44,7 +43,6 @@
 - (void) newGame;
 - (void) setupGtpBoard;
 - (void) setupGtpHandicapAndKomi;
-- (void) setupComputerPlayer;
 - (void) triggerComputerPlayer;
 //@}
 @end
@@ -97,7 +95,7 @@
   if (self.shouldSetupGtpHandicapAndKomi)
     [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)
-    [self setupComputerPlayer];
+    [GtpUtilities setupComputerPlayer];
   if (self.shouldTriggerComputerPlayer)
     [self triggerComputerPlayer];
   return true;
@@ -176,33 +174,6 @@
   commandKomi.waitUntilDone = true;
   [commandKomi submit];
   assert(commandKomi.response.status);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Configures the GTP engine with settings obtained from the current
-/// game's computer player.
-///
-/// Prefers the black computer player if both players are computer players.
-/// If neither player is a computer player, the settings obtained from the
-/// default GTP engine profile are applied.
-// -----------------------------------------------------------------------------
-- (void) setupComputerPlayer
-{
-  GtpEngineProfile* profile = nil;
-  GoGame* game = [GoGame sharedGame];
-  if (GoGameTypeHumanVsHuman == game.type)
-    profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
-  else
-  {
-    Player* computerPlayerWithGtpProfile = game.playerBlack.player;
-    if (computerPlayerWithGtpProfile.isHuman)
-    {
-      computerPlayerWithGtpProfile = game.playerWhite.player;
-      assert(! computerPlayerWithGtpProfile.isHuman);
-    }
-    profile = [computerPlayerWithGtpProfile gtpEngineProfile];
-  }
-  [profile applyProfile];
 }
 
 // -----------------------------------------------------------------------------

@@ -18,6 +18,12 @@
 // Project includes
 #import "GtpUtilities.h"
 #import "GtpCommand.h"
+#import "../go/GoGame.h"
+#import "../go/GoPlayer.h"
+#import "../main/ApplicationDelegate.h"
+#import "../player/GtpEngineProfileModel.h"
+#import "../player/GtpEngineProfile.h"
+#import "../player/Player.h"
 
 
 @implementation GtpUtilities
@@ -54,5 +60,81 @@
     [aTarget performSelector:aSelector withObject:command.response];
   }
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GtpEngineProfile object that is active for the game that
+/// is currently in progress.
+///
+/// The following rules are observed:
+/// - Computer vs. human game: Returns the profile of the computer player
+/// - Human vs. human game: Returns the default profile
+/// - Computer vs. computer game: Returns the profile of the black computer
+///   player
+// -----------------------------------------------------------------------------
++ (GtpEngineProfile*) activeProfile
+{
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameTypeHumanVsHuman == game.type)
+    return [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
+  else
+  {
+    Player* blackPlayer = game.playerBlack.player;
+    if (! blackPlayer.isHuman)
+      return [blackPlayer gtpEngineProfile];
+    else
+      return [game.playerWhite.player gtpEngineProfile];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the GTP engine with settings obtained from the current
+/// game's computer player.
+///
+/// Prefers the black computer player if both players are computer players.
+/// If neither player is a computer player, the settings obtained from the
+/// default GTP engine profile are applied.
+// -----------------------------------------------------------------------------
++ (void) setupComputerPlayer
+{
+  GtpEngineProfile* profile = [GtpUtilities activeProfile];
+  if (profile)
+    [profile applyProfile];
+  else
+    DDLogError(@"GtpUtilities::setupComputerPlayer(): Unable to determine profile with computer player settings");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tells the GTP engine to start pondering.
+// -----------------------------------------------------------------------------
++ (void) startPondering
+{
+  NSString* commandString = @"uct_param_player ponder 1";
+  [[GtpCommand command:commandString] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tells the GTP engine to stop pondering.
+// -----------------------------------------------------------------------------
++ (void) stopPondering
+{
+  NSString* commandString = @"uct_param_player ponder 0";
+  [[GtpCommand command:commandString] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Restores the GTP engine's "pondering" state to the state prescribed
+/// by the active GTP engine profile (see activeProfile:()).
+// -----------------------------------------------------------------------------
++ (void) restorePondering
+{
+  GtpEngineProfile* profile = [GtpUtilities activeProfile];
+  if (! profile)
+    DDLogError(@"GtpUtilities::restorePondering(): Unable to determine profile with computer player settings");
+  else if (profile.fuegoPondering)
+    [GtpUtilities startPondering];
+  else
+    [GtpUtilities stopPondering];
+}
+
 
 @end

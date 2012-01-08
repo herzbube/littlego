@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+@class GtpEngineProfile;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The GtpUtilities class is a container for various utility functions
 /// related to the GTP module.
@@ -29,5 +32,10 @@
 }
 
 + (void) submitCommand:(NSString*)commandString target:(id)aTarget selector:(SEL)aSelector waitUntilDone:(bool)wait;
++ (GtpEngineProfile*) activeProfile;
++ (void) setupComputerPlayer;
++ (void) startPondering;
++ (void) stopPondering;
++ (void) restorePondering;
 
 @end
