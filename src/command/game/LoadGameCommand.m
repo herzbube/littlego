@@ -451,19 +451,40 @@
 /// @a moveList is expected to contain NSString objects, each having the format
 /// "color vertex" (e.g. "W C13").
 ///
-/// @note This method runs in a secondary thread. For every move that is
-/// replayed, the progress view in @e m_progressHUD is updated by one step.
+/// The progress view in @e m_progressHUD is updated continuously as the moves
+/// are replayed. In an ideal world we would have a fine-grained progress view
+/// with as many steps as there are views. However, when there are many moves
+/// to be replayed this would waste a lot of precious CPU cycles for GUI
+/// updates, effectively slowing down the process of loading a game. In the
+/// real world, we therefore limit the number of progress view updates to a
+/// fixed number. At the moment the number is hard-coded to 10.
+///
+/// @note This method runs in a secondary thread.
 // -----------------------------------------------------------------------------
 - (void) replayMoves:(NSArray*)moveList
 {
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
 
-  int totalSteps = moveList.count;
+  static const int maxSteps = 10;
+  int totalSteps;
+  float movesPerStep;
+  if (moveList.count <= maxSteps)
+  {
+    totalSteps = moveList.count;
+    movesPerStep = 1;
+  }
+  else
+  {
+    totalSteps = maxSteps;
+    movesPerStep = moveList.count / totalSteps;
+  }
   float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
   bool hasResigned = false;
+  int movesReplayed = 0;
+  float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
   for (NSString* move in moveList)
   {
     if (hasResigned)
@@ -489,9 +510,14 @@
       GoPoint* point = [board pointAtVertex:vertexString];
       [game play:point];
     }
+    ++movesReplayed;
 
-    progress += stepIncrease;
-    m_progressHUD.progress = progress;
+    if (movesReplayed >= nextProgressUpdate)
+    {
+      nextProgressUpdate += movesPerStep;
+      progress += stepIncrease;
+      m_progressHUD.progress = progress;
+    }
   }
 }
 

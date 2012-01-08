@@ -60,6 +60,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  DDLogInfo(@"Deallocating %@", self);
   self.name = nil;
   [super dealloc];
 }

@@ -31,10 +31,10 @@
 //@}
 /// @name Private helper methods
 //@{
-- (void) moveSubRegion:(NSArray*)subRegion fromMainRegion:(GoBoardRegion*)mainRegion;
-- (void) removeSubRegion:(NSArray*)subRegion;
 - (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint;
 - (void) fillSubRegion:(NSMutableArray*)subRegion containingPoint:(GoPoint*)point;
+- (void) moveSubRegion:(NSArray*)subRegion fromMainRegion:(GoBoardRegion*)mainRegion;
+- (void) removeSubRegion:(NSArray*)subRegion;
 - (void) fillCache;
 - (void) invalidateCache;
 //@}
@@ -474,7 +474,6 @@
     // (the main region) so that the next iteration will find less objects in
     // self.points and will therefore process more quickly.
     [[GoBoardRegion region] moveSubRegion:newSubRegion fromMainRegion:self];
-    DDLogInfo(@"splitRegionAfterRemovingPoint:(): Created new subregion with %d points", newSubRegion.count);
   }
 }
 
