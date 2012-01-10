@@ -33,7 +33,8 @@ enum EditGtpEngineProfileTableViewSection
 {
   ProfileNameSection,
   ProfileDescriptionSection,
-  ProfileSettingsSection,
+  MaxMemorySection,
+  OtherProfileSettingsSection,
   MaxSection
 };
 
@@ -56,16 +57,25 @@ enum ProfileDescriptionSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ProfileSettingsSection.
+/// @brief Enumerates items in the MaxMemorySection.
 // -----------------------------------------------------------------------------
-enum ProfileSettingsSectionItem
+enum MaxMemorySectionItem
 {
   FuegoMaxMemoryItem,
+  MaxMaxMemorySectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the OtherProfileSettingsSection.
+// -----------------------------------------------------------------------------
+enum OtherProfileSettingsSectionItem
+{
   FuegoThreadCountItem,
   FuegoPonderingItem,
   FuegoReuseSubtreeItem,
-  MaxProfileSettingsSectionItem
+  MaxOtherProfileSettingsSectionItem
 };
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for
@@ -119,6 +129,7 @@ enum ProfileSettingsSectionItem
 @property(nonatomic, retain) UITextView* textView;
 @property(nonatomic, retain) UIViewController* textViewController;
 @property(nonatomic, assign) bool textViewControllerIsPushed;
+@property(nonatomic, retain) UISwitch* reuseSubtreeSwitch;
 //@}
 @end
 
@@ -131,6 +142,7 @@ enum ProfileSettingsSectionItem
 @synthesize textView;
 @synthesize textViewController;
 @synthesize textViewControllerIsPushed;
+@synthesize reuseSubtreeSwitch;
 
 
 // -----------------------------------------------------------------------------
@@ -178,6 +190,7 @@ enum ProfileSettingsSectionItem
   self.profile = nil;
   self.textView = nil;
   self.textViewController = nil;
+  self.reuseSubtreeSwitch = nil;
   [super dealloc];
 }
 
@@ -261,8 +274,10 @@ enum ProfileSettingsSectionItem
       return MaxProfileNameSectionItem;
     case ProfileDescriptionSection:
       return MaxProfileDescriptionSectionItem;
-    case ProfileSettingsSection:
-      return MaxProfileSettingsSectionItem;
+    case MaxMemorySection:
+      return MaxMaxMemorySectionItem;
+    case OtherProfileSettingsSection:
+      return MaxOtherProfileSettingsSectionItem;
     default:
       assert(0);
       break;
@@ -281,7 +296,7 @@ enum ProfileSettingsSectionItem
       return @"Profile name & description";
     case ProfileDescriptionSection:
       return nil;
-    case ProfileSettingsSection:
+    case MaxMemorySection:
       return @"GTP engine settings";
     default:
       assert(0);
@@ -295,10 +310,16 @@ enum ProfileSettingsSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  if (ProfileSettingsSection == section)
-    return @"Changed settings are applied only after a new game with a player who uses this profile is started.";
-  else
-    return nil;
+  switch (section)
+  {
+    case MaxMemorySection:
+      return @"WARNING: Setting this value too high WILL crash the app! Read more about this under 'Help > Players & Profiles > Maximum memory'";
+    case OtherProfileSettingsSection:
+      return @"Changed settings are applied only after a new game with a player who uses this profile is started.";
+    default:
+      break;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -364,37 +385,24 @@ enum ProfileSettingsSectionItem
       }
       break;
     }
-    case ProfileSettingsSection:
+    case MaxMemorySection:
     {
-      enum TableViewCellType cellType;
+      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
+      sliderCell.descriptionLabel.text = @"Max. memory (MB)";
+      sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
+      sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
+      sliderCell.value = self.profile.fuegoMaxMemory;
+      break;
+    }
+    case OtherProfileSettingsSection:
+    {
       switch (indexPath.row)
       {
-        case FuegoMaxMemoryItem:
-        case FuegoThreadCountItem:
-          cellType = SliderCellType;
-          break;
-        default:
-          cellType = SwitchCellType;
-          break;
-      }
-      cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-      UISwitch* accessoryView = nil;
-      if (SwitchCellType == cellType)
-        accessoryView = (UISwitch*)cell.accessoryView;
-      switch (indexPath.row)
-      {
-        case FuegoMaxMemoryItem:
-        {
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
-          sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-          sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
-          sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
-          sliderCell.value = self.profile.fuegoMaxMemory;
-          break;
-        }
         case FuegoThreadCountItem:
         {
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
           sliderCell.descriptionLabel.text = @"Number of threads";
@@ -404,18 +412,29 @@ enum ProfileSettingsSectionItem
           break;
         }
         case FuegoPonderingItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Pondering";
           accessoryView.on = self.profile.fuegoPondering;
           [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
           break;
+        }
         case FuegoReuseSubtreeItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Reuse subtree";
           accessoryView.on = self.profile.fuegoReuseSubtree;
           [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
+          // If pondering is on, the default value of reuse subtree ("on") must
+          // not be changed by the user
+          accessoryView.enabled = ! self.profile.fuegoPondering;
+          // Keep reference to control so that we can manipulate it when
+          // pondering is changed later on
+          self.reuseSubtreeSwitch = accessoryView;
           break;
-        default:
-          assert(0);
-          break;
+        }
       }
       break;
     }
@@ -450,11 +469,15 @@ enum ProfileSettingsSectionItem
                hasDisclosureIndicator:true];
       break;
     }
-    case ProfileSettingsSection:
+    case MaxMemorySection:
+    {
+      height = [TableViewSliderCell rowHeightInTableView:tableView];
+      break;
+    }
+    case OtherProfileSettingsSection:
     {
       switch (indexPath.row)
       {
-        case FuegoMaxMemoryItem:
         case FuegoThreadCountItem:
         {
           height = [TableViewSliderCell rowHeightInTableView:tableView];
@@ -481,7 +504,7 @@ enum ProfileSettingsSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  
+
   if (ProfileDescriptionSection == indexPath.section)
   {
     self.textView.text = self.profile.profileDescription;
@@ -570,6 +593,19 @@ enum ProfileSettingsSectionItem
 
   if (self.profileExists)
     [self.delegate didChangeProfile:self];
+
+  // Directly manipulating the switch control gives the best result,
+  // graphics-wise. If we do the update via table view reload of a single cell,
+  // there is a nasty little flicker when pondering is turned off and the
+  // "reuse subtree" switch becomes enabled. I have not tracked down the source
+  // of the flicker, but instead gone straight to directly manipulating the
+  // switch control.
+  if (self.profile.fuegoPondering)
+  {
+    self.profile.fuegoReuseSubtree = true;
+    self.reuseSubtreeSwitch.on = true;
+  }
+  self.reuseSubtreeSwitch.enabled = ! self.profile.fuegoPondering;
 }
 
 // -----------------------------------------------------------------------------
@@ -615,7 +651,6 @@ enum ProfileSettingsSectionItem
 // -----------------------------------------------------------------------------
 - (bool) isProfileValid
 {
-  // TODO check for duplicate name
   return (self.profile.name.length > 0);
 }
 

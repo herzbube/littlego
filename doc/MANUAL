@@ -165,7 +165,7 @@ changes will take effect only after you start a new game with a computer player
 which uses the profile.
 
 ==============
-Maximum memory 
+Maximum memory
 ==============
 This setting defines how much memory in MB the computer is allowed to use for
 its calculations. In general, the more memory it gets, the better the computer
@@ -218,6 +218,10 @@ move. On its next move it will then need to re-calculate some of the very same
 results that it has just forgotten. Turning this setting on therefore makes the
 computer play stronger because it can use its allotted time for making new
 calculations.
+
+When "pondering" is turned on, "reuse subtree" must be turned on as well. The
+app automatically does this for you, and it will also prevent you from
+accidentally turning the setting off.
 
 
 --------------------------------------------------------------------------------
