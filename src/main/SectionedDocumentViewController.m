@@ -41,6 +41,7 @@
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -49,7 +50,7 @@
 //@}
 /// @name Private helpers
 //@{
-- (void) viewSectionAtIndex:(int)sectionIndex;
+- (void) viewSectionAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Privately declared properties
 //@{
@@ -116,7 +117,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 1;
+  return [self.documentGenerator numberOfGroups];
 }
 
 // -----------------------------------------------------------------------------
@@ -124,7 +125,15 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return [self.documentGenerator numberOfSections];
+  return [self.documentGenerator numberOfSectionsInGroup:section];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+{
+  return [self.documentGenerator titleForGroup:section];
 }
 
 // -----------------------------------------------------------------------------
@@ -133,7 +142,7 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [self.documentGenerator sectionTitle:indexPath.row];
+  cell.textLabel.text = [self.documentGenerator titleForSection:indexPath.row inGroup:indexPath.section];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
 }
@@ -144,17 +153,17 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewSectionAtIndex:indexPath.row];
+  [self viewSectionAtIndexPath:indexPath];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Displays DocumentViewController with the content of the section at
 /// index position @a sectionIndex.
 // -----------------------------------------------------------------------------
-- (void) viewSectionAtIndex:(int)sectionIndex
+- (void) viewSectionAtIndexPath:(NSIndexPath*)indexPath
 {
-  NSString* sectionTitle = [self.documentGenerator sectionTitle:sectionIndex];
-  NSString* sectionContent = [self.documentGenerator sectionContent:sectionIndex];
+  NSString* sectionTitle = [self.documentGenerator titleForSection:indexPath.row inGroup:indexPath.section];
+  NSString* sectionContent = [self.documentGenerator contentForSection:indexPath.row inGroup:indexPath.section];
   DocumentViewController* controller = [DocumentViewController controllerWithTitle:sectionTitle htmlString:sectionContent];
   [self.navigationController pushViewController:controller animated:YES];
 }

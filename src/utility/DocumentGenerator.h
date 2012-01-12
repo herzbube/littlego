@@ -26,8 +26,10 @@
 ///
 /// DocumentGenerator assumes that the text file is structured according to
 /// the following rules:
-/// - The document is partitioned into sections; DocumentGenerator creates one
-///   HTML document for each section it finds
+/// - The document is partitioned into groups and sections
+/// - Sections are the main structuring element of the text file, while groups
+///   are a simple means to provide sections with a common heading
+/// - DocumentGenerator creates one HTML document for each section
 /// - A section has a title and a content; the section title can be used to
 ///   refer to the HTML document in the GUI, the section content is also the
 ///   content of the HTML document
@@ -35,8 +37,12 @@
 ///   dashes, i.e. "---"
 /// - The single line below the separator is the section title
 /// - If another separator line is found below the section title it is ignored
-/// - All lines below the separator, until either the next section title or
-///   until end-of-file, form the section content
+/// - All lines below the separator, until either the next group title, section
+///   title or until end-of-file, form the section content
+/// - Group titles are defined exactly the same as section titles, with the
+///   exception that separator lines begin with 3 or more asterisks, i.e. "***"
+/// - If the text file does not contain an explicit group title,
+///   DocumentGenerator still adds one implicit group, albeit without a title
 ///
 /// DocumentGenerator parses the section content lines for a few patterns to
 /// generate the following markup within the section's HTML document:
@@ -61,9 +67,11 @@
 }
 
 - (id) initWithFileContent:(NSString*)fileContent;
-- (NSString*) sectionTitle:(int)sectionIndex;
-- (NSString*) sectionContent:(int)sectionIndex;
+- (NSString*) titleForGroup:(int)groupIndex;
+- (int) numberOfSectionsInGroup:(int)groupIndex;
+- (NSString*) titleForSection:(int)sectionIndex inGroup:(int)groupIndex;
+- (NSString*) contentForSection:(int)sectionIndex inGroup:(int)groupIndex;
 
-@property(nonatomic, assign, readonly) int numberOfSections;
+@property(nonatomic, assign, readonly) int numberOfGroups;
 
 @end

@@ -18,6 +18,8 @@
 // Project includes
 #import "DocumentGenerator.h"
 
+#import <UIKit/UITableView.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for DocumentGenerator.
@@ -29,11 +31,17 @@
 //@}
 /// @name Private helpers
 //@{
+- (int) sectionIDForSection:(int)sectionIndex inGroup:(int)groupIndex;
+- (int) addGroup;
+- (void) addSectionID:(int)sectionID toGroup:(int)groupIndex;
 - (void) parseFileContent:(NSString*)fileContent;
+- (void) parseGroupContentLines:(NSArray*)groupContentLines forGroup:(int)groupIndex;
 - (NSString*) parseSectionContentLines:(NSArray*)sectionContentLines;
 //@}
 /// @name Privately declared properties
 //@{
+@property(nonatomic, retain) NSMutableArray* groupTitles;
+@property(nonatomic, retain) NSMutableArray* sectionIndexPaths;  // each element is another NSMutableArray
 @property(nonatomic, retain) NSMutableArray* sectionTitles;
 @property(nonatomic, retain) NSMutableArray* sectionContents;
 //@}
@@ -42,8 +50,9 @@
 
 @implementation DocumentGenerator
 
-
-@synthesize numberOfSections;
+@synthesize numberOfGroups;
+@synthesize groupTitles;
+@synthesize sectionIndexPaths;
 @synthesize sectionTitles;
 @synthesize sectionContents;
 
@@ -61,6 +70,8 @@
   if (! self)
     return nil;
 
+  self.groupTitles = [NSMutableArray arrayWithCapacity:0];
+  self.sectionIndexPaths = [NSMutableArray arrayWithCapacity:0];
   self.sectionTitles = [NSMutableArray arrayWithCapacity:0];
   self.sectionContents = [NSMutableArray arrayWithCapacity:0];
 
@@ -74,38 +85,101 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.groupTitles = nil;
+  self.sectionIndexPaths = nil;
   self.sectionTitles = nil;
   self.sectionContents = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the number of sections that were found by this
+/// @brief Returns the number of groups that were found by this
 /// DocumentGenerator.
 // -----------------------------------------------------------------------------
-- (int) numberOfSections
+- (int) numberOfGroups
 {
-  return self.sectionTitles.count;
+  return self.sectionIndexPaths.count;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the title of the section referenced by @a sectionIndex. The
+/// @brief Returns the title of the group referenced by @a groupIndex. The
 /// index is zero-based.
 // -----------------------------------------------------------------------------
-- (NSString*) sectionTitle:(int)sectionIndex
+- (NSString*) titleForGroup:(int)groupIndex
 {
-  return [self.sectionTitles objectAtIndex:sectionIndex];
+  return [self.groupTitles objectAtIndex:groupIndex];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the content of the section referenced by @a sectionIndex. The
-/// index is zero-based.
+/// @brief Returns the number of sections in the group referenced by
+/// @a groupIndex. The index is zero-based.
+// -----------------------------------------------------------------------------
+- (int) numberOfSectionsInGroup:(int)groupIndex
+{
+  NSArray* sectionIndexList = [self.sectionIndexPaths objectAtIndex:groupIndex];
+  return sectionIndexList.count;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the section ID referenced by @a sectionIndex and
+/// @a groupIndex. The indices are zero-based.
+///
+/// The section ID returned is actually an index that can be used to access
+/// elements in @e sectionTitles and @e sectionContents.
+///
+/// This is an internal helper.
+// -----------------------------------------------------------------------------
+- (int) sectionIDForSection:(int)sectionIndex inGroup:(int)groupIndex
+{
+  NSArray* sectionIDList = [self.sectionIndexPaths objectAtIndex:groupIndex];
+  NSNumber* sectionID = [sectionIDList objectAtIndex:sectionIndex];
+  return [sectionID intValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds a new group. Returns the zero-based index that references the
+/// new group.
+///
+/// This is an internal helper.
+// -----------------------------------------------------------------------------
+- (int) addGroup
+{
+  [self.sectionIndexPaths addObject:[NSMutableArray arrayWithCapacity:0]];
+  return (self.sectionIndexPaths.count - 1);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds a new section to group referenced by @a groupIndex. The index
+/// is zero-based.
+///
+/// This is an internal helper.
+// -----------------------------------------------------------------------------
+- (void) addSectionID:(int)sectionID toGroup:(int)groupIndex
+{
+  NSMutableArray* sectionIDList = [self.sectionIndexPaths objectAtIndex:groupIndex];
+  [sectionIDList addObject:[NSNumber numberWithInt:sectionID]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the title of the section referenced by @a sectionIndex and
+/// @a groupIndex. The indices are zero-based.
+// -----------------------------------------------------------------------------
+- (NSString*) titleForSection:(int)sectionIndex inGroup:(int)groupIndex
+{
+  int sectionID = [self sectionIDForSection:sectionIndex inGroup:groupIndex];
+  return [self.sectionTitles objectAtIndex:sectionID];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the content of the section referenced by @a sectionIndex and
+/// @a groupIndex. The indices are zero-based.
 ///
 /// The content of the section that is returned is a valid HTML document.
 // -----------------------------------------------------------------------------
-- (NSString*) sectionContent:(int)sectionIndex
+- (NSString*) contentForSection:(int)sectionIndex inGroup:(int)groupIndex
 {
-  return [self.sectionContents objectAtIndex:sectionIndex];
+  int sectionID = [self sectionIDForSection:sectionIndex inGroup:groupIndex];
+  return [self.sectionContents objectAtIndex:sectionID];
 }
 
 // -----------------------------------------------------------------------------
@@ -124,15 +198,187 @@
                                                         range:NSMakeRange(0, fileContent.length)
                                                  withTemplate:@"<a href=\"$0\">$0</a>"];
 
-  bool useNextLineAsSectionTitle = false;
-  bool ignoreNextLineIfItIsSectionSeparator = false;
-  NSString* sectionTitle = nil;
-  NSMutableArray* sectionContentLines = [NSMutableArray arrayWithCapacity:0];
+  bool useNextLineAsGroupTitle = false;
+  bool ignoreNextLineIfItIsGroupSeparator = false;
+  NSString* groupTitle = nil;
+  NSMutableArray* groupContentLines = [NSMutableArray arrayWithCapacity:0];
   
   NSArray* fileContentLines = [fileContent componentsSeparatedByString:@"\n"];
   for (NSString* fileContentLine in fileContentLines)
   {
-    if ([fileContentLine hasPrefix:@"---"])
+    if ([fileContentLine hasPrefix:@"***"])
+    {
+      if (ignoreNextLineIfItIsGroupSeparator)
+      {
+        // ignore the line as requested
+      }
+      else
+      {
+        useNextLineAsGroupTitle = true;
+
+        if (groupTitle)
+        {
+          // Add group
+          int groupIndex = [self addGroup];
+          // Remember group title
+          [self.groupTitles addObject:groupTitle];
+          // Parse group content, modifying internal state as a side effect
+          [self parseGroupContentLines:groupContentLines forGroup:groupIndex];
+          // Prepare for next group
+          groupTitle = nil;
+          [groupContentLines removeAllObjects];
+        }
+      }
+    }
+    else if (useNextLineAsGroupTitle)
+    {
+      groupTitle = fileContentLine;
+      useNextLineAsGroupTitle = false;
+      ignoreNextLineIfItIsGroupSeparator = true;
+    }
+    else
+    {
+      if (ignoreNextLineIfItIsGroupSeparator)
+        ignoreNextLineIfItIsGroupSeparator = false;
+      [groupContentLines addObject:fileContentLine];
+    }
+  }
+  // Post-processing for last group in file. Also post-process if there was no
+  // group at all.
+  if (groupTitle || 0 == [self numberOfGroups])
+  {
+    int groupIndex = [self addGroup];
+    // Must not add a nil object, but an empty string is also adequate (table
+    // views do not display empty string headers)
+    if (! groupTitle)
+      groupTitle = @"";
+    [self.groupTitles addObject:groupTitle];
+    [self parseGroupContentLines:groupContentLines forGroup:groupIndex];
+  }
+/*
+  int groupIndex = 0;
+  int sectionID = 0;
+  bool useNextLineAsGroupTitle = false;
+  bool useNextLineAsSectionTitle = false;
+  bool ignoreNextLineIfItIsGroupSeparator = false;
+  bool ignoreNextLineIfItIsSectionSeparator = false;
+  NSString* groupTitle = nil;
+  NSString* sectionTitle = nil;
+  NSMutableArray* sectionContentLines = [NSMutableArray arrayWithCapacity:0];
+
+  NSArray* fileContentLines = [fileContent componentsSeparatedByString:@"\n"];
+  for (NSString* fileContentLine in fileContentLines)
+  {
+    if ([fileContentLine hasPrefix:@"***"] ||
+        [fileContentLine hasPrefix:@"---"])
+    {
+      if (ignoreNextLineIfItIsGroupSeparator ||
+          ignoreNextLineIfItIsSectionSeparator)
+      {
+        // ignore the line as requested
+      }
+      else
+      {
+        if ([fileContentLine hasPrefix:@"***"])
+          useNextLineAsGroupTitle = true;
+        else if ([fileContentLine hasPrefix:@"---"])
+          useNextLineAsSectionTitle = true;
+
+        // Regardless of which line type we encountered, we must now process
+        // previously gathered group or section data. We must check both types
+        // of data, and we must check section data first because a section must
+        // be added to the old group.
+        if (sectionTitle)
+        {
+          // Ignore some sections with special titles
+          if (! [sectionTitle isEqualToString:@"Table of Contents"] &&
+              ! [sectionTitle isEqualToString:@"Purpose of this document"])
+          {
+            // Add section to group
+            [self addSectionID:sectionID toGroup:groupIndex];
+            // Remember section title
+            [self.sectionTitles addObject:sectionTitle];
+            // Parse section content & remember parsed content
+            NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
+            [self.sectionContents addObject:sectionContent];
+            // Prepare for next section
+            ++sectionID;
+          }
+          // Prepare for next section
+          sectionTitle = nil;
+          [sectionContentLines removeAllObjects];
+        }
+        if (groupTitle)
+        {
+          // Add group
+          [self addGroup];
+          // Remember group title
+          [self.groupTitles addObject:groupTitle];
+          // Prepare for next group
+          groupTitle = nil;
+          ++groupIndex;
+        }
+      }
+    }
+    else if (useNextLineAsGroupTitle)
+    {
+      groupTitle = fileContentLine;
+      useNextLineAsGroupTitle = false;
+      ignoreNextLineIfItIsGroupSeparator = true;
+    }
+    else if (useNextLineAsSectionTitle)
+    {
+      sectionTitle = fileContentLine;
+      useNextLineAsSectionTitle = false;
+      ignoreNextLineIfItIsSectionSeparator = true;
+    }
+    else
+    {
+      if (ignoreNextLineIfItIsGroupSeparator)
+        ignoreNextLineIfItIsGroupSeparator = false;
+      else if (ignoreNextLineIfItIsSectionSeparator)
+        ignoreNextLineIfItIsSectionSeparator = false;
+      [sectionContentLines addObject:fileContentLine];
+    }
+  }
+  // Post-processing for last group/section in file
+  if (sectionTitle)
+  {
+    [self addSectionID:sectionID toGroup:groupIndex];
+    [self.sectionTitles addObject:sectionTitle];
+    NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
+    [self.sectionContents addObject:sectionContent];
+  }
+  if (groupTitle)
+  {
+    [self addGroup];
+    [self.groupTitles addObject:groupTitle];
+  }
+*/
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Parses the content of @a groupContentLines and creates sections from
+/// it. As a side effect, adds sections to the group referenced by
+/// @a groupIndex.
+///
+/// Assumes that the objects in @a groupContentLines are strings that contain
+/// lines of the original file content. All lines in @a groupContentLines
+/// together form a single group.
+///
+/// This method is invoked as part of the initialization process when a new
+/// DocumentGenerator instance is created.
+// -----------------------------------------------------------------------------
+- (void) parseGroupContentLines:(NSArray*)groupContentLines forGroup:(int)groupIndex
+{
+  bool useNextLineAsSectionTitle = false;
+  bool ignoreNextLineIfItIsSectionSeparator = false;
+  NSString* sectionTitle = nil;
+  NSMutableArray* sectionContentLines = [NSMutableArray arrayWithCapacity:0];
+
+  for (NSString* groupContentLine in groupContentLines)
+  {
+    if ([groupContentLine hasPrefix:@"---"])
     {
       if (ignoreNextLineIfItIsSectionSeparator)
       {
@@ -153,6 +399,9 @@
             // Parse section content & remember parsed content
             NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
             [self.sectionContents addObject:sectionContent];
+            // Add section to group
+            int sectionID = self.sectionTitles.count - 1;  // section ID is actually the index of the section title that we just added
+            [self addSectionID:sectionID toGroup:groupIndex];
           }
           // Prepare for next section
           sectionTitle = nil;
@@ -162,7 +411,7 @@
     }
     else if (useNextLineAsSectionTitle)
     {
-      sectionTitle = fileContentLine;
+      sectionTitle = groupContentLine;
       useNextLineAsSectionTitle = false;
       ignoreNextLineIfItIsSectionSeparator = true;
     }
@@ -170,7 +419,7 @@
     {
       if (ignoreNextLineIfItIsSectionSeparator)
         ignoreNextLineIfItIsSectionSeparator = false;
-      [sectionContentLines addObject:fileContentLine];
+      [sectionContentLines addObject:groupContentLine];
     }
   }
   // Post-processing for last section in file
@@ -179,6 +428,8 @@
     [self.sectionTitles addObject:sectionTitle];
     NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
     [self.sectionContents addObject:sectionContent];
+    int sectionID = self.sectionTitles.count - 1;
+    [self addSectionID:sectionID toGroup:groupIndex];
   }
 }
 

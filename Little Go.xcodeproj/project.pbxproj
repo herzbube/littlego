@@ -179,6 +179,8 @@
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
 		CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
+		CDE1A0C714BD38C800317ECA /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A0C514BD38C400317ECA /* help.png */; };
+		CDE1A0C814BD38C800317ECA /* help@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A0C614BD38C600317ECA /* help@2x.png */; };
 		CDE30137135CA4E7005235F2 /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
@@ -409,6 +411,8 @@
 		CDDD526114840A540027476B /* ScoringSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringSettingsController.m; sourceTree = "<group>"; };
 		CDDD52681485B05B0027476B /* DocumentGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentGenerator.h; sourceTree = "<group>"; };
 		CDDD52691485B05C0027476B /* DocumentGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentGenerator.m; sourceTree = "<group>"; };
+		CDE1A0C514BD38C400317ECA /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
+		CDE1A0C614BD38C600317ECA /* help@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "help@2x.png"; sourceTree = "<group>"; };
 		CDE300F113578E54005235F2 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE30136135CA4E7005235F2 /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
@@ -912,6 +916,8 @@
 				CD2A6E0C1492D7A3001D4AAE /* gopass.png */,
 				CD2A6E0E1492E1D6001D4AAE /* gopass@2x.png */,
 				CD0CCF6B143A627000A3F869 /* GtpLogView.xib */,
+				CDE1A0C514BD38C400317ECA /* help.png */,
+				CDE1A0C614BD38C600317ECA /* help@2x.png */,
 				CDEC28AD12F4A3500069F5B7 /* Info.plist */,
 				CDC2DD871495176000F6D750 /* LaunchImage.png */,
 				CDC2DD881495176000F6D750 /* LaunchImage@2x.png */,
@@ -1080,6 +1086,8 @@
 				CDC2DD8A1495176000F6D750 /* LaunchImage@2x.png in Resources */,
 				CDF51D0F1497F9B7009BB718 /* 79-medical-bag.png in Resources */,
 				CDF51D101497F9B7009BB718 /* 79-medical-bag@2x.png in Resources */,
+				CDE1A0C714BD38C800317ECA /* help.png in Resources */,
+				CDE1A0C814BD38C800317ECA /* help@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

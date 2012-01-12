@@ -31,9 +31,7 @@ As usual the ChangeLog document has all the details.
 
 Known bugs
 ----------
-A game cannot be loaded if the computer is currently thinking (either for
-itself, or on behalf of a human player who has triggered the "play for me"
-function).
+See the "Troubleshooting" section in the MANUAL document.
 
 
 License and source code
@@ -51,10 +49,3 @@ Currently Little Go is available for the iPhone only. Later on, an iPad version
 is planned as well.
 
 The minimum requirement for running this version of Little Go is iOS 4.3.
-
-It might be possible to make a build for earlier versions of iOS, but unless
-someone requests it I won't spend any time on this.
-
-Some features may not work correctly on devices that are not multitasking
-capable. One known instance is that the game currently in progress is not saved
-when the application is terminated.

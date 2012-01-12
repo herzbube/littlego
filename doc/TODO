@@ -39,13 +39,6 @@ Priority 1 (important)
 - Allow to store and retrieve "New game" settings; this makes the process of
   starting a new game much quicker if one frequently starts new games with
   different settings
-- Swap the "Diagnostics" and "Help" tab
-- Move the "Troubleshooting" section in the MANUAL document to the top for
-  improved visibility
-- Move content of the "Known bugs" section in the README document to the
-  "Troubleshooting" section in the MANUAL document
-- Add a "FAQ" section at the top of the MANUAL document. Two FAQs are: "How do
-  I change the board size?" and "Why is the touch calibration off?".
 - Add keywords "바둑" and "computer go" to the App Store entry
 - "New game" is not visible enough, and/or people are confused because they
   don't know where they can change the board size. One possible solution for
@@ -266,7 +259,3 @@ Future improvements to the 3rdparty build process
   asking for trouble. If a solution is found, remove the hack in function
   INSTALL_STEPS_SOFTWARE() in build-fuego.sh which creates an SDK directory
   symlink as a workaround for this Xcode limitation.
-- Add support for devices that are not capable of multitasking: The application
-  delegat needs to be enhanced with an applicationWillTerminate:() handler, and
-  BackupGameCommand needs to be fixed so that it does not use a background task
-  to write its temporary file.

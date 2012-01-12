@@ -143,7 +143,7 @@ Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
-- IPHONEOS_DEPLOYMENT_TARGET = 4.2
+- IPHONEOS_DEPLOYMENT_TARGET = 4.3
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
@@ -309,7 +309,7 @@ Architecture and implementation notes
     execution at the appropriate time.
   - When the application is terminated (applicationWillTerminate:), it does
     nothing - the application is expected to always run on multitasking capable
-    devices.
+    devices. IPHONE_DEPLOYMENT_TARGET is set to 4.3 to ensure this.
   - When the application resumes (applicationWillEnterForeground:) it clears
     the temporary .sgf file that was written on suspend.
   - When the application becomes inactive (applicationWillResignActive:), it

@@ -1,19 +1,115 @@
 --------------------------------------------------------------------------------
 Table of Contents
 --------------------------------------------------------------------------------
-1. Introduction
-2. How to play
-3. Players & Profiles
-4. Scoring
-5. Preferences
-6. The archive
-7. GTP engine
-8. Go rules
-9. Troubleshooting
+1.  FAQ
+2.  Troubleshooting
+3.  Introduction
+4.  How to play
+5.  Players & Profiles
+6.  Scoring
+7.  Preferences
+8.  The archive
+9.  GTP engine
+10. Go rules
 
 Note to editors: This file is parsed and displayed in game under the "Help" tab.
 For this to work, the content of this file must follow certain guidelines that
 are documented in DocumentGenerator.h.
+
+
+********************************************************************************
+Quick Help
+********************************************************************************
+
+--------------------------------------------------------------------------------
+FAQ
+--------------------------------------------------------------------------------
+
+=============================
+Why is touch calibration off?
+=============================
+There is no "calibration" going on - displaying the stone some distance away
+from your finger is simply a feature intended to help with placing the stone on
+devices with small screens, especially when playing on large boards and your
+fingertip covers more than one intersection.
+
+If you still feel irritated by this cool feature ☺, you can turn it off by
+toggling the switch under "Settings > Play view > Place stone under finger".
+
+===============================
+How do I change the board size?
+===============================
+You need to start a new game. See the next question.
+
+==========================
+How do I start a new game?
+==========================
+Go to the first tab (the one that displays the board). Tap the "Action" button
+on the right-hand side of the toolbar at the top of the screen. Select
+"New game" from the menu that appears.
+
+
+--------------------------------------------------------------------------------
+Troubleshooting
+--------------------------------------------------------------------------------
+
+=============
+Memory issues
+=============
+If you experience a sudden crash, a probable cause is that the currently active
+computer player profile has a "Maximum memory" value that is too high. You
+should find out which computer player is currently active (on the "Play" tab
+select the game info toolbar button), then go to that player's profile (under
+"Settings > Players & Profiles") and lower the value for the "Maximum memory"
+setting.
+
+The profiles that are actively used by players when you first install Little Go
+all have a value of 32 MB. This should be OK even for older devices such as an
+iPhone 3GS.
+
+===================================================
+I cannot load a game, the "load" button is disabled
+===================================================
+When you view the details of a saved game on the "Archive" tab, the "load"
+button is disabled as long as the computer is busy thinking (either for itself,
+or on behalf of a human player who has triggered the "play for me" function).
+If a computer vs. computer game is currently in progress, you have to pause the
+game for the button to become enabled. This limitation should be removed in one
+of the next releases of Little Go.
+
+===================================================
+File sharing via iTunes does not update the archive
+===================================================
+Since iOS 5, if you add or remove files via iTunes file sharing, the archive
+view does not update automatically. This is a known problem and I will try to
+find a fix for this. In the meantime, a simple workaround is to temporarily
+lock the device. After the device is unlocked again, the archive view will
+update itself.
+
+================================================================
+I'm on iPhone 3G and I lose my game when I press the Home button
+================================================================
+Little Go expects to be suspended (not terminated) when you press the Home
+button, and to be re-activated to the same state, including the game currently
+in progress, when you launch the app again at a later time. This is how things
+normally work on iOS devices that support multitasking.
+
+Some older iOS devices (the iPhone 3G among them), however, do not support
+multitasking. This means that when you press the Home button, Little Go is
+terminated immediately without a chance to save the game currently in progress.
+
+There is little chance that I am going to fix this "problem", because this is
+not a bug, it's just how Little Go has been designed from the start. The
+question remains: How did you get Little Go running on an iOS device without
+multitasking support? If you got it from the App Store, then please let me know
+immediately, because this should not have been possible in the first place:
+Little Go has been published with a minimum requirement of iOS 4.3 to ensure
+multitasking capability.
+
+
+********************************************************************************
+The Manual
+********************************************************************************
 
 
 --------------------------------------------------------------------------------
@@ -45,7 +141,6 @@ Read "The archive" section for more information.
 
 Finally, if you are interested in the way how Little Go and Fuego talk to each
 other, you should study the technical information in the "GTP engine" section.
-
 
 
 --------------------------------------------------------------------------------
@@ -635,41 +730,3 @@ history and tradition of the game. In Little Go, most of the time you will play
 against the computer, so there is not much point in going into the details of
 this subject. If you are keen on reading more, though, I would like to refer you
 once more to Sensei's Library (http://senseis.xmp.net/?GoEtiquette).
-
-
---------------------------------------------------------------------------------
-Troubleshooting
---------------------------------------------------------------------------------
-
-=============
-Memory issues
-=============
-If you experience a sudden crash, a probable cause is that the currently active
-computer player profile has a "Maximum memory" value that is too high. You
-should find out which computer player is currently active (on the "Play" tab
-select the game info toolbar button), then go to that player's profile (under
-"Settings > Players & Profiles") and lower the value for the "Maximum memory"
-setting.
-
-The profiles that are actively used by players when you first install Little Go
-all have a value of 32 MB. This should be OK even for older devices such as an
-iPhone 3GS.
-
-===================================================
-I cannot load a game, the "load" button is disabled
-===================================================
-When you view the details of a saved game on the "Archive" tab, the "load"
-button is disabled as long as the computer is busy thinking (either for itself,
-or on behalf of a human player who has triggered the "play for me" function).
-If a computer vs. computer game is currently in progress, you have to pause the
-game for the button to become enabled. This limitation should be removed in one
-of the next releases of Little Go.
-
-===================================================
-File sharing via iTunes does not update the archive
-===================================================
-Since iOS 5, if you add or remove files via iTunes file sharing, the archive
-view does not update automatically. This is a known problem and I will try to
-find a fix for this. In the meantime, a simple workaround is to temporarily
-lock the device. After the device is unlocked again, the archive view will
-update itself.
