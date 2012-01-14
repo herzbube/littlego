@@ -102,7 +102,7 @@ Other files
 Little Go.xcodeproj
   The Xcode project file. The format is "Xcode 3.2-compatible".
 
-resource/Info.plist
+resource/plist/Info.plist
   The information property list file that describes the Little Go application
   bundle.
 
