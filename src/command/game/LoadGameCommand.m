@@ -56,14 +56,14 @@
 /// @name Helpers
 //@{
 - (void) handleCommandSucceeded;
-- (void) handleCommandFailed;
+- (void) handleCommandFailed:(NSString*)message;
 - (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize;
 - (void) setupHandicap:(NSString*)handicapFromGtp;
 - (void) setupKomi:(NSString*)komiFromGtp;
 - (void) setupMoves:(NSString*)movesFromGtp;
 - (void) triggerComputerPlayer;
 - (void) cleanup;
-- (void) showAlert;
+- (void) showAlert:(NSString*)message;
 - (void) replayMoves:(NSArray*)moveList;
 //@}
 @end
@@ -138,27 +138,26 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:self.filePath])
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:@"Internal error: Archived .sgf file not found"];
     return false;
   }
   // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()
   // further down will abort the copy attempt. A temporary file possibly exists
   // if a previous file operation failed to properly clean up.
+  NSError* error;
   if ([fileManager fileExistsAtPath:sgfTemporaryFilePath])
   {
-    NSError* error;
-    BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:&error];
+    BOOL success = [fileManager removeItemAtPath:sgfTemporaryFilePath error:&error];
     if (! success)
     {
-      DDLogError(@"LoadGameCommand::doIt(): Failed to remove temporary file %@, reason: %@", sgfTemporaryFileName, [error localizedDescription]);
-      [self handleCommandFailed];
+      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file before load, reason: %@", [error localizedDescription]]];
       return false;
     }
   }
-  BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:nil];
+  BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:&error];
   if (! success)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy archived .sgf file, reason: %@", [error localizedDescription]]];
     return false;
   }
 
@@ -181,12 +180,13 @@
 - (void) loadsgfCommandResponseReceived:(GtpResponse*)response
 {
   // Get rid of the temporary file
+  NSError* error;
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:nil];
+  BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:&error];
   [fileManager changeCurrentDirectoryPath:m_oldCurrentDirectory];
   if (! success)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file after load, reason: %@", [error localizedDescription]]];
     assert(0);
     return;
   }
@@ -195,7 +195,8 @@
   // to load was not an .sgf file.
   if (! response.status)
   {
-    [self handleCommandFailed];
+    // This is the most probable error scenario, so no "Internal error"
+    [self handleCommandFailed:@"The archived game could not be loaded. Is the game file in .sgf format?"];
     return;
   }
 
@@ -216,7 +217,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:@"Internal error: Failed to detect board size of archived game"];
     assert(0);
     return;
   }
@@ -252,7 +253,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:@"Internal error: Failed to detect komi of archived game"];
     assert(0);
     return;
   }
@@ -276,7 +277,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:@"Internal error: Failed to detect handicap of archived game"];
     assert(0);
     return;
   }
@@ -300,7 +301,7 @@
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed];
+    [self handleCommandFailed:@"Internal error: Failed to detect moves of archived game"];
     assert(0);
     return;
   }
@@ -325,16 +326,17 @@
 // -----------------------------------------------------------------------------
 /// @brief Performs all steps required to handle failed command execution.
 ///
-/// Failure may occur during any of the steps in this command.
+/// Failure may occur during any of the steps in this command. An alert with
+/// @a message is displayed to notify the user of the problem.
 // -----------------------------------------------------------------------------
-- (void) handleCommandFailed
+- (void) handleCommandFailed:(NSString*)message
 {
   // Start a new game anyway, with the goal to bring the app into a controlled
   // state that matches the state of the GTP engine.
   [self startNewGameForSuccessfulCommand:false boardSize:gDefaultBoardSize];
 
   [self cleanup];
-  [self showAlert];
+  [self showAlert:message];
 }
 
 // -----------------------------------------------------------------------------
@@ -564,12 +566,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays alert with "failed to load game" message.
+/// @brief Displays "failed to load game" alert with the error details stored
+/// in @a message.
 // -----------------------------------------------------------------------------
-- (void) showAlert
+- (void) showAlert:(NSString*)message
 {
   UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to load game"
-                                                  message:@"The archived game could not be loaded. Is the game file in .sgf format?"
+                                                  message:message
                                                  delegate:nil
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
