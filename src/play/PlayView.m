@@ -39,11 +39,8 @@
 @interface PlayView()
 /// @name Initialization and deallocation
 //@{
+- (id) initWithFrame:(CGRect)aRect;
 - (void) dealloc;
-//@}
-/// @name UINibLoadingAdditions category
-//@{
-- (void) awakeFromNib;
 //@}
 /// @name UIView methods
 //@{
@@ -168,37 +165,13 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 + (PlayView*) sharedView
 {
-  assert(sharedPlayView != nil);
   return sharedPlayView;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayView object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
-  [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
-  [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
-  [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
-
-  self.statusLine = nil;
-  self.activityIndicator = nil;
-  self.playViewModel = nil;
-  self.scoringModel = nil;
-  self.crossHairPoint = nil;
-  if (self == sharedPlayView)
-    sharedPlayView = nil;
-  [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Is invoked after an PlayView object has been allocated and
-/// initialized from PlayView.xib. This happens at least once during application
-/// launch, but may occur again later on if the view is unloaded and then
-/// reloaded due to a memory warning.
+/// @brief Initializes a PlayView object with frame rectangle @a aRect. This
+/// happens at least once during application launch, but may occur again later
+/// on if the view is unloaded and then reloaded due to a memory warning.
 ///
 /// Attempts to set up the view and make it ready for drawing. If this method
 /// is invoked the very first time during application launch, the attempt fails
@@ -211,14 +184,14 @@ static PlayView* sharedPlayView = nil;
 /// the setup attempt will succeed because all the necessary objects are already
 /// there.
 ///
-/// @note This is a method from the UINibLoadingAdditions category (an addition
-/// to NSObject, defined in UINibLoading.h). Although it has the same purpose,
-/// the implementation via category is different from the NSNibAwaking informal
-/// protocol on the Mac OS X platform.
+/// @note This is the designated initializer of PlayView.
 // -----------------------------------------------------------------------------
-- (void) awakeFromNib
+- (id) initWithFrame:(CGRect)aRect
 {
-  [super awakeFromNib];
+  // Call designated initializer of superclass (NSView)
+  self = [super initWithFrame:aRect];
+  if (! self)
+    return nil;
 
   sharedPlayView = self;
 
@@ -234,6 +207,30 @@ static PlayView* sharedPlayView = nil;
     [self makeViewReadyForDrawing];
     self.viewReadyForDrawing = true;
   }
+  
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this PlayView object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
+  [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
+  [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
+  
+  self.statusLine = nil;
+  self.activityIndicator = nil;
+  self.playViewModel = nil;
+  self.scoringModel = nil;
+  self.crossHairPoint = nil;
+  if (self == sharedPlayView)
+    sharedPlayView = nil;
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -356,7 +353,7 @@ static PlayView* sharedPlayView = nil;
     return;
   }
   // No game -> no board -> no drawing. This situation exists right after the
-  // application has lanuched and the initial game is created only after a
+  // application has launched and the initial game is created only after a
   // small delay.
   if (! [GoGame sharedGame])
     return;

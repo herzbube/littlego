@@ -157,7 +157,7 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 + (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score
 {
-  GameInfoViewController* controller = [[GameInfoViewController alloc] initWithNibName:@"GameInfoView" bundle:nil];
+  GameInfoViewController* controller = [[GameInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
@@ -185,6 +185,11 @@ enum MoveStatisticsSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+
+  self.title = @"Game Info";
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                         target:self
+                                                                                         action:@selector(done:)];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];

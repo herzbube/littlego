@@ -35,6 +35,7 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 //@}
@@ -101,7 +102,7 @@
 // -----------------------------------------------------------------------------
 + (GtpLogViewController*) controller
 {
-  GtpLogViewController* controller = [[GtpLogViewController alloc] initWithNibName:@"GtpLogView" bundle:nil];
+  GtpLogViewController* controller = [[GtpLogViewController alloc] init];
   if (controller)
     [controller autorelease];
   return controller;
@@ -114,6 +115,19 @@
 {
   self.model = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  CGRect frame = [[UIScreen mainScreen] applicationFrame];
+  
+  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
+  self.frontSideView = [[[UITableView alloc] initWithFrame:frame
+                                                     style:UITableViewStylePlain] autorelease];
+  self.backSideView = [[[UITextView alloc] initWithFrame:frame] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,7 +155,10 @@
                                              object:nil];
 
   if (self.model.gtpLogViewFrontSideIsVisible)
+  {
     [self.view addSubview:frontSideView];
+    [self.frontSideView reloadData];
+  }
   else
   {
     [self.view addSubview:backSideView];
@@ -197,6 +214,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupFrontSideView
 {
+  self.frontSideView.delegate = self;
+  self.frontSideView.dataSource = self;
+
   self.lastRowIsVisible = false;
   self.updateScheduledByGtpLogItemChanged = false;
   self.updateScheduledByGtpLogContentChanged = false;

@@ -18,6 +18,7 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -30,8 +31,10 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UIWebViewDelegate protocol
 //@{
@@ -107,6 +110,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.webView = [[UIWebView alloc] init];
+  self.view = webView;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Called after the controller’s view is loaded into memory, usually
 /// to perform additional initialization steps.
 ///
@@ -160,6 +172,15 @@
 {
   [super viewDidUnload];
   self.webView = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

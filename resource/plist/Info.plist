@@ -50,15 +50,27 @@
 	<string>MainWindow</string>
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
-	<key>UILaunchImageFile</key>
+	<key>UIInterfaceOrientation~ipad</key>
+	<string>UIInterfaceOrientationLandscapeRight</string>
+	<key>UIInterfaceOrientation~iphone</key>
+	<string>UIInterfaceOrientationPortrait</string>
+	<key>UILaunchImageFile~ipad</key>
+	<string></string>
+	<key>UILaunchImageFile~iphone</key>
 	<string>LaunchImage</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
-	<key>UISupportedInterfaceOrientations</key>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~iphone</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 </dict>
 </plist>

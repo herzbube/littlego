@@ -22,6 +22,7 @@
 #import "ViewGameController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 #import "../command/game/DeleteGameCommand.h"
 
 
@@ -35,8 +36,10 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -75,13 +78,28 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+///
+/// This implementation exists because this controller needs a grouped style
+/// table view, and there is no simpler way to specify the table view style.
+/// - This controller does not load its table view from a .nib file, so the
+///   style can't be specified there
+/// - This controller is itself loaded from a .nib file, so the style can't be
+///   specified in initWithStyle:()
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped forController:self];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Called after the controller’s view is loaded into memory, usually
 /// to perform additional initialization steps.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
+  
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.archiveViewModel = delegate.archiveViewModel;
   // self.editButtonItem is a standard item provided by UIViewController, which
@@ -103,6 +121,15 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

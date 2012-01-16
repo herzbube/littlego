@@ -104,7 +104,7 @@
 ///     updateScheduledByGtpLogItemChanged is set, it therefore does *NOT* clear
 ///     lastRowIsVisible as its first operation
 // -----------------------------------------------------------------------------
-@interface GtpLogViewController : UIViewController
+@interface GtpLogViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
 }
 

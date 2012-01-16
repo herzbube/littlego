@@ -178,17 +178,11 @@
 		CDE1A17F14C1CED200317ECA /* LaunchImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15414C1CED200317ECA /* LaunchImage@2x.png */; };
 		CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */; };
 		CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */; };
-		CDE1A18214C1CED200317ECA /* ArchiveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15914C1CED200317ECA /* ArchiveView.xib */; };
-		CDE1A18314C1CED200317ECA /* DebugView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15A14C1CED200317ECA /* DebugView.xib */; };
-		CDE1A18414C1CED200317ECA /* DocumentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15B14C1CED200317ECA /* DocumentView.xib */; };
-		CDE1A18514C1CED200317ECA /* GameInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15C14C1CED200317ECA /* GameInfoView.xib */; };
-		CDE1A18614C1CED200317ECA /* GtpLogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15D14C1CED200317ECA /* GtpLogView.xib */; };
 		CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15E14C1CED200317ECA /* MainWindow.xib */; };
-		CDE1A18814C1CED200317ECA /* PlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15F14C1CED200317ECA /* PlayView.xib */; };
-		CDE1A18914C1CED200317ECA /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A16014C1CED200317ECA /* SettingsView.xib */; };
 		CDE1A18A14C1CED200317ECA /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */; };
 		CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
 		CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
+		CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
 		CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
@@ -410,18 +404,12 @@
 		CDE1A15414C1CED200317ECA /* LaunchImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage@2x.png"; sourceTree = "<group>"; };
 		CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-01.aiff"; sourceTree = "<group>"; };
 		CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
-		CDE1A15914C1CED200317ECA /* ArchiveView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ArchiveView.xib; sourceTree = "<group>"; };
-		CDE1A15A14C1CED200317ECA /* DebugView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DebugView.xib; sourceTree = "<group>"; };
-		CDE1A15B14C1CED200317ECA /* DocumentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DocumentView.xib; sourceTree = "<group>"; };
-		CDE1A15C14C1CED200317ECA /* GameInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GameInfoView.xib; sourceTree = "<group>"; };
-		CDE1A15D14C1CED200317ECA /* GtpLogView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GtpLogView.xib; sourceTree = "<group>"; };
 		CDE1A15E14C1CED200317ECA /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		CDE1A15F14C1CED200317ECA /* PlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayView.xib; sourceTree = "<group>"; };
-		CDE1A16014C1CED200317ECA /* SettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsView.xib; sourceTree = "<group>"; };
 		CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SubmitGtpCommandView.xib; sourceTree = "<group>"; };
 		CDE1A19114C1CF4D00317ECA /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE1A19214C1CF4D00317ECA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
+		CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
 		CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIColorAdditions.m; sourceTree = "<group>"; };
 		CDE302821360BDA3005235F2 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
@@ -878,14 +866,8 @@
 		CDE1A15814C1CED200317ECA /* xib */ = {
 			isa = PBXGroup;
 			children = (
-				CDE1A15914C1CED200317ECA /* ArchiveView.xib */,
-				CDE1A15A14C1CED200317ECA /* DebugView.xib */,
-				CDE1A15B14C1CED200317ECA /* DocumentView.xib */,
-				CDE1A15C14C1CED200317ECA /* GameInfoView.xib */,
-				CDE1A15D14C1CED200317ECA /* GtpLogView.xib */,
 				CDE1A15E14C1CED200317ECA /* MainWindow.xib */,
-				CDE1A15F14C1CED200317ECA /* PlayView.xib */,
-				CDE1A16014C1CED200317ECA /* SettingsView.xib */,
+				CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */,
 				CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */,
 			);
 			path = xib;
@@ -1128,16 +1110,10 @@
 				CDE1A17F14C1CED200317ECA /* LaunchImage@2x.png in Resources */,
 				CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */,
 				CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */,
-				CDE1A18214C1CED200317ECA /* ArchiveView.xib in Resources */,
-				CDE1A18314C1CED200317ECA /* DebugView.xib in Resources */,
-				CDE1A18414C1CED200317ECA /* DocumentView.xib in Resources */,
-				CDE1A18514C1CED200317ECA /* GameInfoView.xib in Resources */,
-				CDE1A18614C1CED200317ECA /* GtpLogView.xib in Resources */,
 				CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */,
-				CDE1A18814C1CED200317ECA /* PlayView.xib in Resources */,
-				CDE1A18914C1CED200317ECA /* SettingsView.xib in Resources */,
 				CDE1A18A14C1CED200317ECA /* SubmitGtpCommandView.xib in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
+				CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1356,6 +1332,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1382,6 +1359,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1471,6 +1449,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Distribute_AppStore;
@@ -1691,6 +1670,7 @@
 					"-lCocoaLumberjack",
 				);
 				PRODUCT_NAME = "Little Go";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribute_AdHoc;
 		};

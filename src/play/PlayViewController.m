@@ -31,6 +31,7 @@
 #import "../command/move/UndoMoveCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../command/game/ContinueGameCommand.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -43,8 +44,10 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name Action methods for toolbar items
 //@{
@@ -126,6 +129,42 @@
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
 @property(nonatomic, retain) GoScore* gameInfoScore;
+/// @brief The frontside view. A superview of @e playView.
+@property(nonatomic, retain) UIView* frontSideView;
+/// @brief The backside view with information about the current game.
+@property(nonatomic, retain) UIView* backSideView;
+/// @brief The view that PlayViewController is responsible for.
+@property(nonatomic, retain) PlayView* playView;
+/// @brief The toolbar that displays action buttons.
+@property(nonatomic, retain) UIToolbar* toolbar;
+/// @brief The "Play for me" button. Tapping this button causes the computer
+/// player to generate a move for the human player whose turn it currently is.
+@property(nonatomic, retain) UIBarButtonItem* playForMeButton;
+/// @brief The "Pass" button. Tapping this button generates a "Pass" move for
+/// the human player whose turn it currently is.
+@property(nonatomic, retain) UIBarButtonItem* passButton;
+/// @brief The "Undo" button. Tapping this button takes back the last move made
+/// by a human player, including any computer player moves that were made in
+/// response.
+@property(nonatomic, retain) UIBarButtonItem* undoButton;
+/// @brief The "Pause" button. Tapping this button causes the game to pause if
+/// two computer players play against each other.
+@property(nonatomic, retain) UIBarButtonItem* pauseButton;
+/// @brief The "Continue" button. Tapping this button causes the game to
+/// continue if it is paused while two computer players play against each other.
+@property(nonatomic, retain) UIBarButtonItem* continueButton;
+/// @brief Dummy button that creates an expanding space between the "New"
+/// button and its predecessors.
+@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
+/// @brief The "Game Info" button. Tapping this button flips the game view to
+/// display an alternate view with information about the game in progress.
+@property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
+/// @brief The "Game Actions" button. Tapping this button displays an action
+/// sheet with actions that relate to Go games as a whole.
+@property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
+/// @brief The "Done" button. Tapping this button ends the currently active
+/// mode and returns to normal play mode.
+@property(nonatomic, retain) UIBarButtonItem* doneButton;
 //@}
 @end
 
@@ -168,6 +207,89 @@
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    // http://www.idev101.com/code/User_Interface/sizes.html
+    // total screen size is 320x480 (portrait)
+    // status bar height = 20
+    // tab bar height = 49
+    // view height therefore = 480 - 49 - 20 = 411
+    self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 411)] autorelease];
+    // One of these views is later added as a subview to self.view
+    // -> x/y = 0, but same size
+    self.frontSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 411)] autorelease];
+    self.backSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 411)] autorelease];
+
+    // navbar height = 44
+    self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)] autorelease];
+    [self.frontSideView addSubview:self.toolbar];
+
+    // y = 44 because of navbar
+    // height = 411 - 44 (navbar) - 21 (label) - 8 (spacing) = 348
+    self.playView = [[[PlayView alloc] initWithFrame:CGRectMake(0, 44, 320, 348)] autorelease];
+    [self.frontSideView addSubview:self.playView];
+
+    // default label height = 21
+    // y = 411 - 21 = 390
+    // width = 320 - 20 - 8 = 292
+    self.playView.statusLine = [[[UILabel alloc] initWithFrame:CGRectMake(0, 390, 292, 21)] autorelease];
+    [self.frontSideView addSubview:self.playView.statusLine];
+
+    // default activity indicator width/height = 20
+    // x = 320 - 20 = 300
+    // y = 411 - 20 = 391
+    self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(300, 391, 20, 20)] autorelease];
+    self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+    [self.frontSideView addSubview:self.playView.activityIndicator];
+  }
+  else
+  {
+    // http://www.idev101.com/code/User_Interface/sizes.html
+    // total screen size is 1024x768 (landscape)
+    // status bar height = 20
+    // tab bar height = 49
+    // view height therefore = 768 - 49 - 20 = 699
+    self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 20, 1024, 699)] autorelease];
+    // One of these views is later added as a subview to self.view
+    // -> x/y = 0, but same size
+    self.frontSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 699)] autorelease];
+    self.backSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 699)] autorelease];
+
+    // navbar height = 44
+    self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 1024, 44)] autorelease];
+    [self.frontSideView addSubview:self.toolbar];
+
+    // y = 44 because of navbar
+    // height = 699 - 44 (navbar) - 21 (label) - 8 (spacing) = 626
+    self.playView = [[[PlayView alloc] initWithFrame:CGRectMake(0, 44, 1024, 626)] autorelease];
+    [self.frontSideView addSubview:self.playView];
+
+    // default label height = 21
+    // y = 699 - 21 = 678
+    // width = 1024 - 20 - 8 = 996
+    self.playView.statusLine = [[[UILabel alloc] initWithFrame:CGRectMake(0, 678, 996, 21)] autorelease];
+    [self.frontSideView addSubview:self.playView.statusLine];
+
+    // default activity indicator width/height = 20
+    // x = 1024 - 20 = 1004
+    // y = 699 - 20 = 679
+    self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(1004, 679, 20, 20)] autorelease];
+    self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+    [self.frontSideView addSubview:self.playView.activityIndicator];
+  }
+
+  // set common bgcolor for elements on frontside view
+  UIColor* frontSideBackgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.frontSideView.backgroundColor = frontSideBackgroundColor;
+  self.playView.backgroundColor = frontSideBackgroundColor;
+  self.playView.statusLine.backgroundColor = frontSideBackgroundColor;
 }
 
 // -----------------------------------------------------------------------------
@@ -223,11 +345,43 @@
 	[self.playView addGestureRecognizer:self.tapRecognizer];
   self.tapRecognizer.delegate = self;
 
-  self.gameInfoScore = nil;
+  self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"computer-play.png"]
+                                                           style:UIBarButtonItemStyleBordered
+                                                          target:self
+                                                          action:@selector(playForMe:)] autorelease];
+  self.passButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gopass.png"]
+                                                      style:UIBarButtonItemStyleBordered
+                                                     target:self
+                                                     action:@selector(pass:)] autorelease];
+  self.undoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"213-reply.png"]
+                                                      style:UIBarButtonItemStyleBordered
+                                                     target:self
+                                                     action:@selector(undo:)] autorelease];
+  self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"48-pause.png"]
+                                                       style:UIBarButtonItemStyleBordered
+                                                      target:self
+                                                      action:@selector(pause:)] autorelease];
+  self.continueButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"49-play.png"]
+                                                          style:UIBarButtonItemStyleBordered
+                                                         target:self
+                                                         action:@selector(continue:)] autorelease];
   self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabular.png"]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
                                                          action:@selector(gameInfo:)] autorelease];
+  self.gameActionsButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                          target:self
+                                                                          action:@selector(gameActions:)] autorelease];
+  self.gameActionsButton.style = UIBarButtonItemStyleBordered;
+  self.doneButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                   target:self
+                                                                   action:@selector(done:)] autorelease];
+  self.doneButton.style = UIBarButtonItemStyleBordered;
+  self.flexibleSpaceButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                            target:nil
+                                                                            action:nil] autorelease];
+
+  self.gameInfoScore = nil;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
@@ -265,6 +419,15 @@
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------
@@ -338,8 +501,11 @@
     }
     score = self.gameInfoScore;
   }
-  GameInfoViewController* controller = [[GameInfoViewController controllerWithDelegate:self score:score] retain];
-  [self.backSideView addSubview:controller.view];
+  GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:gameInfoController];
+  [navigationController.view setFrame:[self.backSideView bounds]];
+  [self.backSideView addSubview:navigationController.view];
   bool flipToFrontSideView = false;
   [self flipToFrontSideView:flipToFrontSideView];
 }
@@ -351,8 +517,8 @@
 {
   bool flipToFrontSideView = true;
   [self flipToFrontSideView:flipToFrontSideView];
-  [controller.view removeFromSuperview];
-  [controller release];
+  [controller.navigationController.view removeFromSuperview];
+  [controller.navigationController release];
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)
   {

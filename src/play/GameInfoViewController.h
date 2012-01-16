@@ -44,7 +44,7 @@
 /// this to work, the delegate must implement the protocol
 /// GameInfoViewControllerDelegate.
 // -----------------------------------------------------------------------------
-@interface GameInfoViewController : UIViewController <TableViewGridCellDelegate>
+@interface GameInfoViewController : UITableViewController <TableViewGridCellDelegate>
 {
 }
 

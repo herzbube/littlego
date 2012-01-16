@@ -400,7 +400,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupGUI
 {
-  [self.window addSubview:tabBarController.view];
   [self.window makeKeyAndVisible];
   // Disable edit button in the "more" navigation controller
   self.tabBarController.customizableViewControllers = [NSArray array];
