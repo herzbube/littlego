@@ -23,6 +23,7 @@
 #import "SubmitGtpCommandViewController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -122,12 +123,10 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect frame = [[UIScreen mainScreen] applicationFrame];
-  
-  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
-  self.frontSideView = [[[UITableView alloc] initWithFrame:frame
+  self.view = [[[UIView alloc] initWithFrame:[UiElementMetrics applicationFrame]] autorelease];
+  self.frontSideView = [[[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
                                                      style:UITableViewStylePlain] autorelease];
-  self.backSideView = [[[UITextView alloc] initWithFrame:frame] autorelease];
+  self.backSideView = [[[UITextView alloc] initWithFrame:[UiElementMetrics applicationFrame]] autorelease];
 }
 
 // -----------------------------------------------------------------------------

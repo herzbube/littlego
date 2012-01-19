@@ -31,6 +31,7 @@
 #import "../command/move/UndoMoveCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../command/game/ContinueGameCommand.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
 
@@ -214,78 +215,71 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    // http://www.idev101.com/code/User_Interface/sizes.html
-    // total screen size is 320x480 (portrait)
-    // status bar height = 20
-    // tab bar height = 49
-    // view height therefore = 480 - 49 - 20 = 411
-    self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 20, 320, 411)] autorelease];
-    // One of these views is later added as a subview to self.view
-    // -> x/y = 0, but same size
-    self.frontSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 411)] autorelease];
-    self.backSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 411)] autorelease];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  CGRect mainViewFrame = CGRectMake(0,
+                                    [UiElementMetrics statusBarHeight],
+                                    [UiElementMetrics screenWidth],
+                                    mainViewHeight);
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  // One of these views is later added as a subview to self.view
+  CGRect subViewFrame = CGRectMake(0, 0, [UiElementMetrics screenWidth], mainViewHeight);
+  self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
+  self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
 
-    // navbar height = 44
-    self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)] autorelease];
-    [self.frontSideView addSubview:self.toolbar];
+  CGRect toolbarFrame = CGRectMake(0, 0, [UiElementMetrics screenWidth], [UiElementMetrics navigationBarHeight]);
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  [self.frontSideView addSubview:self.toolbar];
 
-    // y = 44 because of navbar
-    // height = 411 - 44 (navbar) - 21 (label) - 8 (spacing) = 348
-    self.playView = [[[PlayView alloc] initWithFrame:CGRectMake(0, 44, 320, 348)] autorelease];
-    [self.frontSideView addSubview:self.playView];
-
-    // default label height = 21
-    // y = 411 - 21 = 390
-    // width = 320 - 20 - 8 = 292
-    self.playView.statusLine = [[[UILabel alloc] initWithFrame:CGRectMake(0, 390, 292, 21)] autorelease];
-    [self.frontSideView addSubview:self.playView.statusLine];
-
-    // default activity indicator width/height = 20
-    // x = 320 - 20 = 300
-    // y = 411 - 20 = 391
-    self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(300, 391, 20, 20)] autorelease];
-    self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-    [self.frontSideView addSubview:self.playView.activityIndicator];
-  }
+  int playViewFullWidth = [UiElementMetrics screenWidth];
+  int playViewFullHeight = (mainViewHeight
+                            - [UiElementMetrics navigationBarHeight]
+                            - [UiElementMetrics spacingVertical]
+                            - [UiElementMetrics labelHeight]);
+  // Make the view square
+  int playViewSideLength;
+  if (playViewFullHeight >= playViewFullWidth)
+    playViewSideLength = playViewFullWidth;
   else
-  {
-    // http://www.idev101.com/code/User_Interface/sizes.html
-    // total screen size is 1024x768 (landscape)
-    // status bar height = 20
-    // tab bar height = 49
-    // view height therefore = 768 - 49 - 20 = 699
-    self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 20, 1024, 699)] autorelease];
-    // One of these views is later added as a subview to self.view
-    // -> x/y = 0, but same size
-    self.frontSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 699)] autorelease];
-    self.backSideView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 699)] autorelease];
+    playViewSideLength = playViewFullHeight;
+  int playViewWidth = playViewSideLength;
+  int playViewHeight = playViewSideLength;
+  int playViewX = (self.frontSideView.bounds.size.width - playViewWidth) / 2;
+  int playViewY = [UiElementMetrics navigationBarHeight];
+  CGRect playViewFrame = CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
+  self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
+  [self.frontSideView addSubview:self.playView];
 
-    // navbar height = 44
-    self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 1024, 44)] autorelease];
-    [self.frontSideView addSubview:self.toolbar];
+  int statusLineWidth = ([UiElementMetrics screenWidth]
+                         - [UiElementMetrics spacingHorizontal]
+                         - [UiElementMetrics activityIndicatorWidthAndHeight]);
+  CGRect statusLineFrame = CGRectMake(0,
+                                      mainViewHeight - [UiElementMetrics labelHeight],
+                                      statusLineWidth,
+                                      [UiElementMetrics labelHeight]);
+  self.playView.statusLine = [[[UILabel alloc] initWithFrame:statusLineFrame] autorelease];
+  [self.frontSideView addSubview:self.playView.statusLine];
 
-    // y = 44 because of navbar
-    // height = 699 - 44 (navbar) - 21 (label) - 8 (spacing) = 626
-    self.playView = [[[PlayView alloc] initWithFrame:CGRectMake(0, 44, 1024, 626)] autorelease];
-    [self.frontSideView addSubview:self.playView];
+  CGRect activityIndicatorFrame = CGRectMake([UiElementMetrics screenWidth] - [UiElementMetrics activityIndicatorWidthAndHeight],
+                                             mainViewHeight - [UiElementMetrics activityIndicatorWidthAndHeight],
+                                             [UiElementMetrics activityIndicatorWidthAndHeight],
+                                             [UiElementMetrics activityIndicatorWidthAndHeight]);
+  self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
+  self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  [self.frontSideView addSubview:self.playView.activityIndicator];
 
-    // default label height = 21
-    // y = 699 - 21 = 678
-    // width = 1024 - 20 - 8 = 996
-    self.playView.statusLine = [[[UILabel alloc] initWithFrame:CGRectMake(0, 678, 996, 21)] autorelease];
-    [self.frontSideView addSubview:self.playView.statusLine];
+  self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
+  self.playView.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
+  self.playView.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
 
-    // default activity indicator width/height = 20
-    // x = 1024 - 20 = 1004
-    // y = 699 - 20 = 679
-    self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(1004, 679, 20, 20)] autorelease];
-    self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-    [self.frontSideView addSubview:self.playView.activityIndicator];
-  }
+  // If the view is resized, the Go board needs to be redrawn
+  self.playView.contentMode = UIViewContentModeRedraw;
 
-  // set common bgcolor for elements on frontside view
+  // Set common background color for all elements on the frontside view
   UIColor* frontSideBackgroundColor = [UIColor groupTableViewBackgroundColor];
   self.frontSideView.backgroundColor = frontSideBackgroundColor;
   self.playView.backgroundColor = frontSideBackgroundColor;

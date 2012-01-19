@@ -202,25 +202,6 @@ extern NSString* sgfBackupFileName;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Table view cell constants
-// -----------------------------------------------------------------------------
-//@{
-/// @brief Width is for a non-indented top-level cell. This cannot be calculated
-/// reliably, self.contentView.bounds.size.width changes when a cell is reused.
-extern const int cellContentViewWidth;
-extern const int cellContentDistanceFromEdgeHorizontal;
-extern const int cellContentDistanceFromEdgeVertical;
-// Spacing between UI elements
-extern const int cellContentSpacingHorizontal;
-extern const int cellContentSpacingVertical;
-// UI elements sizes
-extern const int cellContentLabelHeight;
-extern const int cellContentSliderHeight;
-extern const int cellContentSwitchWidth;
-extern const int cellDisclosureIndicatorWidth;
-//@}
-
-// -----------------------------------------------------------------------------
 /// @name Application notifications
 // -----------------------------------------------------------------------------
 //@{

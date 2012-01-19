@@ -23,6 +23,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UiElementMetrics.h"
 #import "../utility/UiColorAdditions.h"
 
 
@@ -206,10 +207,10 @@ enum OtherProfileSettingsSectionItem
   self.textView = [[[UITextView alloc] init] autorelease];
   self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
   self.textView.textColor = [UIColor slateBlueColor];
-  self.textView.contentInset = UIEdgeInsetsMake(cellContentDistanceFromEdgeVertical,
-                                                cellContentDistanceFromEdgeHorizontal,
-                                                cellContentDistanceFromEdgeVertical,
-                                                cellContentDistanceFromEdgeHorizontal);
+  self.textView.contentInset = UIEdgeInsetsMake([UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
+                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
+                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
+                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
   self.textViewController = [[[UIViewController alloc] init] autorelease];
   self.textViewController.view = textView;
   self.textViewController.navigationItem.title = @"Edit description";

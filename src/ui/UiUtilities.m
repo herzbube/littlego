@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UiUtilities.h"
+#import "UiElementMetrics.h"
 
 
 @implementation UiUtilities
@@ -51,16 +52,15 @@
     case DefaultCellType:
     {
       // The label has the entire cell width
-      labelWidth = cellContentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
+      labelWidth = [UiElementMetrics tableViewCellContentViewAvailableWidth];
       break;
     }
     case SwitchCellType:
     {
       // The label shares the cell with a UISwitch
-      labelWidth = (cellContentViewWidth
-                    - 2 * cellContentDistanceFromEdgeHorizontal
-                    - cellContentSwitchWidth
-                    - cellContentSpacingHorizontal);
+      labelWidth = ([UiElementMetrics tableViewCellContentViewAvailableWidth]
+                    - [UiElementMetrics switchWidth]
+                    - [UiElementMetrics spacingHorizontal]);
       break;
     }
     default:
@@ -70,7 +70,7 @@
     }
   }
   if (hasDisclosureIndicator)
-    labelWidth -= cellDisclosureIndicatorWidth;
+    labelWidth -= [UiElementMetrics tableViewCellDisclosureIndicatorWidth];
 
   UIFont* labelFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
   CGSize constraintSize = CGSizeMake(labelWidth, MAXFLOAT);
@@ -78,12 +78,12 @@
                       constrainedToSize:constraintSize
                           lineBreakMode:UILineBreakModeWordWrap];
 
-  return labelSize.height + 2 * cellContentDistanceFromEdgeVertical;
+  return labelSize.height + 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns YES for portrait orientations on iPhone, and for landscape
-/// orientations on iPad. Returns NO for all other situation.
+/// @brief Returns YES for portrait orientations on iPhone, and for all
+/// orientations on iPad. Returns NO for all other situations.
 ///
 /// This method implements application-wide orientation support. It can be
 /// invoked by all view controller's shouldAutorotateToInterfaceOrientation:().
@@ -94,7 +94,7 @@
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     return isLandscapeOrientation ? NO : YES;
   else
-    return isLandscapeOrientation ? YES : NO;
+    return YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -116,7 +116,7 @@
 // -----------------------------------------------------------------------------
 + (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController
 {
-  UITableView* tableView = [[UITableView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]
+  UITableView* tableView = [[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
                                                         style:tableViewStyle];
   
   // Connect controller with view

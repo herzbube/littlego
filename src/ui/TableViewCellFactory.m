@@ -19,10 +19,8 @@
 #import "TableViewCellFactory.h"
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
+#import "UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
-
-// System includes
-#import <UIKit/UIKit.h>
 
 
 @implementation TableViewCellFactory
@@ -123,15 +121,10 @@
     }
     case TextFieldCellType:
     {
-      // TODO: move this calculation and comment somewhere else;
-      // tableviewslidercell and GtpLogItemViewController has the same
-      // calculation
-      int cellContentViewHeight = cell.contentView.bounds.size.height;
-
-      int textFieldX = cellContentDistanceFromEdgeHorizontal;
-      int textFieldY = cellContentDistanceFromEdgeVertical;
-      int textFieldWidth = cellContentViewWidth - 2 * cellContentDistanceFromEdgeHorizontal;
-      int textFieldHeight = cellContentViewHeight - 2 * cellContentDistanceFromEdgeVertical;
+      int textFieldX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
+      int textFieldY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
+      int textFieldWidth = [UiElementMetrics tableViewCellContentViewAvailableWidth];
+      int textFieldHeight = [UiElementMetrics tableViewCellContentViewAvailableHeight];
       CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
       UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
       [cell.contentView addSubview:textField];

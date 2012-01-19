@@ -18,6 +18,7 @@
 // Project includes
 #import "TableViewGridCell.h"
 #import "UIColorAdditions.h"
+#import "UiElementMetrics.h"
 
 // Forward declarations
 @class GridCellContentView;
@@ -137,19 +138,18 @@ static NSString* gridLineColor = @"A9ABAD";
   GridCellContentView* gridCellContentView = [self gridCellContentView];
 
   int numberOfColumns = [delegate numberOfColumnsInGridCell:self];
-  const int cellEdgePadding = 2 * cellContentDistanceFromEdgeHorizontal;  // padding at the left and at the right edge of the cell
   int numberOfGridLines = numberOfColumns - 1;
-  const int gridLinePadding = 2 * cellContentSpacingHorizontal;  // padding on the left and on the right of a grid line
-  int totalWidthAvailableForAllColumns = cellContentViewWidth - cellEdgePadding - (numberOfGridLines * gridLinePadding);
+  const int gridLinePadding = 2 * [UiElementMetrics spacingHorizontal];  // padding on the left and on the right of a grid line
+  int totalWidthAvailableForAllColumns = [UiElementMetrics tableViewCellContentViewAvailableWidth] - (numberOfGridLines * gridLinePadding);
   int columnWidth = totalWidthAvailableForAllColumns / numberOfColumns;
 
   NSMutableArray* gridLines = [NSMutableArray arrayWithCapacity:numberOfGridLines];
   for (int column = 0; column < numberOfColumns; ++column)
   {
-    int labelX = cellContentDistanceFromEdgeHorizontal + column * (columnWidth + gridLinePadding);
-    int labelY = cellContentDistanceFromEdgeVertical;
+    int labelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal] + column * (columnWidth + gridLinePadding);
+    int labelY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
     int labelWidth = columnWidth;
-    CGRect labelRect = CGRectMake(labelX, labelY, labelWidth, cellContentLabelHeight);
+    CGRect labelRect = CGRectMake(labelX, labelY, labelWidth, [UiElementMetrics labelHeight]);
     UILabel* label = nil;
     enum GridCellColumnStyle columnStyle = [delegate gridCell:self styleInColumn:column];
     switch (columnStyle)
@@ -176,7 +176,7 @@ static NSString* gridLineColor = @"A9ABAD";
     // Generate a grid line for all but the first column
     if (column > 0)
     {
-      float gridLineX = labelX - cellContentSpacingHorizontal;
+      float gridLineX = labelX - [UiElementMetrics spacingHorizontal];
       [gridLines addObject:[NSNumber numberWithFloat:gridLineX]];
     }
   }
@@ -190,8 +190,9 @@ static NSString* gridLineColor = @"A9ABAD";
 // -----------------------------------------------------------------------------
 - (GridCellContentView*) gridCellContentView
 {
-  int cellContentViewHeight = self.contentView.bounds.size.height;
-  CGRect gridCellContentViewFrameRect = CGRectMake(0, 0, cellContentViewWidth, cellContentViewHeight);
+  CGRect gridCellContentViewFrameRect = CGRectMake(0, 0,
+                                                   [UiElementMetrics tableViewCellContentViewWidth],
+                                                   [UiElementMetrics tableViewCellContentViewHeight]);
   GridCellContentView* gridCellContentView = [[GridCellContentView alloc] initWithFrame:gridCellContentViewFrameRect];
   [self.contentView addSubview:gridCellContentView];
   [gridCellContentView release];

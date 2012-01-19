@@ -48,6 +48,7 @@
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
 #import "../utility/UserDefaultsUpdater.h"
+#import "../ui/UiElementMetrics.h"
 
 // Library includes
 #include <cocoalumberjack/DDTTYLogger.h>
@@ -400,7 +401,9 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupGUI
 {
+  [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
   [self.window makeKeyAndVisible];
+
   // Disable edit button in the "more" navigation controller
   self.tabBarController.customizableViewControllers = [NSArray array];
 }

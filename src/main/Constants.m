@@ -22,20 +22,6 @@ const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 // Go constants
 const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
 
-// Table view cell constants
-// Note: Values determined experimentally by debugging a default UITableViewCell
-const int cellContentViewWidth = 300;
-const int cellContentDistanceFromEdgeHorizontal = 10;
-const int cellContentDistanceFromEdgeVertical = 11;
-// Values determined experimentally in Interface Builder
-const int cellContentSpacingHorizontal = 8;
-const int cellContentSpacingVertical = 8;
-// Values also from IB
-const int cellContentLabelHeight = 21;
-const int cellContentSliderHeight = 23;
-const int cellContentSwitchWidth = 94;
-const int cellDisclosureIndicatorWidth = 20;
-
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
 NSString* sgfBackupFileName = @"backup.sgf";
