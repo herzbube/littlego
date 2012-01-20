@@ -49,6 +49,7 @@
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration;
 //@}
 /// @name Action methods for toolbar items
 //@{
@@ -107,6 +108,12 @@
 //@}
 /// @name Private helpers
 //@{
+- (CGRect) mainViewFrame;
+- (CGRect) subViewFrame;
+- (CGRect) toolbarViewFrame;
+- (CGRect) playViewFrame;
+- (CGRect) statusLineViewFrame;
+- (CGRect) activityIndicatorViewFrame;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
@@ -215,60 +222,37 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  CGRect mainViewFrame = CGRectMake(0,
-                                    [UiElementMetrics statusBarHeight],
-                                    [UiElementMetrics screenWidth],
-                                    mainViewHeight);
+  // Create view hierarchy
+  CGRect mainViewFrame = [self mainViewFrame];
   self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  // One of these views is later added as a subview to self.view
-  CGRect subViewFrame = CGRectMake(0, 0, [UiElementMetrics screenWidth], mainViewHeight);
+  CGRect subViewFrame = [self subViewFrame];
   self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
   self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-
-  CGRect toolbarFrame = CGRectMake(0, 0, [UiElementMetrics screenWidth], [UiElementMetrics navigationBarHeight]);
+  // Add frontside view to the main view already here, do not wait until
+  // makeControllerReadyForAction is invoked. Reason: If the user is holding the
+  // device in landscape orientation while the application is starting up, iOS
+  // will first start up in portrait orientation and then initiate an
+  // auto-rotation to landscape orientation. If the frontside view has not yet
+  // been added as a subview at this time, it will not be auto-resized, and all
+  // size calculations for the play view during auto-rotation will miserably
+  // fail. Because startup auto-rotation happens before
+  // makeControllerReadyForAction is called, we must add the frontside view
+  // to the main view here.
+  [self.view addSubview:self.frontSideView];
+  CGRect toolbarFrame = [self toolbarViewFrame];
   self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
   [self.frontSideView addSubview:self.toolbar];
-
-  int playViewFullWidth = [UiElementMetrics screenWidth];
-  int playViewFullHeight = (mainViewHeight
-                            - [UiElementMetrics navigationBarHeight]
-                            - [UiElementMetrics spacingVertical]
-                            - [UiElementMetrics labelHeight]);
-  // Make the view square
-  int playViewSideLength;
-  if (playViewFullHeight >= playViewFullWidth)
-    playViewSideLength = playViewFullWidth;
-  else
-    playViewSideLength = playViewFullHeight;
-  int playViewWidth = playViewSideLength;
-  int playViewHeight = playViewSideLength;
-  int playViewX = (self.frontSideView.bounds.size.width - playViewWidth) / 2;
-  int playViewY = [UiElementMetrics navigationBarHeight];
-  CGRect playViewFrame = CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
+  CGRect playViewFrame = [self playViewFrame];
   self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
   [self.frontSideView addSubview:self.playView];
-
-  int statusLineWidth = ([UiElementMetrics screenWidth]
-                         - [UiElementMetrics spacingHorizontal]
-                         - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  CGRect statusLineFrame = CGRectMake(0,
-                                      mainViewHeight - [UiElementMetrics labelHeight],
-                                      statusLineWidth,
-                                      [UiElementMetrics labelHeight]);
-  self.playView.statusLine = [[[UILabel alloc] initWithFrame:statusLineFrame] autorelease];
+  CGRect statusLineViewFrame = [self statusLineViewFrame];
+  self.playView.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
   [self.frontSideView addSubview:self.playView.statusLine];
-
-  CGRect activityIndicatorFrame = CGRectMake([UiElementMetrics screenWidth] - [UiElementMetrics activityIndicatorWidthAndHeight],
-                                             mainViewHeight - [UiElementMetrics activityIndicatorWidthAndHeight],
-                                             [UiElementMetrics activityIndicatorWidthAndHeight],
-                                             [UiElementMetrics activityIndicatorWidthAndHeight]);
+  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
   self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
   [self.frontSideView addSubview:self.playView.activityIndicator];
-
+  
+  // Configure autoresizingMask properties for proper autorotation
   self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -276,14 +260,123 @@
   self.playView.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
   self.playView.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
 
-  // If the view is resized, the Go board needs to be redrawn
-  self.playView.contentMode = UIViewContentModeRedraw;
-
   // Set common background color for all elements on the frontside view
   UIColor* frontSideBackgroundColor = [UIColor groupTableViewBackgroundColor];
   self.frontSideView.backgroundColor = frontSideBackgroundColor;
   self.playView.backgroundColor = frontSideBackgroundColor;
   self.playView.statusLine.backgroundColor = frontSideBackgroundColor;
+
+  // If the view is resized, the Go board needs to be redrawn (occurs during
+  // rotation animation)
+  self.playView.contentMode = UIViewContentModeRedraw;
+
+  // Other configuration
+  self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of this controller's main view, taking into
+/// account the current interface orientation. Assumes that super views have
+/// the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) mainViewFrame
+{
+  int mainViewX = 0;
+  int mainViewY = [UiElementMetrics statusBarHeight];
+  int mainViewWidth = [UiElementMetrics screenWidth];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the frontside and backside subviews, taking
+/// into account the current interface orientation. Assumes that super views
+/// have the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) subViewFrame
+{
+  int subViewX = 0;
+  int subViewY = 0;
+  int subViewWidth = [UiElementMetrics screenWidth];
+  int subViewHeight = self.view.bounds.size.height;
+  return CGRectMake(subViewX, subViewY, subViewWidth, subViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the toolbar view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarViewFrame
+{
+  int toolbarViewX = 0;
+  int toolbarViewY = 0;
+  int toolbarViewWidth = [UiElementMetrics screenWidth];
+  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
+  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the play view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) playViewFrame
+{
+  // Dimensions if all the available space were used. The result would be a
+  // rectangle.
+  CGSize mainViewSize = self.view.bounds.size;
+  int playViewFullWidth = mainViewSize.width;
+  int playViewFullHeight = (mainViewSize.height
+                            - [UiElementMetrics navigationBarHeight]
+                            - [UiElementMetrics spacingVertical]
+                            - [UiElementMetrics labelHeight]);
+
+  // Now make the view square
+  int playViewSideLength;
+  if (playViewFullHeight >= playViewFullWidth)
+    playViewSideLength = playViewFullWidth;
+  else
+    playViewSideLength = playViewFullHeight;
+
+  // Calculate the final values
+  int playViewX = (self.frontSideView.bounds.size.width - playViewSideLength) / 2;  // center horizontally
+  int playViewY = [UiElementMetrics toolbarHeight];                                 // place just below the toolbar
+  int playViewWidth = playViewSideLength;
+  int playViewHeight = playViewSideLength;
+  return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the status line view, taking into account
+/// the current interface orientation. Assumes that super views have the
+/// correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) statusLineViewFrame
+{
+  int statusLineViewX = 0;
+  int statusLineViewY = self.view.bounds.size.height - [UiElementMetrics labelHeight];
+  int statusLineViewWidth = ([UiElementMetrics screenWidth]
+                             - [UiElementMetrics spacingHorizontal]
+                             - [UiElementMetrics activityIndicatorWidthAndHeight]);
+  int statusLineViewHeight = [UiElementMetrics labelHeight];
+  return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the activity indicator view, taking into
+/// account the current interface orientation. Assumes that super views have
+/// the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) activityIndicatorViewFrame
+{
+  int activityIndicatorViewX = [UiElementMetrics screenWidth] - [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewY = self.view.bounds.size.height - [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
+  return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -320,8 +413,6 @@
     DDLogError(@"PlayViewController::makeControllerReadyForAction(): Unable to find the ScoringModel object");
     assert(0);
   }
-
-  [self.view addSubview:self.frontSideView];
 
   self.panningEnabled = false;
   self.tappingEnabled = false;
@@ -422,6 +513,25 @@
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit before performing a one-step user interface
+/// rotation.
+// -----------------------------------------------------------------------------
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
+{
+  // Orientation of view controllers has already changed at this point, and
+  // the bounds of all views have been changed, so we can safely calculate the
+  // new frame
+  CGRect playViewFrame = [self playViewFrame];
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:UIViewAnimationCurveLinear
+                   animations:^{
+                     self.playView.frame = playViewFrame;
+                   }
+                   completion:NULL];
 }
 
 // -----------------------------------------------------------------------------

@@ -50,10 +50,6 @@
 	<string>MainWindow</string>
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
-	<key>UIInterfaceOrientation~ipad</key>
-	<string>UIInterfaceOrientationLandscapeRight</string>
-	<key>UIInterfaceOrientation~iphone</key>
-	<string>UIInterfaceOrientationPortrait</string>
 	<key>UILaunchImageFile~ipad</key>
 	<string></string>
 	<key>UILaunchImageFile~iphone</key>
@@ -64,8 +60,10 @@
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~iphone</key>
 	<array>
