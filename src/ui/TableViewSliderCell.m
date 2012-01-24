@@ -38,6 +38,9 @@
 //@}
 /// @name Other methods
 //@{
+- (CGRect) descriptionLabelFrame;
+- (CGRect) valueLabelFrame;
+- (CGRect) sliderFrame;
 - (void) updateValueLabel;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -61,10 +64,6 @@
 @synthesize delegate;
 @synthesize delegateActionValueDidChange;
 @synthesize delegateActionSliderValueDidChange;
-
-
-// Arbitrary value that hopefully leaves enough space for the value label
-static const int descriptionLabelWidth = 230;
 
 
 // -----------------------------------------------------------------------------
@@ -135,40 +134,96 @@ static const int descriptionLabelWidth = 230;
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  assert(descriptionLabelWidth < cellContentViewWidth);
-  CGRect descriptionLabelRect = CGRectMake([UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
-                                           [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
-                                           descriptionLabelWidth,
-                                           [UiElementMetrics labelHeight]);
+  CGRect descriptionLabelRect = [self descriptionLabelFrame];
   descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
   descriptionLabel.tag = SliderCellDescriptionLabelTag;
   descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
   descriptionLabel.textAlignment = UITextAlignmentLeft;
   descriptionLabel.textColor = [UIColor blackColor];
+  descriptionLabel.backgroundColor = [UIColor clearColor];
   [self.contentView addSubview:descriptionLabel];
 
-  int valueLabelX = descriptionLabelRect.origin.x + descriptionLabelRect.size.width + [UiElementMetrics spacingHorizontal];
-  int valueLabelY = descriptionLabelRect.origin.y;
-  int valueLabelWidth = ([UiElementMetrics tableViewCellContentViewWidth]
-                         - valueLabelX
-                         - [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
-  assert(valueLabelWidth > 0);
-  CGRect valueLabelRect = CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, [UiElementMetrics labelHeight]);
+  CGRect valueLabelRect = [self valueLabelFrame];
   valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
   valueLabel.tag = SliderCellValueLabelTag;
   valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
   valueLabel.textAlignment = UITextAlignmentRight;
   valueLabel.textColor = [UIColor slateBlueColor];
+  valueLabel.backgroundColor = [UIColor clearColor];
   [self.contentView addSubview:valueLabel];
 
-  int sliderX = descriptionLabelRect.origin.x;
-  int sliderY = descriptionLabelRect.origin.y + descriptionLabelRect.size.height + [UiElementMetrics spacingVertical];
-  int sliderWidth = valueLabelX + valueLabelWidth - sliderX;
-  CGRect sliderRect = CGRectMake(sliderX, sliderY, sliderWidth, [UiElementMetrics sliderHeight]);
-  slider = [[UISlider alloc] initWithFrame: sliderRect];  // no autorelease, property is retained
+  CGRect sliderRect = [self sliderFrame];
+  slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
   slider.tag = SliderCellSliderTag;
   slider.continuous = YES;
   [self.contentView addSubview:slider];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked by UIKit when the view needs to layout its subviews, e.g.
+/// as part of the auto-rotation process.
+///
+/// Auto-rotation support could only be added by overriding this method. The
+/// usual approach of setting sensible values for autoresizingMask for subviews
+/// did not work in this case, for unknown reasons subviews would stretch
+/// "all over the place".
+// -----------------------------------------------------------------------------
+- (void) layoutSubviews
+{
+  [super layoutSubviews];  // resize content view
+  descriptionLabel.frame = [self descriptionLabelFrame];
+  valueLabel.frame = [self valueLabelFrame];
+  slider.frame = [self sliderFrame];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the description label, taking into account
+/// the current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) descriptionLabelFrame
+{
+  int descriptionLabelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
+  int descriptionLabelY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
+  // Arbitrary value that hopefully leaves enough space for the value label
+  static const int descriptionLabelWidth = 230;
+  int descriptionLabelHeight = [UiElementMetrics labelHeight];
+  return CGRectMake(descriptionLabelX, descriptionLabelY, descriptionLabelWidth, descriptionLabelHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the value label, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) valueLabelFrame
+{
+  int valueLabelX = (descriptionLabel.frame.origin.x
+                     + descriptionLabel.frame.size.width
+                     + [UiElementMetrics spacingHorizontal]);
+  int valueLabelY = descriptionLabel.frame.origin.y;
+  int valueLabelWidth = ([UiElementMetrics tableViewCellContentViewWidth]
+                         - valueLabelX
+                         - [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
+  int valueLabelHeight = [UiElementMetrics labelHeight];
+  return CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, valueLabelHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the slider, taking into account the current
+/// interface orientation. Assumes that super views have the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) sliderFrame
+{
+  int sliderX = descriptionLabel.frame.origin.x;
+  int sliderY = (descriptionLabel.frame.origin.y
+                 + descriptionLabel.frame.size.height
+                 + [UiElementMetrics spacingVertical]);
+  int sliderWidth = (valueLabel.frame.origin.x
+                     + valueLabel.frame.size.width
+                     - sliderX);
+  int sliderHeight = [UiElementMetrics sliderHeight];
+  return CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
 }
 
 // -----------------------------------------------------------------------------

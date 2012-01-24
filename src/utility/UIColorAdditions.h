@@ -41,4 +41,6 @@
 - (CGFloat) alpha;
 
 + (UIColor*) slateBlueColor;
++ (UIColor*) iPadGroupTableViewBackgroundGradientStartColor;
++ (UIColor*) iPadGroupTableViewBackgroundGradientEndColor;
 @end

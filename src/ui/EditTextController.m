@@ -18,6 +18,7 @@
 // Project includes
 #import "EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -34,6 +35,7 @@
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 - (void) viewWillAppear:(BOOL)animated;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name Action methods
 //@{
@@ -165,6 +167,15 @@
 
   // Place the insertion point into the text field
   [m_textField becomeFirstResponder];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

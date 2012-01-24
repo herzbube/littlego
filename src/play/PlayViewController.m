@@ -254,6 +254,7 @@
   
   // Configure autoresizingMask properties for proper autorotation
   self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
                                     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
@@ -261,10 +262,9 @@
   self.playView.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
 
   // Set common background color for all elements on the frontside view
-  UIColor* frontSideBackgroundColor = [UIColor groupTableViewBackgroundColor];
-  self.frontSideView.backgroundColor = frontSideBackgroundColor;
-  self.playView.backgroundColor = frontSideBackgroundColor;
-  self.playView.statusLine.backgroundColor = frontSideBackgroundColor;
+  [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
+  self.playView.backgroundColor = [UIColor clearColor];
+  self.playView.statusLine.backgroundColor = [UIColor clearColor];
 
   // If the view is resized, the Go board needs to be redrawn (occurs during
   // rotation animation)
@@ -297,10 +297,11 @@
 // -----------------------------------------------------------------------------
 - (CGRect) subViewFrame
 {
+  CGSize superViewSize = self.view.bounds.size;
   int subViewX = 0;
   int subViewY = 0;
-  int subViewWidth = [UiElementMetrics screenWidth];
-  int subViewHeight = self.view.bounds.size.height;
+  int subViewWidth = superViewSize.width;
+  int subViewHeight = superViewSize.height;
   return CGRectMake(subViewX, subViewY, subViewWidth, subViewHeight);
 }
 
@@ -311,9 +312,10 @@
 // -----------------------------------------------------------------------------
 - (CGRect) toolbarViewFrame
 {
+  CGSize superViewSize = self.frontSideView.bounds.size;
   int toolbarViewX = 0;
   int toolbarViewY = 0;
-  int toolbarViewWidth = [UiElementMetrics screenWidth];
+  int toolbarViewWidth = superViewSize.width;
   int toolbarViewHeight = [UiElementMetrics toolbarHeight];
   return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
 }
@@ -327,14 +329,19 @@
 {
   // Dimensions if all the available space were used. The result would be a
   // rectangle.
-  CGSize mainViewSize = self.view.bounds.size;
-  int playViewFullWidth = mainViewSize.width;
-  int playViewFullHeight = (mainViewSize.height
-                            - [UiElementMetrics navigationBarHeight]
+  CGSize superViewSize = self.frontSideView.bounds.size;
+  int playViewFullWidth = superViewSize.width;
+  int playViewFullHeight = (superViewSize.height
+                            - [UiElementMetrics toolbarHeight]
                             - [UiElementMetrics spacingVertical]
                             - [UiElementMetrics labelHeight]);
 
-  // Now make the view square
+  // Now make the view square so that auto-rotation on orientation change does
+  // not cause the view to be squashed or stretched. This is possibly not
+  // necessary anymore, because now there is a custom animation going on during
+  // auto-rotation that resizes the view to its proper dimensions.
+  // Note: There's already a small bit of code in PlayView that lets it handle
+  // rectangular frames.
   int playViewSideLength;
   if (playViewFullHeight >= playViewFullWidth)
     playViewSideLength = playViewFullWidth;
@@ -342,8 +349,8 @@
     playViewSideLength = playViewFullHeight;
 
   // Calculate the final values
-  int playViewX = (self.frontSideView.bounds.size.width - playViewSideLength) / 2;  // center horizontally
-  int playViewY = [UiElementMetrics toolbarHeight];                                 // place just below the toolbar
+  int playViewX = (superViewSize.width - playViewSideLength) / 2;  // center horizontally
+  int playViewY = [UiElementMetrics toolbarHeight];                // place just below the toolbar
   int playViewWidth = playViewSideLength;
   int playViewHeight = playViewSideLength;
   return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
@@ -356,9 +363,10 @@
 // -----------------------------------------------------------------------------
 - (CGRect) statusLineViewFrame
 {
+  CGSize superViewSize = self.frontSideView.bounds.size;
   int statusLineViewX = 0;
-  int statusLineViewY = self.view.bounds.size.height - [UiElementMetrics labelHeight];
-  int statusLineViewWidth = ([UiElementMetrics screenWidth]
+  int statusLineViewY = superViewSize.height - [UiElementMetrics labelHeight];
+  int statusLineViewWidth = (superViewSize.width
                              - [UiElementMetrics spacingHorizontal]
                              - [UiElementMetrics activityIndicatorWidthAndHeight]);
   int statusLineViewHeight = [UiElementMetrics labelHeight];
@@ -372,8 +380,9 @@
 // -----------------------------------------------------------------------------
 - (CGRect) activityIndicatorViewFrame
 {
-  int activityIndicatorViewX = [UiElementMetrics screenWidth] - [UiElementMetrics activityIndicatorWidthAndHeight];
-  int activityIndicatorViewY = self.view.bounds.size.height - [UiElementMetrics activityIndicatorWidthAndHeight];
+  CGSize superViewSize = self.frontSideView.bounds.size;
+  int activityIndicatorViewX = superViewSize.width - [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewY = superViewSize.height - [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);

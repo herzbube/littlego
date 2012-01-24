@@ -128,9 +128,9 @@ static NSString* gridLineColor = @"A9ABAD";
   // 3) Grid line
   //
   // a) self.indentationWidth
-  // b) cellContentDistanceFromEdgeHorizontal
+  // b) [UIElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
   // c) columnWidth
-  // d) cellContentSpacingHorizontal
+  // d) [UiElementMetrics spacingHorizontal]
 
   UIView* oldGridCellContentView = [self.contentView viewWithTag:GridCellContentViewTag];
   if (oldGridCellContentView)

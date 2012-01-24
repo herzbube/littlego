@@ -21,6 +21,9 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
+#import "../ui/UiUtilities.h"
+#import "../utility/UIColorAdditions.h"
 #import "../gtp/GtpCommand.h"
 
 
@@ -35,18 +38,20 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
-/// @name UIPickerViewDataSource protocol
+/// @name UITableViewDataSource protocol
 //@{
-- (NSInteger) numberOfComponentsInPickerView:(UIPickerView*)pickerView;
-- (NSInteger) pickerView:(UIPickerView*)pickerView numberOfRowsInComponent:(NSInteger)component;
+- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
+- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
+- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
-/// @name UIPickerViewDelegate protocol
+/// @name UITableViewDelegate protocol
 //@{
-- (NSString*) pickerView:(UIPickerView*)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component;
-- (void) pickerView:(UIPickerView*)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component;
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITextFieldDelegate protocol method.
 //@{
@@ -60,8 +65,15 @@
 //@}
 /// @name Private helpers
 //@{
+- (CGRect) mainViewFrame;
+- (CGRect) textFieldViewFrame;
+- (CGRect) tableViewFrame;
 - (void) setupNavigationItem;
 - (bool) isTextAcceptable:(NSString*)aText;
+//@}
+/// @name Privately declared properties
+//@{
+@property(nonatomic, retain) UITextField* textField;
 //@}
 @end
 
@@ -78,7 +90,7 @@
 // -----------------------------------------------------------------------------
 + (SubmitGtpCommandViewController*) controller
 {
-  SubmitGtpCommandViewController* controller = [[SubmitGtpCommandViewController alloc] initWithNibName:@"SubmitGtpCommandView" bundle:nil];
+  SubmitGtpCommandViewController* controller = [[SubmitGtpCommandViewController alloc] init];
   if (controller)
     [controller autorelease];
   return controller;
@@ -92,6 +104,94 @@
 {
   self.model = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  CGRect textFieldViewFrame = [self textFieldViewFrame];
+  self.textField = [[[UITextField alloc] initWithFrame:textFieldViewFrame] autorelease];
+  [self.view addSubview:self.textField];
+  CGRect tableViewFrame = [self tableViewFrame];
+  UITableView* tableView = [[[UITableView alloc] initWithFrame:tableViewFrame style:UITableViewStyleGrouped] autorelease];
+  [self.view addSubview:tableView];
+
+  self.textField.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
+  tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+
+  self.textField.delegate = self;
+  tableView.delegate = self;
+  tableView.dataSource = self;
+
+  self.textField.placeholder = @"Enter new command, or select from the list";
+  self.textField.borderStyle = UITextBorderStyleRoundedRect;
+  self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+  self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+  self.textField.adjustsFontSizeToFitWidth = YES;
+  self.textField.minimumFontSize = 12;
+  self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+  // Only available since iOS 5
+  if ([self.textField respondsToSelector:@selector(setSpellCheckingType:)])
+    self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
+
+  tableView.backgroundView = nil;
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of this controller's main view, taking into
+/// account the current interface orientation. Assumes that super views have
+/// the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) mainViewFrame
+{
+  int mainViewX = 0;
+  int mainViewY = 0;
+  int mainViewWidth = [UiElementMetrics screenWidth];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics navigationBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the text field view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) textFieldViewFrame
+{
+  CGSize superViewSize = self.view.bounds.size;
+  int textFieldViewX = [UiElementMetrics viewMarginHorizontal];
+  int textFieldViewY = [UiElementMetrics viewMarginVertical];
+  int textFieldViewWidth = superViewSize.width - 2 * [UiElementMetrics viewMarginHorizontal];
+  int textFieldViewHeight = [UiElementMetrics textFieldHeight];
+  return CGRectMake(textFieldViewX, textFieldViewY, textFieldViewWidth, textFieldViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the table view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) tableViewFrame
+{
+  CGSize superViewSize = self.view.bounds.size;
+  int tableViewX = 0;
+  int tableViewY = ([UiElementMetrics viewMarginVertical]
+                    + self.textField.bounds.size.height
+                    + [UiElementMetrics spacingVertical]);
+  int tableViewWidth = superViewSize.width;
+  int tableViewHeight = (superViewSize.height
+                         - tableViewY
+                         - [UiElementMetrics viewMarginHorizontal]);
+  return CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -122,6 +222,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the navigation item of this view controller.
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
@@ -138,35 +247,38 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIPickerViewDataSource protocol method.
+/// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSInteger) numberOfComponentsInPickerView:(UIPickerView*)pickerView
+- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
   return 1;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIPickerViewDataSource protocol method.
+/// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSInteger) pickerView:(UIPickerView*)pickerView numberOfRowsInComponent:(NSInteger)component
+- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
   return self.model.commandCount;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIPickerViewDelegate protocol method.
+/// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) pickerView:(UIPickerView*)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  return [model commandStringAtIndex:row];
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+  cell.textLabel.text = [model commandStringAtIndex:indexPath.row];
+  return cell;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIPickerViewDelegate protocol method.
+/// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) pickerView:(UIPickerView*)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  self.textField.text = [model commandStringAtIndex:row];
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  self.textField.text = [model commandStringAtIndex:indexPath.row];
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
 }
 

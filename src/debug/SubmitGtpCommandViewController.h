@@ -26,14 +26,12 @@
 /// @brief The SubmitGtpCommandViewController class is responsible for managing
 /// user interaction on the "Submit GTP command" view.
 // -----------------------------------------------------------------------------
-@interface SubmitGtpCommandViewController : UIViewController <UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface SubmitGtpCommandViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 {
 }
 
 + (SubmitGtpCommandViewController*) controller;
 
-/// @brief The text field used to edit the GTP command before it is submitted.
-@property(nonatomic, retain) IBOutlet UITextField* textField;
 /// @brief The model object
 @property(nonatomic, retain) GtpCommandModel* model;
 

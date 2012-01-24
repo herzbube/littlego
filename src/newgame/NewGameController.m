@@ -19,6 +19,7 @@
 #import "NewGameController.h"
 #import "NewGameModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 #import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
@@ -93,6 +94,7 @@ enum KomiSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name Action methods
 //@{
@@ -221,6 +223,15 @@ enum KomiSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

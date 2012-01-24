@@ -178,12 +178,6 @@ Priority 3 (not important)
     application > Resume application > The "savesgf" command from the suspend
     background task is not visible > Manually scroll down to make the command
     visible > Generate another command > Auto-scroll does not work!
-- In SubmitGtpCommandView.xib
-  - Use a larger font to display the command
-  - Use a UITextView to edit the command (or make the UITextField multi-line)
-  - Try to replace UIPickerView by something else; UITableView would be more
-    suitable, but so far I was unable to come up with a UITableView solution
-    that looks good
 - Play a "whoosh" sound when the user submits a GTP command
 - Allow free selection of komi values. The value of this is disputable, but an
   implementation is presumably rather simple since komi is treated as a
@@ -213,8 +207,6 @@ Priority 3 (not important)
   confirmation whether the game should be restored
 - Undoing a move in a human vs. computer game causes two updates in PlayView
   because two moves are taken back; there should only be one update
-- TableViewSliderCell: Labels should use the default table view cell background
-  color (currently they use white as the background color)
 
 
 Future improvements to the 3rdparty build process

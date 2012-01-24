@@ -84,26 +84,6 @@ static UIViewController* m_interfaceOrientationSource;
   return 49;
 }
 
-+ (int) viewWithStatusBarHeight
-{
-  return [UiElementMetrics screenHeight] - [UiElementMetrics statusBarHeight];
-}
-
-+ (int) viewWithNavigationBarHeight
-{
-  return [UiElementMetrics viewWithStatusBarHeight] - [UiElementMetrics navigationBarHeight];
-}
-
-+ (int) viewWithTabBarHeight
-{
-  return [UiElementMetrics viewWithStatusBarHeight] - [UiElementMetrics tabBarHeight];
-}
-
-+ (int) viewWithNavigationAndTabBarHeight
-{
-  return [UiElementMetrics viewWithNavigationBarHeight] - [UiElementMetrics tabBarHeight];
-}
-
 + (int) spacingHorizontal
 {
   return 8;
@@ -129,24 +109,82 @@ static UIViewController* m_interfaceOrientationSource;
   return 94;
 }
 
++ (int) textFieldHeight
+{
+  return 31;
+}
+
 + (int) activityIndicatorWidthAndHeight
 {
   return 20;
 }
 
++ (int) viewMarginHorizontal
+{
+  // Use the same margin as a table view
+  return [UiElementMetrics tableViewCellMarginHorizontal];
+}
+
++ (int) viewMarginVertical
+{
+  // Use the same margin as a table view
+  return [UiElementMetrics tableViewMarginVertical];
+}
+
+// The vertical margin of a table view is the distance from the top or bottom
+// edge of the table view to the top or bottom edge of the top-most or
+// bottom-most table view element (e.g. a cell, or a header/footer).
++ (int) tableViewMarginVertical
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 10;
+  else
+    return 30;
+}
+
++ (int) tableViewCellWidth
+{
+  return [UiElementMetrics screenWidth];
+}
+
++ (int) tableViewCellHeight:(bool)topOrBottomCell
+{
+  // The top and bottom cells in a grouped table view have height 45, any cells
+  // in between have height 44. It's probably safe to assume that the additional
+  // points come from the top and bottom border lines.
+  if (topOrBottomCell)
+    return 44;
+  else
+    return 43;
+}
+
+// The horizontal margin is the distance from the left or right edge of the
+// table view cell to the left or right edge of the table view cell content
+// view, i.e. the space that is used in a grouped table view to inset the
+// content view.
++ (int) tableViewCellMarginHorizontal
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 10;
+  else
+    return 45;
+}
+
 /// @brief Width is for a non-indented top-level cell.
 + (int) tableViewCellContentViewWidth
 {
-  // This cannot be calculated reliably using a table view's content view
-  // bounds, because self.contentView.bounds.size.width changes when a cell
-  // is reused.
-  return [UiElementMetrics screenWidth] - 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
+  return [UiElementMetrics tableViewCellWidth] - 2 * [UiElementMetrics tableViewCellMarginHorizontal];
 }
 
+// For the top cell in a grouped table view, the content view frame.origin.y
+// coordinate is 1 (probably due to the cell's border line at the top), for the
+// bottom and in-between cells frame.origin.y is 0.
 + (int) tableViewCellContentViewHeight
 {
-  // A dynamic calculation would use cell.contentView.bounds.size.height;
-  return 44;
+  // This cannot be calculated reliably using a table view cell's content view
+  // bounds, because cell.contentView.bounds.size.width changes when a cell
+  // is reused.
+  return 43;
 }
 
 + (int) tableViewCellContentViewAvailableWidth
@@ -161,7 +199,7 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) tableViewCellContentDistanceFromEdgeHorizontal
 {
-  return 10;
+  return 10;  // the same on iPhone and iPad
 }
 
 + (int) tableViewCellContentDistanceFromEdgeVertical

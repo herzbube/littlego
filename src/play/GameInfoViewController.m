@@ -27,6 +27,7 @@
 #import "../go/GoVertex.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -116,6 +117,7 @@ enum MoveStatisticsSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -206,6 +208,15 @@ enum MoveStatisticsSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

@@ -80,6 +80,7 @@
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
 		CD1088611326CD2400E83543 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
 		CD10887D1326D2C100E83543 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
+		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -180,7 +181,6 @@
 		CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */; };
 		CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */; };
 		CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15E14C1CED200317ECA /* MainWindow.xib */; };
-		CDE1A18A14C1CED200317ECA /* SubmitGtpCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */; };
 		CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
 		CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
 		CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */; };
@@ -296,6 +296,7 @@
 		CD1088601326CD2400E83543 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
 		CD10887B1326D2C100E83543 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
 		CD10887C1326D2C100E83543 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
+		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD3AE6E91343F14200B58E08 /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
@@ -408,7 +409,6 @@
 		CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-01.aiff"; sourceTree = "<group>"; };
 		CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
 		CDE1A15E14C1CED200317ECA /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SubmitGtpCommandView.xib; sourceTree = "<group>"; };
 		CDE1A19114C1CF4D00317ECA /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE1A19214C1CF4D00317ECA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
@@ -470,6 +470,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -501,6 +502,7 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
+				CD24962E14CCB51000C9D19F /* QuartzCore.framework */,
 				CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */,
 				CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */,
 				CD1087701323D07800E83543 /* LICENSE */,
@@ -871,7 +873,6 @@
 			children = (
 				CDE1A15E14C1CED200317ECA /* MainWindow.xib */,
 				CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */,
-				CDE1A16114C1CED200317ECA /* SubmitGtpCommandView.xib */,
 			);
 			path = xib;
 			sourceTree = "<group>";
@@ -1116,7 +1117,6 @@
 				CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */,
 				CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */,
 				CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */,
-				CDE1A18A14C1CED200317ECA /* SubmitGtpCommandView.xib in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
 				CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */,
 			);

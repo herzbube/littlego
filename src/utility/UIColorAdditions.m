@@ -30,6 +30,7 @@
 - (CGFloat) rgbComponentAtIndex:(int)index;
 @end
 
+
 @implementation UIColor(UIColorAdditionsPrivate)
 
 // -----------------------------------------------------------------------------
@@ -195,6 +196,33 @@
 + (UIColor*) slateBlueColor
 {
   return [UIColor colorWithRed:0.22f green:0.33f blue:0.53f alpha:1.0f];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are 226/229/234 and whose
+/// alpha value is 1.0.
+///
+/// On the iPad, group table views have a background view that employs a
+/// linear gradient. The color returned by this method is the gradient's start
+/// color. See this stackoverflow.com question for information about how the
+/// color can be experimentally determined:
+/// http://stackoverflow.com/questions/5736515/ipad-grouped-tableview-background-color-what-is-it/
+// -----------------------------------------------------------------------------
++ (UIColor*) iPadGroupTableViewBackgroundGradientStartColor
+{
+  return [UIColor colorWithRed:226.0/255.0 green:229.0/255.0 blue:234.0/255.0 alpha:1.0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are 208/210/216 and whose
+/// alpha value is 1.0.
+///
+/// This is the gradient end color, as descried in this method's documentation:
+/// iPadGroupedTableViewBackgroundGradientStartColor().
+// -----------------------------------------------------------------------------
++ (UIColor*) iPadGroupTableViewBackgroundGradientEndColor
+{
+  return [UIColor colorWithRed:208.0/255.0 green:210.0/255.0 blue:216.0/255.0 alpha:1.0];
 }
 
 @end

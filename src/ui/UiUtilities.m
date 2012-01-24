@@ -18,6 +18,10 @@
 // Project includes
 #import "UiUtilities.h"
 #import "UiElementMetrics.h"
+#import "../utility/UIColorAdditions.h"
+
+// System includes
+#import <QuartzCore/QuartzCore.h>
 
 
 @implementation UiUtilities
@@ -130,6 +134,99 @@
     tableView.delegate = (id<UITableViewDelegate>)viewController;
   if ([viewController conformsToProtocol:@protocol(UITableViewDataSource)])
     tableView.dataSource = (id<UITableViewDataSource>)viewController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds the same background to @a view that is used by the default
+/// group UITableView.
+///
+/// This method takes into account the device that the application is running
+/// on:
+/// - On the iPhone the background is [UIColor groupTableViewBackgroundColor]
+/// - On the iPad the background is a linear gradient image between
+///   experimentally determined start and end colors (see UIColorAdditions);
+///   the UIImage is set as the content of the @a view's CALayer object.
+// -----------------------------------------------------------------------------
++ (void) addGroupTableViewBackgroundToView:(UIView*)view
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  else
+  {
+    // Dimensions determined experimentally by examining an iPad's group table
+    // view backgroundView object, which at the time of writing is a
+    // UIImageView object whose image has these dimensions.
+    CGSize backgroundPatternSize = CGSizeMake(1, 64);
+    UIImage* backgroundPattern = [UiUtilities gradientImageWithSize:backgroundPatternSize
+                                                         startColor:[UIColor iPadGroupTableViewBackgroundGradientStartColor]
+                                                           endColor:[UIColor iPadGroupTableViewBackgroundGradientEndColor]];
+    // This is the only way I managed to get the image to properly resize on
+    // auto-rotation. Alternatives that I tried, but that didn't work
+    // - view.background = [UIColor colorWithPatternImage:backgroundPattern];
+    // - [UIImageView initWithImage:backgroundPattern], followed by setting
+    //   the image view's frame to the proper dimensions, and also setting the
+    //   view's autoresizingMask
+    view.layer.contents = (id)backgroundPattern.CGImage;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size with a linear gradient drawn along
+/// the axis that runs from the top-middle to the bottom-middle point.
+// -----------------------------------------------------------------------------
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor
+{
+  UIGraphicsBeginImageContext(size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  CGRect rect = CGRectMake(0, 0, size.width, size.height);
+  [UiUtilities drawLinearGradientWithContext:context rect:rect startColor:startColor.CGColor endColor:endColor.CGColor];
+
+  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return gradientImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a linear gradient along the axis that runs from the top-middle
+/// to the bottom-middle point of @a rect.
+///
+/// The code for this method is based on
+/// http://www.raywenderlich.com/2033/core-graphics-101-lines-rectangles-and-gradients
+// -----------------------------------------------------------------------------
++ (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor
+{
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+  CGFloat locations[] = { 0.0, 1.0 };
+  NSArray* colors = [NSArray arrayWithObjects:(id)startColor, (id)endColor, nil];
+  // NSArray is toll-free bridged, so we can simply cast to CGArrayRef
+  CGGradientRef gradient = CGGradientCreateWithColors(colorSpace,
+                                                      (CFArrayRef)colors,
+                                                      locations);
+
+  // Draw the gradient from top-middle to bottom-middle
+  CGPoint startPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect));
+  CGPoint endPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect));
+
+  // Remember context so that later on we can undo the clipping we are going to
+  // add to the Core Graphics state machine
+  CGContextSaveGState(context);
+  // Add clipping with the specified rect so that we can simply draw into the
+  // specified context without changing anything outside of the rect. With this
+  // approach, the caller can give us a context that already has other stuff
+  // in it
+  CGContextAddRect(context, rect);
+  CGContextClip(context);
+  // Finally draw the gradient
+  CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+  // Undo clipping
+  CGContextRestoreGState(context);
+
+  // Cleanup memory allocated by CGContextDrawLinearGradient()
+  CGGradientRelease(gradient);
+  // Cleanup memory allocated by CGColorSpaceCreateDeviceRGB()
+  CGColorSpaceRelease(colorSpace);
 }
 
 @end

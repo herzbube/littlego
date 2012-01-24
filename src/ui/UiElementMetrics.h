@@ -32,6 +32,10 @@
 ///
 /// Useful references and functions:
 /// - http://www.idev101.com/code/User_Interface/sizes.html
+///
+/// @note Most of the values returned by the methods in this class have been
+/// determined experimentally, either in Interface Builder, or by running a
+/// debug session and looking at the various UI element's frames.
 // -----------------------------------------------------------------------------
 @interface UiElementMetrics : NSObject
 {
@@ -46,16 +50,19 @@
 + (int) navigationBarHeight;
 + (int) toolbarHeight;
 + (int) tabBarHeight;
-+ (int) viewWithStatusBarHeight;
-+ (int) viewWithNavigationBarHeight;
-+ (int) viewWithTabBarHeight;
-+ (int) viewWithNavigationAndTabBarHeight;
 + (int) spacingHorizontal;
 + (int) spacingVertical;
 + (int) labelHeight;
 + (int) sliderHeight;
 + (int) switchWidth;
++ (int) textFieldHeight;
 + (int) activityIndicatorWidthAndHeight;
++ (int) viewMarginHorizontal;
++ (int) viewMarginVertical;
++ (int) tableViewMarginVertical;
++ (int) tableViewCellWidth;
++ (int) tableViewCellHeight:(bool)topOrBottomCell;
++ (int) tableViewCellMarginHorizontal;
 + (int) tableViewCellContentViewWidth;
 + (int) tableViewCellContentViewHeight;
 + (int) tableViewCellContentViewAvailableWidth;

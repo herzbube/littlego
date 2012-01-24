@@ -18,6 +18,7 @@
 // Project includes
 #import "ItemPickerController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,6 +34,7 @@
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name Action methods
 //@{
@@ -151,6 +153,15 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

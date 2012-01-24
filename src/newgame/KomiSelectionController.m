@@ -19,6 +19,7 @@
 #import "KomiSelectionController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../utility/NSStringAdditions.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -64,6 +65,7 @@ enum NoHandicapGameSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name Action methods
 //@{
@@ -154,6 +156,15 @@ enum NoHandicapGameSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

@@ -23,6 +23,7 @@
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -68,6 +69,7 @@ enum GtpEngineProfilesSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated;
 //@}
 /// @name UITableViewDataSource protocol
@@ -177,6 +179,15 @@ enum GtpEngineProfilesSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

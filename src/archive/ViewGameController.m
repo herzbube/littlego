@@ -21,6 +21,7 @@
 #import "ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
 #import "../go/GoGame.h"
@@ -66,6 +67,7 @@ enum GameAttributesSectionItem
 //@{
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -170,6 +172,15 @@ enum GameAttributesSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------

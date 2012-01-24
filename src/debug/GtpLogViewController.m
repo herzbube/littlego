@@ -24,6 +24,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -39,6 +40,8 @@
 - (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -63,6 +66,7 @@
 //@}
 /// @name Private helpers
 //@{
+- (CGRect) mainViewFrame;
 - (void) setupNavigationItem;
 - (void) setupFrontSideView;
 - (void) setupBackSideView;
@@ -123,10 +127,17 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:[UiElementMetrics applicationFrame]] autorelease];
-  self.frontSideView = [[[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  self.frontSideView = [[[UITableView alloc] initWithFrame:mainViewFrame
                                                      style:UITableViewStylePlain] autorelease];
-  self.backSideView = [[[UITextView alloc] initWithFrame:[UiElementMetrics applicationFrame]] autorelease];
+  self.backSideView = [[[UITextView alloc] initWithFrame:mainViewFrame] autorelease];
+
+  // Configure autoresizingMask properties for proper autorotation
+  UIViewAutoresizing autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.view.autoresizingMask = autoresizingMask;
+  self.frontSideView.autoresizingMask = autoresizingMask;
+  self.backSideView.autoresizingMask = autoresizingMask;
 }
 
 // -----------------------------------------------------------------------------
@@ -176,6 +187,46 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit at various times to determine whether this controller
+/// supports the given orientation @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit after the user interface has rotated.
+// -----------------------------------------------------------------------------
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+  // Adjust the frame of the view that is currently NOT visible. The main view
+  // has already been resized by the auto-rotation process, so we can take its
+  // frame as the reference.
+  if (self.model.gtpLogViewFrontSideIsVisible)
+    self.backSideView.frame = self.view.frame;
+  else
+    self.frontSideView.frame = self.view.frame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of this controller's main view, taking into
+/// account the current interface orientation. Assumes that super views have
+/// the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) mainViewFrame
+{
+  int mainViewX = 0;
+  int mainViewY = 0;
+  int mainViewWidth = [UiElementMetrics screenWidth];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics navigationBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
 }
 
 // -----------------------------------------------------------------------------
