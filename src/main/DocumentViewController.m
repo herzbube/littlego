@@ -114,7 +114,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.webView = [[UIWebView alloc] init];
+  self.webView = [[[UIWebView alloc] init] autorelease];
   self.view = webView;
 }
 

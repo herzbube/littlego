@@ -114,6 +114,7 @@
 - (CGRect) playViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
+- (void) updateFramesOfViewsWithoutAutoResizing;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
@@ -253,6 +254,7 @@
   [self.frontSideView addSubview:self.playView.activityIndicator];
   
   // Configure autoresizingMask properties for proper autorotation
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -516,6 +518,19 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Called by UIKit when the view is about to made visible.
+// -----------------------------------------------------------------------------
+- (void) viewWillAppear:(BOOL)animated
+{
+  // Default does nothing, we don't have to invoke [super viewWillAppear]
+
+  // We don't know whether we really need to invoke this method, but if we
+  // don't, then an interface orientation change while this controller was not
+  // visible will go unnoticed.
+  [self updateFramesOfViewsWithoutAutoResizing];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Called by UIKit at various times to determine whether this controller
 /// supports the given orientation @a interfaceOrientation.
 // -----------------------------------------------------------------------------
@@ -530,17 +545,53 @@
 // -----------------------------------------------------------------------------
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
-  // Orientation of view controllers has already changed at this point, and
-  // the bounds of all views have been changed, so we can safely calculate the
-  // new frame
+  // Only perform animation if the play view is visible. If the game info view
+  // is visible on the backside, UIKit animates the rotation for us.
+  if (self.frontSideView.superview)
+  {
+    // Orientation of view controllers has already changed at this point, and
+    // the bounds of all views have been changed, so we can safely calculate the
+    // new frame
+    CGRect playViewFrame = [self playViewFrame];
+    [UIView animateWithDuration:duration
+                          delay:0
+                        options:UIViewAnimationCurveLinear
+                     animations:^{
+                       self.playView.frame = playViewFrame;
+                     }
+                     completion:NULL];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Called by UIKit after interface rotation ends.
+// -----------------------------------------------------------------------------
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+{
+  // One of the views was not resized because it was not part of the view
+  // hierarchy during rotation. Here we fix this...
+  [self updateFramesOfViewsWithoutAutoResizing];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adjust the frame propery of all views that are not automatically
+/// resized (most views are auto-resized due to their autoresizingMask.
+// -----------------------------------------------------------------------------
+- (void) updateFramesOfViewsWithoutAutoResizing
+{
+  if (! self.frontSideView.superview)
+    self.frontSideView.frame = self.backSideView.frame;
+  else
+    self.backSideView.frame = self.frontSideView.frame;
+
+  // Always update PlayView. With this we handle
+  // - Missing update if "Play" view is visible, but only the backside view is
+  //   currently displayed
+  // - Missing update if "Play" view is not visible
+  // If the PlayView already has the correct frame, we hope that setting it
+  // again will result in a no-op.
   CGRect playViewFrame = [self playViewFrame];
-  [UIView animateWithDuration:duration
-                        delay:0
-                      options:UIViewAnimationCurveLinear
-                   animations:^{
-                     self.playView.frame = playViewFrame;
-                   }
-                   completion:NULL];
+  self.playView.frame = playViewFrame;
 }
 
 // -----------------------------------------------------------------------------
@@ -617,7 +668,7 @@
   GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:gameInfoController];
-  [navigationController.view setFrame:[self.backSideView bounds]];
+  navigationController.view.frame = self.backSideView.bounds;
   [self.backSideView addSubview:navigationController.view];
   bool flipToFrontSideView = false;
   [self flipToFrontSideView:flipToFrontSideView];
@@ -628,6 +679,8 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
 {
+  self.frontSideView.frame = self.backSideView.frame;
+  self.frontSideView.bounds = self.backSideView.bounds;
   bool flipToFrontSideView = true;
   [self flipToFrontSideView:flipToFrontSideView];
   [controller.navigationController.view removeFromSuperview];

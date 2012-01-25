@@ -233,7 +233,6 @@
   m_textField.delegate = self;
   m_textField.text = self.text;
   m_textField.placeholder = self.placeholder;
-  m_textField.clearButtonMode = UITextFieldViewModeAlways;
 
   return cell;
 }

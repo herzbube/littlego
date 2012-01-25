@@ -43,6 +43,6 @@
 + (DocumentViewController*) controllerWithTitle:(NSString*)title resourceName:(NSString*)resourceName;
 
 /// @brief The view that this DocumentViewController is responsible for.
-@property(nonatomic, retain) IBOutlet UIWebView* webView;
+@property(nonatomic, retain) UIWebView* webView;
 
 @end

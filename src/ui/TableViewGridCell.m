@@ -66,7 +66,7 @@ static NSString* gridLineColor = @"A9ABAD";
 - (id) initWithFrame:(CGRect)frame;
 - (void) dealloc;
 - (void) drawRect:(CGRect)rect;
-@property(nonatomic, retain) NSArray* gridLines;
+@property(nonatomic, assign) int numberOfColumns;
 @end
 
 
@@ -128,10 +128,11 @@ static NSString* gridLineColor = @"A9ABAD";
   // 3) Grid line
   //
   // a) self.indentationWidth
-  // b) [UIElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
+  // b) [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
   // c) columnWidth
   // d) [UiElementMetrics spacingHorizontal]
 
+  // Remove the old content view, 
   UIView* oldGridCellContentView = [self.contentView viewWithTag:GridCellContentViewTag];
   if (oldGridCellContentView)
     [oldGridCellContentView removeFromSuperview];
@@ -140,10 +141,13 @@ static NSString* gridLineColor = @"A9ABAD";
   int numberOfColumns = [delegate numberOfColumnsInGridCell:self];
   int numberOfGridLines = numberOfColumns - 1;
   const int gridLinePadding = 2 * [UiElementMetrics spacingHorizontal];  // padding on the left and on the right of a grid line
-  int totalWidthAvailableForAllColumns = [UiElementMetrics tableViewCellContentViewAvailableWidth] - (numberOfGridLines * gridLinePadding);
+  int totalWidthAvailableForAllColumns = (gridCellContentView.bounds.size.width
+                                          - 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
+                                          - (numberOfGridLines * gridLinePadding));
   int columnWidth = totalWidthAvailableForAllColumns / numberOfColumns;
 
-  NSMutableArray* gridLines = [NSMutableArray arrayWithCapacity:numberOfGridLines];
+  gridCellContentView.numberOfColumns = numberOfColumns;
+
   for (int column = 0; column < numberOfColumns; ++column)
   {
     int labelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal] + column * (columnWidth + gridLinePadding);
@@ -170,17 +174,27 @@ static NSString* gridLineColor = @"A9ABAD";
         continue;
       }
     }
+
+    label.tag = GridCellContentViewTag + column + 1;
+    if (0 == column)
+    {
+      // Left label
+      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
+    }
+    else if (numberOfColumns == (column + 1))
+    {
+      // Right label
+      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
+    }
+    else
+    {
+      // In-between labels
+      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin);
+    }
+
     label.text = [delegate gridCell:self textForColumn:column];
     [gridCellContentView addSubview:label];
-
-    // Generate a grid line for all but the first column
-    if (column > 0)
-    {
-      float gridLineX = labelX - [UiElementMetrics spacingHorizontal];
-      [gridLines addObject:[NSNumber numberWithFloat:gridLineX]];
-    }
   }
-  gridCellContentView.gridLines = gridLines;
 }
 
 // -----------------------------------------------------------------------------
@@ -190,13 +204,12 @@ static NSString* gridLineColor = @"A9ABAD";
 // -----------------------------------------------------------------------------
 - (GridCellContentView*) gridCellContentView
 {
-  CGRect gridCellContentViewFrameRect = CGRectMake(0, 0,
-                                                   [UiElementMetrics tableViewCellContentViewWidth],
-                                                   [UiElementMetrics tableViewCellContentViewHeight]);
+  CGRect gridCellContentViewFrameRect = self.contentView.bounds;
   GridCellContentView* gridCellContentView = [[GridCellContentView alloc] initWithFrame:gridCellContentViewFrameRect];
   [self.contentView addSubview:gridCellContentView];
   [gridCellContentView release];
   gridCellContentView.tag = GridCellContentViewTag;
+  gridCellContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   return gridCellContentView;
 }
 
@@ -223,6 +236,7 @@ static NSString* gridLineColor = @"A9ABAD";
 	label.textAlignment = UITextAlignmentCenter;
 	label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
 	label.backgroundColor = [UIColor clearColor];
+  label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	return label;
 }
 
@@ -231,7 +245,8 @@ static NSString* gridLineColor = @"A9ABAD";
 
 @implementation GridCellContentView
 
-@synthesize gridLines;
+@synthesize numberOfColumns;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TableViewGridCell object with reuse identifier
@@ -245,7 +260,7 @@ static NSString* gridLineColor = @"A9ABAD";
   self = [super initWithFrame:frame];
   if (! self)
     return nil;
-  self.gridLines = nil;
+  self.numberOfColumns = 0;
   self.backgroundColor = [UIColor clearColor];
   return self;
 }
@@ -255,7 +270,6 @@ static NSString* gridLineColor = @"A9ABAD";
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.gridLines = nil;
   [super dealloc];
 }
 
@@ -268,11 +282,24 @@ static NSString* gridLineColor = @"A9ABAD";
 	CGContextSetLineWidth(context, 1.0);
 	CGContextSetStrokeColorWithColor(context, [UIColor colorFromHexString:gridLineColor].CGColor);
 
-  for (NSNumber* gridLine in self.gridLines)
+  // The following iteration must take into account that the original label
+  // frames have changed due to resizing, so it can't use the same fixed
+  // width calculations as in TableViewGridCell::setupCellContent()
+  CGFloat rightEdgeOfPreviousLabel = 0;
+  for (int column = 0; column < numberOfColumns; ++column)
   {
-    CGFloat gridLineX = [gridLine floatValue];
-    CGContextMoveToPoint(context, gridLineX + gHalfPixel, 0);
-    CGContextAddLineToPoint(context, gridLineX + gHalfPixel, rect.size.height);
+    int labelTag = GridCellContentViewTag + column + 1;
+    UIView* label = [self viewWithTag:labelTag];
+    // Generate a grid line for all but the first column
+    if (column > 0)
+    {
+      CGFloat leftEdgeOfCurrentLabel = label.frame.origin.x;
+      CGFloat halfDistanceBetweenLabels = (leftEdgeOfCurrentLabel - rightEdgeOfPreviousLabel) / 2;
+      int gridLineX = floor(rightEdgeOfPreviousLabel + halfDistanceBetweenLabels);
+      CGContextMoveToPoint(context, gridLineX + gHalfPixel, 0);
+      CGContextAddLineToPoint(context, gridLineX + gHalfPixel, rect.size.height);
+    }
+    rightEdgeOfPreviousLabel = label.frame.origin.x + label.frame.size.width;
   }
 
 	CGContextStrokePath(context);

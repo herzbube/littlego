@@ -121,18 +121,24 @@
     }
     case TextFieldCellType:
     {
-      int textFieldX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
-      int textFieldY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
-      int textFieldWidth = [UiElementMetrics tableViewCellContentViewAvailableWidth];
-      int textFieldHeight = [UiElementMetrics tableViewCellContentViewAvailableHeight];
-      CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
-      UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
+      // The content view at this time (i.e. after construction) is always
+      // sized 320x44, even on iPad or iPhone/landscape. The "trick" for
+      // proper size adjustment of subviews is to blithely use the content
+      // view's size and let the autoresizingMask do the work for us. This
+      // works even though the contentView currently has autoresizingMask == 0.
+      // It's not clear who actually performs the size adjustment (we can
+      // guess: the UITableView), but it works, even on orientation changes.
+      // The "brute-force" or "do-it-yourself" alternative is to subclass
+      // UITableViewCell and override layoutSubviews().
+      CGRect textFieldFrame = cell.contentView.bounds;
+      textFieldFrame = CGRectInset(textFieldFrame,
+                                   [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
+                                   [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical]);
+      UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldFrame] autorelease];
       [cell.contentView addSubview:textField];
       textField.textColor = [UIColor slateBlueColor];
-      // TODO Find out how we can use UITextFieldViewModeWhileEditing; at the
-      // moment we don't use it because the clear button is displayed
-      // overlaying the right border of the cell
-      textField.clearButtonMode = UITextFieldViewModeNever;
+      textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+      textField.clearButtonMode = UITextFieldViewModeWhileEditing;
       // Make the text field identifiable so that clients can get at it by
       // sending "viewWithTag:" to the cell
       textField.tag = TextFieldCellTextFieldTag;

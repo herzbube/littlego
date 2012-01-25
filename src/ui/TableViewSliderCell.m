@@ -141,6 +141,7 @@
   descriptionLabel.textAlignment = UITextAlignmentLeft;
   descriptionLabel.textColor = [UIColor blackColor];
   descriptionLabel.backgroundColor = [UIColor clearColor];
+  descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
   [self.contentView addSubview:descriptionLabel];
 
   CGRect valueLabelRect = [self valueLabelFrame];
@@ -150,36 +151,21 @@
   valueLabel.textAlignment = UITextAlignmentRight;
   valueLabel.textColor = [UIColor slateBlueColor];
   valueLabel.backgroundColor = [UIColor clearColor];
+  valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
   [self.contentView addSubview:valueLabel];
 
   CGRect sliderRect = [self sliderFrame];
   slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
   slider.tag = SliderCellSliderTag;
   slider.continuous = YES;
+  slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   [self.contentView addSubview:slider];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked by UIKit when the view needs to layout its subviews, e.g.
-/// as part of the auto-rotation process.
-///
-/// Auto-rotation support could only be added by overriding this method. The
-/// usual approach of setting sensible values for autoresizingMask for subviews
-/// did not work in this case, for unknown reasons subviews would stretch
-/// "all over the place".
-// -----------------------------------------------------------------------------
-- (void) layoutSubviews
-{
-  [super layoutSubviews];  // resize content view
-  descriptionLabel.frame = [self descriptionLabelFrame];
-  valueLabel.frame = [self valueLabelFrame];
-  slider.frame = [self sliderFrame];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the description label, taking into account
-/// the current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief Calculates the frame of the description label. Assumes that an
+/// autoresizingMask is later applied to the label that will make it resize
+/// properly.
 // -----------------------------------------------------------------------------
 - (CGRect) descriptionLabelFrame
 {
@@ -192,17 +178,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the value label, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief Calculates the frame of the value label. Assumes that an
+/// autoresizingMask is later applied to the label that will make it resize
+/// properly.
 // -----------------------------------------------------------------------------
 - (CGRect) valueLabelFrame
 {
+  CGSize superViewSize = self.contentView.bounds.size;
   int valueLabelX = (descriptionLabel.frame.origin.x
                      + descriptionLabel.frame.size.width
                      + [UiElementMetrics spacingHorizontal]);
   int valueLabelY = descriptionLabel.frame.origin.y;
-  int valueLabelWidth = ([UiElementMetrics tableViewCellContentViewWidth]
+  int valueLabelWidth = (superViewSize.width
                          - valueLabelX
                          - [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
   int valueLabelHeight = [UiElementMetrics labelHeight];
@@ -210,8 +197,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the slider, taking into account the current
-/// interface orientation. Assumes that super views have the correct bounds.
+/// @brief Calculates the frame of the slider. Assumes that an autoresizingMask
+/// is later applied to the label that will make it resize properly.
 // -----------------------------------------------------------------------------
 - (CGRect) sliderFrame
 {

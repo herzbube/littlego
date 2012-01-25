@@ -70,5 +70,6 @@
 + (int) tableViewCellContentDistanceFromEdgeHorizontal;
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
++ (int) englishKeyboardHeight;
 
 @end

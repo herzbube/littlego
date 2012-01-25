@@ -69,14 +69,22 @@ static UIViewController* m_interfaceOrientationSource;
   return 20;
 }
 
+// It's recommended not to set bar heights programmatically, but heck, why not
+// if we already do it for everything else?
 + (int) navigationBarHeight
 {
-  return 44;  // same as toolbar height
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+    if (! isPortraitOrientation)
+      return 32;
+  }
+  return 44;
 }
 
 + (int) toolbarHeight
 {
-  return 44;  // same as navigation bar height
+  return [UiElementMetrics navigationBarHeight];
 }
 
 + (int) tabBarHeight
@@ -210,6 +218,25 @@ static UIViewController* m_interfaceOrientationSource;
 + (int) tableViewCellDisclosureIndicatorWidth
 {
   return 20;
+}
+
++ (int) englishKeyboardHeight
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    if (isPortraitOrientation)
+      return 216;
+    else
+      return 162;
+  }
+  else
+  {
+    if (isPortraitOrientation)
+      return 264;
+    else
+      return 352;
+  }
 }
 
 @end

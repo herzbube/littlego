@@ -43,7 +43,7 @@
 /// @note This method is intended to be called from inside a table view
 /// delegate's tableView:heightForRowAtIndexPath:().
 // -----------------------------------------------------------------------------
-+ (CGFloat) tableView:(UITableView*)tableView heightForCellOfType:(enum TableViewCellType)type withText:(NSString*)text  hasDisclosureIndicator:(bool)hasDisclosureIndicator
++ (CGFloat) tableView:(UITableView*)tableView heightForCellOfType:(enum TableViewCellType)type withText:(NSString*)text hasDisclosureIndicator:(bool)hasDisclosureIndicator
 {
   // Calculating the cell height for an empty text results in a value much too
   // small. We therefore return table view's default height for rows
@@ -122,7 +122,7 @@
 {
   UITableView* tableView = [[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
                                                         style:tableViewStyle];
-  
+
   // Connect controller with view
   // Note: If viewController is a UITableViewController, setting this property
   // automatically sets the controller's tableView property

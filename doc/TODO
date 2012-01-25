@@ -207,6 +207,13 @@ Priority 3 (not important)
   confirmation whether the game should be restored
 - Undoing a move in a human vs. computer game causes two updates in PlayView
   because two moves are taken back; there should only be one update
+- When GameInfoView is visible and rotated, TableViewGridCell's drawRect:() is
+  not invoked. The result is that the crisp 1-point lines that are normally
+  drawn there appear slightly fuzzy because after UIKit's rotation animation
+  the lines are anti-aliased. If some of the cells are not visible when the
+  rotation begins, and become visible during rotation, they are then redrawn.
+  The result is that half of the cells have crisp lines and half of them have
+  fuzzy, anti-aliased lines.
 
 
 Future improvements to the 3rdparty build process

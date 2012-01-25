@@ -79,6 +79,10 @@
 //@}
 /// @name Privately declared properties
 //@{
+/// @brief The frontside view. Log items are represented by table view cells.
+@property(nonatomic, retain) UITableView* frontSideView;
+/// @brief The backside view. Log items are represented by raw text.
+@property(nonatomic, retain) UITextView* backSideView;
 @property(nonatomic, assign) bool lastRowIsVisible;
 @property(nonatomic, assign) bool updateScheduledByGtpLogItemChanged;
 /// TODO This flag exists because we "know" that, if both gtpLogContentChanged
@@ -127,6 +131,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  // Setup view hierarchy
   CGRect mainViewFrame = [self mainViewFrame];
   self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
   self.frontSideView = [[[UITableView alloc] initWithFrame:mainViewFrame
@@ -138,6 +143,9 @@
   self.view.autoresizingMask = autoresizingMask;
   self.frontSideView.autoresizingMask = autoresizingMask;
   self.backSideView.autoresizingMask = autoresizingMask;
+  
+  // Other configuration
+  self.backSideView.editable = false;
 }
 
 // -----------------------------------------------------------------------------

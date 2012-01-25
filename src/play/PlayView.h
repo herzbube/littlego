@@ -104,9 +104,9 @@
 - (void) actionEnds;
 
 /// @brief The status line GUI control.
-@property(nonatomic, retain) IBOutlet UILabel* statusLine;
+@property(nonatomic, retain) UILabel* statusLine;
 /// @brief The activity indicator.
-@property(nonatomic, retain) IBOutlet UIActivityIndicatorView* activityIndicator;
+@property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 
 /// @name Cross-hair point properties
 //@{
