@@ -143,7 +143,7 @@
       // sending "viewWithTag:" to the cell
       textField.tag = TextFieldCellTextFieldTag;
       // Properties from the UITextInputTraits protocol
-      textField.autocapitalizationType = YES;
+      textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
       textField.autocorrectionType = UITextAutocorrectionTypeNo;
       textField.enablesReturnKeyAutomatically = YES;
       // The cell should never appear selected, instead we want the text field

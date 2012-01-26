@@ -289,7 +289,10 @@ enum ActionSheetButton
     suffix++;
   }
 
-  EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName title:@"Game name" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
+                                                                             style:EditTextControllerStyleTextField
+                                                                          delegate:self] retain];
+  editTextController.title = @"Game name";
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;

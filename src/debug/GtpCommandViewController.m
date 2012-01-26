@@ -225,7 +225,10 @@
 // -----------------------------------------------------------------------------
 - (void) addCommand:(id)sender
 {
-  EditTextController* editTextController = [[EditTextController controllerWithText:@"" title:@"New command" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:@""
+                                                                             style:EditTextControllerStyleTextField
+                                                                          delegate:self] retain];
+  editTextController.title = @"New command";
   editTextController.context = [NSNumber numberWithInt:-1];
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
@@ -242,7 +245,10 @@
 - (void) editCommandAtIndex:(int)index
 {
   NSString* commandString = [self.model commandStringAtIndex:index];
-  EditTextController* editTextController = [[EditTextController controllerWithText:commandString title:@"Edit command" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:commandString
+                                                                             style:EditTextControllerStyleTextField
+                                                                          delegate:self] retain];
+  editTextController.title = @"Edit command";
   editTextController.context = [NSNumber numberWithInt:index];
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];

@@ -118,9 +118,10 @@ enum OtherProfileSettingsSectionItem
 //@{
 - (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
 //@}
-/// @name UINavigationControllerDelegate protocol
+/// @name EditTextDelegate protocol
 //@{
-- (void) navigationController:(UINavigationController*)navigationController willShowViewController:(UIViewController*)viewController animated:(BOOL)animated;
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
 /// @name Private helpers
 //@{
@@ -128,9 +129,6 @@ enum OtherProfileSettingsSectionItem
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) UITextView* textView;
-@property(nonatomic, retain) UIViewController* textViewController;
-@property(nonatomic, assign) bool textViewControllerIsPushed;
 @property(nonatomic, retain) UISwitch* reuseSubtreeSwitch;
 //@}
 @end
@@ -141,9 +139,6 @@ enum OtherProfileSettingsSectionItem
 @synthesize delegate;
 @synthesize profile;
 @synthesize profileExists;
-@synthesize textView;
-@synthesize textViewController;
-@synthesize textViewControllerIsPushed;
 @synthesize reuseSubtreeSwitch;
 
 
@@ -190,8 +185,6 @@ enum OtherProfileSettingsSectionItem
 {
   self.delegate = nil;
   self.profile = nil;
-  self.textView = nil;
-  self.textViewController = nil;
   self.reuseSubtreeSwitch = nil;
   [super dealloc];
 }
@@ -203,30 +196,6 @@ enum OtherProfileSettingsSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  // Try to make the text view look similar to a table view cell
-  self.textView = [[[UITextView alloc] init] autorelease];
-  self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-  self.textView.textColor = [UIColor slateBlueColor];
-  self.textView.contentInset = UIEdgeInsetsMake([UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
-                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
-                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
-                                                [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
-  self.textViewController = [[[UIViewController alloc] init] autorelease];
-  self.textViewController.view = textView;
-  self.textViewController.navigationItem.title = @"Edit description";
-  if (! self.navigationController.delegate)
-    self.navigationController.delegate = self;
-  else
-  {
-    // This may be a little bit harsh, but we really want to know if there
-    // was an implementation change and this class was not properly updated.
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Navigation controller already has a delegate"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  self.textViewControllerIsPushed = false;
 
   if (self.profileExists)
   {
@@ -518,10 +487,44 @@ enum OtherProfileSettingsSectionItem
 
   if (ProfileDescriptionSection == indexPath.section)
   {
-    self.textView.text = self.profile.profileDescription;
-    [self.textView becomeFirstResponder];
-    [self.navigationController pushViewController:self.textViewController animated:YES];
+    EditTextController* editTextController = [[EditTextController controllerWithText:self.profile.profileDescription
+                                                                               style:EditTextControllerStyleTextView
+                                                                            delegate:self] retain];
+    editTextController.title = @"Edit description";
+    UINavigationController* navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:editTextController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentModalViewController:navigationController animated:YES];
+    [navigationController release];
+    [editTextController release];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
+{
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+{
+  if (! didCancel)
+  {
+    if (editTextController.textHasChanged)
+    {
+      self.profile.profileDescription = editTextController.text;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileDescriptionItem inSection:ProfileDescriptionSection];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -553,32 +556,6 @@ enum OtherProfileSettingsSectionItem
   // -> the user must simply continue editing until the profile name becomes
   //    valid
   return YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UINavigationControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) navigationController:(UINavigationController*)navigationController willShowViewController:(UIViewController*)viewController animated:(BOOL)animated
-{
-  if (viewController == self.textViewController)
-    self.textViewControllerIsPushed = true;
-  else if (viewController == self)
-  {
-    if (self.textViewControllerIsPushed)
-    {
-      self.textViewControllerIsPushed = false;
-      self.profile.profileDescription = self.textView.text;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileDescriptionItem inSection:ProfileDescriptionSection];
-      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
-      [self.tableView reloadRowsAtIndexPaths:indexPaths
-                            withRowAnimation:UITableViewRowAnimationNone];
-    }
-  }
-  else
-  {
-    // self is being popped, so we don't want to be the delegate any longer
-    self.navigationController.delegate = nil;
-  }
 }
 
 // -----------------------------------------------------------------------------

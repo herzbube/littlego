@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../ui/EditTextController.h"
+
 // Forward declarations
 @class EditGtpEngineProfileController;
 @class GtpEngineProfile;
@@ -41,7 +44,7 @@
 /// The "Edit/New Profile" view allows the user to edit the information
 /// associated with a GtpEngineProfile object. The view is a generic
 /// UITableView whose input elements are created dynamically by
-/// EditGtpEngineProfileController.  The controller runs in one of two modes,
+/// EditGtpEngineProfileController. The controller runs in one of two modes,
 /// depending on which convenience constructor is used to create the controller
 /// instance:
 /// - Create mode: The profile whose attributes are edited does not exist yet,
@@ -60,7 +63,7 @@
 /// can be informed when the user makes any changes. For this to work, the
 /// delegate must implement the protocol EditGtpEngineProfileDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, UINavigationControllerDelegate>
+@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, EditTextDelegate>
 {
 }
 

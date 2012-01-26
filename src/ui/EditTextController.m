@@ -18,7 +18,12 @@
 // Project includes
 #import "EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/UIColorAdditions.h"
+
+// System includes
+#import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +37,7 @@
 //@}
 /// @name UIViewController methods
 //@{
+- (void) loadView;
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 - (void) viewWillAppear:(BOOL)animated;
@@ -42,29 +48,34 @@
 - (void) done:(id)sender;
 - (void) cancel:(id)sender;
 //@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
 /// @name UITextFieldDelegate protocol method.
 //@{
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)textField;
-- (BOOL) textFieldShouldReturn:(UITextField*)textField;
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
+- (BOOL) textFieldShouldReturn:(UITextField*)aTextField;
+//@}
+/// @name UITextViewDelegate protocol method.
+//@{
+- (void) textViewDidChange:(UITextView*)aTextView;
 //@}
 /// @name Helpers
 //@{
 - (bool) isTextAcceptable:(NSString*)aText;
+//@}
+/// @name Privately declared property
+//@{
+@property(nonatomic, retain) UITextField* textField;
+@property(nonatomic, retain) UITextView* textView;
 //@}
 @end
 
 
 @implementation EditTextController
 
+@synthesize textField;
+@synthesize textView;
 @synthesize context;
-@synthesize title;
+@synthesize editTextControllerStyle;
 @synthesize delegate;
 @synthesize text;
 @synthesize placeholder;
@@ -76,13 +87,13 @@
 /// @brief Convenience constructor. Creates an EditTextController instance of
 /// grouped style that is used to edit @a text.
 // -----------------------------------------------------------------------------
-+ (EditTextController*) controllerWithText:(NSString*)text title:(NSString*)title delegate:(id<EditTextDelegate>)delegate
++ (EditTextController*) controllerWithText:(NSString*)text style:(enum EditTextControllerStyle)style delegate:(id<EditTextDelegate>)delegate
 {
   EditTextController* controller = [[EditTextController alloc] init];
   if (controller)
   {
     [controller autorelease];
-    controller.title = title;
+    controller.editTextControllerStyle = style;
     controller.delegate = delegate;
     controller.text = text;
   }
@@ -96,14 +107,15 @@
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (UITableViewController)
-  self = [super initWithStyle:UITableViewStyleGrouped];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super init];
   if (! self)
     return nil;
 
-  m_textField = nil;
+  self.textField = nil;
+  self.textView = nil;
   self.context = nil;
-  self.title = nil;
+  self.editTextControllerStyle = EditTextControllerStyleTextField;
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
@@ -118,12 +130,94 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.textField = nil;
+  self.textView = nil;
   self.context = nil;
-  self.title = nil;
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  int mainViewX = 0;
+  int mainViewY = 0;
+  int mainViewWidth = [UiElementMetrics screenWidth];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics navigationBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  CGRect mainViewFrame = CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+
+
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  switch (self.editTextControllerStyle)
+  {
+    case EditTextControllerStyleTextField:
+    {
+      int textFieldX = [UiElementMetrics tableViewCellMarginHorizontal];
+      int textFieldY = [UiElementMetrics tableViewMarginVertical];
+      int textFieldWidth = self.view.bounds.size.width - 2 * textFieldX;
+      int textFieldHeight = [UiElementMetrics textFieldHeight];
+      CGRect textFieldRect = CGRectMake(textFieldX, textFieldY, textFieldWidth, textFieldHeight);
+      self.textField = [[[UITextField alloc] initWithFrame:textFieldRect] autorelease];
+      [self.view addSubview:self.textField];
+
+      self.textField.borderStyle = UITextBorderStyleRoundedRect;
+      self.textField.textColor = [UIColor slateBlueColor];
+      self.textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+      self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+      self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+      self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+      self.textField.enablesReturnKeyAutomatically = YES;
+      self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+      // Only available since iOS 5
+      if ([self.textField respondsToSelector:@selector(setSpellCheckingType:)])
+        self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
+
+      self.textField.delegate = self;
+      self.textField.text = self.text;
+      self.textField.placeholder = self.placeholder;
+      break;
+    }
+    case EditTextControllerStyleTextView:
+    {
+      int textViewX = [UiElementMetrics tableViewCellMarginHorizontal];
+      int textViewY = [UiElementMetrics tableViewMarginVertical];
+      int textViewWidth = self.view.bounds.size.width - 2 * textViewX;
+      // Use up only half of the available height to leave room for the keyboard
+      int textViewHeight = (self.view.bounds.size.height - 2 * textViewY) / 2;
+      CGRect textViewRect = CGRectMake(textViewX, textViewY, textViewWidth, textViewHeight);
+      self.textView = [[[UITextView alloc] initWithFrame:textViewRect] autorelease];
+      [self.view addSubview:self.textView];
+
+      self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+      self.textView.textColor = [UIColor slateBlueColor];
+      self.textView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+      self.textView.contentInset = UIEdgeInsetsMake([UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
+                                                    [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
+                                                    [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical],
+                                                    [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
+
+      self.textView.layer.borderColor = [UIColor whiteColor].CGColor;
+      self.textView.layer.borderWidth = 2.3;
+      self.textView.layer.cornerRadius = 15;
+      self.textView.clipsToBounds = YES;
+      
+      self.textView.delegate = self;
+      self.textView.text = self.text;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -137,7 +231,6 @@
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                         target:self
                                                                                         action:@selector(cancel:)];
-  self.navigationItem.title = self.title;
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
@@ -166,7 +259,7 @@
   [super viewWillAppear:animated];
 
   // Place the insertion point into the text field
-  [m_textField becomeFirstResponder];
+  [textField becomeFirstResponder];
 }
 
 // -----------------------------------------------------------------------------
@@ -183,10 +276,15 @@
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  if (! [self.delegate controller:self shouldEndEditingWithText:m_textField.text])
+  NSString* textFromControl = nil;
+  if (EditTextControllerStyleTextField == self.editTextControllerStyle)
+    textFromControl = self.textField.text;
+  else
+    textFromControl = self.textView.text;
+  if (! [self.delegate controller:self shouldEndEditingWithText:textFromControl])
     return;
-  self.textHasChanged = ! [self.text isEqualToString:m_textField.text];
-  self.text = m_textField.text;
+  self.textHasChanged = ! [self.text isEqualToString:textFromControl];
+  self.text = textFromControl;
   [self.delegate didEndEditing:self didCancel:false];
 }
 
@@ -199,55 +297,16 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
-{
-  return 1;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
-{
-  return 1;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (0 != indexPath.section && 0 != indexPath.row)
-  {
-    assert(false);
-    return nil;
-  }
-
-  enum TableViewCellType cellType = TextFieldCellType;
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-
-  m_textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
-  assert(m_textField != nil);
-  m_textField.delegate = self;
-  m_textField.text = self.text;
-  m_textField.placeholder = self.placeholder;
-
-  return cell;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
 ///
 /// An alternative to using the delegate protocol is to listen for notifications
 /// sent by the text field.
 // -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
 {
   // Compose the string as it would look like if the proposed change had already
   // been made
-  NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+  NSString* newText = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
   // Make sure that, if the text is not acceptable input, the view cannot be
   // left except by cancelling
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:newText];
@@ -259,7 +318,7 @@
 // -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldClear:(UITextField*)textField
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField
 {
   self.navigationItem.rightBarButtonItem.enabled = NO;
   return YES;
@@ -268,7 +327,7 @@
 // -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldReturn:(UITextField*)textField
+- (BOOL) textFieldShouldReturn:(UITextField*)aTextField
 {
   if (! [self isTextAcceptable:textField.text])
     return NO;
@@ -284,6 +343,14 @@
   if (self.acceptEmptyText)
     return true;
   return (aText.length > 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITextViewdDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) textViewDidChange:(UITextView*)aTextView
+{
+  self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:aTextView.text];
 }
 
 @end

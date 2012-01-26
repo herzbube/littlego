@@ -20,6 +20,17 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates different styles how EditTextController presents the
+/// text for editing.
+// -----------------------------------------------------------------------------
+enum EditTextControllerStyle
+{
+  EditTextControllerStyleTextField,  ///< @brief The text is presented in a UITextField. Suitable for short, one-line texts
+  EditTextControllerStyleTextView    ///< @brief The text is presented in a UITextView. Suitable for long, multi-line texts.
+};
+
+
+// -----------------------------------------------------------------------------
 /// @brief The EditTextDelegate protocol must be implemented by the delegate
 /// of EditTextController.
 // -----------------------------------------------------------------------------
@@ -64,20 +75,18 @@
 /// editing session from ending (it should also display an alert to provide
 /// feedback to the user why tapping the "done" button has no effect).
 // -----------------------------------------------------------------------------
-@interface EditTextController : UITableViewController <UITextFieldDelegate>
+@interface EditTextController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 {
-@private
-  /// @brief Private reference to the text field that does the actual editing.
-  UITextField* m_textField;
 }
 
-+ (EditTextController*) controllerWithText:(NSString*)text title:(NSString*)title delegate:(id<EditTextDelegate>)delegate;
++ (EditTextController*) controllerWithText:(NSString*)text style:(enum EditTextControllerStyle)style delegate:(id<EditTextDelegate>)delegate;
 
 /// @brief A context object that can be set by the client to identify the
 /// context or purpose that an instance of EditTextController was created for.
 @property(nonatomic, retain) id context;
-/// @brief The title to be displayed in the navigation item.
-@property(nonatomic, retain) NSString* title;
+/// @brief The style that EditTextController adopts for presenting the editable
+/// text.
+@property(nonatomic, assign) enum EditTextControllerStyle editTextControllerStyle;
 /// @brief This is the delegate that will be informed when the user has
 /// finished editing the text.
 @property(nonatomic, assign) id<EditTextDelegate> delegate;

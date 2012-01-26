@@ -314,7 +314,10 @@ enum GameAttributesSectionItem
 // -----------------------------------------------------------------------------
 - (void) editGame
 {
-  EditTextController* editTextController = [[EditTextController controllerWithText:self.game.name title:@"Game name" delegate:self] retain];
+  EditTextController* editTextController = [[EditTextController controllerWithText:self.game.name
+                                                                             style:EditTextControllerStyleTextField
+                                                                          delegate:self] retain];
+  editTextController.title = @"Game name";
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
