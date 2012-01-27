@@ -28,6 +28,7 @@
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -140,6 +141,12 @@ enum MoveStatisticsSectionItem
 //@{
 - (void) goGameNewCreated:(NSNotification*)notification;
 //@}
+/// @name Private helpers
+//@{
+- (CGRect) mainViewFrame;
+- (CGRect) navigationBarViewFrame;
+- (CGRect) tableViewFrame;
+//@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) GoScore* score;
@@ -159,7 +166,7 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 + (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score
 {
-  GameInfoViewController* controller = [[GameInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
+  GameInfoViewController* controller = [[GameInfoViewController alloc] init];
   if (controller)
   {
     [controller autorelease];
@@ -178,6 +185,76 @@ enum MoveStatisticsSectionItem
   self.delegate = nil;
   self.score = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the view that this controller manages.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  CGRect navigationBarViewFrame = [self navigationBarViewFrame];
+  UINavigationBar* navigationBar = [[[UINavigationBar alloc] initWithFrame:navigationBarViewFrame] autorelease];
+  [self.view addSubview:navigationBar];
+  CGRect tableViewFrame = [self tableViewFrame];
+  UITableView* tableView = [[[UITableView alloc] initWithFrame:tableViewFrame style:UITableViewStyleGrouped] autorelease];
+  [self.view addSubview:tableView];
+
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  navigationBar.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
+  tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+
+  tableView.delegate = self;
+  tableView.dataSource = self;
+
+  [navigationBar pushNavigationItem:self.navigationItem animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of this controller's main view, taking into
+/// account the current interface orientation. Assumes that super views have
+/// the correct bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) mainViewFrame
+{
+  int mainViewX = 0;
+  int mainViewY = 0;
+  int mainViewWidth = [UiElementMetrics screenWidth];
+  int mainViewHeight = ([UiElementMetrics screenHeight]
+                        - [UiElementMetrics tabBarHeight]
+                        - [UiElementMetrics statusBarHeight]);
+  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the toolbar view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) navigationBarViewFrame
+{
+  CGSize superViewSize = self.view.bounds.size;
+  int navigationBarViewX = 0;
+  int navigationBarViewY = 0;
+  int navigationBarViewWidth = superViewSize.width;
+  int navigationBarViewHeight = [UiElementMetrics navigationBarHeight];
+  return CGRectMake(navigationBarViewX, navigationBarViewY, navigationBarViewWidth, navigationBarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the frame of the toolbar view, taking into account the
+/// current interface orientation. Assumes that super views have the correct
+/// bounds.
+// -----------------------------------------------------------------------------
+- (CGRect) tableViewFrame
+{
+  CGSize superViewSize = self.view.bounds.size;
+  int tableViewX = 0;
+  int tableViewY = [UiElementMetrics navigationBarHeight];
+  int tableViewWidth = superViewSize.width;
+  int tableViewHeight = superViewSize.height - tableViewY;
+  return CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
 }
 
 // -----------------------------------------------------------------------------

@@ -580,9 +580,9 @@
 - (void) updateFramesOfViewsWithoutAutoResizing
 {
   if (! self.frontSideView.superview)
-    self.frontSideView.frame = self.backSideView.frame;
+    self.frontSideView.frame = self.view.bounds;
   else
-    self.backSideView.frame = self.frontSideView.frame;
+    self.backSideView.frame = self.view.bounds;
 
   // Always update PlayView. With this we handle
   // - Missing update if "Play" view is visible, but only the backside view is
@@ -666,10 +666,9 @@
     score = self.gameInfoScore;
   }
   GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:gameInfoController];
-  navigationController.view.frame = self.backSideView.bounds;
-  [self.backSideView addSubview:navigationController.view];
+  [gameInfoController retain];
+  [self.backSideView addSubview:gameInfoController.view];
+
   bool flipToFrontSideView = false;
   [self flipToFrontSideView:flipToFrontSideView];
 }
@@ -679,12 +678,10 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
 {
-  self.frontSideView.frame = self.backSideView.frame;
-  self.frontSideView.bounds = self.backSideView.bounds;
   bool flipToFrontSideView = true;
   [self flipToFrontSideView:flipToFrontSideView];
-  [controller.navigationController.view removeFromSuperview];
-  [controller.navigationController release];
+  [controller.view removeFromSuperview];
+  [controller release];
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)
   {
