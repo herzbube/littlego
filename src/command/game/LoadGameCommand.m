@@ -440,7 +440,7 @@
   else
     moveList = [movesFromGtp componentsSeparatedByString:@", "];
 
-  UIView* theSuperView = [ApplicationDelegate sharedDelegate].tabBarController.view;
+  UIView* theSuperView = [ApplicationDelegate sharedDelegate].window;
 	m_progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
 	[theSuperView addSubview:m_progressHUD];
 	// Set determinate mode

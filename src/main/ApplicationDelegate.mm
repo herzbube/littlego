@@ -540,7 +540,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // would see a white screen.
   [self setupGUI];
 
-  UIView* theSuperView = self.tabBarController.view;
+  UIView* theSuperView = self.window;
   MBProgressHUD* progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
   [theSuperView addSubview:progressHUD];
   progressHUD.mode = MBProgressHUDModeDeterminate;
