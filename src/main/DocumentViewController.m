@@ -56,6 +56,7 @@
 @implementation DocumentViewController
 
 @synthesize webView;
+@synthesize contextTabBarItem;
 @synthesize titleString;
 @synthesize htmlString;
 @synthesize resourceName;
@@ -145,7 +146,7 @@
   }
   else
   {
-    NSInteger tabType = self.tabBarItem.tag;
+    NSInteger tabType = self.contextTabBarItem.tag;
     NSString* resourceNameForTabType = [appDelegate resourceNameForTabType:tabType];
     NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
     switch (tabType)

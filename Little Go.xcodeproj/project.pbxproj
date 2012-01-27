@@ -199,6 +199,7 @@
 		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
+		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -1310,6 +1311,7 @@
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
+				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

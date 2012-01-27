@@ -63,6 +63,7 @@
 
 @implementation SectionedDocumentViewController
 
+@synthesize contextTabBarItem;
 @synthesize documentGenerator;
 
 
@@ -85,7 +86,7 @@
   [super viewDidLoad];
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NSInteger tabType = self.tabBarItem.tag;
+  NSInteger tabType = self.contextTabBarItem.tag;
   NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (tabType)

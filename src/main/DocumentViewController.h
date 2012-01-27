@@ -44,5 +44,8 @@
 
 /// @brief The view that this DocumentViewController is responsible for.
 @property(nonatomic, retain) UIWebView* webView;
+/// @brief The tag of this tab bar item provides this controller with the
+/// context what it is supposed to display.
+@property(nonatomic, assign) IBOutlet UITabBarItem* contextTabBarItem;
 
 @end

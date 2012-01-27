@@ -632,7 +632,8 @@
   cachedSize = [self size];
   cachedIsStoneGroup = [self isStoneGroup];
   cachedColor = [self color];
-  cachedLiberties = [self liberties];
+  if ([self isStoneGroup])
+    cachedLiberties = [self liberties];
   self.cachedAdjacentRegions = [self adjacentRegions];  // use self to increase retain count
 }
 
