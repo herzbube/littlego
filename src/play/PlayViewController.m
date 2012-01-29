@@ -284,7 +284,7 @@
 - (CGRect) mainViewFrame
 {
   int mainViewX = 0;
-  int mainViewY = [UiElementMetrics statusBarHeight];
+  int mainViewY = 0;
   int mainViewWidth = [UiElementMetrics screenWidth];
   int mainViewHeight = ([UiElementMetrics screenHeight]
                         - [UiElementMetrics tabBarHeight]
