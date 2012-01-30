@@ -637,3 +637,56 @@ Benchmark results
   - Panning normally = 20-27%
   - Placing the stone = 2-4%
 
+
+Layers in their order of stacking
+- Board
+  - This layer draws the wooden (or whatever) board. Currently uses a solid
+    color, but may use a pattern or image in the future.
+- Grid
+  - This layer draws the grid lines on whose intersections stones are placed
+- Coordinates
+  - This layer draws the grid coordinate labels (A-T, 1-19)
+  - This layer could possibly be merged with the grid layer
+- Star Points
+  - This layer marks up special intersections called star points (or hoshi, to
+    use the Japanese term)
+  - This layer could possibly be merged with the grid layer
+- Stones
+  - This layer draws the stones that have been placed during the current game
+- Cross-hair
+  - This layer draws the cross-hair that indicates to the user during stone
+    placement where the stone would be placed
+  - The cross-hair layer cannot be at the top of the stack because we want any
+    symbols to be drawn on top of the cross-hair stone
+- Symbols
+  - This layer draws various symbols to mark up stones
+  - Examples are: Last move, move numbers
+  - This layer is hidden in Scoring mode
+- Territory
+  - This layer marks up territory in Scoring mode
+  - This layer is shown only in Scoring mode
+- Dead stones
+  - This layer marks up dead stones in Scoring mode
+  - This layer is shown only in Scoring mode
+
+
+Events                                   Affected layer       Required change
+----------------------------------------------------------------------------------
+MarkLastMoveChanged                      Symbols              0-1 rectangles for the last stone that was placed
+DisplayCoordinatesChanged                iPad: Coordinates    4 rectangles on all board sides that contain the labels
+                                         iPhone: All layers   On iPhone we must resize the board
+DisplayMoveNumbersChanged                Symbols              0-n rectangles, one for each stone that is placed
+InconsistentTerritoryMarkupTypeChanged   Territory            Entire layer
+CrossHairChanged                         Cross-hair           A set of rectangles to remove the old and draw the new cross-hair
+GoGameNewCreated                         All layers           Entire layers (a new game might include a board size change)
+GoGameFirstMoveChanged                   ?                    Do we need this event? Can't we handle this with GoGameLastMoveChanged?
+GoGameLastMoveChanged                    Stones               1-n rectangles, for the stone being placed/undone + stones being captured/replaced
+GoScoreScoringModeEnabled                Symbols              Hide layer
+                                         Territory            Show layer
+                                         Dead Stones          Show layer
+GoScoreScoringModeDisabled               Symbols              Show layer
+                                         Territory            Hide layer
+                                         Dead Stones          Hide layer
+GoScoreCalculationEnds                   Territory            Update entire layer
+                                         Dead Stones          Update entire layer
+InterfaceRotationChanged                 All layers           Entire layers (space available for drawing changes)
