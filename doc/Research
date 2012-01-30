@@ -554,3 +554,86 @@ Copy & paste templates:
   uct_param_player reuse_subtree 1
   loadsgf /Users/patrick/Documents/go-games/19x19/pw6-gokifu-20110915-Choi_Cheolhan-Kim_Kiyoung.sgf
 
+
+Redesigning the drawing mechanism in PlayView
+---------------------------------------------
+During development of version 0.8 I decided to revise the implementation of how
+the PlayView class is drawing the Go board. The rationale for this is that the
+current implementation is extremely simple and brute force: Whenever an update
+is required, the entire board is re-drawn from scratch. This brute force
+approach has the potential to consume too much CPU power and thus to reduce
+battery life. Since there already is some optimization in place that tries to
+coalesce multiple update cycles into one (e.g. while loading a game), the main
+area affected by constant redrawing is when the user wants to place a stone and
+is panning around the board.
+
+So the first thing I am planning to do is to measure with Instruments.app on a
+real device how much CPU power is consumed during a panning session. This will
+be the benchmark that the new implementation must improve.
+
+Ideas for the new implementation
+- Pre-calculate coordinates of points, lines, edges, etc. only once when the
+  bounds of the view change (e.g. when it is drawn for the first time, or after
+  an interface orientation change) or when the board size changes. Currently
+  those coordinates are calculated from scratch each time the view is drawn.
+- The new implementation must be smart: It must be capable of deciding which
+  parts of the board need to be updated in reaction to a specific event. We
+  will therefore need to revisit the various events that can affect how the
+  board is drawn, and define for each event what parts of the board are
+  affected, and how.
+- Layers
+  - Conceptually, the PlayView main drawing method drawRect:() already splits
+    drawing tasks into separate layers (e.g. first draw the board, then draw the
+    lines on top, then draw the star points on top, etc.). It is probably a good
+    idea to create real layers using QuartzCore, instead of just doing layers in
+    concept.
+  - With layers, the smart new implementation will be able to conclude from a
+    specific event which layers need to be changed, instead of redrawing all
+    layers.
+  - A simple version of the layering solution will still update an entire layer
+    whenever that layer needs to be changed, even if the change affects only a
+    small rectangle.
+- Rectangles
+  - The UIKit drawing concept sees the view as a simple 2-D plane, not as a set
+    of stacked layers, and is based on updating rectangles within that plane.
+  - To make use of this concept, the smart new implementation will be able to
+    conclude from a specific event which partial rectangles need to be updated,
+    instead of updating the entire view rectangle.
+  - A simple version of the rectangle-based solution will update the partial
+    rectangles in all layers, even if the change affects only one or two layers.
+- The ultimate smart solution will be able to combine the two approaches: When
+  an event occurs, it will determine 1) which layers, and 2) which rectangles
+  are affected by the event, then it will update only those things that really
+  need to be changed.
+
+Things that should also be kept in mind:
+- What about the optimization approach where one creates an image that can then
+  be used as a canvas to draw on? Does it make sense to create such an image for
+  those parts of the Go board that are relatively static (i.e. stuff that
+  changes only with board size) and to combine the image with layers?
+- Is it necessary to take into account that in the future the app might support
+  zooming the Go board?
+
+
+Benchmark results
+- Set up the user defaults with a 19x19 board for new games, two human
+  players, and the default profile set not to use pondering (to eliminiate all
+  interference by Fuego)
+- Kill all applications to eliminate other outside interference
+- Start Instruments, then wait a moment until system activity dies down before
+  starting to pan
+- Note that during the entire test on all devices the system load is always 0%,
+  only user load appears to be relevant
+- Results on iPhone 3GS
+  - User load for the idle system (i.e. before beginning with the test) is 7-8%
+  - Starting to pan lets the user load quickly rise to 70-80%
+  - When wildly panning, user load is constantly above 90%, peaking at 98%
+  - When panning normally, user load is between 48 and 62%
+  - Placing the stone lets the user load go back down to the original 7-8%
+- Results on iPad 2, landscape
+  - Idle = 2-4%
+  - Start to pan = around 30%
+  - Wildly panning = above 60%, peaking at 74%
+  - Panning normally = 20-27%
+  - Placing the stone = 2-4%
+
