@@ -106,6 +106,9 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
+  // Send this while the old GoGame object is still around and fully functional
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:nil];
+
   // Create the new GoGame object
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
@@ -134,7 +137,7 @@
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what
   // game type this is.
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameNewCreated object:newGame];
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:newGame];
 }
 
 // -----------------------------------------------------------------------------

@@ -99,7 +99,7 @@ enum GtpEngineProfilesSectionItem
 //@}
 /// @name Notification responders
 //@{
-- (void) goGameNewCreated:(NSNotification*)notification;
+- (void) goGameDidCreate:(NSNotification*)notification;
 //@}
 /// @name Private helpers
 //@{
@@ -165,7 +165,7 @@ enum GtpEngineProfilesSectionItem
   self.navigationItem.rightBarButtonItem = self.editButtonItem;
   
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -592,9 +592,9 @@ enum GtpEngineProfilesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameNewCreated notification.
+/// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
-- (void) goGameNewCreated:(NSNotification*)notification
+- (void) goGameDidCreate:(NSNotification*)notification
 {
   // Here we are dealing with the (forbidden) scenario that the user can delete
   // a player that is associated with a running game. Imagine this:

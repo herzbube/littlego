@@ -50,7 +50,7 @@
 ///   The other GoGame objects is the new game that is still in the process of
 ///   being configured. Access to this new GoGame object is not available yet.
 ///   The new GoGame object becomes officially available via sharedGame() when
-///   the notification #goGameNewCreated is being sent.
+///   the notification #goGameDidCreate is being sent.
 // -----------------------------------------------------------------------------
 @interface GoGame : NSObject
 {

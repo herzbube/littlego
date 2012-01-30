@@ -15,11 +15,7 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <UIKit/UIKit.h>
-
 // Forward declarations
-@class PlayViewModel;
 @class GoPoint;
 
 
@@ -103,14 +99,18 @@
 - (void) actionStarts;
 - (void) actionEnds;
 
-/// @brief The status line GUI control.
-@property(nonatomic, retain) UILabel* statusLine;
-/// @brief The activity indicator.
-@property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
-
 /// @name Cross-hair point properties
 //@{
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+///
+/// Observers may monitor this property via KVO. If this property changes its
+/// value, observers can also get a correctly updated value from property
+/// @e crossHairPointIsLegalMove.
 @property(nonatomic, retain) GoPoint* crossHairPoint;
+/// @brief Is true if the GoPoint object at the focus of the cross-hair
+/// represents a legal move.
+///
+/// This property cannot be monitored via KVO.
 @property(nonatomic, assign) bool crossHairPointIsLegalMove;
 //@}
 

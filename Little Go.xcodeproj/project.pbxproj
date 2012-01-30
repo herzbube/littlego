@@ -200,6 +200,8 @@
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
+		CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
+		CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -453,6 +455,10 @@
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
+		CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityIndicatorController.h; sourceTree = "<group>"; };
+		CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityIndicatorController.m; sourceTree = "<group>"; };
+		CDF8B6FD14D722BA00940D3E /* StatusLineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusLineController.h; sourceTree = "<group>"; };
+		CDF8B6FE14D722BA00940D3E /* StatusLineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusLineController.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -669,6 +675,8 @@
 		CD1088561326CBB300E83543 /* play */ = {
 			isa = PBXGroup;
 			children = (
+				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
+				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
 				CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */,
 				CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */,
 				CD10887B1326D2C100E83543 /* PlayView.h */,
@@ -683,6 +691,8 @@
 				CD92EE951469EB83001EA980 /* ScoringModel.m */,
 				CDBF976913EC66FE00476748 /* SoundHandling.h */,
 				CDBF976A13EC66FE00476748 /* SoundHandling.m */,
+				CDF8B6FD14D722BA00940D3E /* StatusLineController.h */,
+				CDF8B6FE14D722BA00940D3E /* StatusLineController.m */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -1251,6 +1261,8 @@
 				CD00A367148C2C26004E1A0C /* main.m in Sources */,
 				CD00A368148C2C26004E1A0C /* SectionedDocumentViewController.m in Sources */,
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
+				CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */,
+				CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

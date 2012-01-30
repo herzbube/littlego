@@ -18,6 +18,8 @@
 // Project includes
 #import "PlayViewController.h"
 #import "PlayView.h"
+#import "StatusLineController.h"
+#import "ActivityIndicatorController.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
@@ -82,7 +84,8 @@
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
-- (void) goGameNewCreated:(NSNotification*)notification;
+- (void) goGameWillCreate:(NSNotification*)notification;
+- (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
@@ -146,6 +149,14 @@
 @property(nonatomic, retain) PlayView* playView;
 /// @brief The toolbar that displays action buttons.
 @property(nonatomic, retain) UIToolbar* toolbar;
+/// @brief The status line that displays messages to the user.
+@property(nonatomic, retain) UILabel* statusLine;
+/// @brief The activity indicator that is animated for long running operations.
+@property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
+/// @brief The controller that manages the status line.
+@property(nonatomic, retain) StatusLineController* statusLineController;
+/// @brief The controller that manages the activity indicator.
+@property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
@@ -185,6 +196,10 @@
 @synthesize backSideView;
 @synthesize playView;
 @synthesize toolbar;
+@synthesize statusLine;
+@synthesize activityIndicator;
+@synthesize statusLineController;
+@synthesize activityIndicatorController;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize undoButton;
@@ -211,6 +226,20 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
+  self.toolbar = nil;
+  self.statusLine = nil;
+  self.activityIndicator = nil;
+  self.statusLineController = nil;
+  self.activityIndicatorController = nil;
+  self.playForMeButton = nil;
+  self.passButton = nil;
+  self.undoButton = nil;
+  self.pauseButton = nil;
+  self.continueButton = nil;
+  self.flexibleSpaceButton = nil;
+  self.gameInfoButton = nil;
+  self.gameActionsButton = nil;
+  self.doneButton = nil;
   self.scoringModel = nil;
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
@@ -247,11 +276,11 @@
   self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
   [self.frontSideView addSubview:self.playView];
   CGRect statusLineViewFrame = [self statusLineViewFrame];
-  self.playView.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
-  [self.frontSideView addSubview:self.playView.statusLine];
+  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
+  [self.frontSideView addSubview:self.statusLine];
   CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
-  self.playView.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  [self.frontSideView addSubview:self.playView.activityIndicator];
+  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
+  [self.frontSideView addSubview:self.activityIndicator];
   
   // Configure autoresizingMask properties for proper autorotation
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
@@ -260,20 +289,20 @@
   self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
                                     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
-  self.playView.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
-  self.playView.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
+  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
+  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
 
   // Set common background color for all elements on the frontside view
   [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
   self.playView.backgroundColor = [UIColor clearColor];
-  self.playView.statusLine.backgroundColor = [UIColor clearColor];
+  self.statusLine.backgroundColor = [UIColor clearColor];
 
   // If the view is resized, the Go board needs to be redrawn (occurs during
   // rotation animation)
   self.playView.contentMode = UIViewContentModeRedraw;
 
   // Other configuration
-  self.playView.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 }
 
 // -----------------------------------------------------------------------------
@@ -441,6 +470,9 @@
 	[self.playView addGestureRecognizer:self.tapRecognizer];
   self.tapRecognizer.delegate = self;
 
+  self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
+  self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+
   self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"computer-play.png"]
                                                            style:UIBarButtonItemStyleBordered
                                                           target:self
@@ -480,7 +512,8 @@
   self.gameInfoScore = nil;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
@@ -491,9 +524,9 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 
   // We invoke this to set up initial state because we did not get
-  // get goGameNewCreated for the initial game (viewDidLoad gets called too
+  // get goGameDidCreate for the initial game (viewDidLoad gets called too
   // late)
-  [self goGameNewCreated:nil];
+  [self goGameDidCreate:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -511,6 +544,20 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
+  self.toolbar = nil;
+  self.statusLine = nil;
+  self.activityIndicator = nil;
+  self.statusLineController = nil;
+  self.activityIndicatorController = nil;
+  self.playForMeButton = nil;
+  self.passButton = nil;
+  self.undoButton = nil;
+  self.pauseButton = nil;
+  self.continueButton = nil;
+  self.flexibleSpaceButton = nil;
+  self.gameInfoButton = nil;
+  self.gameActionsButton = nil;
+  self.doneButton = nil;
   self.scoringModel = nil;
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
@@ -848,11 +895,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameNewCreated notification.
+/// @brief Responds to the #goGameWillCreate notification.
 // -----------------------------------------------------------------------------
-- (void) goGameNewCreated:(NSNotification*)notification
+- (void) goGameWillCreate:(NSNotification*)notification
 {
+  // Disable scoring mode while the old GoGame is still around
   self.scoringModel.scoringMode = false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];

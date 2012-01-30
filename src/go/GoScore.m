@@ -39,6 +39,10 @@
 - (id) init;
 - (void) dealloc;
 //@}
+/// @name Notification responders
+//@{
+- (void) goGameWillCreate:(NSNotification*)notification;
+//@}
 /// @name Private helpers
 //@{
 - (void) resetValues;
@@ -115,7 +119,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoScore object.
 ///
-/// @note This is the designated initializer of GoPoint.
+/// @note This is the designated initializer of GoScore.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -133,28 +137,49 @@
   allRegions = nil;
   [self resetValues];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GoPoint object.
+/// @brief Deallocates memory allocated by this GoScore object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   if (territoryScoresAvailable)
   {
-    GoBoard* board = game.board;
-    GoPoint* point = [board pointAtVertex:@"A1"];
-    for (; point != nil; point = point.next)
+    if (game)
     {
-      GoBoardRegion* region = point.region;
-      region.scoringMode = false;  // forget cached values
+      GoBoard* board = game.board;
+      GoPoint* point = [board pointAtVertex:@"A1"];
+      for (; point != nil; point = point.next)
+      {
+        GoBoardRegion* region = point.region;
+        region.scoringMode = false;  // forget cached values
+      }
     }
   }
 
   self.operationQueue = nil;
   self.allRegions = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  // Now that a new GoGame is about to be created, we can expect to be
+  // deallocated very soon. However, we can't be sure if this will happen while
+  // the old GoGame object is still around, therefore we clear our reference
+  // now so that our dealloc() does not access an object that no longer exists.
+  // Note: No more calculations are possible after this.
+  game = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -196,6 +221,8 @@
 - (void) calculateWaitUntilDone:(bool)waitUntilDone
 {
   if (self.scoringInProgress)
+    return;
+  if (! game)
     return;
   self.scoringInProgress = true;  // notify while we're still in the main thread context
 
@@ -438,6 +465,8 @@
   if (! territoryScoresAvailable)
     return;
   if (scoringInProgress)
+    return;
+  if (! game)
     return;
   if (! [stoneGroup isStoneGroup])
     return;

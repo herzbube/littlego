@@ -237,12 +237,18 @@ extern NSString* gtpEngineIdleNotification;
 /// @name GoGame notifications
 // -----------------------------------------------------------------------------
 //@{
+/// @brief Is sent to indicate that a new GoGame object is about to be created
+/// and and old GoGame object (if one exists) is about to be deallocated.
+///
+/// This notification is sent while the old GoGame object and its dependent
+/// objects (e.g. GoBoard) are still around and fully functional.
+extern NSString* goGameWillCreate;
 /// @brief Is sent to indicate that a new GoGame object has been created. This
 /// notification is sent after the GoGame object and its dependent objects (e.g.
 /// GoBoard) have been fully configured.
 ///
 /// The GoGame object is associated with the notification.
-extern NSString* goGameNewCreated;
+extern NSString* goGameDidCreate;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
 /// i.e. the game has started or ended.
 ///

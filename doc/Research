@@ -678,7 +678,7 @@ DisplayCoordinatesChanged                iPad: Coordinates    4 rectangles on al
 DisplayMoveNumbersChanged                Symbols              0-n rectangles, one for each stone that is placed
 InconsistentTerritoryMarkupTypeChanged   Territory            Entire layer
 CrossHairChanged                         Cross-hair           A set of rectangles to remove the old and draw the new cross-hair
-GoGameNewCreated                         All layers           Entire layers (a new game might include a board size change)
+GoGameDidCreate                          All layers           Entire layers (a new game might include a board size change)
 GoGameFirstMoveChanged                   ?                    Do we need this event? Can't we handle this with GoGameLastMoveChanged?
 GoGameLastMoveChanged                    Stones               1-n rectangles, for the stone being placed/undone + stones being captured/replaced
 GoScoreScoringModeEnabled                Symbols              Hide layer

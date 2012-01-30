@@ -139,7 +139,7 @@ enum MoveStatisticsSectionItem
 //@}
 /// @name Notification responders
 //@{
-- (void) goGameNewCreated:(NSNotification*)notification;
+- (void) goGameDidCreate:(NSNotification*)notification;
 //@}
 /// @name Private helpers
 //@{
@@ -271,7 +271,7 @@ enum MoveStatisticsSectionItem
                                                                                          action:@selector(done:)];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameNewCreated:) name:goGameNewCreated object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -779,9 +779,9 @@ enum MoveStatisticsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameNewCreated notification.
+/// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
-- (void) goGameNewCreated:(NSNotification*)notification
+- (void) goGameDidCreate:(NSNotification*)notification
 {
   // Dismiss the Info view when a new game is started. This typically occurs
   // when a saved game is loaded from the archive.
