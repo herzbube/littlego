@@ -17,8 +17,14 @@
 
 // Project includes
 #import "PlayView.h"
+#import "PlayViewMetrics.h"
 #import "PlayViewModel.h"
 #import "ScoringModel.h"
+#import "layer/BoardLayerDelegate.h"
+//#import "layer/GridLayerDelegate.h"
+//#import "layer/StarPointsLayerDelegate.h"
+//#import "layer/StonesLayerDelegate.h"
+//#import "layer/SymbolsLayerDelegate.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoBoard.h"
@@ -29,6 +35,9 @@
 #import "../go/GoVertex.h"
 #import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
+
+// System includes
+#import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
@@ -42,24 +51,24 @@
 //@}
 /// @name UIView methods
 //@{
-- (void) drawRect:(CGRect)rect;
+//- (void) drawRect:(CGRect)rect;
 //@}
 /// @name Layer drawing and other GUI updating
 //@{
-- (void) drawBackground:(CGRect)rect;
-- (void) drawBoard;
-- (void) drawGrid;
-- (void) drawStarPoints;
-- (void) drawStones;
-- (void) drawStone:(UIColor*)color point:(GoPoint*)point;
-- (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex;
-- (void) drawStone:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY;
-- (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates;
-- (void) drawEmpty:(GoPoint*)point;
-- (void) drawSymbols;
-- (void) drawLabels;
-- (void) drawTerritory;
-- (void) drawDeadStones;
+- (void) drawBackground:(CGContextRef)context;
+- (void) drawBoard:(CGContextRef)context;
+- (void) drawGrid:(CGContextRef)context;
+- (void) drawStarPoints:(CGContextRef)context;
+- (void) drawStones:(CGContextRef)context;
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color point:(GoPoint*)point;
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertex:(GoVertex*)vertex;
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY;
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color coordinates:(CGPoint)coordinates;
+- (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point;
+- (void) drawSymbols:(CGContextRef)context;
+- (void) drawLabels:(CGContextRef)context;
+- (void) drawTerritory:(CGContextRef)context;
+- (void) drawDeadStones:(CGContextRef)context;
 //@}
 /// @name Calculators
 //@{
@@ -85,8 +94,9 @@
 /// @name Private helpers
 //@{
 - (void) makeViewReadyForDrawing;
-- (void) updateDrawParametersForRect:(CGRect)rect;
+//- (void) updateDrawParametersForRect:(CGRect)rect;
 - (void) updateCrossHairPointDistanceFromFinger;
+- (void) setNeedsDisplayLayers;
 - (void) delayedUpdate;
 //@}
 /// @name Dynamically calculated properties
@@ -113,6 +123,13 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 //@}
+@property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
+@property(nonatomic, retain) BoardLayerDelegate* boardLayerDelegate;
+//@property(nonatomic, retain) GridLayerDelegate* gridLayer;
+//@property(nonatomic, retain) StarPointsLayerDelegate* starPointsLayer;
+//@property(nonatomic, retain) StonesLayerDelegate* stonesLayer;
+//@property(nonatomic, retain) SymbolsLayerDelegate* symbolsLayer;
+
 @end
 
 
@@ -143,6 +160,13 @@
 
 @synthesize actionsInProgress;
 @synthesize updatesWereDelayed;
+
+@synthesize playViewMetrics;
+@synthesize boardLayerDelegate;
+//@synthesize gridLayerDelegate;
+//@synthesize starPointsLayerDelegate;
+//@synthesize stonesLayerDelegate;
+//@synthesize symbolsLayerDelegate;
 
 
 // -----------------------------------------------------------------------------
@@ -218,6 +242,14 @@ static PlayView* sharedPlayView = nil;
   self.crossHairPoint = nil;
   if (self == sharedPlayView)
     sharedPlayView = nil;
+
+  self.playViewMetrics = nil;
+  self.boardLayerDelegate = nil;
+//  self.gridLayerDelegate = nil;
+//  self.starPointsLayerDelegate = nil;
+//  self.stonesLayerDelegate = nil;
+//  self.symbolsLayerDelegate = nil;
+
   [super dealloc];
 }
 
@@ -272,6 +304,24 @@ static PlayView* sharedPlayView = nil;
   
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
+  
+  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithModel:playViewModel] autorelease];
+  self.boardLayerDelegate = [[[BoardLayerDelegate alloc] initWithLayer:[CALayer layer]
+                                                               metrics:playViewMetrics
+                                                                 model:playViewModel] autorelease];
+  //  self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithLayer:[CALayer layer] metrics:playViewMetrics] autorelease];
+  //  self.starPointsLayerDelegate = [[[StarPointsLayerDelegate alloc] initWithLayer:[CALayer layer] metrics:playViewMetrics] autorelease];
+  //  self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithLayer:[CALayer layer] metrics:playViewMetrics] autorelease];
+  //  self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithLayer:[CALayer layer] metrics:playViewMetrics] autorelease];
+  [self.layer addSublayer:boardLayerDelegate.layer];
+  //  [self.layer addSublayer:gridLayer];
+  //  [self.layer addSublayer:starPointsLayer];
+  //  [self.layer addSublayer:stonesLayer];
+  //  [self.layer addSublayer:symbolsLayer];
+  
+  // Layer delegates observe PlayViewMetrics for rectangle changes and update
+  // themselves automatically
+  [self.playViewMetrics updateWithRect:self.bounds boardSize:[GoGame sharedGame].board.size];
 }
 
 // -----------------------------------------------------------------------------
@@ -292,17 +342,17 @@ static PlayView* sharedPlayView = nil;
   if (0 == self.actionsInProgress)
   {
     if (self.updatesWereDelayed)
-      [self setNeedsDisplay];
+      [self setNeedsDisplayLayers];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. PlayView
 /// methods that need a view update should invoke this helper instead of
-/// setNeedsDisplay().
+/// setNeedsDisplayLayers().
 ///
-/// If @e actionsInProgress is 0, this helper invokes setNeedsDisplay(), thus
-/// triggering the update in UIKit.
+/// If @e actionsInProgress is 0, this helper invokes setNeedsDisplayLayers(),
+/// thus triggering the update in UIKit.
 ///
 /// If @e actionsInProgress is >0, this helper sets @e updatesWereDelayed to
 /// true.
@@ -312,12 +362,80 @@ static PlayView* sharedPlayView = nil;
   if (self.actionsInProgress > 0)
     self.updatesWereDelayed = true;
   else
-    [self setNeedsDisplay];
+    [self setNeedsDisplayLayers];
+}
+
+// xxx
+- (void) setNeedsDisplayLayers
+{
+  [boardLayerDelegate.layer setNeedsDisplay];
+//xxx  [gridLayer setNeedsDisplay];
+//xxx  [starPointsLayer setNeedsDisplay];
+//xxx  [stonesLayer setNeedsDisplay];
+//xxx  [symbolsLayer setNeedsDisplay];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief CALayer delegate method.
+// -----------------------------------------------------------------------------
+- (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
+{
+/*
+  // Guard against
+  // - updates triggered while the view is still uninitialized and not yet ready
+  //   for drawing (occurs during application launch)
+  // - updates triggered by UIKit
+  // - updates that were triggered by delayedUpdate() before actionsInProgress
+  //   was increased
+  if (! self.viewReadyForDrawing)
+  {
+    self.updatesWereDelayed = true;
+    return;
+  }
+  if (self.actionsInProgress > 0)
+  {
+    self.updatesWereDelayed = true;
+    return;
+  }
+  // No game -> no board -> no drawing. This situation exists right after the
+  // application has launched and the initial game is created only after a
+  // small delay.
+  if (! [GoGame sharedGame])
+    return;
+
+  [self updateDrawParametersForRect:self.bounds];
+
+  if (layer == boardLayer)
+  {
+    [self drawBoard:context];
+  }
+  else if (layer == gridLayer)
+  {
+    [self drawGrid:context];
+  }
+  else if (layer == starPointsLayer)
+  {
+    [self drawStarPoints:context];
+  }
+  else if (layer == stonesLayer)
+  {
+    [self drawStones:context];
+  }
+  else if (layer == symbolsLayer)
+  {
+    [self drawSymbols:context];
+  }
+  else
+  {
+    // TODO throw exception?
+  }
+*/
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Is invoked by UIKit when the view needs updating.
 // -----------------------------------------------------------------------------
+/*
 - (void) drawRect:(CGRect)rect
 {
   // Guard against
@@ -342,30 +460,33 @@ static PlayView* sharedPlayView = nil;
   if (! [GoGame sharedGame])
     return;
 
+  CGContextRef context = UIGraphicsGetCurrentContext();
 //  DDLogInfo(@"PlayView::drawRect:() starts");
   [self updateDrawParametersForRect:rect];
   // The order in which draw methods are invoked is important, as each method
   // draws its objects as a new layer on top of the previous layers.
-  [self drawBackground:rect];
-  [self drawBoard];
-  [self drawGrid];
-  [self drawStarPoints];
-  [self drawStones];
-  [self drawSymbols];
-  [self drawLabels];
+  [self drawBackground:context];
+  [self drawBoard:context];
+  [self drawGrid:context];
+  [self drawStarPoints:context];
+  [self drawStones:context];
+  [self drawSymbols:context];
+  [self drawLabels:context];
   if (self.scoringModel.scoringMode)
   {
-    [self drawTerritory];
-    [self drawDeadStones];
+    [self drawTerritory:context];
+    [self drawDeadStones:context];
   }
 
 //  DDLogInfo(@"PlayView::drawRect:() ends");
 }
+*/
 
 // -----------------------------------------------------------------------------
 /// @brief Updates properties that can be dynamically calculated. @a rect is
 /// assumed to refer to the entire view rectangle.
 // -----------------------------------------------------------------------------
+/*
 - (void) updateDrawParametersForRect:(CGRect)rect
 {
   // No need to update if the new rect is the same as the one we did our
@@ -402,6 +523,7 @@ static PlayView* sharedPlayView = nil;
 
   self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
 }
+*/
 
 // -----------------------------------------------------------------------------
 /// @brief Updates self.crossHairPointDistanceFromFinger.
@@ -446,7 +568,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the view background layer.
 // -----------------------------------------------------------------------------
-- (void) drawBackground:(CGRect)rect
+- (void) drawBackground:(CGContextRef)context
 {
   // Currently we don't draw the background, the table view background set in
   // the .xib looks nice enough. If this should ever become configurable, note
@@ -454,17 +576,15 @@ static PlayView* sharedPlayView = nil;
   // can't be converted to a hex string for storage in the user defaults.
   // Convenience constructor: [UIColor groupTableViewBackgroundColor].
 
-//  CGContextRef context = UIGraphicsGetCurrentContext();
 //  CGContextSetFillColorWithColor(context, self.playViewModel.backgroundColor.CGColor);
-//  CGContextFillRect(context, rect);
+//  CGContextFillRect(context, self.bounds);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Draws the Go board background layer.
 // -----------------------------------------------------------------------------
-- (void) drawBoard
+- (void) drawBoard:(CGContextRef)context
 {
-  CGContextRef context = UIGraphicsGetCurrentContext();
   CGContextSetFillColorWithColor(context, self.playViewModel.boardColor.CGColor);
   CGContextFillRect(context, CGRectMake(self.topLeftBoardCornerX + gHalfPixel,
                                         self.topLeftBoardCornerY + gHalfPixel,
@@ -474,10 +594,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the grid layer.
 // -----------------------------------------------------------------------------
-- (void) drawGrid
+- (void) drawGrid:(CGContextRef)context
 {
-  CGContextRef context = UIGraphicsGetCurrentContext();
-
   CGPoint crossHairCenter = CGPointZero;
   if (self.crossHairPoint)
     crossHairCenter = [self coordinatesFromPoint:self.crossHairPoint];
@@ -524,9 +642,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the star points layer.
 // -----------------------------------------------------------------------------
-- (void) drawStarPoints
+- (void) drawStarPoints:(CGContextRef)context
 {
-  CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, self.playViewModel.starPointColor.CGColor);
 
   const int startRadius = 0;
@@ -545,7 +662,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the Go stones layer.
 // -----------------------------------------------------------------------------
-- (void) drawStones
+- (void) drawStones:(CGContextRef)context
 {
   bool crossHairStoneDrawn = false;
   GoGame* game = [GoGame sharedGame];
@@ -566,13 +683,13 @@ static PlayView* sharedPlayView = nil;
         color = [UIColor blackColor];
       else
         color = [UIColor whiteColor];
-      [self drawStone:color vertex:point.vertex];
+      [self drawStone:context color:color vertex:point.vertex];
     }
     else
     {
       // TODO remove this or make it into something that can be turned on
       // at runtime for debugging
-//      [self drawEmpty:point];
+//      [self drawEmpty:context point:point];
     }
   }
 
@@ -588,43 +705,42 @@ static PlayView* sharedPlayView = nil;
     else
       color = [UIColor whiteColor];
     if (color)
-      [self drawStone:color point:self.crossHairPoint];
+      [self drawStone:context color:color point:self.crossHairPoint];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Draws a single stone at intersection @a point, using color @a color.
 // -----------------------------------------------------------------------------
-- (void) drawStone:(UIColor*)color point:(GoPoint*)point
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color point:(GoPoint*)point
 {
-  [self drawStone:color vertex:point.vertex];
+  [self drawStone:context color:color vertex:point.vertex];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Draws a single stone at intersection @a vertex, using color @a color.
 // -----------------------------------------------------------------------------
-- (void) drawStone:(UIColor*)color vertex:(GoVertex*)vertex
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertex:(GoVertex*)vertex
 {
   struct GoVertexNumeric numericVertex = vertex.numeric;
-  [self drawStone:color vertexX:numericVertex.x vertexY:numericVertex.y];
+  [self drawStone:context color:color vertexX:numericVertex.x vertexY:numericVertex.y];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Draws a single stone at the intersection identified by @a vertexX
 /// and @a vertexY, using color @a color.
 // -----------------------------------------------------------------------------
-- (void) drawStone:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY
 {
-  [self drawStone:color coordinates:[self coordinatesFromVertexX:vertexX vertexY:vertexY]];
+  [self drawStone:context color:color coordinates:[self coordinatesFromVertexX:vertexX vertexY:vertexY]];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Draws a single stone with its center at the view coordinates
 /// @a coordinaes, using color @a color.
 // -----------------------------------------------------------------------------
-- (void) drawStone:(UIColor*)color coordinates:(CGPoint)coordinates
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color coordinates:(CGPoint)coordinates
 {
-  CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, color.CGColor);
 
   const int startRadius = 0;
@@ -637,7 +753,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the symbols layer.
 // -----------------------------------------------------------------------------
-- (void) drawSymbols
+- (void) drawSymbols:(CGContextRef)context
 {
   if (self.playViewModel.markLastMove && ! self.scoringModel.scoringMode)
   {
@@ -653,7 +769,6 @@ static PlayView* sharedPlayView = nil;
       else
         lastMoveBoxColor = [UIColor blackColor];
       // Now render the box
-      CGContextRef context = UIGraphicsGetCurrentContext();
       CGContextBeginPath(context);
       CGContextAddRect(context, lastMoveBox);
       CGContextSetStrokeColorWithColor(context, lastMoveBoxColor.CGColor);
@@ -666,7 +781,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the coordinate labels layer.
 // -----------------------------------------------------------------------------
-- (void) drawLabels
+- (void) drawLabels:(CGContextRef)context
 {
   // TODO not yet implemented
 }
@@ -674,7 +789,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the territory layer in scoring mode.
 // -----------------------------------------------------------------------------
-- (void) drawTerritory
+- (void) drawTerritory:(CGContextRef)context
 {
   UIColor* colorBlack = [UIColor colorWithWhite:0.0 alpha:self.scoringModel.alphaTerritoryColorBlack];
   UIColor* colorWhite = [UIColor colorWithWhite:1.0 alpha:self.scoringModel.alphaTerritoryColorWhite];
@@ -738,7 +853,6 @@ static PlayView* sharedPlayView = nil;
         continue;
     }
 
-    CGContextRef context = UIGraphicsGetCurrentContext();
     if (inconsistencyFound && InconsistentTerritoryMarkupTypeDotSymbol == inconsistentTerritoryMarkupType)
     {
       CGPoint coordinates = [self coordinatesFromPoint:point];
@@ -768,7 +882,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Draws the dead stones layer in scoring mode.
 // -----------------------------------------------------------------------------
-- (void) drawDeadStones
+- (void) drawDeadStones:(CGContextRef)context
 {
   UIColor* deadStoneSymbolColor = self.scoringModel.deadStoneSymbolColor;
   bool insetCalculated = false;
@@ -792,7 +906,6 @@ static PlayView* sharedPlayView = nil;
     }
     innerSquare = CGRectInset(innerSquare, inset, inset);
 
-    CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, innerSquare.origin.x, innerSquare.origin.y);
     CGContextAddLineToPoint(context, innerSquare.origin.x + innerSquare.size.width, innerSquare.origin.y + innerSquare.size.width);
@@ -811,11 +924,10 @@ static PlayView* sharedPlayView = nil;
 ///
 /// This method is a debugging aid to see how GoBoardRegions are calculated.
 // -----------------------------------------------------------------------------
-- (void) drawEmpty:(GoPoint*)point
+- (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point
 {
   struct GoVertexNumeric numericVertex = point.vertex.numeric;
   CGPoint coordinates = [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
-  CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSetFillColorWithColor(context, point.region.randomColor.CGColor);
 
   const int startRadius = 0;
@@ -952,7 +1064,7 @@ static PlayView* sharedPlayView = nil;
   [self makeViewReadyForDrawing];
   self.viewReadyForDrawing = true;
   
-  [self setNeedsDisplay];
+  [self setNeedsDisplayLayers];
 }
 
 // -----------------------------------------------------------------------------

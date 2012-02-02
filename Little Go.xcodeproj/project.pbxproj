@@ -202,6 +202,9 @@
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
 		CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
+		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */; };
+		CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */; };
+		CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -459,6 +462,12 @@
 		CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityIndicatorController.m; sourceTree = "<group>"; };
 		CDF8B6FD14D722BA00940D3E /* StatusLineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusLineController.h; sourceTree = "<group>"; };
 		CDF8B6FE14D722BA00940D3E /* StatusLineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusLineController.m; sourceTree = "<group>"; };
+		CDF8B76814D9E92000940D3E /* PlayViewLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B76B14D9ED7900940D3E /* BoardLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
+		CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -675,6 +684,7 @@
 		CD1088561326CBB300E83543 /* play */ = {
 			isa = PBXGroup;
 			children = (
+				CDF8B76714D9E91F00940D3E /* layer */,
 				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
 				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
 				CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */,
@@ -685,6 +695,8 @@
 				CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */,
 				CD10885F1326CD2400E83543 /* PlayViewController.h */,
 				CD1088601326CD2400E83543 /* PlayViewController.m */,
+				CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */,
+				CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */,
 				CDE3028E1360BDD3005235F2 /* PlayViewModel.h */,
 				CDE3028F1360BDD3005235F2 /* PlayViewModel.m */,
 				CD92EE941469EB83001EA980 /* ScoringModel.h */,
@@ -1018,6 +1030,17 @@
 			path = ui;
 			sourceTree = "<group>";
 		};
+		CDF8B76714D9E91F00940D3E /* layer */ = {
+			isa = PBXGroup;
+			children = (
+				CDF8B76B14D9ED7900940D3E /* BoardLayerDelegate.h */,
+				CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */,
+				CDF8B76814D9E92000940D3E /* PlayViewLayerDelegate.h */,
+				CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */,
+			);
+			path = layer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1263,6 +1286,9 @@
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
 				CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */,
 				CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */,
+				CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegate.m in Sources */,
+				CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */,
+				CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
