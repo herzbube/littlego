@@ -20,9 +20,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The StonesLayerDelegate class is responsible for drawing stones on
+/// the Go board.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface StonesLayerDelegate : PlayViewLayerDelegate
 {
 }
 

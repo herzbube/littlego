@@ -681,6 +681,7 @@ CrossHairChanged                         Cross-hair           A set of rectangle
 GoGameDidCreate                          All layers           Entire layers (a new game might include a board size change)
 GoGameFirstMoveChanged                   ?                    Do we need this event? Can't we handle this with GoGameLastMoveChanged?
 GoGameLastMoveChanged                    Stones               1-n rectangles, for the stone being placed/undone + stones being captured/replaced
+                                         Symbols              Update last move marker
 GoScoreScoringModeEnabled                Symbols              Hide layer
                                          Territory            Show layer
                                          Dead Stones          Show layer
@@ -689,4 +690,4 @@ GoScoreScoringModeDisabled               Symbols              Show layer
                                          Dead Stones          Hide layer
 GoScoreCalculationEnds                   Territory            Update entire layer
                                          Dead Stones          Update entire layer
-InterfaceRotationChanged                 All layers           Entire layers (space available for drawing changes)
+InterfaceRotationChanged                 All layers           Update entire layer (space available for drawing changes)

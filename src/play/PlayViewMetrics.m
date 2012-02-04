@@ -19,18 +19,22 @@
 #import "PlayViewMetrics.h"
 #import "PlayViewModel.h"
 #import "../go/GoBoard.h"
+#import "../go/GoGame.h"
+#import "../go/GoPoint.h"
+#import "../go/GoVertex.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for PlayViewMetrics.
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics()
-/// @name Initialization and deallocation
+/// @name Private helpers
 //@{
-- (void) dealloc;
+- (void) updateWithRect:(CGRect)newRect boardDimension:(int)newBoardDimension;
 //@}
 /// @name Privately declared properties
 //@{
+@property(nonatomic, retain) UIView* playView;
 @property(nonatomic, retain) PlayViewModel* playViewModel;
 //@}
 @end
@@ -38,6 +42,7 @@
 
 @implementation PlayViewMetrics
 
+@synthesize playView;
 @synthesize playViewModel;
 @synthesize rect;
 @synthesize boardDimension;
@@ -60,29 +65,20 @@
 ///
 /// @note This is the designated initializer of PlayViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) initWithModel:(PlayViewModel*)model
+- (id) initWithView:(UIView*)view model:(PlayViewModel*)model
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
   
+  self.playView = view;
   self.playViewModel = model;
 
   rect = CGRectNull;
   boardDimension = [GoBoard dimensionForSize:GoBoardSizeUndefined];
-  self.portrait = true;
-  self.boardSize = 0;
-  self.boardOuterMargin = 0;
-  self.boardInnerMargin = 0;
-  self.topLeftBoardCornerX = 0;
-  self.topLeftBoardCornerY = 0;
-  self.topLeftPointX = 0;
-  self.topLeftPointY = 0;
-  self.numberOfCells = 0;
-  self.pointDistance = 0;
-  self.lineLength = 0;
-  self.stoneRadius = 0;
+  // Remaining properties are initialized by updateWithRect:boardDimension:()
+  [self updateWithRect:self.playView.bounds boardDimension:self.boardDimension];
 
   return self;
 }
@@ -98,21 +94,40 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this PlayViewMetrics object based on
-/// @a newRect and @a newBoardSize.
-///
-/// This method does nothing if the previous calculation was based on the same
-/// rectangle and board size.
+/// @a newRect.
 // -----------------------------------------------------------------------------
-- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
+- (void) updateWithRect:(CGRect)newRect
+{
+  [self updateWithRect:newRect boardDimension:self.boardDimension];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @a newBoardSize.
+// -----------------------------------------------------------------------------
+- (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize
 {
   int newBoardDimension = [GoBoard dimensionForSize:newBoardSize];
+  [self updateWithRect:self.rect boardDimension:newBoardDimension];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @a newRect and @a newBoardDimension.
+///
+/// This method does nothing if the previous calculation was based on the same
+/// rectangle and board dimension.
+// -----------------------------------------------------------------------------
+- (void) updateWithRect:(CGRect)newRect boardDimension:(int)newBoardDimension
+{
   if (CGRectEqualToRect(rect, newRect) && boardDimension == newBoardDimension)
     return;
 
   // ----------------------------------------------------------------
-  // Use newRect and newBoardDimension for calculations. self.rect is updated
-  // at the very end, after all other properties have been calculated. The
-  // reason for this is that clients can use KVO on self.rect
+  // Use newRect and newBoardDimension for calculations. self.rect and
+  // self.boardDimension are updated at the very end, after all other properties
+  // have been calculated. The reason for this is that clients can use KVO on
+  // self.rect or self.boardDimension.
   // ----------------------------------------------------------------
 
   // The rect is rectangular, but the Go board is square. Examine the rect
@@ -126,10 +141,22 @@
     boardSizeBase = newRect.size.height;
   self.boardOuterMargin = floor(boardSizeBase * self.playViewModel.boardOuterMarginPercentage);
   self.boardSize = boardSizeBase - (self.boardOuterMargin * 2);
+  
   self.numberOfCells = newBoardDimension - 1;
-  // +1 to self.numberOfCells because we need one-half of a cell on both sides
-  // of the board (top/bottom or left/right) to draw a stone
-  self.pointDistance = floor(self.boardSize / (self.numberOfCells + 1));
+  if (0 == self.numberOfCells + 1)
+  {
+    // This branch exists to prevent division by zero; this is expected to occur
+    // if board dimension is zero during initialization, but it may also occur
+    // later on during the application's life-cycle if we get updated while
+    // no GoGame exists.
+    self.pointDistance = 0;
+  }
+  else
+  {
+    // +1 to self.numberOfCells because we need one-half of a cell on both sides
+    // of the board (top/bottom or left/right) to draw a stone
+    self.pointDistance = floor(self.boardSize / (self.numberOfCells + 1));
+  }
   self.boardInnerMargin = floor(self.pointDistance / 2);
   // Don't use border here - rounding errors might cause improper centering
   self.topLeftBoardCornerX = floor((newRect.size.width - self.boardSize) / 2);
@@ -141,10 +168,126 @@
   
   self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
 
+  // Updating self.rect and self.boardDimension must be the last operation in
+  // this method; also use self to update so that the synthesized setter will
+  // trigger KVO.
   self.boardDimension = newBoardDimension;
-  // Updating self.rect must be the last operation in this method; also use
-  // self to update so that the synthesized setter will trigger KVO
   self.rect = newRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// @a point.
+// -----------------------------------------------------------------------------
+- (CGPoint) coordinatesFromPoint:(GoPoint*)point
+{
+  return [self coordinatesFromVertex:point.vertex];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// @a vertex.
+// -----------------------------------------------------------------------------
+- (CGPoint) coordinatesFromVertex:(GoVertex*)vertex
+{
+  struct GoVertexNumeric numericVertex = vertex.numeric;
+  return [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the intersection
+/// identified by @a vertexX and @a vertexY.
+// -----------------------------------------------------------------------------
+- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
+{
+  // The origin for Core Graphics is in the bottom-left corner!
+  return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
+                     self.topLeftPointY + self.lineLength - (self.pointDistance * (vertexY - 1)));
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoVertex object for the intersection identified by the view
+/// coordinates @a coordinates.
+///
+/// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
+/// because @a coordinates are outside the board's edges).
+// -----------------------------------------------------------------------------
+- (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates
+{
+  struct GoVertexNumeric numericVertex;
+  numericVertex.x = 1 + (coordinates.x - self.topLeftPointX) / self.pointDistance;
+  numericVertex.y = 1 + (self.topLeftPointY + self.lineLength - coordinates.y) / self.pointDistance;
+  GoVertex* vertex;
+  @try
+  {
+    vertex = [GoVertex vertexFromNumeric:numericVertex];
+  }
+  @catch (NSException* exception)
+  {
+    vertex = nil;
+  }
+  return vertex;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoPoint object for the intersection identified by the view
+/// coordinates @a coordinates.
+///
+/// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
+/// because @a coordinates are outside the board's edges).
+// -----------------------------------------------------------------------------
+- (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
+{
+  GoVertex* vertex = [self vertexFromCoordinates:coordinates];
+  if (vertex)
+    return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square inside the circle that
+/// represents the Go stone at @a point.
+///
+/// The square does not touch the circle, it is slighly inset.
+// -----------------------------------------------------------------------------
+- (CGRect) innerSquareAtPoint:(GoPoint*)point
+{
+  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
+  // Geometry tells us that for the square with side length "a":
+  //   a = r * sqrt(2)
+  int sideLength = floor(self.stoneRadius * sqrt(2));
+  CGRect square = [self squareWithCenterPoint:coordinates sideLength:sideLength];
+  // We subtract another 2 points because we don't want to touch the circle.
+  return CGRectInset(square, 1, 1);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square exactly surrounding the circle
+/// that represents the Go stone at @a point.
+///
+/// Two squares for adjacent points do not overlap, they exactly touch each
+/// other.
+// -----------------------------------------------------------------------------
+- (CGRect) squareAtPoint:(GoPoint*)point
+{
+  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
+  return [self squareWithCenterPoint:coordinates sideLength:self.pointDistance];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rect that describes a square whose center is at coordinate
+/// @a center and whose side length is @a sideLength.
+// -----------------------------------------------------------------------------
+- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength
+{
+  // The origin for Core Graphics is in the bottom-left corner!
+  CGRect square;
+  square.origin.x = floor((center.x - (sideLength / 2))) + gHalfPixel;
+  square.origin.y = floor((center.y - (sideLength / 2))) + gHalfPixel;
+  square.size.width = sideLength;
+  square.size.height = sideLength;
+  return square;
 }
 
 @end

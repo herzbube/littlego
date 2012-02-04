@@ -18,14 +18,22 @@
 // Project includes
 #import "PlayViewLayerDelegate.h"
 
+// Forward declarations
+@class GoPoint;
+
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The CrossHairLayerDelegate class is responsible for drawing the
+/// cross-hair that indicates to the user during stone placement where the
+/// stone would be placed.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface CrossHairLayerDelegate : PlayViewLayerDelegate
 {
 }
 
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
 
 @end

@@ -18,14 +18,19 @@
 // Project includes
 #import "PlayViewLayerDelegate.h"
 
+// Forward declarations
+@class ScoringModel;
+
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The DeadStonesLayerDelegate class is responsible for marking up dead
+/// stones while scoring is in progress.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface DeadStonesLayerDelegate : PlayViewLayerDelegate
 {
 }
 
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel;
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
 
 @end

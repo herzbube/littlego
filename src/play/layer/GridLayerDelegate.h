@@ -20,9 +20,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The GridLayerDelegate class is responsible for drawing the line grid
+/// on the Go board.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface GridLayerDelegate : PlayViewLayerDelegate
 {
 }
 

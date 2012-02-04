@@ -16,6 +16,8 @@
 
 
 @class PlayViewModel;
+@class GoPoint;
+@class GoVertex;
 
 
 // -----------------------------------------------------------------------------
@@ -23,21 +25,55 @@
 /// coordinates and sizes of UI elements on the Play view, and for providing
 /// those values to clients that need them for drawing.
 ///
-/// If the bounds of the Play view change (e.g. when an interface orientation
-/// occurs), someone must invoke updateWithRect:().
+/// If the frame of the Play view changes (e.g. when an interface orientation
+/// change occurs), someone must invoke updateWithRect:(). If the size of the
+/// Go board that is displayed by the Play view changes (e.g. when a new game
+/// is started), someone must invoke updateWithBoardSize:().
+///
+/// In reaction to either of those events, PlayViewMetrics re-calculates all
+/// of its properties. The last property that is updated is either
+/// @e boardDimension, or @e rect, depending on which updater method was
+/// invoked. Clients of PlayViewMetrics may use KVO to monitor either of those
+/// properties for changes.
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics : NSObject
 {
 }
 
-- (id) initWithModel:(PlayViewModel*)model;
-- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize;
+/// @name Initialization and deallocation
+//@{
+- (id) initWithView:(UIView*)view model:(PlayViewModel*)model;
+- (void) dealloc;
+//@}
 
-/// @brief The rectangle that layers must use as their frame.
+/// @name Calculators
+//@{
+- (void) updateWithRect:(CGRect)newRect;
+- (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize;
+//@}
+
+/// @name Calculators
+//@{
+- (CGPoint) coordinatesFromPoint:(GoPoint*)point;
+- (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
+- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
+- (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
+- (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
+- (CGRect) innerSquareAtPoint:(GoPoint*)point;
+- (CGRect) squareAtPoint:(GoPoint*)point;
+- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength;
+//@}
+
+
+/// @brief The rectangle that Play view layers must use as their frame.
 ///
 /// This property can be used for KVO. When the change notification fires, all
 /// other properties are guaranteed to have updated values.
 @property(nonatomic, assign) CGRect rect;
+/// @brief The dimension of the Go board that is drawn by Play view layers.
+///
+/// This property can be used for KVO. When the change notification fires, all
+/// other properties are guaranteed to have updated values.
 @property(nonatomic, assign) int boardDimension;
 @property(nonatomic, assign) bool portrait;
 @property(nonatomic, assign) int boardSize;

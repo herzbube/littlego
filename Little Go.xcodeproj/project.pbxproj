@@ -205,6 +205,13 @@
 		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */; };
 		CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */; };
 		CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
+		CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
+		CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */; };
+		CDF8B77B14DB598F00940D3E /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */; };
+		CDF8B77C14DB598F00940D3E /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */; };
+		CDF8B77F14DB5C9700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
+		CDF8B78214DB5CA400940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
+		CDF8B78814DC757C00940D3E /* CrossHairLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLayerDelegate.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -468,6 +475,20 @@
 		CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardLayerDelegate.m; sourceTree = "<group>"; };
 		CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
 		CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
+		CDF8B77114DB598000940D3E /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B77214DB598000940D3E /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B77414DB598B00940D3E /* StarPointsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StarPointsLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarPointsLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B77614DB598C00940D3E /* StonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StonesLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B77814DB598D00940D3E /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolsLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B77D14DB5C9400940D3E /* DeadStonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeadStonesLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeadStonesLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B78014DB5CA100940D3E /* TerritoryLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerritoryLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
+		CDF8B78614DC757700940D3E /* CrossHairLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLayerDelegate.h; sourceTree = "<group>"; };
+		CDF8B78714DC757900940D3E /* CrossHairLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLayerDelegate.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -1035,8 +1056,22 @@
 			children = (
 				CDF8B76B14D9ED7900940D3E /* BoardLayerDelegate.h */,
 				CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */,
+				CDF8B78614DC757700940D3E /* CrossHairLayerDelegate.h */,
+				CDF8B78714DC757900940D3E /* CrossHairLayerDelegate.m */,
+				CDF8B77D14DB5C9400940D3E /* DeadStonesLayerDelegate.h */,
+				CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */,
+				CDF8B77114DB598000940D3E /* GridLayerDelegate.h */,
+				CDF8B77214DB598000940D3E /* GridLayerDelegate.m */,
 				CDF8B76814D9E92000940D3E /* PlayViewLayerDelegate.h */,
 				CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */,
+				CDF8B77414DB598B00940D3E /* StarPointsLayerDelegate.h */,
+				CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */,
+				CDF8B77614DB598C00940D3E /* StonesLayerDelegate.h */,
+				CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */,
+				CDF8B77814DB598D00940D3E /* SymbolsLayerDelegate.h */,
+				CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */,
+				CDF8B78014DB5CA100940D3E /* TerritoryLayerDelegate.h */,
+				CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */,
 			);
 			path = layer;
 			sourceTree = "<group>";
@@ -1289,6 +1324,13 @@
 				CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegate.m in Sources */,
 				CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */,
 				CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */,
+				CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */,
+				CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */,
+				CDF8B77B14DB598F00940D3E /* StonesLayerDelegate.m in Sources */,
+				CDF8B77C14DB598F00940D3E /* SymbolsLayerDelegate.m in Sources */,
+				CDF8B77F14DB5C9700940D3E /* DeadStonesLayerDelegate.m in Sources */,
+				CDF8B78214DB5CA400940D3E /* TerritoryLayerDelegate.m in Sources */,
+				CDF8B78814DC757C00940D3E /* CrossHairLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

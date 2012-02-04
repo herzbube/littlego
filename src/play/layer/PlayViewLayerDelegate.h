@@ -29,6 +29,10 @@
 }
 
 - (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+- (void) updateIfDirty;
+- (void) drawLine:(CGContextRef)context startPoint:(CGPoint)start endPoint:(CGPoint)end color:(UIColor*)color width:(CGFloat)width;
+- (void) drawStone:(CGContextRef)context color:(UIColor*)color coordinates:(CGPoint)coordinates;
+
 
 /// @brief The layer managed by the delegate.
 @property(nonatomic, retain, readonly) CALayer* layer;
@@ -38,5 +42,8 @@
 /// @brief Model object that provides additional drawing information obtained
 /// from the user defaults.
 @property(nonatomic, retain, readonly) PlayViewModel* playViewModel;
+/// @brief Flag is set to true to indicate that this layer needs to draw itself
+/// in the next update cycle.
+@property(nonatomic, assign) bool dirty;
 
 @end

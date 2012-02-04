@@ -18,14 +18,19 @@
 // Project includes
 #import "PlayViewLayerDelegate.h"
 
+// Forward declarations
+@class ScoringModel;
+
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The SymbolsLayerDelegate class is responsible for drawing symbols
+/// (e.g. last move).
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface SymbolsLayerDelegate : PlayViewLayerDelegate
 {
 }
 
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel;
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
 
 @end

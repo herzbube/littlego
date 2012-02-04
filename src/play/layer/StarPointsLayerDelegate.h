@@ -20,9 +20,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
+/// @brief The StarPointsLayerDelegate class is responsible for drawing the
+/// star points (hoshi) on the Go board.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface StarPointsLayerDelegate : PlayViewLayerDelegate
 {
 }
 

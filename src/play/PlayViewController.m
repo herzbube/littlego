@@ -602,9 +602,10 @@
     CGRect playViewFrame = [self playViewFrame];
     [UIView animateWithDuration:duration
                           delay:0
-                        options:UIViewAnimationCurveLinear
+                        options:UIViewAnimationCurveEaseOut
                      animations:^{
                        self.playView.frame = playViewFrame;
+                       [self.playView frameChanged];
                      }
                      completion:NULL];
   }
