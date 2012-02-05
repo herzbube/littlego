@@ -148,7 +148,7 @@
 {
   GoBoard* board = [GoGame sharedGame].board;
   [[GtpCommand command:@"clear_board"] submit];
-  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.dimensions]] submit];
+  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]] submit];
 }
 
 // -----------------------------------------------------------------------------

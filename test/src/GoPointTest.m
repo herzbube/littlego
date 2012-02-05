@@ -90,9 +90,9 @@
 // -----------------------------------------------------------------------------
 - (void) testNeighbours
 {
-  int expectedBoardDimensions = 19;
+  int expectedBoardSize = 19;
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
+  STAssertEquals(expectedBoardSize, board.size, nil);
 
   NSString* stringVertexCorner = @"T1";  // a corner that is not the first or last point
   NSString* stringVertexEdge = @"A16";
@@ -108,7 +108,7 @@
   NSUInteger expectedNumberOfNeighboursCorner = 2;
   NSUInteger expectedNumberOfNeighboursEdge = 3;
   NSUInteger expectedNumberOfNeighboursCenter = 4;
-  int expectedNumberOfPointsOnBoard = pow(expectedBoardDimensions, 2);
+  int expectedNumberOfPointsOnBoard = pow(expectedBoardSize, 2);
 
   STAssertEquals(expectedNumberOfNeighboursCorner, pointCorner.neighbours.count, nil);
   STAssertNotNil(pointCorner.left, nil);

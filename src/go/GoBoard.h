@@ -44,8 +44,6 @@
 + (GoBoard*) newGameBoard;
 + (GoBoard*) boardWithSize:(enum GoBoardSize)size;
 + (NSString*) stringForSize:(enum GoBoardSize)size;
-+ (int) dimensionForSize:(enum GoBoardSize)size;
-+ (enum GoBoardSize) sizeForDimension:(int)dimension;
 - (NSEnumerator*) pointEnumerator;
 - (GoPoint*) pointAtVertex:(NSString*)vertex;
 - (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction;
@@ -53,9 +51,6 @@
 /// @brief The board size, specifying the horizontal and vertical board
 /// dimensions.
 @property(nonatomic, assign, readonly) enum GoBoardSize size;
-/// @brief Numeric board dimension that corresponds to property @a size. For
-/// instance 19, if @e size has the enum value #GoBoardSize19.
-@property(nonatomic, assign, readonly) int dimensions;
 /// @brief A list of GoPoint objects that refer to the star points for the
 /// current board size. The list has no particular order.
 @property(nonatomic, retain, readonly) NSArray* starPoints;

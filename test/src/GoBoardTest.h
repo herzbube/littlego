@@ -31,8 +31,6 @@
 - (void) testNewGameBoard;
 - (void) testBoardWithSize;
 - (void) testStringForSize;
-- (void) testDimensionForSize;
-- (void) testSizeForDimension;
 - (void) testPointEnumerator;
 - (void) testPointAtVertex;
 - (void) testNeighbourOfInDirection;

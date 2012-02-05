@@ -551,7 +551,7 @@ enum MoveStatisticsSectionItem
         case BoardSizeItem:
         {
           cell.textLabel.text = @"Board size";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", game.board.dimensions];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", game.board.size];
           break;
         }
         case BlackPlayerItem:

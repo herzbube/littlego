@@ -339,8 +339,14 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupRegistrationDomain
 {
+  // User defaults data must be upgraded *BEFORE* the registration domain
+  // defaults are put into place
+  [UserDefaultsUpdater upgradeToVersion:userDefaultsVersionRegistrationDomain];
+
   NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
-  NSDictionary* defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:defaultsPathName];
+  NSMutableDictionary* defaultsDictionary = [NSMutableDictionary dictionaryWithDictionary:[NSDictionary dictionaryWithContentsOfFile:defaultsPathName]];
+  [defaultsDictionary setValue:[NSNumber numberWithInt:userDefaultsVersionRegistrationDomain]
+                        forKey:userDefaultsVersionRegistrationDomainKey];
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
 }
 
@@ -350,11 +356,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupUserDefaults
 {
-  // Upgrade user defaults data before the model objects access it. For this to
-  // work we need to have the registration defaults in place.
-  [UserDefaultsUpdater upgrade];
-
-  // Create model objects and load values from the user defaults system
   self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];

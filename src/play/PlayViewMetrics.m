@@ -30,7 +30,7 @@
 @interface PlayViewMetrics()
 /// @name Private helpers
 //@{
-- (void) updateWithRect:(CGRect)newRect boardDimension:(int)newBoardDimension;
+- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize;
 //@}
 /// @name Privately declared properties
 //@{
@@ -45,9 +45,9 @@
 @synthesize playView;
 @synthesize playViewModel;
 @synthesize rect;
-@synthesize boardDimension;
-@synthesize portrait;
 @synthesize boardSize;
+@synthesize portrait;
+@synthesize boardSideLength;
 @synthesize boardOuterMargin;
 @synthesize boardInnerMargin;
 @synthesize topLeftBoardCornerX;
@@ -76,9 +76,9 @@
   self.playViewModel = model;
 
   rect = CGRectNull;
-  boardDimension = [GoBoard dimensionForSize:GoBoardSizeUndefined];
-  // Remaining properties are initialized by updateWithRect:boardDimension:()
-  [self updateWithRect:self.playView.bounds boardDimension:self.boardDimension];
+  boardSize = GoBoardSizeUndefined;
+  // Remaining properties are initialized by updateWithRect:boardSize:()
+  [self updateWithRect:self.playView.bounds boardSize:self.boardSize];
 
   return self;
 }
@@ -98,7 +98,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect
 {
-  [self updateWithRect:newRect boardDimension:self.boardDimension];
+  [self updateWithRect:newRect boardSize:self.boardSize];
 }
 
 // -----------------------------------------------------------------------------
@@ -107,71 +107,70 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize
 {
-  int newBoardDimension = [GoBoard dimensionForSize:newBoardSize];
-  [self updateWithRect:self.rect boardDimension:newBoardDimension];
+  [self updateWithRect:self.rect boardSize:newBoardSize];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this PlayViewMetrics object based on
-/// @a newRect and @a newBoardDimension.
+/// @a newRect and @a newBoardSize.
 ///
 /// This method does nothing if the previous calculation was based on the same
-/// rectangle and board dimension.
+/// rectangle and board size.
 // -----------------------------------------------------------------------------
-- (void) updateWithRect:(CGRect)newRect boardDimension:(int)newBoardDimension
+- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
 {
-  if (CGRectEqualToRect(rect, newRect) && boardDimension == newBoardDimension)
+  if (CGRectEqualToRect(rect, newRect) && boardSize == newBoardSize)
     return;
 
   // ----------------------------------------------------------------
-  // Use newRect and newBoardDimension for calculations. self.rect and
-  // self.boardDimension are updated at the very end, after all other properties
-  // have been calculated. The reason for this is that clients can use KVO on
-  // self.rect or self.boardDimension.
+  // Use newRect and newBoardSize for calculations. self.rect and self.boardSize
+  // are updated at the very end, after all other properties have been
+  // calculated. The reason for this is that clients can use KVO on self.rect
+  // or self.boardSize.
   // ----------------------------------------------------------------
 
   // The rect is rectangular, but the Go board is square. Examine the rect
   // orientation and use the smaller dimension of the rect as the base for
-  // the Go board's dimension.
+  // the Go board's side length.
   self.portrait = newRect.size.height >= newRect.size.width;
-  int boardSizeBase = 0;
+  int boardSideLengthBase = 0;
   if (self.portrait)
-    boardSizeBase = newRect.size.width;
+    boardSideLengthBase = newRect.size.width;
   else
-    boardSizeBase = newRect.size.height;
-  self.boardOuterMargin = floor(boardSizeBase * self.playViewModel.boardOuterMarginPercentage);
-  self.boardSize = boardSizeBase - (self.boardOuterMargin * 2);
-  
-  self.numberOfCells = newBoardDimension - 1;
+    boardSideLengthBase = newRect.size.height;
+  self.boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
+  self.boardSideLength = boardSideLengthBase - (self.boardOuterMargin * 2);
+
+  self.numberOfCells = newBoardSize - 1;
   if (0 == self.numberOfCells + 1)
   {
     // This branch exists to prevent division by zero; this is expected to occur
-    // if board dimension is zero during initialization, but it may also occur
-    // later on during the application's life-cycle if we get updated while
-    // no GoGame exists.
+    // if board size is zero during initialization, but it may also occur later
+    // on during the application's life-cycle if we get updated while no GoGame
+    // exists.
     self.pointDistance = 0;
   }
   else
   {
     // +1 to self.numberOfCells because we need one-half of a cell on both sides
     // of the board (top/bottom or left/right) to draw a stone
-    self.pointDistance = floor(self.boardSize / (self.numberOfCells + 1));
+    self.pointDistance = floor(self.boardSideLength / (self.numberOfCells + 1));
   }
   self.boardInnerMargin = floor(self.pointDistance / 2);
   // Don't use border here - rounding errors might cause improper centering
-  self.topLeftBoardCornerX = floor((newRect.size.width - self.boardSize) / 2);
-  self.topLeftBoardCornerY = floor((newRect.size.height - self.boardSize) / 2);
+  self.topLeftBoardCornerX = floor((newRect.size.width - self.boardSideLength) / 2);
+  self.topLeftBoardCornerY = floor((newRect.size.height - self.boardSideLength) / 2);
   self.lineLength = self.pointDistance * numberOfCells;
   // Don't use padding here, rounding errors mighth cause improper positioning
-  self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSize - self.lineLength) / 2;
-  self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSize - self.lineLength) / 2;
-  
+  self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSideLength - self.lineLength) / 2;
+  self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSideLength - self.lineLength) / 2;
+
   self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
 
-  // Updating self.rect and self.boardDimension must be the last operation in
-  // this method; also use self to update so that the synthesized setter will
+  // Updating self.rect and self.boardSize must be the last operation in this
+  // method; also use self to update so that the synthesized setter will
   // trigger KVO.
-  self.boardDimension = newBoardDimension;
+  self.boardSize = newBoardSize;
   self.rect = newRect;
 }
 

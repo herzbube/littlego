@@ -54,7 +54,6 @@
 		CD05B137142A746100214BBE /* CleanBackupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B119142A606400214BBE /* CleanBackupCommand.m */; };
 		CD05B138142A746800214BBE /* RestoreGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B120142A60A700214BBE /* RestoreGameCommand.m */; };
 		CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
-		CD05B146142A750C00214BBE /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
 		CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
 		CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
 		CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
@@ -212,6 +211,18 @@
 		CDF8B77F14DB5C9700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
 		CDF8B78214DB5CA400940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
 		CDF8B78814DC757C00940D3E /* CrossHairLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLayerDelegate.m */; };
+		CDF8B78914DDD72500940D3E /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
+		CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
+		CDF8B78B14DDD73100940D3E /* BoardLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */; };
+		CDF8B78C14DDD73500940D3E /* CrossHairLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLayerDelegate.m */; };
+		CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
+		CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
+		CDF8B78F14DDD73E00940D3E /* PlayViewLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegate.m */; };
+		CDF8B79014DDD74300940D3E /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */; };
+		CDF8B79114DDD74700940D3E /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */; };
+		CDF8B79214DDD74A00940D3E /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */; };
+		CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
+		CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -521,6 +532,7 @@
 			files = (
 				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
+				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,7 +551,6 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
-				CD24962E14CCB51000C9D19F /* QuartzCore.framework */,
 				CDC2DD851494E85C00F6D750 /* appicon-iphone-fuseki-8x8@2x.png */,
 				CDC2DD831494E85700F6D750 /* appicon-iphone-fuseki-8x8.png */,
 				CD1087701323D07800E83543 /* LICENSE */,
@@ -565,6 +576,7 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765070DF74369002DB57D /* CoreGraphics.framework */,
 				CDBF979E13EC750C00476748 /* AudioToolbox.framework */,
+				CD24962E14CCB51000C9D19F /* QuartzCore.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1374,7 +1386,6 @@
 				CD05B137142A746100214BBE /* CleanBackupCommand.m in Sources */,
 				CD05B138142A746800214BBE /* RestoreGameCommand.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
-				CD05B146142A750C00214BBE /* PlayView.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
@@ -1392,6 +1403,17 @@
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
+				CDF8B78914DDD72500940D3E /* PlayView.m in Sources */,
+				CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */,
+				CDF8B78B14DDD73100940D3E /* BoardLayerDelegate.m in Sources */,
+				CDF8B78C14DDD73500940D3E /* CrossHairLayerDelegate.m in Sources */,
+				CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */,
+				CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */,
+				CDF8B78F14DDD73E00940D3E /* PlayViewLayerDelegate.m in Sources */,
+				CDF8B79014DDD74300940D3E /* StarPointsLayerDelegate.m in Sources */,
+				CDF8B79114DDD74700940D3E /* StonesLayerDelegate.m in Sources */,
+				CDF8B79214DDD74A00940D3E /* SymbolsLayerDelegate.m in Sources */,
+				CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

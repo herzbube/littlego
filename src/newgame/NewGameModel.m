@@ -51,7 +51,7 @@
   if (! self)
     return nil;
 
-  self.boardSize = 0;
+  self.boardSize = GoBoardSizeUndefined;
   self.blackPlayerUUID = @"";
   self.whitePlayerUUID = @"";
   self.handicap = 0;

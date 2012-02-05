@@ -74,7 +74,7 @@
 
   // KVO observing
   [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
-  [self.playViewMetrics addObserver:self forKeyPath:@"boardDimension" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
 
   return self;
 }
@@ -85,7 +85,7 @@
 - (void) dealloc
 {
   [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
-  [self.playViewMetrics removeObserver:self forKeyPath:@"boardDimension"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
   self.layer = nil;
   self.playViewMetrics = nil;
   self.playViewModel = nil;
@@ -102,10 +102,10 @@
     self.layer.frame = playViewMetrics.rect;
     self.dirty = true;
   }
-  else if ([keyPath isEqualToString:@"boardDimension"])
+  else if ([keyPath isEqualToString:@"boardSize"])
   {
     // TODO set needsDisplay to false if the concrete layer does not need an
-    // update on boardDimension change
+    // update on boardSize change
     self.dirty = true;
   }
 }

@@ -80,38 +80,16 @@
 // -----------------------------------------------------------------------------
 - (void) testStringForSize
 {
-  static const int arraySize = GoBoardSizeMax + 3;
-  static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, 42};
-  static NSString* expectedBoardSizeStrings[arraySize] = {@"7", @"9", @"11", @"13", @"15", @"17", @"19", @"Undefined", @"Undefined"};
+  static const int numberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+  static const int arraySize = numberOfBoardSizes + 1;
+  static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined};
+  static NSString* expectedBoardSizeStrings[arraySize] = {@"7", @"9", @"11", @"13", @"15", @"17", @"19", @"Undefined"};
 
   for (int index = 0; index < arraySize; ++index)
     STAssertTrue([expectedBoardSizeStrings[index] isEqualToString:[GoBoard stringForSize:boardSizes[index]]], expectedBoardSizeStrings[index]);
-}
 
-// -----------------------------------------------------------------------------
-/// @brief Exercises the dimensionForSize:() class method.
-// -----------------------------------------------------------------------------
-- (void) testDimensionForSize
-{
-  static const int arraySize = GoBoardSizeMax + 3;
-  static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, 42};
-  static const int expectedBoardSizes[arraySize] = {7, 9, 11, 13, 15, 17, 19, 0, 0};
-
-  for (int index = 0; index < arraySize; ++index)
-    STAssertEquals(expectedBoardSizes[index], [GoBoard dimensionForSize:boardSizes[index]], [GoBoard stringForSize:boardSizes[index]]);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the sizeForDimension:() class method.
-// -----------------------------------------------------------------------------
-- (void) testSizeForDimension
-{
-  static const int arraySize = GoBoardSizeMax + 4;
-  static const int boardDimensions[arraySize] = {7, 9, 11, 13, 15, 17, 19, 42, -1, 0};
-  static const int expectedBoardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined, GoBoardSizeUndefined, GoBoardSizeUndefined};
-
-  for (int index = 0; index < arraySize; ++index)
-    STAssertEquals(expectedBoardSizes[index], [GoBoard sizeForDimension:boardDimensions[index]], nil);
+  STAssertThrowsSpecificNamed([GoBoard stringForSize:(enum GoBoardSize)42],
+                              NSException, NSInvalidArgumentException, @"evil cast");
 }
 
 // -----------------------------------------------------------------------------
@@ -119,8 +97,8 @@
 // -----------------------------------------------------------------------------
 - (void) testPointEnumerator
 {
-  int expectedBoardDimensions = 19;
-  int expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedNumberOfPoints = pow(expectedBoardSize, 2);
 
   int numberOfPoints = 0;
   NSEnumerator* enumerator = [m_game.board pointEnumerator];
@@ -176,39 +154,39 @@
 // -----------------------------------------------------------------------------
 - (void) testNeighbourOfInDirection
 {
-  int expectedBoardDimensions = 19;
+  int expectedBoardSize = 19;
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
+  STAssertEquals(expectedBoardSize, board.size, nil);
 
   enum GoBoardDirection direction = GoBoardDirectionLeft;
   for (; direction <= GoBoardDirectionPrevious; ++direction)
   {
-    int expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+    int expectedNumberOfPoints = pow(expectedBoardSize, 2);
     NSString* initialVertex;
     switch (direction)
     {
       case GoBoardDirectionLeft:
-        expectedNumberOfPoints = expectedBoardDimensions;
+        expectedNumberOfPoints = expectedBoardSize;
         initialVertex = @"T8";
         break;
       case GoBoardDirectionRight:
-        expectedNumberOfPoints = expectedBoardDimensions;
+        expectedNumberOfPoints = expectedBoardSize;
         initialVertex = @"A14";
         break;
       case GoBoardDirectionUp:
-        expectedNumberOfPoints = expectedBoardDimensions;
+        expectedNumberOfPoints = expectedBoardSize;
         initialVertex = @"Q1";
         break;
       case GoBoardDirectionDown:
-        expectedNumberOfPoints = expectedBoardDimensions;
+        expectedNumberOfPoints = expectedBoardSize;
         initialVertex = @"J19";
         break;
       case GoBoardDirectionNext:
-        expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+        expectedNumberOfPoints = pow(expectedBoardSize, 2);
         initialVertex = @"A1";
         break;
       case GoBoardDirectionPrevious:
-        expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+        expectedNumberOfPoints = pow(expectedBoardSize, 2);
         initialVertex = @"T19";
         break;
       default:
@@ -271,12 +249,10 @@
 // -----------------------------------------------------------------------------
 - (void) checkBoardState:(GoBoard*)board expectedBoardSize:(enum GoBoardSize)expectedBoardSize
 {
-  int expectedBoardDimensions = [GoBoard dimensionForSize:expectedBoardSize];
-  int expectedNumberOfPoints = pow(expectedBoardDimensions, 2);
+  int expectedNumberOfPoints = pow(expectedBoardSize, 2);
 
   STAssertNotNil(board, nil);
   STAssertEquals(expectedBoardSize, board.size, nil);
-  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
 
   int numberOfPoints = 0;
   NSEnumerator* enumerator = [board pointEnumerator];

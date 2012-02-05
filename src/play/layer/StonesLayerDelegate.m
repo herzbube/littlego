@@ -45,6 +45,41 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  static CGLayerRef blackStoneLayer = NULL;
+  static CGLayerRef whiteStoneLayer = NULL;
+  if (! blackStoneLayer)
+  {
+    for (int i = 0; i < 2; ++i)
+    {
+      CGLayerRef* stoneLayer;
+      UIColor* color = nil;
+      if (0 == i)
+      {
+        stoneLayer = &blackStoneLayer;
+        color = [UIColor blackColor];
+      }
+      else
+      {
+        stoneLayer = &whiteStoneLayer;
+        color = [UIColor whiteColor];
+      }
+      CGRect stoneRect = CGRectMake(0, 0, self.playViewMetrics.pointDistance, self.playViewMetrics.pointDistance);
+      *stoneLayer = CGLayerCreateWithContext(context, stoneRect.size, NULL);
+      CGContextRef stoneLayerContext = CGLayerGetContext(*stoneLayer);
+      CGContextSetFillColorWithColor(stoneLayerContext, color.CGColor);
+      const int startRadius = 0;
+      const int endRadius = 2 * M_PI;
+      const int clockwise = 0;
+      CGContextAddArc(stoneLayerContext, stoneRect.size.width / 2 + gHalfPixel + gHalfPixel,
+                      stoneRect.size.height / 2 + gHalfPixel + gHalfPixel,
+                      self.playViewMetrics.stoneRadius,
+                      startRadius,
+                      endRadius,
+                      clockwise);
+      CGContextFillPath(stoneLayerContext);
+    }
+  }
+
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
@@ -52,12 +87,45 @@
   {
     if (point.hasStone)
     {
-      UIColor* color;
+//xxx      UIColor* color;
+//xxx      if (point.blackStone)
+//xxx        color = [UIColor blackColor];
+//xxx      else
+//xxx        color = [UIColor whiteColor];
+//xxx      [self drawStone:context color:color vertex:point.vertex];
+
+/*
+      CGLayerRef stoneLayer;
       if (point.blackStone)
-        color = [UIColor blackColor];
+        stoneLayer = blackStoneLayer;
       else
+        stoneLayer = whiteStoneLayer;
+
+      CGContextSaveGState(context);
+      CGContextTranslateCTM(context,
+                            (point.vertex.numeric.x - 1) * self.playViewMetrics.pointDistance,
+                            (self.playViewMetrics.boardSize - point.vertex.numeric.y) * self.playViewMetrics.pointDistance);
+      CGContextDrawLayerAtPoint(context, CGPointZero, stoneLayer);
+      CGContextRestoreGState(context);
+*/
+      if (point.blackStone)
+      {
+        CGLayerRef stoneLayer;
+        stoneLayer = blackStoneLayer;
+        CGContextSaveGState(context);
+        CGContextTranslateCTM(context,
+                              (point.vertex.numeric.x - 1) * self.playViewMetrics.pointDistance - (self.playViewMetrics.pointDistance / 2) - gHalfPixel,
+                              (self.playViewMetrics.boardSize - point.vertex.numeric.y) * self.playViewMetrics.pointDistance - (self.playViewMetrics.pointDistance / 2) - gHalfPixel
+                              );
+        CGContextDrawLayerAtPoint(context, CGPointZero, stoneLayer);
+        CGContextRestoreGState(context);
+      }
+      else
+      {
+        UIColor* color;
         color = [UIColor whiteColor];
-      [self drawStone:context color:color vertex:point.vertex];
+        [self drawStone:context color:color vertex:point.vertex];
+      }
     }
     else
     {

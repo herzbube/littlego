@@ -43,7 +43,9 @@
 ///
 /// In order to be able to perform this task, UserDefaultsUpdater must be
 /// triggered as early as possible during the application launch cycle, before
-/// any other application code accesses the user defaults system.
+/// any other application code accesses the user defaults system. It is also
+/// vital that the upgrade process is performed @e BEFORE the registration
+/// domain defaults are added to 
 ///
 ///
 /// @par Upgrading details
@@ -56,30 +58,33 @@
 /// version). Upgrades are performed incrementally to make this task easier.
 ///
 ///
-/// @ The user defaults version number
-/// 
+/// @ The user defaults format version number
+///
 /// To find out if upgrades need to be performed, UserDefaultsUpdater compares
-/// the values stored in the registration domain and the application domain
-/// under the key #userDefaultsVersionKey. If the values of this user defaults
-/// version number are the same in both domains, no upgrade is needed. If the
-/// registration domain value is higher, one or more incremental upgrades are
-/// performed until the application domain data reaches a state that matches
-/// the registration domain data.
+/// the format version of the current user defaults to the target format version
+/// supplied to the upgrade:() method. The current user defaults format version
+/// is determined by reading the key #userDefaultsVersionApplicationDomainKey
+/// from the application domain.
 ///
-/// @note Downgrading is not supported. If the registration domain value is
-/// lower than the application domain value, UserDefaultsUpdater tries to
-/// recover by performing a destructive downgrade. All current user defaults
-/// are lost by this operation.
+/// If the two version numbers are the same, no upgrade is needed. If the target
+/// version supplied to the upgrade:() method is higher, one or more incremental
+/// upgrades are performed until the application domain data reaches a state
+/// that matches the requested target format.
 ///
-/// The user defaults version number is an integral number that increases
+/// @note Downgrading is not supported. If the target version supplied to the
+/// upgrade:() method is lower than the application domain value,
+/// UserDefaultsUpdater tries to recover by performing a destructive downgrade.
+/// All current user defaults are lost by this operation.
+///
+/// The user defaults format version number is an integral number that increases
 /// monotonically. The number in effect denotes the version of the user defaults
 /// data format, @b not the application version. For this reason, it is not
 /// necessary for every new application version to also increase the user
-/// defaults version number.
+/// defaults format version number.
 ///
 /// UserDefaultsUpdater allows for gaps in the user defaults versioning scheme,
-/// e.g. a new application version may go from user defaults version 3 directly
-/// to version 5, bypassing version 4.
+/// e.g. a new application version may go from user defaults format version 3
+/// directly to version 5, bypassing version 4.
 ///
 ///
 /// @par How to implement an incremental upgrade
@@ -92,7 +97,7 @@
 /// version (may or may not be 11), a class method named upgradeToVersion12()
 /// must be implemented.
 ///
-/// When the main method upgrade() progresses along the upgrade path from the
+/// When the main method upgrade:() progresses along the upgrade path from the
 /// application domain to the registration domain version number, it
 /// automatically finds and invokes all upgrade methods that are named
 /// according to the above scheme.
@@ -101,6 +106,6 @@
 {
 }
 
-+ (int) upgrade;
++ (int) upgradeToVersion:(int)targetVersion;
 
 @end

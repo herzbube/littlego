@@ -230,11 +230,11 @@
   // [...]
   // [...]
   //
-  // So what we do here is simply count the lines to get the dimension of the
-  // board. Not terribly sophisticated, but I have not found a better, or more
+  // So what we do here is simply count the lines to get the size of the board.
+  // Not terribly sophisticated, but I have not found a better, or more
   // reliable way to query for board size.
   NSArray* responseLines = [response.parsedResponse componentsSeparatedByString:@"\n"];
-  m_boardSize = [GoBoard sizeForDimension:[responseLines count]];
+  m_boardSize = responseLines.count;
 
   // Submit the next GTP command
   NSString* commandString = @"get_komi";

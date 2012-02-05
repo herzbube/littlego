@@ -142,20 +142,21 @@ enum TabType
 /// @brief Enumerates the supported board sizes.
 enum GoBoardSize
 {
-  GoBoardSize7,
-  GoBoardSize9,
-  GoBoardSize11,
-  GoBoardSize13,
-  GoBoardSize15,
-  GoBoardSize17,
-  GoBoardSize19,
+  GoBoardSize7 = 7,
+  GoBoardSize9 = 9,
+  GoBoardSize11 = 11,
+  GoBoardSize13 = 13,
+  GoBoardSize15 = 15,
+  GoBoardSize17 = 17,
+  GoBoardSize19 = 19,
   GoBoardSizeMin = GoBoardSize7,
   GoBoardSizeMax = GoBoardSize19,
-  GoBoardSizeUndefined
+  GoBoardSizeUndefined = 0
 };
 /// @brief Default board size that should be used if no sensible user default
 /// is available.
 extern const enum GoBoardSize gDefaultBoardSize;
+extern const int gNumberOfBoardSizes;
 
 /// @brief Enumerates the types of alert views used across the application.
 ///
@@ -385,10 +386,11 @@ extern NSString* playStoneSoundFileResource;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Keys for user defaults
+/// @name Constants (mostly keys) for user defaults
 // -----------------------------------------------------------------------------
 //@{
 // User Defaults versioning
+extern const int userDefaultsVersionRegistrationDomain;
 extern NSString* userDefaultsVersionRegistrationDomainKey;
 extern NSString* userDefaultsVersionApplicationDomainKey;
 // Play view settings

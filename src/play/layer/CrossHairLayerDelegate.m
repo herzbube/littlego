@@ -77,14 +77,14 @@
     {
       lineStartPoint.x = self.playViewMetrics.topLeftPointX;
       lineEndPoint.x = lineStartPoint.x + self.playViewMetrics.lineLength;
-      if (0 == vertexNumeric.y || self.playViewMetrics.boardDimension == vertexNumeric.y)
+      if (0 == vertexNumeric.y || self.playViewMetrics.boardSize == vertexNumeric.y)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
     else
     {
       lineStartPoint.y = self.playViewMetrics.topLeftPointY;
       lineEndPoint.y = lineStartPoint.y + self.playViewMetrics.lineLength;
-      if (0 == vertexNumeric.x || self.playViewMetrics.boardDimension == vertexNumeric.x)
+      if (0 == vertexNumeric.x || self.playViewMetrics.boardSize == vertexNumeric.x)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
     

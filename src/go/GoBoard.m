@@ -52,7 +52,6 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoBoardSize size;
-@property(nonatomic, assign, readwrite) int dimensions;
 //@}
 - (NSArray*) starPointVertexes;
 @end
@@ -61,7 +60,6 @@
 @implementation GoBoard
 
 @synthesize size;
-@synthesize dimensions;
 @synthesize starPoints;
 
 // -----------------------------------------------------------------------------
@@ -82,12 +80,26 @@
 // -----------------------------------------------------------------------------
 + (GoBoard*) boardWithSize:(enum GoBoardSize)size;
 {
-  if (0 == [GoBoard dimensionForSize:size])
+  switch (size)
   {
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
-                                                   userInfo:nil];
-    @throw exception;
+    case GoBoardSize7:
+    case GoBoardSize9:
+    case GoBoardSize11:
+    case GoBoardSize13:
+    case GoBoardSize15:
+    case GoBoardSize17:
+    case GoBoardSize19:
+    {
+      break;
+    }
+    case GoBoardSizeUndefined:
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
+                                                     userInfo:nil];
+      @throw exception;
+    }
   }
 
   GoBoard* board = [[GoBoard alloc] initWithSize:size];
@@ -100,89 +112,35 @@
 /// @brief Returns a string representation of @a size that is suitable
 /// for displaying in the UI.
 ///
-/// Returns the string "Undefined" if @a size is #GoBoardSizeUndefined or
-/// otherwise invalid.
+/// Returns the string "Undefined" if @a size is #GoBoardSizeUndefined.
+/// 
+/// Raises an @e NSInvalidArgumentException if @a size is otherwise invalid.
 // -----------------------------------------------------------------------------
 + (NSString*) stringForSize:(enum GoBoardSize)size
 {
   switch (size)
   {
     case GoBoardSize7:
-      return @"7";
     case GoBoardSize9:
-      return @"9";
     case GoBoardSize11:
-      return @"11";
     case GoBoardSize13:
-      return @"13";
     case GoBoardSize15:
-      return @"15";
     case GoBoardSize17:
-      return @"17";
     case GoBoardSize19:
-      return @"19";
+    {
+      return [NSString stringWithFormat:@"%d", size];
+    }
     case GoBoardSizeUndefined:
-    default:
+    {
       return @"Undefined";
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the numeric dimension that corresponds to @a size. For
-/// instance, 19 will be returned for the enum value #GoBoardSize19.
-///
-/// Returns 0 if @a size is #GoBoardSizeUndefined or otherwise invalid.
-// -----------------------------------------------------------------------------
-+ (int) dimensionForSize:(enum GoBoardSize)size
-{
-  switch (size)
-  {
-    case GoBoardSize7:
-      return 7;
-    case GoBoardSize9:
-      return 9;
-    case GoBoardSize11:
-      return 11;
-    case GoBoardSize13:
-      return 13;
-    case GoBoardSize15:
-      return 15;
-    case GoBoardSize17:
-      return 17;
-    case GoBoardSize19:
-      return 19;
-    case GoBoardSizeUndefined:
+    }
     default:
-      return 0;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the board size that corresponds to the numeric @a dimension.
-/// For instance, #GoBoardSize19 will be returned for the numeric value 19.
-///
-/// Returns #GoBoardSizeUndefined if @a dimension is not recognized.
-// -----------------------------------------------------------------------------
-+ (enum GoBoardSize) sizeForDimension:(int)dimension
-{
-  switch (dimension)
-  {
-    case 7:
-      return GoBoardSize7;
-    case 9:
-      return GoBoardSize9;
-    case 11:
-      return GoBoardSize11;
-    case 13:
-      return GoBoardSize13;
-    case 15:
-      return GoBoardSize15;
-    case 17:
-      return GoBoardSize17;
-    case 19:
-      return GoBoardSize19;
-    default:
-      return GoBoardSizeUndefined;
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
+                                                     userInfo:nil];
+      @throw exception;
+    }
   }
 }
 
@@ -199,7 +157,6 @@
     return nil;
 
   self.size = boardSize;
-  self.dimensions = [GoBoard dimensionForSize:boardSize];
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
   starPoints = nil;
 
@@ -244,7 +201,7 @@
 - (void) setupGoPoints
 {
   // Implementation note: It is tempting to create only a single GoPoint at A1
-  // and let lazy initialization in pointAtVertex:() figure out the reset. This
+  // and let lazy initialization in pointAtVertex:() figure out the rest. This
   // poses the problem, though, that the lazy initialiation part of
   // pointAtVertex:() would become quite expensive, because it would need to be
   // able to handle the scenario that a GoPoint is created at a time when the
@@ -302,7 +259,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoBoard(%p): dimension = %d", self, dimensions];
+  return [NSString stringWithFormat:@"GoBoard(%p): size = %d", self, size];
 }
 
 // -----------------------------------------------------------------------------
@@ -362,12 +319,12 @@
       break;
     case GoBoardDirectionRight:
       numericVertex.x++;
-      if (numericVertex.x > self.dimensions)
+      if (numericVertex.x > size)
         return nil;
       break;
     case GoBoardDirectionUp:
       numericVertex.y++;
-      if (numericVertex.y > self.dimensions)
+      if (numericVertex.y > size)
         return nil;
       break;
     case GoBoardDirectionDown:
@@ -377,11 +334,11 @@
       break;
     case GoBoardDirectionNext:
       numericVertex.x++;
-      if (numericVertex.x > self.dimensions)
+      if (numericVertex.x > size)
       {
         numericVertex.x = 1;
         numericVertex.y++;
-        if (numericVertex.y > self.dimensions)
+        if (numericVertex.y > size)
           return nil;
       }
       break;
@@ -389,7 +346,7 @@
       numericVertex.x--;
       if (numericVertex.x < 1)
       {
-        numericVertex.x = self.dimensions;
+        numericVertex.x = size;
         numericVertex.y--;
         if (numericVertex.y < 1)
           return nil;
@@ -431,7 +388,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:starPointsKey];
-  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.dimensions];
+  NSString* boardSizeKey = [NSString stringWithFormat:@"%d", self.size];
   NSString* starPointVertexListAsString = [dictionary valueForKey:boardSizeKey];
   if (starPointVertexListAsString == nil || [starPointVertexListAsString length] == 0)
     return [NSArray array];

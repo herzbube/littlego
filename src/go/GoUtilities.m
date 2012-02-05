@@ -127,7 +127,8 @@
   if (0 == handicap)
     return handicapVertices;
 
-  if (handicap < 2 || handicap > maxHandicaps[boardSize])
+  int boardSizeArrayIndex = (boardSize - GoBoardSizeMin) / 2;
+  if (handicap < 2 || handicap > maxHandicaps[boardSizeArrayIndex])
   {
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:[NSString stringWithFormat:@"Specified handicap %d is out of range for GoBoardSize %d", handicap, boardSize]
@@ -135,10 +136,9 @@
     @throw exception;
   }
 
-  int boardDimension = [GoBoard dimensionForSize:boardSize];
-  int edgeDistance = edgeDistances[boardSize];
+  int edgeDistance = edgeDistances[boardSizeArrayIndex];
   int lineClose = edgeDistance;
-  int lineFar = boardDimension - edgeDistance + 1;
+  int lineFar = boardSize - edgeDistance + 1;
   int lineMiddle = lineClose + ((lineFar - lineClose) / 2);
 
   for (int handicapIter = 1; handicapIter <= handicap; ++handicapIter)

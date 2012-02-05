@@ -33,12 +33,12 @@
 // -----------------------------------------------------------------------------
 - (void) testNewGame
 {
-  int expectedBoardDimensions = 19;
-  int expectedRegionSize = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedRegionSize = pow(expectedBoardSize, 2);
   NSUInteger expectedNumberOfPoints = expectedRegionSize;
 
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardDimensions, board.dimensions, nil);
+  STAssertEquals(expectedBoardSize, board.size, nil);
   GoPoint* pointA1 = [board pointAtVertex:@"A1"];
   STAssertNotNil(pointA1, nil);
   GoBoardRegion* region = pointA1.region;
@@ -88,8 +88,8 @@
   GoBoard* board = m_game.board;
   GoPoint* point = [board pointAtVertex:@"R17"];
   GoBoardRegion* mainRegion = point.region;
-  int expectedBoardDimensions = 19;
-  int expectedMainRegionSize = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedMainRegionSize = pow(expectedBoardSize, 2);
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
 
   int expectedRegionSize = 1;
@@ -117,10 +117,9 @@
   GoPoint* point2 = [board pointAtVertex:@"F9"];
   GoPoint* point3 = [board pointAtVertex:@"M3"];
   GoBoardRegion* mainRegion = point1.region;
-  int expectedBoardDimensions = 19;
-  int expectedMainRegionSize = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedMainRegionSize = pow(expectedBoardSize, 2);
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-
   NSUInteger expectedPointsCount = 0;
 
   GoBoardRegion* region = [GoBoardRegion region];
@@ -191,8 +190,8 @@
   GoBoard* board = m_game.board;
   GoPoint* point1 = [board pointAtVertex:@"Q17"];
   GoBoardRegion* mainRegion = point1.region;
-  int expectedBoardDimensions = 19;
-  int expectedMainRegionSize = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedMainRegionSize = pow(expectedBoardSize, 2);
   NSUInteger expectedMainRegionPointsCount = expectedMainRegionSize;
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
   STAssertEquals(expectedMainRegionPointsCount, mainRegion.points.count, nil);
@@ -235,8 +234,8 @@
   GoPoint* point1 = [board pointAtVertex:@"D10"];
   GoPoint* point2 = [board pointAtVertex:@"G2"];
   GoBoardRegion* mainRegion = point1.region;
-  int expectedBoardDimensions = 19;
-  int expectedMainRegionSize = pow(expectedBoardDimensions, 2);
+  int expectedBoardSize = 19;
+  int expectedMainRegionSize = pow(expectedBoardSize, 2);
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
 
   expectedMainRegionSize -= 2;

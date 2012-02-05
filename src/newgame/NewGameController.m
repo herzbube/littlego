@@ -400,11 +400,15 @@ enum KomiSectionItem
     case BoardSizeSection:
     {
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-      for (enum GoBoardSize boardSizeIndex = GoBoardSizeMin; boardSizeIndex <= GoBoardSizeMax; ++boardSizeIndex)
-        [itemList addObject:[GoBoard stringForSize:boardSizeIndex]];
+      for (int boardSizeIndex = 0; boardSizeIndex < gNumberOfBoardSizes; ++boardSizeIndex)
+      {
+        int naturalBoardSize = GoBoardSizeMin + (boardSizeIndex * 2);
+        [itemList addObject:[NSString stringWithFormat:@"%d", naturalBoardSize]];
+      }
+      int indexOfDefaultBoardSize = (self.boardSize - GoBoardSizeMin) / 2;
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                           title:@"Board size"
-                                                                             indexOfDefaultItem:self.boardSize
+                                                                             indexOfDefaultItem:indexOfDefaultBoardSize
                                                                                        delegate:self];
       itemPickerController.context = indexPath;
       modalController = itemPickerController;
@@ -475,7 +479,7 @@ enum KomiSectionItem
     {
       if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
       {
-        self.boardSize = controller.indexOfSelectedItem;
+        self.boardSize = GoBoardSizeMin + (controller.indexOfSelectedItem * 2);
         NSRange indexSetRange = NSMakeRange(BoardSizeSection, 1);
 
         // Adjust handicap if the current handicap exceeds the maximum allowed

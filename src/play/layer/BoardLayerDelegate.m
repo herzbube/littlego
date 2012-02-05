@@ -39,8 +39,8 @@
   CGContextSetFillColorWithColor(context, self.playViewModel.boardColor.CGColor);
   CGContextFillRect(context, CGRectMake(self.playViewMetrics.topLeftBoardCornerX + gHalfPixel,
                                         self.playViewMetrics.topLeftBoardCornerY + gHalfPixel,
-                                        self.playViewMetrics.boardSize,
-                                        self.playViewMetrics.boardSize));
+                                        self.playViewMetrics.boardSideLength,
+                                        self.playViewMetrics.boardSideLength));
 }
 
 @end

@@ -499,9 +499,7 @@ static PlayView* sharedPlayView = nil;
     {
       // Distance from fingertip should scale with board size. The base for
       // calculating the scale factor is the minimum board size.
-      int minBoardDimension = [GoBoard dimensionForSize:GoBoardSizeMin];
-      int currentBoardDimension = game.board.dimensions;
-      scaleFactor = 1.0 * currentBoardDimension / minBoardDimension;
+      scaleFactor = 1.0 * game.board.size / GoBoardSizeMin;
       // Straight scaling results in a scale factor that is too large for big
       // boards, so we tune down the scale a little bit. The factor of 0.75 has
       // been determined experimentally.

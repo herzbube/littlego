@@ -36,13 +36,17 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  enum GoBoardSize boardSize = self.playViewMetrics.boardSize;
+  if (GoBoardSizeUndefined == boardSize)
+    return;
+
   // Two iterations for the two directions horizontal and vertical
   for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
   {
     CGPoint lineStartPoint = CGPointMake(self.playViewMetrics.topLeftPointX, self.playViewMetrics.topLeftPointY);
 
     bool drawHorizontalLine = (0 == lineDirection) ? true : false;
-    for (int lineCounter = 0; lineCounter < self.playViewMetrics.boardDimension; ++lineCounter)
+    for (int lineCounter = 0; lineCounter < boardSize; ++lineCounter)
     {
       CGPoint lineEndPoint = lineStartPoint;
       if (drawHorizontalLine)
@@ -51,7 +55,7 @@
         lineEndPoint.y += self.playViewMetrics.lineLength;
 
       int lineWidth;
-      if (0 == lineCounter || (self.playViewMetrics.boardDimension - 1) == lineCounter)
+      if (0 == lineCounter || (boardSize - 1) == lineCounter)
         lineWidth = self.playViewModel.boundingLineWidth;
       else
         lineWidth = self.playViewModel.normalLineWidth;

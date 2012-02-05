@@ -19,7 +19,6 @@
 @class GoPoint;
 @class GoVertex;
 
-
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewMetrics class is responsible for calculating the
 /// coordinates and sizes of UI elements on the Play view, and for providing
@@ -31,10 +30,10 @@
 /// is started), someone must invoke updateWithBoardSize:().
 ///
 /// In reaction to either of those events, PlayViewMetrics re-calculates all
-/// of its properties. The last property that is updated is either
-/// @e boardDimension, or @e rect, depending on which updater method was
-/// invoked. Clients of PlayViewMetrics may use KVO to monitor either of those
-/// properties for changes.
+/// of its properties. The last property that is updated is either @e boardSize,
+/// or @e rect, depending on which updater method was invoked. Clients of
+/// PlayViewMetrics may use KVO to monitor either of those properties for
+/// changes.
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics : NSObject
 {
@@ -70,13 +69,13 @@
 /// This property can be used for KVO. When the change notification fires, all
 /// other properties are guaranteed to have updated values.
 @property(nonatomic, assign) CGRect rect;
-/// @brief The dimension of the Go board that is drawn by Play view layers.
+/// @brief The size of the Go board that is drawn by Play view layers.
 ///
 /// This property can be used for KVO. When the change notification fires, all
 /// other properties are guaranteed to have updated values.
-@property(nonatomic, assign) int boardDimension;
+@property(nonatomic, assign) enum GoBoardSize boardSize;
 @property(nonatomic, assign) bool portrait;
-@property(nonatomic, assign) int boardSize;
+@property(nonatomic, assign) int boardSideLength;
 @property(nonatomic, assign) int boardOuterMargin;  // distance to view edge
 @property(nonatomic, assign) int boardInnerMargin;  // distance to grid
 @property(nonatomic, assign) int topLeftBoardCornerX;

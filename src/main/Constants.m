@@ -21,6 +21,7 @@ const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 
 // Go constants
 const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
+const int gNumberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -84,8 +85,9 @@ NSString* creditsDocumentResource = @"Credits.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 
-// Keys for user defaults
+// Constants (mostly keys) for user defaults
 // User Defaults versioning
+const int userDefaultsVersionRegistrationDomain = 3;
 NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
 NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
 // Play view settings
