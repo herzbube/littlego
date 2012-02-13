@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayViewLayerDelegate.h"
+#import "PlayViewLayerDelegateBase.h"
 
 // Forward declarations
 @class ScoringModel;
@@ -26,11 +26,20 @@
 /// @brief The SymbolsLayerDelegate class is responsible for drawing symbols
 /// (e.g. last move).
 // -----------------------------------------------------------------------------
-@interface SymbolsLayerDelegate : PlayViewLayerDelegate
+@interface SymbolsLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 
 - (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel;
+
+/// @name PlayViewLayerDelegate methods
+//@{
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name CALayer delegate methods
+//@{
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+//@}
 
 @end

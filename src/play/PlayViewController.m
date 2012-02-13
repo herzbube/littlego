@@ -820,7 +820,7 @@
   //    user can see the stone location
 
   CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* crossHairPoint = [self.playView crossHairPointAt:panningLocation];
+  GoPoint* crossHairPoint = [self.playView crossHairPointNear:panningLocation];
 
   // TODO If the move is not legal, determine the reason (another stone is
   // already placed on the point; suicide move; guarded by Ko rule)
@@ -862,7 +862,7 @@
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* deadStonePoint = [self.playView pointAt:tappingLocation];
+  GoPoint* deadStonePoint = [self.playView pointNear:tappingLocation];
   if (! deadStonePoint || ! [deadStonePoint hasStone])
     return;
   [self.scoringModel.score toggleDeadStoneStateOfGroup:deadStonePoint.region];

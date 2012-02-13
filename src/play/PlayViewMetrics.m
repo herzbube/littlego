@@ -48,16 +48,17 @@
 @synthesize boardSize;
 @synthesize portrait;
 @synthesize boardSideLength;
-@synthesize boardOuterMargin;
-@synthesize boardInnerMargin;
 @synthesize topLeftBoardCornerX;
 @synthesize topLeftBoardCornerY;
 @synthesize topLeftPointX;
 @synthesize topLeftPointY;
 @synthesize numberOfCells;
+@synthesize cellWidth;
 @synthesize pointDistance;
 @synthesize lineLength;
 @synthesize stoneRadius;
+@synthesize pointCellSize;
+@synthesize stoneInnerSquareSize;
 
 
 // -----------------------------------------------------------------------------
@@ -119,15 +120,10 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
 {
-  if (CGRectEqualToRect(rect, newRect) && boardSize == newBoardSize)
+  if (CGRectEqualToRect(self.rect, newRect) && self.boardSize == newBoardSize)
     return;
-
-  // ----------------------------------------------------------------
-  // Use newRect and newBoardSize for calculations. self.rect and self.boardSize
-  // are updated at the very end, after all other properties have been
-  // calculated. The reason for this is that clients can use KVO on self.rect
-  // or self.boardSize.
-  // ----------------------------------------------------------------
+  self.boardSize = newBoardSize;
+  self.rect = newRect;
 
   // The rect is rectangular, but the Go board is square. Examine the rect
   // orientation and use the smaller dimension of the rect as the base for
@@ -138,40 +134,85 @@
     boardSideLengthBase = newRect.size.width;
   else
     boardSideLengthBase = newRect.size.height;
-  self.boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
-  self.boardSideLength = boardSideLengthBase - (self.boardOuterMargin * 2);
 
-  self.numberOfCells = newBoardSize - 1;
-  if (0 == self.numberOfCells + 1)
+  // Outer margin and board side length are not yet final - any rounding errors
+  // that occur in the following calculations will re-added to the outer margin,
+  // so in the end the margin will be slightly larger, and the board will be
+  // slightly smaller than we calculate here.
+
+  // These values must be calculated even if the board size is not yet known
+  // so that the board itself can already be drawn.
+  // Note: This is important because the board will NOT be redrawn when the
+  // board size changes (see BoardLayerDelegate)!
+  int boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
+  self.topLeftBoardCornerX = boardOuterMargin;
+  self.topLeftBoardCornerY = boardOuterMargin;
+  self.boardSideLength = boardSideLengthBase - (boardOuterMargin * 2);
+
+  if (GoBoardSizeUndefined == newBoardSize)
   {
-    // This branch exists to prevent division by zero; this is expected to occur
-    // if board size is zero during initialization, but it may also occur later
-    // on during the application's life-cycle if we get updated while no GoGame
-    // exists.
+    // Assign hard-coded values and don't rely on calculations that might
+    // produce insane results. This also removes the risk of division by zero
+    // errors.
+    self.numberOfCells = 0;
+    self.cellWidth = 0;
     self.pointDistance = 0;
+    self.stoneRadius = 0;
+    self.lineLength = 0;
+    self.topLeftPointX = self.topLeftBoardCornerX;
+    self.topLeftPointY = self.topLeftBoardCornerY;
   }
   else
   {
+    self.numberOfCells = newBoardSize - 1;
+
+    // For the purpose of calculating the cell width, we assume that all lines
+    // have the same thickness. The difference between normal and bounding line
+    // width is added to the *OUTSIDE* of the board (see GridLayerDelegate).
+    int numberOfPointsAvailableForCells = self.boardSideLength - newBoardSize * self.playViewModel.normalLineWidth;
+    assert(numberOfPointsAvailableForCells >= 0);
     // +1 to self.numberOfCells because we need one-half of a cell on both sides
-    // of the board (top/bottom or left/right) to draw a stone
-    self.pointDistance = floor(self.boardSideLength / (self.numberOfCells + 1));
-  }
-  self.boardInnerMargin = floor(self.pointDistance / 2);
-  // Don't use border here - rounding errors might cause improper centering
-  self.topLeftBoardCornerX = floor((newRect.size.width - self.boardSideLength) / 2);
-  self.topLeftBoardCornerY = floor((newRect.size.height - self.boardSideLength) / 2);
-  self.lineLength = self.pointDistance * numberOfCells;
-  // Don't use padding here, rounding errors mighth cause improper positioning
-  self.topLeftPointX = self.topLeftBoardCornerX + (self.boardSideLength - self.lineLength) / 2;
-  self.topLeftPointY = self.topLeftBoardCornerY + (self.boardSideLength - self.lineLength) / 2;
+    // of the board (top/bottom or left/right) to draw, for instance, a stone
+    self.cellWidth = floor(numberOfPointsAvailableForCells / (self.numberOfCells + 1));
+    // We want an even number so that half a cell leaves us with no fractions,
+    // so that we can draw neatly aligned half-cell rectangles 
+    if (self.cellWidth % 2 != 0)
+    {
+      // We can't increase self.cellWidth to get an even number because if
+      // self.boardSideLength is very small, increasing self.cellWidth might
+      // cause the sum of all cells to exceed self.boardSideLength. Decreasing
+      // self.cellWidth therefore is the only option, although this wastes a
+      // small amount of screen estate.
+      self.cellWidth--;
+    }
 
-  self.stoneRadius = floor(self.pointDistance / 2 * self.playViewModel.stoneRadiusPercentage);
+    self.pointDistance = self.cellWidth + self.playViewModel.normalLineWidth;
+    self.stoneRadius = floor(self.cellWidth / 2 * self.playViewModel.stoneRadiusPercentage);
+    int pointsUsedForGridLines = ((newBoardSize - 2) * self.playViewModel.normalLineWidth
+                                  + 2 * self.playViewModel.boundingLineWidth);
+    self.lineLength = pointsUsedForGridLines + self.cellWidth * numberOfCells;
 
-  // Updating self.rect and self.boardSize must be the last operation in this
-  // method; also use self to update so that the synthesized setter will
-  // trigger KVO.
-  self.boardSize = newBoardSize;
-  self.rect = newRect;
+    // This makes sure that the grid is centered. We can't use self.cellWidth
+    // as the inner margin, because that parameter might have been adjusted
+    // above for even-ness, which would result in a non-centered grid.
+    int boardInnerMargin = floor((self.boardSideLength - self.lineLength) / 2);
+    assert(2 * boardInnerMargin >= self.cellWidth);
+    self.topLeftPointX = self.topLeftBoardCornerX + boardInnerMargin;
+    self.topLeftPointY = self.topLeftBoardCornerY + boardInnerMargin;
+
+    // Calculate self.pointCellSize. See property documentation for details
+    // what we calculate here.
+    int pointCellSideLength = self.cellWidth + self.playViewModel.normalLineWidth;
+    self.pointCellSize = CGSizeMake(pointCellSideLength, pointCellSideLength);
+    
+    // Geometry tells us that for the square with side length "a":
+    //   a = r * sqrt(2)
+    int stoneInnerSquareSideLength = floor(self.stoneRadius * sqrt(2));
+    // Subtract an additional 2 points because we don't want to touch the stone
+    // circle
+    stoneInnerSquareSideLength -= 2;
+    self.stoneInnerSquareSize = CGSizeMake(stoneInnerSquareSideLength, stoneInnerSquareSideLength);
+  }  // else [if (GoBoardSizeUndefined == newBoardSize)]
 }
 
 // -----------------------------------------------------------------------------
@@ -180,52 +221,9 @@
 // -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point
 {
-  return [self coordinatesFromVertex:point.vertex];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns view coordinates that correspond to the intersection
-/// @a vertex.
-// -----------------------------------------------------------------------------
-- (CGPoint) coordinatesFromVertex:(GoVertex*)vertex
-{
-  struct GoVertexNumeric numericVertex = vertex.numeric;
-  return [self coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns view coordinates that correspond to the intersection
-/// identified by @a vertexX and @a vertexY.
-// -----------------------------------------------------------------------------
-- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY
-{
-  // The origin for Core Graphics is in the bottom-left corner!
-  return CGPointMake(self.topLeftPointX + (self.pointDistance * (vertexX - 1)),
-                     self.topLeftPointY + self.lineLength - (self.pointDistance * (vertexY - 1)));
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a GoVertex object for the intersection identified by the view
-/// coordinates @a coordinates.
-///
-/// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
-/// because @a coordinates are outside the board's edges).
-// -----------------------------------------------------------------------------
-- (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates
-{
-  struct GoVertexNumeric numericVertex;
-  numericVertex.x = 1 + (coordinates.x - self.topLeftPointX) / self.pointDistance;
-  numericVertex.y = 1 + (self.topLeftPointY + self.lineLength - coordinates.y) / self.pointDistance;
-  GoVertex* vertex;
-  @try
-  {
-    vertex = [GoVertex vertexFromNumeric:numericVertex];
-  }
-  @catch (NSException* exception)
-  {
-    vertex = nil;
-  }
-  return vertex;
+  struct GoVertexNumeric numericVertex = point.vertex.numeric;
+  return CGPointMake(self.topLeftPointX + (self.pointDistance * (numericVertex.x - 1)),
+                     self.topLeftPointY + (self.pointDistance * (self.boardSize - numericVertex.y)));
 }
 
 // -----------------------------------------------------------------------------
@@ -237,56 +235,94 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
 {
-  GoVertex* vertex = [self vertexFromCoordinates:coordinates];
-  if (vertex)
-    return [[GoGame sharedGame].board pointAtVertex:vertex.string];
-  else
+  struct GoVertexNumeric numericVertex;
+  numericVertex.x = 1 + (coordinates.x - self.topLeftPointX) / self.pointDistance;
+  numericVertex.y = self.boardSize - (coordinates.y - self.topLeftPointY) / self.pointDistance;
+  GoVertex* vertex;
+  @try
+  {
+    vertex = [GoVertex vertexFromNumeric:numericVertex];
+  }
+  @catch (NSException* exception)
+  {
     return nil;
+  }
+  return [[GoGame sharedGame].board pointAtVertex:vertex.string];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a rect that describes a square inside the circle that
-/// represents the Go stone at @a point.
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a stone that
+/// uses the specified color @a stoneColor.
 ///
-/// The square does not touch the circle, it is slighly inset.
-// -----------------------------------------------------------------------------
-- (CGRect) innerSquareAtPoint:(GoPoint*)point
-{
-  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
-  // Geometry tells us that for the square with side length "a":
-  //   a = r * sqrt(2)
-  int sideLength = floor(self.stoneRadius * sqrt(2));
-  CGRect square = [self squareWithCenterPoint:coordinates sideLength:sideLength];
-  // We subtract another 2 points because we don't want to touch the circle.
-  return CGRectInset(square, 1, 1);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a rect that describes a square exactly surrounding the circle
-/// that represents the Go stone at @a point.
+/// The layer size is taken from the current value of self.pointCellSize. The
+/// stone's size is defined by the current value of self.stoneRadius.
 ///
-/// Two squares for adjacent points do not overlap, they exactly touch each
-/// other.
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this method is responsible for releasing the returned
+/// CGLayer object using the function CGLayerRelease when the layer is no
+/// longer needed.
 // -----------------------------------------------------------------------------
-- (CGRect) squareAtPoint:(GoPoint*)point
+- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor
 {
-  CGPoint coordinates = [self coordinatesFromVertex:point.vertex];
-  return [self squareWithCenterPoint:coordinates sideLength:self.pointDistance];
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = self.pointCellSize;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+  static const int startRadius = 0;
+  static const int endRadius = 2 * M_PI;
+  static const int clockwise = 0;
+
+  // Half-pixel translation is added at the time when the layer is actually
+  // drawn
+  CGContextAddArc(layerContext,
+                  layerCenter.x,
+                  layerCenter.y,
+                  self.stoneRadius,
+                  startRadius,
+                  endRadius,
+                  clockwise);
+  CGContextSetFillColorWithColor(layerContext, stoneColor.CGColor);
+  CGContextFillPath(layerContext);
+
+  return layer;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a rect that describes a square whose center is at coordinate
-/// @a center and whose side length is @a sideLength.
+/// @brief Draws the layer @a layer using the specified drawing context so that
+/// the layer is centered at the intersection specified by @a point.
 // -----------------------------------------------------------------------------
-- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength
+- (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point
 {
-  // The origin for Core Graphics is in the bottom-left corner!
-  CGRect square;
-  square.origin.x = floor((center.x - (sideLength / 2))) + gHalfPixel;
-  square.origin.y = floor((center.y - (sideLength / 2))) + gHalfPixel;
-  square.size.width = sideLength;
-  square.size.height = sideLength;
-  return square;
+  // Create a save point that we can restore to before we leave this method
+  CGContextSaveGState(context);
+
+  // Adjust the CTM as if we were drawing the layer with its upper-left corner
+  // at the specified intersection
+  CGPoint pointCoordinates = [self coordinatesFromPoint:point];
+  CGContextTranslateCTM(context,
+                        pointCoordinates.x,
+                        pointCoordinates.y);
+  // Align the layer center with the intersection
+  CGSize layerSize = CGLayerGetSize(layer);
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = layerSize;
+  CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+  CGContextTranslateCTM(context, -layerCenter.x, -layerCenter.y);
+  // Half-pixel translation to prevent unnecessary anti-aliasing
+  CGContextTranslateCTM(context, gHalfPixel, gHalfPixel);
+
+  // Because of the CTM adjustments, we can now use CGPointZero
+  CGContextDrawLayerAtPoint(context, CGPointZero, layer);
+
+  // Restore the drawing context to undo CTM adjustments
+  CGContextRestoreGState(context);
 }
 
 @end

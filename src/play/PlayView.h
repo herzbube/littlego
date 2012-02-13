@@ -49,53 +49,18 @@
 /// are drawn with anti-aliasing, things become mis-aligned (e.g. stones are
 /// not exactly centered on line intersections).
 ///
-/// @note All calculations rely on the coordinate system origin being in the
-/// top-left corner.
-///
 /// @note All methods that require a view update should invoke delayedUpdate()
 /// instead of setNeedsDisplay() so that multiple updates can be coalesced into
 /// a single update, after one or more long-running actions have finished.
-///
-/// The following schematic illustrates the composition of the view for a
-/// (theoretical) 4x4 board. See the private implementation of PlayView for
-/// matching properties.
-///
-/// @verbatim
-/// +-----------------------screen--------------------+
-/// |                       boardOuterMargin          |
-/// |  +--------------------board------------------+  |
-/// |  |  /-\         /-\   boardInnerMargin       |  |
-/// |  | |-o-|-------|-o-|--grid---o-----------o   |  |
-/// |  |  \-/         \-/          |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |          /-\         /-\          |   |  |
-/// |  |   o---------|-o-|-------|-o-|---------o   |  |
-/// |  |   |          \-/         \-/          |   |  |
-/// |  |   |           |         ^   ^         |   |  |
-/// |  |   |           |         +---+         |   |  |
-/// |  |   |           |     stoneRadius*2     |   |  |
-/// |  |   o-----------o-----  (diameter)  ----o   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   o-----------o-----------o-----------o   |  |
-/// |  |               ^           ^               |  |
-/// |  +-----------    +-----------+    -----------+  |
-/// |                  pointDistance                  |
-/// +---   ^                                   ^   ---+
-///        +------------lineLength-------------+
-/// @endverbatim
 // -----------------------------------------------------------------------------
 @interface PlayView : UIView
 {
 }
 
 + (PlayView*) sharedView;
-- (GoPoint*) crossHairPointAt:(CGPoint)coordinates;
+- (GoPoint*) crossHairPointNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
-- (GoPoint*) pointAt:(CGPoint)coordinates;
+- (GoPoint*) pointNear:(CGPoint)coordinates;
 - (void) actionStarts;
 - (void) actionEnds;
 - (void) frameChanged;

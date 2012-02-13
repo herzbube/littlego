@@ -16,16 +16,24 @@
 
 
 // Project includes
-#import "PlayViewLayerDelegate.h"
+#import "PlayViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardLayerDelegate class is responsible for drawing the Go board.
 // -----------------------------------------------------------------------------
-@interface BoardLayerDelegate : PlayViewLayerDelegate
+@interface BoardLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 
+/// @name PlayViewLayerDelegate methods
+//@{
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name CALayer delegate methods
+//@{
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+//@}
 
 @end

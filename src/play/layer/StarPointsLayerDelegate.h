@@ -16,17 +16,25 @@
 
 
 // Project includes
-#import "PlayViewLayerDelegate.h"
+#import "PlayViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The StarPointsLayerDelegate class is responsible for drawing the
 /// star points (hoshi) on the Go board.
 // -----------------------------------------------------------------------------
-@interface StarPointsLayerDelegate : PlayViewLayerDelegate
+@interface StarPointsLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 
+/// @name PlayViewLayerDelegate methods
+//@{
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name CALayer delegate methods
+//@{
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+//@}
 
 @end

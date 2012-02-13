@@ -24,6 +24,9 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 
+// System includes
+#import <QuartzCore/QuartzCore.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for StarPointsLayerDelegate.
@@ -36,21 +39,50 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief PlayViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  switch (event)
+  {
+    case PVLDEventRectangleChanged:
+    {
+      self.layer.frame = self.playViewMetrics.rect;
+      self.dirty = true;
+      break;
+    }
+    case PVLDEventGoGameStarted:  // board size possibly changes
+    {
+      self.dirty = true;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief CALayer delegate method.
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
 	CGContextSetFillColorWithColor(context, self.playViewModel.starPointColor.CGColor);
-  
+
   const int startRadius = 0;
   const int endRadius = 2 * M_PI;
   const int clockwise = 0;
   for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
   {
-    struct GoVertexNumeric numericVertex = starPoint.vertex.numeric;
-    int starPointCenterPointX = self.playViewMetrics.topLeftPointX + (self.playViewMetrics.pointDistance * (numericVertex.x - 1));
-    int starPointCenterPointY = self.playViewMetrics.topLeftPointY + (self.playViewMetrics.pointDistance * (numericVertex.y - 1));
-    CGContextAddArc(context, starPointCenterPointX + gHalfPixel, starPointCenterPointY + gHalfPixel, self.playViewModel.starPointRadius, startRadius, endRadius, clockwise);
+    CGPoint starPointCoordinates = [self.playViewMetrics coordinatesFromPoint:starPoint];
+    CGContextAddArc(context,
+                    starPointCoordinates.x + gHalfPixel,
+                    starPointCoordinates.y + gHalfPixel,
+                    self.playViewModel.starPointRadius,
+                    startRadius,
+                    endRadius,
+                    clockwise);
     CGContextFillPath(context);
   }
 }

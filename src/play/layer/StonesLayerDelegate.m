@@ -25,60 +25,111 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 
+// System includes
+#import <QuartzCore/QuartzCore.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for StonesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface StonesLayerDelegate()
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color point:(GoPoint*)point;
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertex:(GoVertex*)vertex;
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY;
+- (void) releaseLayers;
 - (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point;
+@property(nonatomic, assign) CGLayerRef blackStoneLayer;
+@property(nonatomic, assign) CGLayerRef whiteStoneLayer;
 @end
 
 
 @implementation StonesLayerDelegate
 
+@synthesize blackStoneLayer;
+@synthesize whiteStoneLayer;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a StonesLayerDelegate object.
+///
+/// @note This is the designated initializer of StonesLayerDelegate.
+// -----------------------------------------------------------------------------
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+{
+  // Call designated initializer of superclass (PlayViewLayerDelegate)
+  self = [super initWithLayer:aLayer metrics:metrics model:model];
+  if (! self)
+    return nil;
+  self.blackStoneLayer = NULL;
+  self.whiteStoneLayer = NULL;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this StonesLayerDelegate object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self releaseLayers];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Releases stone layers if they are currently allocated. Otherwise
+/// does nothing.
+// -----------------------------------------------------------------------------
+- (void) releaseLayers
+{
+  if (self.blackStoneLayer)
+  {
+    CGLayerRelease(self.blackStoneLayer);
+    self.blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+  if (self.whiteStoneLayer)
+  {
+    CGLayerRelease(self.whiteStoneLayer);
+    self.whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief PlayViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  switch (event)
+  {
+    case PVLDEventRectangleChanged:
+    {
+      self.layer.frame = self.playViewMetrics.rect;
+      [self releaseLayers];
+      self.dirty = true;
+      break;
+    }
+    case PVLDEventGoGameStarted:  // possible board size change + place handicap stones
+    {
+      [self releaseLayers];
+      self.dirty = true;
+      break;      
+    }
+    case PVLDEventLastMoveChanged:
+    {
+      self.dirty = true;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief CALayer delegate method.
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  static CGLayerRef blackStoneLayer = NULL;
-  static CGLayerRef whiteStoneLayer = NULL;
-  if (! blackStoneLayer)
-  {
-    for (int i = 0; i < 2; ++i)
-    {
-      CGLayerRef* stoneLayer;
-      UIColor* color = nil;
-      if (0 == i)
-      {
-        stoneLayer = &blackStoneLayer;
-        color = [UIColor blackColor];
-      }
-      else
-      {
-        stoneLayer = &whiteStoneLayer;
-        color = [UIColor whiteColor];
-      }
-      CGRect stoneRect = CGRectMake(0, 0, self.playViewMetrics.pointDistance, self.playViewMetrics.pointDistance);
-      *stoneLayer = CGLayerCreateWithContext(context, stoneRect.size, NULL);
-      CGContextRef stoneLayerContext = CGLayerGetContext(*stoneLayer);
-      CGContextSetFillColorWithColor(stoneLayerContext, color.CGColor);
-      const int startRadius = 0;
-      const int endRadius = 2 * M_PI;
-      const int clockwise = 0;
-      CGContextAddArc(stoneLayerContext, stoneRect.size.width / 2 + gHalfPixel + gHalfPixel,
-                      stoneRect.size.height / 2 + gHalfPixel + gHalfPixel,
-                      self.playViewMetrics.stoneRadius,
-                      startRadius,
-                      endRadius,
-                      clockwise);
-      CGContextFillPath(stoneLayerContext);
-    }
-  }
+  if (! self.blackStoneLayer)
+    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor blackColor]];
+  if (! self.whiteStoneLayer)
+    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor whiteColor]];
 
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
@@ -87,45 +138,10 @@
   {
     if (point.hasStone)
     {
-//xxx      UIColor* color;
-//xxx      if (point.blackStone)
-//xxx        color = [UIColor blackColor];
-//xxx      else
-//xxx        color = [UIColor whiteColor];
-//xxx      [self drawStone:context color:color vertex:point.vertex];
-
-/*
-      CGLayerRef stoneLayer;
       if (point.blackStone)
-        stoneLayer = blackStoneLayer;
+        [self.playViewMetrics drawLayer:self.blackStoneLayer withContext:context centeredAtPoint:point];
       else
-        stoneLayer = whiteStoneLayer;
-
-      CGContextSaveGState(context);
-      CGContextTranslateCTM(context,
-                            (point.vertex.numeric.x - 1) * self.playViewMetrics.pointDistance,
-                            (self.playViewMetrics.boardSize - point.vertex.numeric.y) * self.playViewMetrics.pointDistance);
-      CGContextDrawLayerAtPoint(context, CGPointZero, stoneLayer);
-      CGContextRestoreGState(context);
-*/
-      if (point.blackStone)
-      {
-        CGLayerRef stoneLayer;
-        stoneLayer = blackStoneLayer;
-        CGContextSaveGState(context);
-        CGContextTranslateCTM(context,
-                              (point.vertex.numeric.x - 1) * self.playViewMetrics.pointDistance - (self.playViewMetrics.pointDistance / 2) - gHalfPixel,
-                              (self.playViewMetrics.boardSize - point.vertex.numeric.y) * self.playViewMetrics.pointDistance - (self.playViewMetrics.pointDistance / 2) - gHalfPixel
-                              );
-        CGContextDrawLayerAtPoint(context, CGPointZero, stoneLayer);
-        CGContextRestoreGState(context);
-      }
-      else
-      {
-        UIColor* color;
-        color = [UIColor whiteColor];
-        [self drawStone:context color:color vertex:point.vertex];
-      }
+        [self.playViewMetrics drawLayer:self.whiteStoneLayer withContext:context centeredAtPoint:point];
     }
     else
     {
@@ -137,32 +153,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Draws a single stone at intersection @a point, using color @a color.
-// -----------------------------------------------------------------------------
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color point:(GoPoint*)point
-{
-  [self drawStone:context color:color vertex:point.vertex];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Draws a single stone at intersection @a vertex, using color @a color.
-// -----------------------------------------------------------------------------
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertex:(GoVertex*)vertex
-{
-  struct GoVertexNumeric numericVertex = vertex.numeric;
-  [self drawStone:context color:color vertexX:numericVertex.x vertexY:numericVertex.y];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Draws a single stone at the intersection identified by @a vertexX
-/// and @a vertexY, using color @a color.
-// -----------------------------------------------------------------------------
-- (void) drawStone:(CGContextRef)context color:(UIColor*)color vertexX:(int)vertexX vertexY:(int)vertexY
-{
-  [self drawStone:context color:color coordinates:[self.playViewMetrics coordinatesFromVertexX:vertexX vertexY:vertexY]];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Draws a small circle at intersection @a point, when @a point does
 /// not have a stone on it. The color of the circle is different for different
 /// regions.
@@ -171,8 +161,7 @@
 // -----------------------------------------------------------------------------
 - (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point
 {
-  struct GoVertexNumeric numericVertex = point.vertex.numeric;
-  CGPoint coordinates = [self.playViewMetrics coordinatesFromVertexX:numericVertex.x vertexY:numericVertex.y];
+  CGPoint coordinates = [self.playViewMetrics coordinatesFromPoint:point];
 	CGContextSetFillColorWithColor(context, point.region.randomColor.CGColor);
   
   const int startRadius = 0;

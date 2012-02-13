@@ -29,11 +29,59 @@
 /// Go board that is displayed by the Play view changes (e.g. when a new game
 /// is started), someone must invoke updateWithBoardSize:().
 ///
-/// In reaction to either of those events, PlayViewMetrics re-calculates all
-/// of its properties. The last property that is updated is either @e boardSize,
-/// or @e rect, depending on which updater method was invoked. Clients of
-/// PlayViewMetrics may use KVO to monitor either of those properties for
-/// changes.
+/// In reaction to either of these events, PlayViewMetrics re-calculates all
+/// of its properties. Re-drawing of layers must be initiated separately.
+///
+///
+/// @par Calculations
+///
+/// All calculations rely on the coordinate system origin being in the top-left
+/// corner.
+///
+/// The following schematic illustrates the composition of the view for a
+/// (theoretical) 4x4 board.
+///
+/// @verbatim
+///    +------ topLeftBoardCorner
+///    |   +-- topLeftPoint
+///    |   |
+/// +- | - | ---------------rect----------------------+
+/// |  v   |                boardOuterMargin          |
+/// |  +---v----------------board------------------+  |
+/// |  |  /-\         /-\                          |  |
+/// |  | |-o-|-------|-o-|--grid---o-----------o   |  |
+/// |  |  \-/         \-/          |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |          /-\         /-\          |   |  |
+/// |  |   o---------|-o-|-------|-o-|---------o   |  |
+/// |  |   |          \-/         \-/          |   |  |
+/// |  |   |           |         ^   ^         |   |  |
+/// |  |   |           |         +---+         |   |  |
+/// |  |   |           |    stoneRadius*2+1    |   |  |
+/// |  |   |           |       (diameter)      |   |  |
+/// |  |   o-----------o-----------+-----------o   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   |           |           |           |   |  |
+/// |  |   o-----------o-----------o-----------o   |  |
+/// |  |   ^           ^^         ^            ^   |  |
+/// |  +-- | --------- ||  cell   | ---------- | --+  |
+/// |  ^   |           |+--Width--+            |   ^  |
+/// +- |   |           | point    ^            |   | -+
+///    |   |           +-Distance-+            |   |
+///    |   +------------lineLength-------------+   |
+///    +--------------boardSideLength--------------+
+/// @endverbatim
+///
+///
+/// As a small reminder for how to calculate distances, lengths and sizes in the
+/// graphics system: The coordinate system is zero-based, and the distance
+/// between two points always includes the starting point, but not the end point
+/// (cf. pointDistance in the schematic above).
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics : NSObject
 {
@@ -45,7 +93,7 @@
 - (void) dealloc;
 //@}
 
-/// @name Calculators
+/// @name Updaters
 //@{
 - (void) updateWithRect:(CGRect)newRect;
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize;
@@ -54,37 +102,69 @@
 /// @name Calculators
 //@{
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
-- (CGPoint) coordinatesFromVertex:(GoVertex*)vertex;
-- (CGPoint) coordinatesFromVertexX:(int)vertexX vertexY:(int)vertexY;
-- (GoVertex*) vertexFromCoordinates:(CGPoint)coordinates;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
-- (CGRect) innerSquareAtPoint:(GoPoint*)point;
-- (CGRect) squareAtPoint:(GoPoint*)point;
-- (CGRect) squareWithCenterPoint:(CGPoint)center sideLength:(double)sideLength;
+//@}
+
+/// @name Drawing helpers
+//@{
+- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor;
+- (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point;
 //@}
 
 
 /// @brief The rectangle that Play view layers must use as their frame.
-///
-/// This property can be used for KVO. When the change notification fires, all
-/// other properties are guaranteed to have updated values.
 @property(nonatomic, assign) CGRect rect;
 /// @brief The size of the Go board that is drawn by Play view layers.
-///
-/// This property can be used for KVO. When the change notification fires, all
-/// other properties are guaranteed to have updated values.
 @property(nonatomic, assign) enum GoBoardSize boardSize;
+/// @brief True if @e rect refers to a rectangle with portrait orientation,
+/// false if the rectangle uses landscape orientation.
 @property(nonatomic, assign) bool portrait;
 @property(nonatomic, assign) int boardSideLength;
-@property(nonatomic, assign) int boardOuterMargin;  // distance to view edge
-@property(nonatomic, assign) int boardInnerMargin;  // distance to grid
 @property(nonatomic, assign) int topLeftBoardCornerX;
 @property(nonatomic, assign) int topLeftBoardCornerY;
 @property(nonatomic, assign) int topLeftPointX;
 @property(nonatomic, assign) int topLeftPointY;
 @property(nonatomic, assign) int numberOfCells;
+/// @brief Denotes the number of uncovered points between two grid lines. The
+/// numeric value is guaranteed to be an even number.
+@property(nonatomic, assign) int cellWidth;
+/// @brief Denotes the distance between two points, or intersections, on the
+/// Go board. Thickness of normal grid lines is taken into account.
 @property(nonatomic, assign) int pointDistance;
+/// @brief The length of a grid line. Thickness of bounding and normal grid
+/// lines is taken into account.
 @property(nonatomic, assign) int lineLength;
+/// @brief Radius of the circle that represents a Go stone. The circle is
+/// guaranteed to fit into a rectangle of size pointCellSize.
 @property(nonatomic, assign) int stoneRadius;
+/// @brief Size that denotes a square whose side length is "cellWidth + the
+/// width of a normal grid line".
+///
+/// The purpose of this size is to define the drawing area "owned" by an
+/// intersection on the Go board. All drawing artifacts that belong to an
+/// intersection (e.g. star point, Go stone, territory for scoring) must stay
+/// within the boundaries defined by pointCellSize.
+///
+/// As the following schematic illustrates, two adjacent rectangles that both
+/// use pointCellSize will not overlap.
+///
+/// @verbatim
+/// o------o------o------o
+/// |      |      |      |
+/// |   +-----++-----+   |
+/// |   |  |  ||  |  |   |
+/// o---|--A--||--B--|---o
+/// |   |  |  ||  |  |   |
+/// |   +-----++-----+   |
+/// |      |      |      |
+/// o------o------o------o
+/// @endverbatim
+@property(nonatomic, assign) CGSize pointCellSize;
+/// @brief Size that denotes a square whose side length makes it fit inside the
+/// circle that represents a Go stone (i.e. a circle whose size is defined by
+/// stoneRadius).
+///
+/// The square does not touch the circle, it is slighly inset.
+@property(nonatomic, assign) CGSize stoneInnerSquareSize;
 
 @end

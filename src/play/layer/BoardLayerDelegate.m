@@ -20,6 +20,9 @@
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
 
+// System includes
+#import <QuartzCore/QuartzCore.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for BoardLayerDelegate.
@@ -30,6 +33,26 @@
 
 @implementation BoardLayerDelegate
 
+
+// -----------------------------------------------------------------------------
+/// @brief PlayViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  switch (event)
+  {
+    case PVLDEventRectangleChanged:
+    {
+      self.layer.frame = self.playViewMetrics.rect;
+      self.dirty = true;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief CALayer delegate method.

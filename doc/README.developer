@@ -180,6 +180,11 @@ overview of how I usually configure my schemes:
   "Distribute_AdHoc" build configuration.
 - Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
   actions use the "Distribute_AppStore" build configuration
+- In all schemes, make sure that the checkox "Run" is checked not only for the
+  main target, but for the unit test target as well. This ensures that unit
+  tests are build & run every time the main target is built. Note that the same
+  result can also be achieved by a target dependency, which is saved to the
+  Xcode project file and thus placed under version control.
 
 
 Platform notes
@@ -430,9 +435,13 @@ Unit tests
 All unit test related files are located in the top-level folder "test".
 
 The Xcode project defines a target "Unit tests" which builds a unit test bundle,
-then immediately runs the tests in its "Run Script" phase. The main target
-depends on the "Unit test" target to make sure that tests are built and executed
-automatically if a piece of source code that is under test has changed.
+then immediately runs the tests in its "Run Script" phase.
+
+To make the unit tests build & run automatically every time the main target is
+built, I usually make sure that in all of my Xcode schemes the checkox "Run" is
+checked not only for the main target, but for the unit test target as well.
+Note that the same result can also be achieved by a target dependency, which is
+saved to the Xcode project file and thus placed under version control.
 
 Notes about the "Unit test" target:
 - All tests in this target are what Apple calls "logic tests" (see [1]), i.e.

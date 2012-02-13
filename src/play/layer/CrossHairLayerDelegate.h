@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayViewLayerDelegate.h"
+#import "PlayViewLayerDelegateBase.h"
 
 // Forward declarations
 @class GoPoint;
@@ -27,11 +27,20 @@
 /// cross-hair that indicates to the user during stone placement where the
 /// stone would be placed.
 // -----------------------------------------------------------------------------
-@interface CrossHairLayerDelegate : PlayViewLayerDelegate
+@interface CrossHairLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 
+/// @name PlayViewLayerDelegate methods
+//@{
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name CALayer delegate methods
+//@{
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+//@}
+
 
 /// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
 @property(nonatomic, retain) GoPoint* crossHairPoint;

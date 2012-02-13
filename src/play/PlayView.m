@@ -54,6 +54,7 @@
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameLastMoveChanged:(NSNotification*)notification;
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
@@ -64,7 +65,7 @@
 - (void) updateCrossHairPointDistanceFromFinger;
 - (void) updateLayers;
 - (void) delayedUpdate;
-- (void) dirtyAllLayers;
+- (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
 //@}
 /// @name Update optimizing
 //@{
@@ -84,14 +85,14 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
-@property(nonatomic, retain) BoardLayerDelegate* boardLayerDelegate;
-@property(nonatomic, retain) GridLayerDelegate* gridLayerDelegate;
-@property(nonatomic, retain) StarPointsLayerDelegate* starPointsLayerDelegate;
-@property(nonatomic, retain) StonesLayerDelegate* stonesLayerDelegate;
-@property(nonatomic, retain) CrossHairLayerDelegate* crossHairLayerDelegate;
-@property(nonatomic, retain) SymbolsLayerDelegate* symbolsLayerDelegate;
-@property(nonatomic, retain) TerritoryLayerDelegate* territoryLayerDelegate;
-@property(nonatomic, retain) DeadStonesLayerDelegate* deadStonesLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> boardLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> gridLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> starPointsLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> stonesLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> symbolsLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> territoryLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> deadStonesLayerDelegate;
 //@}
 @end
 
@@ -171,7 +172,7 @@ static PlayView* sharedPlayView = nil;
   {
     [self makeViewReadyForDrawing];
     self.viewReadyForDrawing = true;
-    [self dirtyAllLayers];
+    [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
     [self delayedUpdate];
   }
 
@@ -219,7 +220,7 @@ static PlayView* sharedPlayView = nil;
 
   [self makeViewReadyForDrawing];
   self.viewReadyForDrawing = true;
-  [self dirtyAllLayers];
+  [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -242,6 +243,7 @@ static PlayView* sharedPlayView = nil;
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   // KVO observing
@@ -365,30 +367,33 @@ static PlayView* sharedPlayView = nil;
 //xxx    return;
   self.updatesWereDelayed = false;
 
-  [boardLayerDelegate updateIfDirty];
-  [gridLayerDelegate updateIfDirty];
-  [starPointsLayerDelegate updateIfDirty];
-  [stonesLayerDelegate updateIfDirty];
-  [crossHairLayerDelegate updateIfDirty];
-  [symbolsLayerDelegate updateIfDirty];
-  [territoryLayerDelegate updateIfDirty];
-  [deadStonesLayerDelegate updateIfDirty];
+  [boardLayerDelegate drawLayer];
+  [gridLayerDelegate drawLayer];
+  [starPointsLayerDelegate drawLayer];
+  [stonesLayerDelegate drawLayer];
+  [crossHairLayerDelegate drawLayer];
+  [symbolsLayerDelegate drawLayer];
+  [territoryLayerDelegate drawLayer];
+  [deadStonesLayerDelegate drawLayer];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Marks all layers dirty so that they redraw themselves in the next
-/// update cycle.
+/// @brief Notifies all layer delegates that @a event has occurred. The event
+/// info object supplied to the delegates is @a eventInfo.
+///
+/// Delegates will ignore the event, or react to the event, as appropriate for
+/// the layer that they manage.
 // -----------------------------------------------------------------------------
-- (void) dirtyAllLayers
+- (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
-  boardLayerDelegate.dirty = true;
-  gridLayerDelegate.dirty = true;
-  starPointsLayerDelegate.dirty = true;
-  stonesLayerDelegate.dirty = true;
-  crossHairLayerDelegate.dirty = true;
-  symbolsLayerDelegate.dirty = true;
-  territoryLayerDelegate.dirty = true;
-  deadStonesLayerDelegate.dirty = true;
+  [boardLayerDelegate notify:event eventInfo:eventInfo];
+  [gridLayerDelegate notify:event eventInfo:eventInfo];
+  [starPointsLayerDelegate notify:event eventInfo:eventInfo];
+  [stonesLayerDelegate notify:event eventInfo:eventInfo];
+  [crossHairLayerDelegate notify:event eventInfo:eventInfo];
+  [symbolsLayerDelegate notify:event eventInfo:eventInfo];
+  [territoryLayerDelegate notify:event eventInfo:eventInfo];
+  [deadStonesLayerDelegate notify:event eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------
@@ -396,8 +401,9 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) frameChanged
 {
-  // Updating the metrics object triggers layer delegates to update their layers
   [self.playViewMetrics updateWithRect:self.bounds];
+  [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+  // xxx TODO: We should probably invoke delayedUpdate()
 }
 
 // -----------------------------------------------------------------------------
@@ -407,7 +413,7 @@ static PlayView* sharedPlayView = nil;
 {
   [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
-  [self dirtyAllLayers];
+  [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -416,8 +422,16 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goGameLastMoveChanged:(NSNotification*)notification
 {
-  self.stonesLayerDelegate.dirty = true;
-  self.symbolsLayerDelegate.dirty = true;  // update "last move" marker
+  [self notifyLayerDelegates:PVLDEventLastMoveChanged eventInfo:nil];
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeEnabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:PVLDEventScoringModeEnabled eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -426,7 +440,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification
 {
-//xxx  [self delayedUpdate];
+  [self notifyLayerDelegates:PVLDEventScoringModeDisabled eventInfo:nil];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -434,8 +449,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  self.territoryLayerDelegate.dirty = true;
-  self.deadStonesLayerDelegate.dirty = true;
+  [self notifyLayerDelegates:PVLDEventScoreCalculationEnds eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -450,7 +464,7 @@ static PlayView* sharedPlayView = nil;
     {
       if (self.scoringModel.scoringMode)
       {
-        self.territoryLayerDelegate.dirty = true;
+        [self notifyLayerDelegates:PVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedUpdate];
       }
     }
@@ -459,16 +473,18 @@ static PlayView* sharedPlayView = nil;
   {
     if ([keyPath isEqualToString:@"markLastMove"])
     {
-      self.symbolsLayerDelegate.dirty = true;
+      [self notifyLayerDelegates:PVLDEventMarkLastMoveChanged eventInfo:nil];
       [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
-      // TODO: not yet implemented
+      [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
+      [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"displayMoveNumbers"])
     {
-      // TODO: not yet implemented
+      [self notifyLayerDelegates:PVLDEventDisplayMoveNumbersChanged eventInfo:nil];
+      [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"placeStoneUnderFinger"])
       [self updateCrossHairPointDistanceFromFinger];
@@ -522,15 +538,15 @@ static PlayView* sharedPlayView = nil;
 /// - If the user has turned this on in the preferences, @a coordinates are
 ///   slightly adjusted so that the intersection is not directly under the
 ///   user's fingertip
-/// - Otherwise the same rules as for pointAt:() apply - see that method's
+/// - Otherwise the same rules as for pointNear:() apply - see that method's
 ///   documentation.
 // -----------------------------------------------------------------------------
-- (GoPoint*) crossHairPointAt:(CGPoint)coordinates
+- (GoPoint*) crossHairPointNear:(CGPoint)coordinates
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
   coordinates.y -= self.crossHairPointDistanceFromFinger * self.playViewMetrics.pointDistance;
-  return [self pointAt:coordinates];
+  return [self pointNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -548,8 +564,7 @@ static PlayView* sharedPlayView = nil;
   crossHairPointIsLegalMove = isLegalMove;
   self.crossHairPoint = point;
 
-  self.crossHairLayerDelegate.crossHairPoint = point;
-  self.crossHairLayerDelegate.dirty = true;
+  [self notifyLayerDelegates:PVLDEventCrossHairChanged eventInfo:point];
   [self delayedUpdate];
 }
 
@@ -568,7 +583,7 @@ static PlayView* sharedPlayView = nil;
 /// - If @a coordinates are a sufficient distance away from the Go board edges,
 ///   there is no "closest" intersection
 // -----------------------------------------------------------------------------
-- (GoPoint*) pointAt:(CGPoint)coordinates
+- (GoPoint*) pointNear:(CGPoint)coordinates
 {
   int halfPointDistance = floor(playViewMetrics.pointDistance / 2);
   bool coordinatesOutOfRange = false;

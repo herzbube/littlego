@@ -16,17 +16,25 @@
 
 
 // Project includes
-#import "PlayViewLayerDelegate.h"
+#import "PlayViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The GridLayerDelegate class is responsible for drawing the line grid
 /// on the Go board.
 // -----------------------------------------------------------------------------
-@interface GridLayerDelegate : PlayViewLayerDelegate
+@interface GridLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 
+/// @name PlayViewLayerDelegate methods
+//@{
+- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name CALayer delegate methods
+//@{
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
+//@}
 
 @end
