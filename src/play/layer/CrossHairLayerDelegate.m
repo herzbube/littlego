@@ -153,7 +153,7 @@
       lineStartPoint.x = self.playViewMetrics.topLeftPointX;
       lineStartPoint.x -= boundingLineWidthSurplus;
       lineEndPoint.x = lineStartPoint.x + self.playViewMetrics.lineLength;
-      if (0 == vertexNumeric.y || self.playViewMetrics.boardSize == vertexNumeric.y)
+      if (1 == vertexNumeric.y || self.playViewMetrics.boardSize == vertexNumeric.y)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
     else
@@ -161,7 +161,7 @@
       lineStartPoint.y = self.playViewMetrics.topLeftPointY;
       lineStartPoint.y -= boundingLineWidthSurplus;
       lineEndPoint.y = lineStartPoint.y + self.playViewMetrics.lineLength;
-      if (0 == vertexNumeric.x || self.playViewMetrics.boardSize == vertexNumeric.x)
+      if (1 == vertexNumeric.x || self.playViewMetrics.boardSize == vertexNumeric.x)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
     
