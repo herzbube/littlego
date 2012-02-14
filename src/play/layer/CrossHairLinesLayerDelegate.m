@@ -117,7 +117,8 @@
     {
       lineStartPoint.x = self.playViewMetrics.topLeftPointX;
       lineStartPoint.x -= boundingLineWidthSurplus;
-      lineEndPoint.x = lineStartPoint.x + self.playViewMetrics.lineLength;
+      // -1 because the end point will also be stroked
+      lineEndPoint.x = lineStartPoint.x + self.playViewMetrics.lineLength - 1;
       if (1 == vertexNumeric.y || self.playViewMetrics.boardSize == vertexNumeric.y)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
@@ -125,7 +126,8 @@
     {
       lineStartPoint.y = self.playViewMetrics.topLeftPointY;
       lineStartPoint.y -= boundingLineWidthSurplus;
-      lineEndPoint.y = lineStartPoint.y + self.playViewMetrics.lineLength;
+      // -1 because the end point will also be stroked
+      lineEndPoint.y = lineStartPoint.y + self.playViewMetrics.lineLength - 1;
       if (1 == vertexNumeric.x || self.playViewMetrics.boardSize == vertexNumeric.x)
         lineWidth = self.playViewModel.boundingLineWidth;
     }
