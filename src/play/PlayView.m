@@ -21,7 +21,8 @@
 #import "PlayViewModel.h"
 #import "ScoringModel.h"
 #import "layer/BoardLayerDelegate.h"
-#import "layer/CrossHairLayerDelegate.h"
+#import "layer/CrossHairLinesLayerDelegate.h"
+#import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/DeadStonesLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/StarPointsLayerDelegate.h"
@@ -88,8 +89,9 @@
 @property(nonatomic, retain) id<PlayViewLayerDelegate> boardLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> gridLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> starPointsLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairLinesLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> stonesLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairStoneLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> symbolsLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> territoryLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> deadStonesLayerDelegate;
@@ -114,8 +116,9 @@
 @synthesize boardLayerDelegate;
 @synthesize gridLayerDelegate;
 @synthesize starPointsLayerDelegate;
+@synthesize crossHairLinesLayerDelegate;
 @synthesize stonesLayerDelegate;
-@synthesize crossHairLayerDelegate;
+@synthesize crossHairStoneLayerDelegate;
 @synthesize symbolsLayerDelegate;
 @synthesize territoryLayerDelegate;
 @synthesize deadStonesLayerDelegate;
@@ -201,8 +204,9 @@ static PlayView* sharedPlayView = nil;
   self.boardLayerDelegate = nil;
   self.gridLayerDelegate = nil;
   self.starPointsLayerDelegate = nil;
+  self.crossHairLinesLayerDelegate = nil;
   self.stonesLayerDelegate = nil;
-  self.crossHairLayerDelegate = nil;
+  self.crossHairStoneLayerDelegate = nil;
   self.symbolsLayerDelegate = nil;
   self.territoryLayerDelegate = nil;
   self.deadStonesLayerDelegate = nil;
@@ -276,12 +280,15 @@ static PlayView* sharedPlayView = nil;
   self.starPointsLayerDelegate = [[[StarPointsLayerDelegate alloc] initWithLayer:[CALayer layer]
                                                                          metrics:playViewMetrics
                                                                            model:playViewModel] autorelease];
+  self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithLayer:[CALayer layer]
+                                                                                 metrics:playViewMetrics
+                                                                                   model:playViewModel] autorelease];
   self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithLayer:[CALayer layer]
                                                                  metrics:playViewMetrics
                                                                    model:playViewModel] autorelease];
-  self.crossHairLayerDelegate = [[[CrossHairLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                       metrics:playViewMetrics
-                                                                         model:playViewModel] autorelease];
+  self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithLayer:[CALayer layer]
+                                                                                 metrics:playViewMetrics
+                                                                                   model:playViewModel] autorelease];
   self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithLayer:[CALayer layer]
                                                                    metrics:playViewMetrics
                                                              playViewModel:playViewModel
@@ -298,8 +305,9 @@ static PlayView* sharedPlayView = nil;
   [self.layer addSublayer:boardLayerDelegate.layer];
   [self.layer addSublayer:gridLayerDelegate.layer];
   [self.layer addSublayer:starPointsLayerDelegate.layer];
+  [self.layer addSublayer:crossHairLinesLayerDelegate.layer];
   [self.layer addSublayer:stonesLayerDelegate.layer];
-  [self.layer addSublayer:crossHairLayerDelegate.layer];
+  [self.layer addSublayer:crossHairStoneLayerDelegate.layer];
   [self.layer addSublayer:symbolsLayerDelegate.layer];
   [self.layer addSublayer:territoryLayerDelegate.layer];
   [self.layer addSublayer:deadStonesLayerDelegate.layer];
@@ -370,8 +378,9 @@ static PlayView* sharedPlayView = nil;
   [boardLayerDelegate drawLayer];
   [gridLayerDelegate drawLayer];
   [starPointsLayerDelegate drawLayer];
+  [crossHairLinesLayerDelegate drawLayer];
   [stonesLayerDelegate drawLayer];
-  [crossHairLayerDelegate drawLayer];
+  [crossHairStoneLayerDelegate drawLayer];
   [symbolsLayerDelegate drawLayer];
   [territoryLayerDelegate drawLayer];
   [deadStonesLayerDelegate drawLayer];
@@ -389,8 +398,9 @@ static PlayView* sharedPlayView = nil;
   [boardLayerDelegate notify:event eventInfo:eventInfo];
   [gridLayerDelegate notify:event eventInfo:eventInfo];
   [starPointsLayerDelegate notify:event eventInfo:eventInfo];
+  [crossHairLinesLayerDelegate notify:event eventInfo:eventInfo];
   [stonesLayerDelegate notify:event eventInfo:eventInfo];
-  [crossHairLayerDelegate notify:event eventInfo:eventInfo];
+  [crossHairStoneLayerDelegate notify:event eventInfo:eventInfo];
   [symbolsLayerDelegate notify:event eventInfo:eventInfo];
   [territoryLayerDelegate notify:event eventInfo:eventInfo];
   [deadStonesLayerDelegate notify:event eventInfo:eventInfo];
