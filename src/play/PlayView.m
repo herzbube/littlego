@@ -413,7 +413,7 @@ static PlayView* sharedPlayView = nil;
 {
   [self.playViewMetrics updateWithRect:self.bounds];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
-  // xxx TODO: We should probably invoke delayedUpdate()
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
