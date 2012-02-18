@@ -114,14 +114,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this PlayViewMetrics object based on
 /// @a newRect and @a newBoardSize.
-///
-/// This method does nothing if the previous calculation was based on the same
-/// rectangle and board size.
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
 {
-  if (CGRectEqualToRect(self.rect, newRect) && self.boardSize == newBoardSize)
-    return;
   self.boardSize = newBoardSize;
   self.rect = newRect;
 
