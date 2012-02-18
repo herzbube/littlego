@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayViewController.h"
 #import "PlayView.h"
+#import "DebugPlayViewController.h"
 #import "StatusLineController.h"
 #import "ActivityIndicatorController.h"
 #import "ScoringModel.h"
@@ -281,7 +282,14 @@
   CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
   self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
   [self.frontSideView addSubview:self.activityIndicator];
-  
+
+  CGRect debugViewFrame = CGRectMake([UiElementMetrics spacingHorizontal],
+                                     playViewFrame.origin.y + [UiElementMetrics spacingVertical],
+                                     playViewFrame.origin.x - 2 * [UiElementMetrics spacingHorizontal],
+                                     playViewFrame.size.height - [UiElementMetrics spacingVertical]);
+  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] initWithFrame:debugViewFrame];
+  [self.frontSideView addSubview:debugPlayViewController.view];
+
   // Configure autoresizingMask properties for proper autorotation
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
