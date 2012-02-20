@@ -58,6 +58,7 @@
   self = [super initWithLayer:aLayer metrics:metrics model:model];
   if (! self)
     return nil;
+  self.crossHairPoint = nil;
   self.blackStoneLayer = NULL;
   self.whiteStoneLayer = NULL;
   self.crossHairStoneLayer = NULL;
@@ -70,6 +71,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.crossHairPoint = nil;
   [self releaseStoneLayers];
   [super dealloc];
 }

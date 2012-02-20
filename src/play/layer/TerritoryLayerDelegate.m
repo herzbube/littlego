@@ -24,6 +24,7 @@
 #import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 
 // System includes
@@ -292,9 +293,9 @@ enum TerritoryLayerType
   if (TerritoryLayerTypeInconsistentDotSymbol == layerType)
   {
     CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-    static const int startRadius = 0;
-    static const int endRadius = 2 * M_PI;
-    static const int clockwise = 0;
+    const int startRadius = [UiUtilities radians:0];
+    const int endRadius = [UiUtilities radians:360];
+    const int clockwise = 0;
     CGContextAddArc(layerContext,
                     layerCenter.x,
                     layerCenter.y,

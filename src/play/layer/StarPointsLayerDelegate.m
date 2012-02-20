@@ -23,6 +23,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
+#import "../../ui/UiUtilities.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -70,8 +71,8 @@
 {
 	CGContextSetFillColorWithColor(context, self.playViewModel.starPointColor.CGColor);
 
-  const int startRadius = 0;
-  const int endRadius = 2 * M_PI;
+  const int startRadius = [UiUtilities radians:0];
+  const int endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
   for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
   {

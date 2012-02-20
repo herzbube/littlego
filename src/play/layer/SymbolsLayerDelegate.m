@@ -185,7 +185,7 @@
   layerRect.size = self.playViewMetrics.stoneInnerSquareSize;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
-  
+
   // Half-pixel translation is added at the time when the layer is actually
   // drawn
   CGContextBeginPath(layerContext);

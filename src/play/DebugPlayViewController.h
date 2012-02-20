@@ -36,8 +36,6 @@
 {
 }
 
-- (id) initWithFrame:(CGRect)aFrame;
-
-@property(nonatomic, assign) CGRect frame;
+- (id) init;
 
 @end

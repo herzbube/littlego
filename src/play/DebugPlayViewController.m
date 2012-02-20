@@ -57,7 +57,6 @@
 
 @implementation DebugPlayViewController
 
-@synthesize frame;
 @synthesize boardOuterMarginPercentageTextField;
 @synthesize normalLineWidthTextField;
 @synthesize boundingLineWidthTextField;
@@ -66,18 +65,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes an DebugPlayViewController object. The view it creates
-/// will have its frame set to @a frame.
+/// @brief Initializes an DebugPlayViewController object.
 ///
 /// @note This is the designated initializer of DebugPlayViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)aFrame
+- (id) init
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super init];
   if (! self)
     return nil;
-  self.frame = aFrame;
   self.boardOuterMarginPercentageTextField = nil;
   self.normalLineWidthTextField = nil;
   self.boundingLineWidthTextField = nil;
@@ -104,10 +101,16 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:self.frame] autorelease];
-
-  CGRect textFieldFrame = CGRectMake(0, 0, self.frame.size.width, [UiElementMetrics textFieldHeight]);
   static const int textFieldCount = 5;
+  CGFloat viewFrameX = [UiElementMetrics spacingHorizontal];
+  CGFloat viewFrameY = [UiElementMetrics spacingVertical];
+  CGFloat viewFrameWidth = 200;  // sufficient width for one text field
+  CGFloat viewFrameHeight = (textFieldCount * [UiElementMetrics textFieldHeight]
+                             + (textFieldCount - 1) * [UiElementMetrics spacingVertical]);
+  CGRect viewFrame = CGRectMake(viewFrameX, viewFrameY, viewFrameWidth, viewFrameHeight);
+  self.view = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
+
+  CGRect textFieldFrame = CGRectMake(0, 0, viewFrameWidth, [UiElementMetrics textFieldHeight]);
   for (int textFieldIndex = 0; textFieldIndex < textFieldCount; ++textFieldIndex)
   {
     UITextField* textField = [self createTextFieldWithFrame:textFieldFrame];

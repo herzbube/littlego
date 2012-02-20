@@ -24,6 +24,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
+#import "../../ui/UiUtilities.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -164,8 +165,8 @@
   CGPoint coordinates = [self.playViewMetrics coordinatesFromPoint:point];
 	CGContextSetFillColorWithColor(context, point.region.randomColor.CGColor);
   
-  const int startRadius = 0;
-  const int endRadius = 2 * M_PI;
+  const int startRadius = [UiUtilities radians:0];
+  const int endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
   int circleRadius = floor(self.playViewMetrics.stoneRadius / 2);
   CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, circleRadius, startRadius, endRadius, clockwise);

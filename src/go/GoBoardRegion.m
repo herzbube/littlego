@@ -18,6 +18,7 @@
 // Project includes
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
+#import "../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -126,10 +127,7 @@
     return nil;
 
   self.points = [NSMutableArray arrayWithCapacity:0];
-  CGFloat red = (CGFloat)random() / (CGFloat)RAND_MAX;
-  CGFloat blue = (CGFloat)random() / (CGFloat)RAND_MAX;
-  CGFloat green = (CGFloat)random() / (CGFloat)RAND_MAX;
-  self.randomColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+  self.randomColor = [UIColor randomColor];
   self.scoringMode = false;
   self.territoryColor = GoColorNone;
   self.territoryInconsistencyFound = false;

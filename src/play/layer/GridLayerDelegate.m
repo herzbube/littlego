@@ -19,6 +19,9 @@
 #import "GridLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
+#import "../../go/GoBoard.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoPoint.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -28,11 +31,61 @@
 /// @brief Class extension with private methods for GridLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface GridLayerDelegate()
+- (void) releaseLineLayers;
+@property(nonatomic, assign) CGLayerRef normalLineLayer;
+@property(nonatomic, assign) CGLayerRef boundingLineLayer;
 @end
 
 
 @implementation GridLayerDelegate
 
+@synthesize normalLineLayer;
+@synthesize boundingLineLayer;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GridLayerDelegate object.
+///
+/// @note This is the designated initializer of GridLayerDelegate.
+// -----------------------------------------------------------------------------
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+{
+  // Call designated initializer of superclass (PlayViewLayerDelegate)
+  self = [super initWithLayer:aLayer metrics:metrics model:model];
+  if (! self)
+    return nil;
+  self.normalLineLayer = nil;
+  self.boundingLineLayer = nil;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GridLayerDelegate
+/// object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self releaseLineLayers];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Releases line layers if they are currently allocated. Otherwise does
+/// nothing.
+// -----------------------------------------------------------------------------
+- (void) releaseLineLayers
+{
+  if (self.normalLineLayer)
+  {
+    CGLayerRelease(self.normalLineLayer);
+    self.normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+  if (self.boundingLineLayer)
+  {
+    CGLayerRelease(self.boundingLineLayer);
+    self.boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief PlayViewLayerDelegate method.
@@ -44,11 +97,13 @@
     case PVLDEventRectangleChanged:
     {
       self.layer.frame = self.playViewMetrics.rect;
+      [self releaseLineLayers];
       self.dirty = true;
       break;
     }
     case PVLDEventGoGameStarted:  // board size possibly changes
     {
+      [self releaseLineLayers];
       self.dirty = true;
       break;
     }
@@ -64,51 +119,46 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  enum GoBoardSize boardSize = self.playViewMetrics.boardSize;
-  if (GoBoardSizeUndefined == boardSize)
+  GoPoint* pointA1 = [[GoGame sharedGame].board pointAtVertex:@"A1"];
+  if (! pointA1)
     return;
 
-  // Bounding grid lines are usually thicker than normal grid lines. We add
-  // the surplus thickness to the outside of the normal board boundary.
-  int boundingLineWidthSurplus = self.playViewModel.boundingLineWidth - self.playViewModel.normalLineWidth;
-  assert(boundingLineWidthSurplus >= 0);
+  if (! self.normalLineLayer)
+  {
+    self.normalLineLayer = [self.playViewMetrics lineLayerWithContext:context
+                                                            lineColor:self.playViewModel.lineColor
+                                                            lineWidth:self.playViewModel.normalLineWidth];
+  }
+  if (! self.boundingLineLayer)
+  {
+    self.boundingLineLayer = [self.playViewMetrics lineLayerWithContext:context
+                                                              lineColor:self.playViewModel.lineColor
+                                                              lineWidth:self.playViewModel.boundingLineWidth];
+  }
 
-  // Two iterations for the two directions horizontal and vertical
   for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
   {
-    CGPoint lineStartPoint = CGPointMake(self.playViewMetrics.topLeftPointX, self.playViewMetrics.topLeftPointY);
-
-    bool drawHorizontalLine = (0 == lineDirection) ? true : false;
-    if (drawHorizontalLine)
-      lineStartPoint.x -= boundingLineWidthSurplus;
-    else
-      lineStartPoint.y -= boundingLineWidthSurplus;
-
-    for (int lineCounter = 0; lineCounter < boardSize; ++lineCounter)
+    bool isHorizontalLine = (0 == lineDirection) ? true : false;
+    GoPoint* previousPoint = nil;
+    GoPoint* currentPoint = pointA1;
+    while (currentPoint)
     {
-      // -1 because the end point will also be stroked
-      CGPoint lineEndPoint = lineStartPoint;
-      if (drawHorizontalLine)
-        lineEndPoint.x += self.playViewMetrics.lineLength - 1;
+      GoPoint* nextPoint;
+      if (isHorizontalLine)
+        nextPoint = currentPoint.above;
       else
-        lineEndPoint.y += self.playViewMetrics.lineLength - 1;
+        nextPoint = currentPoint.right;
 
-      int lineWidth;
-      if (0 == lineCounter || (boardSize - 1) == lineCounter)
-        lineWidth = self.playViewModel.boundingLineWidth;
+      CGLayerRef lineLayer;
+      bool isBoundingLine = (nil == previousPoint || nil == nextPoint);
+      if (isBoundingLine)
+        lineLayer = self.boundingLineLayer;
       else
-        lineWidth = self.playViewModel.normalLineWidth;
+        lineLayer = self.normalLineLayer;
+      [self.playViewMetrics drawLineLayer:lineLayer withContext:context horizontal:isHorizontalLine positionedAtPoint:currentPoint];
 
-      [self drawLine:context
-          startPoint:lineStartPoint
-            endPoint:lineEndPoint
-               color:self.playViewModel.lineColor
-               width:lineWidth];
-
-      if (drawHorizontalLine)
-        lineStartPoint.y += self.playViewMetrics.pointDistance;
-      else
-        lineStartPoint.x += self.playViewMetrics.pointDistance;
+      previousPoint = currentPoint;
+      currentPoint = nextPoint;
     }
   }
 }

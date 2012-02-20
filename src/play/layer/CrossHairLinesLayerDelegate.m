@@ -32,12 +32,17 @@
 /// @brief Class extension with private methods for CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface CrossHairLinesLayerDelegate()
+- (void) releaseLineLayers;
+@property(nonatomic, assign) CGLayerRef normalLineLayer;
+@property(nonatomic, assign) CGLayerRef boundingLineLayer;
 @end
 
 
 @implementation CrossHairLinesLayerDelegate
 
 @synthesize crossHairPoint;
+@synthesize normalLineLayer;
+@synthesize boundingLineLayer;
 
 
 // -----------------------------------------------------------------------------
@@ -51,6 +56,9 @@
   self = [super initWithLayer:aLayer metrics:metrics model:model];
   if (! self)
     return nil;
+  self.crossHairPoint = nil;
+  self.normalLineLayer = nil;
+  self.boundingLineLayer = nil;
   return self;
 }
 
@@ -60,7 +68,27 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.crossHairPoint = nil;
+  [self releaseLineLayers];
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Releases line layers if they are currently allocated. Otherwise does
+/// nothing.
+// -----------------------------------------------------------------------------
+- (void) releaseLineLayers
+{
+  if (self.normalLineLayer)
+  {
+    CGLayerRelease(self.normalLineLayer);
+    self.normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+  if (self.boundingLineLayer)
+  {
+    CGLayerRelease(self.boundingLineLayer);
+    self.boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -73,8 +101,15 @@
     case PVLDEventRectangleChanged:
     {
       self.layer.frame = self.playViewMetrics.rect;
+      [self releaseLineLayers];
       self.dirty = true;
       break;
+    }
+    case PVLDEventGoGameStarted:  // possible board size change -> need to recalculate length of grid lines
+    {
+      [self releaseLineLayers];
+      self.dirty = true;
+      break;      
     }
     case PVLDEventCrossHairChanged:
     {
@@ -96,48 +131,35 @@
 {
   if (! self.crossHairPoint)
     return;
-
-  CGPoint crossHairCenter = [self.playViewMetrics coordinatesFromPoint:self.crossHairPoint];
-  struct GoVertexNumeric vertexNumeric = self.crossHairPoint.vertex.numeric;
-
-  // Bounding grid lines are usually thicker than normal grid lines. We add
-  // the surplus thickness to the outside of the normal board boundary.
-  int boundingLineWidthSurplus = self.playViewModel.boundingLineWidth - self.playViewModel.normalLineWidth;
-  assert(boundingLineWidthSurplus >= 0);
-
-  // Two iterations for the two directions horizontal and vertical
-  for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
+  if (! self.normalLineLayer)
   {
-    CGPoint lineStartPoint = crossHairCenter;
-    CGPoint lineEndPoint = lineStartPoint;
-    int lineWidth = self.playViewModel.normalLineWidth;
-
-    bool drawHorizontalLine = (0 == lineDirection) ? true : false;
-    if (drawHorizontalLine)
-    {
-      lineStartPoint.x = self.playViewMetrics.topLeftPointX;
-      lineStartPoint.x -= boundingLineWidthSurplus;
-      // -1 because the end point will also be stroked
-      lineEndPoint.x = lineStartPoint.x + self.playViewMetrics.lineLength - 1;
-      if (1 == vertexNumeric.y || self.playViewMetrics.boardSize == vertexNumeric.y)
-        lineWidth = self.playViewModel.boundingLineWidth;
-    }
-    else
-    {
-      lineStartPoint.y = self.playViewMetrics.topLeftPointY;
-      lineStartPoint.y -= boundingLineWidthSurplus;
-      // -1 because the end point will also be stroked
-      lineEndPoint.y = lineStartPoint.y + self.playViewMetrics.lineLength - 1;
-      if (1 == vertexNumeric.x || self.playViewMetrics.boardSize == vertexNumeric.x)
-        lineWidth = self.playViewModel.boundingLineWidth;
-    }
-    
-    [self drawLine:context
-        startPoint:lineStartPoint
-          endPoint:lineEndPoint
-             color:self.playViewModel.crossHairColor
-             width:lineWidth];
+    self.normalLineLayer = [self.playViewMetrics lineLayerWithContext:context
+                                                            lineColor:self.playViewModel.crossHairColor
+                                                            lineWidth:self.playViewModel.normalLineWidth];
   }
+  if (! self.boundingLineLayer)
+  {
+    self.boundingLineLayer = [self.playViewMetrics lineLayerWithContext:context
+                                                              lineColor:self.playViewModel.crossHairColor
+                                                              lineWidth:self.playViewModel.boundingLineWidth];
+  }
+
+  struct GoVertexNumeric numericVertex = self.crossHairPoint.vertex.numeric;
+  CGLayerRef horizontalLineLayer;
+  bool isBoundingLineHorizontal = (1 == numericVertex.y || self.playViewMetrics.boardSize == numericVertex.y);
+  if (isBoundingLineHorizontal)
+    horizontalLineLayer = self.boundingLineLayer;
+  else
+    horizontalLineLayer = self.normalLineLayer;
+  CGLayerRef verticalLineLayer;
+  bool isBoundingLineVertical = (1 == numericVertex.x || self.playViewMetrics.boardSize == numericVertex.x);
+  if (isBoundingLineVertical)
+    verticalLineLayer = self.boundingLineLayer;
+  else
+    verticalLineLayer = self.normalLineLayer;
+
+  [self.playViewMetrics drawLineLayer:horizontalLineLayer withContext:context horizontal:true positionedAtPoint:self.crossHairPoint];
+  [self.playViewMetrics drawLineLayer:verticalLineLayer withContext:context horizontal:false positionedAtPoint:self.crossHairPoint];
 }
 
 @end

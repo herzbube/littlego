@@ -27,6 +27,17 @@
 @implementation UiUtilities
 
 // -----------------------------------------------------------------------------
+/// @brief Converts @a degrees into the corresponding radians value.
+///
+/// Radians are often used by Core Graphics operations, such as drawing arcs
+/// or performing CTM rotations.
+// -----------------------------------------------------------------------------
++ (double) radians:(double)degrees
+{
+  return degrees * M_PI / 180;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Calculates the row height for a table view cell of type @a type
 /// whose label is about to be displayed containing @a text.
 ///

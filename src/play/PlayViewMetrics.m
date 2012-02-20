@@ -22,6 +22,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -59,6 +60,8 @@
 @synthesize stoneRadius;
 @synthesize pointCellSize;
 @synthesize stoneInnerSquareSize;
+@synthesize lineStartOffset;
+@synthesize boundingLineStrokeOffset;
 
 
 // -----------------------------------------------------------------------------
@@ -187,13 +190,24 @@
                                   + 2 * self.playViewModel.boundingLineWidth);
     self.lineLength = pointsUsedForGridLines + self.cellWidth * numberOfCells;
 
-    // This makes sure that the grid is centered. We can't use self.cellWidth
-    // as the inner margin, because that parameter might have been adjusted
-    // above for even-ness, which would result in a non-centered grid.
-    int boardInnerMargin = floor((self.boardSideLength - self.lineLength) / 2);
-    assert(2 * boardInnerMargin >= self.cellWidth);
-    self.topLeftPointX = self.topLeftBoardCornerX + boardInnerMargin;
-    self.topLeftPointY = self.topLeftBoardCornerY + boardInnerMargin;
+    
+    
+    // Calculate topLeftPointMargin so that the grid is centered. -1 to
+    // newBoardSize because our goal is to get the coordinates of the top-left
+    // point, which sits in the middle of a normal line. Because the centering
+    // calculation divides by 2 we must subtract a full line width here, not
+    // just half a line width.
+    int widthForCentering = self.cellWidth * numberOfCells + (newBoardSize - 1) * self.playViewModel.normalLineWidth;
+    int topLeftPointMargin = floor((self.boardSideLength - widthForCentering) / 2);
+    if (topLeftPointMargin < self.cellWidth / 2.0)
+    {
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:[NSString stringWithFormat:@"Insufficient space to draw stones: topLeftPointMargin %d is below half-cell width", topLeftPointMargin]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+    self.topLeftPointX = self.topLeftBoardCornerX + topLeftPointMargin;
+    self.topLeftPointY = self.topLeftBoardCornerY + topLeftPointMargin;
 
     // Calculate self.pointCellSize. See property documentation for details
     // what we calculate here.
@@ -207,6 +221,40 @@
     // circle
     stoneInnerSquareSideLength -= 2;
     self.stoneInnerSquareSize = CGSizeMake(stoneInnerSquareSideLength, stoneInnerSquareSideLength);
+
+    // Schema depicting the horizontal bounding line at the top of the board:
+    //
+    //       +----------->  +------------------------- startB
+    //       |              |
+    //       |              |
+    //       |              |
+    // widthB|              | ------------------------ strokeB
+    //       |              |
+    //       |        +-->  |   +--------------------- startN
+    //       |  widthN|     |   | -------------------- strokeN
+    //       +----->  +-->  +-- +---------------------
+    //
+    // widthN = width normal line
+    // widthB = width bounding line
+    // startN = start coordinate for normal line
+    // startB = start coordinate for bounding line
+    // strokeN = stroke coordinate for normal line, also self.topLeftPointY
+    // strokeB = stroke coordinate for bounding line
+    //
+    // Notice how the lower edge of the bounding line is flush with the lower
+    // edge of the normal line (it were drawn here). The calculation for
+    // strokeB goes like this:
+    //       strokeB = strokeN + widthN/2 - widthB/2
+    //
+    // Based on this, the calculation for startB looks like this:
+    //       startB = strokeB - widthB / 2
+    int normalLineStrokeCoordinate = self.topLeftPointY;
+    CGFloat normalLineHalfWidth = self.playViewModel.normalLineWidth / 2.0;
+    CGFloat boundingLineHalfWidth = self.playViewModel.boundingLineWidth / 2.0;
+    CGFloat boundingLineStrokeCoordinate = normalLineStrokeCoordinate + normalLineHalfWidth - boundingLineHalfWidth;
+    self.boundingLineStrokeOffset = normalLineStrokeCoordinate - boundingLineStrokeCoordinate;
+    CGFloat boundingLineStartCoordinate = boundingLineStrokeCoordinate - boundingLineHalfWidth;
+    self.lineStartOffset = normalLineStrokeCoordinate - boundingLineStartCoordinate;
   }  // else [if (GoBoardSizeUndefined == newBoardSize)]
 }
 
@@ -247,11 +295,135 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a horizontal
+/// grid line that uses the specified color @a lineColor and width @a lineWidth.
+///
+/// If the grid line should be drawn vertically, a 90 degrees rotation must be
+/// added to the CTM before drawing.
+///
+/// All sizes are taken from the current metrics values.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this method is responsible for releasing the returned
+/// CGLayer object using the function CGLayerRelease when the layer is no
+/// longer needed.
+// -----------------------------------------------------------------------------
+- (CGLayerRef) lineLayerWithContext:(CGContextRef)context lineColor:(UIColor*)lineColor lineWidth:(int)lineWidth
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = CGSizeMake(self.lineLength, lineWidth);
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGContextSetFillColorWithColor(layerContext, lineColor.CGColor);
+  CGContextFillRect(layerContext, layerRect);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the layer @a layer using the specified drawing context so that
+/// the layer is suitably placed with @a point as the reference.
+///
+/// The numeric vertex of @a point is also used to determine whether the line
+/// to be drawn is a normal or a bounding line.
+///
+/// @note This method assumes that @a layer contains the drawing operations for
+/// rendering a horizontal line. If @a horizontal is false, the CTM will
+/// therefore be rotated to make the line point downwards.
+// -----------------------------------------------------------------------------
+- (void) drawLineLayer:(CGLayerRef)layer withContext:(CGContextRef)context horizontal:(bool)horizontal positionedAtPoint:(GoPoint*)point
+{
+  struct GoVertexNumeric numericVertex = point.vertex.numeric;
+  int lineIndexCountingFromTopLeft;
+  if (horizontal)
+    lineIndexCountingFromTopLeft = self.boardSize - numericVertex.y;
+  else
+    lineIndexCountingFromTopLeft = numericVertex.x - 1;
+  bool isBoundingLineLeftOrTop = (0 == lineIndexCountingFromTopLeft);
+  bool isBoundingLineRightOrBottom = ((self.boardSize - 1) == lineIndexCountingFromTopLeft);
+  // Line layer must refer to a horizontal line
+  CGSize layerSize = CGLayerGetSize(layer);
+  CGFloat lineHalfWidth = layerSize.height / 2.0;
+
+  // Create a save point that we can restore to before we leave this method
+  CGContextSaveGState(context);
+
+  CGPoint pointCoordinates = [self coordinatesFromPoint:point];
+  if (horizontal)
+  {
+    // Place line so that its upper-left corner is at the y-position of the
+    // specified intersections
+    CGContextTranslateCTM(context, self.topLeftPointX, pointCoordinates.y);
+    // Place line so that it straddles the y-position of the specified
+    // intersection
+    CGContextTranslateCTM(context, 0, -lineHalfWidth);
+    // If it's a bounding line, adjust the line position so that its edge is
+    // in the same position as if a normal line were drawn. The surplus width
+    // lies outside of the board. As a result, all cells inside the board have
+    // the same size.
+    if (isBoundingLineLeftOrTop)
+      CGContextTranslateCTM(context, 0, -self.boundingLineStrokeOffset);
+    else if (isBoundingLineRightOrBottom)
+      CGContextTranslateCTM(context, 0, self.boundingLineStrokeOffset);
+    // Adjust horizontal line position so that it starts at the left edge of
+    // the left bounding line
+    CGContextTranslateCTM(context, -lineStartOffset, 0);
+  }
+  else
+  {
+    // Perform translations as if the line were already vertical, pointing
+    // downwards from the top-left origin. We are going to perform the rotation
+    // further down, but only *AFTER* doing translations; if we were rotating
+    // *BEFORE* doing translations, we would have to swap x/y translation
+    // components, which would be very confusing and potentially dangerous to
+    // the brain of whoever tries to debug this code :-)
+    CGContextTranslateCTM(context, pointCoordinates.x, self.topLeftPointY);
+    CGContextTranslateCTM(context, -lineHalfWidth, 0);  // use y-coordinate because layer rect is horizontal
+    if (isBoundingLineLeftOrTop)
+      CGContextTranslateCTM(context, -self.boundingLineStrokeOffset, 0);
+    else if (isBoundingLineRightOrBottom)
+      CGContextTranslateCTM(context, self.boundingLineStrokeOffset, 0);
+    CGContextTranslateCTM(context, 0, -lineStartOffset);
+    // Shift all vertical lines 1 point to the right. This is what I call
+    // "the mystery point" - I couldn't come up with a satisfactory explanation
+    // why this is needed even after hours of geometric drawings and manual
+    // calculations. Very unsatisfactory :-(
+    CGContextTranslateCTM(context, 1, 0);
+    // We are finished with regular translations and are now almost ready to
+    // rotate. However, we must still perform one final translation: The one
+    // that makes sure that the rotation will align the left (not the right!)
+    // border of the line with y-coordinate 0. If this is hard to understand,
+    // take a piece of paper and make some drawings. Keep in mind that the
+    // origin used for rotation will also be moved by CTM translations (or maybe
+    // it's more intuitive to imagine that any artifact will be rotated
+    // "in place")!
+    CGSize layerSize = CGLayerGetSize(layer);
+    CGContextTranslateCTM(context, layerSize.height, 0);
+    // Phew, done, finally we can rotate. 
+    CGContextRotateCTM(context, [UiUtilities radians:90]);
+  }
+  // Half-pixel translation to prevent unnecessary anti-aliasing. We need this
+  // because above at some point we perform a translation that lets the line
+  // straddle the intersection.
+  CGContextTranslateCTM(context, gHalfPixel, gHalfPixel);
+
+  // Because of the CTM adjustments, we can now use CGPointZero
+  CGContextDrawLayerAtPoint(context, CGPointZero, layer);
+
+  // Restore the drawing context to undo CTM adjustments
+  CGContextRestoreGState(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
 /// context @a context and contains the drawing operations to draw a stone that
 /// uses the specified color @a stoneColor.
 ///
-/// The layer size is taken from the current value of self.pointCellSize. The
-/// stone's size is defined by the current value of self.stoneRadius.
+/// All sizes are taken from the current metrics values.
 ///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
@@ -269,9 +441,9 @@
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-  static const int startRadius = 0;
-  static const int endRadius = 2 * M_PI;
-  static const int clockwise = 0;
+  const int startRadius = [UiUtilities radians:0];
+  const int endRadius = [UiUtilities radians:360];
+  const int clockwise = 0;
 
   // Half-pixel translation is added at the time when the layer is actually
   // drawn

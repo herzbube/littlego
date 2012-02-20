@@ -199,6 +199,18 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are randomly chosen and
+/// whose alpha value is 1.0.
+// -----------------------------------------------------------------------------
++ (UIColor*) randomColor
+{
+  CGFloat red = (CGFloat)random() / (CGFloat)RAND_MAX;
+  CGFloat blue = (CGFloat)random() / (CGFloat)RAND_MAX;
+  CGFloat green = (CGFloat)random() / (CGFloat)RAND_MAX;
+  return [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are 226/229/234 and whose
 /// alpha value is 1.0.
 ///

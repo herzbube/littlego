@@ -214,6 +214,13 @@ Priority 3 (not important)
   rotation begins, and become visible during rotation, they are then redrawn.
   The result is that half of the cells have crisp lines and half of them have
   fuzzy, anti-aliased lines.
+- Add support for grid line widths that are even numbers. Currently an even
+  number, especially for normal grid lines, leads to anti-aliasing because all
+  the drawing calculations assume that a half-pixel needs to be added to
+  drawing coordinates. This fix is really only needed if the drawing settings
+  are exposed to the user to be changed at runtime.
+- Find out why PlayViewMetrics (in drawLineLayer:withContext:horizontal:positionedAtPoint:())
+  needs to translate vertical grid lines by one point (the "mystery point")
 
 
 Future improvements to the 3rdparty build process

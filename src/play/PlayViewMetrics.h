@@ -107,6 +107,8 @@
 
 /// @name Drawing helpers
 //@{
+- (CGLayerRef) lineLayerWithContext:(CGContextRef)context lineColor:(UIColor*)lineColor lineWidth:(int)lineWidth;
+- (void) drawLineLayer:(CGLayerRef)layer withContext:(CGContextRef)context horizontal:(bool)horizontal positionedAtPoint:(GoPoint*)point;
 - (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor;
 - (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point;
 //@}
@@ -166,5 +168,11 @@
 ///
 /// The square does not touch the circle, it is slighly inset.
 @property(nonatomic, assign) CGSize stoneInnerSquareSize;
-
+/// @brief An offset to subtract from an intersection coordinate component
+/// (x or y) to find the coordinate of the starting point to draw a grid line.
+@property(nonatomic, assign) CGFloat lineStartOffset;
+/// @brief An offset to add or subtract from an intersection coordinate
+/// component (x or y) to find the coordinate of the starting point to draw a
+/// bounding grid line.
+@property(nonatomic, assign) CGFloat boundingLineStrokeOffset;
 @end

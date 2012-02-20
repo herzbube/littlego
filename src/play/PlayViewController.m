@@ -283,12 +283,11 @@
   self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
   [self.frontSideView addSubview:self.activityIndicator];
 
-  CGRect debugViewFrame = CGRectMake([UiElementMetrics spacingHorizontal],
-                                     playViewFrame.origin.y + [UiElementMetrics spacingVertical],
-                                     playViewFrame.origin.x - 2 * [UiElementMetrics spacingHorizontal],
-                                     playViewFrame.size.height - [UiElementMetrics spacingVertical]);
-  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] initWithFrame:debugViewFrame];
+  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
   [self.frontSideView addSubview:debugPlayViewController.view];
+  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
+  debugPlayViewFrame.origin.y += toolbarFrame.size.height;
+  debugPlayViewController.view.frame = debugPlayViewFrame;
 
   // Configure autoresizingMask properties for proper autorotation
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
