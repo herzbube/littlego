@@ -60,8 +60,8 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   CGContextSetFillColorWithColor(context, self.playViewModel.boardColor.CGColor);
-  CGContextFillRect(context, CGRectMake(self.playViewMetrics.topLeftBoardCornerX + gHalfPixel,
-                                        self.playViewMetrics.topLeftBoardCornerY + gHalfPixel,
+  CGContextFillRect(context, CGRectMake(self.playViewMetrics.topLeftBoardCornerX,
+                                        self.playViewMetrics.topLeftBoardCornerY,
                                         self.playViewMetrics.boardSideLength,
                                         self.playViewMetrics.boardSideLength));
 }
