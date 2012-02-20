@@ -33,11 +33,64 @@
 /// @brief Class extension with private methods for StarPointsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface StarPointsLayerDelegate()
+/// @name Initialization and deallocation
+//@{
+- (void) dealloc;
+//@}
+/// @name Private helpers
+//@{
+- (CGLayerRef) starPointLayerWithContext:(CGContextRef)context;
+- (void) releaseLayer;
+//@}
+/// @name Privately declared properties
+//@{
+@property(nonatomic, assign) CGLayerRef starPointLayer;
+//@}
 @end
 
 
 @implementation StarPointsLayerDelegate
 
+@synthesize starPointLayer;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a StarPointsLayerDelegate object.
+///
+/// @note This is the designated initializer of StarPointsLayerDelegate.
+// -----------------------------------------------------------------------------
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+{
+  // Call designated initializer of superclass (PlayViewLayerDelegate)
+  self = [super initWithLayer:aLayer metrics:metrics model:model];
+  if (! self)
+    return nil;
+  self.starPointLayer = nil;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this StarPointsLayerDelegate
+/// object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self releaseLayer];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Releases the star point layer if it is currently allocated. Otherwise
+/// does nothing.
+// -----------------------------------------------------------------------------
+- (void) releaseLayer
+{
+  if (self.starPointLayer)
+  {
+    CGLayerRelease(self.starPointLayer);
+    self.starPointLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief PlayViewLayerDelegate method.
@@ -69,23 +122,50 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-	CGContextSetFillColorWithColor(context, self.playViewModel.starPointColor.CGColor);
+  if (! self.starPointLayer)
+    self.starPointLayer = [self starPointLayerWithContext:context];
 
+  for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
+    [self.playViewMetrics drawLayer:self.starPointLayer withContext:context centeredAtPoint:starPoint];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a star
+/// point.
+///
+/// All sizes are taken from the current values in self.playViewMetrics.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this method is responsible for releasing the returned
+/// CGLayer object using the function CGLayerRelease when the layer is no
+/// longer needed.
+// -----------------------------------------------------------------------------
+- (CGLayerRef) starPointLayerWithContext:(CGContextRef)context
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = self.playViewMetrics.pointCellSize;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
   const int startRadius = [UiUtilities radians:0];
   const int endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
-  for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
-  {
-    CGPoint starPointCoordinates = [self.playViewMetrics coordinatesFromPoint:starPoint];
-    CGContextAddArc(context,
-                    starPointCoordinates.x + gHalfPixel,
-                    starPointCoordinates.y + gHalfPixel,
-                    self.playViewModel.starPointRadius,
-                    startRadius,
-                    endRadius,
-                    clockwise);
-    CGContextFillPath(context);
-  }
+  CGContextAddArc(layerContext,
+                  layerCenter.x,
+                  layerCenter.y,
+                  self.playViewModel.starPointRadius,
+                  startRadius,
+                  endRadius,
+                  clockwise);
+	CGContextSetFillColorWithColor(layerContext, self.playViewModel.starPointColor.CGColor);
+  CGContextFillPath(layerContext);
+  
+  return layer;
 }
 
 @end

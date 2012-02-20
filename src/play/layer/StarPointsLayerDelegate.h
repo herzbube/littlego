@@ -27,6 +27,8 @@
 {
 }
 
+- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+
 /// @name PlayViewLayerDelegate methods
 //@{
 - (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
