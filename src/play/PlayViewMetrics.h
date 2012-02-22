@@ -103,6 +103,7 @@
 //@{
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
+- (GoPoint*) pointNear:(CGPoint)coordinates;
 //@}
 
 /// @name Drawing helpers
@@ -126,6 +127,8 @@
 @property(nonatomic, assign) int topLeftBoardCornerY;
 @property(nonatomic, assign) int topLeftPointX;
 @property(nonatomic, assign) int topLeftPointY;
+@property(nonatomic, assign) int bottomRightPointX;
+@property(nonatomic, assign) int bottomRightPointY;
 @property(nonatomic, assign) int numberOfCells;
 /// @brief Denotes the number of uncovered points between two grid lines. The
 /// numeric value is guaranteed to be an even number.

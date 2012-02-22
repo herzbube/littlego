@@ -556,7 +556,7 @@ static PlayView* sharedPlayView = nil;
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
   coordinates.y -= self.crossHairPointDistanceFromFinger * self.playViewMetrics.pointDistance;
-  return [self pointNear:coordinates];
+  return [playViewMetrics pointNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -583,81 +583,11 @@ static PlayView* sharedPlayView = nil;
 /// view coordinates @a coordinates. Returns nil if there is no "closest"
 /// intersection.
 ///
-/// Determining "closest" works like this:
-/// - The closest intersection is the one whose distance to @a coordinates is
-///   less than half the distance between two adjacent intersections
-///   - During panning this creates a "snap-to" effect when the user's panning
-///     fingertip crosses half the distance between two adjacent intersections.
-///   - For a tap this simply makes sure that the fingertip does not have to
-///     hit the exact coordinate of the intersection.
-/// - If @a coordinates are a sufficient distance away from the Go board edges,
-///   there is no "closest" intersection
+/// @see PlayViewMetrics::pointNear:() for details.
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointNear:(CGPoint)coordinates
 {
-  int halfPointDistance = floor(playViewMetrics.pointDistance / 2);
-  bool coordinatesOutOfRange = false;
-
-  // Check if coordinates are outside the grid on the x-axis and cannot be
-  // mapped to a point. To make the edge lines accessible in the same way as
-  // the inner lines, a padding of half a point distance must be added.
-  if (coordinates.x < playViewMetrics.topLeftPointX)
-  {
-    if (coordinates.x < playViewMetrics.topLeftPointX - halfPointDistance)
-      coordinatesOutOfRange = true;
-    else
-      coordinates.x = playViewMetrics.topLeftPointX;
-  }
-  else if (coordinates.x > playViewMetrics.topLeftPointX + playViewMetrics.lineLength)
-  {
-    if (coordinates.x > playViewMetrics.topLeftPointX + playViewMetrics.lineLength + halfPointDistance)
-      coordinatesOutOfRange = true;
-    else
-      coordinates.x = playViewMetrics.topLeftPointX + playViewMetrics.lineLength;
-  }
-  else
-  {
-    // Adjust so that the snap-to calculation below switches to the next vertex
-    // when the coordinates are half-way through the distance to that vertex
-    coordinates.x += halfPointDistance;
-  }
-
-  // Unless the x-axis checks have already found the coordinates to be out of
-  // range, we now perform the same checks as above on the y-axis
-  if (coordinatesOutOfRange)
-  {
-    // Coordinates are already out of range, no more checks necessary
-  }
-  else if (coordinates.y < playViewMetrics.topLeftPointY)
-  {
-    if (coordinates.y < playViewMetrics.topLeftPointY - halfPointDistance)
-      coordinatesOutOfRange = true;
-    else
-      coordinates.y = playViewMetrics.topLeftPointY;
-  }
-  else if (coordinates.y > playViewMetrics.topLeftPointY + playViewMetrics.lineLength)
-  {
-    if (coordinates.y > playViewMetrics.topLeftPointY + playViewMetrics.lineLength + halfPointDistance)
-      coordinatesOutOfRange = true;
-    else
-      coordinates.y = playViewMetrics.topLeftPointY + playViewMetrics.lineLength;
-  }
-  else
-  {
-    coordinates.y += halfPointDistance;
-  }
-
-  // Snap to the nearest vertex, unless the coordinates were out of range
-  if (coordinatesOutOfRange)
-    return nil;
-  else
-  {
-    coordinates.x = (playViewMetrics.topLeftPointX
-                     + playViewMetrics.pointDistance * floor((coordinates.x - playViewMetrics.topLeftPointX) / playViewMetrics.pointDistance));
-    coordinates.y = (playViewMetrics.topLeftPointY
-                     + playViewMetrics.pointDistance * floor((coordinates.y - playViewMetrics.topLeftPointY) / playViewMetrics.pointDistance));
-    return [playViewMetrics pointFromCoordinates:coordinates];
-  }
+  return [playViewMetrics pointNear:coordinates];
 }
 
 @end

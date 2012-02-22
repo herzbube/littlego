@@ -53,6 +53,8 @@
 @synthesize topLeftBoardCornerY;
 @synthesize topLeftPointX;
 @synthesize topLeftPointY;
+@synthesize bottomRightPointX;
+@synthesize bottomRightPointY;
 @synthesize numberOfCells;
 @synthesize cellWidth;
 @synthesize pointDistance;
@@ -159,6 +161,8 @@
     self.lineLength = 0;
     self.topLeftPointX = self.topLeftBoardCornerX;
     self.topLeftPointY = self.topLeftBoardCornerY;
+    self.bottomRightPointX = self.topLeftPointX;
+    self.bottomRightPointY = self.topLeftPointY;
   }
   else
   {
@@ -208,6 +212,8 @@
     }
     self.topLeftPointX = self.topLeftBoardCornerX + topLeftPointMargin;
     self.topLeftPointY = self.topLeftBoardCornerY + topLeftPointMargin;
+    self.bottomRightPointX = self.topLeftPointX + (newBoardSize - 1) * self.pointDistance;
+    self.bottomRightPointY = self.topLeftPointY + (newBoardSize - 1) * self.pointDistance;
 
     // Calculate self.pointCellSize. See property documentation for details
     // what we calculate here.
@@ -291,6 +297,88 @@
     return nil;
   }
   return [[GoGame sharedGame].board pointAtVertex:vertex.string];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoPoint object for the intersection that is closest to the
+/// view coordinates @a coordinates. Returns nil if there is no "closest"
+/// intersection.
+///
+/// Determining "closest" works like this:
+/// - The closest intersection is the one whose distance to @a coordinates is
+///   less than half the distance between two adjacent intersections
+///   - During panning this creates a "snap-to" effect when the user's panning
+///     fingertip crosses half the distance between two adjacent intersections.
+///   - For a tap this simply makes sure that the fingertip does not have to
+///     hit the exact coordinate of the intersection.
+/// - If @a coordinates are a sufficient distance away from the Go board edges,
+///   there is no "closest" intersection
+// -----------------------------------------------------------------------------
+- (GoPoint*) pointNear:(CGPoint)coordinates
+{
+  int halfPointDistance = floor(self.pointDistance / 2);
+  bool coordinatesOutOfRange = false;
+
+  // Check if coordinates are outside the grid on the x-axis and cannot be
+  // mapped to a point. To make the edge lines accessible in the same way as
+  // the inner lines, a padding of half a point distance must be added.
+  if (coordinates.x < self.topLeftPointX)
+  {
+    if (coordinates.x < self.topLeftPointX - halfPointDistance)
+      coordinatesOutOfRange = true;
+    else
+      coordinates.x = self.topLeftPointX;
+  }
+  else if (coordinates.x > self.bottomRightPointX)
+  {
+    if (coordinates.x > self.bottomRightPointX + halfPointDistance)
+      coordinatesOutOfRange = true;
+    else
+      coordinates.x = self.bottomRightPointX;
+  }
+  else
+  {
+    // Adjust so that the snap-to calculation below switches to the next vertex
+    // when the coordinates are half-way through the distance to that vertex
+    coordinates.x += halfPointDistance;
+  }
+
+  // Unless the x-axis checks have already found the coordinates to be out of
+  // range, we now perform the same checks as above on the y-axis
+  if (coordinatesOutOfRange)
+  {
+    // Coordinates are already out of range, no more checks necessary
+  }
+  else if (coordinates.y < self.topLeftPointY)
+  {
+    if (coordinates.y < self.topLeftPointY - halfPointDistance)
+      coordinatesOutOfRange = true;
+    else
+      coordinates.y = self.topLeftPointY;
+  }
+  else if (coordinates.y > self.bottomRightPointY)
+  {
+    if (coordinates.y > self.bottomRightPointY + halfPointDistance)
+      coordinatesOutOfRange = true;
+    else
+      coordinates.y = self.bottomRightPointY;
+  }
+  else
+  {
+    coordinates.y += halfPointDistance;
+  }
+
+  // Snap to the nearest vertex, unless the coordinates were out of range
+  if (coordinatesOutOfRange)
+    return nil;
+  else
+  {
+    coordinates.x = (self.topLeftPointX
+                     + self.pointDistance * floor((coordinates.x - self.topLeftPointX) / self.pointDistance));
+    coordinates.y = (self.topLeftPointY
+                     + self.pointDistance * floor((coordinates.y - self.topLeftPointY) / self.pointDistance));
+    return [self pointFromCoordinates:coordinates];
+  }
 }
 
 // -----------------------------------------------------------------------------
