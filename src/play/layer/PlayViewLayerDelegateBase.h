@@ -56,11 +56,6 @@
 - (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
 //@}
 
-/// @name Drawing helpers
-//@{
-- (void) drawLine:(CGContextRef)context startPoint:(CGPoint)start endPoint:(CGPoint)end color:(UIColor*)color width:(CGFloat)width;
-//@}
-
 
 /// @brief Object that provides the metrics for drawing elements on the Play
 /// view.

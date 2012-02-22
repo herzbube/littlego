@@ -99,20 +99,4 @@
   // empty "do-nothing" implementation
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Drawing primitive that draws a line between points @a start and
-/// @a end, using width @a width and stroke color @a color.
-///
-/// This is a convenience method intended to be used by sub-classes.
-// -----------------------------------------------------------------------------
-- (void) drawLine:(CGContextRef)context startPoint:(CGPoint)start endPoint:(CGPoint)end color:(UIColor*)color width:(CGFloat)width
-{
-  CGContextBeginPath(context);
-  CGContextMoveToPoint(context, start.x + gHalfPixel, start.y + gHalfPixel);
-  CGContextAddLineToPoint(context, end.x + gHalfPixel, end.y + gHalfPixel);
-  CGContextSetStrokeColorWithColor(context, color.CGColor);
-  CGContextSetLineWidth(context, width);
-  CGContextStrokePath(context);
-}
-
 @end
