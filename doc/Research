@@ -624,18 +624,22 @@ Benchmark results
   starting to pan
 - Note that during the entire test on all devices the system load is always 0%,
   only user load appears to be relevant
-- Results on iPhone 3GS
-  - User load for the idle system (i.e. before beginning with the test) is 7-8%
-  - Starting to pan lets the user load quickly rise to 70-80%
-  - When wildly panning, user load is constantly above 90%, peaking at 98%
-  - When panning normally, user load is between 48 and 62%
-  - Placing the stone lets the user load go back down to the original 7-8%
-- Results on iPad 2, landscape
-  - Idle = 2-4%
-  - Start to pan = around 30%
-  - Wildly panning = above 60%, peaking at 74%
-  - Panning normally = 20-27%
-  - Placing the stone = 2-4%
+- The 5 sampling actions are
+  - User load for the idle system (i.e. before beginning with the test) between x% and y%
+  - Starting to pan lets the user load quickly rise to x-y%
+  - When wildly panning, user load is constantly above a certain threshold x%, peaking at y%
+  - When panning normally, user load is between x and y%
+  - Placing the stone lets the user load go back down to the original x-y%
+
+                                    Idle   Start     Wildly            Normal    Placing
+                                    load   panning   panning           panning   stone
+----------------------------------------------------------------------------------------
+Original implementation (build from commit c2566ce86b5ccad0e3eb2f7c671fb2df5e0e3747)
+  iPhone 3GS                        7-8%   70-80%    >90% (peak 98%)   48-62%    7-8%
+  iPad 2, landscape                 2-4%   30%       >60% (peak 74%)   20-27%    2-4%
+CALayer with pre-rendered CGLayers (build from commit 4ea840c51f7307519fd54f1dca735c8e496b3371)
+  iPhone 3GS                        7-8%   30-38%    >95% (peak 100%)  58-80%    7-8%
+  iPad 2, landscape                 2-5%   15-25%    >60% (peak 68%)   27-36%    2-4%
 
 
 Layers in their order of stacking
@@ -651,13 +655,18 @@ Layers in their order of stacking
   - This layer marks up special intersections called star points (or hoshi, to
     use the Japanese term)
   - This layer could possibly be merged with the grid layer
+- Cross-hair lines
+  - This layer draws the cross-hair lines that indicate to the user during stone
+    placement where the stone would be placed
+  - This layer must be drawn at a different y-position than the cross-hair
+    stone layer because normal stones should paint over cross-hair lines
 - Stones
   - This layer draws the stones that have been placed during the current game
-- Cross-hair
-  - This layer draws the cross-hair that indicates to the user during stone
-    placement where the stone would be placed
-  - The cross-hair layer cannot be at the top of the stack because we want any
-    symbols to be drawn on top of the cross-hair stone
+- Cross-hair stone
+  - This layer draws the cross-hair stone that indicates to the user during
+    stone placement where the stone would be placed
+  - This layer cannot be at the top of the stack because we want symbols to be
+    drawn on top of the cross-hair stone
 - Symbols
   - This layer draws various symbols to mark up stones
   - Examples are: Last move, move numbers

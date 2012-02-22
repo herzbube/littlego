@@ -283,12 +283,15 @@
   self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
   [self.frontSideView addSubview:self.activityIndicator];
 
-  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
-  [self.frontSideView addSubview:debugPlayViewController.view];
-  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
-  debugPlayViewFrame.origin.y += toolbarFrame.size.height;
-  debugPlayViewController.view.frame = debugPlayViewFrame;
-
+  // Activate the following code to display controls that you can use to change
+  // Play view drawing parameters that are normally immutable at runtime. This
+  // is nice for debugging changes to the drawing system.
+//  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
+//  [self.frontSideView addSubview:debugPlayViewController.view];
+//  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
+//  debugPlayViewFrame.origin.y += toolbarFrame.size.height;
+//  debugPlayViewController.view.frame = debugPlayViewFrame;
+  
   // Configure autoresizingMask properties for proper autorotation
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
