@@ -63,6 +63,7 @@
 /// @name Private helpers
 //@{
 - (void) makeViewReadyForDrawing;
+- (void) setupSubLayer:(CALayer*)subLayer;
 - (void) updateCrossHairPointDistanceFromFinger;
 - (void) updateLayers;
 - (void) delayedUpdate;
@@ -302,15 +303,29 @@ static PlayView* sharedPlayView = nil;
                                                                    playViewModel:playViewModel
                                                                     scoringModel:scoringModel] autorelease];
 
-  [self.layer addSublayer:boardLayerDelegate.layer];
-  [self.layer addSublayer:gridLayerDelegate.layer];
-  [self.layer addSublayer:starPointsLayerDelegate.layer];
-  [self.layer addSublayer:crossHairLinesLayerDelegate.layer];
-  [self.layer addSublayer:stonesLayerDelegate.layer];
-  [self.layer addSublayer:crossHairStoneLayerDelegate.layer];
-  [self.layer addSublayer:symbolsLayerDelegate.layer];
-  [self.layer addSublayer:territoryLayerDelegate.layer];
-  [self.layer addSublayer:deadStonesLayerDelegate.layer];
+  [self setupSubLayer:boardLayerDelegate.layer];
+  [self setupSubLayer:gridLayerDelegate.layer];
+  [self setupSubLayer:starPointsLayerDelegate.layer];
+  [self setupSubLayer:crossHairLinesLayerDelegate.layer];
+  [self setupSubLayer:stonesLayerDelegate.layer];
+  [self setupSubLayer:crossHairStoneLayerDelegate.layer];
+  [self setupSubLayer:symbolsLayerDelegate.layer];
+  [self setupSubLayer:territoryLayerDelegate.layer];
+  [self setupSubLayer:deadStonesLayerDelegate.layer];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the specified layer as a sublayer of this Play view.
+// -----------------------------------------------------------------------------
+- (void) setupSubLayer:(CALayer*)subLayer
+{
+  [self.layer addSublayer:subLayer];
+  // This disables the implicit animation that normally occurs when the layer
+  // delegate is drawing. As always, stackoverflow.com is our friend:
+  // http://stackoverflow.com/questions/2244147/disabling-implicit-animations-in-calayer-setneedsdisplayinrect
+  NSMutableDictionary* newActions = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"contents", nil];
+  subLayer.actions = newActions;
+  [newActions release];
 }
 
 // -----------------------------------------------------------------------------
