@@ -22,7 +22,9 @@
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewMetrics class is responsible for calculating the
 /// coordinates and sizes of UI elements on the Play view, and for providing
-/// those values to clients that need them for drawing.
+/// those values to clients that need them for drawing. PlayViewMetrics also
+/// provides a few drawing helper methods because their implementation is also
+/// calculation-heavy.
 ///
 /// If the frame of the Play view changes (e.g. when an interface orientation
 /// change occurs), someone must invoke updateWithRect:(). If the size of the
@@ -82,6 +84,26 @@
 /// graphics system: The coordinate system is zero-based, and the distance
 /// between two points always includes the starting point, but not the end point
 /// (cf. pointDistance in the schematic above).
+///
+///
+/// @par Anti-aliasing
+///
+/// Most calculations are made with integer types. If necessary, the actual
+/// drawing then uses a half-pixel translation to prevent anti-aliasing for
+/// straight lines. Half-pixel translation is usually needed when lines have an
+/// odd-numbered width (e.g. 1, 3, ...). See http://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
+/// for details. Half-pixel translation may also be necessary if something is
+/// drawn with its center at an intersection on the Go board, and the
+/// intersection coordinate has fractional x.5 values.
+///
+/// Half-pixel translation may not be required if a CGLayer is drawn with its
+/// upper-left corner at a coordinate whose values are integral numbers.
+///
+/// @note It's not possible to turn off anti-aliasing, instead of doing
+/// half-pixel translation. The reason is that 1) round shapes (e.g. star
+/// points, stones) do need anti-aliasing; and 2) if only some parts of the view
+/// are drawn with anti-aliasing, and others are not, things become mis-aligned
+/// (e.g. stones are not exactly centered on line intersections).
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics : NSObject
 {

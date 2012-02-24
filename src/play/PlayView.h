@@ -27,8 +27,10 @@
 /// - View background
 /// - Board background
 /// - Grid lines
+/// - Cross-hair lines (during stone placement)
 /// - Star points
 /// - Played stones (if any)
+/// - Cross-hair stone (during stone placement)
 /// - Symbols (if any)
 /// - Coordinate labels (if any)
 /// - Territory coloring (in scoring mode only)
@@ -38,20 +40,46 @@
 /// activity indicator, to provide the user with feedback about operations
 /// that are currently going on.
 ///
-/// All coordinate calculations are made with integer types. The actual drawing
-/// then uses a half pixel "translation" to prevent anti-aliasing when straight
-/// lines are drawn. See http://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
-/// for details.
 ///
-/// @note It's not possible to turn off anti-aliasing, instead of doing
-/// half-pixel translation. The reason is that 1) round shapes (e.g. star
-/// points, stones) do need anti-aliasing; and 2) if not all parts of the view
-/// are drawn with anti-aliasing, things become mis-aligned (e.g. stones are
-/// not exactly centered on line intersections).
+/// @par Delayed updates
 ///
-/// @note All methods that require a view update should invoke delayedUpdate()
-/// instead of setNeedsDisplay() so that multiple updates can be coalesced into
-/// a single update, after one or more long-running actions have finished.
+/// If a long-running action is started (the typical example is loading a game)
+/// which would cause many view updates, a client can prevent those updates
+/// from taking place immediately by invoking actionStarts(). Events that would
+/// normally trigger drawing updates are processed as normal, but the drawing
+/// itself is delayed. When actionEnds() is invoked, all drawing updates that
+/// have accumulated are now coalesced into a single update.
+///
+/// actionStarts() may be invoked multiple times, but each invocation must be
+/// paired with a matching call to actionEnds(). The drawing update occurs only
+/// when the last matching call to actionEnds() occurs.
+///
+/// @note Clients that want to update the view directly should invoke
+/// delayedUpdate() instead of setNeedsDisplay(). Using delayedUpdate() makes
+/// sure that the update occurs at the right time, either immediately, or after
+/// a long-running action has ended.
+///
+///
+/// @par Implementation notes
+///
+/// PlayView acts as a facade that hides the drawing and layer management
+/// details from outside forces. For instance, although PlayViewController
+/// closely interacts with PlayView, it does not need to know how exactly the
+/// Go board is drawn. One early implementation of PlayView did all the drawing
+/// in a single drawRect:() implementation, while later implementations
+/// distributed responsibility for drawing each layer to dedicated layer
+/// delegate classes. Because this happened behind the PlayView facade, there
+/// was no need to change PlayViewController.
+///
+/// If we look at PlayView from the inside of the facade, its main
+/// responsibility is that of a coordinating agent. PlayView is the central
+/// receiver of events that occur in the application. It distributes those
+/// events to all of its sub-objects, which then decide on their own whether
+/// they are affected by each event, and how. If necessary, PlayView updates
+/// drawing metrics before an event is distributed. After an event is
+/// distributed, PlayView initiates redrawing at the proper moment. This may
+/// be immediately, or after some delay. See the "Delayed updates" section
+/// above.
 // -----------------------------------------------------------------------------
 @interface PlayView : UIView
 {
