@@ -387,6 +387,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
   [self.gtpCommandModel writeUserDefaults];
+
+  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 // -----------------------------------------------------------------------------
