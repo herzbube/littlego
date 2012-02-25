@@ -483,27 +483,27 @@
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
 
-  self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"computer-play.png"]
+  self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
                                                            style:UIBarButtonItemStyleBordered
                                                           target:self
                                                           action:@selector(playForMe:)] autorelease];
-  self.passButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gopass.png"]
+  self.passButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:passButtonIconResource]
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(pass:)] autorelease];
-  self.undoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"213-reply.png"]
+  self.undoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:undoButtonIconResource]
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(undo:)] autorelease];
-  self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"48-pause.png"]
+  self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
                                                        style:UIBarButtonItemStyleBordered
                                                       target:self
                                                       action:@selector(pause:)] autorelease];
-  self.continueButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"49-play.png"]
+  self.continueButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:continueButtonIconResource]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
                                                          action:@selector(continue:)] autorelease];
-  self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabular.png"]
+  self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:gameInfoButtonIconResource]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
                                                          action:@selector(gameInfo:)] autorelease];

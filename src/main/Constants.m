@@ -84,6 +84,12 @@ NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
+NSString* playForMeButtonIconResource = @"computer-play.png";
+NSString* passButtonIconResource = @"gopass.png";
+NSString* undoButtonIconResource = @"213-reply.png";
+NSString* pauseButtonIconResource = @"48-pause.png";
+NSString* continueButtonIconResource = @"49-play.png";
+NSString* gameInfoButtonIconResource = @"tabular.png";
 
 // Constants (mostly keys) for user defaults
 // User Defaults versioning

@@ -383,6 +383,12 @@ extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
+extern NSString* playForMeButtonIconResource;
+extern NSString* passButtonIconResource;
+extern NSString* undoButtonIconResource;
+extern NSString* pauseButtonIconResource;
+extern NSString* continueButtonIconResource;
+extern NSString* gameInfoButtonIconResource;
 //@}
 
 // -----------------------------------------------------------------------------
