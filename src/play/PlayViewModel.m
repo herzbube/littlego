@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayViewModel.h"
+#import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -112,13 +113,13 @@
   self.boardColor = [UIColor colorFromHexString:[dictionary valueForKey:boardColorKey]];
   self.boardOuterMarginPercentage = [[dictionary valueForKey:boardOuterMarginPercentageKey] floatValue];
   self.lineColor = [UIColor colorFromHexString:[dictionary valueForKey:lineColorKey]];
-  self.boundingLineWidth = [[dictionary valueForKey:boundingLineWidthKey] intValue];
+  self.boundingLineWidth = [[dictionary valueForKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]] intValue];
   self.normalLineWidth = [[dictionary valueForKey:normalLineWidthKey] intValue];
   self.starPointColor = [UIColor colorFromHexString:[dictionary valueForKey:starPointColorKey]];
-  self.starPointRadius = [[dictionary valueForKey:starPointRadiusKey] intValue];
+  self.starPointRadius = [[dictionary valueForKey:[starPointRadiusKey stringByAppendingDeviceSuffix]] intValue];
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
-  self.placeStoneUnderFinger = [[dictionary valueForKey:placeStoneUnderFingerKey] boolValue];
+  self.placeStoneUnderFinger = [[dictionary valueForKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -127,7 +128,11 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
-  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  // Obtain a dictionary with all keys, even device-specific ones, so that we
+  // can simply overwrite the old with the new values and don't have to care
+  // about creating device-specific keys that we don't use on this device.
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:playViewKey]];
   // setValue:forKey:() allows for nil values, so we use that instead of
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
@@ -141,16 +146,15 @@
   [dictionary setValue:[UIColor hexStringFromUIColor:self.boardColor] forKey:boardColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.boardOuterMarginPercentage] forKey:boardOuterMarginPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.lineColor] forKey:lineColorKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.boundingLineWidth] forKey:boundingLineWidthKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.boundingLineWidth] forKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.normalLineWidth] forKey:normalLineWidthKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.starPointColor] forKey:starPointColorKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:starPointRadiusKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:[starPointRadiusKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
-  [dictionary setValue:[NSNumber numberWithBool:self.placeStoneUnderFinger] forKey:placeStoneUnderFingerKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.placeStoneUnderFinger] forKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:playViewKey];
 }
 

@@ -91,16 +91,19 @@
 ///
 /// An incremental upgrade must be implemented in a private class method of
 /// UserDefaultsUpdater whose selector follows the naming scheme
-/// @e upgradeToVersion<targetVersion>().
+/// @e upgradeToVersion<targetVersion>:().
 ///
 /// For instance, to implement the upgrade to version 12 from the previous
-/// version (may or may not be 11), a class method named upgradeToVersion12()
+/// version (may or may not be 11), a class method named upgradeToVersion12:()
 /// must be implemented.
 ///
 /// When the main method upgrade:() progresses along the upgrade path from the
 /// application domain to the registration domain version number, it
 /// automatically finds and invokes all upgrade methods that are named
 /// according to the above scheme.
+///
+/// The parameter passed to the class method is an NSDictionary that stores the
+/// registration domain defaults.
 // -----------------------------------------------------------------------------
 @interface UserDefaultsUpdater : NSObject
 {

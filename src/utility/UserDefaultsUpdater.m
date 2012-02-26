@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UserDefaultsUpdater.h"
+#import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
 
 
@@ -33,9 +34,16 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 /// @brief Class extension with private methods for UserDefaultsUpdater.
 // -----------------------------------------------------------------------------
 @interface UserDefaultsUpdater()
-+ (void) upgradeToVersion1;
-+ (void) upgradeToVersion2;
-+ (void) upgradeToVersion3;
+/// @name Upgrade methods
+//@{
++ (void) upgradeToVersion1:(NSDictionary*)registrationDomainDefaults;
++ (void) upgradeToVersion2:(NSDictionary*)registrationDomainDefaults;
++ (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults;
+//@}
+/// @name Internal helpers
+//@{
++ (void) upgradeDictionary:(NSMutableDictionary*)dictionary forKey:(NSString*)key upgradeDeviceSuffix:(NSString*)upgradeDeviceSuffix registrationDomainDefaults:(NSDictionary*)registrationDomainDefaults;
+//@}
 @end
 
 
@@ -109,7 +117,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
       // Incrementally perform upgrades. We allow for gaps in the user defaults
       // versioning scheme.
       ++applicationDomainVersion;
-      NSString* upgradeMethodName = [NSString stringWithFormat:@"upgradeToVersion%d", applicationDomainVersion];
+      NSString* upgradeMethodName = [NSString stringWithFormat:@"upgradeToVersion%d:", applicationDomainVersion];
       SEL upgradeSelector = NSSelectorFromString(upgradeMethodName);
       if ([[UserDefaultsUpdater class] respondsToSelector:upgradeSelector])
       {
@@ -118,7 +126,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
                   registrationDomainVersion);
         // TODO How do we learn of success/failure of upgradeSelector, and how
         // do we react to failure?
-        [[UserDefaultsUpdater class] performSelector:upgradeSelector];
+        [[UserDefaultsUpdater class] performSelector:upgradeSelector withObject:registrationDomainDefaults];
         ++numberOfUpgradesPerformed;
         // Update the application domain version number
         [userDefaults setValue:[NSNumber numberWithInt:applicationDomainVersion]
@@ -148,7 +156,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 /// @brief Performs the incremental upgrade to the user defaults format
 /// version 1.
 // -----------------------------------------------------------------------------
-+ (void) upgradeToVersion1
++ (void) upgradeToVersion1:(NSDictionary*)registrationDomainDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
@@ -180,7 +188,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 /// @brief Performs the incremental upgrade to the user defaults format
 /// version 2.
 // -----------------------------------------------------------------------------
-+ (void) upgradeToVersion2
++ (void) upgradeToVersion2:(NSDictionary*)registrationDomainDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
@@ -212,7 +220,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 /// @brief Performs the incremental upgrade to the user defaults format
 /// version 3.
 // -----------------------------------------------------------------------------
-+ (void) upgradeToVersion3
++ (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
@@ -230,6 +238,91 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
     int naturalBoardSize = GoBoardSizeMin + indexBasedBoardSize * 2;
     [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:naturalBoardSize] forKey:boardSizeKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
+  }
+
+  // A number of keys now exist only as device-specific variants so that we can
+  // have different factory settings for different devices. We need to add
+  // those device-specific keys to the PlayView dictionary, while retaining
+  // the values that were previously stored under the key's base name.
+  id playViewDictionary = [userDefaults objectForKey:playViewKey];
+  if (playViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    NSMutableDictionary* playViewDictionaryRegistrationDomain = [registrationDomainDefaults objectForKey:playViewKey];
+
+    NSArray* keysWithoutDeviceSuffix = [NSArray arrayWithObjects:boundingLineWidthKey, starPointRadiusKey, placeStoneUnderFingerKey, nil];
+    for (NSString* keyWithoutDeviceSuffix in keysWithoutDeviceSuffix)
+    {
+      NSString* upgradeDeviceSuffix;
+      if ([keyWithoutDeviceSuffix isEqualToString:placeStoneUnderFingerKey])
+      {
+        // This user default can be changed by the user, so we preserve the
+        // current value for the current device.
+        upgradeDeviceSuffix = [UIDevice currentDeviceSuffix];
+      }
+      else
+      {
+        // These user defaults cannot be changed by the user, so we discard
+        // their current values and instead take the values from the
+        // registration domain defaults. For iPad users this will result in a
+        // change because we are introducing new iPad-specific values in this
+        // release.
+        upgradeDeviceSuffix = nil;
+      }
+      [UserDefaultsUpdater upgradeDictionary:playViewDictionaryUpgrade
+                                      forKey:keyWithoutDeviceSuffix
+                         upgradeDeviceSuffix:upgradeDeviceSuffix
+                  registrationDomainDefaults:playViewDictionaryRegistrationDomain];
+    }
+
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Upgrades @a dictionary so that after the upgrade it contains
+/// device-specific keys that match the device-agnostic @a key for all
+/// supported devices.
+///
+/// If @a dictionary contains a value for the device-agnostic @a key, that value
+/// will be preserved under a new device-specific key that is formed by tacking
+/// @a upgradeDeviceSuffix on to @a key. If @a upgradeDeviceSuffix is nil, the
+/// device-agnostic value will be discarded.
+///
+/// The values for the other device-specific keys are taken from
+/// @a registrationDomainDefaults, unless @a dictionary already contains a value
+/// for a device-specific key, in which case that value is preserved.
+///
+/// @note @a registrationDomainDefaults must be a sub-dictionary that
+/// corresponds to @a dictionary, @e not the entire registration domain defaults
+/// dictionary.
+///
+/// @note This method was implemented with the goal in mind that it can be
+/// reused if 1) in the future more keys become device-specific, and 2) more
+/// devices become supported.
+// -----------------------------------------------------------------------------
++ (void) upgradeDictionary:(NSMutableDictionary*)dictionary forKey:(NSString*)key upgradeDeviceSuffix:(NSString*)upgradeDeviceSuffix registrationDomainDefaults:(NSDictionary*)registrationDomainDefaults
+{
+  id valueForKeyWithoutDeviceSuffix = [dictionary objectForKey:key];
+  if (valueForKeyWithoutDeviceSuffix)
+  {
+    [dictionary removeObjectForKey:key];
+    if (nil != upgradeDeviceSuffix)
+    {
+      NSString* keyWithUpgradeDeviceSuffix = [key stringByAppendingString:upgradeDeviceSuffix];
+      [dictionary setValue:valueForKeyWithoutDeviceSuffix forKey:keyWithUpgradeDeviceSuffix];
+    }
+  }
+
+  for (NSString* deviceSuffix in [UIDevice deviceSuffixes])
+  {
+    NSString* keyWithDeviceSuffix = [key stringByAppendingString:deviceSuffix];
+    id valueForKeyWithDeviceSuffix = [dictionary objectForKey:keyWithDeviceSuffix];
+    if (! valueForKeyWithDeviceSuffix)
+    {
+      id valueFromRegistrationDomainDefaults = [registrationDomainDefaults valueForKey:keyWithDeviceSuffix];
+      [dictionary setValue:valueFromRegistrationDomainDefaults forKey:keyWithDeviceSuffix];
+    }
   }
 }
 

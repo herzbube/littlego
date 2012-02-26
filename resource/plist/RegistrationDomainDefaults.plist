@@ -24,20 +24,26 @@
 		<real>0.02</real>
 		<key>LineColor</key>
 		<string>000000</string>
-		<key>BoundingLineWidth</key>
+		<key>BoundingLineWidth~iphone</key>
 		<integer>2</integer>
+		<key>BoundingLineWidth~ipad</key>
+		<string>3</string>
 		<key>NormalLineWidth</key>
 		<integer>1</integer>
 		<key>StarPointColor</key>
 		<string>000000</string>
-		<key>StarPointRadius</key>
+		<key>StarPointRadius~iphone</key>
 		<integer>3</integer>
+		<key>StarPointRadius~ipad</key>
+		<string>5</string>
 		<key>StoneRadiusPercentage</key>
 		<real>0.9</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
-		<key>PlaceStoneUnderFinger</key>
+		<key>PlaceStoneUnderFinger~iphone</key>
 		<false/>
+		<key>PlaceStoneUnderFinger~ipad</key>
+		<true/>
 	</dict>
 	<key>NewGame</key>
 	<dict>
