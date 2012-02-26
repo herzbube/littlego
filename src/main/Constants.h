@@ -396,7 +396,6 @@ extern NSString* gameInfoButtonIconResource;
 // -----------------------------------------------------------------------------
 //@{
 // User Defaults versioning
-extern const int userDefaultsVersionRegistrationDomain;
 extern NSString* userDefaultsVersionRegistrationDomainKey;
 extern NSString* userDefaultsVersionApplicationDomainKey;
 // Play view settings

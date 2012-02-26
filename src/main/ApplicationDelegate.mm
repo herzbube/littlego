@@ -339,14 +339,13 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupRegistrationDomain
 {
-  // User defaults data must be upgraded *BEFORE* the registration domain
-  // defaults are put into place
-  [UserDefaultsUpdater upgradeToVersion:userDefaultsVersionRegistrationDomain];
-
   NSString* defaultsPathName = [self.resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
   NSMutableDictionary* defaultsDictionary = [NSMutableDictionary dictionaryWithDictionary:[NSDictionary dictionaryWithContentsOfFile:defaultsPathName]];
-  [defaultsDictionary setValue:[NSNumber numberWithInt:userDefaultsVersionRegistrationDomain]
-                        forKey:userDefaultsVersionRegistrationDomainKey];
+
+  // User defaults data must be upgraded *BEFORE* the registration domain
+  // defaults are put into place
+  [UserDefaultsUpdater upgradeToRegistrationDomainDefaults:defaultsDictionary];
+
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
 }
 

@@ -155,6 +155,8 @@ Priority 2 (nice to have)
   - Add unit tests for GoUtilities, GoScore (load .sgf files with known scores)
     is pre-determined)
   - Test application shutdown to see whether there are no memory leaks
+- Use color red instead of blue for cross-hair lines (and stone?) if the move is
+  not legal
 
 
 Priority 3 (not important)

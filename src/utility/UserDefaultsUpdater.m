@@ -43,8 +43,9 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 
 
 // -----------------------------------------------------------------------------
-/// @brief Performs all the required upgrades to reach the data format with
-/// version number @a targetVersion.
+/// @brief Performs all the required upgrades to the user defaults data to reach
+/// the data format that matches the one present in the registration domain
+/// defaults dictionary @a registrationDomainDefaults.
 ///
 /// Returns the number of upgrades performed. Probably the most interesting
 /// thing about this number is whether it is zero (no upgrades were performed)
@@ -60,53 +61,50 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 /// @retval >0 The number of upgrades that were performed.
 /// @retval -1 A downgrade was performed.
 ///
-/// Raises an @e NSInternalInconsistencyException if it is found that the
-/// registration domain defaults have already been registered.
+/// Raises an @e NSInternalInconsistencyException if it is found that
+/// @a registrationDomainDefaults have already been registered in the user
+/// defaults system.
 // -----------------------------------------------------------------------------
-+ (int) upgradeToVersion:(int)targetVersion
++ (int) upgradeToRegistrationDomainDefaults:(NSDictionary*)registrationDomainDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  // TODO The following check at the moment must be disabled for unit tests to
-  // run successfully. It would be desirable to re-enable the check, but then
-  // the problem with unit tests needs to be fixed. That problem currently is:
-  // setup() in BaseTestCase runs ApplicationDelegate::setupRegistrationDomain()
-  // for every test, so this upgrade method is invoked multiple times during
-  // the same application life-cycle (ocunit). The first invocation runs
-  // through successfully, but then the 2nd invocation finds that
-  // userDefaultsVersionRegistrationDomainKey is now present - it was added by
-  // the first invocation of ApplicationDelegate::setupRegistrationDomain().
-  // One possible fix would be to move this check into the else case of
-  //     if (applicationDomainVersion == targetVersion)
-  // further down, i.e. move it to where we know that we really need to perform
-  // an upgrade.
-//  id registrationDomainVersion = [userDefaults objectForKey:userDefaultsVersionRegistrationDomainKey];
-//  if (registrationDomainVersion)
-//  {
-//    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-//                                                     reason:@"UserDefaultsUpdater: Aborting upgrade, registration domain defaults are already registered"
-//                                                   userInfo:nil];
-//    @throw exception;
-//  }
-//
-  
+  // Perform the check whether registration domain defaults are already
+  // registered only once. The reason for this is that during unit tests this
+  // method may be invoked multiple times, but from the 2nd time onwards the
+  // registration domain defaults will always be present.
+  static int numberOfTimesThisMethodHasBeenInvoked = 0;
+  ++numberOfTimesThisMethodHasBeenInvoked;
+  if (1 == numberOfTimesThisMethodHasBeenInvoked)
+  {
+    id registrationDomainVersionInUserDefaults = [userDefaults objectForKey:userDefaultsVersionRegistrationDomainKey];
+    if (registrationDomainVersionInUserDefaults)
+    {
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:@"UserDefaultsUpdater: Aborting upgrade, registration domain defaults are already registered"
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  int registrationDomainVersion = [[registrationDomainDefaults valueForKey:userDefaultsVersionRegistrationDomainKey] intValue];
   int applicationDomainVersion = [[userDefaults valueForKey:userDefaultsVersionApplicationDomainKey] intValue];
   int numberOfUpgradesPerformed = 0;  // aka the return value :-)
-  if (applicationDomainVersion == targetVersion)
+  if (applicationDomainVersion == registrationDomainVersion)
   {
     // nothing to do
   }
-  else if (applicationDomainVersion > targetVersion)
+  else if (applicationDomainVersion > registrationDomainVersion)
   {
-    DDLogWarn(@"UserDefaultsUpdater performs DOWNGRADE operation. Downgrade target version = %d, current version = %d",
-              targetVersion,
+    DDLogWarn(@"UserDefaultsUpdater performs DOWNGRADE operation. Downgrade to target version = %d, current version = %d",
+              registrationDomainVersion,
               applicationDomainVersion);
     // TODO perform downgrade
     numberOfUpgradesPerformed = -1;
   }
   else
   {
-    while (applicationDomainVersion < targetVersion)
+    while (applicationDomainVersion < registrationDomainVersion)
     {
       // Incrementally perform upgrades. We allow for gaps in the user defaults
       // versioning scheme.
@@ -117,7 +115,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
       {
         DDLogInfo(@"UserDefaultsUpdater performs incremental upgrade to version = %d. Final target version = %d",
                   applicationDomainVersion,
-                  targetVersion);
+                  registrationDomainVersion);
         // TODO How do we learn of success/failure of upgradeSelector, and how
         // do we react to failure?
         [[UserDefaultsUpdater class] performSelector:upgradeSelector];
@@ -133,11 +131,11 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
   // Perform final check if the cumulative effect of all upgrades had the
   // desired effect.
   int realApplicationDomainVersion = [[userDefaults valueForKey:userDefaultsVersionApplicationDomainKey] intValue];
-  if (realApplicationDomainVersion != targetVersion)
+  if (realApplicationDomainVersion != registrationDomainVersion)
   {
     DDLogError(@"UserDefaultsUpdater failed! Current version after upgrades = %d, but should be %d",
               realApplicationDomainVersion,
-              targetVersion);
+              registrationDomainVersion);
     // TODO: Display an alert that notifies the user of the problem. The alert
     // should probably recommend a re-install. Also decide whether to allow the
     // user to continue, or to gracefully shutdown the application.
@@ -217,7 +215,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 + (void) upgradeToVersion3
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  
+
   // Numeric values for enumerated board sizes now correspond to natural board
   // sizes (e.g. the numeric value for BoardSize9 is now 9), whereas previously
   // numeric values for enumerated board sizes simply started with 0 and

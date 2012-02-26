@@ -45,7 +45,7 @@
 /// triggered as early as possible during the application launch cycle, before
 /// any other application code accesses the user defaults system. It is also
 /// vital that the upgrade process is performed @e BEFORE the registration
-/// domain defaults are added to 
+/// domain defaults are added to the user defaults system.
 ///
 ///
 /// @par Upgrading details
@@ -106,6 +106,6 @@
 {
 }
 
-+ (int) upgradeToVersion:(int)targetVersion;
++ (int) upgradeToRegistrationDomainDefaults:(NSDictionary*)registrationDomainDefaults;
 
 @end

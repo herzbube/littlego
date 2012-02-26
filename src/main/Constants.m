@@ -93,7 +93,6 @@ NSString* gameInfoButtonIconResource = @"tabular.png";
 
 // Constants (mostly keys) for user defaults
 // User Defaults versioning
-const int userDefaultsVersionRegistrationDomain = 3;
 NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
 NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
 // Play view settings
