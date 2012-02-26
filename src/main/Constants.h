@@ -395,6 +395,9 @@ extern NSString* gameInfoButtonIconResource;
 /// @name Constants (mostly keys) for user defaults
 // -----------------------------------------------------------------------------
 //@{
+// Device-specific suffixes
+extern NSString* iPhoneDeviceSuffix;
+extern NSString* iPadDeviceSuffix;
 // User Defaults versioning
 extern NSString* userDefaultsVersionRegistrationDomainKey;
 extern NSString* userDefaultsVersionApplicationDomainKey;

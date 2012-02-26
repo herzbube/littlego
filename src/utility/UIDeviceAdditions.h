@@ -16,19 +16,16 @@
 
 
 // Forward declarations
-@class NSString;
+@class UIDevice;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSStringAdditions category enhances NSString by adding a number
+/// @brief The UIDeviceAdditions category enhances UIDevice by adding a number
 /// of useful class methods.
 ///
 /// @ingroup utility
 // -----------------------------------------------------------------------------
-@interface NSString(NSStringAdditions)
-+ (NSString*) UUIDString;
-- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
-+ (NSString*) stringWithKomi:(double)komi;
-+ (NSString*) stringWithFractionValue:(double)value;
-- (NSString*) stringByAppendingDeviceSuffix;
+@interface UIDevice(UIDeviceAdditions)
++ (NSArray*) deviceSuffixes;
++ (NSString*) currentDeviceSuffix;
 @end

@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NSStringAdditions.h"
+#import "UIDeviceAdditions.h"
 
 
 @implementation NSString(NSStringAdditions)
@@ -162,6 +163,18 @@
     return stringFractionalPart;
   else
     return [NSString stringWithFormat:@"%.0f%@", valueIntegerPart, stringFractionalPart];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new string made by appending the current device-specific
+/// suffix (as returned by UIDevice::currentDeviceSuffix()) to the receiver.
+///
+/// @note This is a convenience method for clients that prefer to work with
+/// NSStringAdditions.h instead of UIDeviceAdditions.h.
+// -----------------------------------------------------------------------------
+- (NSString*) stringByAppendingDeviceSuffix
+{
+  return [self stringByAppendingString:[UIDevice currentDeviceSuffix]];
 }
 
 @end

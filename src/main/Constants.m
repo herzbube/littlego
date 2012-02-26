@@ -92,6 +92,9 @@ NSString* continueButtonIconResource = @"49-play.png";
 NSString* gameInfoButtonIconResource = @"tabular.png";
 
 // Constants (mostly keys) for user defaults
+// Device-specific suffixes
+NSString* iPhoneDeviceSuffix = @"~iphone";
+NSString* iPadDeviceSuffix = @"~ipad";
 // User Defaults versioning
 NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
 NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
