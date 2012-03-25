@@ -169,8 +169,12 @@
 /// response to one of the players making a #GoMoveTypePlay.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
-/// or #GoGameStateGameHasStarted.
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
+/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+///
+/// @note Play when in paused state is allowed only because the computer
+/// player who is thinking at the time the game is paused must be able to
+/// finish its turn.
 ///
 /// Raises @e NSInvalidArgumentException if @a aPoint is nil, if isLegalMove:()
 /// returns false for @a aPoint, or if an exception occurs while actually
@@ -178,10 +182,12 @@
 // -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)aPoint
 {
-  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  if (GoGameStateGameHasNotYetStarted != self.state &&
+      GoGameStateGameHasStarted != self.state &&
+      GoGameStateGameIsPaused != self.state)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                     reason:@"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
                                                    userInfo:nil];
     @throw exception;
   }
