@@ -22,12 +22,16 @@
 ///
 /// Sound and/or vibration is triggered only if both of the following is true:
 /// - The corresponding feature is turned on in the user preferences
-/// - The player whose turn it is, is human. If both players are computer
-///   players, or if the computer has just played on behalf of the human
-///   player, then no sound and/or vibration is triggered.
+/// - The player whose turn it is, is human
 ///
-/// Sound and vibration may be temporarily disabled to prevent any disturbances,
-/// e.g. while the user is answering a phone call.
+/// The second condition exists because the purpose of sound/vibration is to
+/// notify a human player that it is now his or her turn after a lengthy
+/// computer operation. If, for instance, the computer has just played on
+/// behalf of the human player but it is now the computer player's turn, then
+/// it is not yet time to notify the human player.
+///
+/// Sound and vibration may be temporarily disabled by setting a property to
+/// prevent any disturbances, e.g. while the user is answering a phone call.
 // -----------------------------------------------------------------------------
 @interface SoundHandling : NSObject
 {

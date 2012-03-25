@@ -107,7 +107,9 @@ Play view user preferences
   is not muted. This is important for subsequent tests.
 - Tap "play for me"
 - There must be neither audio nor vibration feedback when the computer generates
-  the move on behalf of the player
+  the move on behalf of the player.
+- Wait until the computer has generated its own move. Now there must be both
+  audio and vibration feedback.
 - Let the computer generate a move, then immediately lock the device
 - There must be neither audio nor vibration feedback while the device is locked
 - Unlock the device after the computer move has been generated
@@ -178,7 +180,7 @@ Human vs. human game / Handicap
   in progress
 - Place a stone; it must be a black stone
 - Tap "play for me". The computer must generate one move for white
-- There must be neither audio nor vibration feedback when the computer generates
+- There must be both audio and vibration feedback when the computer generates
   the move
 - Place a stone; it must be a black stone
 - Place a few more stones and capture a stone group; the stone group must
