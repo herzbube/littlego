@@ -219,13 +219,18 @@
     // what we calculate here.
     int pointCellSideLength = self.cellWidth + self.playViewModel.normalLineWidth;
     self.pointCellSize = CGSizeMake(pointCellSideLength, pointCellSideLength);
-    
+
     // Geometry tells us that for the square with side length "a":
     //   a = r * sqrt(2)
     int stoneInnerSquareSideLength = floor(self.stoneRadius * sqrt(2));
-    // Subtract an additional 2 points because we don't want to touch the stone
-    // circle
-    stoneInnerSquareSideLength -= 2;
+    // Subtract an additional 1-2 points because we don't want to touch the
+    // stone circle. The square side length must be an odd number to prevent
+    // anti-aliasing when the square is drawn (we assume that drawing occurs
+    // with playViewModel.normalLineWidth and that the line width is an odd
+    // number (typically 1 point)).
+    --stoneInnerSquareSideLength;
+    if (stoneInnerSquareSideLength % 2 == 0)
+      --stoneInnerSquareSideLength;
     self.stoneInnerSquareSize = CGSizeMake(stoneInnerSquareSideLength, stoneInnerSquareSideLength);
 
     // Schema depicting the horizontal bounding line at the top of the board:

@@ -183,6 +183,13 @@
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = self.playViewMetrics.stoneInnerSquareSize;
+  // It looks better if the marker is slightly inset, and on the iPad we can
+  // afford to waste the space
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  {
+    layerRect.size.width -= 2;
+    layerRect.size.height -= 2;
+  }
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
