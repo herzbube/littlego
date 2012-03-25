@@ -272,7 +272,9 @@ will play. There are a few things that you need to be aware of, though:
   device) finds that Little Go behaves badly and uses up too much memory, it
   will terminate Little Go after a short delay so that the other applications
   can continue running. To make a long story short: If you increase the maximum
-  memory setting, be extra careful to set a value that is not too high!
+  memory setting, be extra careful to set a value that is not too high! If you
+  don't know how much memory your device has you can consult the ever useful
+  Wikipedia: http://en.wikipedia.org/wiki/List_of_iOS_devices.
 - More threads (see below) usually need more memory to be effective
 - Faster processors need more memory because they can calculate more than slower
   processors in the same amount of time
