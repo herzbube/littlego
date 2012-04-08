@@ -14,6 +14,8 @@
 	<array>
 		<string>appicon-iphone-fuseki-8x8.png</string>
 		<string>appicon-iphone-fuseki-8x8@2x.png</string>
+		<string>appicon-ipad-fuseki-8x8.png</string>
+		<string>appicon-ipad-fuseki-8x8@2x.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -23,6 +25,8 @@
 			<array>
 				<string>appicon-iphone-fuseki-8x8.png</string>
 				<string>appicon-iphone-fuseki-8x8@2x.png</string>
+				<string>appicon-ipad-fuseki-8x8.png</string>
+				<string>appicon-ipad-fuseki-8x8@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<false/>
@@ -51,7 +55,7 @@
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
 	<key>UILaunchImageFile~ipad</key>
-	<string></string>
+	<string>LaunchImageiPad</string>
 	<key>UILaunchImageFile~iphone</key>
 	<string>LaunchImage</string>
 	<key>UIRequiredDeviceCapabilities</key>

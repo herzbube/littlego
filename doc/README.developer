@@ -192,8 +192,8 @@ Platform notes
 - The Xcode project is prepared to build Little Go both for iOS and for the
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
-  moving target SDK. The latest release of the project was made with iOS 5.0.
-- The deployment target is set to 4.2 so that the application keeps running on
+  moving target SDK. The latest release of the project was made with iOS 5.1.
+- The deployment target is set to 4.3 so that the application keeps running on
   iOS 4 devices.
 
 
