@@ -36,8 +36,8 @@
 # Subsequent sections are based on settings in this section,
 # you should not need to change anything in these other sections.
 # ----------------------------------------------------------------------
-IPHONEOS_BASESDK_VERSION=5.0
-IPHONE_SIMULATOR_BASESDK_VERSION=5.0
+IPHONEOS_BASESDK_VERSION=5.1
+IPHONE_SIMULATOR_BASESDK_VERSION=5.1
 MACOSX_BASESDK_VERSION=10.6  # If you use 10.4u, set deployment target separately
 
 # Deployment target variables must be exported because they are actually
