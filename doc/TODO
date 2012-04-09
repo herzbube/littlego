@@ -157,6 +157,8 @@ Priority 2 (nice to have)
   - Test application shutdown to see whether there are no memory leaks
 - Use color red instead of blue for cross-hair lines (and stone?) if the move is
   not legal
+- Add a grayed out message to the Archive tab when there are no archived games,
+  saying something like "You don't have any archived games."
 
 
 Priority 3 (not important)

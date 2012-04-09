@@ -495,6 +495,27 @@
   STAssertTrue([m_game isLegalMove:point7], nil);
   [m_game play:point7];
 
+  // Setup situation that resembles Ko, but is not, because it allows to
+  // capture back more than 1 stone
+  [m_game play:[m_game.board pointAtVertex:@"Q18"]];
+  [m_game play:[m_game.board pointAtVertex:@"R18"]];
+  [m_game play:[m_game.board pointAtVertex:@"R17"]];
+  [m_game play:[m_game.board pointAtVertex:@"S18"]];
+  [m_game play:[m_game.board pointAtVertex:@"S17"]];
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"R19"]];
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"S19"]];
+  [m_game pass];
+  // Black captures two white stones
+  [m_game play:[m_game.board pointAtVertex:@"T18"]];
+  // White plays inside the black enclosure, with only one liberty
+  [m_game play:[m_game.board pointAtVertex:@"R18"]];
+  // Is legal for black, recaptures white stone on R18
+  GoPoint* point9 = [m_game.board pointAtVertex:@"S18"];
+  STAssertTrue([m_game isLegalMove:point9], nil);
+  [m_game play:point9];
+
   STAssertThrowsSpecificNamed([m_game isLegalMove:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
 }
