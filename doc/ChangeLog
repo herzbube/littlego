@@ -6,6 +6,10 @@ Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - bugfixes
   - loading a game is now much faster
   - drawing now uses less CPU power, which improves battery life
+  - Ko is no longer erroneously detected in certain situations (e.g. black has
+    stones on A2, B1, B3, C1, C3, white has stones on B2 and C2; black now plays
+    on D2, white on B2; in this situation, black C2 was erroneously thought to
+    be illegal due to Ko)
   - profiles: "reuse subtree" is now always enabled when pondering is enabled
   - improved in-game help
   - loading archived game now works even if temporary file is still around for

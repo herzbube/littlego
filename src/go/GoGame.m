@@ -434,52 +434,57 @@
     bool nextMoveIsBlack = self.currentPlayer.isBlack;
     bool isKoStillPossible = true;
 
+    // Pass 1: Examine friendly colored neighbours
     NSArray* neighbours = point.neighbours;
     for (GoPoint* neighbour in neighbours)
     {
-      if ([neighbour blackStone] == nextMoveIsBlack)  // friendly color?
+      if ([neighbour blackStone] != nextMoveIsBlack)
+        continue;
+      // If we are connecting to a stone group with more than just one
+      // liberty, we are *NOT* killing it, so the move is not a suicide and
+      // therefore legal
+      if ([neighbour liberties] > 1)
+        return true;
+      else
       {
-        // If we are connecting to a stone group with more than just one
-        // liberty, we are *NOT* killing it, so the move is not a suicide and
-        // therefore legal
-        if ([neighbour liberties] > 1)
+        // A Ko situation is not possible since one of our neighbours is a
+        // friendly colored stone
+        isKoStillPossible = false;
+      }
+    }
+
+    // Pass 2: Examine opposite colored neighbours
+    for (GoPoint* neighbour in neighbours)
+    {
+      if ([neighbour blackStone] == nextMoveIsBlack)
+        continue;
+      // Can we capture the stone (or the group to which it belongs)?
+      if ([neighbour liberties] == 1)
+      {
+        // Yes, we can capture the group. If the group is larger than 1 stone
+        // it can't be a Ko, so the move is legal
+        GoBoardRegion* neighbourRegion = neighbour.region;
+        if ([neighbourRegion size] > 1)
           return true;
+        else if (isKoStillPossible)
+        {
+          // There is a Ko if the opposing stone was just played during the
+          // last turn, so the move is illegal
+          GoPoint* lastMovePoint = self.lastMove.point;
+          if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
+            return false;
+          else
+            return true;  // no Ko -> capturing is possible -> the move is legal
+        }
         else
         {
-          // A Ko situation is not possible since one of our neighbours is a
-          // friendly colored stone
-          isKoStillPossible = false;
-        }
-      }
-      else  // opposing color!
-      {
-        // Can we capture the stone (or the group to which it belongs)?
-        if ([neighbour liberties] == 1)
-        {
-          // Yes, we can capture the group. If the group is larger than 1 stone
-          // it can't be a Ko, so the move is legal
-          GoBoardRegion* neighbourRegion = neighbour.region;
-          if ([neighbourRegion size] > 1)
-            return true;
-          else if (isKoStillPossible)
-          {
-            // There is a Ko if the opposing stone was just played during the
-            // last turn, so the move is illegal
-            GoPoint* lastMovePoint = self.lastMove.point;
-            if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
-              return false;
-            else
-              return true;  // no Ko -> capturing is possible -> the move is legal
-          }
-          else
-          {
-            // Since it can't be Ko, and we *CAN* capture the group, the move
-            // is legal.
-            return true;
-          }
+          // Since it can't be Ko, and we *CAN* capture the group, the move
+          // is legal.
+          return true;
         }
       }
     }
+
     // If we arrive here, no opposing stones can be captured and there are no
     // friendly groups with sufficient liberties to connect to
     // -> the move is a suicide and therefore illegal
