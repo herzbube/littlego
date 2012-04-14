@@ -347,6 +347,7 @@
   // Configure NewGameModel with information that is used when NewGameCommand
   // creates a new GoGame object
   NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  enum GoBoardSize oldBoardSize = model.boardSize;
   model.boardSize = boardSize;
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
@@ -369,6 +370,10 @@
   // from the already slow load game command.
   command.shouldSetupComputerPlayer = false;
   [command submit];
+
+  // Restore the original board size (is a user preference which should should
+  // not be overwritten by the loaded game's setting)
+  model.boardSize = oldBoardSize;
 }
 
 // -----------------------------------------------------------------------------
