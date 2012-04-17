@@ -15,7 +15,8 @@ Before the release
     the user's preferences are clobbered by UserDefaultsUpdater
 - Replace the "Changes in this release" section of the README with a collection
   of the most important changes from the ChangeLog.
-- Update the "Known bugs" listed in the README
+- Update the "Troubleshooting" section in the MANUAL file if there are any new
+  "known bugs"
 - Change the release date in the following files:
   - Roadmap
 - Make sure that the version number is up to date in the following files:
@@ -25,7 +26,7 @@ Before the release
   the summary page of the project, as the field labelled "Build")
 - Make sure that the copyright year is up to date in the following files (e.g.
   2009-2011 instead of 2009-2010):
-  - All source files
+  - All source files that were touched since the last release
   - Info.plist
 - In Xcode select the "Little Go Release" scheme, then make a build for the
   simulator and for all target devices. If there are any warnings, fix them.

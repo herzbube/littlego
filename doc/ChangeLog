@@ -1,22 +1,26 @@
-Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
+Tue April 17 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.8
 - features
-  - iPad version with support for all interface orientations
+  - iPad version with support for retina display and all interface orientations
   - iPhone now supports upside-down portrait orientation
+  - improved in-game help
 - bugfixes
   - loading a game is now much faster
-  - drawing now uses less CPU power, which improves battery life
+  - drawing, especially while moving a stone around the board, now uses 10-15%
+    less CPU power, which improves battery life
   - Ko is no longer erroneously detected in certain situations (e.g. black has
     stones on A2, B1, B3, C1, C3, white has stones on B2 and C2; black now plays
     on D2, white on B2; in this situation, black C2 was erroneously thought to
     be illegal due to Ko)
-  - profiles: "reuse subtree" is now always enabled when pondering is enabled
-  - improved in-game help
+  - profiles: "reuse subtree" is now always enabled (and cannot be disabled)
+    when pondering is enabled; previously the two settings were independent of
+    each other, which was a bug
   - loading archived game now works even if temporary file is still around for
     some reason
 - technical changes
   - rewrite of Play view drawing code
   - lots of new unit tests
+  - upgrade to iOS SDK 5.1
 
 Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - release of bugfix version 0.7.1

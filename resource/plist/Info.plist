@@ -45,11 +45,11 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2011 Patrick Näf</string>
+	<string>© 2011-2012 Patrick Näf</string>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
 	<key>UIFileSharingEnabled</key>
