@@ -159,6 +159,9 @@ Priority 2 (nice to have)
   not legal
 - Add a grayed out message to the Archive tab when there are no archived games,
   saying something like "You don't have any archived games."
+- Define if it should be possible to load a game while scoring is in progress.
+  Currently this works accidentally only. Also add a test case for this to the
+  TESTING document.
 
 
 Priority 3 (not important)
