@@ -386,8 +386,8 @@ static PlayView* sharedPlayView = nil;
   // No game -> no board -> no drawing. This situation exists right after the
   // application has launched and the initial game is created only after a
   // small delay.
-//xxx  if (! [GoGame sharedGame])
-//xxx    return;
+  if (! [GoGame sharedGame])
+    return;
   self.updatesWereDelayed = false;
 
   [boardLayerDelegate drawLayer];
