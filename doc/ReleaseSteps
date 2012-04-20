@@ -48,7 +48,7 @@ Create an archive
   "Distribute_AppStore" build configuration
 - After the build succeeds it is archived, then the "Organizer" window opens to
   display the archive that was just created
-- Give it a useful name, e.g. "Little Go 0.7 AppStore Distribution"
+- Give it a useful name, e.g. "Little Go AdHoc Distribution 0.8.0"
 
 
 Make an ad-hoc distribution (beta release)

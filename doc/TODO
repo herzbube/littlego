@@ -39,7 +39,6 @@ Priority 1 (important)
 - Allow to store and retrieve "New game" settings; this makes the process of
   starting a new game much quicker if one frequently starts new games with
   different settings
-- Add keywords "바둑" and "computer go" to the App Store entry
 - "New game" is not visible enough, and/or people are confused because they
   don't know where they can change the board size. One possible solution for
   this could be to display the "New game" (or "Load game", see TODO entry under
