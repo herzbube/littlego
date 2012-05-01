@@ -53,6 +53,18 @@ on the right-hand side of the toolbar at the top of the screen. Select
 Troubleshooting
 --------------------------------------------------------------------------------
 
+========================================================
+I can play a suicide move - shouldn't this be forbidden?
+========================================================
+Yes, this is a known bug. Please email me any information you may have on how to
+reproduce the problem - more clues means I will be quicker in fixing the bug.
+
+Meanwhile, to work around the bug you can try to save the game that is currently
+in progress, then reload the game you just saved. Loading a saved game, by the
+way, is a generally useful strategy to bring Little Go back into a sane state
+whenever the app behaves buggy.
+
+
 =============
 Memory issues
 =============

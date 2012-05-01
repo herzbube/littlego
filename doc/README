@@ -24,16 +24,9 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.8.
+This is Little Go 0.8.1.
 
-The big thing in this release is, of course, full iPad support. Because I don't
-like separate "HD" versions of one and the same app, Little Go is built as a
-universal binary.
-
-In addition, a few bugs have been ironed out: Notably, loading a game is now
-much faster, and another bug in the Ko detection routine has been mercilessly
-squashed. In case you are wondering: Yes, Fuego also has Ko detection, and no,
-Little Go does not use it - for a reason, so please don't ask...
+TODO
 
 As usual the ChangeLog document has all the details.
 
@@ -54,7 +47,6 @@ tab item). If not, see <http://www.apache.org/licenses/>.
 
 Platforms
 ---------
-Currently Little Go is available for the iPhone only. Later on, an iPad version
-is planned as well.
+Little Go is available both for the iPhone and the iPad.
 
 The minimum requirement for running this version of Little Go is iOS 4.3.
