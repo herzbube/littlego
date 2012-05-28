@@ -13,21 +13,33 @@ Quick-start guide on how to build and run Little Go
 2. Install Xcode 4 if you haven't done so already. With Xcode 4 the build should
    work out of the box, earlier or later Xcode versions probably require some
    tinkering.
-3. Edit script/build-env.sh to match your development environment. For instance,
-   change the iOS Base SDK and deployment target versions.
+3. Edit script/build-env.sh to match your development environment. Most
+   important are the "Base SDK" variables which must refer to an iOS SDK that
+   you have installed on your development machine. Usually, the version of Xcode
+   that you have installed also determines which iOS SDK version is installed,
+   so refer to the Xcode release notes or have a look at the contents of the
+   folder /Developer/Platforms/iPhoneOS.platform/Developer/SDKs.
 4. Launch Terminal.app and execute these commands:
      cd /path/to/littlego
      ./script/get-and-build-3rdparty-software.sh
 5. Wait until the script has downloaded and built all 3rdparty software packages
-   (see the section "3rdparty software build" further down for more details)
+   (see the section "3rdparty software build" further down for more details).
+   This will take substantial time, for instance my 2.33 GHz Core 2 Duo laptop
+   requires nearly one hour for building everything.
 6. Launch Xcode by opening "Little Go.xcodeproj"
 7. Change iOS Base SDK and deployment target versions to match your development
    environment
-8. Make sure that you have a scheme that configures the target "Little Go" to
-   use the build configuration "Debug"
-9. Select that scheme, and the destination "iPhone 4.2 Simulator", from the
-   toolbar's scheme selector
-10. From the menu select Product > Run. The app should now be built in Debug
+8. Check whether the reference to book.dat in the "resource" folder is valid.
+   If it isn't (e.g. the reference appears in red color), fix the reference.
+   The usual cause is that the reference points to a path that includes an SDK
+   version that is different from the SDK version you used to build the 3rdparty
+   software packages.
+9. Make sure that you have a scheme that configures the target "Little Go" to
+   use the build configuration "Debug". See "Xcode schemes" further down if you
+   need more information.
+10. Select that scheme, and one of the iPhone or iPad simulator destinations,
+    from the toolbar's scheme selector
+11. From the menu select Product > Run. The app should now be built in Debug
     mode and launched inside the simulator.
 
 
@@ -195,6 +207,21 @@ Platform notes
   moving target SDK. The latest release of the project was made with iOS 5.1.
 - The deployment target is set to 4.3 so that the application keeps running on
   iOS 4 devices.
+
+
+Upgrading the iOS SDK
+---------------------
+A few rough notes on what needs to be done when a new iOS SDK is installed on
+the development machine:
+- Delete (or backup) the 3rdparty folder
+- Edit script/build-env.sh: Update the "Base SDK" variables to refer to the new
+  SDK version that was just installed
+- In Terminal.app, run script/get-and-build-3rdparty-software.sh to perform a
+  full rebuild of all 3rdparty software packages
+- If you haven't restarted Xcode, it might be a good idea to do so now
+- In the Xcode project, update the reference to book.dat in the "resource"
+  folder
+- In the Xcode project, rebuild the "Little Go" target
 
 
 .xib design notes
