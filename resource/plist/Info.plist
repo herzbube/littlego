@@ -12,10 +12,10 @@
 	<string></string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>appicon-iphone-fuseki-8x8.png</string>
-		<string>appicon-iphone-fuseki-8x8@2x.png</string>
-		<string>appicon-ipad-fuseki-8x8.png</string>
-		<string>appicon-ipad-fuseki-8x8@2x.png</string>
+		<string>appicon-iphone.png</string>
+		<string>appicon-iphone@2x.png</string>
+		<string>appicon-ipad8x8.png</string>
+		<string>appicon-ipad@2x.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -23,10 +23,10 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>appicon-iphone-fuseki-8x8.png</string>
-				<string>appicon-iphone-fuseki-8x8@2x.png</string>
-				<string>appicon-ipad-fuseki-8x8.png</string>
-				<string>appicon-ipad-fuseki-8x8@2x.png</string>
+				<string>appicon-iphone.png</string>
+				<string>appicon-iphone@2x.png</string>
+				<string>appicon-ipad.png</string>
+				<string>appicon-ipad@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<false/>
@@ -58,6 +58,8 @@
 	<string>LaunchImageiPad</string>
 	<key>UILaunchImageFile~iphone</key>
 	<string>LaunchImage</string>
+	<key>UIPrerenderedIcon</key>
+	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
