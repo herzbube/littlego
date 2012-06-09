@@ -46,7 +46,7 @@ struct GoVertexNumeric
 ///
 /// GoVertex supports values in the range 1..19 on both axis.
 // -----------------------------------------------------------------------------
-@interface GoVertex : NSObject
+@interface GoVertex : NSObject <NSCoding>
 {
 }
 

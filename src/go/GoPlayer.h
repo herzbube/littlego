@@ -27,7 +27,7 @@
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoPlayer : NSObject
+@interface GoPlayer : NSObject <NSCoding>
 {
 }
 

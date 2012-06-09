@@ -30,6 +30,11 @@
 - (id) initWithVertex:(GoVertex*)aVertex onBoard:(GoBoard*)aBoard;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
@@ -125,6 +130,39 @@
   isBelowValid = false;
   isNextValid = false;
   isPreviousValid = false;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.vertex = [decoder decodeObjectForKey:goPointVertexKey];
+  self.board = [decoder decodeObjectForKey:goPointBoardKey];
+  left = [decoder decodeObjectForKey:goPointLeftKey];
+  right = [decoder decodeObjectForKey:goPointRightKey];
+  above = [decoder decodeObjectForKey:goPointAboveKey];
+  below = [decoder decodeObjectForKey:goPointBelowKey];
+  neighbours = [decoder decodeObjectForKey:goPointNeighboursKey];
+  next = [decoder decodeObjectForKey:goPointNextKey];
+  previous = [decoder decodeObjectForKey:goPointPreviousKey];
+  self.starPoint = [decoder decodeBoolForKey:goPointIsStarPointKey];
+  self.stoneState = [decoder decodeIntForKey:goPointStoneStateKey];
+  self.region = [decoder decodeObjectForKey:goPointRegionKey];
+  self.isLeftValid = [decoder decodeBoolForKey:goPointIsLeftValidKey];
+  self.isRightValid = [decoder decodeBoolForKey:goPointIsRightValidKey];
+  self.isAboveValid = [decoder decodeBoolForKey:goPointIsAboveValidKey];
+  self.isBelowValid = [decoder decodeBoolForKey:goPointIsBelowValidKey];
+  self.isNextValid = [decoder decodeBoolForKey:goPointIsNextValidKey];
+  self.isPreviousValid = [decoder decodeBoolForKey:goPointIsPreviousValidKey];
 
   return self;
 }
@@ -320,6 +358,32 @@
     return false;
   // Don't rely on instance identity, it's better to compare the vertex
   return [self.vertex isEqualToVertex:point.vertex];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.vertex forKey:goPointVertexKey];
+  [encoder encodeObject:self.board forKey:goPointBoardKey];
+  [encoder encodeObject:self.left forKey:goPointLeftKey];
+  [encoder encodeObject:self.right forKey:goPointRightKey];
+  [encoder encodeObject:self.above forKey:goPointAboveKey];
+  [encoder encodeObject:self.below forKey:goPointBelowKey];
+  [encoder encodeObject:self.neighbours forKey:goPointNeighboursKey];
+  [encoder encodeObject:self.next forKey:goPointNextKey];
+  [encoder encodeObject:self.previous forKey:goPointPreviousKey];
+  [encoder encodeBool:self.isStarPoint forKey:goPointIsStarPointKey];
+  [encoder encodeInt:self.stoneState forKey:goPointStoneStateKey];
+  [encoder encodeObject:self.region forKey:goPointRegionKey];
+  [encoder encodeBool:self.isLeftValid forKey:goPointIsLeftValidKey];
+  [encoder encodeBool:self.isRightValid forKey:goPointIsRightValidKey];
+  [encoder encodeBool:self.isAboveValid forKey:goPointIsAboveValidKey];
+  [encoder encodeBool:self.isBelowValid forKey:goPointIsBelowValidKey];
+  [encoder encodeBool:self.isNextValid forKey:goPointIsNextValidKey];
+  [encoder encodeBool:self.isPreviousValid forKey:goPointIsPreviousValidKey];
 }
 
 @end

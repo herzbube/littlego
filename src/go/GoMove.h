@@ -46,7 +46,7 @@
 /// from/to the predecessor GoMove, which usually causes the GoMove to be
 /// deallocated.
 // -----------------------------------------------------------------------------
-@interface GoMove : NSObject
+@interface GoMove : NSObject <NSCoding>
 {
 }
 

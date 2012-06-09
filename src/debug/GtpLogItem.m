@@ -29,6 +29,11 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 @end
 
 
@@ -60,6 +65,27 @@
   self.responseStatus = false;
   self.parsedResponseString = nil;
   self.rawResponseString = nil;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.commandString = [decoder decodeObjectForKey:gtpLogItemCommandStringKey];
+  self.timeStamp = [decoder decodeObjectForKey:gtpLogItemTimeStampKey];
+  self.hasResponse = [decoder decodeBoolForKey:gtpLogItemHasResponseKey];
+  self.responseStatus = [decoder decodeBoolForKey:gtpLogItemResponseStatusKey];
+  self.parsedResponseString = [decoder decodeObjectForKey:gtpLogItemParsedResponseStringKey];
+  self.rawResponseString = [decoder decodeObjectForKey:gtpLogItemRawResponseStringKey];
 
   return self;
 }
@@ -146,6 +172,20 @@
   [outputImage retain];
 
   return outputImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.commandString forKey:gtpLogItemCommandStringKey];
+  [encoder encodeObject:self.timeStamp forKey:gtpLogItemTimeStampKey];
+  [encoder encodeBool:self.hasResponse forKey:gtpLogItemHasResponseKey];
+  [encoder encodeBool:self.responseStatus forKey:gtpLogItemResponseStatusKey];
+  [encoder encodeObject:self.parsedResponseString forKey:gtpLogItemParsedResponseStringKey];
+  [encoder encodeObject:self.rawResponseString forKey:gtpLogItemRawResponseStringKey];
 }
 
 @end

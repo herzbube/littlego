@@ -32,6 +32,11 @@
 - (id) initWithPlayer:(Player*)aPlayer;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
@@ -144,6 +149,23 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.player = [decoder decodeObjectForKey:goPlayerPlayerKey];
+  self.black = [decoder decodeBoolForKey:goPlayerIsBlackKey];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this GoPlayer object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -175,6 +197,16 @@
     return @"B";
   else
     return @"W";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.player forKey:goPlayerPlayerKey];
+  [encoder encodeBool:self.isBlack forKey:goPlayerIsBlackKey];
 }
 
 @end

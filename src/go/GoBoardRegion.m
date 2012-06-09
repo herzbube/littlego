@@ -30,6 +30,11 @@
 - (id) init;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Private helper methods
 //@{
 - (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint;
@@ -128,11 +133,37 @@
 
   self.points = [NSMutableArray arrayWithCapacity:0];
   self.randomColor = [UIColor randomColor];
-  self.scoringMode = false;
+  scoringMode = false;  // don't use self, otherwise we trigger the setter!
   self.territoryColor = GoColorNone;
   self.territoryInconsistencyFound = false;
   self.deadStoneGroup = false;
   [self invalidateCache];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.points = [decoder decodeObjectForKey:goBoardRegionPointsKey];
+  self.randomColor = [decoder decodeObjectForKey:goBoardRegionRandomColorKey];
+  scoringMode = [decoder decodeBoolForKey:goBoardRegionScoringModeKey];  // don't use self, otherwise we trigger the setter!
+  self.territoryColor = [decoder decodeIntForKey:goBoardRegionTerritoryColorKey];
+  self.territoryInconsistencyFound = [decoder decodeBoolForKey:goBoardRegionTerritoryInconsistencyFoundKey];
+  self.deadStoneGroup = [decoder decodeBoolForKey:goBoardRegionDeadStoneGroupKey];
+  self.cachedSize = [decoder decodeIntForKey:goBoardRegionCachedSizeKey];
+  self.cachedIsStoneGroup = [decoder decodeBoolForKey:goBoardRegionCachedIsStoneGroupKey];
+  self.cachedColor = [decoder decodeIntForKey:goBoardRegionCachedColorKey];
+  self.cachedLiberties = [decoder decodeIntForKey:goBoardRegionCachedLibertiesKey];
+  self.cachedAdjacentRegions = [decoder decodeObjectForKey:goBoardRegionCachedAdjacentRegionsKey];
 
   return self;
 }
@@ -645,6 +676,25 @@
   cachedColor = GoColorNone;
   cachedLiberties = -1;
   self.cachedAdjacentRegions = nil;  // use self to decrease the retain count
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.points forKey:goBoardRegionPointsKey];
+  [encoder encodeObject:self.randomColor forKey:goBoardRegionRandomColorKey];
+  [encoder encodeBool:self.scoringMode forKey:goBoardRegionScoringModeKey];
+  [encoder encodeInt:self.territoryColor forKey:goBoardRegionTerritoryColorKey];
+  [encoder encodeBool:self.territoryInconsistencyFound forKey:goBoardRegionTerritoryInconsistencyFoundKey];
+  [encoder encodeBool:self.deadStoneGroup forKey:goBoardRegionDeadStoneGroupKey];
+  [encoder encodeInt:self.cachedSize forKey:goBoardRegionCachedSizeKey];
+  [encoder encodeBool:self.cachedIsStoneGroup forKey:goBoardRegionCachedIsStoneGroupKey];
+  [encoder encodeInt:self.cachedColor forKey:goBoardRegionCachedColorKey];
+  [encoder encodeInt:self.cachedLiberties forKey:goBoardRegionCachedLibertiesKey];
+  [encoder encodeObject:self.cachedAdjacentRegions forKey:goBoardRegionCachedAdjacentRegionsKey];
 }
 
 @end

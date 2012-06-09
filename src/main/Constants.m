@@ -167,3 +167,100 @@ NSString* inconsistentTerritoryDotSymbolColorKey = @"InconsistentTerritoryDotSym
 NSString* inconsistentTerritoryDotSymbolPercentageKey = @"InconsistentTerritoryDotSymbolPercentage";
 NSString* inconsistentTerritoryFillColorKey = @"InconsistentTerritoryFillColor";
 NSString* inconsistentTerritoryFillColorAlphaKey = @"InconsistentTerritoryFillColorAlpha";
+
+// Constants for NSCoding
+// General constants
+const int nscodingVersion = 1;
+NSString* nscodingVersionKey = @"NSCodingVersion";
+// GoGame keys
+NSString* goGameTypeKey = @"Type";
+NSString* goGameBoardKey = @"Board";
+NSString* goGameHandicapPointsKey = @"HandicapPoints";
+NSString* goGameKomiKey = @"Komi";
+NSString* goGamePlayerBlackKey = @"PlayerBlack";
+NSString* goGamePlayerWhiteKey = @"PlayerWhite";
+NSString* goGameFirstMoveKey = @"FirstMove";
+NSString* goGameLastMoveKey = @"LastMove";
+NSString* goGameStateKey = @"State";
+NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
+NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
+NSString* goGameNextMoveIsComputerGeneratedKey = @"NextMoveIsComputerGenerated";
+// GoPlayer keys
+NSString* goPlayerPlayerKey = @"Player";
+NSString* goPlayerIsBlackKey = @"IsBlack";
+// GoMove keys
+NSString* goMoveTypeKey = @"Type";
+NSString* goMovePlayerKey = @"Player";
+NSString* goMovePointKey = @"Point";
+NSString* goMovePreviousKey = @"Previous";
+NSString* goMoveNextKey = @"Next";
+NSString* goMoveCapturedStonesKey = @"CapturedStones";
+NSString* goMoveComputerGeneratedKey = @"ComputerGenerated";
+// GoBoard keys
+NSString* goBoardSizeKey = @"Size";
+NSString* goBoardVertexDictKey = @"VertexDict";
+NSString* goBoardStarPointsKey = @"StarPoints";
+// GoBoardRegion keys
+NSString* goBoardRegionPointsKey = @"Points";
+NSString* goBoardRegionRandomColorKey = @"RandomColor";
+NSString* goBoardRegionScoringModeKey = @"ScoringMode";
+NSString* goBoardRegionTerritoryColorKey = @"TerritoryColor";
+NSString* goBoardRegionTerritoryInconsistencyFoundKey = @"TerritoryInconsistencyFound";
+NSString* goBoardRegionDeadStoneGroupKey = @"DeadStoneGroup";
+NSString* goBoardRegionCachedSizeKey = @"CachedSize";
+NSString* goBoardRegionCachedIsStoneGroupKey = @"CachedIsStoneGroup";
+NSString* goBoardRegionCachedColorKey = @"CachedColor";
+NSString* goBoardRegionCachedLibertiesKey = @"CachedLiberties";
+NSString* goBoardRegionCachedAdjacentRegionsKey = @"CachedAdjacentRegions";
+// GoPoint keys
+NSString* goPointVertexKey = @"Vertex";
+NSString* goPointBoardKey = @"Board";
+NSString* goPointLeftKey = @"Left";
+NSString* goPointRightKey = @"Right";
+NSString* goPointAboveKey = @"Above";
+NSString* goPointBelowKey = @"Below";
+NSString* goPointNeighboursKey = @"Neighbours";
+NSString* goPointNextKey = @"Next";
+NSString* goPointPreviousKey = @"Previous";
+NSString* goPointIsStarPointKey = @"IsStarPoint";
+NSString* goPointStoneStateKey = @"StoneState";
+NSString* goPointRegionKey = @"Region";
+NSString* goPointIsLeftValidKey = @"IsLeftValid";
+NSString* goPointIsRightValidKey = @"IsRightValid";
+NSString* goPointIsAboveValidKey = @"IsAboveValid";
+NSString* goPointIsBelowValidKey = @"IsBelowValid";
+NSString* goPointIsNextValidKey = @"IsNextValid";
+NSString* goPointIsPreviousValidKey = @"IsPreviousValid";
+// GoVertex keys
+NSString* goVertexStringKey = @"String";
+NSString* goVertexNumericXKey = @"NumericX";
+NSString* goVertexNumericYKey = @"NumericY";
+// GoScore keys
+NSString* goScoreTerritoryScoresAvailableKey = @"TerritoryScoresAvailable";
+NSString* goScoreScoringInProgressKey = @"ScoringInProgress";
+NSString* goScoreKomiKey = @"Komi";
+NSString* goScoreCapturedByBlackKey = @"CapturedByBlack";
+NSString* goScoreCapturedByWhiteKey = @"CapturedByWhite";
+NSString* goScoreDeadBlackKey = @"DeadBlack";
+NSString* goScoreDeadWhiteKey = @"DeadWhite";
+NSString* goScoreTerritoryBlackKey = @"TerritoryBlack";
+NSString* goScoreTerritoryWhiteKey = @"TerritoryWhite";
+NSString* goScoreTotalScoreBlackKey = @"TotalScoreBlack";
+NSString* goScoreTotalScoreWhiteKey = @"TotalScoreWhite";
+NSString* goScoreResultKey = @"Result";
+NSString* goScoreNumberOfMovesKey = @"NumberOfMoves";
+NSString* goScoreStonesPlayedByBlackKey = @"StonesPlayedByBlack";
+NSString* goScoreStonesPlayedByWhiteKey = @"StonesPlayedByWhite";
+NSString* goScorePassesPlayedByBlackKey = @"PassesPlayedByBlack";
+NSString* goScorePassesPlayedByWhiteKey = @"PassesPlayedByWhite";
+NSString* goScoreGameKey = @"Game";
+NSString* goScoreBoardIsInitializedKey = @"BoardIsInitialized";
+NSString* goScoreLastCalculationHadErrorKey = @"LastCalculationHadError";
+NSString* goScoreAllRegionsKey = @"AllRegions";
+// GtpLogItem keys
+NSString* gtpLogItemCommandStringKey = @"CommandString";
+NSString* gtpLogItemTimeStampKey = @"TimeStamp";
+NSString* gtpLogItemHasResponseKey = @"HasResponse";
+NSString* gtpLogItemResponseStatusKey = @"ResponseStatus";
+NSString* gtpLogItemParsedResponseStringKey = @"ParsedResponseString";
+NSString* gtpLogItemRawResponseStringKey = @"RawResponseString";

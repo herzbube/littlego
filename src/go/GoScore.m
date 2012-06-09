@@ -38,6 +38,12 @@
 //@{
 - (id) init;
 - (void) dealloc;
+- (void) setupAfterUnarchiving;
+//@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
 //@}
 /// @name Notification responders
 //@{
@@ -131,14 +137,51 @@
   territoryScoresAvailable = false;
   scoringInProgress = false;
   game = nil;
-  operationQueue = [[NSOperationQueue alloc] init];
+  operationQueue = nil;
   boardIsInitialized = false;
   lastCalculationHadError = false;
   allRegions = nil;
   [self resetValues];
 
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [self setupAfterUnarchiving];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.territoryScoresAvailable = [decoder decodeBoolForKey:goScoreTerritoryScoresAvailableKey];
+  self.scoringInProgress = [decoder decodeBoolForKey:goScoreScoringInProgressKey];
+  self.komi = [decoder decodeDoubleForKey:goScoreKomiKey];
+  self.capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
+  self.capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
+  self.deadBlack = [decoder decodeIntForKey:goScoreDeadBlackKey];
+  self.deadWhite = [decoder decodeIntForKey:goScoreDeadWhiteKey];
+  self.territoryBlack = [decoder decodeIntForKey:goScoreTerritoryBlackKey];
+  self.territoryWhite = [decoder decodeIntForKey:goScoreTerritoryWhiteKey];
+  self.totalScoreBlack = [decoder decodeIntForKey:goScoreTotalScoreBlackKey];
+  self.totalScoreWhite = [decoder decodeDoubleForKey:goScoreTotalScoreWhiteKey];
+  self.result = [decoder decodeIntForKey:goScoreResultKey];
+  self.numberOfMoves = [decoder decodeIntForKey:goScoreNumberOfMovesKey];
+  self.stonesPlayedByBlack = [decoder decodeIntForKey:goScoreStonesPlayedByBlackKey];
+  self.stonesPlayedByWhite = [decoder decodeIntForKey:goScoreStonesPlayedByWhiteKey];
+  self.passesPlayedByBlack = [decoder decodeIntForKey:goScorePassesPlayedByBlackKey];
+  self.passesPlayedByWhite = [decoder decodeIntForKey:goScorePassesPlayedByWhiteKey];
+  self.game = [decoder decodeObjectForKey:goScoreGameKey];
+  self.boardIsInitialized = [decoder decodeBoolForKey:goScoreBoardIsInitializedKey];
+  self.lastCalculationHadError = [decoder decodeBoolForKey:goScoreLastCalculationHadErrorKey];
+  self.allRegions = [decoder decodeObjectForKey:goScoreAllRegionsKey];
+
+  [self setupAfterUnarchiving];
 
   return self;
 }
@@ -167,6 +210,20 @@
   self.operationQueue = nil;
   self.allRegions = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs initialization after the NSCoding initializer has done its
+/// work.
+///
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupAfterUnarchiving
+{
+  operationQueue = [[NSOperationQueue alloc] init];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -802,6 +859,36 @@
     result = GoGameResultWhiteHasWon;
   else
     result = GoGameResultTie;
+}
+
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeBool:self.territoryScoresAvailable forKey:goScoreTerritoryScoresAvailableKey];
+  [encoder encodeBool:self.scoringInProgress forKey:goScoreScoringInProgressKey];
+  [encoder encodeDouble:self.komi forKey:goScoreKomiKey];
+  [encoder encodeInt:self.capturedByBlack forKey:goScoreCapturedByBlackKey];
+  [encoder encodeInt:self.capturedByWhite forKey:goScoreCapturedByWhiteKey];
+  [encoder encodeInt:self.deadBlack forKey:goScoreDeadBlackKey];
+  [encoder encodeInt:self.deadWhite forKey:goScoreDeadWhiteKey];
+  [encoder encodeInt:self.territoryBlack forKey:goScoreTerritoryBlackKey];
+  [encoder encodeInt:self.territoryWhite forKey:goScoreTerritoryWhiteKey];
+  [encoder encodeInt:self.totalScoreBlack forKey:goScoreTotalScoreBlackKey];
+  [encoder encodeDouble:self.totalScoreWhite forKey:goScoreTotalScoreWhiteKey];
+  [encoder encodeInt:self.result forKey:goScoreResultKey];
+  [encoder encodeInt:self.numberOfMoves forKey:goScoreNumberOfMovesKey];
+  [encoder encodeInt:self.stonesPlayedByBlack forKey:goScoreStonesPlayedByBlackKey];
+  [encoder encodeInt:self.stonesPlayedByWhite forKey:goScoreStonesPlayedByWhiteKey];
+  [encoder encodeInt:self.passesPlayedByBlack forKey:goScorePassesPlayedByBlackKey];
+  [encoder encodeInt:self.passesPlayedByWhite forKey:goScorePassesPlayedByWhiteKey];
+  [encoder encodeObject:self.game forKey:goScoreGameKey];
+  [encoder encodeBool:self.boardIsInitialized forKey:goScoreBoardIsInitializedKey];
+  [encoder encodeBool:self.lastCalculationHadError forKey:goScoreLastCalculationHadErrorKey];
+  [encoder encodeObject:self.allRegions forKey:goScoreAllRegionsKey];
 }
 
 @end
