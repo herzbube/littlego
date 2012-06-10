@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "DebugViewController.h"
+#import "DiagnosticsViewController.h"
 #import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
 #import "GtpCommandViewController.h"
@@ -25,9 +25,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Debug" table view.
+/// @brief Enumerates the sections presented in the "Diagnostics" table view.
 // -----------------------------------------------------------------------------
-enum DebugTableViewSection
+enum DiagnosticsTableViewSection
 {
   GtpSection,
 //  ApplicationLogSection,
@@ -57,9 +57,9 @@ enum ApplicationLogSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DebugViewController.
+/// @brief Class extension with private methods for DiagnosticsViewController.
 // -----------------------------------------------------------------------------
-@interface DebugViewController()
+@interface DiagnosticsViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -94,11 +94,12 @@ enum ApplicationLogSectionItem
 @end
 
 
-@implementation DebugViewController
+@implementation DiagnosticsViewController
 
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DebugViewController object.
+/// @brief Deallocates memory allocated by this DiagnosticsViewController
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

@@ -16,10 +16,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DebugViewController class is responsible for managing user
-/// interaction on the "Debug" view.
+/// @brief The DiagnosticsViewController class is responsible for managing user
+/// interaction on the "Diagnostics" view.
 // -----------------------------------------------------------------------------
-@interface DebugViewController : UITableViewController
+@interface DiagnosticsViewController : UITableViewController
 {
 }
 

@@ -67,7 +67,7 @@ const bool fuegoPonderingDefault = true;
 const bool fuegoReuseSubtreeDefault = true;
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
-// Debug view settings default values
+// Diagnostics view settings default values
 const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 

@@ -131,7 +131,7 @@ enum TabType
   TabTypePlay,
   TabTypeSettings,
   TabTypeArchive,
-  TabTypeDebug,
+  TabTypeDiagnostics,
   TabTypeManual,
   TabTypeAbout,
   TabTypeSourceCode,
@@ -360,7 +360,7 @@ extern NSString* defaultGtpEngineProfileUUID;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Debug view settings default values
+/// @name Diagnostics view settings default values
 // -----------------------------------------------------------------------------
 //@{
 extern const int gtpLogSizeMinimum;
