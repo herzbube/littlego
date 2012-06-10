@@ -16,6 +16,10 @@
 		<string>appicon-iphone@2x.png</string>
 		<string>appicon-ipad8x8.png</string>
 		<string>appicon-ipad@2x.png</string>
+		<string>spotlighticon-iphone.png</string>
+		<string>spotlighticon-iphone@2x.png</string>
+		<string>spotlighticon-ipad.png</string>
+		<string>spotlighticon-ipad@2x.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -27,6 +31,10 @@
 				<string>appicon-iphone@2x.png</string>
 				<string>appicon-ipad.png</string>
 				<string>appicon-ipad@2x.png</string>
+				<string>spotlighticon-iphone.png</string>
+				<string>spotlighticon-iphone@2x.png</string>
+				<string>spotlighticon-ipad.png</string>
+				<string>spotlighticon-ipad@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>

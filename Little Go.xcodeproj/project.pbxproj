@@ -96,6 +96,10 @@
 		CD7E92D41532333D00DCD671 /* LaunchImageiPad-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7E92D01532333D00DCD671 /* LaunchImageiPad-Landscape@2x.png */; };
 		CD7E92D51532333D00DCD671 /* LaunchImageiPad-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7E92D11532333D00DCD671 /* LaunchImageiPad-Portrait.png */; };
 		CD7E92D61532333D00DCD671 /* LaunchImageiPad-Portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7E92D21532333D00DCD671 /* LaunchImageiPad-Portrait@2x.png */; };
+		CD84BBB8158536E80078C9DE /* spotlighticon-ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CD84BBB4158536E80078C9DE /* spotlighticon-ipad.png */; };
+		CD84BBB9158536E80078C9DE /* spotlighticon-ipad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD84BBB5158536E80078C9DE /* spotlighticon-ipad@2x.png */; };
+		CD84BBBA158536E80078C9DE /* spotlighticon-iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CD84BBB6158536E80078C9DE /* spotlighticon-iphone.png */; };
+		CD84BBBB158536E80078C9DE /* spotlighticon-iphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD84BBB7158536E80078C9DE /* spotlighticon-iphone@2x.png */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -366,6 +370,10 @@
 		CD7E92D01532333D00DCD671 /* LaunchImageiPad-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImageiPad-Landscape@2x.png"; sourceTree = "<group>"; };
 		CD7E92D11532333D00DCD671 /* LaunchImageiPad-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImageiPad-Portrait.png"; sourceTree = "<group>"; };
 		CD7E92D21532333D00DCD671 /* LaunchImageiPad-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImageiPad-Portrait@2x.png"; sourceTree = "<group>"; };
+		CD84BBB4158536E80078C9DE /* spotlighticon-ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spotlighticon-ipad.png"; sourceTree = "<group>"; };
+		CD84BBB5158536E80078C9DE /* spotlighticon-ipad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spotlighticon-ipad@2x.png"; sourceTree = "<group>"; };
+		CD84BBB6158536E80078C9DE /* spotlighticon-iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spotlighticon-iphone.png"; sourceTree = "<group>"; };
+		CD84BBB7158536E80078C9DE /* spotlighticon-iphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spotlighticon-iphone@2x.png"; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
@@ -955,6 +963,10 @@
 				CDE1A14F14C1CED200317ECA /* help@2x.png */,
 				CDB0A305152B708B003B2BBF /* licenses.png */,
 				CDB0A306152B708B003B2BBF /* licenses@2x.png */,
+				CD84BBB4158536E80078C9DE /* spotlighticon-ipad.png */,
+				CD84BBB5158536E80078C9DE /* spotlighticon-ipad@2x.png */,
+				CD84BBB6158536E80078C9DE /* spotlighticon-iphone.png */,
+				CD84BBB7158536E80078C9DE /* spotlighticon-iphone@2x.png */,
 				CDE1A15014C1CED200317ECA /* tabular.png */,
 				CDE1A15114C1CED200317ECA /* tabular@2x.png */,
 			);
@@ -1280,6 +1292,10 @@
 				CDE022DA155731740052ACE0 /* appicon-iphone.png in Resources */,
 				CDE022DB155731740052ACE0 /* appicon-iphone@2x.png in Resources */,
 				CD66127F155862F6009C6535 /* appicon-ipad@2x.png in Resources */,
+				CD84BBB8158536E80078C9DE /* spotlighticon-ipad.png in Resources */,
+				CD84BBB9158536E80078C9DE /* spotlighticon-ipad@2x.png in Resources */,
+				CD84BBBA158536E80078C9DE /* spotlighticon-iphone.png in Resources */,
+				CD84BBBB158536E80078C9DE /* spotlighticon-iphone@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
