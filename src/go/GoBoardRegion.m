@@ -408,26 +408,19 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Splits this GoBoardRegion if any of the GoPoint objects within it
-/// are not adjacent.
+/// are no longer adjacent after @a removedPoint has been removed.
 ///
 /// Additional GoBoardRegion objects are created by this method if it detects
 /// that this GoBoardRegion has fragmented into smaller, non-adjacent sets of
-/// GoPoint objects. The reason why fragmentation might have occurred is that
-/// @a removedPoint has been removed from this GoBoardRegion.
+/// GoPoint objects.
 ///
-/// This method does nothing and returns immediately if this GoBoardRegion
-/// represents a stone group. The reason for this is efficieny, combined with
-/// the knowledge that stone groups can never fragment if the game proceeds in
-/// a regular fashion. A stone group can only be captured as a whole, in which
-/// case the entire GoBoardRegion "converts" from being a stone group to being
-/// an empty area.
+/// @note When this method is invoked, @a removedPoint must already have been
+/// removed from this GoBoardRegion.
+///
+/// @note This is a private backend helper method for removePoint:().
 // -----------------------------------------------------------------------------
 - (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint
 {
-  // Stone groups can never fragment, they are only captured as a whole which
-  // leaves the region unchanged
-  if ([self isStoneGroup])
-    return;
   // Split not possible if less than 2 points
   if (points.count < 2)
     return;

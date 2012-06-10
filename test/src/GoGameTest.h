@@ -46,5 +46,6 @@
 - (void) testContinue;
 - (void) testIsLegalMove;
 - (void) testIsComputerPlayersTurn;
+- (void) testUndoCausesRegionToFragment;
 
 @end

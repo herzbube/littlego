@@ -20,12 +20,21 @@
 
 // Application includes
 #import <go/GoBoard.h>
+#import <go/GoBoardRegion.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
 #import <main/ApplicationDelegate.h>
 #import <command/game/NewGameCommand.h>
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for GoGameTest.
+// -----------------------------------------------------------------------------
+@interface GoGameTest()
+- (void) verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:(NSString*)failureDescription;
+@end
 
 
 @implementation GoGameTest
@@ -537,6 +546,106 @@
 
   // Currently no more tests possible because we can't simulate
   // computer vs. human games
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Regression test for bug 137.
+///
+/// Set up a position where 4 regions, each consisting of a single stone, are
+/// merged into a new single region, by placing a single connecting stone. The
+/// connecting stone is then removed by undoing the move, which must result
+/// in the same 4 regions being re-created.
+/// - Single stone regions: A2, B1, B3, C2
+/// - Connecting stone: B2
+// -----------------------------------------------------------------------------
+- (void) testUndoCausesRegionToFragment
+{
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* point3 = [m_game.board pointAtVertex:@"B3"];
+  GoPoint* point4 = [m_game.board pointAtVertex:@"C2"];
+  GoPoint* point5 = [m_game.board pointAtVertex:@"B2"];
+  GoPoint* pointInMainRegion = [m_game.board pointAtVertex:@"A3"];
+
+  // Set up the initial position
+  [m_game play:point1];
+  [m_game pass];
+  [m_game play:point2];
+  [m_game pass];
+  [m_game play:point3];
+  [m_game pass];
+  [m_game play:point4];
+  [m_game pass];
+  [self verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:@"initial setup"];
+
+  // Play the connecting stone
+  [m_game play:point5];
+  STAssertEquals(GoColorBlack, point5.stoneState, nil);
+  NSUInteger expectedNumberOfRegionsWhenMerged = 3;
+  STAssertEquals(expectedNumberOfRegionsWhenMerged, m_game.board.regions.count, nil);
+  GoBoardRegion* mergedRegion = point1.region;
+  GoBoardRegion* mainRegion = pointInMainRegion.region;
+  STAssertTrue(mergedRegion == point2.region, nil);
+  STAssertTrue(mergedRegion == point3.region, nil);
+  STAssertTrue(mergedRegion == point4.region, nil);
+  STAssertTrue(mergedRegion == point5.region, nil);
+  STAssertTrue(mergedRegion != mainRegion, nil);
+  int expectedSizeOfRegionWhenMerged = 5;
+  STAssertEquals(expectedSizeOfRegionWhenMerged, [mergedRegion size], nil);
+
+  // Remove the connecting stone
+  [m_game undo];
+  [self verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:@"after undo"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testUndoCausesRegionToFragment(). Verifies
+/// the correctness of region fragmentation twice: Once before the connecting
+/// move is made, and and once after the connecting move has been undone.
+// -----------------------------------------------------------------------------
+- (void) verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:(NSString*)failureDescription
+{
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* point3 = [m_game.board pointAtVertex:@"B3"];
+  GoPoint* point4 = [m_game.board pointAtVertex:@"C2"];
+  GoPoint* point5 = [m_game.board pointAtVertex:@"B2"];
+  GoPoint* pointInMainRegion = [m_game.board pointAtVertex:@"A3"];
+
+  STAssertEquals(GoColorBlack, point1.stoneState, failureDescription);
+  STAssertEquals(GoColorBlack, point2.stoneState, failureDescription);
+  STAssertEquals(GoColorBlack, point3.stoneState, failureDescription);
+  STAssertEquals(GoColorBlack, point4.stoneState, failureDescription);
+  STAssertEquals(GoColorNone, point5.stoneState, failureDescription);
+  NSUInteger expectedNumberOfRegionsWhenFragmented = 7;
+  STAssertEquals(expectedNumberOfRegionsWhenFragmented, m_game.board.regions.count, failureDescription);
+  GoBoardRegion* point1Region = point1.region;
+  GoBoardRegion* point2Region = point2.region;
+  GoBoardRegion* point3Region = point3.region;
+  GoBoardRegion* point4Region = point4.region;
+  GoBoardRegion* point5Region = point5.region;
+  GoBoardRegion* mainRegion = pointInMainRegion.region;
+  STAssertTrue(point1Region != point2Region, failureDescription);
+  STAssertTrue(point1Region != point3Region, failureDescription);
+  STAssertTrue(point1Region != point4Region, failureDescription);
+  STAssertTrue(point1Region != point5Region, failureDescription);
+  STAssertTrue(point1Region != mainRegion, failureDescription);
+  STAssertTrue(point2Region != point3Region, failureDescription);
+  STAssertTrue(point2Region != point4Region, failureDescription);
+  STAssertTrue(point2Region != point5Region, failureDescription);
+  STAssertTrue(point2Region != mainRegion, failureDescription);
+  STAssertTrue(point3Region != point4Region, failureDescription);
+  STAssertTrue(point3Region != point5Region, failureDescription);
+  STAssertTrue(point3Region != mainRegion, failureDescription);
+  STAssertTrue(point4Region != point5Region, failureDescription);
+  STAssertTrue(point4Region != mainRegion, failureDescription);
+  STAssertTrue(point5Region != mainRegion, failureDescription);
+  int expectedSizeOfRegionsWhenFragmented = 1;
+  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point1Region size], failureDescription);
+  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point2Region size], failureDescription);
+  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point3Region size], failureDescription);
+  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point4Region size], failureDescription);
+  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point5Region size], failureDescription);
 }
 
 @end
