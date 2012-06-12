@@ -22,6 +22,45 @@ Quick Help
 ********************************************************************************
 
 --------------------------------------------------------------------------------
+Quick Start Guide
+--------------------------------------------------------------------------------
+The purpose of this "Quick Start Guide" section is to let you play the game as
+quickly as possible. Not every feature of the app is explained here, and in
+particular you will not find anything about the game rules here. For the latter,
+please consult the "Go rules" section in the main manual.
+
+When you launch the app for the first time, you will see the "Play" view with
+the game board. A new game on a 9x9 board has already been set up for you: You
+play black, the computer plays white. The game has komi 6½ and no handicap.
+
+To place a stone, simply tap somewhere in the middle of the board. Keep your
+fingertip on the screen to move the stone, it will be placed only after you
+release your finger.
+
+If you are on an iPhone, the stone is placed a short distance above your
+fingertip. The reason for this is that on the small screen of the iPhone your
+fingertip partially obscures one or more intersection, making it hard to
+accurately place a stone. Making the stone appear slightly above your fingertip
+tries to work around this problem. If you don't like this behaviour, you can
+turn it off: On the "Settings" tab, select the "Play view" entry and enable the
+switch "Place stone under finger".
+
+To conclude this "Quick start" guide, the following list gives you an idea of
+what each one of the buttons in the toolbar at the top of the screen does. The
+buttons are explained from left to right.
+
+- "Play for me" button: Tap this if you don't know where to play, or are just
+  lazy ☺. The computer will then make a move on your behalf.
+- "Pass" button: Tap this if you want to pass instead of placing a stone.
+- "Undo" button: Tap this if you want to undo the computer's and your last move.
+- "Game info" button: Tap this to call up the "Game info" view where you can see
+  all sorts of interesting things about the game in progress (e.g. the score).
+- "Action" button: Tapping this displays a menu with these additional functions:
+  Switch to scoring mode (to get territory scores), resign the game, save the
+  game, and start a new game.
+
+
+--------------------------------------------------------------------------------
 FAQ
 --------------------------------------------------------------------------------
 
@@ -33,8 +72,8 @@ from your finger is simply a feature intended to help with placing the stone on
 devices with small screens, especially when playing on large boards and your
 fingertip covers more than one intersection.
 
-If you still feel irritated by this cool feature ☺, you can turn it off by
-toggling the switch under "Settings > Play view > Place stone under finger".
+If you feel irritated by this cool feature ☺, you can turn it off by toggling
+the switch under "Settings > Play view > Place stone under finger".
 
 ===============================
 How do I change the board size?
@@ -48,20 +87,27 @@ Go to the first tab (the one that displays the board). Tap the "Action" button
 on the right-hand side of the toolbar at the top of the screen. Select
 "New game" from the menu that appears.
 
+====================================================
+What are the functions of all those toolbar buttons?
+====================================================
+Read the "Quick Start Guide" section for an overview, or the "How to play"
+section for the full story.
+
 
 --------------------------------------------------------------------------------
 Troubleshooting
 --------------------------------------------------------------------------------
 
-========================================================
-I can play a suicide move - shouldn't this be forbidden?
-========================================================
-Yes, this is a known bug. Please email me any information you may have on how to
-reproduce the problem - more clues means I will be quicker in fixing the bug.
+=====================================================
+I can/can't do X - isn't this against the game rules?
+=====================================================
+You may have found a bug. Please email me with a description of the problem and,
+if possible, how to reproduce it.
 
-Meanwhile, to work around the bug you can try to save the game that is currently
-in progress, then reload the game you just saved. Loading a saved game, by the
-way, is a generally useful strategy to bring Little Go back into a sane state
+Meanwhile, if you are stuck in an impossible situation (e.g. you cannot capture
+a stone), you can try to work around the problem by saving the game that is
+currently in progress, then reloading the game you just saved. Loading a saved
+game is a generally useful strategy to bring Little Go back into a sane state
 whenever the app behaves buggy.
 
 
@@ -133,13 +179,16 @@ introduction in the last section in this help (titled "Go rules"). For a more
 thorough approach I recommend visiting one of the many websites dedicated to the
 game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
 
-You can play the game against another human (in "hot-seat" mode), or against the
-computer. The "How to play" section in this help will provide you with a good
-overview of what you can do when you see the game board. The computer player, by
-the way, is powered by the open source software library Fuego
-(http://fuego.sourceforge.net/), which can be a pretty nasty opponent ☺ if you
-tune up its number-crunching power. The "Players & Profiles" help section tells
-you more about how to make Fuego stronger or weaker.
+You can play the game against another human (in "hot-seat" mode on the same
+device), or against the computer. The "How to play" section in this help will
+provide you with a good overview of what you can do when you see the game board.
+For an ultra-short introduction you may also wish to have a look at the "Quick
+Start Guide" section.
+
+The computer player built into Little Go is powered by the open source software
+library Fuego (http://fuego.sourceforge.net/), which is a pretty nasty
+opponent ☺ if you tune up its number-crunching power. The "Players & Profiles"
+help section tells you more about how to make Fuego stronger or weaker.
 
 When a game is over you will usually want to know who has won. Unfortunately,
 Little Go is not very smart about calculating the score - it relies quite
@@ -159,11 +208,15 @@ other, you should study the technical information in the "GTP engine" section.
 How to play
 --------------------------------------------------------------------------------
 
-===================
+How to read this
+================
+This section is written as a "narrative" which should be read from top to bottom
+by first-time users.
+
 Starting a new game
 ===================
-When you launch the app it displays the "Play" view with the game board and
-automatically start a new game using the settings that you gave it the last
+When you launch the app it displays the "Play" view with the game board. It also
+automatically starts a new game, using the settings that you gave it the last
 time you yourself started a new game. If this is the very first time that you
 run Little Go, it will start with a few default settings: A 9x9 board, no
 handicap, a komi of 6½ and a human vs. a computer player.
@@ -177,16 +230,16 @@ Placing a stone
 ===============
 Start placing a stone by pressing your fingertip near the intersection where you
 want the stone to end up. The stone immediately appears a short distance away
-away from your fingertip, but is not yet placed. Drag your finger around the
-screen until you are satisfied with the stone's location, then place the stone
-by taking away your finger from the screen. Voilà.
+from your fingertip, but is not yet placed. Drag your finger around the screen
+until you are satisfied with the stone's location, then place the stone by
+taking away your finger from the screen. Voilà.
 
-If you are irritated because the stone does not appear directly under your
-fingertip, you can change this behaviour in the preferences under
-"Settings > Play view > Place stone under finger". You probably won't see the
-stone anymore because your fingertip covers it, but if you watch the status
-line below the game board you will see the coordinates of the intersection
-where the stone is placed should you release it now.
+If you feel irritated because the stone does not appear directly under your
+fingertip (default behaviour on the iPhone only), you can turn this feature off
+in the preferences under "Settings > Play view > Place stone under finger".
+You probably won't see the stone anymore because your fingertip covers it, but
+if you watch the status line below the game board you will see the coordinates
+of the intersection where the stone would be placed should you release it now.
 
 ===================
 The computer player
