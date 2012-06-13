@@ -107,10 +107,10 @@
 /// @brief Model object that stores attributes used to manage the Archive view.
 @property(nonatomic, retain) ArchiveViewModel* archiveViewModel;
 /// @brief Model object that stores information about the GTP log, viewable on
-/// the Debug view.
+/// the Diagnostics view.
 @property(nonatomic, retain) GtpLogModel* gtpLogModel;
 /// @brief Model object that stores canned GTP commands that can be managed and
-/// submitted on the Debug view.
+/// submitted on the Diagnostics view.
 @property(nonatomic, retain) GtpCommandModel* gtpCommandModel;
 
 @end

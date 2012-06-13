@@ -138,7 +138,7 @@
 /// @brief True if a tapping gesture is currently allowed, false if not (e.g.
 /// if scoring mode is not enabled).
 @property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
-/// @brief GoScore object used while the game info view is displayed scoring
+/// @brief GoScore object used while the game info view is displayed and scoring
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
 @property(nonatomic, retain) GoScore* gameInfoScore;

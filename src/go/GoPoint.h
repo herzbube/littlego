@@ -44,7 +44,7 @@
 /// GoPoint would be legal. This includes checking for suicide moves and Ko
 /// situations.
 // -----------------------------------------------------------------------------
-@interface GoPoint : NSObject
+@interface GoPoint : NSObject <NSCoding>
 {
 }
 

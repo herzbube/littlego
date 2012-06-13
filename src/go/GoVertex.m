@@ -29,6 +29,11 @@
 - (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
@@ -166,6 +171,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.string = [decoder decodeObjectForKey:goVertexStringKey];
+  struct GoVertexNumeric numericVertex;
+  numericVertex.x = [decoder decodeIntForKey:goVertexNumericXKey];
+  numericVertex.y = [decoder decodeIntForKey:goVertexNumericYKey];
+  self.numeric = numericVertex;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this GoVertex object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -197,6 +222,17 @@
   struct GoVertexNumeric otherNumericValue = vertex.numeric;
   return (myNumericValue.x == otherNumericValue.x &&
           myNumericValue.y == otherNumericValue.y);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.string forKey:goVertexStringKey];
+  [encoder encodeInt:self.numeric.x forKey:goVertexNumericXKey];
+  [encoder encodeInt:self.numeric.y forKey:goVertexNumericYKey];
 }
 
 @end

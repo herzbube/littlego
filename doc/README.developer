@@ -589,6 +589,12 @@ with that is properly set up. Information on how to get these tasks done can be
 found in section "App-Related Resources" of [18], in section "Custom Icon and
 Image Creation Guidelines" of [12], and in [21].
 
+Archiving an object graph to a file, and restoring the objects from such an
+archive file, is explained in [22].
+
+The base for all of the following references is the "iOS Developer Library",
+found under this URL: https://developer.apple.com/library/ios/navigation/.
+
 [1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Developer Library > Guides > Threading Programming Guide
 [3]  iOS Developer Library > Guides > Timer Programming Topics
@@ -610,6 +616,7 @@ Image Creation Guidelines" of [12], and in [21].
 [19] iOS Developer Library > Getting Started > A Short Practical Guide to Blocks
 [20] iOS Developer Library > Guides > Blocks Programming Topics
 [21] iOS Developer Library > Reference > Information Property List Key Reference
+[22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
 
 
 Compilation command

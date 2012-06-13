@@ -143,7 +143,7 @@
   self.view.autoresizingMask = autoresizingMask;
   self.frontSideView.autoresizingMask = autoresizingMask;
   self.backSideView.autoresizingMask = autoresizingMask;
-  
+
   // Other configuration
   self.backSideView.editable = false;
 }
@@ -505,7 +505,7 @@
 - (void) scrollToBottomOfBackSideView
 {
   // TODO This UITextView specific code does not work for unknown reasons. It
-  // did work in the past, though, when the Debug view consisted only of a
+  // did work in the past, though, when the Diagnostics view consisted only of a
   // UITextView.
   NSRange endOfTextRange = NSMakeRange([self.backSideView.text length], 0);
   [self.backSideView scrollRangeToVisible:endOfTextRange];

@@ -60,7 +60,7 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
-		CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DebugViewController.m */; };
+		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
 		CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
@@ -308,8 +308,8 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
-		CD0CCB68142FE10900A3F869 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
-		CD0CCB69142FE10900A3F869 /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
+		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
+		CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiagnosticsViewController.m; sourceTree = "<group>"; };
 		CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogModel.h; sourceTree = "<group>"; };
 		CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogModel.m; sourceTree = "<group>"; };
 		CD0CCB78142FF82100A3F869 /* GtpLogItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogItem.h; sourceTree = "<group>"; };
@@ -742,11 +742,11 @@
 			path = go;
 			sourceTree = "<group>";
 		};
-		CD1088551326CBB300E83543 /* debug */ = {
+		CD1088551326CBB300E83543 /* diagnostics */ = {
 			isa = PBXGroup;
 			children = (
-				CD0CCB68142FE10900A3F869 /* DebugViewController.h */,
-				CD0CCB69142FE10900A3F869 /* DebugViewController.m */,
+				CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */,
+				CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */,
 				CD613D98143CD1B70002759E /* GtpCommandModel.h */,
 				CD613D99143CD1B70002759E /* GtpCommandModel.m */,
 				CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */,
@@ -764,7 +764,7 @@
 				CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */,
 				CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */,
 			);
-			path = debug;
+			path = diagnostics;
 			sourceTree = "<group>";
 		};
 		CD1088561326CBB300E83543 /* play */ = {
@@ -1057,7 +1057,7 @@
 			children = (
 				CDD48C80141034F000188B6A /* archive */,
 				CDD48FA61413E00E00188B6A /* command */,
-				CD1088551326CBB300E83543 /* debug */,
+				CD1088551326CBB300E83543 /* diagnostics */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
 				CD00A356148C2C21004E1A0C /* main */,
@@ -1396,7 +1396,7 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
-				CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */,
+				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
