@@ -1,5 +1,20 @@
+Tue June 12 2012   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.8.1
+- Features
+  - New application icon
+  - Added "Quick Start Guide" section to in-game help
+- Bugfixes
+  - A bug in a low-level function, which has been present in all versions of
+    Little Go since its initial App Store release, has finally been found and
+    exterminated. The bug caused "Undo" to not work correctly in certain
+    situations. The error, when it manifested, did not have an immediate visible
+    impact in the GUI, instead it caused all sorts of follow-up problems to
+    occur (capturing stones might not work, suicide moves might be allowed,
+    marking dead stones in scoring mode might not work correctly, and in some
+    extreme cases it might even cause the app to crash).
+
 Tue April 17 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.8
+- release of version 0.8.0
 - features
   - iPad version with support for retina display and all interface orientations
   - iPhone now supports upside-down portrait orientation

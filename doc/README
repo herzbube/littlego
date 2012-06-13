@@ -24,9 +24,15 @@ document.
 
 Changes in this release
 -----------------------
-This is Little Go 0.8.1.
+This is the Little Go bugfix release 0.8.1. There are only two new things:
 
-TODO
+1) A spiffy new app icon, contributed by Daniel Máslo. To see more of Daniel's
+artwork pay a visit to his website http://www.danielmaslo.com/.
+
+2) I am also pleased to announce that an elusive bug, which has plagued
+Little Go since before its first public release on the App Store, has finally
+been found and exterminated. Thanks to Andrew Hersee for reporting the issue,
+complete with instructions how to reproduce the bug.
 
 As usual the ChangeLog document has all the details.
 
