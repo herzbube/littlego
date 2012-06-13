@@ -44,6 +44,7 @@ Priority 1 (important)
   this could be to display the "New game" (or "Load game", see TODO entry under
   priority 2) screen on app startup instead of automatically starting a new
   game. This should be made into a user preference.
+- README.developer has become bloated and needs reorganizing
 
 
 Priority 2 (nice to have)
