@@ -41,6 +41,9 @@ enum LicensesSectionItem
   GPLItem,
   LGPLItem,
   BoostLicenseItem,
+  MBProgressHUDLicenseItem,
+  LumberjackLicenseItem,
+  ZipKitLicenseItem,
   MaxLicensesSectionItem
 };
 
@@ -198,6 +201,21 @@ enum LicensesSectionItem
       return @"Boost License";
       break;
     }
+    case MBProgressHUDLicenseItem:
+    {
+      return @"MBProgressHUD License";
+      break;
+    }
+    case LumberjackLicenseItem:
+    {
+      return @"Cocoa Lumberjack License";
+      break;
+    }
+    case ZipKitLicenseItem:
+    {
+      return @"ZipKit License";
+      break;
+    }
     default:
     {
       assert(0);
@@ -233,6 +251,21 @@ enum LicensesSectionItem
     case BoostLicenseItem:
     {
       return boostLicenseDocumentResource;
+      break;
+    }
+    case MBProgressHUDLicenseItem:
+    {
+      return MBProgressHUDLicenseDocumentResource;
+      break;
+    }
+    case LumberjackLicenseItem:
+    {
+      return lumberjackLicenseDocumentResource;
+      break;
+    }
+    case ZipKitLicenseItem:
+    {
+      return zipkitLicenseDocumentResource;
       break;
     }
     default:

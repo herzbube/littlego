@@ -248,6 +248,9 @@
 		CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
 		CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
+		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
+		CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */; };
+		CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -554,6 +557,9 @@
 		CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
 		CDFA329015990C8400439B4E /* build-zipkit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-zipkit.sh"; sourceTree = "<group>"; };
 		CDFA329A159FA0F400439B4E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Lumberjack-LICENSE.txt.html"; sourceTree = "<group>"; };
+		CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "MBProgressHUD-license.html"; sourceTree = "<group>"; };
+		CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "ZipKit-COPYING.TXT.html"; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -932,7 +938,10 @@
 				CDE1A13714C1CED200317ECA /* COPYING.html */,
 				CDE1A13814C1CED200317ECA /* COPYING.LESSER.html */,
 				CDE1A13914C1CED200317ECA /* Credits.html */,
+				CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */,
+				CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */,
 				CDE1A13A14C1CED200317ECA /* SourceCode.html */,
+				CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */,
 			);
 			path = html;
 			sourceTree = "<group>";
@@ -1302,6 +1311,9 @@
 				CD84BBB9158536E80078C9DE /* spotlighticon-ipad@2x.png in Resources */,
 				CD84BBBA158536E80078C9DE /* spotlighticon-iphone.png in Resources */,
 				CD84BBBB158536E80078C9DE /* spotlighticon-iphone@2x.png in Resources */,
+				CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */,
+				CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */,
+				CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
