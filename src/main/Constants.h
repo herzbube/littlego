@@ -368,6 +368,35 @@ extern const int gtpLogSizeMaximum;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Bug report constants
+// -----------------------------------------------------------------------------
+//@{
+extern const int bugReportFormatVersion;
+/// @brief Name of the folder that is used to collect bug report information.
+///
+/// The folder name should relate to the project name because a .zip archive
+/// file is created whose name is based on the folder name, and the .zip file
+/// name is visible to the user when she sends it as an email attachment.
+extern NSString* bugReportFolderName;
+/// @brief Name of the bug report file that stores the bug report format number.
+extern NSString* bugReportFormatVersionFileName;
+/// @brief Name of the bug report file that stores an archive of in-memory
+/// objects.
+extern NSString* bugReportInMemoryObjectsArchiveFileName;
+/// @brief Name of the bug report file that stores user defaults.
+extern NSString* bugReportUserDefaultsFileName;
+/// @brief Name of the bug report file that stores the current game in .sgf
+/// format.
+extern NSString* bugReportCurrentGameFileName;
+/// @brief Name of the bug report file that stores a screenshot of the views
+/// visible on the Play tab.
+extern NSString* bugReportScreenshotFileName;
+/// @brief Name of the bug report file that stores a depiction of the board as
+/// it is seen by the GTP engine.
+extern NSString* bugReportBoardAsSeenByGtpEngineFileName;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Resource file names
 // -----------------------------------------------------------------------------
 //@{

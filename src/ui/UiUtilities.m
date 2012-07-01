@@ -240,4 +240,20 @@
   CGColorSpaceRelease(colorSpace);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Captures the content currently drawn by @a view into an image, then
+/// returns that image.
+///
+/// The code for this method is based on
+/// http://stackoverflow.com/questions/2200736/how-to-take-a-screenshot-programmatically
+// -----------------------------------------------------------------------------
++ (UIImage*) captureView:(UIView*)view
+{
+  UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, [UIScreen mainScreen].scale);
+  [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+  UIImage* imageCapture = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return imageCapture;
+}
+
 @end

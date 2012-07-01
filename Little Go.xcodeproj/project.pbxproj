@@ -251,6 +251,8 @@
 		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
 		CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */; };
 		CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */; };
+		CDFA32A515A0A3C500439B4E /* CreateBugReportPackageCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A415A0A3C500439B4E /* CreateBugReportPackageCommand.m */; };
+		CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -560,6 +562,10 @@
 		CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Lumberjack-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "MBProgressHUD-license.html"; sourceTree = "<group>"; };
 		CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "ZipKit-COPYING.TXT.html"; sourceTree = "<group>"; };
+		CDFA32A315A0A3C500439B4E /* CreateBugReportPackageCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateBugReportPackageCommand.h; sourceTree = "<group>"; };
+		CDFA32A415A0A3C500439B4E /* CreateBugReportPackageCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateBugReportPackageCommand.m; sourceTree = "<group>"; };
+		CDFA32A615A0A3E400439B4E /* PathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathUtilities.h; sourceTree = "<group>"; };
+		CDFA32A715A0A3E400439B4E /* PathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathUtilities.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -917,6 +923,7 @@
 			isa = PBXGroup;
 			children = (
 				CD05B115142A606400214BBE /* backup */,
+				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
 				CD05A8C91422803B00214BBE /* move */,
 				CDD48FA71413E00E00188B6A /* Command.h */,
@@ -1037,6 +1044,8 @@
 				CDDD52691485B05C0027476B /* DocumentGenerator.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
+				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
+				CDFA32A715A0A3E400439B4E /* PathUtilities.m */,
 				CDE30139135CA7D5005235F2 /* UIColorAdditions.h */,
 				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
 				CDEF3C75140A69A2002D9C1C /* UIDebugging.h */,
@@ -1179,6 +1188,15 @@
 				CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */,
 			);
 			path = layer;
+			sourceTree = "<group>";
+		};
+		CDFA32A215A0A3C400439B4E /* diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				CDFA32A315A0A3C500439B4E /* CreateBugReportPackageCommand.h */,
+				CDFA32A415A0A3C500439B4E /* CreateBugReportPackageCommand.m */,
+			);
+			path = diagnostics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1460,6 +1478,8 @@
 				CD0DFED814EB2163000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD0DFEDC14F01C21000FE1B5 /* DebugPlayViewController.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
+				CDFA32A515A0A3C500439B4E /* CreateBugReportPackageCommand.m in Sources */,
+				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

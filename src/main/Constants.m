@@ -71,6 +71,16 @@ NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 
+// Bug reports constants
+const int bugReportFormatVersion = 1;
+NSString* bugReportFolderName = @"littlego-bugreport";
+NSString* bugReportFormatVersionFileName = @"format-version.txt";
+NSString* bugReportInMemoryObjectsArchiveFileName = @ "";
+NSString* bugReportUserDefaultsFileName = @ "userdefaults.plist";
+NSString* bugReportCurrentGameFileName = @ "currentgame.sgf";
+NSString* bugReportScreenshotFileName = @ "screenshot.png";
+NSString* bugReportBoardAsSeenByGtpEngineFileName = @ "showboard.txt";
+
 // Resource file names
 NSString* openingBookResource = @"book.dat";
 NSString* aboutDocumentResource = @"About.html";

@@ -22,6 +22,7 @@
 #import "GtpCommandViewController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
+#import "../command/diagnostics/CreateBugReportPackageCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -30,6 +31,7 @@
 enum DiagnosticsTableViewSection
 {
   GtpSection,
+  BugReportSection,
 //  ApplicationLogSection,
   MaxSection
 };
@@ -43,6 +45,15 @@ enum GtpSectionItem
   GtpCommandsItem,
   GtpSettingsItem,
   MaxGtpSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the BugReportSection.
+// -----------------------------------------------------------------------------
+enum BugReportSectionItem
+{
+  SendBugReportItem,
+  MaxBugReportSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -76,6 +87,7 @@ enum ApplicationLogSectionItem
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name UITableViewDelegate protocol
@@ -87,6 +99,7 @@ enum ApplicationLogSectionItem
 - (void) viewGtpLog;
 - (void) viewCannedGtpCommands;
 - (void) viewGtpSettings;
+- (void) sendBugReport;
 //@}
 /// @name Helpers
 //@{
@@ -169,6 +182,8 @@ enum ApplicationLogSectionItem
   {
     case GtpSection:
       return MaxGtpSectionItem;
+    case BugReportSection:
+      return MaxBugReportSectionItem;
 //    case ApplicationLogSection:
 //      return MaxApplicationLogSectionItem;
     default:
@@ -185,8 +200,10 @@ enum ApplicationLogSectionItem
 {
   switch (section)
   {
-//    case GtpSection:
-//      return @"GTP (Go Text Protocol)";
+    case GtpSection:
+      return @"GTP (Go Text Protocol)";
+    case BugReportSection:
+      return @"Bug Report";
 //    case ApplicationLogSection:
 //      return @"Application Log";
     default:
@@ -198,14 +215,27 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (GtpSection == section)
+    return @"Observe the flow of communication between Little Go (GTP client) and Fuego (GTP engine), or inject your own GTP commands (dangerous!).";
+  else if (BugReportSection == section)
+    return @"Creates an email with an attached bug report package. You can edit the email before you send it.";
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   switch (indexPath.section)
   {
     case GtpSection:
     {
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       switch (indexPath.row)
       {
         case GtpLogItem:
@@ -216,6 +246,20 @@ enum ApplicationLogSectionItem
           break;
         case GtpSettingsItem:
           cell.textLabel.text = @"Settings";
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
+    case BugReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case SendBugReportItem:
+          cell.textLabel.text = @"Send a bug report";
+          cell.accessoryType = UITableViewCellAccessoryNone;
           break;
         default:
           assert(0);
@@ -274,6 +318,19 @@ enum ApplicationLogSectionItem
       }
       break;
     }
+    case BugReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case SendBugReportItem:
+          [self sendBugReport];
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
 //    case ApplicationLogSection:
 //      break;
     default:
@@ -309,6 +366,17 @@ enum ApplicationLogSectionItem
 {
   GtpLogSettingsController* controller = [GtpLogSettingsController controller];
   [self.navigationController pushViewController:controller animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Collects bug report information in a single .zip archive, then opens
+/// an email view with a template message and the archive file attached. The
+/// user can further edit the email message before sending it.
+// -----------------------------------------------------------------------------
+- (void) sendBugReport
+{
+  CreateBugReportPackageCommand* command = [[CreateBugReportPackageCommand alloc] init];
+  [command submit];
 }
 
 @end
