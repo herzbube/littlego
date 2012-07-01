@@ -158,9 +158,16 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - IPHONEOS_DEPLOYMENT_TARGET = 4.3
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
-- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
-  Note: If a future version of Fuego requires additional Boost libraries, they
-  must be added here.
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack -ltouchzipkit -ObjC
+  - Note 1: The option "-ObjC" is required by ZipKit. Without this option the
+    app crashes when a ZKFileArchive object is created due to an unrecognized
+    selector being sent to the object. For understanding the issue, read this
+    technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html
+  - Note 2: If a future version of Fuego requires additional Boost libraries,
+    they must be added here.
+- For the target "Little Go", libz.dylib has been added to the "Build Phases"
+  section "Link Binary with Libraries". This is required to satisfy the
+  dependencies of ZipKit.
 - GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
@@ -732,6 +739,11 @@ Installation
 
 CocoaLumberjack build/installation issues
 -----------------------------------------
+No issues, build works out of the box.
+
+
+ZipKit build/installation issues
+--------------------------------
 No issues, build works out of the box.
 
 
