@@ -497,7 +497,7 @@ extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
 extern NSString* goGameNextMoveIsComputerGeneratedKey;
 // GoPlayer keys
-extern NSString* goPlayerPlayerKey;
+extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
 // GoMove keys
 extern NSString* goMoveTypeKey;

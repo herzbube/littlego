@@ -189,7 +189,7 @@ NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameNextMoveIsComputerGeneratedKey = @"NextMoveIsComputerGenerated";
 // GoPlayer keys
-NSString* goPlayerPlayerKey = @"Player";
+NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
 // GoMove keys
 NSString* goMoveTypeKey = @"Type";
