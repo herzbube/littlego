@@ -468,6 +468,39 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the root controller for the tab identified by @a tabID.
+/// Returns nil if @a tabID is not recognized.
+///
+/// This method returns the correct controller even if the tab is located in
+/// the "More" navigation controller.
+// -----------------------------------------------------------------------------
+- (UIViewController*) tabController:(enum TabType)tabID
+{
+  for (UIViewController* controller in tabBarController.viewControllers)
+  {
+    if (controller.tabBarItem.tag == tabID)
+      return controller;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the main view for the tab identified by @a tabID. Returns
+/// nil if @a tabID is not recognized.
+///
+/// This method returns the correct view even if the tab is located in the
+/// "More" navigation controller.
+// -----------------------------------------------------------------------------
+- (UIView*) tabView:(enum TabType)tabID
+{
+  UIViewController* tabController = [self tabController:tabID];
+  if (tabController)
+    return tabController.view;
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Activates the tab identified by @a tabID, making it visible to the
 /// user.
 ///
@@ -476,14 +509,9 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) activateTab:(enum TabType)tabID
 {
-  for (UIViewController* controller in tabBarController.viewControllers)
-  {
-    if (controller.tabBarItem.tag == tabID)
-    {
-      tabBarController.selectedViewController = controller;
-      break;
-    }
-  }
+  UIViewController* tabController = [self tabController:tabID];
+  if (tabController)
+    tabBarController.selectedViewController = tabController;
 }
 
 // -----------------------------------------------------------------------------

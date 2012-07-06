@@ -67,6 +67,8 @@
 - (void) setupGUI;
 - (void) setupFuego;
 - (void) writeUserDefaults;
+- (UIViewController*) tabController:(enum TabType)tabID;
+- (UIView*) tabView:(enum TabType)tabID;
 - (void) activateTab:(enum TabType)tabID;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
 - (NSString*) resourceNameForTabType:(enum TabType)tabType;
