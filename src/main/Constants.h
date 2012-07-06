@@ -171,7 +171,10 @@ enum AlertViewType
   AlertViewTypeLoadGameFailed,
   AlertViewTypeUndoMoveFailed,
   AlertViewTypeAddToCannedCommands,
-  AlertViewTypeMemoryWarning
+  AlertViewTypeMemoryWarning,
+  AlertViewTypeCannotSendBugReport,
+  AlertViewTypeDiagnosticsInformationFileGenerated,
+  AlertViewTypeDiagnosticsInformationFileNotGenerated
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -372,12 +375,16 @@ extern const int gtpLogSizeMaximum;
 // -----------------------------------------------------------------------------
 //@{
 extern const int bugReportFormatVersion;
-/// @brief Name of the folder that is used to collect bug report information.
+/// @brief Name of the diagnostics information file that is attached to the
+/// bug report email.
 ///
-/// The folder name should relate to the project name because a .zip archive
-/// file is created whose name is based on the folder name, and the .zip file
-/// name is visible to the user when she sends it as an email attachment.
-extern NSString* bugReportFolderName;
+/// The file name should relate to the project name because the file is user
+/// visible, either as an email attachment or when the user transfers it via
+/// iTunes file sharing.
+extern NSString* bugReportDiagnosticsInformationFileName;
+/// @brief Mime-type used for attaching the diagnostics information file to the
+/// bug report email.
+extern NSString* bugReportDiagnosticsInformationFileMimeType;
 /// @brief Name of the bug report file that stores the bug report format number.
 extern NSString* bugReportFormatVersionFileName;
 /// @brief Name of the bug report file that stores an archive of in-memory
@@ -394,6 +401,10 @@ extern NSString* bugReportScreenshotFileName;
 /// @brief Name of the bug report file that stores a depiction of the board as
 /// it is seen by the GTP engine.
 extern NSString* bugReportBoardAsSeenByGtpEngineFileName;
+/// @brief Email address of the bug report email recipient.
+extern NSString* bugReportEmailRecipient;
+/// @brief Subject for the bug report email.
+extern NSString* bugReportEmailSubject;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -421,6 +432,7 @@ extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
+extern NSString* bugReportMessageTemplateResource;
 //@}
 
 // -----------------------------------------------------------------------------

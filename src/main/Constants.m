@@ -73,13 +73,16 @@ const int gtpLogSizeMaximum = 1000;
 
 // Bug reports constants
 const int bugReportFormatVersion = 1;
-NSString* bugReportFolderName = @"littlego-bugreport";
+NSString* bugReportDiagnosticsInformationFileName = @"littlego-bugreport.zip";
+NSString* bugReportDiagnosticsInformationFileMimeType = @"application/zip";
 NSString* bugReportFormatVersionFileName = @"format-version.txt";
 NSString* bugReportInMemoryObjectsArchiveFileName = @ "in-memory-objects.plist";
 NSString* bugReportUserDefaultsFileName = @ "userdefaults.plist";
 NSString* bugReportCurrentGameFileName = @ "currentgame.sgf";
 NSString* bugReportScreenshotFileName = @ "screenshot.png";
 NSString* bugReportBoardAsSeenByGtpEngineFileName = @ "showboard.txt";
+NSString* bugReportEmailRecipient = @"herzbube@herzbube.ch";
+NSString* bugReportEmailSubject = @"Little Go Bug Report";
 
 // Resource file names
 NSString* openingBookResource = @"book.dat";
@@ -103,6 +106,7 @@ NSString* undoButtonIconResource = @"213-reply.png";
 NSString* pauseButtonIconResource = @"48-pause.png";
 NSString* continueButtonIconResource = @"49-play.png";
 NSString* gameInfoButtonIconResource = @"tabular.png";
+NSString* bugReportMessageTemplateResource = @"bug-report-message-template.txt";
 
 // Constants (mostly keys) for user defaults
 // Device-specific suffixes

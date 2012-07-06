@@ -20,9 +20,9 @@
 #import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
 #import "GtpCommandViewController.h"
+#import "SendBugReportController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
-#import "../command/diagnostics/CreateBugReportPackageCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -53,6 +53,7 @@ enum GtpSectionItem
 enum BugReportSectionItem
 {
   SendBugReportItem,
+  GenerateDiagnosticsInformationFileItem,
   MaxBugReportSectionItem
 };
 
@@ -100,6 +101,7 @@ enum ApplicationLogSectionItem
 - (void) viewCannedGtpCommands;
 - (void) viewGtpSettings;
 - (void) sendBugReport;
+- (void) generateDiagnosticsInformationFile;
 //@}
 /// @name Helpers
 //@{
@@ -220,7 +222,7 @@ enum ApplicationLogSectionItem
   if (GtpSection == section)
     return @"Observe the flow of communication between Little Go (GTP client) and Fuego (GTP engine), or inject your own GTP commands (dangerous!).";
   else if (BugReportSection == section)
-    return @"Creates an email with an attached bug report package. You can edit the email before you send it.";
+    return @"Sending a bug report creates an email with an attached diagnostics information file. You can edit the email before you send it. If you want to send the report from your computer, generate just the file and transfer it to your computer via iTunes file sharing.";
   else
     return nil;
 }
@@ -259,6 +261,10 @@ enum ApplicationLogSectionItem
       {
         case SendBugReportItem:
           cell.textLabel.text = @"Send a bug report";
+          cell.accessoryType = UITableViewCellAccessoryNone;
+          break;
+        case GenerateDiagnosticsInformationFileItem:
+          cell.textLabel.text = @"Generate diagnostics information file";
           cell.accessoryType = UITableViewCellAccessoryNone;
           break;
         default:
@@ -325,6 +331,9 @@ enum ApplicationLogSectionItem
         case SendBugReportItem:
           [self sendBugReport];
           break;
+        case GenerateDiagnosticsInformationFileItem:
+          [self generateDiagnosticsInformationFile];
+          break;
         default:
           assert(0);
           break;
@@ -369,14 +378,24 @@ enum ApplicationLogSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Collects bug report information in a single .zip archive, then opens
-/// an email view with a template message and the archive file attached. The
-/// user can further edit the email message before sending it.
+/// @brief Triggers the workflow that allows the user to send a bug report email
+/// directly from the device.
 // -----------------------------------------------------------------------------
 - (void) sendBugReport
 {
-  CreateBugReportPackageCommand* command = [[CreateBugReportPackageCommand alloc] init];
-  [command submit];
+  SendBugReportController* controller = [SendBugReportController controller];
+  [controller sendBugReport:self];
+  [controller retain];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the file with diagnostics information for transfer with
+/// iTunes file sharing.
+// -----------------------------------------------------------------------------
+- (void) generateDiagnosticsInformationFile
+{
+  SendBugReportController* controller = [SendBugReportController controller];
+  [controller generateDiagnosticsInformationFile];
 }
 
 @end

@@ -37,6 +37,7 @@
 /// @name Private helpers
 //@{
 - (ArchiveGame*) gameWithFileName:(NSString*)fileName;
+- (bool) shouldIgnoreFileName:(NSString*)fileName;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -172,7 +173,7 @@
   NSMutableArray* localGameList = [NSMutableArray arrayWithCapacity:fileList.count];
   for (NSString* fileName in fileList)
   {
-    if ([fileName isEqualToString:@"Logs"])  // ignore logging framework folder
+    if ([self shouldIgnoreFileName:fileName])
       continue;
     NSString* filePath = [self.archiveFolder stringByAppendingPathComponent:fileName];
     NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
@@ -192,6 +193,19 @@
 
   // Replace entire array to trigger KVO
   self.gameList = localGameList;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a fileName is not an archived game and should be
+/// ignored by this model.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreFileName:(NSString*)fileName
+{
+  if ([fileName isEqualToString:@"Logs"])  // ignore logging framework folder
+    return true;
+  if ([fileName isEqualToString:bugReportDiagnosticsInformationFileName])
+    return true;
+  return false;
 }
 
 @end
