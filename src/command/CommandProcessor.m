@@ -81,16 +81,31 @@ static CommandProcessor* sharedProcessor = nil;
 /// Releases @a command after execution is complete with the intent of
 /// disposing of the command object. A client that wants to continue using the
 /// object (not recommended) must retain it.
+///
+/// Exceptions raised while executing the command are passed back to the caller.
 // -----------------------------------------------------------------------------
 - (bool) submitCommand:(id<Command>)command
 {
   DDLogInfo(@"Executing %@", command);
-  bool result = [command doIt];
-  if (result)
-    DDLogVerbose(@"Command execution succeeded (%@)", command);
-  else
-    DDLogError(@"Command execution failed (%@)", command);
-  [command release];
+  bool result;
+  @try
+  {
+    result = [command doIt];
+  }
+  @catch (NSException* exception)
+  {
+    result = false;
+    DDLogError(@"Exception raised while executing command, exception reason: %@", exception);
+    @throw;
+  }
+  @finally
+  {
+    if (result)
+      DDLogVerbose(@"Command execution succeeded (%@)", command);
+    else
+      DDLogError(@"Command execution failed (%@)", command);
+    [command release];
+  }
   return result;
 }
 
