@@ -264,7 +264,7 @@ enum ApplicationLogSectionItem
           cell.accessoryType = UITableViewCellAccessoryNone;
           break;
         case GenerateDiagnosticsInformationFileItem:
-          cell.textLabel.text = @"Generate diagnostics information file";
+          cell.textLabel.text = @"Generate diagnostics information";
           cell.accessoryType = UITableViewCellAccessoryNone;
           break;
         default:

@@ -118,8 +118,8 @@
 {
   if (! [self generateDiagnosticsInformationFileInternal])
     return;
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"File generated"
-                                                  message:[NSString stringWithFormat:@"The file has been generated and is ready for transfer to your computer via iTunes file sharing. The file name is '%@'.", bugReportDiagnosticsInformationFileName]
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Information generated"
+                                                  message:[NSString stringWithFormat:@"Diagnostics information has been generated and is ready for transfer to your computer via iTunes file sharing. In iTunes look for the file named '%@'.", bugReportDiagnosticsInformationFileName]
                                                  delegate:nil
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
@@ -164,7 +164,7 @@
   if (! success)
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
-                                                    message:@"An error occurred while generating the diagnostics information file."
+                                                    message:@"An error occurred while generating diagnostics information."
                                                    delegate:nil
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Very funny!", nil];
