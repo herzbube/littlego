@@ -870,6 +870,9 @@ What is inside the diagnostics information file?
 ================================================
 
 The file is a .zip archive that contains the following pieces of information:
+- A version number that identifies the format of the information inside the
+  attachment
+- iOS version and device type (only whether it is an iPhone or an iPad)
 - A snapshot of some of Little Go's in-memory objects that make it possible to
   reproduce the state of Little Go exactly the way it was at the time the
   diagnostics information file was generated
@@ -879,8 +882,6 @@ The file is a .zip archive that contains the following pieces of information:
 - A screenshot of the "Play" tab (excluding the status bar, i.e. the name of
   your carrier is not in the screenshot)
 - The output of the "showboard" GTP command
-- A version number that identifies the format of the information inside the
-  attachment
 
 =============================================================
 What is <em>not</em> inside the diagnostics information file?

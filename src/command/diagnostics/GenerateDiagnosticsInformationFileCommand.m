@@ -43,6 +43,7 @@
 //@}
 /// @name Collecting pieces of information
 //@{
+- (void) saveBugReportInfo;
 - (void) saveInMemoryObjects;
 - (void) saveUserDefaults;
 - (void) saveCurrentGameAsSgf;
@@ -54,7 +55,6 @@
 - (void) setup;
 - (void) cleanup;
 - (void) zipDiagnosticsInformationFolder;
-- (void) writeBugReportFormatVersion:(int)version toFile:(NSString*)filePath;
 - (NSString*) boardAsSeenByGtpEngine;
 - (void) writeBoardAsSeenByGtpEngine:(NSString*)boardAsSeenByGtpEngine toFile:(NSString*)filePath;
 - (bool) shouldIgnoreUserDefaultsKey:(NSString*)key;
@@ -132,6 +132,7 @@
   {
     [self setup];
 
+    [self saveBugReportInfo];
     [self saveInMemoryObjects];
     [self saveUserDefaults];
     [self saveCurrentGameAsSgf];
@@ -152,6 +153,32 @@
   }
 
   return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Saves bug report information such as the format version of the
+/// diagnostics information and environmental information (iOS version, device
+/// type) into a .plist file.
+// -----------------------------------------------------------------------------
+- (void) saveBugReportInfo
+{
+  UIDevice* device = [UIDevice currentDevice];
+  NSMutableDictionary* bugReportInfoDictionary = [NSMutableDictionary dictionary];
+  [bugReportInfoDictionary setValue:[NSString stringWithFormat:@"%d", bugReportFormatVersion] forKey:@"BugReportFormatVersion"];
+  [bugReportInfoDictionary setValue:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"LittleGoVersion"];
+  [bugReportInfoDictionary setValue:[device systemName] forKey:@"SystemName"];
+  [bugReportInfoDictionary setValue:[device systemVersion] forKey:@"SystemVersion"];
+  [bugReportInfoDictionary setValue:[device model] forKey:@"DeviceModel"];
+
+  NSString* bugReportInfoFilePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportInfoFileName];
+  BOOL success = [bugReportInfoDictionary writeToFile:bugReportInfoFilePath atomically:YES];
+  if (! success)
+  {
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:[NSString stringWithFormat:@"Failed to write bug report info to file %@", bugReportInfoFilePath]
+                                                   userInfo:nil];
+    @throw exception;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -322,8 +349,6 @@
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFilePath];
   [PathUtilities createFolder:self.diagnosticsInformationFolderPath removeIfExists:true];
-  [self writeBugReportFormatVersion:bugReportFormatVersion
-                             toFile:[self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportFormatVersionFileName]];
 }
 
 // -----------------------------------------------------------------------------
@@ -338,26 +363,6 @@
   DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Cleaning up");
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFolderPath];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Writes the diagnostics information format version @a version to the
-/// file located at @a filePath.
-// -----------------------------------------------------------------------------
-- (void) writeBugReportFormatVersion:(int)version toFile:(NSString*)filePath
-{
-  NSString* versionString = [NSString stringWithFormat:@"%d", version];
-  BOOL success = [versionString writeToFile:filePath
-                                 atomically:YES
-                                   encoding:NSUTF8StringEncoding
-                                      error:nil];
-  if (! success)
-  {
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write diagnostics information format version %@ to file %@", version, filePath]
-                                                   userInfo:nil];
-    @throw exception;
-  }
 }
 
 // -----------------------------------------------------------------------------

@@ -395,8 +395,9 @@ extern NSString* bugReportDiagnosticsInformationFileName;
 /// @brief Mime-type used for attaching the diagnostics information file to the
 /// bug report email.
 extern NSString* bugReportDiagnosticsInformationFileMimeType;
-/// @brief Name of the bug report file that stores the bug report format number.
-extern NSString* bugReportFormatVersionFileName;
+/// @brief Name of the bug report information file that stores the bug report
+/// format number, the iOS version and the device type.
+extern NSString* bugReportInfoFileName;
 /// @brief Name of the bug report file that stores an archive of in-memory
 /// objects.
 extern NSString* bugReportInMemoryObjectsArchiveFileName;

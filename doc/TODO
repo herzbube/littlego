@@ -220,6 +220,9 @@ Priority 3 (not important)
   are exposed to the user to be changed at runtime.
 - Find out why PlayViewMetrics (in drawLineLayer:withContext:horizontal:positionedAtPoint:())
   needs to translate vertical grid lines by one point (the "mystery point")
+- Add GtpLogItem to objects being serialized when a bug report is sent. This has
+  not been implemented yet because this potentially increases the diagnostics
+  information file a lot (depending on the size of the GTP log)
 
 
 Future improvements to the 3rdparty build process
