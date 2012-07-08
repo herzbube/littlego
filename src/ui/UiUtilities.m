@@ -246,6 +246,8 @@
 ///
 /// The code for this method is based on
 /// http://stackoverflow.com/questions/2200736/how-to-take-a-screenshot-programmatically
+///
+/// Keyword for search: screenshot
 // -----------------------------------------------------------------------------
 + (UIImage*) captureView:(UIView*)view
 {

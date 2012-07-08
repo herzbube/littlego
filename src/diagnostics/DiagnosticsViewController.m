@@ -21,6 +21,10 @@
 #import "GtpLogSettingsController.h"
 #import "GtpCommandViewController.h"
 #import "SendBugReportController.h"
+#import "../go/GoGame.h"
+#import "../go/GoScore.h"
+#import "../main/ApplicationDelegate.h"
+#import "../play/ScoringModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -95,6 +99,12 @@ enum ApplicationLogSectionItem
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
+/// @name Notification responders
+//@{
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+- (void) goScoreCalculationStarts:(NSNotification*)notification;
+- (void) goScoreCalculationEnds:(NSNotification*)notification;
+//@}
 /// @name Action methods
 //@{
 - (void) viewGtpLog;
@@ -105,11 +115,19 @@ enum ApplicationLogSectionItem
 //@}
 /// @name Helpers
 //@{
+- (void) updateBugReportSection;
+- (bool) shouldDisableBugReportSection;
+//@}
+/// @name Private properties
+//@{
+@property(nonatomic, assign) bool bugReportSectionIsDisabled;
 //@}
 @end
 
 
 @implementation DiagnosticsViewController
+
+@synthesize bugReportSectionIsDisabled;
 
 
 // -----------------------------------------------------------------------------
@@ -143,6 +161,14 @@ enum ApplicationLogSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+
+  self.bugReportSectionIsDisabled = [self shouldDisableBugReportSection];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -155,6 +181,7 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super viewDidUnload];
 }
 
@@ -185,9 +212,10 @@ enum ApplicationLogSectionItem
     case GtpSection:
       return MaxGtpSectionItem;
     case BugReportSection:
-      return MaxBugReportSectionItem;
-//    case ApplicationLogSection:
-//      return MaxApplicationLogSectionItem;
+      if (self.bugReportSectionIsDisabled)
+        return 1;
+      else
+        return MaxBugReportSectionItem;
     default:
       assert(0);
       break;
@@ -206,8 +234,6 @@ enum ApplicationLogSectionItem
       return @"GTP (Go Text Protocol)";
     case BugReportSection:
       return @"Bug Report";
-//    case ApplicationLogSection:
-//      return @"Application Log";
     default:
       break;
   }
@@ -222,7 +248,12 @@ enum ApplicationLogSectionItem
   if (GtpSection == section)
     return @"Observe the flow of communication between Little Go (GTP client) and Fuego (GTP engine), or inject your own GTP commands (dangerous!).";
   else if (BugReportSection == section)
-    return @"Sending a bug report creates an email with an attached diagnostics information file. You can edit the email before you send it. If you want to send the report from your computer, generate just the file and transfer it to your computer via iTunes file sharing.";
+  {
+    if (self.bugReportSectionIsDisabled)
+      return @"The options for reporting a bug are temporarily unavailable because the application is currently busy doing something else (e.g. computer player is thinking). If this is a computer vs. computer game, you must pause the game to be able to send a bug report.";
+    else
+      return @"Sending a bug report creates an email with an attached diagnostics information file. You can edit the email before you send it. If you want to send the report from your computer, generate just the file and transfer it to your computer via iTunes file sharing.";
+  }
   else
     return nil;
 }
@@ -232,11 +263,12 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+  UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
     case GtpSection:
     {
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       switch (indexPath.row)
       {
@@ -257,38 +289,32 @@ enum ApplicationLogSectionItem
     }
     case BugReportSection:
     {
-      switch (indexPath.row)
+      if (self.bugReportSectionIsDisabled)
       {
-        case SendBugReportItem:
-          cell.textLabel.text = @"Send a bug report";
-          cell.accessoryType = UITableViewCellAccessoryNone;
-          break;
-        case GenerateDiagnosticsInformationFileItem:
-          cell.textLabel.text = @"Generate diagnostics information";
-          cell.accessoryType = UITableViewCellAccessoryNone;
-          break;
-        default:
-          assert(0);
-          break;
+        cell = [TableViewCellFactory cellWithType:ActivityIndicatorCellType tableView:tableView];
+        cell.textLabel.text = @"Temporarily unavailable...";
+        UIActivityIndicatorView* accessoryView = (UIActivityIndicatorView*)cell.accessoryView;
+        [accessoryView startAnimating];
+      }
+      else
+      {
+        cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        switch (indexPath.row)
+        {
+          case SendBugReportItem:
+            cell.textLabel.text = @"Send a bug report";
+            break;
+          case GenerateDiagnosticsInformationFileItem:
+            cell.textLabel.text = @"Generate diagnostics information";
+            break;
+          default:
+            assert(0);
+            break;
+        }
       }
       break;
     }
-//    case ApplicationLogSection:
-//    {
-//      switch (indexPath.row)
-//      {
-//        case ApplicationLogItem:
-//          cell.textLabel.text = @"View application log";
-//          break;
-//        case ApplicationLogSettingsItem:
-//          cell.textLabel.text = @"Settings";
-//          break;
-//        default:
-//          assert(0);
-//          break;
-//      }
-//      break;
-//    }
     default:
       assert(0);
       break;
@@ -326,22 +352,27 @@ enum ApplicationLogSectionItem
     }
     case BugReportSection:
     {
-      switch (indexPath.row)
+      if (self.bugReportSectionIsDisabled)
       {
-        case SendBugReportItem:
-          [self sendBugReport];
-          break;
-        case GenerateDiagnosticsInformationFileItem:
-          [self generateDiagnosticsInformationFile];
-          break;
-        default:
-          assert(0);
-          break;
+        break;  // ignore user interaction
+      }
+      else
+      {
+        switch (indexPath.row)
+        {
+          case SendBugReportItem:
+            [self sendBugReport];
+            break;
+          case GenerateDiagnosticsInformationFileItem:
+            [self generateDiagnosticsInformationFile];
+            break;
+          default:
+            assert(0);
+            break;
+        }
       }
       break;
     }
-//    case ApplicationLogSection:
-//      break;
     default:
       return;
   }
@@ -396,6 +427,97 @@ enum ApplicationLogSectionItem
 {
   SendBugReportController* controller = [SendBugReportController controller];
   [controller generateDiagnosticsInformationFile];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts and
+/// #computerPlayerThinkingStops notifications.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  [self updateBugReportSection];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  [self updateBugReportSection];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
+{
+  [self updateBugReportSection];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables or disables the features in the "Send bug report" section,
+/// depending on the current state of the application.
+///
+/// See shouldDisableBugReportSection() for details.
+// -----------------------------------------------------------------------------
+- (void) updateBugReportSection
+{
+  bool shouldDisableBugReportSection = [self shouldDisableBugReportSection];
+  if (shouldDisableBugReportSection == self.bugReportSectionIsDisabled)
+    return;
+  self.bugReportSectionIsDisabled = shouldDisableBugReportSection;
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BugReportSection];
+  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the features in the "Send bug report" section should
+/// be disabled.
+///
+/// The features in question need to be disabled during long-running operations
+/// taking place elsewhere in the application. In-memory objects may be in an
+/// inconsistent state while these operations are in progress, therefore it is
+/// not possible to generate the diagnostics information file.
+// -----------------------------------------------------------------------------
+- (bool) shouldDisableBugReportSection
+{
+  GoGame* game = [GoGame sharedGame];
+  switch (game.type)
+  {
+    case GoGameTypeComputerVsComputer:
+    {
+      // In computer vs. computer games the game must be paused to enable the
+      // bug report section. If we were to react only to "isComputerThinking",
+      // we would constantly enable/disable the section.
+      switch (game.state)
+      {
+        case GoGameStateGameHasStarted:
+          return true;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+    {
+      if (game.isComputerThinking)
+        return true;
+      // Prevent flickering between turns, after the computer has generated a
+      // move in response to "play for me", but before it starts thinking for
+      // itself
+      else if ([game isComputerPlayersTurn])
+        return true;
+      else
+        break;
+    }
+  }
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  if (scoringModel.scoringMode)
+  {
+    if (scoringModel.score.scoringInProgress)
+      return true;
+  }
+  return false;
 }
 
 @end

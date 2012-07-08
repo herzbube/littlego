@@ -28,6 +28,12 @@ extern const float gHalfPixel;
 /// cross-hair point be displayed when placing stones on the Play view. The unit
 /// used by this constant is "distances between two adjacent intersections".
 extern const int crossHairPointDistanceFromFingerOnSmallestBoard;
+/// @brief An alpha value that can be used to make a view (e.g. the label of a
+/// table view cell) appear disabled.
+///
+/// This is based on
+/// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
+extern const float gDisabledViewAlpha;
 //@}
 
 // -----------------------------------------------------------------------------
