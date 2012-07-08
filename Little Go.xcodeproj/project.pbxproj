@@ -87,6 +87,14 @@
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48AD9815A7281C004A7096 /* MessageUI.framework */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
+		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
+		CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
+		CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
+		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
+		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
+		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -365,6 +373,12 @@
 		CD3D5147147436C70098D8E0 /* makedist.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = makedist.sh; sourceTree = "<group>"; };
 		CD48AD9815A7281C004A7096 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
+		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationState.h; sourceTree = "<group>"; };
+		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationState.m; sourceTree = "<group>"; };
+		CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportUserDefaultsCommand.h; sourceTree = "<group>"; };
+		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
+		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
+		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -608,6 +622,7 @@
 				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
+				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -771,6 +786,8 @@
 		CD1088551326CBB300E83543 /* diagnostics */ = {
 			isa = PBXGroup;
 			children = (
+				CD48ADA315A891B7004A7096 /* BugReportUtilities.h */,
+				CD48ADA415A891B8004A7096 /* BugReportUtilities.m */,
 				CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */,
 				CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */,
 				CD613D98143CD1B70002759E /* GtpCommandModel.h */,
@@ -1215,6 +1232,10 @@
 			children = (
 				CDFA32A315A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.h */,
 				CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */,
+				CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */,
+				CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */,
+				CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */,
+				CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */,
 			);
 			path = diagnostics;
 			sourceTree = "<group>";
@@ -1502,6 +1523,9 @@
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
+				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1576,6 +1600,10 @@
 				CD0DFED914EB2171000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
+				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
+				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1777,6 +1805,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1819,6 +1849,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1861,6 +1893,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1904,6 +1938,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;

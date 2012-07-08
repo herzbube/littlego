@@ -151,7 +151,7 @@
   right = [decoder decodeObjectForKey:goPointRightKey];
   above = [decoder decodeObjectForKey:goPointAboveKey];
   below = [decoder decodeObjectForKey:goPointBelowKey];
-  neighbours = [decoder decodeObjectForKey:goPointNeighboursKey];
+  neighbours = [[decoder decodeObjectForKey:goPointNeighboursKey] retain];
   next = [decoder decodeObjectForKey:goPointNextKey];
   previous = [decoder decodeObjectForKey:goPointPreviousKey];
   self.starPoint = [decoder decodeBoolForKey:goPointIsStarPointKey];

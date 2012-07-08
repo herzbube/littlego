@@ -16,19 +16,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PathUtilities class is a container for various utility functions
-/// related to handling of files and folders.
+/// @brief The BugReportUtilities class is a container for various utility
+/// functions related to managing the diagnostics information attached to a
+/// bug report.
 ///
-/// All functions in PathUtilities are class methods, so there is no need to
-/// create an instance of PathUtilities.
+/// All functions in BugReportUtilities are class methods, so there is no need
+/// to create an instance of BugReportUtilities.
 // -----------------------------------------------------------------------------
-@interface PathUtilities : NSObject
+@interface BugReportUtilities : NSObject
 {
 }
 
-+ (void) createFolder:(NSString*)path removeIfExists:(bool)removeIfExists;
-+ (void) deleteItemIfExists:(NSString*)path;
-+ (NSString*) preferencesFileName;
-+ (NSString*) preferencesFilePath;
++ (bool) diagnosticsInformationExists;
++ (NSString*) diagnosticsInformationFolderName;
++ (NSString*) diagnosticsInformationFolderPath;
++ (NSString*) diagnosticsInformationFilePath;
 
 @end

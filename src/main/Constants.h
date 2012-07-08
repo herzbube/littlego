@@ -193,6 +193,16 @@ enum ArchiveSortCriteria
   ArchiveSortCriteriaFileDate
 };
 
+/// @brief Enumerates different ways how the application can be launched.
+enum ApplicationLaunchMode
+{
+  ApplicationLaunchModeUnknown,
+  ApplicationLaunchModeNormal,      ///< @brief The application was launched normally. Production uses
+                                    ///  this mode only.
+  ApplicationLaunchModeDiagnostics  ///< @brief The application was launched to diagnose a bug report. This
+                                    ///  mode is available only in the simulator.
+};
+
 // -----------------------------------------------------------------------------
 /// @name Filesystem related constants
 // -----------------------------------------------------------------------------

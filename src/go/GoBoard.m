@@ -183,6 +183,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.size = [decoder decodeIntForKey:goBoardSizeKey];
+  m_vertexDict = [[decoder decodeObjectForKey:goBoardVertexDictKey] retain];
   self.starPoints = [decoder decodeObjectForKey:goBoardStarPointsKey];
 
   return self;

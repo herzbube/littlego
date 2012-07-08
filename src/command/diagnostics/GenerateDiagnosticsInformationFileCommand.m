@@ -17,10 +17,13 @@
 
 // Project includes
 #import "GenerateDiagnosticsInformationFileCommand.h"
+#import "../../diagnostics/BugReportUtilities.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../play/ScoringModel.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -54,10 +57,12 @@
 - (void) writeBugReportFormatVersion:(int)version toFile:(NSString*)filePath;
 - (NSString*) boardAsSeenByGtpEngine;
 - (void) writeBoardAsSeenByGtpEngine:(NSString*)boardAsSeenByGtpEngine toFile:(NSString*)filePath;
+- (bool) shouldIgnoreUserDefaultsKey:(NSString*)key;
 //@}
 /// @name Private properties
 //@{
 @property(nonatomic, retain) NSString* diagnosticsInformationFolderPath;
+@property(nonatomic, retain) NSDictionary* registrationDomainDefaults;
 //@}
 @end
 
@@ -66,6 +71,7 @@
 
 @synthesize diagnosticsInformationFolderPath;
 @synthesize diagnosticsInformationFilePath;
+@synthesize registrationDomainDefaults;
 
 
 // -----------------------------------------------------------------------------
@@ -81,8 +87,15 @@
   if (! self)
     return nil;
 
-  // Collect information in temp folder
-  NSString* diagnosticsInformationFolderName = [bugReportDiagnosticsInformationFileName stringByDeletingPathExtension];
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !! IMPORTANT
+  // !! The path we use here must be different from the path returned by
+  // !! BugReportUtilities::diagnosticsInformationFolderPath(). This is to
+  // !! eliminate even the most remote chance (e.g. due to some unexpected
+  // !! malfunctioning) that the application launches into bug report mode
+  // !! when it is deployed to a productive device.
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  NSString* diagnosticsInformationFolderName = [BugReportUtilities diagnosticsInformationFolderName];
   self.diagnosticsInformationFolderPath = [NSTemporaryDirectory() stringByAppendingPathComponent:diagnosticsInformationFolderName];
 
   // Place final diagnostics information file in document folder where it can
@@ -92,6 +105,8 @@
   BOOL expandTilde = YES;
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
   self.diagnosticsInformationFilePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:bugReportDiagnosticsInformationFileName];
+
+  self.registrationDomainDefaults = nil;
 
   return self;
 }
@@ -103,6 +118,7 @@
 - (void) dealloc
 {
   self.diagnosticsInformationFolderPath = nil;
+  self.registrationDomainDefaults = nil;
   [super dealloc];
 }
 
@@ -150,6 +166,12 @@
 
   GoGame* game = [GoGame sharedGame];
   [archiver encodeObject:game forKey:@"GoGame"];
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  if (scoringModel.scoringMode)
+  {
+    GoScore* score = scoringModel.score;
+    [archiver encodeObject:score forKey:@"GoScore"];
+  }
   [archiver finishEncoding];
 
   NSString* archivePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];
@@ -172,15 +194,28 @@
 {
   DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Writing user defaults to file");
 
-  [[ApplicationDelegate sharedDelegate] writeUserDefaults];
+  NSBundle* resourceBundle = [ApplicationDelegate sharedDelegate].resourceBundle;
+  NSString* registrationDomainDefaultsPath = [resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
+  self.registrationDomainDefaults = [NSDictionary dictionaryWithContentsOfFile:registrationDomainDefaultsPath];
 
-  NSString* userDefaultsDictionaryPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportUserDefaultsFileName];
+  [[ApplicationDelegate sharedDelegate] writeUserDefaults];
   NSDictionary* userDefaultsDictionary = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-  BOOL success = [userDefaultsDictionary writeToFile:userDefaultsDictionaryPath atomically:YES];
+
+  NSMutableDictionary* exportDictionary = [NSMutableDictionary dictionary];
+  for (NSString* key in userDefaultsDictionary)
+  {
+    if ([self shouldIgnoreUserDefaultsKey:key])
+      continue;
+    id value = [userDefaultsDictionary valueForKey:key];
+    [exportDictionary setValue:value forKey:key];
+  }
+
+  NSString* exportDictionaryPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportUserDefaultsFileName];
+  BOOL success = [exportDictionary writeToFile:exportDictionaryPath atomically:YES];
   if (! success)
   {
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write user defaults to file %@", userDefaultsDictionaryPath]
+                                                     reason:[NSString stringWithFormat:@"Failed to write user defaults to file %@", exportDictionaryPath]
                                                    userInfo:nil];
     @throw exception;
   }
@@ -360,6 +395,34 @@
                                                    userInfo:nil];
     @throw exception;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the user default named @a key should be ignored and
+/// not be exported to the user defaults dump file.
+///
+/// The purpose of this method is to ignore alls keys that do not belong to
+/// Little Go. The key userDefaultsVersionRegistrationDomainKey is also not
+/// exported because this key must never exist outside the registration domain
+/// defaults, i.e. if we were exporting it now, the dump file could not be
+/// imported later on.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreUserDefaultsKey:(NSString*)key
+{
+  // Special handling because this key is ***NOT*** in the registration domain
+  // defaults, but we want it exported
+  if ([key isEqualToString:userDefaultsVersionApplicationDomainKey])
+    return false;
+  // Special handling because this key ***IS*** in the registration domain
+  // defaults, but we don't want it exported
+  if ([key isEqualToString:userDefaultsVersionRegistrationDomainKey])
+    return true;
+  // Everything else that is not in the registration domain defaults is
+  // ignored
+  if (nil == [self.registrationDomainDefaults objectForKey:key])
+    return true;
+  else
+    return false;
 }
 
 @end

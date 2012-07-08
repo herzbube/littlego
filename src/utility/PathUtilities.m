@@ -75,4 +75,40 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the name of the application's preferences file.
+///
+/// The file name is based on the main bundle's identifier.
+///
+/// @attention This method should be used only in a controlled environment, and
+/// only for debugging and/or testing purposes. It should not be used in a
+/// production environment where storage of preferences is opaque to the
+/// application.
+// -----------------------------------------------------------------------------
++ (NSString*) preferencesFileName
+{
+  NSString* bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+  return [bundleIdentifier stringByAppendingPathExtension:@"plist"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the full path of the application's preferences file.
+///
+/// The file name is based on the main bundle's identifier. The file location
+/// is assumed to be in the standard location "Library/Preferences".
+///
+/// @attention This method should be used only in a controlled environment, and
+/// only for debugging and/or testing purposes. It should not be used in a
+/// production environment where storage of preferences is opaque to the
+/// application.
+// -----------------------------------------------------------------------------
++ (NSString*) preferencesFilePath
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, expandTilde);
+  NSString* libraryFolderPath = [paths objectAtIndex:0];
+  NSString* preferencesFolderPath = [libraryFolderPath stringByAppendingPathComponent:@"Preferences"];
+  return [preferencesFolderPath stringByAppendingPathComponent:[PathUtilities preferencesFileName]];
+}
+
 @end

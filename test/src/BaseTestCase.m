@@ -36,6 +36,8 @@
   m_delegate = [[ApplicationDelegate newDelegate] retain];
   STAssertNotNil(m_delegate, @"Unable to create ApplicationDelegate object in setUp()");
 
+  STAssertEquals(m_delegate.applicationLaunchMode, ApplicationLaunchModeNormal, @"Application launch mode is not ApplicationLaunchModeNormal");
+
   // Xcode 4: The log file for unit tests run in the simulator environment is
   // located in ~/Library/Application Support/iPhone Simulator/Documents/Logs
   [m_delegate setupLogging];
