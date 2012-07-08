@@ -102,7 +102,8 @@ Troubleshooting
 I can/can't do X - isn't this against the game rules?
 =====================================================
 You may have found a bug. Please email me with a description of the problem and,
-if possible, how to reproduce it.
+if possible, how to reproduce it. Check out the "Diagnostics" tab where you can
+generate a bug report with useful diagnostics information attached.
 
 Meanwhile, if you are stuck in an impossible situation (e.g. you cannot capture
 a stone), you can try to work around the problem by saving the game that is
@@ -816,3 +817,103 @@ history and tradition of the game. In Little Go, most of the time you will play
 against the computer, so there is not much point in going into the details of
 this subject. If you are keen on reading more, though, I would like to refer you
 once more to Sensei's Library (http://senseis.xmp.net/?GoEtiquette).
+
+
+--------------------------------------------------------------------------------
+Reporting bugs
+--------------------------------------------------------------------------------
+
+=================
+General procedure
+=================
+
+To report a bug, please send an email to mailto:herzbube@herzbube.ch that
+contains a description of the problem and, if possible, step-by-step
+instructions on how to reproduce it. I especially love the "how to reproduce"
+part ☺ since this usually makes it much easier for me to pinpoint the source of
+a problem.
+
+===============================
+The "Send a bug report" feature
+===============================
+
+For your convenience, on the "Diagnostics" tab you will find a button labelled
+"Send a bug report". Tapping the button displays a pre-filled email view that
+you only need to supplement with your problem description before you can send
+off the report.
+
+You will notice that the email has a file attached. The next section will tell
+you more about this file.
+
+============================
+Diagnostics information file
+============================
+
+The file attached to the bug report email contains diagnostics information about
+the current state of Little Go and the game in progress. This information helps
+me to better diagnose problems that are hard to describe or reproduce. If you
+ever find that Little Go behaves badly from time to time, but not <em>all</em>
+the time, it will be most useful if you send a bug report (and thus generate a
+diagnostics information file) right then and there when you notice the problem.
+
+The "Diagnostics" tab also has a button that lets you just generate the
+diagnostics information file, without sending an email. This can be useful if
+your device is not capable of sending email, or if you just want to snapshot
+the application behaving badly <em>now</em>, but send the bug report later.
+Once you have generated the diagnostics information file, you can use iTunes
+to transfer the file to your computer, and send the bug report from there. Read
+"The archive" section of this manual for a quick overview of how iTunes file
+sharing works.
+
+================================================
+What is inside the diagnostics information file?
+================================================
+
+The file is a .zip archive that contains the following pieces of information:
+- A snapshot of some of Little Go's in-memory objects that make it possible to
+  reproduce the state of Little Go exactly the way it was at the time the
+  diagnostics information file was generated
+- Your current preferences (including the players you have defined and the
+  settings you use on GTP engine profiles)
+- The current game as an .sgf file
+- A screenshot of the "Play" tab (excluding the status bar, i.e. the name of
+  your carrier is not in the screenshot)
+- The output of the "showboard" GTP command
+- A version number that identifies the format of the information inside the
+  attachment
+
+=============================================================
+What is <em>not</em> inside the diagnostics information file?
+=============================================================
+
+The file does <em>not</em> contain any information that identifies you or your
+device, nor any other information that comes from outside of the Little Go app.
+
+If you are concerned, please feel free to inspect the content of the file by
+forwarding the email to your Mac or PC before you send the bug report to me. As
+already mentioned further up, you can also transfer the file to your computer
+via iTunes file sharing and inspect the file there.
+
+Finally, since Little Go is open source you can also study the program code that
+produces the file. Let me know and I will point you in the right direction.
+
+=========================
+File size and persistence
+=========================
+
+The file's size varies with the current game's board size, the number of moves
+made so far, and with your device's screen resolution. The smallest files are
+between 50-90 KB (on a regular iPhone without Retina display), while the
+largest files should not take up more than 200-300 KB (on an iPad with Retina
+display).
+
+For technical reasons, a copy of the file remains on your device after the bug
+report email has been generated. The copy is located in the documents folder
+within the Little Go app bundle where it is not accessible to any other apps -
+even Little Go will not use the copy after the bug report has been sent. If you
+generate another bug report, the lingering file from the previous bug report is
+overwritten. If you want to get rid of the file you can do so via iTunes file
+sharing.
+
+In no way there is any danger that your device will fill up with unwanted and
+useless information.
