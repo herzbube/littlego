@@ -61,6 +61,9 @@
     case GridCellType:
       cellID = @"Grid1CellType";
       break;
+    case ActivityIndicatorCellType:
+      cellID = @"ActivityIndicatorCellType";
+      break;
     default:
       assert(0);
       return nil;
@@ -148,6 +151,14 @@
       textField.enablesReturnKeyAutomatically = YES;
       // The cell should never appear selected, instead we want the text field
       // to become active when the cell is tapped
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
+    case ActivityIndicatorCellType:
+    {
+      UIActivityIndicatorView* accessoryViewActivityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+      cell.accessoryView = accessoryViewActivityIndicator;
+      [accessoryViewActivityIndicator release];
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
