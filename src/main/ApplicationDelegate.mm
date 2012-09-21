@@ -38,13 +38,16 @@
 #import "../play/ScoringModel.h"
 #import "../play/SoundHandling.h"
 #import "../archive/ArchiveViewModel.h"
-#import "../debug/GtpCommandModel.h"
-#import "../debug/GtpLogModel.h"
+#import "../diagnostics/BugReportUtilities.h"
+#import "../diagnostics/GtpCommandModel.h"
+#import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
 #import "../command/LoadOpeningBookCommand.h"
 #import "../command/backup/BackupGameCommand.h"
 #import "../command/backup/CleanBackupCommand.h"
 #import "../command/backup/RestoreGameCommand.h"
+#import "../command/diagnostics/RestoreBugReportApplicationState.h"
+#import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
 #import "../utility/UserDefaultsUpdater.h"
@@ -98,6 +101,7 @@
 
 @synthesize window;
 @synthesize tabBarController;
+@synthesize applicationLaunchMode;
 @synthesize applicationReadyForAction;
 @synthesize resourceBundle;
 @synthesize gtpClient;
@@ -144,6 +148,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 + (ApplicationDelegate*) newDelegate
 {
   sharedDelegate = [[[ApplicationDelegate alloc] init] autorelease];
+  sharedDelegate.applicationLaunchMode = ApplicationLaunchModeNormal;
   sharedDelegate.applicationReadyForAction = false;
   return sharedDelegate;
 }
@@ -282,6 +287,23 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the application launch mode.
+// -----------------------------------------------------------------------------
+- (void) setupApplicationLaunchMode
+{
+  if ([BugReportUtilities diagnosticsInformationExists])
+  {
+    DDLogInfo(@"Launching in mode ApplicationLaunchModeDiagnostics");
+    self.applicationLaunchMode = ApplicationLaunchModeDiagnostics;
+  }
+  else
+  {
+    DDLogInfo(@"Launching in mode ApplicationLaunchModeNormal");
+    self.applicationLaunchMode = ApplicationLaunchModeNormal;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up application logging.
 // -----------------------------------------------------------------------------
 - (void) setupLogging
@@ -355,6 +377,19 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupUserDefaults
 {
+  if (ApplicationLaunchModeDiagnostics == self.applicationLaunchMode)
+  {
+    RestoreBugReportUserDefaultsCommand* command = [[RestoreBugReportUserDefaultsCommand alloc] init];
+    bool success = [command submit];
+    if (! success)
+    {
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:[NSString stringWithFormat:@"Failed to restore user defaults while launching in mode ApplicationLaunchModeDiagnostics"]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
   self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];
@@ -468,6 +503,39 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the root controller for the tab identified by @a tabID.
+/// Returns nil if @a tabID is not recognized.
+///
+/// This method returns the correct controller even if the tab is located in
+/// the "More" navigation controller.
+// -----------------------------------------------------------------------------
+- (UIViewController*) tabController:(enum TabType)tabID
+{
+  for (UIViewController* controller in tabBarController.viewControllers)
+  {
+    if (controller.tabBarItem.tag == tabID)
+      return controller;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the main view for the tab identified by @a tabID. Returns
+/// nil if @a tabID is not recognized.
+///
+/// This method returns the correct view even if the tab is located in the
+/// "More" navigation controller.
+// -----------------------------------------------------------------------------
+- (UIView*) tabView:(enum TabType)tabID
+{
+  UIViewController* tabController = [self tabController:tabID];
+  if (tabController)
+    return tabController.view;
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Activates the tab identified by @a tabID, making it visible to the
 /// user.
 ///
@@ -476,14 +544,9 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) activateTab:(enum TabType)tabID
 {
-  for (UIViewController* controller in tabBarController.viewControllers)
-  {
-    if (controller.tabBarItem.tag == tabID)
-    {
-      tabBarController.selectedViewController = controller;
-      break;
-    }
-  }
+  UIViewController* tabController = [self tabController:tabID];
+  if (tabController)
+    tabBarController.selectedViewController = tabController;
 }
 
 // -----------------------------------------------------------------------------
@@ -562,9 +625,13 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD
 {
-  const int totalSteps = 9;
+  const int totalSteps = 10;
   const float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
+
+  [self setupApplicationLaunchMode];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
 
   [self setupLogging];
   progress += stepIncrease;
@@ -573,15 +640,15 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupFolders];
   progress += stepIncrease;
   progressHUD.progress = progress;
-  
+
   [self setupResourceBundle];
   progress += stepIncrease;
   progressHUD.progress = progress;
-  
+
   [self setupRegistrationDomain];
   progress += stepIncrease;
   progressHUD.progress = progress;
-  
+
   [self setupUserDefaults];
   progress += stepIncrease;
   progressHUD.progress = progress;
@@ -614,10 +681,25 @@ static ApplicationDelegate* sharedDelegate = nil;
   [progressHUD removeFromSuperview];
   [progressHUD release];
 
-  // Important: We must execute this command in the context of a thread that
-  // survives the entire command execution - see the class documentation of
-  // RestoreGameCommand for the reason why.
-  [[[RestoreGameCommand alloc] init] submit];
+  if (ApplicationLaunchModeDiagnostics == self.applicationLaunchMode)
+  {
+    RestoreBugReportApplicationState* command = [[RestoreBugReportApplicationState alloc] init];
+    bool success = [command submit];
+    if (! success)
+    {
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:[NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  else
+  {
+    // Important: We must execute this command in the context of a thread that
+    // survives the entire command execution - see the class documentation of
+    // RestoreGameCommand for the reason why.
+    [[[RestoreGameCommand alloc] init] submit];
+  }
 }
 
 @end

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,19 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DebugViewController class is responsible for managing user
-/// interaction on the "Debug" view.
+/// @brief The PathUtilities class is a container for various utility functions
+/// related to handling of files and folders.
+///
+/// All functions in PathUtilities are class methods, so there is no need to
+/// create an instance of PathUtilities.
 // -----------------------------------------------------------------------------
-@interface DebugViewController : UITableViewController
+@interface PathUtilities : NSObject
 {
 }
+
++ (void) createFolder:(NSString*)path removeIfExists:(bool)removeIfExists;
++ (void) deleteItemIfExists:(NSString*)path;
++ (NSString*) preferencesFileName;
++ (NSString*) preferencesFilePath;
 
 @end

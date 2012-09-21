@@ -35,6 +35,11 @@
 - (id) init;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Setters needed for posting notifications to notify our observers
 //@{
 - (void) setFirstMove:(GoMove*)newValue;
@@ -90,8 +95,8 @@
   if (! self)
     return nil;
 
-  // Where possible don't use "self" to prevent setter methods from
-  // triggering notifications.
+  // Don't use "self" because most properties have non-trivial setter methods
+  // (e.g. notificatins are triggered, but also other stuff)
   type = GoGameTypeUnknown;
   board = nil;
   handicapPoints = [[NSArray array] retain];
@@ -104,6 +109,35 @@
   reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
   nextMoveIsComputerGenerated = false;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  // Don't use "self" because most properties have non-trivial setter methods
+  // (e.g. notificatins are triggered, but also other stuff)
+  type = [decoder decodeIntForKey:goGameTypeKey];
+  board = [[decoder decodeObjectForKey:goGameBoardKey] retain];
+  handicapPoints = [[decoder decodeObjectForKey:goGameHandicapPointsKey] retain];
+  komi = [decoder decodeDoubleForKey:goGameKomiKey];
+  playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
+  playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
+  firstMove = [[decoder decodeObjectForKey:goGameFirstMoveKey] retain];
+  lastMove = [[decoder decodeObjectForKey:goGameLastMoveKey] retain];
+  state = [decoder decodeIntForKey:goGameStateKey];
+  reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
+  computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
+  nextMoveIsComputerGenerated = [decoder decodeBoolForKey:goGameNextMoveIsComputerGeneratedKey];
 
   return self;
 }
@@ -578,6 +612,26 @@
       [GoUtilities movePointToNewRegion:point];
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeInt:self.type forKey:goGameTypeKey];
+  [encoder encodeObject:self.board forKey:goGameBoardKey];
+  [encoder encodeObject:self.handicapPoints forKey:goGameHandicapPointsKey];
+  [encoder encodeDouble:self.komi forKey:goGameKomiKey];
+  [encoder encodeObject:self.playerBlack forKey:goGamePlayerBlackKey];
+  [encoder encodeObject:self.playerWhite forKey:goGamePlayerWhiteKey];
+  [encoder encodeObject:self.firstMove forKey:goGameFirstMoveKey];
+  [encoder encodeObject:self.lastMove forKey:goGameLastMoveKey];
+  [encoder encodeInt:self.state forKey:goGameStateKey];
+  [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
+  [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
+  [encoder encodeBool:self.nextMoveIsComputerGenerated forKey:goGameNextMoveIsComputerGeneratedKey];
 }
 
 @end

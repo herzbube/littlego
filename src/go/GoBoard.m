@@ -45,6 +45,11 @@
 - (void) setupGoPoints;
 - (void) setupStarPoints;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
@@ -52,6 +57,7 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoBoardSize size;
+@property(nonatomic, retain, readwrite) NSArray* starPoints;
 //@}
 - (NSArray*) starPointVertexes;
 @end
@@ -161,6 +167,24 @@
   starPoints = nil;
 
   [self setupBoard];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.size = [decoder decodeIntForKey:goBoardSizeKey];
+  m_vertexDict = [[decoder decodeObjectForKey:goBoardVertexDictKey] retain];
+  self.starPoints = [decoder decodeObjectForKey:goBoardStarPointsKey];
 
   return self;
 }
@@ -409,6 +433,17 @@
       [regionList addObject:region];
   }
   return regionList;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeInt:self.size forKey:goBoardSizeKey];
+  [encoder encodeObject:m_vertexDict forKey:goBoardVertexDictKey];
+  [encoder encodeObject:self.starPoints forKey:goBoardStarPointsKey];
 }
 
 @end

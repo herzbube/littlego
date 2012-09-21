@@ -94,8 +94,10 @@
 /// This is a convenience method so that clients do not need to know
 /// CommandProcessor, or how to obtain an instance of CommandProcessor.
 ///
-/// @note Unless the client retains this command, it will be deallocated after
-/// execution has completed.
+/// Exceptions raised while executing the command are passed back to the caller.
+///
+/// @note Invoking this method deallocates this command. The client must retain
+/// this command to prevent this.
 // -----------------------------------------------------------------------------
 - (bool) submit
 {

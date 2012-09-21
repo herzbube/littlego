@@ -58,6 +58,7 @@
 + (ApplicationDelegate*) sharedDelegate;
 + (ApplicationDelegate*) newDelegate;
 
+- (void) setupApplicationLaunchMode;
 - (void) setupLogging;
 - (void) setupFolders;
 - (void) setupResourceBundle;
@@ -67,6 +68,8 @@
 - (void) setupGUI;
 - (void) setupFuego;
 - (void) writeUserDefaults;
+- (UIViewController*) tabController:(enum TabType)tabID;
+- (UIView*) tabView:(enum TabType)tabID;
 - (void) activateTab:(enum TabType)tabID;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
 - (NSString*) resourceNameForTabType:(enum TabType)tabType;
@@ -75,6 +78,15 @@
 @property(nonatomic, retain) IBOutlet UIWindow* window;
 /// @brief The main application controller.
 @property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+/// @brief Indicates how the application was launched.
+///
+/// This property initially has the value #ApplicationLaunchModeUnknown. At the
+/// very beginning of the application launch process this property is set to its
+/// final value. The mode thus determined is then used to direct the remainder
+/// of the application launch process. Once the application is running the
+/// property can still be queried to see what happened during application
+/// launch.
+@property(nonatomic, assign) enum ApplicationLaunchMode applicationLaunchMode;
 /// @brief Is false during application launch, and shortly afterwards while this
 /// delegate is still setting up objects that are important for the application
 /// lifecycle.
@@ -107,10 +119,10 @@
 /// @brief Model object that stores attributes used to manage the Archive view.
 @property(nonatomic, retain) ArchiveViewModel* archiveViewModel;
 /// @brief Model object that stores information about the GTP log, viewable on
-/// the Debug view.
+/// the Diagnostics view.
 @property(nonatomic, retain) GtpLogModel* gtpLogModel;
 /// @brief Model object that stores canned GTP commands that can be managed and
-/// submitted on the Debug view.
+/// submitted on the Diagnostics view.
 @property(nonatomic, retain) GtpCommandModel* gtpCommandModel;
 
 @end

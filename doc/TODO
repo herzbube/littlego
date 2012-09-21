@@ -120,11 +120,6 @@ Priority 2 (nice to have)
 - Suggestions by Martin
   - Show number of playouts per second (what's this exactly?)
   - Use some gfx commands
-- Create new app icons with a smaller Fuseki pattern
-  - Allows to place the border lines further inside the icon, so that they are
-    not cut off by the rounded corners applied to the icon by iOS
-  - Also allows to create additional search results icons (29x29 for iPhone and
-    50x50 for iPad)
 - Add user preference for what should happen when a memory warning is received
   - Remain silent (the default)
   - Display alert
@@ -210,8 +205,6 @@ Priority 3 (not important)
   directly jump to the profile detail view
 - Add user preference whether the screen should be locked in a computer vs.
   computer game.
-- When the application is launched and a backup .sgf is found: Ask the user for
-  confirmation whether the game should be restored
 - Undoing a move in a human vs. computer game causes two updates in PlayView
   because two moves are taken back; there should only be one update
 - When GameInfoView is visible and rotated, TableViewGridCell's drawRect:() is
@@ -228,6 +221,9 @@ Priority 3 (not important)
   are exposed to the user to be changed at runtime.
 - Find out why PlayViewMetrics (in drawLineLayer:withContext:horizontal:positionedAtPoint:())
   needs to translate vertical grid lines by one point (the "mystery point")
+- Add GtpLogItem to objects being serialized when a bug report is sent. This has
+  not been implemented yet because this potentially increases the diagnostics
+  information file a lot (depending on the size of the GTP log)
 
 
 Future improvements to the 3rdparty build process

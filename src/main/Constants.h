@@ -28,6 +28,12 @@ extern const float gHalfPixel;
 /// cross-hair point be displayed when placing stones on the Play view. The unit
 /// used by this constant is "distances between two adjacent intersections".
 extern const int crossHairPointDistanceFromFingerOnSmallestBoard;
+/// @brief An alpha value that can be used to make a view (e.g. the label of a
+/// table view cell) appear disabled.
+///
+/// This is based on
+/// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
+extern const float gDisabledViewAlpha;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -131,7 +137,7 @@ enum TabType
   TabTypePlay,
   TabTypeSettings,
   TabTypeArchive,
-  TabTypeDebug,
+  TabTypeDiagnostics,
   TabTypeManual,
   TabTypeAbout,
   TabTypeSourceCode,
@@ -171,7 +177,10 @@ enum AlertViewType
   AlertViewTypeLoadGameFailed,
   AlertViewTypeUndoMoveFailed,
   AlertViewTypeAddToCannedCommands,
-  AlertViewTypeMemoryWarning
+  AlertViewTypeMemoryWarning,
+  AlertViewTypeCannotSendBugReport,
+  AlertViewTypeDiagnosticsInformationFileGenerated,
+  AlertViewTypeDiagnosticsInformationFileNotGenerated
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -188,6 +197,16 @@ enum ArchiveSortCriteria
 {
   ArchiveSortCriteriaFileName,
   ArchiveSortCriteriaFileDate
+};
+
+/// @brief Enumerates different ways how the application can be launched.
+enum ApplicationLaunchMode
+{
+  ApplicationLaunchModeUnknown,
+  ApplicationLaunchModeNormal,      ///< @brief The application was launched normally. Production uses
+                                    ///  this mode only.
+  ApplicationLaunchModeDiagnostics  ///< @brief The application was launched to diagnose a bug report. This
+                                    ///  mode is available only in the simulator.
 };
 
 // -----------------------------------------------------------------------------
@@ -360,11 +379,49 @@ extern NSString* defaultGtpEngineProfileUUID;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Debug view settings default values
+/// @name Diagnostics view settings default values
 // -----------------------------------------------------------------------------
 //@{
 extern const int gtpLogSizeMinimum;
 extern const int gtpLogSizeMaximum;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Bug report constants
+// -----------------------------------------------------------------------------
+//@{
+extern const int bugReportFormatVersion;
+/// @brief Name of the diagnostics information file that is attached to the
+/// bug report email.
+///
+/// The file name should relate to the project name because the file is user
+/// visible, either as an email attachment or when the user transfers it via
+/// iTunes file sharing.
+extern NSString* bugReportDiagnosticsInformationFileName;
+/// @brief Mime-type used for attaching the diagnostics information file to the
+/// bug report email.
+extern NSString* bugReportDiagnosticsInformationFileMimeType;
+/// @brief Name of the bug report information file that stores the bug report
+/// format number, the iOS version and the device type.
+extern NSString* bugReportInfoFileName;
+/// @brief Name of the bug report file that stores an archive of in-memory
+/// objects.
+extern NSString* bugReportInMemoryObjectsArchiveFileName;
+/// @brief Name of the bug report file that stores user defaults.
+extern NSString* bugReportUserDefaultsFileName;
+/// @brief Name of the bug report file that stores the current game in .sgf
+/// format.
+extern NSString* bugReportCurrentGameFileName;
+/// @brief Name of the bug report file that stores a screenshot of the views
+/// visible on the Play tab.
+extern NSString* bugReportScreenshotFileName;
+/// @brief Name of the bug report file that stores a depiction of the board as
+/// it is seen by the GTP engine.
+extern NSString* bugReportBoardAsSeenByGtpEngineFileName;
+/// @brief Email address of the bug report email recipient.
+extern NSString* bugReportEmailRecipient;
+/// @brief Subject for the bug report email.
+extern NSString* bugReportEmailSubject;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -378,6 +435,9 @@ extern NSString* apacheLicenseDocumentResource;
 extern NSString* GPLDocumentResource;
 extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
+extern NSString* MBProgressHUDLicenseDocumentResource;
+extern NSString* lumberjackLicenseDocumentResource;
+extern NSString* zipkitLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
 extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
@@ -389,6 +449,7 @@ extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
+extern NSString* bugReportMessageTemplateResource;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -471,4 +532,105 @@ extern NSString* inconsistentTerritoryDotSymbolColorKey;
 extern NSString* inconsistentTerritoryDotSymbolPercentageKey;
 extern NSString* inconsistentTerritoryFillColorKey;
 extern NSString* inconsistentTerritoryFillColorAlphaKey;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Constants for NSCoding
+// -----------------------------------------------------------------------------
+//@{
+// General constants
+extern const int nscodingVersion;
+extern NSString* nscodingVersionKey;
+// GoGame keys
+extern NSString* goGameTypeKey;
+extern NSString* goGameBoardKey;
+extern NSString* goGameHandicapPointsKey;
+extern NSString* goGameKomiKey;
+extern NSString* goGamePlayerBlackKey;
+extern NSString* goGamePlayerWhiteKey;
+extern NSString* goGameFirstMoveKey;
+extern NSString* goGameLastMoveKey;
+extern NSString* goGameStateKey;
+extern NSString* goGameReasonForGameHasEndedKey;
+extern NSString* goGameIsComputerThinkingKey;
+extern NSString* goGameNextMoveIsComputerGeneratedKey;
+// GoPlayer keys
+extern NSString* goPlayerPlayerUUIDKey;
+extern NSString* goPlayerIsBlackKey;
+// GoMove keys
+extern NSString* goMoveTypeKey;
+extern NSString* goMovePlayerKey;
+extern NSString* goMovePointKey;
+extern NSString* goMovePreviousKey;
+extern NSString* goMoveNextKey;
+extern NSString* goMoveCapturedStonesKey;
+extern NSString* goMoveComputerGeneratedKey;
+// GoBoard keys
+extern NSString* goBoardSizeKey;
+extern NSString* goBoardVertexDictKey;
+extern NSString* goBoardStarPointsKey;
+// GoBoardRegion keys
+extern NSString* goBoardRegionPointsKey;
+extern NSString* goBoardRegionRandomColorKey;
+extern NSString* goBoardRegionScoringModeKey;
+extern NSString* goBoardRegionTerritoryColorKey;
+extern NSString* goBoardRegionTerritoryInconsistencyFoundKey;
+extern NSString* goBoardRegionDeadStoneGroupKey;
+extern NSString* goBoardRegionCachedSizeKey;
+extern NSString* goBoardRegionCachedIsStoneGroupKey;
+extern NSString* goBoardRegionCachedColorKey;
+extern NSString* goBoardRegionCachedLibertiesKey;
+extern NSString* goBoardRegionCachedAdjacentRegionsKey;
+// GoPoint keys
+extern NSString* goPointVertexKey;
+extern NSString* goPointBoardKey;
+extern NSString* goPointLeftKey;
+extern NSString* goPointRightKey;
+extern NSString* goPointAboveKey;
+extern NSString* goPointBelowKey;
+extern NSString* goPointNeighboursKey;
+extern NSString* goPointNextKey;
+extern NSString* goPointPreviousKey;
+extern NSString* goPointIsStarPointKey;
+extern NSString* goPointStoneStateKey;
+extern NSString* goPointRegionKey;
+extern NSString* goPointIsLeftValidKey;
+extern NSString* goPointIsRightValidKey;
+extern NSString* goPointIsAboveValidKey;
+extern NSString* goPointIsBelowValidKey;
+extern NSString* goPointIsNextValidKey;
+extern NSString* goPointIsPreviousValidKey;
+// GoVertex keys
+extern NSString* goVertexStringKey;
+extern NSString* goVertexNumericXKey;
+extern NSString* goVertexNumericYKey;
+// GoScore keys
+extern NSString* goScoreTerritoryScoresAvailableKey;
+extern NSString* goScoreScoringInProgressKey;
+extern NSString* goScoreKomiKey;
+extern NSString* goScoreCapturedByBlackKey;
+extern NSString* goScoreCapturedByWhiteKey;
+extern NSString* goScoreDeadBlackKey;
+extern NSString* goScoreDeadWhiteKey;
+extern NSString* goScoreTerritoryBlackKey;
+extern NSString* goScoreTerritoryWhiteKey;
+extern NSString* goScoreTotalScoreBlackKey;
+extern NSString* goScoreTotalScoreWhiteKey;
+extern NSString* goScoreResultKey;
+extern NSString* goScoreNumberOfMovesKey;
+extern NSString* goScoreStonesPlayedByBlackKey;
+extern NSString* goScoreStonesPlayedByWhiteKey;
+extern NSString* goScorePassesPlayedByBlackKey;
+extern NSString* goScorePassesPlayedByWhiteKey;
+extern NSString* goScoreGameKey;
+extern NSString* goScoreBoardIsInitializedKey;
+extern NSString* goScoreLastCalculationHadErrorKey;
+extern NSString* goScoreAllRegionsKey;
+// GtpLogItem keys
+extern NSString* gtpLogItemCommandStringKey;
+extern NSString* gtpLogItemTimeStampKey;
+extern NSString* gtpLogItemHasResponseKey;
+extern NSString* gtpLogItemResponseStatusKey;
+extern NSString* gtpLogItemParsedResponseStringKey;
+extern NSString* gtpLogItemRawResponseStringKey;
 //@}

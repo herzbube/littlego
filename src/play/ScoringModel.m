@@ -161,4 +161,18 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Enables scoring mode. Uses @a scoreObject instead of creating a new
+/// score object from scratch. This model takes ownership of @a scoreObject.
+///
+/// This method exists for the sole purpose of diagnosing a bug report which
+/// includes an archived GoScore object.
+// -----------------------------------------------------------------------------
+- (void) enableScoringModeWithScoreObject:(GoScore*)scoreObject
+{
+  scoringMode = true;        // don't use self because we don't want to trigger the setter
+  self.score = scoreObject;  // use self to retain the score object
+  [[NSNotificationCenter defaultCenter] postNotificationName:goScoreScoringModeEnabled object:nil];
+}
+
 @end

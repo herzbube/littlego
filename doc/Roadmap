@@ -15,8 +15,6 @@ The roadmap
 Version 1.x
 - Play view
   - Time-based play
-  - Mark groups of stones according to threat level; a basic implementation
-    might simply count liberties and color-code the group accordingly
   - Replay game (manual, or automatic with delay)
 - Settings view
   - Player statistics (number of games played, possibly strength)
@@ -60,7 +58,7 @@ Version 0.5 (November 16 2011)
   - Flip the view to display an Info view with information about the current game
 
 Version 0.4 (October 31 2011)
-- Debug view
+- Diagnostics view
   - Send arbitrary commands to GTP engine
 - Technical
   - Handle interruptions (phone call, application is suspended, etc)
@@ -107,7 +105,7 @@ Version 0.1 (April 8 2011)
   - Display of NOTICE
   - Where to get the sources
   - "Looking for Artwork" note
-- Debug view
+- Diagnostics view
   - Log commands, responses, and std::cout
 - Artwork & media
   - Use icons for toolbar buttons on Play view

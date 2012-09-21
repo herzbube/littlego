@@ -60,7 +60,7 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
-		CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DebugViewController.m */; };
+		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
 		CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
@@ -85,6 +85,16 @@
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
+		CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48AD9815A7281C004A7096 /* MessageUI.framework */; };
+		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
+		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
+		CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
+		CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
+		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
+		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
+		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -247,6 +257,13 @@
 		CDF8B79214DDD74A00940D3E /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */; };
 		CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
 		CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
+		CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
+		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
+		CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */; };
+		CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */; };
+		CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */; };
+		CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
+		CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32AD15A10AD500439B4E /* SendBugReportController.m */; };
 		CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
 		CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABB871416DD880065C93B /* ArchiveGame.m */; };
@@ -308,8 +325,8 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
-		CD0CCB68142FE10900A3F869 /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
-		CD0CCB69142FE10900A3F869 /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
+		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
+		CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiagnosticsViewController.m; sourceTree = "<group>"; };
 		CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogModel.h; sourceTree = "<group>"; };
 		CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogModel.m; sourceTree = "<group>"; };
 		CD0CCB78142FF82100A3F869 /* GtpLogItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogItem.h; sourceTree = "<group>"; };
@@ -354,6 +371,14 @@
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
 		CD3D5147147436C70098D8E0 /* makedist.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = makedist.sh; sourceTree = "<group>"; };
+		CD48AD9815A7281C004A7096 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
+		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationState.h; sourceTree = "<group>"; };
+		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationState.m; sourceTree = "<group>"; };
+		CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportUserDefaultsCommand.h; sourceTree = "<group>"; };
+		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
+		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
+		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -551,6 +576,17 @@
 		CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDF8B78614DC757700940D3E /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
 		CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
+		CDFA329015990C8400439B4E /* build-zipkit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-zipkit.sh"; sourceTree = "<group>"; };
+		CDFA329A159FA0F400439B4E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Lumberjack-LICENSE.txt.html"; sourceTree = "<group>"; };
+		CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "MBProgressHUD-license.html"; sourceTree = "<group>"; };
+		CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "ZipKit-COPYING.TXT.html"; sourceTree = "<group>"; };
+		CDFA32A315A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenerateDiagnosticsInformationFileCommand.h; sourceTree = "<group>"; };
+		CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerateDiagnosticsInformationFileCommand.m; sourceTree = "<group>"; };
+		CDFA32A615A0A3E400439B4E /* PathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathUtilities.h; sourceTree = "<group>"; };
+		CDFA32A715A0A3E400439B4E /* PathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathUtilities.m; sourceTree = "<group>"; };
+		CDFA32AC15A10AD500439B4E /* SendBugReportController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendBugReportController.h; sourceTree = "<group>"; };
+		CDFA32AD15A10AD500439B4E /* SendBugReportController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendBugReportController.m; sourceTree = "<group>"; };
 		CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
 		CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringAdditions.m; sourceTree = "<group>"; };
 		CDFABB861416DD880065C93B /* ArchiveGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveGame.h; sourceTree = "<group>"; };
@@ -574,6 +610,8 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */,
 				CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */,
+				CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */,
+				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +622,7 @@
 				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
+				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,6 +641,7 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
+				CD48AD9815A7281C004A7096 /* MessageUI.framework */,
 				CDE022D6155731740052ACE0 /* appicon-ipad.png */,
 				CD66127E155862F6009C6535 /* appicon-ipad@2x.png */,
 				CDE022D7155731740052ACE0 /* appicon-iphone.png */,
@@ -630,6 +670,7 @@
 				288765070DF74369002DB57D /* CoreGraphics.framework */,
 				CDBF979E13EC750C00476748 /* AudioToolbox.framework */,
 				CD24962E14CCB51000C9D19F /* QuartzCore.framework */,
+				CDFA329A159FA0F400439B4E /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -742,11 +783,13 @@
 			path = go;
 			sourceTree = "<group>";
 		};
-		CD1088551326CBB300E83543 /* debug */ = {
+		CD1088551326CBB300E83543 /* diagnostics */ = {
 			isa = PBXGroup;
 			children = (
-				CD0CCB68142FE10900A3F869 /* DebugViewController.h */,
-				CD0CCB69142FE10900A3F869 /* DebugViewController.m */,
+				CD48ADA315A891B7004A7096 /* BugReportUtilities.h */,
+				CD48ADA415A891B8004A7096 /* BugReportUtilities.m */,
+				CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */,
+				CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */,
 				CD613D98143CD1B70002759E /* GtpCommandModel.h */,
 				CD613D99143CD1B70002759E /* GtpCommandModel.m */,
 				CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */,
@@ -761,10 +804,12 @@
 				CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */,
 				CD0CCBF014311AD300A3F869 /* GtpLogViewController.h */,
 				CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */,
+				CDFA32AC15A10AD500439B4E /* SendBugReportController.h */,
+				CDFA32AD15A10AD500439B4E /* SendBugReportController.m */,
 				CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */,
 				CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */,
 			);
-			path = debug;
+			path = diagnostics;
 			sourceTree = "<group>";
 		};
 		CD1088561326CBB300E83543 /* play */ = {
@@ -823,6 +868,14 @@
 				CD3AE8AD134A423000B58E08 /* index.html */,
 			);
 			path = doxygen;
+			sourceTree = "<group>";
+		};
+		CD48AD9A15A75B77004A7096 /* text */ = {
+			isa = PBXGroup;
+			children = (
+				CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */,
+			);
+			path = text;
 			sourceTree = "<group>";
 		};
 		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
@@ -906,6 +959,7 @@
 			isa = PBXGroup;
 			children = (
 				CD05B115142A606400214BBE /* backup */,
+				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
 				CD05A8C91422803B00214BBE /* move */,
 				CDD48FA71413E00E00188B6A /* Command.h */,
@@ -927,7 +981,10 @@
 				CDE1A13714C1CED200317ECA /* COPYING.html */,
 				CDE1A13814C1CED200317ECA /* COPYING.LESSER.html */,
 				CDE1A13914C1CED200317ECA /* Credits.html */,
+				CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */,
+				CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */,
 				CDE1A13A14C1CED200317ECA /* SourceCode.html */,
+				CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */,
 			);
 			path = html;
 			sourceTree = "<group>";
@@ -1023,6 +1080,8 @@
 				CDDD52691485B05C0027476B /* DocumentGenerator.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
+				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
+				CDFA32A715A0A3E400439B4E /* PathUtilities.m */,
 				CDE30139135CA7D5005235F2 /* UIColorAdditions.h */,
 				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
 				CDEF3C75140A69A2002D9C1C /* UIDebugging.h */,
@@ -1057,7 +1116,7 @@
 			children = (
 				CDD48C80141034F000188B6A /* archive */,
 				CDD48FA61413E00E00188B6A /* command */,
-				CD1088551326CBB300E83543 /* debug */,
+				CD1088551326CBB300E83543 /* diagnostics */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
 				CD00A356148C2C21004E1A0C /* main */,
@@ -1095,6 +1154,7 @@
 				CDE1A15214C1CED200317ECA /* image */,
 				CDE1A19014C1CF4D00317ECA /* plist */,
 				CDE1A15514C1CED200317ECA /* sound */,
+				CD48AD9A15A75B77004A7096 /* text */,
 				CDE1A15814C1CED200317ECA /* xib */,
 				CD8A43C613318409009F3C7F /* book.dat */,
 			);
@@ -1110,6 +1170,7 @@
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
+				CDFA329015990C8400439B4E /* build-zipkit.sh */,
 				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
 			);
 			path = script;
@@ -1164,6 +1225,19 @@
 				CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */,
 			);
 			path = layer;
+			sourceTree = "<group>";
+		};
+		CDFA32A215A0A3C400439B4E /* diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				CDFA32A315A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.h */,
+				CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */,
+				CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */,
+				CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */,
+				CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */,
+				CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */,
+			);
+			path = diagnostics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1296,6 +1370,10 @@
 				CD84BBB9158536E80078C9DE /* spotlighticon-ipad@2x.png in Resources */,
 				CD84BBBA158536E80078C9DE /* spotlighticon-iphone.png in Resources */,
 				CD84BBBB158536E80078C9DE /* spotlighticon-iphone@2x.png in Resources */,
+				CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */,
+				CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */,
+				CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */,
+				CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1396,7 +1474,7 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
-				CD0CCB6A142FE10900A3F869 /* DebugViewController.m in Sources */,
+				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
@@ -1442,6 +1520,12 @@
 				CD0DFED814EB2163000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD0DFEDC14F01C21000FE1B5 /* DebugPlayViewController.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
+				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
+				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
+				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
+				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1516,6 +1600,10 @@
 				CD0DFED914EB2171000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
+				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
+				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1542,6 +1630,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1569,6 +1659,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1659,6 +1751,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1711,6 +1805,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1753,6 +1849,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1795,6 +1893,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1838,6 +1938,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -1880,6 +1982,8 @@
 					"-lboost_filesystem",
 					"-lboost_program_options",
 					"-lCocoaLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";

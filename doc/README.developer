@@ -158,9 +158,15 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - IPHONEOS_DEPLOYMENT_TARGET = 4.3
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
-- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack
-  Note: If a future version of Fuego requires additional Boost libraries, they
-  must be added here.
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack -ltouchzipkit -ObjC
+  - Note 1: The option "-ObjC" is required by ZipKit. Without this option the
+    app crashes when a ZKFileArchive object is created due to an unrecognized
+    selector being sent to the object. For understanding the issue, read this
+    technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html
+  - Note 2: If a future version of Fuego requires additional Boost libraries,
+    they must be added here.
+- libz.dylib has been added to the "Build Phases" section "Link Binary with
+  Libraries". This is required to satisfy the dependencies of ZipKit.
 - GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
@@ -609,6 +615,12 @@ with that is properly set up. Information on how to get these tasks done can be
 found in section "App-Related Resources" of [18], in section "Custom Icon and
 Image Creation Guidelines" of [12], and in [21].
 
+Archiving an object graph to a file, and restoring the objects from such an
+archive file, is explained in [22].
+
+The base for all of the following references is the "iOS Developer Library",
+found under this URL: https://developer.apple.com/library/ios/navigation/.
+
 [1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Developer Library > Guides > Threading Programming Guide
 [3]  iOS Developer Library > Guides > Timer Programming Topics
@@ -630,6 +642,7 @@ Image Creation Guidelines" of [12], and in [21].
 [19] iOS Developer Library > Getting Started > A Short Practical Guide to Blocks
 [20] iOS Developer Library > Guides > Blocks Programming Topics
 [21] iOS Developer Library > Reference > Information Property List Key Reference
+[22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
 
 
 Compilation command
@@ -745,6 +758,11 @@ Installation
 
 CocoaLumberjack build/installation issues
 -----------------------------------------
+No issues, build works out of the box.
+
+
+ZipKit build/installation issues
+--------------------------------
 No issues, build works out of the box.
 
 
@@ -1043,3 +1061,34 @@ image name and let iOS do the rest for me. Specifically:
 Note that in Xcode 4 the launch images do not show up on the main target's
 summary page. Apparently Xcode does not support iOS' automatic way of finding
 alternative images.
+
+
+How to use the diagnostics information file sent as part of a bug report email
+------------------------------------------------------------------------------
+Preparation work
+- Make sure to get the sources for the exact version of Little Go that the user
+  had when he generated the diagnostics information file
+- Make a debug build & run that build in the simulator version that most closely
+  matches the user's device.
+- Stop the app. This first run was just to make sure that the app bundle is
+  installed in the simulator
+- Locate the app bundle folder in the Finder. For instance, on my system with
+  Xcode 4.2 and using the current 4.3 simulator the folder is located here:
+  /Users/patrick/Library/Application Support/iPhone Simulator/4.3.2/Applications/5A454C1C-1339-494A-8CDD-9DBF1FCB85D6/Little Go.app
+- Place a copy of the diagnostics information file into the
+  "Library/Application Support" folder which is located parallel to the
+  simulator app bundle
+
+Run the debug build you made earlier in the preparation phase. The following
+things will happen:
+- The application delegate detects the presence of the diagnostics information
+  file and performs the following special startup sequence
+- RestoreBugReportUserDefaultsCommand is executed to restore user defaults
+  that were extracted from the diagnostics information file
+- User defaults are then loaded in the usual way
+- RestoreBugReportApplicationState is executed instead of RestoreGameCommand;
+  more stuff is extracted from the diagnostics information file to bring the
+  application back to the exact state it was in when diagnostics information
+  file was generated
+
+Once the application has launched you are ready to test & debug.

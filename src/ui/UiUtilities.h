@@ -37,5 +37,6 @@
 + (void) addGroupTableViewBackgroundToView:(UIView*)view;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
 + (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
++ (UIImage*) captureView:(UIView*)view;
 
 @end

@@ -33,7 +33,8 @@ enum TableViewCellType
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
   TextFieldCellType,     ///< @brief The cell's entire content view is a UITextField
   SliderCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value
-  GridCellType           ///< @brief Cell displays configurable number of columns; requires a delegate
+  GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
+  ActivityIndicatorCellType   ///< @brief Cell with an activity indicator in the accessory view
 };
 
 // -----------------------------------------------------------------------------

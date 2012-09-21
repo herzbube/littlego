@@ -32,6 +32,11 @@
 - (id) init:(enum GoMoveType)aType by:(GoPlayer*)aPlayer;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
@@ -124,6 +129,28 @@
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
   self.computerGenerated = false;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.type = [decoder decodeIntForKey:goMoveTypeKey];
+  self.player = [decoder decodeObjectForKey:goMovePlayerKey];
+  point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
+  self.previous = [decoder decodeObjectForKey:goMovePreviousKey];
+  self.next = [decoder decodeObjectForKey:goMoveNextKey];
+  self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
+  self.computerGenerated = [decoder decodeBoolForKey:goMoveComputerGeneratedKey];
 
   return self;
 }
@@ -301,6 +328,21 @@
   // Not strictly necessary since we expect to be deallocated soon
   point = nil;  // make sure not to use the setter here!
   self.player = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeInt:self.type forKey:goMoveTypeKey];
+  [encoder encodeObject:self.player forKey:goMovePlayerKey];
+  [encoder encodeObject:self.point forKey:goMovePointKey];
+  [encoder encodeObject:self.previous forKey:goMovePreviousKey];
+  [encoder encodeObject:self.next forKey:goMoveNextKey];
+  [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
+  [encoder encodeBool:self.computerGenerated forKey:goMoveComputerGeneratedKey];
 }
 
 @end

@@ -15,34 +15,21 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class Player;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The GoPlayer class represents one of the two players of a Go game.
+/// @brief The BugReportUtilities class is a container for various utility
+/// functions related to managing the diagnostics information attached to a
+/// bug report.
 ///
-/// GoPlayer combines a Player object (which refers to a player's @e identity)
-/// with attributes that are valid in the context of a Go game.
-///
-/// @ingroup go
+/// All functions in BugReportUtilities are class methods, so there is no need
+/// to create an instance of BugReportUtilities.
 // -----------------------------------------------------------------------------
-@interface GoPlayer : NSObject <NSCoding>
+@interface BugReportUtilities : NSObject
 {
 }
 
-+ (GoPlayer*) newGameBlackPlayer;
-+ (GoPlayer*) newGameWhitePlayer;
-+ (GoPlayer*) blackPlayer:(Player*)player;
-+ (GoPlayer*) whitePlayer:(Player*)player;
-
-/// @brief Reference to player object that stores information about that
-/// player's identity.
-@property(nonatomic, retain, readonly) Player* player;
-/// @brief The color taken by the player.
-@property(nonatomic, assign, readonly, getter=isBlack) bool black;
-/// @brief Returns a string that corresponds to the color taken by the
-/// player. "B" for black, "W" for white.
-@property(nonatomic, assign, readonly) NSString* colorString;
++ (bool) diagnosticsInformationExists;
++ (NSString*) diagnosticsInformationFolderName;
++ (NSString*) diagnosticsInformationFolderPath;
++ (NSString*) diagnosticsInformationFilePath;
 
 @end

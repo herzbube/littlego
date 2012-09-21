@@ -351,4 +351,14 @@ Suspending the app
 
 
 Diagnostics
-- TODO
+- GTP Features
+  - TODO
+- Send bug report
+  - TODO
+  - Special case: Play view screenshot after view was unloaded
+    - This case can only be tested in the simulator
+    - Load a game that has a few moves
+    - Switch to Diagnostics tab
+    - Generate a memory warning (in order to force unloading of the Play view)
+    - Generate diagnostics information file
+    - Check that the file contains a valid screenshot of the Play view

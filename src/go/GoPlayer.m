@@ -32,9 +32,15 @@
 - (id) initWithPlayer:(Player*)aPlayer;
 - (void) dealloc;
 //@}
+/// @name NSCoding protocol
+//@{
+- (id) initWithCoder:(NSCoder*)decoder;
+- (void) encodeWithCoder:(NSCoder*)encoder;
+//@}
 /// @name Other methods
 //@{
 - (NSString*) description;
++ (Player*) playerWithUUID:(NSString*)uuid;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -57,8 +63,7 @@
 + (GoPlayer*) newGameBlackPlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
-  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
-  Player* player = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
+  Player* player = [GoPlayer playerWithUUID:newGameModel.blackPlayerUUID];
   return [GoPlayer blackPlayer:player];
 }
 
@@ -69,8 +74,7 @@
 + (GoPlayer*) newGameWhitePlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
-  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
-  Player* player = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
+  Player* player = [GoPlayer playerWithUUID:newGameModel.whitePlayerUUID];
   return [GoPlayer whitePlayer:player];
 }
 
@@ -144,6 +148,39 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+///
+/// It is expected that the user defaults have already been loaded at the time
+/// this initializer is invoked, so that the Player object referenced by the
+/// archived player UUID is available.
+///
+/// Raises an @e NSInvalidArgumentException if the player referenced by the
+/// archived player UUID cannot be found.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  NSString* uuid = [decoder decodeObjectForKey:goPlayerPlayerUUIDKey];
+  self.player = [GoPlayer playerWithUUID:uuid];
+  self.black = [decoder decodeBoolForKey:goPlayerIsBlackKey];
+
+  if (! self.player)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:[NSString stringWithFormat:@"Player object not found for player UUID %@", uuid]
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this GoPlayer object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -175,6 +212,28 @@
     return @"B";
   else
     return @"W";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the player object identified by @a uuid. Returns nil if no
+/// such object exists.
+///
+/// This is an internal helper that hides the source of Player objects.
+// -----------------------------------------------------------------------------
++ (Player*) playerWithUUID:(NSString*)uuid
+{
+  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+  return [playerModel playerWithUUID:uuid];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.player.uuid forKey:goPlayerPlayerUUIDKey];
+  [encoder encodeBool:self.isBlack forKey:goPlayerIsBlackKey];
 }
 
 @end
