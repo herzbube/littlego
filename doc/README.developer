@@ -284,7 +284,8 @@ TableViewCell
 Architecture and implementation notes
 -------------------------------------
 - Error handling: TODO
-- Memory management: Uses retain/release, there is no garbage collection on iOS.
+- Memory management: Manual reference counting using retain/release, i.e. no
+  ARC.
 - Communication with Fuego
   - How it normally works: On PC platforms this is done by running Fuego in a
     separate process and then attaching an output and an input stream to that
@@ -296,6 +297,8 @@ Architecture and implementation notes
     named pipes. The Fuego client also runs in a secondary thread and attaches
     two complementary streams to the same pair of named pipes. Synchronization
     between the two threads is achieved through the pipes' blocking behaviour.
+  - Fuego had to be patched to make this happen. For details, read the section
+    "Changes to the Fuego source code".
 - Thread architecture
   - Main thread: Reacts to user input; submits commands to the GTP client;
     is notified asynchronously by the GTP client after a command has been
@@ -313,10 +316,6 @@ Architecture and implementation notes
   - Communication between main thread and GTP client secondary thread happens
     entirely within the GtpClient class; synchronization occurs with the help
     of the NSObject method performSelector:onThread:withObject:waitUntilDone:().
-    When the response to the command is ready, GtpClient posts a notification
-    to the global notification center. The notification is delivered in the
-    main thread context, which allows arbitrary observers to react to the event
-    without having to care about threading issues.
   - Communication between GTP client and GTP engine secondary threads is routed
     through named pipes; synchronization occurs via the file streams' blocking
     read behaviour.
@@ -326,6 +325,8 @@ Architecture and implementation notes
     client is still waiting for the response to a previous command. For this
     reason, all GUI elements that trigger a GTP command should be disabled
     while a command is being processed.
+  - Read the GtpClient class documentation for details about how GtpClient
+    notifies clients of command submission and response receipt.
 - GTP command sequence: Even though responses for GTP commands are received
   asynchronously, the commands themselves are processed in the order that they
   are submitted. This means that any number of GTP commands can be submitted as
@@ -449,7 +450,8 @@ Coding guidelines
   which is declared in the .m file
 - Consider making properties "readonly" in the public interface of a class, then
   redeclare them as "readwrite" in the private interface in the .m file
-- Explicitly declare setter semantics, even if the default "assign" is in place
+- Always declare a property's setter semantics, i.e. explicitly declare "assign"
+  even though it is the default and might be omitted
 - Use "nonatomic" unless the property really needs to be atomic
 - Find good names for variables, methods and classes; don't hesitate to use
   long names; never (!) use abbreviations; don't use i, j, k for loop variables
@@ -457,10 +459,11 @@ Coding guidelines
 - Method signatures should start in column 0 and use spaces etc. as in the
   following example:
     - (NSString*) foo:(NSString*)bar;
-- Dont use side-effects, e.g.
-  - Never place ++/-- operators in the same line as an assignment
+- Never ever use side-effects, e.g.
+  - Don't place ++/-- operators in the same line as an assignment
   - Don't test a condition and make an assignment at the same time
-- Everything should be documented with Doxygen documentation blocks
+- Everything should be documented with Doxygen documentation blocks; exceptions
+  are possible but should remain rare
 
 
 Unit tests
