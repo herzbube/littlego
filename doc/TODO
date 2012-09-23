@@ -157,6 +157,8 @@ Priority 2 (nice to have)
 - Define if it should be possible to load a game while scoring is in progress.
   Currently this works accidentally only. Also add a test case for this to the
   TESTING document.
+- User should be able to define a set of GTP commands that are always applied
+  when the app is launched (or a new game is started?)
 
 
 Priority 3 (not important)
