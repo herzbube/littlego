@@ -226,6 +226,11 @@ Priority 3 (not important)
 - Add GtpLogItem to objects being serialized when a bug report is sent. This has
   not been implemented yet because this potentially increases the diagnostics
   information file a lot (depending on the size of the GTP log)
+- Find out why it is not possible to initialize constants in Constants.m with
+  numeric_limits. The following example results in a compiler error (namespace
+  std is not known)
+    const unsigned int fuegoMaxPonderTimeMaximum = std::numeric_limits<unsigned int>::max();
+  I tried this after adding the ".mm" file extension, but still no luck.
 
 
 Future improvements to the 3rdparty build process

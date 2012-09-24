@@ -49,7 +49,10 @@
 @synthesize fuegoMaxMemory;
 @synthesize fuegoThreadCount;
 @synthesize fuegoPondering;
+@synthesize fuegoMaxPonderTime;
 @synthesize fuegoReuseSubtree;
+@synthesize fuegoMaxThinkingTime;
+@synthesize fuegoMaxGames;
 
 
 // -----------------------------------------------------------------------------
@@ -90,7 +93,10 @@
     self.fuegoMaxMemory = fuegoMaxMemoryDefault;
     self.fuegoThreadCount = fuegoThreadCountDefault;
     self.fuegoPondering = fuegoPonderingDefault;
+    self.fuegoMaxPonderTime = fuegoMaxPonderTimeDefault;
     self.fuegoReuseSubtree = fuegoReuseSubtreeDefault;
+    self.fuegoMaxThinkingTime = fuegoMaxThinkingTimeDefault;
+    self.fuegoMaxGames = fuegoMaxGamesDefault;
   }
   else
   {
@@ -100,7 +106,10 @@
     self.fuegoMaxMemory = [[dictionary valueForKey:fuegoMaxMemoryKey] intValue];
     self.fuegoThreadCount = [[dictionary valueForKey:fuegoThreadCountKey] intValue];
     self.fuegoPondering = [[dictionary valueForKey:fuegoPonderingKey] boolValue];
+    self.fuegoMaxPonderTime = [[dictionary valueForKey:fuegoMaxPonderTimeKey] unsignedIntValue];
     self.fuegoReuseSubtree = [[dictionary valueForKey:fuegoReuseSubtreeKey] boolValue];
+    self.fuegoMaxThinkingTime = [[dictionary valueForKey:fuegoMaxThinkingTimeKey] unsignedIntValue];
+    self.fuegoMaxGames = [[dictionary valueForKey:fuegoMaxGamesKey] unsignedLongLongValue];
   }
   assert([self.uuid length] > 0);
 
@@ -146,7 +155,10 @@
   [dictionary setValue:[NSNumber numberWithInt:self.fuegoMaxMemory] forKey:fuegoMaxMemoryKey];
   [dictionary setValue:[NSNumber numberWithInt:self.fuegoThreadCount] forKey:fuegoThreadCountKey];
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoPondering] forKey:fuegoPonderingKey];
+  [dictionary setValue:[NSNumber numberWithUnsignedInt:self.fuegoMaxPonderTime] forKey:fuegoMaxPonderTimeKey];
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoReuseSubtree] forKey:fuegoReuseSubtreeKey];
+  [dictionary setValue:[NSNumber numberWithUnsignedInt:self.fuegoMaxThinkingTime] forKey:fuegoMaxThinkingTimeKey];
+  [dictionary setValue:[NSNumber numberWithUnsignedLongLong:self.fuegoMaxGames] forKey:fuegoMaxGamesKey];
   return dictionary;
 }
 
@@ -174,6 +186,15 @@
     [GtpUtilities startPondering];
   else
     [GtpUtilities stopPondering];
+  commandString = [NSString stringWithFormat:@"uct_param_player max_ponder_time %u", self.fuegoMaxPonderTime];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"go_param timelimit %u", self.fuegoMaxThinkingTime];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"uct_param_player max_games %llu", self.fuegoMaxGames];
+  command = [GtpCommand command:commandString];
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------

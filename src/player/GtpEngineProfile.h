@@ -61,7 +61,16 @@
 @property(nonatomic, assign) int fuegoThreadCount;
 /// @brief True if Fuego should play with pondering on.
 @property(nonatomic, assign) bool fuegoPondering;
+/// @brief Maximum time in seconds that Fuego is allowed to ponder (i.e. think
+/// while it is the opponent's turn).
+@property(nonatomic, assign) unsigned int fuegoMaxPonderTime;
 /// @brief True if Fuego should reuse the subtree from the previous search.
 @property(nonatomic, assign) bool fuegoReuseSubtree;
+/// @brief Maximum time in seconds that Fuego is allowed to think on its own
+/// turn.
+@property(nonatomic, assign) unsigned int fuegoMaxThinkingTime;
+/// @brief Maximum number of games that Fuego is allowed to play before it must
+/// decide on a best move.
+@property(nonatomic, assign) unsigned long long fuegoMaxGames;
 
 @end

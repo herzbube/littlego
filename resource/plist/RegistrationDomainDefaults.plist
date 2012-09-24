@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>3</integer>
+	<integer>4</integer>
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
@@ -137,8 +137,14 @@
 			<integer>1</integer>
 			<key>FuegoPondering</key>
 			<true/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<true/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>UUID</key>
@@ -153,8 +159,14 @@
 			<integer>1</integer>
 			<key>FuegoPondering</key>
 			<false/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<false/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>UUID</key>
@@ -169,8 +181,14 @@
 			<integer>2</integer>
 			<key>FuegoPondering</key>
 			<true/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<true/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>0</integer>
 		</dict>
 	</array>
 	<key>StarPoints</key>

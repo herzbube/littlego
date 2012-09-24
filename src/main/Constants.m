@@ -65,7 +65,16 @@ const int fuegoThreadCountMinimum = 1;
 const int fuegoThreadCountMaximum = 8;
 const int fuegoThreadCountDefault = 1;
 const bool fuegoPonderingDefault = true;
+const unsigned int fuegoMaxPonderTimeMinimum = 1;
+const unsigned int fuegoMaxPonderTimeMaximum = 4294967295;  // std::numeric_limits<unsigned int>::max();
+const unsigned int fuegoMaxPonderTimeDefault = 300;
 const bool fuegoReuseSubtreeDefault = true;
+const unsigned int fuegoMaxThinkingTimeMinimum = 1;
+const unsigned int fuegoMaxThinkingTimeMaximum = 4294967295;  // std::numeric_limits<unsigned int>::max();
+const unsigned int fuegoMaxThinkingTimeDefault = 10;
+const unsigned long long fuegoMaxGamesMinimum = 1;
+const unsigned long long fuegoMaxGamesMaximum = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();
+const unsigned long long fuegoMaxGamesDefault = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Diagnostics view settings default values
@@ -161,7 +170,10 @@ NSString* gtpEngineProfileDescriptionKey = @"Description";
 NSString* fuegoMaxMemoryKey = @"FuegoMaxMemory";
 NSString* fuegoThreadCountKey = @"FuegoThreadCount";
 NSString* fuegoPonderingKey = @"FuegoPondering";
+NSString* fuegoMaxPonderTimeKey = @"FuegoMaxPonderTime";
 NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";
+NSString* fuegoMaxThinkingTimeKey = @"FuegoMaxThinkingTime";
+NSString* fuegoMaxGamesKey = @"FuegoMaxGames";
 // Archive view settings
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";
