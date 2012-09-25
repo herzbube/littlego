@@ -65,12 +65,14 @@ const int fuegoThreadCountMinimum = 1;
 const int fuegoThreadCountMaximum = 8;
 const int fuegoThreadCountDefault = 1;
 const bool fuegoPonderingDefault = true;
-const unsigned int fuegoMaxPonderTimeMinimum = 1;
-const unsigned int fuegoMaxPonderTimeMaximum = 4294967295;  // std::numeric_limits<unsigned int>::max();
-const unsigned int fuegoMaxPonderTimeDefault = 300;
+const unsigned int fuegoMaxPonderTimeMinimum = 60;     // only values that are full minutes because
+                                                       // Settings tab lets the user pick minute values
+const unsigned int fuegoMaxPonderTimeMaximum = 3600;   // ditto
+const unsigned int fuegoMaxPonderTimeDefault = 300;    // ditto
 const bool fuegoReuseSubtreeDefault = true;
 const unsigned int fuegoMaxThinkingTimeMinimum = 1;
-const unsigned int fuegoMaxThinkingTimeMaximum = 4294967295;  // std::numeric_limits<unsigned int>::max();
+const unsigned int fuegoMaxThinkingTimeMaximum = 120;  // not too high, user must be able to pick individual values
+                                                       // in the range from 1-10 seconds in the Settings tab
 const unsigned int fuegoMaxThinkingTimeDefault = 10;
 const unsigned long long fuegoMaxGamesMinimum = 1;
 const unsigned long long fuegoMaxGamesMaximum = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();

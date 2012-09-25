@@ -35,7 +35,10 @@ enum EditGtpEngineProfileTableViewSection
   ProfileNameSection,
   ProfileDescriptionSection,
   MaxMemorySection,
-  OtherProfileSettingsSection,
+  ThreadsSection,
+  PonderingSection,
+  ReuseSubtreeSection,
+  PlayoutLimitsSection,
   MaxSection
 };
 
@@ -67,16 +70,63 @@ enum MaxMemorySectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the OtherProfileSettingsSection.
+/// @brief Enumerates items in the ThreadsSection.
 // -----------------------------------------------------------------------------
-enum OtherProfileSettingsSectionItem
+enum ThreadsSectionItem
 {
   FuegoThreadCountItem,
-  FuegoPonderingItem,
-  FuegoReuseSubtreeItem,
-  MaxOtherProfileSettingsSectionItem
+  MaxThreadsSectionItem
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PonderingSection.
+// -----------------------------------------------------------------------------
+enum PonderingSectionItem
+{
+  FuegoPonderingItem,
+  FuegoMaxPonderTimeItem,
+  MaxPonderingSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ReuseSubtreeSection.
+// -----------------------------------------------------------------------------
+enum ReuseSubtreeSectionItem
+{
+  FuegoReuseSubtreeItem,
+  MaxReuseSubtreeSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PlayoutLimitsSection.
+// -----------------------------------------------------------------------------
+enum PlayoutLimitsSectionItem
+{
+  FuegoMaxThinkingTimeItem,
+  FuegoMaxGamesItem,
+  MaxPlayoutLimitsSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates categories of "max. games" as they are displayed to the
+/// user instead of meaningless raw numbers.
+// -----------------------------------------------------------------------------
+enum MaxGamesCategory
+{
+  Game1MaxGamesCategory,
+  Game10MaxGamesCategory,
+  Game100MaxGamesCategory,
+  Game500MaxGamesCategory,
+  Game1000MaxGamesCategory,
+  Game2000MaxGamesCategory,
+  Game5000MaxGamesCategory,
+  Game10000MaxGamesCategory,
+  Game15000MaxGamesCategory,
+  Game20000MaxGamesCategory,
+  Game50000MaxGamesCategory,
+  UnlimitedMaxGamesCategory,
+  MaxMaxGamesCategory
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for
@@ -100,6 +150,9 @@ enum OtherProfileSettingsSectionItem
 - (void) toggleReuseSubtree:(id)sender;
 - (void) maxMemoryDidChange:(id)sender;
 - (void) threadCountDidChange:(id)sender;
+- (void) maxPonderTimeDidChange:(id)sender;
+- (void) maxThinkingTimeDidChange:(id)sender;
+- (void) maxGamesDidChange:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -123,9 +176,16 @@ enum OtherProfileSettingsSectionItem
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
+/// @name ItemPickerDelegate protocol
+//@{
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
 /// @name Private helpers
 //@{
 - (bool) isProfileValid;
+- (NSString*) maxGamesCategoryName:(enum MaxGamesCategory)maxGamesCategory;
+- (unsigned long long) maxGames:(enum MaxGamesCategory)maxGamesCategory;
+- (enum MaxGamesCategory) maxGamesCategory:(unsigned long long)maxGames;
 //@}
 /// @name Privately declared properties
 //@{
@@ -256,8 +316,14 @@ enum OtherProfileSettingsSectionItem
       return MaxProfileDescriptionSectionItem;
     case MaxMemorySection:
       return MaxMaxMemorySectionItem;
-    case OtherProfileSettingsSection:
-      return MaxOtherProfileSettingsSectionItem;
+    case ThreadsSection:
+      return MaxThreadsSectionItem;
+    case PonderingSection:
+      return MaxPonderingSectionItem;
+    case ReuseSubtreeSection:
+      return MaxReuseSubtreeSectionItem;
+    case PlayoutLimitsSection:
+      return MaxPlayoutLimitsSectionItem;
     default:
       assert(0);
       break;
@@ -274,12 +340,9 @@ enum OtherProfileSettingsSectionItem
   {
     case ProfileNameSection:
       return @"Profile name & description";
-    case ProfileDescriptionSection:
-      return nil;
     case MaxMemorySection:
       return @"GTP engine settings";
     default:
-      assert(0);
       break;
   }
   return nil;
@@ -294,7 +357,7 @@ enum OtherProfileSettingsSectionItem
   {
     case MaxMemorySection:
       return @"WARNING: Setting this value too high WILL crash the app! Read more about this under 'Help > Players & Profiles > Maximum memory'";
-    case OtherProfileSettingsSection:
+    case PlayoutLimitsSection:
       return @"Changed settings are applied only after a new game with a player who uses this profile is started.";
     default:
       break;
@@ -376,21 +439,21 @@ enum OtherProfileSettingsSectionItem
       sliderCell.value = self.profile.fuegoMaxMemory;
       break;
     }
-    case OtherProfileSettingsSection:
+    case ThreadsSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
+      sliderCell.descriptionLabel.text = @"Number of threads";
+      sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
+      sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
+      sliderCell.value = self.profile.fuegoThreadCount;
+      break;
+    }
+    case PonderingSection:
     {
       switch (indexPath.row)
       {
-        case FuegoThreadCountItem:
-        {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
-          sliderCell.descriptionLabel.text = @"Number of threads";
-          sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
-          sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
-          sliderCell.value = self.profile.fuegoThreadCount;
-          break;
-        }
         case FuegoPonderingItem:
         {
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
@@ -400,19 +463,68 @@ enum OtherProfileSettingsSectionItem
           [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
           break;
         }
-        case FuegoReuseSubtreeItem:
+        case FuegoMaxPonderTimeItem:
         {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          cell.textLabel.text = @"Reuse subtree";
-          accessoryView.on = self.profile.fuegoReuseSubtree;
-          [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
-          // If pondering is on, the default value of reuse subtree ("on") must
-          // not be changed by the user
-          accessoryView.enabled = ! self.profile.fuegoPondering;
-          // Keep reference to control so that we can manipulate it when
-          // pondering is changed later on
-          self.reuseSubtreeSwitch = accessoryView;
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxPonderTimeDidChange:)];
+          sliderCell.descriptionLabel.text = @"Ponder time (minutes)";
+          sliderCell.slider.minimumValue = fuegoMaxPonderTimeMinimum / 60;
+          sliderCell.slider.maximumValue = fuegoMaxPonderTimeMaximum / 60;
+          sliderCell.value = self.profile.fuegoMaxPonderTime / 60;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
+    case ReuseSubtreeSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Reuse subtree";
+      accessoryView.on = self.profile.fuegoReuseSubtree;
+      [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
+      // If pondering is on, the default value of reuse subtree ("on") must
+      // not be changed by the user
+      accessoryView.enabled = ! self.profile.fuegoPondering;
+      // Keep reference to control so that we can manipulate it when
+      // pondering is changed later on
+      self.reuseSubtreeSwitch = accessoryView;
+      break;
+    }
+    case PlayoutLimitsSection:
+    {
+      switch (indexPath.row)
+      {
+        case FuegoMaxThinkingTimeItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxThinkingTimeDidChange:)];
+          sliderCell.descriptionLabel.text = @"Thinking time (seconds)";
+          sliderCell.slider.minimumValue = fuegoMaxThinkingTimeMinimum;
+          sliderCell.slider.maximumValue = fuegoMaxThinkingTimeMaximum;
+          sliderCell.value = self.profile.fuegoMaxThinkingTime;
+          break;
+        }
+        case FuegoMaxGamesItem:
+        {
+          enum TableViewCellType cellType = Value1CellType;
+          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+          cell.textLabel.text = @"Max. games";
+          enum MaxGamesCategory maxGamesCategory = [self maxGamesCategory:self.profile.fuegoMaxGames];
+          cell.detailTextLabel.text = [self maxGamesCategoryName:maxGamesCategory];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        default:
+        {
+          assert(0);
           break;
         }
       }
@@ -451,23 +563,26 @@ enum OtherProfileSettingsSectionItem
     }
     case MaxMemorySection:
     {
-      height = [TableViewSliderCell rowHeightInTableView:tableView];
+      if (FuegoMaxMemoryItem == indexPath.row)
+        height = [TableViewSliderCell rowHeightInTableView:tableView];
       break;
     }
-    case OtherProfileSettingsSection:
+    case ThreadsSection:
     {
-      switch (indexPath.row)
-      {
-        case FuegoThreadCountItem:
-        {
-          height = [TableViewSliderCell rowHeightInTableView:tableView];
-          break;
-        }
-        default:
-        {
-          break;
-        }
-      }
+      if (FuegoThreadCountItem == indexPath.row)
+        height = [TableViewSliderCell rowHeightInTableView:tableView];
+      break;
+    }
+    case PonderingSection:
+    {
+      if (FuegoMaxPonderTimeItem == indexPath.row)
+        height = [TableViewSliderCell rowHeightInTableView:tableView];
+      break;
+    }
+    case PlayoutLimitsSection:
+    {
+      if (FuegoMaxThinkingTimeItem == indexPath.row)
+        height = [TableViewSliderCell rowHeightInTableView:tableView];
       break;
     }
     default:
@@ -497,6 +612,28 @@ enum OtherProfileSettingsSectionItem
     [self presentModalViewController:navigationController animated:YES];
     [navigationController release];
     [editTextController release];
+  }
+  else if (PlayoutLimitsSection == indexPath.section)
+  {
+    if (FuegoMaxGamesItem == indexPath.row)
+    {
+      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+      for (int maxGamesCategoryIndex = 0; maxGamesCategoryIndex < MaxMaxGamesCategory; ++maxGamesCategoryIndex)
+      {
+        NSString* maxGamesCategory = [self maxGamesCategoryName:maxGamesCategoryIndex];
+        [itemList addObject:maxGamesCategory];
+      }
+      int indexOfDefaultMaxGamesCategory = [self maxGamesCategory:self.profile.fuegoMaxGames];
+      UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                 title:@"Max. games"
+                                                                    indexOfDefaultItem:indexOfDefaultMaxGamesCategory
+                                                                              delegate:self];
+      UINavigationController* navigationController = [[UINavigationController alloc]
+                                                      initWithRootViewController:modalController];
+      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      [self presentModalViewController:navigationController animated:YES];
+      [navigationController release];
+    }
   }
 }
 
@@ -556,6 +693,28 @@ enum OtherProfileSettingsSectionItem
   // -> the user must simply continue editing until the profile name becomes
   //    valid
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+    {
+      self.profile.fuegoMaxGames = [self maxGames:controller.indexOfSelectedItem];
+
+      NSUInteger sectionIndex = PlayoutLimitsSection;
+      NSUInteger rowIndex = FuegoMaxGamesItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -634,12 +793,183 @@ enum OtherProfileSettingsSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing Fuego's maximum pondering time.
+// -----------------------------------------------------------------------------
+- (void) maxPonderTimeDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.profile.fuegoMaxPonderTime = sliderCell.value * 60;
+
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing Fuego's maximum thinking time.
+// -----------------------------------------------------------------------------
+- (void) maxThinkingTimeDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.profile.fuegoMaxThinkingTime = sliderCell.value;
+
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing Fuego's maximum number of games to play.
+// -----------------------------------------------------------------------------
+- (void) maxGamesDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.profile.fuegoMaxGames = sliderCell.value;
+
+  if (self.profileExists)
+    [self.delegate didChangeProfile:self];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns true if the current profile object contains valid data so
 /// that editing can safely be stopped.
 // -----------------------------------------------------------------------------
 - (bool) isProfileValid
 {
   return (self.profile.name.length > 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a maxGamesCategory that is
+/// suitable for displaying in the UI.
+///
+/// Raises an @e NSInvalidArgumentException if @a maxGamesCategory is not
+/// recognized.
+// -----------------------------------------------------------------------------
+- (NSString*) maxGamesCategoryName:(enum MaxGamesCategory)maxGamesCategory
+{
+  switch (maxGamesCategory)
+  {
+    case Game1MaxGamesCategory:
+      return @"1";
+    case Game10MaxGamesCategory:
+      return @"10";
+    case Game100MaxGamesCategory:
+      return @"100";
+    case Game500MaxGamesCategory:
+      return @"500";
+    case Game1000MaxGamesCategory:
+      return @"1000";
+    case Game2000MaxGamesCategory:
+      return @"2000";
+    case Game5000MaxGamesCategory:
+      return @"5000";
+    case Game10000MaxGamesCategory:
+      return @"10'000";
+    case Game15000MaxGamesCategory:
+      return @"15'000";
+    case Game20000MaxGamesCategory:
+      return @"20'000";
+    case Game50000MaxGamesCategory:
+      return @"50'000";
+    case UnlimitedMaxGamesCategory:
+      return @"Unlimited";
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a natural number corresponding to the enumeration value
+/// @a maxGamesCategory.
+///
+/// Raises an @e NSInvalidArgumentException if @a maxGamesCategory is not
+/// recognized.
+// -----------------------------------------------------------------------------
+- (unsigned long long) maxGames:(enum MaxGamesCategory)maxGamesCategory
+{
+  switch (maxGamesCategory)
+  {
+    case Game1MaxGamesCategory:
+      return 1;
+    case Game10MaxGamesCategory:
+      return 10;
+    case Game100MaxGamesCategory:
+      return 100;
+    case Game500MaxGamesCategory:
+      return 500;
+    case Game1000MaxGamesCategory:
+      return 1000;
+    case Game2000MaxGamesCategory:
+      return 2000;
+    case Game5000MaxGamesCategory:
+      return 5000;
+    case Game10000MaxGamesCategory:
+      return 10000;
+    case Game15000MaxGamesCategory:
+      return 15000;
+    case Game20000MaxGamesCategory:
+      return 20000;
+    case Game50000MaxGamesCategory:
+      return 50000;
+    case UnlimitedMaxGamesCategory:
+      return fuegoMaxGamesMaximum;
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a category enumeration value that corresponds to the natural
+/// number @a maxGames.
+///
+/// Raises an @e NSInvalidArgumentException if there is no correspondence for
+/// @a maxGames.
+// -----------------------------------------------------------------------------
+- (enum MaxGamesCategory) maxGamesCategory:(unsigned long long)maxGames
+{
+  if (fuegoMaxGamesMaximum == maxGames)
+    return UnlimitedMaxGamesCategory;
+  switch (maxGames)
+  {
+    case 1:
+      return Game1MaxGamesCategory;
+    case 10:
+      return Game10MaxGamesCategory;
+    case 100:
+      return Game100MaxGamesCategory;
+    case 500:
+      return Game500MaxGamesCategory;
+    case 1000:
+      return Game1000MaxGamesCategory;
+    case 2000:
+      return Game2000MaxGamesCategory;
+    case 5000:
+      return Game5000MaxGamesCategory;
+    case 10000:
+      return Game10000MaxGamesCategory;
+    case 15000:
+      return Game15000MaxGamesCategory;
+    case 20000:
+      return Game20000MaxGamesCategory;
+    case 50000:
+      return Game50000MaxGamesCategory;
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Invalid 'max. games' number %d, no available category", maxGames]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end
