@@ -28,6 +28,24 @@
 /// - If a game is started where both players are human
 /// - If a profile is deleted that is still associated with a Player object,
 ///   then that Player object is re-associated with the default profile
+///
+///
+/// @par Playing strength
+///
+/// The value of the @e playingStrength property of a GtpEngineProfile denotes
+/// the relative playing strength of a computer player that uses the profile.
+/// A lower value indicates a weaker player, while a higher value indicates a
+/// stronger player.
+///
+/// Each playing strength value represents a certain pre-defined (i.e.
+/// hardcoded) combination of GTP engine settings. Changing a GtpEngineProfile's
+/// playing strength will result in the profile's settings being updated to the
+/// combination of values that represent the new playing strength. Only playing
+/// strengths in the range between 0 and #maximumPlayingStrength can be
+/// assigned. An exception is raised if you try to assign any other value.
+///
+/// When querying the property, the value #customPlayingStrength indicates an
+/// unknown (i.e. not pre-defined) combination of profile settings.
 // -----------------------------------------------------------------------------
 @interface GtpEngineProfile : NSObject
 {
@@ -53,6 +71,10 @@
 /// This property is named "profileDescription" instead of just "description"
 /// to prevent a conflict with the description() debugging aid.
 @property(nonatomic, retain) NSString* profileDescription;
+/// @brief The playing strength of this profile. See class documentation for
+/// details. Assigning a value outside the range of pre-defined playing
+/// strengths results in an exception being raised.
+@property(nonatomic, assign) int playingStrength;
 /// @brief The maximum amount of memory in MB that the Fuego GTP engine is
 /// allowed to consume.
 @property(nonatomic, assign) int fuegoMaxMemory;

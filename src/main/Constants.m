@@ -57,7 +57,10 @@ NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
 NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
-/// GTP engine profile default values
+/// GTP engine profile constants
+const int minimumPlayingStrength = 1;
+const int maximumPlayingStrength = 10;
+const int customPlayingStrength = 0;
 const int fuegoMaxMemoryMinimum = 16;
 const int fuegoMaxMemoryMaximum = 512;
 const int fuegoMaxMemoryDefault = 32;

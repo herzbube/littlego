@@ -33,6 +33,8 @@
 /// @name Private helpers
 //@{
 - (NSString*) description;
+- (int) playingStrength;
+- (void) setPlayingStrength:(int)playingStrength;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -203,6 +205,178 @@
 - (bool) isDefaultProfile
 {
   return [uuid isEqualToString:defaultGtpEngineProfileUUID];
+}
+
+// -----------------------------------------------------------------------------
+// See property documentation. This property is not synthesized.
+// -----------------------------------------------------------------------------
+- (int) playingStrength
+{
+  int playingStrength = customPlayingStrength;
+
+  // Rule out any settings that must always be the same
+  if (fuegoMaxMemoryDefault != self.fuegoMaxMemory
+      || fuegoThreadCountDefault != self.fuegoThreadCount
+      || fuegoMaxPonderTimeDefault != self.fuegoMaxPonderTime)
+  {
+    playingStrength = customPlayingStrength;
+  }
+
+  switch (self.fuegoMaxThinkingTime)
+  {
+    case 10:
+    {
+      if (10000 == self.fuegoMaxGames)
+      {
+        if (self.fuegoReuseSubtree && self.fuegoPondering)
+          playingStrength = 9;
+        else if (self.fuegoReuseSubtree)
+          playingStrength = 8;
+        else
+          playingStrength = 7;
+      }
+      else
+      {
+        if (self.fuegoReuseSubtree || self.fuegoPondering)
+          playingStrength = customPlayingStrength;
+        else
+        {
+          switch (self.fuegoMaxGames)
+          {
+            case 10:
+              playingStrength = 1;
+              break;
+            case 100:
+              playingStrength = 2;
+              break;
+            case 500:
+              playingStrength = 3;
+              break;
+            case 1250:
+              playingStrength = 4;
+              break;
+            case 2500:
+              playingStrength = 5;
+              break;
+            case 5000:
+              playingStrength = 6;
+              break;
+            default:
+              playingStrength = customPlayingStrength;
+              break;
+          }
+        }
+      }
+      break;
+    }
+    case 20:
+    {
+      if (self.fuegoPondering && self.fuegoReuseSubtree && fuegoMaxGamesMaximum == self.fuegoMaxGames)
+        playingStrength = 10;
+      else
+        playingStrength = customPlayingStrength;
+      break;
+    }
+    default:
+    {
+      playingStrength = customPlayingStrength;
+      break;
+    }
+  }
+
+  return playingStrength;
+}
+
+// -----------------------------------------------------------------------------
+// See property documentation. This property is not synthesized.
+// -----------------------------------------------------------------------------
+- (void) setPlayingStrength:(int)playingStrength
+{
+  // These settings are never changed
+  self.fuegoMaxMemory = fuegoMaxMemoryDefault;
+  self.fuegoThreadCount = fuegoThreadCountDefault;
+  self.fuegoMaxPonderTime = fuegoMaxPonderTimeDefault;
+  // These settings are only rarely changed
+  self.fuegoPondering = false;
+  self.fuegoReuseSubtree = false;
+  self.fuegoMaxThinkingTime = 10;
+
+  // Thoughts behind the following pre-defined playing strengths
+  // - Setting fuegoMaxGames to very low values is guaranteed to cripple Fuego,
+  //   regardless of the device CPU's number crunching power. This is therefore
+  //   the best way to limit playing strength at the low end of the scale.
+  // - Raising the value of fuegoMaxGames should increase Fuego's playing
+  //   strength
+  // - At a certain point, fuegoMaxThinkingTime will become the limiting factor
+  //   because the CPU will not be able to calculate all of the playouts
+  //   allowed by fuegoMaxGames in the allotted time.
+  // - At this point, we need to switch to some other limiting factor besides
+  //   fuegoMaxGames and fuegoMaxThinkingTime. We cannot just raise
+  //   fuegoMaxThinkingTime because for a good user experience, the computer
+  //   player should not take too long for its turns.
+  // - fuegoMaxMemory and fuegoThreadCount cannot be safely used because on
+  //   older devices not much memory is available, or the CPU has only 1 core
+  // - The best two settings that further increase playing strength therefore
+  //   are "reuse subtree" and pondering. These possibly have a huge impact,
+  //   so they are only turned on at the upper end of the scale.
+  // - For the final challenge, fuegoMaxThinkingTime is increased one more time,
+  //   and any limitation on fuegoMaxGames is removed to make sure that the
+  //   full time limit can be used if necessary
+  //
+  // Crucial points for a balanced scale are:
+  // - What steps should be used to increase fuegoMaxGames from one level of
+  //   playing strength to the next? The steps should be balanced so that the
+  //   increase in playing strength becomes noticable.
+  // - The balance may become disrupted on slower devices because there
+  //   fuegoMaxThinkingTime will become the limiting factor much faster than
+  //   on fast devices with more number crunching power
+
+  switch (playingStrength)
+  {
+    case 1:
+      self.fuegoMaxGames = 10;    // start with 10 because 1 is just ridiculous
+      break;
+    case 2:
+      self.fuegoMaxGames = 100;   // 10x the previous limit guarantees that the difference is noticeable
+      break;
+    case 3:
+      self.fuegoMaxGames = 500;   // not 10x this time, we don't want go forward too fast
+      break;
+    case 4:
+      self.fuegoMaxGames = 1250;
+      break;
+    case 5:
+      self.fuegoMaxGames = 2500;
+      break;
+    case 6:
+      self.fuegoMaxGames = 5000;
+      break;
+    case 7:
+      self.fuegoMaxGames = 10000;  // on fast CPUs this still imposes a noticable limit (measurement made on a MacBook)
+      break;
+    case 8:
+      self.fuegoReuseSubtree = true;
+      self.fuegoMaxGames = 10000;
+      break;
+    case 9:
+      self.fuegoPondering = true;
+      self.fuegoReuseSubtree = true;
+      self.fuegoMaxGames = 10000;
+      break;
+    case 10:
+      self.fuegoPondering = true;
+      self.fuegoReuseSubtree = true;
+      self.fuegoMaxThinkingTime = 20;
+      self.fuegoMaxGames = fuegoMaxGamesMaximum;
+      break;
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:[NSString stringWithFormat:@"Playing strength %d is invalid", playingStrength]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

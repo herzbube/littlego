@@ -160,6 +160,7 @@
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
+		CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
@@ -443,6 +444,8 @@
 		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
+		CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileSettingsController.h; sourceTree = "<group>"; };
+		CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -847,6 +850,8 @@
 			children = (
 				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
+				CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */,
+				CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
@@ -1526,6 +1531,7 @@
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
+				CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

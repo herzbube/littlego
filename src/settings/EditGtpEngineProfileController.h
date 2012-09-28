@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "EditGtpEngineProfileSettingsController.h"
 #import "../ui/EditTextController.h"
 #import "../ui/ItemPickerController.h"
 
@@ -42,9 +43,15 @@
 /// @brief The EditGtpEngineProfileController class is responsible for managing
 /// user interaction on the "Edit/New Profile" view.
 ///
-/// The "Edit/New Profile" view allows the user to edit the information
-/// associated with a GtpEngineProfile object. The view is a generic
-/// UITableView whose input elements are created dynamically by
+/// The "Edit/New Profile" view allows the user to edit basic information
+/// associated with a GtpEngineProfile object. The user can adjust the profile's
+/// playing strength either by selecting one of several pre-defined combinations
+/// of settings, or by tweaking individual settings. In the latter case, editing
+/// of those settings is delegated to EditGtpEngineProfileSettingsController
+/// (isn't that a nice name?).
+///
+/// The view managed by EditGtpEngineProfileController is a generic UITableView
+/// whose input elements are created dynamically by
 /// EditGtpEngineProfileController. The controller runs in one of two modes,
 /// depending on which convenience constructor is used to create the controller
 /// instance:
@@ -64,7 +71,7 @@
 /// can be informed when the user makes any changes. For this to work, the
 /// delegate must implement the protocol EditGtpEngineProfileDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, EditTextDelegate, ItemPickerDelegate>
+@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, EditTextDelegate, ItemPickerDelegate, EditGtpEngineProfileSettingsDelegate>
 {
 }
 

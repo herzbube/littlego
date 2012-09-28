@@ -359,11 +359,14 @@ extern NSString* goScoreCalculationEnds;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name GTP engine profile default values
+/// @name GTP engine profile constants
 ///
 /// @brief See GtpEngineProfile for attribute documentation.
 // -----------------------------------------------------------------------------
 //@{
+extern const int minimumPlayingStrength;
+extern const int maximumPlayingStrength;
+extern const int customPlayingStrength;
 extern const int fuegoMaxMemoryMinimum;
 extern const int fuegoMaxMemoryMaximum;
 extern const int fuegoMaxMemoryDefault;
