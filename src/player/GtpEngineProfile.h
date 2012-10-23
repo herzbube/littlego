@@ -56,6 +56,7 @@
 - (NSDictionary*) asDictionary;
 - (void) applyProfile;
 - (bool) isDefaultProfile;
+- (void) resetToDefaultValues;
 
 /// @brief The profile's UUID. This is a technical identifier guaranteed to be
 /// unique. This identifier is never displayed in the GUI.

@@ -34,6 +34,7 @@ enum EditGtpEngineProfileTableViewSection
   PonderingSection,
   ReuseSubtreeSection,
   PlayoutLimitsSection,
+  ResetToDefaultsSection,
   MaxSection
 };
 
@@ -82,6 +83,15 @@ enum PlayoutLimitsSectionItem
   FuegoMaxThinkingTimeItem,
   FuegoMaxGamesItem,
   MaxPlayoutLimitsSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ResetToDefaultsSection.
+// -----------------------------------------------------------------------------
+enum ResetToDefaultsSectionItem
+{
+  ResetToDefaultsItem,
+  MaxResetToDefaultsSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -145,6 +155,10 @@ enum MaxGamesCategory
 /// @name ItemPickerDelegate protocol
 //@{
 - (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
+/// @name UIActionSheetDelegate protocol
+//@{
+- (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;
 //@}
 /// @name Private helpers
 //@{
@@ -253,6 +267,8 @@ enum MaxGamesCategory
       return MaxReuseSubtreeSectionItem;
     case PlayoutLimitsSection:
       return MaxPlayoutLimitsSectionItem;
+    case ResetToDefaultsSection:
+      return MaxResetToDefaultsSectionItem;
     default:
       assert(0);
       break;
@@ -387,6 +403,12 @@ enum MaxGamesCategory
       }
       break;
     }
+    case ResetToDefaultsSection:
+    {
+      cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+      cell.textLabel.text = @"Reset to default values";
+      break;
+    }
     default:
     {
       assert(0);
@@ -466,6 +488,19 @@ enum MaxGamesCategory
       [navigationController release];
     }
   }
+  else if (ResetToDefaultsSection == indexPath.section)
+  {
+    // TODO iPad: Modify this to not include a cancel button (see HIG).
+    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:@"Reset to default values"
+                                                    otherButtonTitles:nil];
+    // The acton sheet must be shown based on the cell, not the table view,
+    // otherwise buttons in the sheet cannot be properly tapped.
+    [actionSheet showInView:[tableView cellForRowAtIndexPath:indexPath]];
+    [actionSheet release];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -490,6 +525,20 @@ enum MaxGamesCategory
     }
   }
   [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user selecting an action from the action sheet
+/// displayed when the "Reset to default values" button was tapped.
+// -----------------------------------------------------------------------------
+- (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  if (actionSheet.cancelButtonIndex != buttonIndex)
+  {
+    [self.profile resetToDefaultValues];
+    [self.delegate didChangeProfile:self];
+    [self.tableView reloadData];
+  }
 }
 
 // -----------------------------------------------------------------------------

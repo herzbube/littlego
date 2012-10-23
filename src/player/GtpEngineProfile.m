@@ -92,13 +92,7 @@
     self.uuid = [NSString UUIDString];
     self.name = @"";
     self.profileDescription = @"";
-    self.fuegoMaxMemory = fuegoMaxMemoryDefault;
-    self.fuegoThreadCount = fuegoThreadCountDefault;
-    self.fuegoPondering = fuegoPonderingDefault;
-    self.fuegoMaxPonderTime = fuegoMaxPonderTimeDefault;
-    self.fuegoReuseSubtree = fuegoReuseSubtreeDefault;
-    self.fuegoMaxThinkingTime = fuegoMaxThinkingTimeDefault;
-    self.fuegoMaxGames = fuegoMaxGamesDefault;
+    [self resetToDefaultValues];
   }
   else
   {
@@ -377,6 +371,21 @@
       @throw exception;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resets the profile's GTP settings to their default values. Does not
+/// modify the profile's UUID, name and description.
+// -----------------------------------------------------------------------------
+- (void) resetToDefaultValues
+{
+  self.fuegoMaxMemory = fuegoMaxMemoryDefault;
+  self.fuegoThreadCount = fuegoThreadCountDefault;
+  self.fuegoPondering = fuegoPonderingDefault;
+  self.fuegoMaxPonderTime = fuegoMaxPonderTimeDefault;
+  self.fuegoReuseSubtree = fuegoReuseSubtreeDefault;
+  self.fuegoMaxThinkingTime = fuegoMaxThinkingTimeDefault;
+  self.fuegoMaxGames = fuegoMaxGamesDefault;
 }
 
 @end

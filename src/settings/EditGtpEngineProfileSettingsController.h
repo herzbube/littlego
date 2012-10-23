@@ -53,7 +53,7 @@
 /// work, the delegate must implement the protocol
 /// EditGtpEngineProfileSettingsDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileSettingsController : UITableViewController <ItemPickerDelegate>
+@interface EditGtpEngineProfileSettingsController : UITableViewController <ItemPickerDelegate, UIActionSheetDelegate>
 {
 }
 
