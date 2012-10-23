@@ -31,8 +31,8 @@
 enum EditGtpEngineProfileTableViewSection
 {
   ProfileNameSection,
-  ProfileDescriptionSection,
   PlayingStrengthSection,
+  ProfileNotesSection,
   MaxSection
 };
 
@@ -46,15 +46,6 @@ enum ProfileNameSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ProfileDescriptionSection.
-// -----------------------------------------------------------------------------
-enum ProfileDescriptionSectionItem
-{
-  ProfileDescriptionItem,
-  MaxProfileDescriptionSectionItem,
-};
-
-// -----------------------------------------------------------------------------
 /// @brief Enumerates items in the PlayingStrengthSection.
 // -----------------------------------------------------------------------------
 enum PlayingStrengthSectionItem
@@ -62,6 +53,15 @@ enum PlayingStrengthSectionItem
   PlayingStrengthItem,
   AdvancedConfigurationItem,
   MaxPlayingStrengthSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ProfileNotesSection.
+// -----------------------------------------------------------------------------
+enum ProfileNotesSectionItem
+{
+  ProfileNotesItem,
+  MaxProfileNotesSectionItem,
 };
 
 // -----------------------------------------------------------------------------
@@ -241,10 +241,10 @@ enum PlayingStrengthSectionItem
   {
     case ProfileNameSection:
       return MaxProfileNameSectionItem;
-    case ProfileDescriptionSection:
-      return MaxProfileDescriptionSectionItem;
     case PlayingStrengthSection:
       return MaxPlayingStrengthSectionItem;
+    case ProfileNotesSection:
+      return MaxProfileNotesSectionItem;
     default:
       assert(0);
       break;
@@ -260,9 +260,11 @@ enum PlayingStrengthSectionItem
   switch (section)
   {
     case ProfileNameSection:
-      return @"Profile name & description";
+      return @"Profile name";
     case PlayingStrengthSection:
       return @"Playing strength";
+    case ProfileNotesSection:
+      return @"Profile notes";
     default:
       break;
   }
@@ -315,39 +317,6 @@ enum PlayingStrengthSectionItem
       }
       break;
     }
-    case ProfileDescriptionSection:
-    {
-      switch (indexPath.row)
-      {
-        case ProfileDescriptionItem:
-        {
-          enum TableViewCellType cellType = DefaultCellType;
-          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          if (self.profile.profileDescription.length > 0)
-          {
-            cell.textLabel.text = self.profile.profileDescription;
-            cell.textLabel.textColor = [UIColor slateBlueColor];
-          }
-          else
-          {
-            // Fake placeholder of UITextField
-            cell.textLabel.text = @"Profile description";
-            cell.textLabel.textColor = [UIColor lightGrayColor];
-          }
-          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-          cell.textLabel.numberOfLines = 0;
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
-      break;
-    }
     case PlayingStrengthSection:
     {
       switch (indexPath.row)
@@ -378,6 +347,39 @@ enum PlayingStrengthSectionItem
       }
       break;
     }
+    case ProfileNotesSection:
+    {
+      switch (indexPath.row)
+      {
+        case ProfileNotesItem:
+        {
+          enum TableViewCellType cellType = DefaultCellType;
+          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+          if (self.profile.profileDescription.length > 0)
+          {
+            cell.textLabel.text = self.profile.profileDescription;
+            cell.textLabel.textColor = [UIColor slateBlueColor];
+          }
+          else
+          {
+            // Fake placeholder of UITextField
+            cell.textLabel.text = @"Profile notes";
+            cell.textLabel.textColor = [UIColor lightGrayColor];
+          }
+          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
     default:
     {
       assert(0);
@@ -396,7 +398,7 @@ enum PlayingStrengthSectionItem
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
-    case ProfileDescriptionSection:
+    case ProfileNotesSection:
     {
       NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
       if (ProfileNameSection == indexPath.section)
@@ -424,20 +426,7 @@ enum PlayingStrengthSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-  if (ProfileDescriptionSection == indexPath.section)
-  {
-    EditTextController* editTextController = [[EditTextController controllerWithText:self.profile.profileDescription
-                                                                               style:EditTextControllerStyleTextView
-                                                                            delegate:self] retain];
-    editTextController.title = @"Edit description";
-    UINavigationController* navigationController = [[UINavigationController alloc]
-                                                    initWithRootViewController:editTextController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self presentModalViewController:navigationController animated:YES];
-    [navigationController release];
-    [editTextController release];
-  }
-  else if (PlayingStrengthSection == indexPath.section)
+  if (PlayingStrengthSection == indexPath.section)
   {
     switch (indexPath.row)
     {
@@ -479,6 +468,20 @@ enum PlayingStrengthSectionItem
       }
     }
   }
+  else if (ProfileNotesSection == indexPath.section)
+  {
+    EditTextController* editTextController = [[EditTextController controllerWithText:self.profile.profileDescription
+                                                                               style:EditTextControllerStyleTextView
+                                                                            delegate:self] retain];
+    editTextController.title = @"Edit notes";
+    editTextController.acceptEmptyText = true;
+    UINavigationController* navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:editTextController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentModalViewController:navigationController animated:YES];
+    [navigationController release];
+    [editTextController release];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -499,7 +502,7 @@ enum PlayingStrengthSectionItem
     if (editTextController.textHasChanged)
     {
       self.profile.profileDescription = editTextController.text;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileDescriptionItem inSection:ProfileDescriptionSection];
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileNotesItem inSection:ProfileNotesSection];
       NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
       [self.tableView reloadRowsAtIndexPaths:indexPaths
                             withRowAnimation:UITableViewRowAnimationNone];
