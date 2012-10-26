@@ -157,7 +157,7 @@ enum ProfileNotesSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.profile = [[[GtpEngineProfile alloc] init] autorelease];
-    controller.profile.playingStrength = (maximumPlayingStrength - minimumPlayingStrength) / 2.0 + 0.5;
+    controller.profile.playingStrength = defaultPlayingStrength;
     controller.profileExists = false;
   }
   return controller;

@@ -367,6 +367,7 @@ extern NSString* goScoreCalculationEnds;
 extern const int minimumPlayingStrength;
 extern const int maximumPlayingStrength;
 extern const int customPlayingStrength;
+extern const int defaultPlayingStrength;
 extern const int fuegoMaxMemoryMinimum;
 extern const int fuegoMaxMemoryMaximum;
 extern const int fuegoMaxMemoryDefault;
@@ -384,6 +385,9 @@ extern const unsigned int fuegoMaxThinkingTimeDefault;
 extern const unsigned long long fuegoMaxGamesMinimum;
 extern const unsigned long long fuegoMaxGamesMaximum;
 extern const unsigned long long fuegoMaxGamesDefault;
+extern const unsigned long long fuegoMaxGamesPlayingStrength1;
+extern const unsigned long long fuegoMaxGamesPlayingStrength2;
+extern const unsigned long long fuegoMaxGamesPlayingStrength3;
 /// @brief The hardcoded UUID of the default GTP engine profile. This profile
 /// is the fallback profile if no other profile is available or appropriate.
 /// The user cannot delete this profile.

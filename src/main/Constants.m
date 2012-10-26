@@ -59,20 +59,21 @@ NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
-const int maximumPlayingStrength = 10;
+const int maximumPlayingStrength = 5;
 const int customPlayingStrength = 0;
+const int defaultPlayingStrength = 3;
 const int fuegoMaxMemoryMinimum = 16;
 const int fuegoMaxMemoryMaximum = 512;
 const int fuegoMaxMemoryDefault = 32;
 const int fuegoThreadCountMinimum = 1;
 const int fuegoThreadCountMaximum = 8;
 const int fuegoThreadCountDefault = 1;
-const bool fuegoPonderingDefault = true;
+const bool fuegoPonderingDefault = false;
 const unsigned int fuegoMaxPonderTimeMinimum = 60;     // only values that are full minutes because
                                                        // Settings tab lets the user pick minute values
 const unsigned int fuegoMaxPonderTimeMaximum = 3600;   // ditto
 const unsigned int fuegoMaxPonderTimeDefault = 300;    // ditto
-const bool fuegoReuseSubtreeDefault = true;
+const bool fuegoReuseSubtreeDefault = false;
 const unsigned int fuegoMaxThinkingTimeMinimum = 1;
 const unsigned int fuegoMaxThinkingTimeMaximum = 120;  // not too high, user must be able to pick individual values
                                                        // in the range from 1-10 seconds in the Settings tab
@@ -80,6 +81,11 @@ const unsigned int fuegoMaxThinkingTimeDefault = 10;
 const unsigned long long fuegoMaxGamesMinimum = 1;
 const unsigned long long fuegoMaxGamesMaximum = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();
 const unsigned long long fuegoMaxGamesDefault = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();
+const unsigned long long fuegoMaxGamesPlayingStrength1 = 500;    // start with 500 because anything below this is
+                                                                 // quite ridiculous; 500 is still very weak
+const unsigned long long fuegoMaxGamesPlayingStrength2 = 5000;
+const unsigned long long fuegoMaxGamesPlayingStrength3 = 10000;  // on fast CPUs this still imposes a noticable
+                                                                 // limit (measurement made on a MacBook)
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Diagnostics view settings default values
