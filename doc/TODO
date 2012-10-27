@@ -159,6 +159,14 @@ Priority 2 (nice to have)
   TESTING document.
 - User should be able to define a set of GTP commands that are always applied
   when the app is launched (or a new game is started?)
+- Add a (red) button to the "Players & Profiles" view that lets the user reset
+  all players & profiles to the factory defaults. The main problem is what to
+  do about the current game in progress, since normally players that participate
+  in a game cannot be deleted.
+- Display some sort of menu on the Play view when the app is launched, instead
+  of immediately starting or loading a game. This changes a fundamental thing
+  about Little Go, namely the fact that a GoGame object always exists after the
+  application has finished launching.
 
 
 Priority 3 (not important)
