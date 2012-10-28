@@ -42,23 +42,36 @@
 /// clients do not have to concern themselves with where to obtain an instance
 /// of GtpClient.
 ///
+///
+/// @par Public notifications
+///
 /// Command submission and response receipt are bracketed by a pair of
 /// notifications that are sent just before the command is submitted
 /// (#gtpCommandWillBeSubmitted), and right after the response to the command
 /// was received (#gtpResponseWasReceived). The GtpCommand and GtpResponse
 /// objects are attached to their respective notification.
 ///
-/// Clients listening for both notifications are guaranteed to receive
+/// Observers listening for both notifications are guaranteed to receive
 /// #gtpCommandWillBeSubmitted before they receive the matching
 /// #gtpResponseWasReceived. Both notifications are delivered in the context of
-/// the thread that the command was submitted in (which is not necessarily the
-/// main thread).
+/// the secondary thread that processes commands.
 ///
-/// After #gtpResponseWasReceived has been delivered, the response target (the
-/// object stored in GtpCommand's @e responseTarget property) is notified by
-/// invoking the response target selector (the selector stored in GtpCommand's
-/// @e responseTargetSelector property). This occurs in the same thread context
-/// that the notifications are delivered in.
+///
+/// @par Private notification of response target
+///
+/// In addition to #gtpResponseWasReceived, which is sent to the general public,
+/// the response target (the object stored in GtpCommand's @e responseTarget
+/// property) is also privately notified by invoking the response target
+/// selector (the selector stored in GtpCommand's @e responseTargetSelector
+/// property). This notification occurs in the context of the thread that
+/// submitted the command (which may or may not be the main thread).
+///
+/// There is no guarantee as to who is notified first of a GTP response: The
+/// response target via its selector, or any public observers listening for
+/// #gtpResponseWasReceived.
+///
+/// Specification of a response target is optional. If no response target is
+/// specified for a GtpCommand, no private notification is sent.
 // -----------------------------------------------------------------------------
 @interface GtpClient : NSObject
 {

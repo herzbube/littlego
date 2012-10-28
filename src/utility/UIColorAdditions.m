@@ -229,12 +229,60 @@
 /// @brief Returns a color object whose RGB values are 208/210/216 and whose
 /// alpha value is 1.0.
 ///
-/// This is the gradient end color, as descried in this method's documentation:
-/// iPadGroupedTableViewBackgroundGradientStartColor().
+/// This is the gradient end color, as described in this method's documentation:
+/// iPadGroupTableViewBackgroundGradientStartColor().
 // -----------------------------------------------------------------------------
 + (UIColor*) iPadGroupTableViewBackgroundGradientEndColor
 {
   return [UIColor colorWithRed:208.0/255.0 green:210.0/255.0 blue:216.0/255.0 alpha:1.0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns 4 color objects that can be used to create a background view
+/// image that will look like the red delete button in Apple's address book.
+///
+/// The 4 color objects are intended to be used to form 2 linear gradients
+/// that are then vertically arrayed.
+///
+/// The colors have been experimentally determined from an iPhone screenshot.
+///
+/// The color objects have the following RGB values (all use alpha 1.0):
+/// - 230/192/193
+/// - 181/36/37
+/// - 170/2/3
+/// - 189/58/59
+// -----------------------------------------------------------------------------
++ (NSArray*) redButtonTableViewCellBackgroundGradientColors
+{
+  UIColor* startColor1 = [UIColor colorWithRed:230.0/255.0 green:192.0/255.0 blue:193.0/255.0 alpha:1.0];
+  UIColor* endColor1 = [UIColor colorWithRed:181.0/255.0 green:36.0/255.0 blue:37.0/255.0 alpha:1.0];
+  UIColor* startColor2 = [UIColor colorWithRed:170.0/255.0 green:2.0/255.0 blue:3.0/255.0 alpha:1.0];
+  UIColor* endColor2 = [UIColor colorWithRed:189.0/255.0 green:58.0/255.0 blue:59.0/255.0 alpha:1.0];
+  return [NSArray arrayWithObjects:startColor1, endColor1, startColor2, endColor2, nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns 4 color objects that can be used to create a background view
+/// image that will look like the red delete button in Apple's address book, in
+/// selected state.
+///
+/// The colors have been determined by reducing the brightness of the colors
+/// specified by redButtonTableViewCellBackgroundGradientColors() by 45.
+///
+/// The color objects have the following RGB values (all use alpha 1.0):
+/// - 189/158/159
+/// - 149/30/30
+/// - 140/2/3
+/// - 155/48/49
+// -----------------------------------------------------------------------------
++ (NSArray*) redButtonTableViewCellSelectedBackgroundGradientColors
+{
+  // Abgedunkelt -45
+  UIColor* startColor1 = [UIColor colorWithRed:189.0/255.0 green:158.0/255.0 blue:159.0/255.0 alpha:1.0];
+  UIColor* endColor1 = [UIColor colorWithRed:149.0/255.0 green:30.0/255.0 blue:30.0/255.0 alpha:1.0];
+  UIColor* startColor2 = [UIColor colorWithRed:140.0/255.0 green:2.0/255.0 blue:2.0/255.0 alpha:1.0];
+  UIColor* endColor2 = [UIColor colorWithRed:155.0/255.0 green:48.0/255.0 blue:49.0/255.0 alpha:1.0];
+  return [NSArray arrayWithObjects:startColor1, endColor1, startColor2, endColor2, nil];
 }
 
 @end

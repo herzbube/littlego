@@ -404,14 +404,49 @@ Territory statistics
 - For scoring one could also define a threshold percentage above which a vertex
   is counted as territory for a color
 
+Interrupting long-running GTP commands
+- A long-running GTP command such as "genmove" can be interrupted by sending
+  the special string "# interrupt". Apparently this has been implemented in
+  Fuego to accomodate the GoGui client. See chapter 10 in the GoGui manual for
+  some details (http://gogui.sourceforge.net/doc/interrupt.html)
+- Fuego also understands the GTP command "gogui-interrupt". The comments in
+  Fuego's source code explain that this command does not actually do anything,
+  its presence in the output of "list_commands" (another GTP command) merely
+  indicates that this version of Fuego is capable of handling the string
+  "# interrupt"
+- Manual experimenting with the Fuego 1.1 engine reveals how "# interrupt" is
+  handled
+  - The string "# interrupt" is not a GTP command because it has no return
+    value
+  - Sending an interrupt causes the GTP engine to stop processing the current
+    command. The GTP engine then prints the result of the interrupted command
+    to the protocol stream.
+  - Sending an interrupt if the engine is idle (i.e. not processing a command)
+    simply does nothing
+  - Sending an interrupt has no effect if anything else is already in the
+    GTP engine's input buffer. This is best explained with an example:
+    1) Submit "genmove W"
+    2) Submit "genmove B"
+    3) Send "# interrupt"
+    Since "genmove B" is already in the engine's input buffer, the interrupt
+    has no effect on "genmove W". After "genmove W" has been fully processed,
+    the GTP engine will then start processing "genmove B". Again, the interrupt
+    has no effect on "genmove B".
+- Notes on interrupting a "genmove" command
+  - The engine reports success for the command and actually generates a move
+  - The question is: Which move is generated? Is it the best move so far, or
+    just the last move that the search algorithm has been evaluating when it
+    detected interruption?
+  - Answer: From looking at the implementation of SgUctSearch::SearchOnePly() in
+    SgUctSearch.cpp, it would appear that the best move so far is selected.
+
 Other useful stuff
 - The "go_point_info" GTP command allows to query Fuego about various properties
   of the specified point. One of the properties is whether the point would be a
   legal move for either black or white
 - The "is_legal" GTP command allows to query Fuego whether it would be legal for
   the specified player to play on the specified point
-- A lengthy GTP command can be interrupted by sending it "# interrupt" (info
-  from GoGui's help, chapter 10)
+
 
 
 
@@ -541,6 +576,34 @@ Fuego playing strength
 Essential parameters for modifying Fuego's playing strenght are described here:
   https://sourceforge.net/apps/trac/fuego/wiki/FAQ1
   https://sourceforge.net/apps/trac/fuego/wiki/FAQ3
+
+Summary
+- With "Reuse subtree" enabled, Fuego does not discard results from a previous
+  search. "Reuse subtree" by default is enabled. Enable "reuse subtree" with
+  "uct_param_player reuse_subtree 1".
+- Pondering allows Fuego to think during opponent's turn. Pondering requires
+  "Reuse subtree" to be enabled. Pondering by default is disabled. Enable
+  pondering with "uct_param_player ponder 1".
+- Fuego will stop pondering after a certain time. By default this limit is set
+  to 300 seconds. Set the pondering limit (in seconds) with
+  "uct_param_player max_ponder_time 300".
+- More memory allows Fuego to store more nodes and to keep more results around,
+  making calculations more accurate. Instead of the amount of memory, it is also
+  possible to change the number of nodes. Changing the amount of memory
+  automatically adjusts the number of nodes, and vice versa. Set the available
+  memory (in bytes) with "uct_max_memory 500000000". Set the number of nodes
+  with "uct_param_search max_nodes 6000000".
+- More search time gives Fuego a better chance to find good moves. By default
+  the time limit for searching is set to 10 seconds. Set the time available for
+  searching with "go_param timelimit 6.5". Remove the time limit entirely with
+  "uct_param_player ignore_clock 1" (not advisable, this will send the search
+  algorithm on a mission to fry your CPU). An active GTP client might also
+  interrupt a search in progress (due to a "genmove" GTP command) by sending
+  the string "# interrupt" to the GTP engine.
+- More games gives Fuego a better chance to find good moves. By default there
+  is no limit for this setting (or more accurate: the maximum allowable value
+  for a double, which is 1.79769e+308 on a Mac). Change this setting with
+  "uct_param_player max_games 123456".
 
 Copy & paste templates:
 - Start Fuego

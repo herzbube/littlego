@@ -25,6 +25,8 @@
 #import "../go/GoPoint.h"
 #import "../go/GoScore.h"
 #import "../go/GoVertex.h"
+#import "../gtp/GtpUtilities.h"
+#import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
 #import "../ui/UiUtilities.h"
@@ -89,6 +91,7 @@ enum GameInfoSectionItem
   BoardSizeItem,
   BlackPlayerItem,
   WhitePlayerItem,
+  ActiveProfileItem,
   MaxGameInfoSectionItem
 };
 
@@ -564,6 +567,17 @@ enum MoveStatisticsSectionItem
         {
           cell.textLabel.text = @"White player";
           cell.detailTextLabel.text = game.playerWhite.player.name;
+          break;
+        }
+        case ActiveProfileItem:
+        {
+          cell.textLabel.text = @"Active profile";
+          GtpEngineProfile* profile = [GtpUtilities activeProfile];
+          assert(profile);
+          if (profile)
+            cell.detailTextLabel.text = profile.name;
+          else
+            cell.detailTextLabel.text = @"n/a";
           break;
         }
         default:

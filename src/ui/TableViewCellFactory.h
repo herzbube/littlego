@@ -34,7 +34,8 @@ enum TableViewCellType
   TextFieldCellType,     ///< @brief The cell's entire content view is a UITextField
   SliderCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
-  ActivityIndicatorCellType   ///< @brief Cell with an activity indicator in the accessory view
+  ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
+  RedButtonCellType      ///< @brief Cell that looks like a red button; style and color are similar to the delete button in Apple's address book
 };
 
 // -----------------------------------------------------------------------------

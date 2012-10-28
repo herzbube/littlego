@@ -182,6 +182,39 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns an image view that, if applied as the background to a table
+/// view cell, makes the cell look like the red delete button in Apple's
+/// address book.
+///
+/// If @a selected is true, the image view represents the button in its selected
+/// state, otherwise the image view represents the button in its normal state.
+///
+/// The concrete colors have been experimentally determined. For details see
+/// UiColorAdditions.
+// -----------------------------------------------------------------------------
++ (UIImageView*) redButtonTableViewCellBackground:(bool)selected
+{
+  CGSize backgroundPatternSize = CGSizeMake([UiElementMetrics tableViewCellContentViewWidth],
+                                            [UiElementMetrics tableViewCellContentViewHeight]);
+  NSArray* colors;
+  if (selected)
+    colors = [UIColor redButtonTableViewCellSelectedBackgroundGradientColors];
+  else
+    colors = [UIColor redButtonTableViewCellBackgroundGradientColors];
+  UIImage* backgroundPattern = [UiUtilities gradientImageWithSize:backgroundPatternSize
+                                                      startColor1:[colors objectAtIndex:0]
+                                                        endColor1:[colors objectAtIndex:1]
+                                                      startColor2:[colors objectAtIndex:2]
+                                                        endColor2:[colors objectAtIndex:3]];
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:backgroundPattern];
+  [[imageView layer] setCornerRadius:8.0f];
+  [[imageView layer] setMasksToBounds:YES];
+  [[imageView layer] setBorderWidth:1.0f];
+  [[imageView layer] setBorderColor: [[UIColor grayColor] CGColor]];
+  return [imageView autorelease];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image of size @a size with a linear gradient drawn along
 /// the axis that runs from the top-middle to the bottom-middle point.
 // -----------------------------------------------------------------------------
@@ -192,6 +225,49 @@
 
   CGRect rect = CGRectMake(0, 0, size.width, size.height);
   [UiUtilities drawLinearGradientWithContext:context rect:rect startColor:startColor.CGColor endColor:endColor.CGColor];
+
+  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return gradientImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size with a 3-color-stop linear gradient
+/// drawn along the axis that runs from the top-middle to the bottom-middle
+/// point.
+// -----------------------------------------------------------------------------
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor
+{
+  UIGraphicsBeginImageContext(size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  int topHalfRectHeight = size.height / 2;
+  CGRect topHalfRect = CGRectMake(0, 0, size.width, topHalfRectHeight);
+  [UiUtilities drawLinearGradientWithContext:context rect:topHalfRect startColor:startColor.CGColor endColor:middleColor.CGColor];
+  CGRect bottomHalfRect = CGRectMake(0, topHalfRectHeight - 1, size.width, size.height - topHalfRectHeight + 1);
+  [UiUtilities drawLinearGradientWithContext:context rect:bottomHalfRect startColor:middleColor.CGColor endColor:endColor.CGColor];
+
+  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return gradientImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size with two linear gradients vertically
+/// arrayed, each gradient taking up half of the height of @a size. Both
+/// gradients are drawn along the axis that runs from the top-middle to the
+/// bottom-middle point of @a rect.
+// -----------------------------------------------------------------------------
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2
+{
+  UIGraphicsBeginImageContext(size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  int topHalfRectHeight = size.height / 2;
+  CGRect topHalfRect = CGRectMake(0, 0, size.width, topHalfRectHeight);
+  [UiUtilities drawLinearGradientWithContext:context rect:topHalfRect startColor:startColor1.CGColor endColor:endColor1.CGColor];
+  CGRect bottomHalfRect = CGRectMake(0, topHalfRectHeight, size.width, size.height - topHalfRectHeight);
+  [UiUtilities drawLinearGradientWithContext:context rect:bottomHalfRect startColor:startColor2.CGColor endColor:endColor2.CGColor];
 
   UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

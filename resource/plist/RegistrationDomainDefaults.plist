@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>3</integer>
+	<integer>4</integer>
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
@@ -130,31 +130,43 @@
 			<key>Name</key>
 			<string>Default profile</string>
 			<key>Description</key>
-			<string>This profile cannot be deleted. It is used for games where both players are human.</string>
+			<string>This profile cannot be deleted. It is used for games where both players are human. By default this profile uses maximum playing strength.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>
 			<integer>1</integer>
 			<key>FuegoPondering</key>
 			<true/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<true/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>-1</integer>
 		</dict>
 		<dict>
 			<key>UUID</key>
 			<string>D341C2B1-94D5-4665-8502-304E55FBA119</string>
 			<key>Name</key>
-			<string>No pondering</string>
+			<string>Weak</string>
 			<key>Description</key>
-			<string>With this profile the computer player does not &quot;think&quot; while it is your turn.</string>
+			<string>This profile uses minimal playing strength.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>
 			<integer>1</integer>
 			<key>FuegoPondering</key>
 			<false/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<false/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>500</integer>
 		</dict>
 		<dict>
 			<key>UUID</key>
@@ -162,15 +174,21 @@
 			<key>Name</key>
 			<string>iPhone 4S</string>
 			<key>Description</key>
-			<string>This profile makes use of the 2 processor cores and the increased memory of the iPhone 4S.</string>
+			<string>This profile uses maximum playing strength, plus it makes use of the 2 processor cores and the increased memory of the iPhone 4S.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>64</integer>
 			<key>FuegoThreadCount</key>
 			<integer>2</integer>
 			<key>FuegoPondering</key>
 			<true/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
 			<key>FuegoReuseSubtree</key>
 			<true/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>-1</integer>
 		</dict>
 	</array>
 	<key>StarPoints</key>

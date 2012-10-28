@@ -157,6 +157,16 @@ Priority 2 (nice to have)
 - Define if it should be possible to load a game while scoring is in progress.
   Currently this works accidentally only. Also add a test case for this to the
   TESTING document.
+- User should be able to define a set of GTP commands that are always applied
+  when the app is launched (or a new game is started?)
+- Add a (red) button to the "Players & Profiles" view that lets the user reset
+  all players & profiles to the factory defaults. The main problem is what to
+  do about the current game in progress, since normally players that participate
+  in a game cannot be deleted.
+- Display some sort of menu on the Play view when the app is launched, instead
+  of immediately starting or loading a game. This changes a fundamental thing
+  about Little Go, namely the fact that a GoGame object always exists after the
+  application has finished launching.
 
 
 Priority 3 (not important)
@@ -224,6 +234,11 @@ Priority 3 (not important)
 - Add GtpLogItem to objects being serialized when a bug report is sent. This has
   not been implemented yet because this potentially increases the diagnostics
   information file a lot (depending on the size of the GTP log)
+- Find out why it is not possible to initialize constants in Constants.m with
+  numeric_limits. The following example results in a compiler error (namespace
+  std is not known)
+    const unsigned int fuegoMaxPonderTimeMaximum = std::numeric_limits<unsigned int>::max();
+  I tried this after adding the ".mm" file extension, but still no luck.
 
 
 Future improvements to the 3rdparty build process

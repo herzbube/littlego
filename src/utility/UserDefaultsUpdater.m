@@ -39,6 +39,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 + (void) upgradeToVersion1:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion2:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults;
++ (void) upgradeToVersion4:(NSDictionary*)registrationDomainDefaults;
 //@}
 /// @name Internal helpers
 //@{
@@ -276,6 +277,31 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
     }
 
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 4.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion4:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Every GTP engine profile now has a number of additional keys
+  id profileListArray = [userDefaults objectForKey:gtpEngineProfileListKey];
+  if (profileListArray)  // is nil if the key is not present
+  {
+    NSMutableArray* profileListArrayUpgrade = [NSMutableArray array];
+    for (NSDictionary* profileDictionary in profileListArray)
+    {
+      NSMutableDictionary* profileDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:profileDictionary];
+      [profileDictionaryUpgrade setValue:[NSNumber numberWithUnsignedInt:fuegoMaxPonderTimeDefault] forKey:fuegoMaxPonderTimeKey];
+      [profileDictionaryUpgrade setValue:[NSNumber numberWithUnsignedInt:fuegoMaxThinkingTimeDefault] forKey:fuegoMaxThinkingTimeKey];
+      [profileDictionaryUpgrade setValue:[NSNumber numberWithUnsignedLongLong:fuegoMaxGamesDefault] forKey:fuegoMaxGamesKey];
+      [profileListArrayUpgrade addObject:profileDictionaryUpgrade];
+    }
+    [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
 }
 

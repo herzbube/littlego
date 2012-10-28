@@ -21,9 +21,7 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/TableViewSliderCell.h"
 #import "../ui/UiUtilities.h"
-#import "../ui/UiElementMetrics.h"
 #import "../utility/UiColorAdditions.h"
 
 
@@ -33,9 +31,8 @@
 enum EditGtpEngineProfileTableViewSection
 {
   ProfileNameSection,
-  ProfileDescriptionSection,
-  MaxMemorySection,
-  OtherProfileSettingsSection,
+  PlayingStrengthSection,
+  ProfileNotesSection,
   MaxSection
 };
 
@@ -49,34 +46,23 @@ enum ProfileNameSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ProfileDescriptionSection.
+/// @brief Enumerates items in the PlayingStrengthSection.
 // -----------------------------------------------------------------------------
-enum ProfileDescriptionSectionItem
+enum PlayingStrengthSectionItem
 {
-  ProfileDescriptionItem,
-  MaxProfileDescriptionSectionItem,
+  PlayingStrengthItem,
+  AdvancedConfigurationItem,
+  MaxPlayingStrengthSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the MaxMemorySection.
+/// @brief Enumerates items in the ProfileNotesSection.
 // -----------------------------------------------------------------------------
-enum MaxMemorySectionItem
+enum ProfileNotesSectionItem
 {
-  FuegoMaxMemoryItem,
-  MaxMaxMemorySectionItem
+  ProfileNotesItem,
+  MaxProfileNotesSectionItem,
 };
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the OtherProfileSettingsSection.
-// -----------------------------------------------------------------------------
-enum OtherProfileSettingsSectionItem
-{
-  FuegoThreadCountItem,
-  FuegoPonderingItem,
-  FuegoReuseSubtreeItem,
-  MaxOtherProfileSettingsSectionItem
-};
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for
@@ -96,10 +82,6 @@ enum OtherProfileSettingsSectionItem
 /// @name Action methods
 //@{
 - (void) create:(id)sender;
-- (void) togglePondering:(id)sender;
-- (void) toggleReuseSubtree:(id)sender;
-- (void) maxMemoryDidChange:(id)sender;
-- (void) threadCountDidChange:(id)sender;
 //@}
 /// @name UITableViewDataSource protocol
 //@{
@@ -123,13 +105,17 @@ enum OtherProfileSettingsSectionItem
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 //@}
+/// @name ItemPickerDelegate protocol
+//@{
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
+//@}
+/// @name EditGtpEngineProfileSettingsDelegate protocol
+//@{
+- (void) didChangeProfile:(EditGtpEngineProfileSettingsController*)editGtpEngineProfileSettingsController;
+//@}
 /// @name Private helpers
 //@{
 - (bool) isProfileValid;
-//@}
-/// @name Privately declared properties
-//@{
-@property(nonatomic, retain) UISwitch* reuseSubtreeSwitch;
 //@}
 @end
 
@@ -139,7 +125,6 @@ enum OtherProfileSettingsSectionItem
 @synthesize delegate;
 @synthesize profile;
 @synthesize profileExists;
-@synthesize reuseSubtreeSwitch;
 
 
 // -----------------------------------------------------------------------------
@@ -172,6 +157,7 @@ enum OtherProfileSettingsSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.profile = [[[GtpEngineProfile alloc] init] autorelease];
+    controller.profile.playingStrength = defaultPlayingStrength;
     controller.profileExists = false;
   }
   return controller;
@@ -185,7 +171,6 @@ enum OtherProfileSettingsSectionItem
 {
   self.delegate = nil;
   self.profile = nil;
-  self.reuseSubtreeSwitch = nil;
   [super dealloc];
 }
 
@@ -240,6 +225,10 @@ enum OtherProfileSettingsSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
+  // Because we always display all sections we can reload sections when we
+  // toggle between simple/advanced settings. Because sections go from zero
+  // to one or more rows (or vice vera), we get a nice animation of rows
+  // fading in/out.
   return MaxSection;
 }
 
@@ -252,12 +241,10 @@ enum OtherProfileSettingsSectionItem
   {
     case ProfileNameSection:
       return MaxProfileNameSectionItem;
-    case ProfileDescriptionSection:
-      return MaxProfileDescriptionSectionItem;
-    case MaxMemorySection:
-      return MaxMaxMemorySectionItem;
-    case OtherProfileSettingsSection:
-      return MaxOtherProfileSettingsSectionItem;
+    case PlayingStrengthSection:
+      return MaxPlayingStrengthSectionItem;
+    case ProfileNotesSection:
+      return MaxProfileNotesSectionItem;
     default:
       assert(0);
       break;
@@ -273,13 +260,12 @@ enum OtherProfileSettingsSectionItem
   switch (section)
   {
     case ProfileNameSection:
-      return @"Profile name & description";
-    case ProfileDescriptionSection:
-      return nil;
-    case MaxMemorySection:
-      return @"GTP engine settings";
+      return @"Profile name";
+    case PlayingStrengthSection:
+      return @"Playing strength";
+    case ProfileNotesSection:
+      return @"Profile notes";
     default:
-      assert(0);
       break;
   }
   return nil;
@@ -292,10 +278,9 @@ enum OtherProfileSettingsSectionItem
 {
   switch (section)
   {
-    case MaxMemorySection:
-      return @"WARNING: Setting this value too high WILL crash the app! Read more about this under 'Help > Players & Profiles > Maximum memory'";
-    case OtherProfileSettingsSection:
-      return @"Changed settings are applied only after a new game with a player who uses this profile is started.";
+    case PlayingStrengthSection:
+      return @"Changes become active only after a new game with a player who uses this profile is started.";
+      break;
     default:
       break;
   }
@@ -332,28 +317,25 @@ enum OtherProfileSettingsSectionItem
       }
       break;
     }
-    case ProfileDescriptionSection:
+    case PlayingStrengthSection:
     {
       switch (indexPath.row)
       {
-        case ProfileDescriptionItem:
+        case PlayingStrengthItem:
         {
-          enum TableViewCellType cellType = DefaultCellType;
-          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          if (self.profile.profileDescription.length > 0)
-          {
-            cell.textLabel.text = self.profile.profileDescription;
-            cell.textLabel.textColor = [UIColor slateBlueColor];
-          }
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Playing strength";
+          if (customPlayingStrength == self.profile.playingStrength)
+            cell.detailTextLabel.text = @"Custom";
           else
-          {
-            // Fake placeholder of UITextField
-            cell.textLabel.text = @"Profile description";
-            cell.textLabel.textColor = [UIColor lightGrayColor];
-          }
-          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-          cell.textLabel.numberOfLines = 0;
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.profile.playingStrength];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        case AdvancedConfigurationItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = @"Advanced configuration";
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
@@ -365,54 +347,34 @@ enum OtherProfileSettingsSectionItem
       }
       break;
     }
-    case MaxMemorySection:
-    {
-      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
-      sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-      sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
-      sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
-      sliderCell.value = self.profile.fuegoMaxMemory;
-      break;
-    }
-    case OtherProfileSettingsSection:
+    case ProfileNotesSection:
     {
       switch (indexPath.row)
       {
-        case FuegoThreadCountItem:
+        case ProfileNotesItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
-          sliderCell.descriptionLabel.text = @"Number of threads";
-          sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
-          sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
-          sliderCell.value = self.profile.fuegoThreadCount;
+          enum TableViewCellType cellType = DefaultCellType;
+          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+          if (self.profile.profileDescription.length > 0)
+          {
+            cell.textLabel.text = self.profile.profileDescription;
+            cell.textLabel.textColor = [UIColor slateBlueColor];
+          }
+          else
+          {
+            // Fake placeholder of UITextField
+            cell.textLabel.text = @"Profile notes";
+            cell.textLabel.textColor = [UIColor lightGrayColor];
+          }
+          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.numberOfLines = 0;
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
-        case FuegoPonderingItem:
+        default:
         {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          cell.textLabel.text = @"Pondering";
-          accessoryView.on = self.profile.fuegoPondering;
-          [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
-          break;
-        }
-        case FuegoReuseSubtreeItem:
-        {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          cell.textLabel.text = @"Reuse subtree";
-          accessoryView.on = self.profile.fuegoReuseSubtree;
-          [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
-          // If pondering is on, the default value of reuse subtree ("on") must
-          // not be changed by the user
-          accessoryView.enabled = ! self.profile.fuegoPondering;
-          // Keep reference to control so that we can manipulate it when
-          // pondering is changed later on
-          self.reuseSubtreeSwitch = accessoryView;
+          assert(0);
           break;
         }
       }
@@ -436,7 +398,7 @@ enum OtherProfileSettingsSectionItem
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
-    case ProfileDescriptionSection:
+    case ProfileNotesSection:
     {
       NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
       if (ProfileNameSection == indexPath.section)
@@ -447,27 +409,6 @@ enum OtherProfileSettingsSectionItem
                   heightForCellOfType:DefaultCellType
                              withText:cellText
                hasDisclosureIndicator:true];
-      break;
-    }
-    case MaxMemorySection:
-    {
-      height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
-    case OtherProfileSettingsSection:
-    {
-      switch (indexPath.row)
-      {
-        case FuegoThreadCountItem:
-        {
-          height = [TableViewSliderCell rowHeightInTableView:tableView];
-          break;
-        }
-        default:
-        {
-          break;
-        }
-      }
       break;
     }
     default:
@@ -485,12 +426,55 @@ enum OtherProfileSettingsSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-  if (ProfileDescriptionSection == indexPath.section)
+  if (PlayingStrengthSection == indexPath.section)
+  {
+    switch (indexPath.row)
+    {
+      case PlayingStrengthItem:
+      {
+        NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+        for (int playingStrength = minimumPlayingStrength; playingStrength < maximumPlayingStrength + 1; ++playingStrength)
+        {
+          NSString* playingStrengthString = [NSString stringWithFormat:@"%d", playingStrength];
+          [itemList addObject:playingStrengthString];
+        }
+        int indexOfDefaultPlayingStrength;
+        if (customPlayingStrength == self.profile.playingStrength)
+          indexOfDefaultPlayingStrength = -1;
+        else
+          indexOfDefaultPlayingStrength = self.profile.playingStrength - minimumPlayingStrength;
+        UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                   title:@"Playing strength"
+                                                                      indexOfDefaultItem:indexOfDefaultPlayingStrength
+                                                                                delegate:self];
+        UINavigationController* navigationController = [[UINavigationController alloc]
+                                                        initWithRootViewController:modalController];
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        [self presentModalViewController:navigationController animated:YES];
+        [navigationController release];
+        break;
+      }
+      case AdvancedConfigurationItem:
+      {
+        EditGtpEngineProfileSettingsController* editProfileSettingsController = [[EditGtpEngineProfileSettingsController controllerForProfile:profile withDelegate:self] retain];
+        [self.navigationController pushViewController:editProfileSettingsController animated:YES];
+        [editProfileSettingsController release];
+        break;
+      }
+      default:
+      {
+        assert(0);
+        break;
+      }
+    }
+  }
+  else if (ProfileNotesSection == indexPath.section)
   {
     EditTextController* editTextController = [[EditTextController controllerWithText:self.profile.profileDescription
                                                                                style:EditTextControllerStyleTextView
                                                                             delegate:self] retain];
-    editTextController.title = @"Edit description";
+    editTextController.title = @"Edit notes";
+    editTextController.acceptEmptyText = true;
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:editTextController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -518,7 +502,7 @@ enum OtherProfileSettingsSectionItem
     if (editTextController.textHasChanged)
     {
       self.profile.profileDescription = editTextController.text;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileDescriptionItem inSection:ProfileDescriptionSection];
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileNotesItem inSection:ProfileNotesSection];
       NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
       [self.tableView reloadRowsAtIndexPaths:indexPaths
                             withRowAnimation:UITableViewRowAnimationNone];
@@ -559,6 +543,41 @@ enum OtherProfileSettingsSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+    {
+      self.profile.playingStrength = (minimumPlayingStrength + controller.indexOfSelectedItem);
+
+      NSUInteger sectionIndex = PlayingStrengthSection;
+      NSUInteger rowIndex = PlayingStrengthItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileSettingsDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didChangeProfile:(EditGtpEngineProfileSettingsController*)editGtpEngineProfileSettingsController
+{
+  NSUInteger sectionIndex = PlayingStrengthSection;
+  NSUInteger rowIndex = PlayingStrengthItem;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+  NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Invoked when the user wants to create a new profile object using the
 /// data that has been entered so far.
 // -----------------------------------------------------------------------------
@@ -568,69 +587,6 @@ enum OtherProfileSettingsSectionItem
   [model add:self.profile];
 
   [self.delegate didCreateProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Ponder" switch. Updates the profile
-/// object with the new value.
-// -----------------------------------------------------------------------------
-- (void) togglePondering:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.profile.fuegoPondering = accessoryView.on;
-
-  if (self.profileExists)
-    [self.delegate didChangeProfile:self];
-
-  // Directly manipulating the switch control gives the best result,
-  // graphics-wise. If we do the update via table view reload of a single cell,
-  // there is a nasty little flicker when pondering is turned off and the
-  // "reuse subtree" switch becomes enabled. I have not tracked down the source
-  // of the flicker, but instead gone straight to directly manipulating the
-  // switch control.
-  if (self.profile.fuegoPondering)
-  {
-    self.profile.fuegoReuseSubtree = true;
-    self.reuseSubtreeSwitch.on = true;
-  }
-  self.reuseSubtreeSwitch.enabled = ! self.profile.fuegoPondering;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Reuse subtree" switch. Updates the
-/// profile object with the new value.
-// -----------------------------------------------------------------------------
-- (void) toggleReuseSubtree:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.profile.fuegoReuseSubtree = accessoryView.on;
-
-  if (self.profileExists)
-    [self.delegate didChangeProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing Fuego's maximum amount of memory.
-// -----------------------------------------------------------------------------
-- (void) maxMemoryDidChange:(id)sender
-{
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.profile.fuegoMaxMemory = sliderCell.value;
-
-  if (self.profileExists)
-    [self.delegate didChangeProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing Fuego's number of threads.
-// -----------------------------------------------------------------------------
-- (void) threadCountDidChange:(id)sender
-{
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.profile.fuegoThreadCount = sliderCell.value;
-
-  if (self.profileExists)
-    [self.delegate didChangeProfile:self];
 }
 
 // -----------------------------------------------------------------------------
