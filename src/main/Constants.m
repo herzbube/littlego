@@ -105,6 +105,9 @@ NSString* bugReportBoardAsSeenByGtpEngineFileName = @ "showboard.txt";
 NSString* bugReportEmailRecipient = @"herzbube@herzbube.ch";
 NSString* bugReportEmailSubject = @"Little Go Bug Report";
 
+// Crash reporting constants
+NSString* crashReportSubmissionURL = @"http://www.herzbube.ch/quincykit/crash_v200.php";
+
 // Resource file names
 NSString* openingBookResource = @"book.dat";
 NSString* aboutDocumentResource = @"About.html";
@@ -116,6 +119,9 @@ NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";
 NSString* MBProgressHUDLicenseDocumentResource = @"MBProgressHUD-license.html";
 NSString* lumberjackLicenseDocumentResource = @"Lumberjack-LICENSE.txt.html";
 NSString* zipkitLicenseDocumentResource = @"ZipKit-COPYING.TXT.html";
+NSString* quincykitLicenseDocumentResource = @"QuincyKit-LICENSE.txt.html";
+NSString* plcrashreporterLicenseDocumentResource = @"PLCrashReporter-LICENSE.txt.html";
+NSString* protobufcLicenseDocumentResource = @"protobuf-c-LICENSE.txt.html";
 NSString* readmeDocumentResource = @"README";
 NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";

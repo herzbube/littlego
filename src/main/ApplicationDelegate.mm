@@ -195,6 +195,13 @@ static ApplicationDelegate* sharedDelegate = nil;
   // secondary thread has finished setup.
   self.applicationReadyForAction = false;
 
+  // For QuincyKit to work properly, this method must be invoked in the context
+  // of the main thread, i.e. it cannot be invoked by launchWithProgressHUD:()
+  // which runs in a secondary thread. If this method is invoked in a secondary
+  // thread context, QuincyKit will not query the user whether she wants to
+  // send a crash report. In fact, QuincyKit will not do anything at all.
+  [self setupCrashReporting];
+
   // Delegate setup to secondary thread so that the application launches as
   // quickly as possible
   [self launchAsynchronously];
@@ -287,6 +294,34 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the crash reporting service.
+// -----------------------------------------------------------------------------
+- (void) setupCrashReporting
+{
+  BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
+  [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
+  // The QuincyKit docs do not mention this, but setting the delegate is
+  // required for displaying an alert view to the user
+  [sharedQuincyManager setDelegate:self];
+  // Default is NO (QuincyKit docs claim the default is YES)
+  sharedQuincyManager.showAlwaysButton = YES;
+  sharedQuincyManager.feedbackActivated = YES;
+  // sharedQuincyManager.appIdentifier must not be set, otherwise no crash
+  // reports are sent to the submission URL.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up application logging.
+// -----------------------------------------------------------------------------
+- (void) setupLogging
+{
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
+  [DDLog addLogger:self.fileLogger];
+  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the application launch mode.
 // -----------------------------------------------------------------------------
 - (void) setupApplicationLaunchMode
@@ -301,17 +336,6 @@ static ApplicationDelegate* sharedDelegate = nil;
     DDLogInfo(@"Launching in mode ApplicationLaunchModeNormal");
     self.applicationLaunchMode = ApplicationLaunchModeNormal;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up application logging.
-// -----------------------------------------------------------------------------
-- (void) setupLogging
-{
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
-  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
-  [DDLog addLogger:self.fileLogger];
-  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
 }
 
 // -----------------------------------------------------------------------------
@@ -629,11 +653,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   const float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
-  [self setupApplicationLaunchMode];
+  [self setupLogging];
   progress += stepIncrease;
   progressHUD.progress = progress;
 
-  [self setupLogging];
+  [self setupApplicationLaunchMode];
   progress += stepIncrease;
   progressHUD.progress = progress;
 

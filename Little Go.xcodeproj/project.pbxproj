@@ -33,6 +33,9 @@
 		CD00A368148C2C26004E1A0C /* SectionedDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */; };
 		CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
+		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
+		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
+		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -130,6 +133,17 @@
 		CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
+		CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
+		CD899E3B1643476B00329154 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0286401640B4A800CF23A1 /* CrashReporter.framework */; };
+		CD899E3C1643476E00329154 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0286401640B4A800CF23A1 /* CrashReporter.framework */; };
+		CD899E3D1643477300329154 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD02862E1640AEE100CF23A1 /* Quincy.bundle */; };
+		CD899E3E1643477300329154 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD02862E1640AEE100CF23A1 /* Quincy.bundle */; };
+		CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD02862B1640AEE100CF23A1 /* BWQuincyManager.m */; };
+		CD899E401643477900329154 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD02862B1640AEE100CF23A1 /* BWQuincyManager.m */; };
+		CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */; };
+		CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */; };
+		CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */; };
+		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
@@ -292,6 +306,16 @@
 		CD00A360148C2C26004E1A0C /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SectionedDocumentViewController.h; sourceTree = "<group>"; };
 		CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SectionedDocumentViewController.m; sourceTree = "<group>"; };
+		CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "QuincyKit-LICENSE.txt.html"; sourceTree = "<group>"; };
+		CD02860B1640986B00CF23A1 /* build-quincykit.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-quincykit.sh"; sourceTree = "<group>"; };
+		CD0286281640AEE100CF23A1 /* BWCrashReportTextFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCrashReportTextFormatter.h; sourceTree = "<group>"; };
+		CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWCrashReportTextFormatter.m; sourceTree = "<group>"; };
+		CD02862A1640AEE100CF23A1 /* BWQuincyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWQuincyManager.h; sourceTree = "<group>"; };
+		CD02862B1640AEE100CF23A1 /* BWQuincyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWQuincyManager.m; sourceTree = "<group>"; };
+		CD02862D1640AEE100CF23A1 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		CD02862E1640AEE100CF23A1 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
+		CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		CD0286401640B4A800CF23A1 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -402,6 +426,8 @@
 		CD84BBB7158536E80078C9DE /* spotlighticon-iphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spotlighticon-iphone@2x.png"; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
+		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
+		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
@@ -608,6 +634,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */,
 				CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -615,6 +642,7 @@
 				CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */,
 				CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */,
 				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
+				CD899E3B1643476B00329154 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,6 +654,8 @@
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
+				CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */,
+				CD899E3C1643476E00329154 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,7 +674,6 @@
 		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
-				CD48AD9815A7281C004A7096 /* MessageUI.framework */,
 				CDE022D6155731740052ACE0 /* appicon-ipad.png */,
 				CD66127E155862F6009C6535 /* appicon-ipad@2x.png */,
 				CDE022D7155731740052ACE0 /* appicon-iphone.png */,
@@ -673,6 +702,8 @@
 				288765070DF74369002DB57D /* CoreGraphics.framework */,
 				CDBF979E13EC750C00476748 /* AudioToolbox.framework */,
 				CD24962E14CCB51000C9D19F /* QuartzCore.framework */,
+				CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */,
+				CD48AD9815A7281C004A7096 /* MessageUI.framework */,
 				CDFA329A159FA0F400439B4E /* libz.dylib */,
 			);
 			name = Frameworks;
@@ -695,6 +726,21 @@
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
 			);
 			path = main;
+			sourceTree = "<group>";
+		};
+		CD0286271640AEE100CF23A1 /* quincykit */ = {
+			isa = PBXGroup;
+			children = (
+				CD0286281640AEE100CF23A1 /* BWCrashReportTextFormatter.h */,
+				CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */,
+				CD02862A1640AEE100CF23A1 /* BWQuincyManager.h */,
+				CD02862B1640AEE100CF23A1 /* BWQuincyManager.m */,
+				CD0286401640B4A800CF23A1 /* CrashReporter.framework */,
+				CD02862D1640AEE100CF23A1 /* LICENSE.txt */,
+				CD02862E1640AEE100CF23A1 /* Quincy.bundle */,
+			);
+			name = quincykit;
+			path = 3rdparty/install/quincykit;
 			sourceTree = "<group>";
 		};
 		CD05A8C91422803B00214BBE /* move */ = {
@@ -886,6 +932,7 @@
 		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
 			isa = PBXGroup;
 			children = (
+				CD0286271640AEE100CF23A1 /* quincykit */,
 			);
 			name = 3rdparty;
 			sourceTree = "<group>";
@@ -988,6 +1035,9 @@
 				CDE1A13914C1CED200317ECA /* Credits.html */,
 				CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */,
 				CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */,
+				CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */,
+				CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */,
+				CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */,
 				CDE1A13A14C1CED200317ECA /* SourceCode.html */,
 				CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */,
 			);
@@ -1174,6 +1224,7 @@
 				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
+				CD02860B1640986B00CF23A1 /* build-quincykit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDFA329015990C8400439B4E /* build-zipkit.sh */,
 				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
@@ -1379,6 +1430,11 @@
 				CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */,
 				CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */,
 				CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */,
+				CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */,
+				CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */,
+				CD899E3D1643477300329154 /* Quincy.bundle in Resources */,
+				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
+				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1387,6 +1443,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */,
+				CD899E3E1643477300329154 /* Quincy.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1532,6 +1589,8 @@
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 				CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */,
+				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
+				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1669,8 @@
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
+				CD899E401643477900329154 /* BWQuincyManager.m in Sources */,
+				CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1621,6 +1682,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1649,6 +1714,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1741,6 +1810,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1784,6 +1857,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -1829,6 +1903,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1872,6 +1947,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -1917,6 +1993,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -1972,6 +2049,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (

@@ -18,6 +18,10 @@
 // Project includes
 #import "../ui/MBProgressHUD.h"
 
+// 3rdparty library includes (uses "" instead of <> syntax because QuincyKit
+// is compiled into the project, not linked against as an external library)
+#import "../../3rdparty/install/quincykit/BWQuincyManager.h"
+
 // Forward declarations
 @class GtpClient;
 @class GtpEngine;
@@ -44,7 +48,7 @@
 /// The single instance of ApplicationDelegate is available to clients via the
 /// class method sharedDelegate().
 // -----------------------------------------------------------------------------
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate, MBProgressHUDDelegate>
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate, MBProgressHUDDelegate, BWQuincyManagerDelegate>
 {
 @private
   /// @name Outlets
@@ -58,8 +62,9 @@
 + (ApplicationDelegate*) sharedDelegate;
 + (ApplicationDelegate*) newDelegate;
 
-- (void) setupApplicationLaunchMode;
+- (void) setupCrashReporting;
 - (void) setupLogging;
+- (void) setupApplicationLaunchMode;
 - (void) setupFolders;
 - (void) setupResourceBundle;
 - (void) setupRegistrationDomain;

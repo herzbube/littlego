@@ -441,6 +441,13 @@ extern NSString* bugReportEmailSubject;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Crash reporting constants
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* crashReportSubmissionURL;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Resource file names
 // -----------------------------------------------------------------------------
 //@{
@@ -454,6 +461,9 @@ extern NSString* boostLicenseDocumentResource;
 extern NSString* MBProgressHUDLicenseDocumentResource;
 extern NSString* lumberjackLicenseDocumentResource;
 extern NSString* zipkitLicenseDocumentResource;
+extern NSString* quincykitLicenseDocumentResource;
+extern NSString* plcrashreporterLicenseDocumentResource;
+extern NSString* protobufcLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
 extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
