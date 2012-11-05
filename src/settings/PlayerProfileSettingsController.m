@@ -30,7 +30,7 @@
 /// @brief Enumerates the sections presented in the "Players & Profiles" user
 /// preferences table view.
 // -----------------------------------------------------------------------------
-enum SettingsTableViewSection
+enum PlayerProfileTableViewSection
 {
   PlayersSection,
   GtpEngineProfilesSection,

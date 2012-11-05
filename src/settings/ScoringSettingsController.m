@@ -30,7 +30,7 @@ NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
 /// @brief Enumerates the sections presented in the "Scoring" user preferences
 /// table view.
 // -----------------------------------------------------------------------------
-enum SettingsTableViewSection
+enum ScoringTableViewSection
 {
   ScoringSection,
   MaxSection
