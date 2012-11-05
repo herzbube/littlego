@@ -35,6 +35,7 @@
 @class ArchiveViewModel;
 @class GtpLogModel;
 @class GtpCommandModel;
+@class CrashReportingModel;
 
 
 // -----------------------------------------------------------------------------
@@ -129,6 +130,9 @@
 /// @brief Model object that stores canned GTP commands that can be managed and
 /// submitted on the Diagnostics view.
 @property(nonatomic, retain) GtpCommandModel* gtpCommandModel;
+/// @brief Model object that stores attributes that describe the behaviour of
+/// the crash reporting service.
+@property(nonatomic, retain) CrashReportingModel* crashReportingModel;
 
 @end
 

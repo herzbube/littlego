@@ -214,6 +214,11 @@ NSString* inconsistentTerritoryDotSymbolColorKey = @"InconsistentTerritoryDotSym
 NSString* inconsistentTerritoryDotSymbolPercentageKey = @"InconsistentTerritoryDotSymbolPercentage";
 NSString* inconsistentTerritoryFillColorKey = @"InconsistentTerritoryFillColor";
 NSString* inconsistentTerritoryFillColorAlphaKey = @"InconsistentTerritoryFillColorAlpha";
+// Crash reporting settings
+NSString* collectCrashDataKey = @"CrashReportActivated";
+NSString* automaticReportCrashDataKey = @"AutomaticallySendCrashReports";
+NSString* allowContactCrashDataKey = @"CrashDataContactAllowKey";
+NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 
 // Constants for NSCoding
 // General constants

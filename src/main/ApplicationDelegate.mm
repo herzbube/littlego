@@ -39,6 +39,7 @@
 #import "../play/SoundHandling.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
+#import "../diagnostics/CrashReportingModel.h"
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
@@ -116,6 +117,7 @@
 @synthesize archiveViewModel;
 @synthesize gtpLogModel;
 @synthesize gtpCommandModel;
+@synthesize crashReportingModel;
 @synthesize fileLogger;
 
 
@@ -172,6 +174,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.archiveViewModel = nil;
   self.gtpLogModel = nil;
   self.gtpCommandModel = nil;
+  self.crashReportingModel = nil;
   self.fileLogger = nil;
   [[CommandProcessor sharedProcessor] release];
   if (self == sharedDelegate)
@@ -422,6 +425,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
+  self.crashReportingModel = [[[CrashReportingModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -430,6 +434,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
   [self.gtpCommandModel readUserDefaults];
+  [self.crashReportingModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -445,6 +450,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
   [self.gtpCommandModel writeUserDefaults];
+  [self.crashReportingModel writeUserDefaults];
 
   [[NSUserDefaults standardUserDefaults] synchronize];
 }

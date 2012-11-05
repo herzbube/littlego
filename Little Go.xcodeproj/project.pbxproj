@@ -145,6 +145,9 @@
 		CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */; };
 		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
 		CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E571645FFE400329154 /* TableViewTextCell.m */; };
+		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
+		CD899E60164875B800329154 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5F164875B700329154 /* CrashReportingSettingsController.m */; };
+		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
@@ -431,6 +434,10 @@
 		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD899E561645FFE300329154 /* TableViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewTextCell.h; sourceTree = "<group>"; };
 		CD899E571645FFE400329154 /* TableViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewTextCell.m; sourceTree = "<group>"; };
+		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
+		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
+		CD899E5E164875B600329154 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
+		CD899E5F164875B700329154 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
@@ -840,6 +847,8 @@
 			children = (
 				CD48ADA315A891B7004A7096 /* BugReportUtilities.h */,
 				CD48ADA415A891B8004A7096 /* BugReportUtilities.m */,
+				CD899E5B164875A800329154 /* CrashReportingModel.h */,
+				CD899E5C164875A800329154 /* CrashReportingModel.m */,
 				CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */,
 				CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */,
 				CD613D98143CD1B70002759E /* GtpCommandModel.h */,
@@ -897,6 +906,8 @@
 		CD1088571326CBB300E83543 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				CD899E5E164875B600329154 /* CrashReportingSettingsController.h */,
+				CD899E5F164875B700329154 /* CrashReportingSettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
 				CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */,
@@ -1597,6 +1608,8 @@
 				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
 				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
 				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
+				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
+				CD899E60164875B800329154 /* CrashReportingSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1677,6 +1690,7 @@
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E401643477900329154 /* BWQuincyManager.m in Sources */,
 				CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */,
+				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

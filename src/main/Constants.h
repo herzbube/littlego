@@ -561,6 +561,11 @@ extern NSString* inconsistentTerritoryDotSymbolColorKey;
 extern NSString* inconsistentTerritoryDotSymbolPercentageKey;
 extern NSString* inconsistentTerritoryFillColorKey;
 extern NSString* inconsistentTerritoryFillColorAlphaKey;
+// Crash reporting settings
+extern NSString* collectCrashDataKey;
+extern NSString* automaticReportCrashDataKey;
+extern NSString* allowContactCrashDataKey;
+extern NSString* contactEmailCrashDataKey;
 //@}
 
 // -----------------------------------------------------------------------------

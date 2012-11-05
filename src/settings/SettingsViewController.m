@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SettingsViewController.h"
+#import "CrashReportingSettingsController.h"
 #import "PlayerProfileSettingsController.h"
 #import "PlayViewSettingsController.h"
 #import "ScoringSettingsController.h"
@@ -30,6 +31,7 @@
 enum SettingsTableViewSection
 {
   SettingsSection,
+  CrashReportingSection,
   MaxSection
 };
 
@@ -43,6 +45,16 @@ enum SettingsSectionItem
   PlayersProfilesSettingsItem,
   MaxSettingsSectionItem
 };
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the CrashReportingSection.
+// -----------------------------------------------------------------------------
+enum CrashReportingSectionItem
+{
+  CrashReportingItem,
+  MaxCrashReportingSectionItem
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for SettingsViewController.
@@ -141,7 +153,17 @@ enum SettingsSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return MaxSettingsSectionItem;
+  switch (section)
+  {
+    case SettingsSection:
+      return MaxSettingsSectionItem;
+    case CrashReportingSection:
+      return MaxCrashReportingSectionItem;
+    default:
+      assert(0);
+      break;
+  }
+  return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -179,6 +201,22 @@ enum SettingsSectionItem
         }
       }
       break;
+    }
+    case CrashReportingSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportingItem:
+        {
+          cell.textLabel.text = @"Crash reporting";
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
     }
     default:
     {
@@ -224,6 +262,22 @@ enum SettingsSectionItem
         }
       }
       break;
+    }
+    case CrashReportingSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportingItem:
+        {
+          controller = [CrashReportingSettingsController controller];
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
     }
     default:
     {
