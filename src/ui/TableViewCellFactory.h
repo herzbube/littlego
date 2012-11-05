@@ -31,7 +31,7 @@ enum TableViewCellType
   Value2CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue2
   SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
-  TextFieldCellType,     ///< @brief The cell's entire content view is a UITextField
+  TextFieldCellType,     ///< @brief The cell's content view is divided into a left UILabel and a right UITextField
   SliderCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
@@ -44,8 +44,7 @@ enum TableViewCellType
 // -----------------------------------------------------------------------------
 enum TableViewCellSubViewTag
 {
-  UnusedSubviewTag = 0,  ///< @brief Tag 0 must not be used, it is the default tag used for all framework-created views (e.g. the cell's content view)
-  TextFieldCellTextFieldTag,
+  UnusedSubviewTag = 0  ///< @brief Tag 0 must not be used, it is the default tag used for all framework-created views (e.g. the cell's content view)
 };
 
 // -----------------------------------------------------------------------------

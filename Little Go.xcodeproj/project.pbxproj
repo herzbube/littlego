@@ -144,6 +144,7 @@
 		CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */; };
 		CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */; };
 		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
+		CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E571645FFE400329154 /* TableViewTextCell.m */; };
 		CD8A43C713318409009F3C7F /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
@@ -428,6 +429,8 @@
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
+		CD899E561645FFE300329154 /* TableViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewTextCell.h; sourceTree = "<group>"; };
+		CD899E571645FFE400329154 /* TableViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewTextCell.m; sourceTree = "<group>"; };
 		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
@@ -1247,6 +1250,8 @@
 				CD72216814633F1D005EAC65 /* TableViewGridCell.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
 				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
+				CD899E561645FFE300329154 /* TableViewTextCell.h */,
+				CD899E571645FFE400329154 /* TableViewTextCell.m */,
 				CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */,
 				CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */,
 				CDB457B2147F14480043EDE4 /* UiUtilities.h */,
@@ -1591,6 +1596,7 @@
 				CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */,
 				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
 				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
+				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
