@@ -939,6 +939,30 @@ once more to Sensei's Library (http://senseis.xmp.net/?GoEtiquette).
 
 
 --------------------------------------------------------------------------------
+Sending crash reports
+--------------------------------------------------------------------------------
+When Little Go crashes, data which can help the developer to correct the problem
+will be collected automatically. All collected data is stored on your device,
+nothing is sent without your permission. Next time you launch the app an alert
+will be displayed, offering you the choice to send the collected data in the
+form of a crash report to the developer. If you decline, no data is sent.
+
+On the "Diagnostics" tab, you will find an entry that allows you to change
+settings related to the crash reporting service. For instance, you can turn
+off data collection entirely, or you can define an email address that should
+be sent along with the crash data so that the developer will be able to contact
+you if clarifications are needed about the problem. Have a look at the settings
+page, it's all self-explanatory.
+
+The crash report is a simple text file that contains the following information:
+- Hardware model (not the device ID!)
+- Operating system version
+- Type of crash
+- Technical information about the state of the application when the crash
+  occurred
+
+
+--------------------------------------------------------------------------------
 Reporting bugs
 --------------------------------------------------------------------------------
 
