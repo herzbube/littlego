@@ -36,9 +36,9 @@
 enum DiagnosticsTableViewSection
 {
   GtpSection,
+  CrashReportSection,
   BugReportSection,
 //  ApplicationLogSection,
-  CrashReportSection,
   MaxSection
 };
 
@@ -51,6 +51,15 @@ enum GtpSectionItem
   GtpCommandsItem,
   GtpSettingsItem,
   MaxGtpSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the CrashReportSection.
+// -----------------------------------------------------------------------------
+enum CrashReportSectionItem
+{
+  CrashReportSettingsItem,
+  MaxCrashReportSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -71,15 +80,6 @@ enum ApplicationLogSectionItem
   ApplicationLogItem,
   ApplicationLogSettingsItem,
   MaxApplicationLogSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the CrashReportSection.
-// -----------------------------------------------------------------------------
-enum CrashReportSectionItem
-{
-  CrashReportSettingsItem,
-  MaxCrashReportSectionItem
 };
 
 
@@ -121,9 +121,9 @@ enum CrashReportSectionItem
 - (void) viewGtpLog;
 - (void) viewCannedGtpCommands;
 - (void) viewGtpSettings;
+- (void) viewCrashReportSettings;
 - (void) sendBugReport;
 - (void) generateDiagnosticsInformationFile;
-- (void) viewCrashReportSettings;
 //@}
 /// @name Helpers
 //@{
@@ -223,13 +223,13 @@ enum CrashReportSectionItem
   {
     case GtpSection:
       return MaxGtpSectionItem;
+    case CrashReportSection:
+      return MaxCrashReportSectionItem;
     case BugReportSection:
       if (self.bugReportSectionIsDisabled)
         return 1;
       else
         return MaxBugReportSectionItem;
-    case CrashReportSection:
-      return MaxCrashReportSectionItem;
     default:
       assert(0);
       break;
@@ -246,10 +246,10 @@ enum CrashReportSectionItem
   {
     case GtpSection:
       return @"GTP (Go Text Protocol)";
-    case BugReportSection:
-      return @"Bug Report";
     case CrashReportSection:
       return @"Crash Report";
+    case BugReportSection:
+      return @"Bug Report";
     default:
       break;
   }
@@ -303,6 +303,25 @@ enum CrashReportSectionItem
       }
       break;
     }
+    case CrashReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportSettingsItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          cell.textLabel.text = @"Settings";
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
     case BugReportSection:
     {
       if (self.bugReportSectionIsDisabled)
@@ -330,24 +349,6 @@ enum CrashReportSectionItem
         }
       }
       break;
-    }
-    case CrashReportSection:
-    {
-      switch (indexPath.row)
-      {
-        case CrashReportSettingsItem:
-        {
-          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-          cell.textLabel.text = @"Settings";
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
     }
     default:
       assert(0);
@@ -384,6 +385,19 @@ enum CrashReportSectionItem
       }
       break;
     }
+    case CrashReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportSettingsItem:
+          [self viewCrashReportSettings];
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      break;
+    }
     case BugReportSection:
     {
       if (self.bugReportSectionIsDisabled)
@@ -406,18 +420,6 @@ enum CrashReportSectionItem
         }
       }
       break;
-    }
-    case CrashReportSection:
-    {
-      switch (indexPath.row)
-      {
-        case CrashReportSettingsItem:
-          [self viewCrashReportSettings];
-          break;
-        default:
-          assert(0);
-          break;
-      }
     }
     default:
     {
@@ -457,6 +459,16 @@ enum CrashReportSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Displays CrashReportingSettingsController to allow the user to view
+/// and modify settings related to the crash reporting service.
+// -----------------------------------------------------------------------------
+- (void) viewCrashReportSettings
+{
+  CrashReportingSettingsController* controller = [CrashReportingSettingsController controller];
+  [self.navigationController pushViewController:controller animated:YES];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Triggers the workflow that allows the user to send a bug report email
 /// directly from the device.
 // -----------------------------------------------------------------------------
@@ -475,16 +487,6 @@ enum CrashReportSectionItem
 {
   SendBugReportController* controller = [SendBugReportController controller];
   [controller generateDiagnosticsInformationFile];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays GtpLogSettingsController to allow the user to view and
-/// modify settings related to the GTP command/response log.
-// -----------------------------------------------------------------------------
-- (void) viewCrashReportSettings
-{
-  CrashReportingSettingsController* controller = [CrashReportingSettingsController controller];
-  [self.navigationController pushViewController:controller animated:YES];
 }
 
 // -----------------------------------------------------------------------------
