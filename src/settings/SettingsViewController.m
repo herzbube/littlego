@@ -17,7 +17,6 @@
 
 // Project includes
 #import "SettingsViewController.h"
-#import "CrashReportingSettingsController.h"
 #import "PlayerProfileSettingsController.h"
 #import "PlayViewSettingsController.h"
 #import "ScoringSettingsController.h"
@@ -31,7 +30,6 @@
 enum SettingsTableViewSection
 {
   SettingsSection,
-  CrashReportingSection,
   MaxSection
 };
 
@@ -44,15 +42,6 @@ enum SettingsSectionItem
   ScoringSettingsItem,
   PlayersProfilesSettingsItem,
   MaxSettingsSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the CrashReportingSection.
-// -----------------------------------------------------------------------------
-enum CrashReportingSectionItem
-{
-  CrashReportingItem,
-  MaxCrashReportingSectionItem
 };
 
 
@@ -157,8 +146,6 @@ enum CrashReportingSectionItem
   {
     case SettingsSection:
       return MaxSettingsSectionItem;
-    case CrashReportingSection:
-      return MaxCrashReportingSectionItem;
     default:
       assert(0);
       break;
@@ -201,22 +188,6 @@ enum CrashReportingSectionItem
         }
       }
       break;
-    }
-    case CrashReportingSection:
-    {
-      switch (indexPath.row)
-      {
-        case CrashReportingItem:
-        {
-          cell.textLabel.text = @"Crash reporting";
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
     }
     default:
     {
@@ -262,22 +233,6 @@ enum CrashReportingSectionItem
         }
       }
       break;
-    }
-    case CrashReportingSection:
-    {
-      switch (indexPath.row)
-      {
-        case CrashReportingItem:
-        {
-          controller = [CrashReportingSettingsController controller];
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
     }
     default:
     {

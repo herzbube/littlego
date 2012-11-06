@@ -17,6 +17,7 @@
 
 // Project includes
 #import "DiagnosticsViewController.h"
+#import "CrashReportingSettingsController.h"
 #import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
 #import "GtpCommandViewController.h"
@@ -37,6 +38,7 @@ enum DiagnosticsTableViewSection
   GtpSection,
   BugReportSection,
 //  ApplicationLogSection,
+  CrashReportSection,
   MaxSection
 };
 
@@ -69,6 +71,15 @@ enum ApplicationLogSectionItem
   ApplicationLogItem,
   ApplicationLogSettingsItem,
   MaxApplicationLogSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the CrashReportSection.
+// -----------------------------------------------------------------------------
+enum CrashReportSectionItem
+{
+  CrashReportSettingsItem,
+  MaxCrashReportSectionItem
 };
 
 
@@ -112,6 +123,7 @@ enum ApplicationLogSectionItem
 - (void) viewGtpSettings;
 - (void) sendBugReport;
 - (void) generateDiagnosticsInformationFile;
+- (void) viewCrashReportSettings;
 //@}
 /// @name Helpers
 //@{
@@ -216,6 +228,8 @@ enum ApplicationLogSectionItem
         return 1;
       else
         return MaxBugReportSectionItem;
+    case CrashReportSection:
+      return MaxCrashReportSectionItem;
     default:
       assert(0);
       break;
@@ -234,6 +248,8 @@ enum ApplicationLogSectionItem
       return @"GTP (Go Text Protocol)";
     case BugReportSection:
       return @"Bug Report";
+    case CrashReportSection:
+      return @"Crash Report";
     default:
       break;
   }
@@ -315,6 +331,24 @@ enum ApplicationLogSectionItem
       }
       break;
     }
+    case CrashReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportSettingsItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          cell.textLabel.text = @"Settings";
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+    }
     default:
       assert(0);
       break;
@@ -373,8 +407,22 @@ enum ApplicationLogSectionItem
       }
       break;
     }
+    case CrashReportSection:
+    {
+      switch (indexPath.row)
+      {
+        case CrashReportSettingsItem:
+          [self viewCrashReportSettings];
+          break;
+        default:
+          assert(0);
+          break;
+      }
+    }
     default:
+    {
       return;
+    }
   }
 }
 
@@ -427,6 +475,16 @@ enum ApplicationLogSectionItem
 {
   SendBugReportController* controller = [SendBugReportController controller];
   [controller generateDiagnosticsInformationFile];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays GtpLogSettingsController to allow the user to view and
+/// modify settings related to the GTP command/response log.
+// -----------------------------------------------------------------------------
+- (void) viewCrashReportSettings
+{
+  CrashReportingSettingsController* controller = [CrashReportingSettingsController controller];
+  [self.navigationController pushViewController:controller animated:YES];
 }
 
 // -----------------------------------------------------------------------------
