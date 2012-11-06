@@ -39,6 +39,7 @@
 #import "../play/SoundHandling.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
+#import "../diagnostics/CrashReportingModel.h"
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
@@ -116,6 +117,7 @@
 @synthesize archiveViewModel;
 @synthesize gtpLogModel;
 @synthesize gtpCommandModel;
+@synthesize crashReportingModel;
 @synthesize fileLogger;
 
 
@@ -172,6 +174,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.archiveViewModel = nil;
   self.gtpLogModel = nil;
   self.gtpCommandModel = nil;
+  self.crashReportingModel = nil;
   self.fileLogger = nil;
   [[CommandProcessor sharedProcessor] release];
   if (self == sharedDelegate)
@@ -194,6 +197,13 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Clients need to see that we are not yet ready. Flag will become true when
   // secondary thread has finished setup.
   self.applicationReadyForAction = false;
+
+  // For QuincyKit to work properly, this method must be invoked in the context
+  // of the main thread, i.e. it cannot be invoked by launchWithProgressHUD:()
+  // which runs in a secondary thread. If this method is invoked in a secondary
+  // thread context, QuincyKit will not query the user whether she wants to
+  // send a crash report. In fact, QuincyKit will not do anything at all.
+  [self setupCrashReporting];
 
   // Delegate setup to secondary thread so that the application launches as
   // quickly as possible
@@ -287,6 +297,34 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the crash reporting service.
+// -----------------------------------------------------------------------------
+- (void) setupCrashReporting
+{
+  BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
+  [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
+  // The QuincyKit docs do not mention this, but setting the delegate is
+  // required for displaying an alert view to the user
+  [sharedQuincyManager setDelegate:self];
+  // Default is NO (QuincyKit docs claim the default is YES)
+  sharedQuincyManager.showAlwaysButton = YES;
+  sharedQuincyManager.feedbackActivated = YES;
+  // sharedQuincyManager.appIdentifier must not be set, otherwise no crash
+  // reports are sent to the submission URL.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up application logging.
+// -----------------------------------------------------------------------------
+- (void) setupLogging
+{
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
+  [DDLog addLogger:self.fileLogger];
+  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Sets up the application launch mode.
 // -----------------------------------------------------------------------------
 - (void) setupApplicationLaunchMode
@@ -301,17 +339,6 @@ static ApplicationDelegate* sharedDelegate = nil;
     DDLogInfo(@"Launching in mode ApplicationLaunchModeNormal");
     self.applicationLaunchMode = ApplicationLaunchModeNormal;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up application logging.
-// -----------------------------------------------------------------------------
-- (void) setupLogging
-{
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
-  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
-  [DDLog addLogger:self.fileLogger];
-  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
 }
 
 // -----------------------------------------------------------------------------
@@ -398,6 +425,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
+  self.crashReportingModel = [[[CrashReportingModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -406,6 +434,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
   [self.gtpCommandModel readUserDefaults];
+  [self.crashReportingModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -421,6 +450,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
   [self.gtpCommandModel writeUserDefaults];
+  [self.crashReportingModel writeUserDefaults];
 
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -629,11 +659,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   const float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
-  [self setupApplicationLaunchMode];
+  [self setupLogging];
   progress += stepIncrease;
   progressHUD.progress = progress;
 
-  [self setupLogging];
+  [self setupApplicationLaunchMode];
   progress += stepIncrease;
   progressHUD.progress = progress;
 

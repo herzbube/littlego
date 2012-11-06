@@ -44,6 +44,7 @@ enum SettingsSectionItem
   MaxSettingsSectionItem
 };
 
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for SettingsViewController.
 // -----------------------------------------------------------------------------
@@ -141,7 +142,15 @@ enum SettingsSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return MaxSettingsSectionItem;
+  switch (section)
+  {
+    case SettingsSection:
+      return MaxSettingsSectionItem;
+    default:
+      assert(0);
+      break;
+  }
+  return 0;
 }
 
 // -----------------------------------------------------------------------------

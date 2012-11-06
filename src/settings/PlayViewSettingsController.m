@@ -30,7 +30,7 @@ NSString* placeStoneUnderFingerText = @"Place stone under finger";
 /// @brief Enumerates the sections presented in the "Play View" user preferences
 /// table view.
 // -----------------------------------------------------------------------------
-enum SettingsTableViewSection
+enum PlayViewTableViewSection
 {
   FeedbackSection,
   ViewSection,

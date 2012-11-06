@@ -159,14 +159,16 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack -ltouchzipkit -ObjC
-  - Note 1: The option "-ObjC" is required by ZipKit. Without this option the
-    app crashes when a ZKFileArchive object is created due to an unrecognized
-    selector being sent to the object. For understanding the issue, read this
-    technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html
+  - Note 1: The option "-ObjC" is required by ZipKit and QuincyKit (actually
+    QuincyKit specifies -all_load, but -ObjC is sufficient). Without this option
+    ZipKit crashes the app when a ZKFileArchive object is created due to an
+    unrecognized selector being sent to the object. For understanding the issue,
+    read this technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html.
   - Note 2: If a future version of Fuego requires additional Boost libraries,
     they must be added here.
 - libz.dylib has been added to the "Build Phases" section "Link Binary with
-  Libraries". This is required to satisfy the dependencies of ZipKit.
+  Libraries". This is required to satisfy the dependencies of ZipKit and
+  QuincyKit.
 - GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
@@ -769,6 +771,22 @@ ZipKit build/installation issues
 No issues, build works out of the box.
 
 
+QuincyKit build/installation issues
+-----------------------------------
+QuincyKit comes pre-built, so no build is necessary.
+
+Installation
+- QuincyKit does not consist of the usual header + library files that can be
+  installed into split locations (include/lib) within platform-specific folders
+  (Developer/Platforms/iPhoneOS.platform/...). Instead, QuincyKit includes a
+  framework (CrashReporter.framework) and a bundle (Quincy.bundle) which need to
+  be added to the Xcode project as a whole, and regardless of which platform
+  the project is built for.
+- For this reason, the necessary QuincyKit files are copied into the folder
+  3rdparty/install/quincykit, and the Xcode project references the files
+  from there
+
+
 Changes to the Fuego source code
 --------------------------------
 1) FuegoUtil::FuegoMain()
@@ -1095,3 +1113,76 @@ things will happen:
   file was generated
 
 Once the application has launched you are ready to test & debug.
+
+
+Crash Reporting
+---------------
+Little Go currently uses QuincyKit [1] for crash reporting. QuincyKit is free
+and open source, but the deciding factor has been that it allows me to send
+crash reports to my own server. If you are creating a clone of Little Go, make
+sure to change the submission URL that appears in ApplicationDelegate.mm to a
+server that you control.
+
+Bugsense [2] is the alternative that should be considered should there ever be a
+need to replace QuincyKit. Although the Bugsense library itself is not open
+source, they are friendly to open source projects and offer them their Plus
+package (which normally costs a hefty fee) for free.
+
+QuincyKit integration into the Little Go app (= the client) has been very easy
+and is described in [3]. Setting up the QuincyKit server is also described in
+[3] and pretty much a no-brainer. The default setup, however, leaves the admin
+web interface completely unprotected against anonymous access from the Internet.
+On [4] I have outlined how to protect the admin interface via HTTP
+authentication.
+
+Symbolication of a crash report is described in [3]. For easy reference I am
+reproducing the steps here:
+- From the extracted QuincyKit package, copy the content of the "server/local"
+  folder to your dev machine
+- If necessary, make the symbolication script executable:
+    chmod + x symbolicatecrash.pl
+- Copy the crash log file to the dev machine
+- The following command symbolicates the crash log file and prints the result
+  to stdout
+    symbolicatecrash.pl /path/to/crashlogfile
+- For this to work, the following packages must be present somewhere on the dev
+  machine:
+    Little Go.app
+    Little Go.app.dSYM
+  Obviously, the packages must match the build that the crash log file comes
+  from. The symbolication script tries to find the packages by peeking into the
+  Spotlight index and looking up the appropriate packages by UUID. If you have
+  an archived build hanging around on the machine, the script will find it and
+  use the packages from inside the archive.
+- You can also specify the folder that contains the necessary packages:
+    symbolicatecrash.pl /path/to/crashlogfile /path/to/packagefiles
+  I have never had to use this, so I don't know how this works.
+
+Once you have local symbolication up and running, you can add remote
+symbolication by doing the following:
+- Modify serverconfig.php so that it contains the necessary details to access
+  the QuincyKit server that receives crash log files from clients. NOTE: I was
+  unable to get this to work with HTTPS access.
+- Try whether this works by running
+    php symbolicate.php
+  Apparently this prints some error message which can be ignored.
+- Log in to the QuincyKit server admin web interface. If everything was set up
+  correctly, you should see that the crash log files on the server are now
+  symbolicated.
+
+Once remote symbolication works, you can take it one step further and add
+automation to the process:
+- Modify symbolicate.sh and com.crashreportsender.symbolicator.plist so that
+  they contain the proper paths
+- Make the shell script executable:
+    chmod + x symbolicate.sh
+- Start automation for the current user:
+  cp com.crashreportsender.symbolicator.plist User/Library/LaunchAgents
+  launchctl load com.crashreportsender.symbolicator.plist
+- Remote symbolication should now run every 15 minutes. If you want a different
+  interval you can change this in the .plist. file.
+
+[1] http://quincykit.net/
+[2] http://www.bugsense.com/pricing
+[3] https://github.com/TheRealKerni/QuincyKit
+[4] http://wiki.herzbube.ch/index.php/QuincyKit

@@ -19,6 +19,7 @@
 #import "TableViewCellFactory.h"
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
+#import "TableViewTextCell.h"
 #import "UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
@@ -90,6 +91,11 @@
       cell = [TableViewGridCell cellWithReuseIdentifier:cellID];
       break;
     }
+    case TextFieldCellType:
+    {
+      cell = [TableViewTextCell cellWithReuseIdentifier:cellID];
+      break;
+    }
     default:
     {
       UITableViewCellStyle cellStyle;
@@ -123,38 +129,6 @@
       UISwitch* accessoryViewSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
       cell.accessoryView = accessoryViewSwitch;
       [accessoryViewSwitch release];
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      break;
-    }
-    case TextFieldCellType:
-    {
-      // The content view at this time (i.e. after construction) is always
-      // sized 320x44, even on iPad or iPhone/landscape. The "trick" for
-      // proper size adjustment of subviews is to blithely use the content
-      // view's size and let the autoresizingMask do the work for us. This
-      // works even though the contentView currently has autoresizingMask == 0.
-      // It's not clear who actually performs the size adjustment (we can
-      // guess: the UITableView), but it works, even on orientation changes.
-      // The "brute-force" or "do-it-yourself" alternative is to subclass
-      // UITableViewCell and override layoutSubviews().
-      CGRect textFieldFrame = cell.contentView.bounds;
-      textFieldFrame = CGRectInset(textFieldFrame,
-                                   [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
-                                   [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical]);
-      UITextField* textField = [[[UITextField alloc] initWithFrame:textFieldFrame] autorelease];
-      [cell.contentView addSubview:textField];
-      textField.textColor = [UIColor slateBlueColor];
-      textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-      textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-      // Make the text field identifiable so that clients can get at it by
-      // sending "viewWithTag:" to the cell
-      textField.tag = TextFieldCellTextFieldTag;
-      // Properties from the UITextInputTraits protocol
-      textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
-      textField.autocorrectionType = UITextAutocorrectionTypeNo;
-      textField.enablesReturnKeyAutomatically = YES;
-      // The cell should never appear selected, instead we want the text field
-      // to become active when the cell is tapped
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }

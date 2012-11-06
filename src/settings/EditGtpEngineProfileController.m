@@ -21,6 +21,7 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewTextCell.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UiColorAdditions.h"
 
@@ -303,7 +304,8 @@ enum ProfileNotesSectionItem
         {
           enum TableViewCellType cellType = TextFieldCellType;
           cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          UITextField* textField = (UITextField*)[cell viewWithTag:TextFieldCellTextFieldTag];
+          TableViewTextCell* textCell = (TableViewTextCell*)cell;
+          UITextField* textField = textCell.textField;
           textField.delegate = self;
           textField.text = self.profile.name;
           textField.placeholder = @"Profile name";

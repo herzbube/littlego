@@ -255,5 +255,13 @@
 		<key>InconsistentTerritoryFillColorAlpha</key>
 		<real>0.3</real>
 	</dict>
+	<key>CrashReportActivated</key>
+	<true/>
+	<key>AutomaticallySendCrashReports</key>
+	<false/>
+	<key>CrashDataContactAllowKey</key>
+	<false/>
+	<key>CrashDataContactEmailKey</key>
+	<string></string>
 </dict>
 </plist>

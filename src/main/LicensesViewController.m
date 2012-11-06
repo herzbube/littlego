@@ -44,6 +44,9 @@ enum LicensesSectionItem
   MBProgressHUDLicenseItem,
   LumberjackLicenseItem,
   ZipKitLicenseItem,
+  QuincyKitLicenseItem,
+  PLCrashReporterLicenseItem,
+  ProtobufCLicenseItem,
   MaxLicensesSectionItem
 };
 
@@ -216,6 +219,21 @@ enum LicensesSectionItem
       return @"ZipKit License";
       break;
     }
+    case QuincyKitLicenseItem:
+    {
+      return @"QuincyKit License";
+      break;
+    }
+    case PLCrashReporterLicenseItem:
+    {
+      return @"PLCrashReporter License";
+      break;
+    }
+    case ProtobufCLicenseItem:
+    {
+      return @"protobuf-c License";
+      break;
+    }
     default:
     {
       assert(0);
@@ -266,6 +284,21 @@ enum LicensesSectionItem
     case ZipKitLicenseItem:
     {
       return zipkitLicenseDocumentResource;
+      break;
+    }
+    case QuincyKitLicenseItem:
+    {
+      return quincykitLicenseDocumentResource;
+      break;
+    }
+    case PLCrashReporterLicenseItem:
+    {
+      return plcrashreporterLicenseDocumentResource;
+      break;
+    }
+    case ProtobufCLicenseItem:
+    {
+      return protobufcLicenseDocumentResource;
       break;
     }
     default:

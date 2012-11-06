@@ -10,7 +10,7 @@ SCRIPT_NAME="$(basename $0)"
 SCRIPT_DIR="$(pwd)/$(dirname $0)"
 
 # Other variables
-SOFTWARE_PACKAGES="boost fuego cocoalumberjack zipkit"
+SOFTWARE_PACKAGES="boost fuego cocoalumberjack zipkit quincykit"
 BUILD_SCRIPT="$SCRIPT_DIR/build-software.sh"
 
 if test $# -ne 0; then
