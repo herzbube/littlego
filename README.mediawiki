@@ -1,0 +1,53 @@
+<!-- Note to editors: This file is formatted in Mediawiki markup. It is parsed
+     by GitHub to present the project front page. -->
+
+__NOTOC__
+
+== Introduction ==
+
+Little Go is an iOS application that lets you play the game of Go on the iPhone
+or iPad. You can play against another human, or against the computer.
+
+For a detailed description of Little Go's features, see the
+[[doc/MANUAL|MANUAL]] document (also available in-game from the "Help" tab).
+
+You can check for the most recent version of Little Go in Apple's
+[http://itunes.apple.com/us/app/little-go/id490753989?ls=1&mt=8 App Store]. If
+you are interested in Little Go as a developer, you can either clone
+[https://github.com/herzbube/littlego/ the GitHub repository], or download a
+release snapshot of the source code from
+[http://www.herzbube.ch/littlego the project website]. Once you have
+unpacked the source tar ball you should first read the
+[[doc/README.developer|README.developer]] document.
+
+
+== Changes in this release ==
+
+This is the Little Go bugfix release 0.8.1. There are only two new things:
+
+# A spiffy new app icon, contributed by Daniel Máslo. To see more of Daniel's artwork pay a visit to [http://www.danielmaslo.com/ his website].
+# I am also pleased to announce that an elusive bug, which has plagued Little Go since before its first public release on the App Store, has finally been found and exterminated. Thanks to Andrew Hersee for reporting the issue, complete with instructions how to reproduce the bug.
+
+As usual the ChangeLog document has all the details.
+
+
+== Known bugs ==
+
+See the "Troubleshooting" section in the [[doc/MANUAL|MANUAL document]].
+
+
+== License and source code ==
+
+Little Go is released under the Apache License (2.0). You should have received a
+copy of the license along with the Little Go application bundle or the source
+distribution (see the file LICENSE inside the application bundle or source
+distribution, or start the application and choose the
+"More:Licenses:Apache License" tab item). If not, see
+http://www.apache.org/licenses/.
+
+
+== Platforms ==
+
+Little Go is available both for the iPhone and the iPad.
+
+The minimum requirement for running this version of Little Go is iOS 4.3.

@@ -540,12 +540,9 @@ Notes about the configuration:
 Version control
 ---------------
 The version control system used to maintain this project is Git. The canonical
-repository currently resides here:
-- URL for cloning: http://git.herzbube.ch/littlego.git
-- URL for browsing: http://git.herzbube.ch/gitweb.cgi/littlego.git
-
-I plan to move to GitHub at some time in the future. More interest in the
-project by other people will make the move sooner.
+repository currently resides on GitHub:
+- URL for cloning: git://github.com/herzbube/littlego.git
+- URL for browsing: https://github.com/herzbube/littlego
 
 The branching model adopted by the project is described in this article:
 http://nvie.com/posts/a-successful-git-branching-model/.

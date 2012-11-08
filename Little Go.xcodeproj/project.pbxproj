@@ -36,6 +36,7 @@
 		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
 		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
+		CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */ = {isa = PBXBuildFile; fileRef = CD04987C164C6AD5007E0721 /* README.mediawiki */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -320,6 +321,7 @@
 		CD02862E1640AEE100CF23A1 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
 		CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CD0286401640B4A800CF23A1 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
+		CD04987C164C6AD5007E0721 /* README.mediawiki */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mediawiki; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -569,7 +571,6 @@
 		CDE4057313EB081C0091E719 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		CDE4057413EB081C0091E719 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
-		CDEC288012F477E70069F5B7 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
@@ -691,6 +692,7 @@
 				CD1087701323D07800E83543 /* LICENSE */,
 				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
+				CD04987C164C6AD5007E0721 /* README.mediawiki */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
@@ -1204,7 +1206,6 @@
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CD00A34D1487F9CF004E1A0C /* MANUAL */,
-				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
 				CDEC288312F477E70069F5B7 /* Research */,
@@ -1451,6 +1452,7 @@
 				CD899E3D1643477300329154 /* Quincy.bundle in Resources */,
 				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
+				CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
