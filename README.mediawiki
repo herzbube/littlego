@@ -8,8 +8,8 @@ __NOTOC__
 Little Go is an iOS application that lets you play the game of Go on the iPhone
 or iPad. You can play against another human, or against the computer.
 
-For a detailed description of Little Go's features, see the
-[[doc/MANUAL|MANUAL]] document (also available in-game from the "Help" tab).
+For a detailed description of Little Go's features, see the MANUAL document
+(also available in-game from the "Help" tab).
 
 You can check for the most recent version of Little Go in Apple's
 [http://itunes.apple.com/us/app/little-go/id490753989?ls=1&mt=8 App Store]. If
@@ -17,8 +17,8 @@ you are interested in Little Go as a developer, you can either clone
 [https://github.com/herzbube/littlego/ the GitHub repository], or download a
 release snapshot of the source code from
 [http://www.herzbube.ch/littlego the project website]. Once you have
-unpacked the source tar ball you should first read the
-[[doc/README.developer|README.developer]] document.
+unpacked the source tar ball you should first read the README.developer
+document.
 
 
 == Changes in this release ==
@@ -33,7 +33,7 @@ As usual the ChangeLog document has all the details.
 
 == Known bugs ==
 
-See the "Troubleshooting" section in the [[doc/MANUAL|MANUAL document]].
+See the "Troubleshooting" section in the MANUAL document.
 
 
 == License and source code ==

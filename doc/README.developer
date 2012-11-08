@@ -50,6 +50,8 @@ Folder structure
  +-- LICENSE.html      The Apache license in HTML format (for display on the
  |                     device).
  +-- NOTICE            Attribution notices.
+ +-- README.mediawiki  Introduction to the project. This file is formatted in
+ |                     Mediawiki markup and rendered as the front page on GitHub.
  +-- 3rdparty          This folder does not exist in a pristine clone of the
  |                     Git repository. It is created when the 3rdparty software
  |                     packages required to run Little Go are downloaded and
@@ -73,12 +75,6 @@ Folder structure
 Document reference
 ------------------
 Documents described here are located in the Documents folder.
-
-README
-  This document is the starting point for end users. It provides a quick
-  overview of what Little Go is about, points to other interesting documents
-  of the project, and also contains other important information that should be
-  immediately accessible to new or recurring users.
 
 TODO
   This document contains a list with not-so-important features (aka
@@ -107,6 +103,12 @@ ChangeLog
 
 ReleaseSteps
   This document lists the steps needed to make a project release.
+
+MANUAL
+  This document contains a complete documentation of the application's end user
+  functionality in prose. The file is parsed and displayed in game under the
+  "Help" tab. For this to work, the content of this file must follow certain
+  guidelines that are documented in DocumentGenerator.h.
 
 
 Other files
