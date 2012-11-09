@@ -275,4 +275,34 @@ static std::ifstream responseStream;
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Interrupts the GTP command currently being processed by the
+/// GtpEngine.
+///
+/// This method is always executed in the main thread's context, in response to
+/// user interaction in the GUI. This method does not return until the
+/// interruption has been sent to the GtpEngine.
+///
+/// @note The current thread architecture does not allow the interrupt to be
+/// sent in the context of the secondary thread, because the secondary thread
+/// currently blocks and waits for the response to the GTP command that is
+/// currently being processed.
+///
+/// When the GtpEngine is interrupted, it immediately stops processing the
+/// current GTP command and returns a result on the GTP response stream.
+/// This wakes up the secondary thread that was waiting for the response. The
+/// response is processed and the response target is notified in the thread
+/// that submitted the command. This is expected to always be the main thread,
+/// since the app implements interruptions only for user-generated commands.
+/// Response target notification is blocked if the main thread is not yet idle
+/// (because interrupt() has not yet been fully processed). The notification
+/// #gtpResponseWasReceivedNotification, however, is sent immediately to the
+/// global notification centre.
+// -----------------------------------------------------------------------------
+- (void) interrupt
+{
+  const char* pchCommand = "# interrupt";
+  commandStream << pchCommand << std::endl;
+}
+
 @end

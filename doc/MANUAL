@@ -62,6 +62,12 @@ buttons are explained from left to right.
 - "Action" button: Tapping this displays a menu with these additional functions:
   Switch to scoring mode (to get territory scores), resign the game, save the
   game, and start a new game.
+- "Interrupt" button: This button is visible only while the computer is
+  thinking. You can tap the button to interrupt and force the computer to play
+  its best move <em>right now</em>. If the computer was playing on your behalf,
+  it will immediately start thinking about its own move, so you may have to
+  interrupt again (e.g. if you want to access the menu behind the "Action"
+  button).
 
 
 --------------------------------------------------------------------------------
@@ -266,9 +272,11 @@ of the intersection where the stone would be placed should you release it now.
 The computer player
 ===================
 If your opponent is a computer player, it will take over immediately after you
-have made your move. In the current version of Little Go you have to wait until
-the computer player has made its turn before you can take further actions. In a
-future version you will get the opportunity to interrupt the computer player.
+have made your move. While the computer player is thinking, an "Interrupt"
+button is displayed in the toolbar. Usually you will want to wait until the
+computer has finished thinking and made its move, but if you want you can tap
+the button to interrupt and force the computer to play its best move
+<em>right now</em>.
 
 If you want to do something else while the computer is thinking, you can always
 switch to one of the other tabs (e.g. to read more of this help). If you would
@@ -288,11 +296,13 @@ each other. Only the black player's profile is relevant, so it doesn't matter
 much which player you select to play white.
 
 In a computer vs. computer game you can't do much more than enjoy watching them
-battling it out ☺. If you want to interrupt the game you have to tap the "Pause"
+battling it out ☺. The "Interrupt" toolbar button lets you cut short the current
+computer player's thinking, forcing it to play the best move it has calculated
+so far. If you want to interrupt the whole game you have to tap the "Pause"
 toolbar button. Once the computer player whose turn it currently is has finished
 its move, the "Action" toolbar button becomes enabled so that you can, for
-instance, start a new game. Tap the "Continue" toolbar button to let the players
-continue their match.
+instance, save the game in progress or start a new game. Tap the "Continue"
+toolbar button to let the players continue their match.
 
 A computer vs. computer game is automatically paused when the device's screen is
 locked, when you receive a phone call, or whenever some other interruption
@@ -304,13 +314,17 @@ participating in the game.
 Other actions
 =============
 If you don't know where to play, or are just lazy ☺, you can let the computer
-play for you by tapping the "Play for me" toolbar button.
+play for you by tapping the "Play for me" toolbar button. Even though the
+computer is now playing on your behalf, you can interrupt it by tapping the
+"Interrupt" toolbar button. If your opponent is a computer player, that player
+will immediately take over, just as if you had made your own move. You may have
+to interrupt again, e.g. if you want to access the menu behind the "Action"
+button.
 
-If you are not happy with the move, or if you just wanted to see where the
-computer would play, you can tap the "Undo" toolbar button. Of course, this
-also works for moves you made yourself. Note that to be able to undo your move,
-the computer player's move must be taken back as well. If the game is a human
-vs. human game, undo will take back only one move.
+If you are not happy with a move you or your opponent made, you can tap the
+"Undo" toolbar button. Note that to be able to undo your move, the computer
+player's move must be taken back as well. If the game is a human vs. human game,
+undo will take back only one move.
 
 Tapping the toolbar button with the "rows & columns" symbol will take you to the
 Game info view. This view tells you all sorts of interesting things about the

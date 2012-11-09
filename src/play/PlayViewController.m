@@ -29,11 +29,12 @@
 #import "../go/GoScore.h"
 #import "../go/GoPoint.h"
 #import "../player/Player.h"
+#import "../command/InterruptComputerCommand.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
 #import "../command/move/UndoMoveCommand.h"
-#import "../command/game/PauseGameCommand.h"
 #import "../command/game/ContinueGameCommand.h"
+#import "../command/game/PauseGameCommand.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
@@ -61,6 +62,7 @@
 - (void) undo:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
+- (void) interrupt:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) gameActions:(id)sender;
 - (void) done:(id)sender;
@@ -104,6 +106,7 @@
 - (void) updateUndoButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
+- (void) updateInterruptButtonState;
 - (void) updateGameInfoButtonState;
 - (void) updateGameActionsButtonState;
 - (void) updateDoneButtonState;
@@ -174,6 +177,9 @@
 /// @brief The "Continue" button. Tapping this button causes the game to
 /// continue if it is paused while two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
+/// @brief The "Interrupt" button. Tapping this button interrupts the computer
+/// player while it is thinking.
+@property(nonatomic, retain) UIBarButtonItem* interruptButton;
 /// @brief Dummy button that creates an expanding space between the "New"
 /// button and its predecessors.
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
@@ -206,6 +212,7 @@
 @synthesize undoButton;
 @synthesize pauseButton;
 @synthesize continueButton;
+@synthesize interruptButton;
 @synthesize flexibleSpaceButton;
 @synthesize gameInfoButton;
 @synthesize gameActionsButton;
@@ -237,6 +244,7 @@
   self.undoButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
+  self.interruptButton = nil;
   self.flexibleSpaceButton = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
@@ -503,6 +511,10 @@
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
                                                          action:@selector(continue:)] autorelease];
+  self.interruptButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:interruptButtonIconResource]
+                                                           style:UIBarButtonItemStyleBordered
+                                                          target:self
+                                                          action:@selector(interrupt:)] autorelease];
   self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:gameInfoButtonIconResource]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
@@ -564,6 +576,7 @@
   self.undoButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
+  self.interruptButton = nil;
   self.flexibleSpaceButton = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
@@ -701,6 +714,16 @@
 - (void) continue:(id)sender
 {
   ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
+  [command submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Interrupt" button. Interrupts the
+/// computer while it is thinking.
+// -----------------------------------------------------------------------------
+- (void) interrupt:(id)sender
+{
+  InterruptComputerCommand* command = [[InterruptComputerCommand alloc] init];
   [command submit];
 }
 
@@ -941,6 +964,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
+  [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
 }
@@ -1017,14 +1041,20 @@
       case GoGameTypeComputerVsComputer:
         [toolbarItems addObject:self.pauseButton];
         [toolbarItems addObject:self.continueButton];
+        [toolbarItems addObject:self.interruptButton];
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
         break;
       default:
-        [toolbarItems addObject:self.playForMeButton];
-        [toolbarItems addObject:self.passButton];
-        [toolbarItems addObject:self.undoButton];
+        if ([GoGame sharedGame].isComputerThinking)
+          [toolbarItems addObject:self.interruptButton];
+        else
+        {
+          [toolbarItems addObject:self.playForMeButton];
+          [toolbarItems addObject:self.passButton];
+          [toolbarItems addObject:self.undoButton];
+        }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
@@ -1044,6 +1074,7 @@
   [self updateUndoButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
+  [self updateInterruptButtonState];
   [self updateGameInfoButtonState];
   [self updateGameActionsButtonState];
   [self updateDoneButtonState];
@@ -1212,6 +1243,25 @@
     }
   }
   self.continueButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Interrupt" button.
+// -----------------------------------------------------------------------------
+- (void) updateInterruptButtonState
+{
+  BOOL enabled = NO;
+  if (self.scoringModel.scoringMode)
+  {
+    if (self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
+  {
+    if ([GoGame sharedGame].isComputerThinking)
+      enabled = YES;
+  }
+  self.interruptButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------

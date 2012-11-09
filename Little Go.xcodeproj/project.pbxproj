@@ -253,6 +253,9 @@
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
+		CDF82294164D450500F53C01 /* 298-circlex.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82292164D450500F53C01 /* 298-circlex.png */; };
+		CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82293164D450500F53C01 /* 298-circlex@2x.png */; };
+		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
 		CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
 		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */; };
@@ -592,6 +595,10 @@
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
+		CDF82292164D450500F53C01 /* 298-circlex.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex.png"; sourceTree = "<group>"; };
+		CDF82293164D450500F53C01 /* 298-circlex@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex@2x.png"; sourceTree = "<group>"; };
+		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
+		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
 		CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityIndicatorController.h; sourceTree = "<group>"; };
 		CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityIndicatorController.m; sourceTree = "<group>"; };
 		CDF8B6FD14D722BA00940D3E /* StatusLineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusLineController.h; sourceTree = "<group>"; };
@@ -1035,6 +1042,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
+				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
+				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
 				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
 			);
@@ -1081,6 +1090,8 @@
 				CDB0A30A152B72FB003B2BBF /* 162-receipt@2x.png */,
 				CDE1A13E14C1CED200317ECA /* 213-reply.png */,
 				CDE1A13F14C1CED200317ECA /* 213-reply@2x.png */,
+				CDF82292164D450500F53C01 /* 298-circlex.png */,
+				CDF82293164D450500F53C01 /* 298-circlex@2x.png */,
 				CDE1A14814C1CED200317ECA /* computer-play.png */,
 				CDE1A14914C1CED200317ECA /* computer-play@2x.png */,
 				CDE1A14A14C1CED200317ECA /* gogrid2x2.png */,
@@ -1453,6 +1464,8 @@
 				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
 				CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */,
+				CDF82294164D450500F53C01 /* 298-circlex.png in Resources */,
+				CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1612,6 +1625,7 @@
 				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
+				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

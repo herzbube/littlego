@@ -475,6 +475,7 @@ extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
+extern NSString* interruptButtonIconResource;
 extern NSString* bugReportMessageTemplateResource;
 //@}
 

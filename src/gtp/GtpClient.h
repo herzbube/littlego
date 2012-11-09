@@ -79,6 +79,7 @@
 
 + (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
 - (void) submit:(GtpCommand*)command;
+- (void) interrupt;
 
 /// @brief Set this property to true to trigger termination of the secondary
 /// thread.
