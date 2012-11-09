@@ -955,7 +955,10 @@
   [self updateButtonStates];
   [self updatePanningEnabled];
   if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+  {
     self.scoringModel.scoringMode = true;
+    [self.scoringModel.score calculateWaitUntilDone:false];
+  }
 }
 
 // -----------------------------------------------------------------------------
