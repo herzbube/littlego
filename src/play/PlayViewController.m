@@ -987,7 +987,6 @@
   [self updateButtonStates];
   [self updatePanningEnabled];  // disable panning
   [self updateTappingEnabled];
-  [self.scoringModel.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------

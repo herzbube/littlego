@@ -21,6 +21,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
+#import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../command/game/SaveGameCommand.h"
@@ -244,6 +245,7 @@ enum ActionSheetButton
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
   scoringModel.scoringMode = ! scoringModel.scoringMode;
+  [scoringModel.score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
