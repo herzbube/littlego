@@ -99,7 +99,8 @@ enum GtpEngineProfileSectionItem
 //@}
 /// @name UITextFieldDelegate protocol method.
 //@{
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
 //@}
 /// @name ItemPickerDelegate protocol
 //@{
@@ -402,11 +403,11 @@ enum GtpEngineProfileSectionItem
 /// An alternative to using the delegate protocol is to listen for notifications
 /// sent by the text field.
 // -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
 {
   // Compose the string as it would look like if the proposed change had already
   // been made
-  self.player.name = [textField.text stringByReplacingCharactersInRange:range withString:string];
+  self.player.name = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
   if (self.playerExists)
   {
     // Make sure that the editing view cannot be left, unless the player is
@@ -423,6 +424,18 @@ enum GtpEngineProfileSectionItem
   // Accept all changes, even those that make the player name invalid
   // -> the user must simply continue editing until the player name becomes
   //    valid
+  return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITextFieldDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField
+{
+  if (self.playerExists)
+    [self.navigationItem setHidesBackButton:YES animated:YES];
+  else
+    self.navigationItem.rightBarButtonItem.enabled = NO;
   return YES;
 }
 

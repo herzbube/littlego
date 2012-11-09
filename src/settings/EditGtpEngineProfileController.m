@@ -99,7 +99,8 @@ enum ProfileNotesSectionItem
 //@}
 /// @name UITextFieldDelegate protocol
 //@{
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
 //@}
 /// @name EditTextDelegate protocol
 //@{
@@ -519,11 +520,11 @@ enum ProfileNotesSectionItem
 /// An alternative to using the delegate protocol is to listen for notifications
 /// sent by the text field.
 // -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
+- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
 {
   // Compose the string as it would look like if the proposed change had already
   // been made
-  NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+  NSString* newText = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
   self.profile.name = newText;
   if (self.profileExists)
   {
@@ -541,6 +542,18 @@ enum ProfileNotesSectionItem
   // Accept all changes, even those that make the profile name invalid
   // -> the user must simply continue editing until the profile name becomes
   //    valid
+  return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITextFieldDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (BOOL) textFieldShouldClear:(UITextField*)aTextField
+{
+  if (self.profileExists)
+    [self.navigationItem setHidesBackButton:YES animated:YES];
+  else
+    self.navigationItem.rightBarButtonItem.enabled = NO;
   return YES;
 }
 
