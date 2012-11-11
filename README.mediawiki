@@ -6,7 +6,8 @@ __NOTOC__
 == Introduction ==
 
 Little Go is an iOS application that lets you play the game of Go on the iPhone
-or iPad. You can play against another human, or against the computer.
+or iPad. You can play against another human, or against the computer. The
+minimum requirement for running this version of Little Go is iOS 4.3.
 
 For a detailed description of Little Go's features, see the MANUAL document
 (also available in-game from the "Help" tab).
@@ -36,6 +37,13 @@ As usual the ChangeLog document has all the details.
 See the "Troubleshooting" section in the MANUAL document.
 
 
+== Links and resources ==
+
+* On Little Go's [https://trello.com/board/little-go/4fd84c295027333d460dcc32 Trello board] you can see what I am currently working on.
+* Little Go also has an [https://www.ohloh.net/p/littlego Ohloh page] that provides mildly interesting source code statistics.
+* The official bugtracker currently resides at [https://bugs.herzbube.ch/ this Bugzilla site]. Due to spamming the site unfortunately is read-only for anonymous users, and registration of new accounts is not possible. If you want to report a bug, please email me directly or create a new issue on GitHub (only possible if you have a GitHub account). Note that since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab.
+
+
 == License and source code ==
 
 Little Go is released under the Apache License (2.0). You should have received a
@@ -44,10 +52,3 @@ distribution (see the file LICENSE inside the application bundle or source
 distribution, or start the application and choose the
 "More:Licenses:Apache License" tab item). If not, see
 http://www.apache.org/licenses/.
-
-
-== Platforms ==
-
-Little Go is available both for the iPhone and the iPad.
-
-The minimum requirement for running this version of Little Go is iOS 4.3.

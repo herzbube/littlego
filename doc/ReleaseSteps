@@ -28,6 +28,7 @@ Before the release
   2009-2011 instead of 2009-2010):
   - All source files that were touched since the last release
   - Info.plist
+  - NOTICE
 - In Xcode select the "Little Go Release" scheme, then make a build for the
   simulator and for all target devices. If there are any warnings, fix them.
 - Using the same scheme, select Product > Archive to make a distribution build,
