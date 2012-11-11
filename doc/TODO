@@ -239,6 +239,14 @@ Priority 3 (not important)
   std is not known)
     const unsigned int fuegoMaxPonderTimeMaximum = std::numeric_limits<unsigned int>::max();
   I tried this after adding the ".mm" file extension, but still no luck.
+- The following exceptions should be either removed or handled, i.e. they should
+  not trigger a crash:
+  - All exceptions in GenerateDiagnosticsInformationFileCommand. These error
+    situations are not fatal to the overall application, they just make
+    generation of a bug report impossible.
+  - PlayViewMetrics, updateWithRect:boardSize:() should not raise an exception,
+    instead it should log the problem and find a way to gracefully deal with
+    the situation.
 
 
 Future improvements to the 3rdparty build process

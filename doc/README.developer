@@ -420,6 +420,17 @@ Architecture and implementation notes
       is busy so that he knows why some UI elements are disabled
     - Currently the indicator is located in the toolbar, this might change in
       a future version.
+- Exceptions: Exceptions should not be used in Cocoa or iOS applications in the
+  same liberal way as someone coming from Java or C++ might expect (see [1]).
+  In this project, exceptions are occasionally raised, in situations where
+  something weird and totally unexpected happened. Most of the time this
+  indicates a programming error of some sort which should be fixed immediately.
+  Instead of trying to recover from these weird and totally unexpected
+  situations, the policy is to fail early. The drawback is that end users will
+  see a crash if an exception-triggering bug makes it into production. This is
+  a price I am willing to pay, also there is now a crash reporting service in
+  place which vastly improves chances that I get notified about the problem.
+  [1] http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Exceptions/Exceptions.html
 
 
 Coding guidelines
