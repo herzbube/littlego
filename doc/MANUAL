@@ -163,6 +163,18 @@ If a computer vs. computer game is currently in progress, you have to pause the
 game for the button to become enabled. This limitation should be removed in one
 of the next releases of Little Go.
 
+============================================================
+I cannot load a game, the game is reported to contain errors
+============================================================
+Little Go will never be able to gracefully handle .sgf files with content that
+violates the game rules (e.g. two black moves in a row). My vision for Little Go
+is a program that lets you play the game of Go. Nothing more. Saving a game in
+Little Go will result in an .sgf with legal moves, so this is what the app
+should be able to load again. Nothing more.
+
+If you still believe that Little Go should be able to load one of your .sgf game
+files, then please write a bug report and attach the .sgf file in question.
+
 ===================================================
 File sharing via iTunes does not update the archive
 ===================================================

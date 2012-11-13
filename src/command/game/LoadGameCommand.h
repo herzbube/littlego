@@ -50,6 +50,21 @@
 /// @attention The calling thread therefore must survive long enough for
 /// ComputerPlayMoveCommand to complete, otherwise the GTP client will be unable
 /// to deliver the GTP response and the application will hang forever.
+///
+///
+/// @par Files with illegal content
+///
+/// LoadGameCommand performs two kinds of sanitary checks for every move it
+/// finds in the .sgf file:
+/// - Is the move played by the expected player color?
+/// - Is the move legal?
+///
+/// If any one of these checks fails, the entire load operation fails. A new
+/// game is started nonetheless, to bring the app back into a defined state.
+///
+/// An exception that is raised while the moves in the .sgf file are replayed
+/// is caught and handled. The result is the same as if one of the sanitary
+/// checks had failed.
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand : CommandBase <MBProgressHUDDelegate>
 {
