@@ -121,6 +121,7 @@
 - (CGRect) playViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
+- (int) statusLineNumberOfTextLines;
 - (void) updateFramesOfViewsWithoutAutoResizing;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
@@ -320,6 +321,8 @@
   self.playView.contentMode = UIViewContentModeRedraw;
 
   // Other configuration
+  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLine.numberOfLines = [self statusLineNumberOfTextLines];
   self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 }
 
@@ -383,7 +386,7 @@
   int playViewFullHeight = (superViewSize.height
                             - [UiElementMetrics toolbarHeight]
                             - [UiElementMetrics spacingVertical]
-                            - [UiElementMetrics labelHeight]);
+                            - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]));
 
   // Now make the view square so that auto-rotation on orientation change does
   // not cause the view to be squashed or stretched. This is possibly not
@@ -414,11 +417,11 @@
 {
   CGSize superViewSize = self.frontSideView.bounds.size;
   int statusLineViewX = 0;
-  int statusLineViewY = superViewSize.height - [UiElementMetrics labelHeight];
+  int statusLineViewY = superViewSize.height - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]);
   int statusLineViewWidth = (superViewSize.width
                              - [UiElementMetrics spacingHorizontal]
                              - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  int statusLineViewHeight = [UiElementMetrics labelHeight];
+  int statusLineViewHeight = [UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines];
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
 
@@ -435,6 +438,17 @@
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns how many number of text lines the status line should display.
+// -----------------------------------------------------------------------------
+- (int) statusLineNumberOfTextLines
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 2;
+  else
+    return 1;
 }
 
 // -----------------------------------------------------------------------------
