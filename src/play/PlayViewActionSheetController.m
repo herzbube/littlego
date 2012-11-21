@@ -24,6 +24,8 @@
 #import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../archive/ArchiveViewModel.h"
+#import "../command/backup/BackupGameCommand.h"
+#import "../command/backup/CleanBackupCommand.h"
 #import "../command/game/SaveGameCommand.h"
 #import "../command/game/NewGameCommand.h"
 
@@ -256,7 +258,12 @@ enum ActionSheetButton
 - (void) resign
 {
   // TODO ask user for confirmation because this action cannot be undone
+  
+  // TODO Tell Fuego about the resignation (but there is no GTP command for
+  // this)
+
   [[GoGame sharedGame] resign];
+  [[[BackupGameCommand alloc] init] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -362,7 +369,10 @@ enum ActionSheetButton
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {
   if (didStartNewGame)
+  {
+    [[[CleanBackupCommand alloc] init] submit];
     [[[NewGameCommand alloc] init] submit];
+  }
   [self.modalMaster dismissModalViewControllerAnimated:YES];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }

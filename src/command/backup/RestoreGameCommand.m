@@ -17,7 +17,6 @@
 
 // Project includes
 #import "RestoreGameCommand.h"
-#import "CleanBackupCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -83,11 +82,11 @@
     Player* whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
 
     LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
+    loadCommand.restoreMode = true;
     loadCommand.waitUntilDone = true;
     loadCommand.blackPlayer = blackPlayer;
     loadCommand.whitePlayer = whitePlayer;
-    [loadCommand submit];  // command is executed synchronously
-    [[[CleanBackupCommand alloc] init] submit];
+    [loadCommand submit];  // not all parts of the command are executed synchronously
   }
   else
   {

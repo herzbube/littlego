@@ -1196,3 +1196,40 @@ automation to the process:
 [2] http://www.bugsense.com/pricing
 [3] https://github.com/TheRealKerni/QuincyKit
 [4] http://wiki.herzbube.ch/index.php/QuincyKit
+
+
+Strategy for saving data / preventing data loss
+-----------------------------------------------
+There are two types of data that need to be saved:
+- Preferences data. This data is saved by the app itself. The function doing
+  this is ApplicationDelegate::writeUserDefaults().
+- The game in progress (as an .sgf). Saving this data is delegated to the Fuego
+  engine. This is done in BackupGameCommand.
+
+Before 0.9.0 the strategy simply was to save data when the application is
+suspended (applicationDidEnterBackground), and to restore it when the
+application did launch (application:didFinishLaunchingWithOptions:()). This
+strategy is sufficient for the normal application lifecycle, but has one severe
+weakness: It assumes that the application never crashes!
+
+From 0.9.0 onwards, the strategy was changed to cope with crashes that might
+occur at - almost - any time. It goes like this:
+
+- The game in progress is saved after each move, overwriting the .sgf file from
+  the previous backup operation. This gives maximum protection against crashes
+  (assuming that there is no crash during the game-saving routine itself), for
+  the price of additional file activity and processing power. I have not
+  measured the impact with Instruments, but for the moment I assume that it is
+  not too high: 10 KB of data saved for a large game doesn't seem too much, and
+  the processing power used for the backup should be neglible in comparison to
+  Fuego's consumption.
+- Preferences data is saved only when the user switches tabs. This is not as
+  thorough as saving the game in progress, but it should be sufficient. It would
+  have been a larger effort to introduce events for each and every preferences
+  change, so I have decided to go for the optimization with the tab changes - an
+  event which is simple to detect. I am also assuming that 1) losing a bit of
+  preferences data in case of a crash is not as grave losing the game in
+  progress (imagine you lose a game of several hours), and 2) that changing
+  preferences is a relatively well-tested process that is not likely to trigger
+  a crash, so saving data can wait until the user switches tabs to do other,
+  potentially more dangerous things.

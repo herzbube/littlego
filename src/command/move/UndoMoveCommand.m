@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UndoMoveCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -114,6 +115,8 @@
   }
 
   [self.game undo];
+
+  [[[BackupGameCommand alloc] init] submit];
 
   // If it's now the computer player's turn, the "undo" above took back the
   // computer player's move

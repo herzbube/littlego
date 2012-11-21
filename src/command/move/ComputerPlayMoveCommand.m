@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ComputerPlayMoveCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
@@ -125,6 +126,8 @@
     else
       ;  // TODO vertex was invalid; do something...
   }
+
+  [[[BackupGameCommand alloc] init] submit];
 
   // Thinking state must change after any of the other things; this order is
   // important for observer notifications

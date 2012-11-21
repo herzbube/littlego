@@ -31,8 +31,10 @@
 #import "ApplicationDelegate.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
+#import "../gtp/GtpUtilities.h"
 #import "../newgame/NewGameModel.h"
 #import "../player/GtpEngineProfileModel.h"
+#import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
 #import "../play/PlayViewModel.h"
 #import "../play/ScoringModel.h"
@@ -44,8 +46,6 @@
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
 #import "../command/LoadOpeningBookCommand.h"
-#import "../command/backup/BackupGameCommand.h"
-#import "../command/backup/CleanBackupCommand.h"
 #import "../command/backup/RestoreGameCommand.h"
 #import "../command/diagnostics/RestoreBugReportApplicationState.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
@@ -227,6 +227,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationWillResignActive:(UIApplication*)application
 {
+  DDLogInfo(@"applicationWillResignActive:() received");
+
   if (GoGameTypeComputerVsComputer == game.type)
   {
     PauseGameCommand* command = [[PauseGameCommand alloc] init];
@@ -241,6 +243,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidBecomeActive:(UIApplication*)application
 {
+  DDLogInfo(@"applicationDidBecomeActive:() received");
+
   self.soundHandling.disabled = false;
   // Send this notification just in case something changed in the documents
   // folder since the app was deactivated. Note: This is not just laziness - if
@@ -259,7 +263,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidEnterBackground:(UIApplication*)application
 {
-  [[[BackupGameCommand alloc] init] submit];
+  DDLogInfo(@"applicationDidEnterBackground:() received");
+
   [self writeUserDefaults];
 }
 
@@ -269,7 +274,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationWillEnterForeground:(UIApplication*)application
 {
-  [[[CleanBackupCommand alloc] init] submit];
+  DDLogInfo(@"applicationWillEnterForeground:() received");
 }
 
 // -----------------------------------------------------------------------------
@@ -278,22 +283,18 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
+  // We can't do anything about the situation since it's Fuego that uses up too
+  // much memory, probably due to an "enthusiastic" maximum memory setting
+  // in the current GTP engine profile.
   DDLogWarn(@"ApplicationDelegate received memory warning");
+  GtpEngineProfile* profile = [GtpUtilities activeProfile];
+  if (profile)
+    DDLogWarn(@"Active GtpEngineProfile is %@, max. memory is %d", profile.name, profile.fuegoMaxMemory);
+  else
+    DDLogWarn(@"No active GtpEngineProfile");
+
   // Save whatever data we can before the system kills the application
-  [[[BackupGameCommand alloc] init] submit];
   [self writeUserDefaults];
-  // Even though we can't really do anything about the situation, we still need
-  // to notify the user so that he knows what's going on, or why the application
-  // is probably going to be terminated in a moment.
-//  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Low Memory"
-//                                                  message:@"Little Go uses too much memory, it may be terminated by the system in a moment!\n\n"
-//                                                           " Consider lowering the computer player's memory consumption (Settings > Players & Profiles)"
-//                                                           " to prevent this warning from appearing in the future."
-//                                                 delegate:nil
-//                                        cancelButtonTitle:nil
-//                                        otherButtonTitles:@"Ok", nil];
-//  alert.tag = MemoryWarningAlertView;
-//  [alert show];
 }
 
 // -----------------------------------------------------------------------------

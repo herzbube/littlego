@@ -18,6 +18,8 @@
 // Project includes
 #import "LoadGameCommand.h"
 #import "NewGameCommand.h"
+#import "../backup/BackupGameCommand.h"
+#import "../backup/CleanBackupCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
@@ -77,6 +79,7 @@
 @synthesize whitePlayer;
 @synthesize gameName;
 @synthesize waitUntilDone;
+@synthesize restoreMode;
 
 
 // -----------------------------------------------------------------------------
@@ -96,6 +99,7 @@
   self.whitePlayer = nil;
   self.gameName = aGameName;
   self.waitUntilDone = false;
+  self.restoreMode = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
   m_komi = nil;
@@ -355,6 +359,7 @@
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
+  [[[CleanBackupCommand alloc] init] submit];
   NewGameCommand* command = [[NewGameCommand alloc] init];
   // If command was successful, the board was already set up by the "loadsgf"
   // GTP command. We must not setup the board again, or we will lose all moves
@@ -456,7 +461,10 @@
 	m_progressHUD.determinateStyle = MBDeterminateStyleBar;
 	m_progressHUD.dimBackground = YES;
 	m_progressHUD.delegate = self;
-	m_progressHUD.labelText = @"Loading game...";
+  if (self.restoreMode)
+    m_progressHUD.labelText = @"Restoring game...";
+  else
+    m_progressHUD.labelText = @"Loading game...";
 	[m_progressHUD showWhileExecuting:@selector(replayMoves:) onTarget:self withObject:moveList animated:YES];
 
   [self retain];
@@ -595,6 +603,10 @@
   [progressHUD removeFromSuperview];
   [progressHUD release];
   [self autorelease];
+  if (self.restoreMode)
+    ;  // no need to create a backup, we are already restoring from an existing backup
+  else
+    [[[BackupGameCommand alloc] init] submit];
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
   [self cleanup];

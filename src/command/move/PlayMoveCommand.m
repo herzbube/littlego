@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayMoveCommand.h"
 #import "ComputerPlayMoveCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -178,6 +179,8 @@
     assert(0);
     return;
   }
+
+  [[[BackupGameCommand alloc] init] submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn
