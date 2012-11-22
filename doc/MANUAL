@@ -247,11 +247,13 @@ other, you should study the technical information in the "GTP engine" section.
 How to play
 --------------------------------------------------------------------------------
 
+================
 How to read this
 ================
 This section is written as a "narrative" which should be read from top to bottom
 by first-time users.
 
+===================
 Starting a new game
 ===================
 When you launch the app it displays the "Play" view with the game board. It also
@@ -542,7 +544,7 @@ to.
   you feel that the profile is too weak for you.
 - Playing strength 1 sets "maximum games" to 500.
 - Playing strength 2 sets "maximum games" to 5000.
-- Playing strength 3 sets "maximum games" to 10000.
+- Playing strength 3 sets "maximum games" to 10'000.
 - Playing strengths 1-3 do not allow pondering, and they disable
   "reuse subtree".
 - Playing strength 4 enables "reuse subtree" and removes the limit on
