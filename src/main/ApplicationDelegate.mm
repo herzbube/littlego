@@ -82,6 +82,14 @@
 - (void) applicationDidBecomeActive:(UIApplication*)application;
 - (void) applicationDidReceiveMemoryWarning:(UIApplication*)application;
 //@}
+/// @name UITabBarControllerDelegate protocol
+//@{
+- (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController;
+//@}
+/// @name UINavigationControllerDelegate protocol
+//@{
+- (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated;
+//@}
 /// @name MBProgressHUDDelegate protocol
 //@{
 - (void) hudWasHidden:(MBProgressHUD*)progressHUD;
@@ -534,6 +542,17 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up the application's main tab bar controller and its more
+/// navigation controller to use this ApplicationDelegate object as their
+/// delegate.
+// -----------------------------------------------------------------------------
+- (void) setupTabBarController
+{
+  [self tabBarController].delegate = self;
+  [self tabBarController].moreNavigationController.delegate = self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the root controller for the tab identified by @a tabID.
 /// Returns nil if @a tabID is not recognized.
 ///
@@ -578,6 +597,27 @@ static ApplicationDelegate* sharedDelegate = nil;
   UIViewController* tabController = [self tabController:tabID];
   if (tabController)
     tabBarController.selectedViewController = tabController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITabBarControllerDelegate method
+///
+/// Writes user defaults in response to the user switching tabs.
+// -----------------------------------------------------------------------------
+- (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
+{
+  [self writeUserDefaults];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationControllerDelegate method
+///
+/// Writes user defaults in response to the user switching views on the tab
+/// bar controller's more navigation controller.
+// -----------------------------------------------------------------------------
+- (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated
+{
+  [self writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -656,7 +696,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD
 {
-  const int totalSteps = 10;
+  const int totalSteps = 11;
   const float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
@@ -692,6 +732,10 @@ static ApplicationDelegate* sharedDelegate = nil;
   progress += stepIncrease;
   progressHUD.progress = progress;
 
+  [self setupTabBarController];
+  progress += stepIncrease;
+  progressHUD.progress = progress;
+  
   self.applicationReadyForAction = true;
   [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
   progress += stepIncrease;

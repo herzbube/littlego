@@ -49,7 +49,11 @@
 /// The single instance of ApplicationDelegate is available to clients via the
 /// class method sharedDelegate().
 // -----------------------------------------------------------------------------
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate, MBProgressHUDDelegate, BWQuincyManagerDelegate>
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate,
+                                           UITabBarControllerDelegate,
+                                           UINavigationControllerDelegate,
+                                           MBProgressHUDDelegate,
+                                           BWQuincyManagerDelegate>
 {
 @private
   /// @name Outlets
@@ -73,6 +77,7 @@
 - (void) setupSound;
 - (void) setupGUI;
 - (void) setupFuego;
+- (void) setupTabBarController;
 - (void) writeUserDefaults;
 - (UIViewController*) tabController:(enum TabType)tabID;
 - (UIView*) tabView:(enum TabType)tabID;
