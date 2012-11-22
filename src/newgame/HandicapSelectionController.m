@@ -204,7 +204,7 @@ enum TwoAndMoreHandicapSectionItem
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
   if (NoHandicapSection == section)
-    return @"There is no handicap 1. Instead of choosing a handicap of 1 it is better to set komi to 0 or 0.5 and let black play first. This way black benefits from the absence of komi while still being able to freely choose his or her white move.";
+    return @"There is no handicap 1. Instead of giving a handicap of 1, white should forego komi (set komi to 0 or 0.5) and let black play first. This way black benefits from the absence of komi and is still able to freely choose his or her first move.";
   else
     return nil;
 }
