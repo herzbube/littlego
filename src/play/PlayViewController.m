@@ -38,6 +38,9 @@
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
+// System includes
+#import <QuartzCore/QuartzCore.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for PlayViewController.
@@ -673,11 +676,20 @@
   // - Missing update if "Play" view is visible, but only the backside view is
   //   currently displayed
   // - Missing update if "Play" view is not visible
-  // If the PlayView already has the correct frame, we hope that setting it
-  // again will result in a no-op.
-  CGRect playViewFrame = [self playViewFrame];
-  self.playView.frame = playViewFrame;
-  [self.playView frameChanged];
+  CGRect currentPlayViewFrame = self.playView.frame;
+  CGRect newPlayViewFrame = [self playViewFrame];
+  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
+  {
+    // This usage of CATransaction prevents the size change from being animated.
+    // If we don't do this, a shrinking animation will take place when the
+    // "Play" tab is re-displayed after a rotation to landscape occurred while
+    // the "Play" tab was not visible.
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.playView.frame = newPlayViewFrame;
+    [self.playView frameChanged];
+    [CATransaction commit];
+  }
 }
 
 // -----------------------------------------------------------------------------
