@@ -677,6 +677,7 @@
   // again will result in a no-op.
   CGRect playViewFrame = [self playViewFrame];
   self.playView.frame = playViewFrame;
+  [self.playView frameChanged];
 }
 
 // -----------------------------------------------------------------------------
