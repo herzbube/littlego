@@ -175,6 +175,7 @@ enum AlertViewType
   AlertViewTypeSaveGame,
   AlertViewTypeRenameGame,
   AlertViewTypeLoadGameFailed,
+  AlertViewTypeSaveGameFailed,
   AlertViewTypeUndoMoveFailed,
   AlertViewTypeAddToCannedCommands,
   AlertViewTypeMemoryWarning,

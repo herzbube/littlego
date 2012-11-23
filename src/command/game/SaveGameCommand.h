@@ -24,7 +24,8 @@
 /// game to the archive.
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
-/// command. If a game with the same name already exists, it is overwritten.
+/// command. If a game with the same name already exists, it is overwritten. If
+/// an error occurs, SaveGameCommand displays an alert view.
 ///
 /// SaveGameCommand executes synchronously.
 // -----------------------------------------------------------------------------

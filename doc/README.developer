@@ -633,6 +633,10 @@ Image Creation Guidelines" of [12], and in [21].
 Archiving an object graph to a file, and restoring the objects from such an
 archive file, is explained in [22].
 
+[23] shows how to use the NSPredicate class to represent logical expressions in
+an object form, and how the clever use of predicates can make your code much
+more expressive.
+
 The base for all of the following references is the "iOS Developer Library",
 found under this URL: https://developer.apple.com/library/ios/navigation/.
 
@@ -658,6 +662,7 @@ found under this URL: https://developer.apple.com/library/ios/navigation/.
 [20] iOS Developer Library > Guides > Blocks Programming Topics
 [21] iOS Developer Library > Reference > Information Property List Key Reference
 [22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
+[23] iOS Developer Library > Guides > Predicate Programming Guide
 
 
 Compilation command
