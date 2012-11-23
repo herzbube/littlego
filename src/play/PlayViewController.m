@@ -125,7 +125,6 @@
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
 - (int) statusLineNumberOfTextLines;
-- (void) updateFramesOfViewsWithoutAutoResizing;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
@@ -611,10 +610,35 @@
 {
   // Default does nothing, we don't have to invoke [super viewWillAppear]
 
-  // We don't know whether we really need to invoke this method, but if we
-  // don't, then an interface orientation change while this controller was not
-  // visible will go unnoticed.
-  [self updateFramesOfViewsWithoutAutoResizing];
+  // If an interface orientation change occurred while the "Play" tab was not
+  // visible, this controller's roation handling in
+  // willAnimateRotationToInterfaceOrientation:duration:() was never executed.
+  // We therefore provide some additional handling here.
+
+  // Either the frontside or the backside view is currently not part of the
+  // view hierarchy, so we must update it manually. The other one who *IS* part
+  // of the view hierarchy has already been automatically updated by UIKit.
+  if (! self.frontSideView.superview)
+    self.frontSideView.frame = self.view.bounds;
+  else
+    self.backSideView.frame = self.view.bounds;
+  // Calculate the PlayView frame only after we can be sure that the superview's
+  // bounds are correct (either by the manual update above, or by an automatic
+  // update by UIKit).
+  CGRect currentPlayViewFrame = self.playView.frame;
+  CGRect newPlayViewFrame = [self playViewFrame];
+  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
+  {
+    // Apparently UIKit invokes viewWillAppear:() while an animation is running.
+    // This usage of CATransaction prevents the size change from being animated.
+    // If we don't do this, a shrinking animation will take place when an
+    // interface rotation to landscape occurred.
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.playView.frame = newPlayViewFrame;
+    [self.playView frameChanged];
+    [CATransaction commit];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -632,14 +656,17 @@
 // -----------------------------------------------------------------------------
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
-  // Only perform animation if the play view is visible. If the game info view
-  // is visible on the backside, UIKit animates the rotation for us.
   if (self.frontSideView.superview)
   {
-    // Orientation of view controllers has already changed at this point, and
-    // the bounds of all views have been changed, so we can safely calculate the
-    // new frame
+    // Manually update backside view because it is currently not part of the
+    // view hierarchy
+    self.backSideView.frame = self.view.bounds;
+    // The frontside view is part of the view hierarchy, so its bounds have
+    // been automatically changed and we can safely calculate the new PlayView
+    // frame
     CGRect playViewFrame = [self playViewFrame];
+    // Because we don't allow the Play view to autoresize we need to perform its
+    // animation ourselves.
     [UIView animateWithDuration:duration
                           delay:0
                         options:UIViewAnimationCurveEaseOut
@@ -649,46 +676,17 @@
                      }
                      completion:NULL];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called by UIKit after interface rotation ends.
-// -----------------------------------------------------------------------------
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
-{
-  // One of the views was not resized because it was not part of the view
-  // hierarchy during rotation. Here we fix this...
-  [self updateFramesOfViewsWithoutAutoResizing];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Adjust the frame propery of all views that are not automatically
-/// resized (most views are auto-resized due to their autoresizingMask.
-// -----------------------------------------------------------------------------
-- (void) updateFramesOfViewsWithoutAutoResizing
-{
-  if (! self.frontSideView.superview)
-    self.frontSideView.frame = self.view.bounds;
   else
-    self.backSideView.frame = self.view.bounds;
-
-  // Always update PlayView. With this we handle
-  // - Missing update if "Play" view is visible, but only the backside view is
-  //   currently displayed
-  // - Missing update if "Play" view is not visible
-  CGRect currentPlayViewFrame = self.playView.frame;
-  CGRect newPlayViewFrame = [self playViewFrame];
-  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
   {
-    // This usage of CATransaction prevents the size change from being animated.
-    // If we don't do this, a shrinking animation will take place when the
-    // "Play" tab is re-displayed after a rotation to landscape occurred while
-    // the "Play" tab was not visible.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    self.playView.frame = newPlayViewFrame;
+    // Manually update frontside view because it is currently not part of the
+    // view hierarchy
+    self.frontSideView.frame = self.view.bounds;
+    // Calculate the PlayView frame only after the manual change of its
+    // superview's bounds
+    CGRect playViewFrame = [self playViewFrame];
+    // The PlayView is not visible, so no need to animate the frame size change
+    self.playView.frame = playViewFrame;
     [self.playView frameChanged];
-    [CATransaction commit];
   }
 }
 
