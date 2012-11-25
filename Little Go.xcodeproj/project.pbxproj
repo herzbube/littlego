@@ -191,6 +191,7 @@
 		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
+		CDD961011662A8E300B54E09 /* render-readme.rb in Resources */ = {isa = PBXBuildFile; fileRef = CDD961001662A8E300B54E09 /* render-readme.rb */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
@@ -505,6 +506,7 @@
 		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
 		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
+		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
@@ -1245,7 +1247,6 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
-				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDE3F584131147D800EC16CC /* build-boost.sh */,
 				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
@@ -1254,6 +1255,8 @@
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDFA329015990C8400439B4E /* build-zipkit.sh */,
 				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
+				CD3D5147147436C70098D8E0 /* makedist.sh */,
+				CDD961001662A8E300B54E09 /* render-readme.rb */,
 			);
 			path = script;
 			sourceTree = "<group>";
@@ -1466,6 +1469,7 @@
 				CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */,
 				CDF82294164D450500F53C01 /* 298-circlex.png in Resources */,
 				CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */,
+				CDD961011662A8E300B54E09 /* render-readme.rb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
