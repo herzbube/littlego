@@ -14,6 +14,10 @@ The roadmap
 -----------
 Version 1.x
 - Play view
+  - Zoom the board
+  - Coordinate labels
+  - Display move numbers
+  - Suggest move
   - Time-based play
   - Replay game (manual, or automatic with delay)
 - Settings view
@@ -27,12 +31,11 @@ Version 1.x
   - Stones
   - Board
 
-Version 0.9
-- Play view
-  - Zoom the board
-  - Coordinate labels
-  - Display move numbers
-  - Suggest move
+Version 0.9 (November 25 2012)
+- Better control over the computer's playing strength
+- Interrupt computer player
+- Send bug report at any time from in-game
+- Send crash report
 
 Version 0.8 (April 17 2012)
 - iPad version

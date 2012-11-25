@@ -11,24 +11,30 @@ Before the release
   for "xxx")
 - Update the ChangeLog
   - The main source for this is the git commit log
+  - The bug tracker may also have useful information. For instance, run the
+    following query to see the bugs that were fixed for release 0.9.0:
+    https://bugs.herzbube.ch/buglist.cgi?query_format=advanced&target_milestone=0.9.0&product=Little%20Go
   - Also add notes about changes to the user defaults, especially if some of
     the user's preferences are clobbered by UserDefaultsUpdater
-- Replace the "Changes in this release" section of the README with a collection
-  of the most important changes from the ChangeLog.
+- Replace the "Changes in this release" section of README.mediawiki with a
+  collection of the most important changes from the ChangeLog.
 - Update the "Troubleshooting" section in the MANUAL file if there are any new
   "known bugs"
 - Change the release date in the following files:
   - Roadmap
 - Make sure that the version number is up to date in the following files:
-  - README
+  - README.mediawiki
   - Info.plist (can be changed in Xcode's summary page for the main target)
 - Increase CFBundleVersion in Info.plist (Xcode also makes this available on
   the summary page of the project, as the field labelled "Build")
 - Make sure that the copyright year is up to date in the following files (e.g.
   2009-2011 instead of 2009-2010):
-  - All source files that were touched since the last release
   - Info.plist
   - NOTICE
+  - All source files that were touched since the last release. For instance,
+    to list all files that were touched since the release 0.8.1 and were not
+    updated to the current year 2012:
+    git diff --name-only 0.8.1 | grep ^src | sort | uniq | xargs grep Copyright 2>/dev/null | grep -v 2012 | cut -d":" -f1
 - In Xcode select the "Little Go Release" scheme, then make a build for the
   simulator and for all target devices. If there are any warnings, fix them.
 - Using the same scheme, select Product > Archive to make a distribution build,

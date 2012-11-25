@@ -10,7 +10,6 @@ the Roadmap document.
 
 Priority 1 (important)
 ----------------------
-- Add global exception handler that "gracefully" shuts down the application
 - Handle .sgf files with a "resigned" comment at the end. Fuego in such a case
   refuses an "undo" command.
 - Fuego responds to "savesgf" by saving all moves, even those that have been
@@ -58,13 +57,6 @@ Priority 2 (nice to have)
     and display in the status line how many stones would be captured
   - If placing a stone would set a group (your own or an enemy group) to
     atari, mark up that group
-- Add more preferences to tune Fuego
-  - uct_param_player max_ponder_time xxx (has influence on how much memory can
-    be used, mention this in the MANUAL)
-  - Also nice would be a maximum time limit for its moves (without implementing
-    the whole system for time-based play). If Fuego does not have such a
-    feature, it can be implemented in Little Go by sending an "interrupt" after
-    a timer has elapsed.
 - Add a "swap players" option to the "new game" view
 - When a new game is started, the request to confirm if the old game can be
   discarded should not appear based on the GoGameState; instead it should
@@ -92,10 +84,6 @@ Priority 2 (nice to have)
   TableViewCellFactory for a few cell types, analogous to a similar method
   in TableViewSliderCell. This would be useful for calculations of variable
   text label heights in case a text label displays a longish string.
-- Add UITextView support to EditTextController. Clients should be able to choose
-  whether to display a UITextView (for long texts) or a UITextField (for short
-  texts). EditGtpEngineProfileController currently has a private implementation
-  of a UITextView based input view that can serve as an example.
 - Display a message in the status line when the previous player has passed
   (currently works only for the computer player)
 - On startup try to find out if the app was killed because it used too much
@@ -118,7 +106,8 @@ Priority 2 (nice to have)
     they reflect the result of the search
   - Statistics gathering requires only minimal memory
 - Suggestions by Martin
-  - Show number of playouts per second (what's this exactly?)
+  - Show number of playouts per second (requires the GTP command/response stream
+    to be in debug mode, unless we can somehow query Fuego for this information)
   - Use some gfx commands
 - Add user preference for what should happen when a memory warning is received
   - Remain silent (the default)

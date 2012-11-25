@@ -130,6 +130,14 @@ Testing "save game"
 - Save another game, this time accept the default name with the suffix "1"
 - Save a third game. The default name must now have the suffix "2"
 - On the archive tab, all three games appear sorted by file name
+- Try saving a game with the character "/" in the name. An error message must be
+  displayed that explains that the game name contains an illegal character.
+  The message must enumerate all characters that are illegal. Tapping OK must
+  dismiss the error message, the screen with the illegal game name must become
+  available for editing once more.
+- Try saving a game with the name "." (a full stop). Same behaviour as above,
+  with a different error message that explains that the game name consists of
+  a reserved word.
 
 
 End of game / Resigning
@@ -237,11 +245,11 @@ Players & profiles
 - Tap edit
 - Add a new profile
 - The "create" button must be disabled until you enter at least 1 character for
-  the profile name
+  the profile name. Check this also by tapping the "clear" button.
 - Create the profile using the name "foo"
 - Add a new player
 - The "create" button must be disabled until you enter at least 1 character for
-  the player name
+  the player name. Check this also by tapping the "clear" button.
 - Turn the "human player" switch off
 - The profile cell must now be displayed with the "Default" profile being
   selected
@@ -306,6 +314,13 @@ Archive
   used for loading the game, but all other new game parameters (board size,
   komi, handicap) must remain unchanged from the values that were explicitly
   set by the user when a new game was started
+- Make sure that the following saved games which contain errors are present on
+  the device
+  - illegal-move.sgf
+  - move-by-wrong-player.sgf
+- Try loading each of these games. An error message must be displayed each time,
+  explaining that the save game contains an error. Dismissing the error message
+  must still result in a new game being started.
 
 
 Scoring
@@ -352,6 +367,8 @@ Suspending the app
 
 Diagnostics
 - GTP Features
+  - TODO
+- Crash report
   - TODO
 - Send bug report
   - TODO
