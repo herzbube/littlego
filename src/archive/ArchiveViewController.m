@@ -58,7 +58,14 @@
 //@}
 /// @name Helpers
 //@{
+- (void) setupPlaceholderView;
+- (void) updateVisibleStateOfPlaceholderView;
+- (void) updateVisibleStateOfEditButton;
 - (void) viewGame:(ArchiveGame*)game;
+//@}
+/// @name Private properties
+//@{
+@property(nonatomic, retain) UIView* placeholderView;
 //@}
 @end
 
@@ -66,6 +73,7 @@
 @implementation ArchiveViewController
 
 @synthesize archiveViewModel;
+@synthesize placeholderView;
 
 
 // -----------------------------------------------------------------------------
@@ -102,9 +110,8 @@
   
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.archiveViewModel = delegate.archiveViewModel;
-  // self.editButtonItem is a standard item provided by UIViewController, which
-  // is linked to triggering the view's edit mode
-  self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
+  [self setupPlaceholderView];
 
   // KVO observing
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
@@ -121,6 +128,7 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+  self.placeholderView = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -145,6 +153,8 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
+  [self updateVisibleStateOfPlaceholderView];
+  [self updateVisibleStateOfEditButton];
   return self.archiveViewModel.gameCount;
 }
 
@@ -201,6 +211,72 @@
   // Invocation of most of the UITableViewDataSource methods is delayed until
   // the table is displayed 
   [self.tableView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the placeholder view and the static label inside.
+// -----------------------------------------------------------------------------
+- (void) setupPlaceholderView
+{
+  self.placeholderView = [[[UIView alloc] initWithFrame:self.tableView.frame] autorelease];
+  [self.tableView addSubview:self.placeholderView];
+  self.placeholderView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+
+  NSString* labelText = @"No archived games.";
+  // The following font size factors have been experimentally determined, i.e.
+  // what looks good to me on a simulator
+  CGFloat fontSizeFactor;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    fontSizeFactor = 1.5;
+  else
+    fontSizeFactor = 2.0;
+  UIFont* labelFont = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
+  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
+  CGSize labelSize = [labelText sizeWithFont:labelFont
+                           constrainedToSize:constraintSize
+                               lineBreakMode:UILineBreakModeWordWrap];
+  CGRect labelFrame = CGRectNull;
+  labelFrame.size = labelSize;
+  // Horizontally center
+  labelFrame.origin.x = (self.placeholderView.bounds.size.width - labelSize.width) / 2;
+  // Vertically place label somewhere in the upper part of the view
+  labelFrame.origin.y = (self.placeholderView.bounds.size.height / 4);
+  UILabel* label = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
+  [self.placeholderView addSubview:label];
+  label.text = labelText;
+  label.font = labelFont;
+  label.textColor = [UIColor blackColor];
+  label.backgroundColor = [UIColor clearColor];
+  label.numberOfLines = 1;
+  label.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
+                            UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Makes the placeholder view visible if the table view does not contain
+/// any rows. Hides the placeholder view if the table views contains 1 or more
+/// rows.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleStateOfPlaceholderView
+{
+  if (0 == self.archiveViewModel.gameCount)
+    self.placeholderView.hidden = NO;
+  else
+    self.placeholderView.hidden = YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Makes the edit button visible if the table view contains 1 or more
+/// rows. Hides the edit button if the table views contains no rows.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleStateOfEditButton
+{
+  // self.editButtonItem is a standard item provided by UIViewController, which
+  // is linked to triggering the view's edit mode
+  if (0 == self.archiveViewModel.gameCount)
+    self.navigationItem.rightBarButtonItem = nil;
+  else
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 // -----------------------------------------------------------------------------
