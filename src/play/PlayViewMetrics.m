@@ -524,6 +524,10 @@
 /// @note Whoever invokes this method is responsible for releasing the returned
 /// CGLayer object using the function CGLayerRelease when the layer is no
 /// longer needed.
+///
+/// @note This method is currently not in use, it has been superseded by
+/// stoneLayerWithContext:stoneImageNamed:(). This method is preserved for
+/// demonstration purposes, i.e. how to draw a simple circle with a fill color.
 // -----------------------------------------------------------------------------
 - (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor
 {
@@ -549,6 +553,60 @@
                   clockwise);
   CGContextSetFillColorWithColor(layerContext, stoneColor.CGColor);
   CGContextFillPath(layerContext);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a stone that
+/// uses the bitmap image in the bundle resource file named @a name.
+///
+/// All sizes are taken from the current metrics values.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this method is responsible for releasing the returned
+/// CGLayer object using the function CGLayerRelease when the layer is no
+/// longer needed.
+// -----------------------------------------------------------------------------
+- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneImageNamed:(NSString*)name
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = self.pointCellSize;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  // The values assigned here have been determined experimentally
+  CGFloat yAxisAdjustmentToVerticallyCenterImageOnIntersection;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    yAxisAdjustmentToVerticallyCenterImageOnIntersection = 0.5;
+  }
+  else
+  {
+    switch (self.boardSize)
+    {
+      case GoBoardSize7:
+      case GoBoardSize9:
+        yAxisAdjustmentToVerticallyCenterImageOnIntersection = 2.0;
+        break;
+      default:
+        yAxisAdjustmentToVerticallyCenterImageOnIntersection = 1.0;
+        break;
+    }
+  }
+  CGContextTranslateCTM(layerContext, 0, yAxisAdjustmentToVerticallyCenterImageOnIntersection);
+
+  UIImage* stoneImage = [UIImage imageNamed:name];
+  // Let UIImage do all the drawing for us. This includes 1) compensating for
+  // coordinate system differences (if we use CGContextDrawImage() the image
+  // is drawn upside down); and 2) for scaling.
+  UIGraphicsPushContext(layerContext);
+  [stoneImage drawInRect:layerRect];
+  UIGraphicsPopContext();
 
   return layer;
 }

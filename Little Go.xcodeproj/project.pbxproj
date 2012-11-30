@@ -89,6 +89,9 @@
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
+		CD393F751669210E009DF814 /* stone-black.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F721669210E009DF814 /* stone-black.png */; };
+		CD393F761669210E009DF814 /* stone-crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F731669210E009DF814 /* stone-crosshair.png */; };
+		CD393F771669210E009DF814 /* stone-white.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F741669210E009DF814 /* stone-white.png */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48AD9815A7281C004A7096 /* MessageUI.framework */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
@@ -404,6 +407,10 @@
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
+		CD393F721669210E009DF814 /* stone-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-black.png"; sourceTree = "<group>"; };
+		CD393F731669210E009DF814 /* stone-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-crosshair.png"; sourceTree = "<group>"; };
+		CD393F741669210E009DF814 /* stone-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white.png"; sourceTree = "<group>"; };
+		CD393F7816692C4D009DF814 /* stones.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = stones.svg; sourceTree = "<group>"; };
 		CD3AE6E91343F14200B58E08 /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
@@ -1125,6 +1132,10 @@
 				CD7E92D01532333D00DCD671 /* LaunchImageiPad-Landscape@2x.png */,
 				CD7E92D11532333D00DCD671 /* LaunchImageiPad-Portrait.png */,
 				CD7E92D21532333D00DCD671 /* LaunchImageiPad-Portrait@2x.png */,
+				CD393F721669210E009DF814 /* stone-black.png */,
+				CD393F731669210E009DF814 /* stone-crosshair.png */,
+				CD393F741669210E009DF814 /* stone-white.png */,
+				CD393F7816692C4D009DF814 /* stones.svg */,
 			);
 			path = image;
 			sourceTree = "<group>";
@@ -1470,6 +1481,9 @@
 				CDF82294164D450500F53C01 /* 298-circlex.png in Resources */,
 				CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */,
 				CDD961011662A8E300B54E09 /* render-readme.rb in Resources */,
+				CD393F751669210E009DF814 /* stone-black.png in Resources */,
+				CD393F761669210E009DF814 /* stone-crosshair.png in Resources */,
+				CD393F771669210E009DF814 /* stone-white.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

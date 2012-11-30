@@ -477,6 +477,9 @@ extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
+extern NSString* stoneBlackImageResource;
+extern NSString* stoneWhiteImageResource;
+extern NSString* stoneCrosshairImageResource;
 extern NSString* bugReportMessageTemplateResource;
 //@}
 

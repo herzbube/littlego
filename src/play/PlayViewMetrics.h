@@ -133,6 +133,7 @@
 - (CGLayerRef) lineLayerWithContext:(CGContextRef)context lineColor:(UIColor*)lineColor lineWidth:(int)lineWidth;
 - (void) drawLineLayer:(CGLayerRef)layer withContext:(CGContextRef)context horizontal:(bool)horizontal positionedAtPoint:(GoPoint*)point;
 - (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor;
+- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneImageNamed:(NSString*)name;
 - (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point;
 //@}
 

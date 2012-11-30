@@ -140,11 +140,11 @@
   if (! self.crossHairPoint)
     return;
   if (! self.blackStoneLayer)
-    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor blackColor]];
+    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneBlackImageResource];
   if (! self.whiteStoneLayer)
-    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor whiteColor]];
+    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneWhiteImageResource];
   if (! self.crossHairStoneLayer)
-    self.crossHairStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:self.playViewModel.crossHairColor];
+    self.crossHairStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneCrosshairImageResource];
 
   CGLayerRef stoneLayer;
   if (self.crossHairPoint.hasStone)
