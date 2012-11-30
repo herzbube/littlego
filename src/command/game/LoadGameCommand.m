@@ -359,7 +359,16 @@
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
-  [[[CleanBackupCommand alloc] init] submit];
+  if (self.restoreMode)
+  {
+    // Since we are restoring from a backup we want to keep it
+  }
+  else
+  {
+    // Delete the current backup, a new backup with the moves from the archive
+    // we are currently loading will be made later on
+    [[[CleanBackupCommand alloc] init] submit];
+  }
   NewGameCommand* command = [[NewGameCommand alloc] init];
   // If command was successful, the board was already set up by the "loadsgf"
   // GTP command. We must not setup the board again, or we will lose all moves
@@ -604,7 +613,7 @@
   [progressHUD release];
   [self autorelease];
   if (self.restoreMode)
-    ;  // no need to create a backup, we are already restoring from an existing backup
+    ;  // no need to create a backup, we already have the one we are restoring from
   else
     [[[BackupGameCommand alloc] init] submit];
   [GtpUtilities setupComputerPlayer];
