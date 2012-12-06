@@ -44,6 +44,10 @@ Priority 1 (important)
   priority 2) screen on app startup instead of automatically starting a new
   game. This should be made into a user preference.
 - README.developer has become bloated and needs reorganizing
+- Check out if the empty key CFBundleIconFile can be removed from Info.plist
+- Add a security question if a pass move would end the game. This is important
+  because at the moment there is no way to undo a move once a game has ended.
+  Possibly protect resign in the same way.
 
 
 Priority 2 (nice to have)
@@ -93,11 +97,6 @@ Priority 2 (nice to have)
   the user.
   - We can't use memory warnings for this because we don't get a recovery
     message when memory conditions normalize
-- Instead of displaying a warning about which profile is used in the "New game"
-  view for computer vs. computer games, or human vs. human games,  it's
-  probably better to always display the profile name that is used - simpler and
-  more consistent. Also investigage if displaying the profile name would be an
-  improvement.
 - Add territory statistics from Fuego to gauge who owns an area
   - Could also be used for scoring since it provides a percentage value for
     each point
@@ -141,8 +140,6 @@ Priority 2 (nice to have)
   - Test application shutdown to see whether there are no memory leaks
 - Use color red instead of blue for cross-hair lines (and stone?) if the move is
   not legal
-- Add a grayed out message to the Archive tab when there are no archived games,
-  saying something like "You don't have any archived games."
 - Define if it should be possible to load a game while scoring is in progress.
   Currently this works accidentally only. Also add a test case for this to the
   TESTING document.
@@ -152,10 +149,27 @@ Priority 2 (nice to have)
   all players & profiles to the factory defaults. The main problem is what to
   do about the current game in progress, since normally players that participate
   in a game cannot be deleted.
+- The button to reset GTP commands should have the "red warning" style
+- Add a red "delete all" button to the Archive view
 - Display some sort of menu on the Play view when the app is launched, instead
   of immediately starting or loading a game. This changes a fundamental thing
   about Little Go, namely the fact that a GoGame object always exists after the
   application has finished launching.
+- Add a command that jumps to a specified section of the in-game manual
+- Currently each move that is replayed in the command causes the Play view to
+  update its buttons via notifications. This is unnecessary and should be
+  prevented, hopefully making the "load game" process slightly faster.
+- Make the main UITabBarController customizable. This was disabled at some time
+  in the past when only the first four tab bar items had icons. Nowadays all
+  items have icons so this restriction is no longer necessary.
+- UI ideas (some of them for taking advantage of the additional space provided
+  by the iPad)
+  - Study the HIG
+  - Adding a drop shadow to the Go board might look nice
+  - Display a list of moves that can be scrolled and from which a move can be
+    selected
+  - Use a segmented control instead of the flipping mechanism to display
+    alternative views on the Play and GTP Log screens
 
 
 Priority 3 (not important)
@@ -236,6 +250,18 @@ Priority 3 (not important)
   - PlayViewMetrics, updateWithRect:boardSize:() should not raise an exception,
     instead it should log the problem and find a way to gracefully deal with
     the situation.
+- Debugging the play view
+  - There is some commented code in PlayViewController that creates a small
+    "debug view" with control that can be used to change Play view drawing
+    parameters that are normally immutable at runtime. This is nice for
+    debugging changes to the drawing system. The associated class is
+    DebugPlayViewController
+  - Instead of letting the commented code decay, it should be uncommented and
+    users should be able to activate the view via a (hidden) user preference
+  - Also make a user preference for displaying of the "random color" property
+    in GoBoardRegion
+- Think about merging the "About" and "Credits" documents
+- DocumentGenerator should support anchor element descriptions and nested lists
 
 
 Future improvements to the 3rdparty build process

@@ -128,9 +128,9 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   if (! self.blackStoneLayer)
-    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor blackColor]];
+    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneBlackImageResource];
   if (! self.whiteStoneLayer)
-    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneColor:[UIColor whiteColor]];
+    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneWhiteImageResource];
 
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
