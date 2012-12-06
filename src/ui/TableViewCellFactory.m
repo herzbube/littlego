@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TableViewCellFactory.h"
+#import "TableViewSegmentedCell.h"
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
 #import "TableViewTextCell.h"
@@ -69,6 +70,9 @@
     case RedButtonCellType:
       cellID = @"RedButtonCellType";
       break;
+    case SegmentedCellType:
+      cellID = @"SegmentedCellType";
+      break;
     default:
       assert(0);
       return nil;
@@ -94,6 +98,11 @@
     case TextFieldCellType:
     {
       cell = [TableViewTextCell cellWithReuseIdentifier:cellID];
+      break;
+    }
+    case SegmentedCellType:
+    {
+      cell = [TableViewSegmentedCell cellWithReuseIdentifier:cellID];
       break;
     }
     default:
