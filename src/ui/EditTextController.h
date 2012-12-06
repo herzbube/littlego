@@ -57,7 +57,9 @@ enum EditTextControllerStyle
 ///
 /// The "Edit Text" view is a generic UITableView whose input elements are
 /// created dynamically by EditTextController. The elements are
-/// - A text field that allows the user to enter a text
+/// - Either a UITextField or a UITextView that allows the user to enter a text
+///   (initializing the EditTextController instance with an
+///   #EditTextControllerStyle specifies which input element should be used)
 /// - A "cancel" button used to end editing without changes
 /// - A "done" button used to end editing, using the currently entered text as
 ///   the result

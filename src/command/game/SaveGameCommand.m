@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,15 @@
 /// @brief Class extension with private methods for SaveGameCommand.
 // -----------------------------------------------------------------------------
 @interface SaveGameCommand()
+/// @name Initialization and deallocation
+//@{
 - (void) dealloc;
+//@}
+/// @name Helpers
+//@{
+- (void) showAlertWithError:(NSError*)error;
+- (void) showAlertWithMessage:(NSString*)message;
+//@}
 @end
 
 
@@ -73,6 +81,8 @@
   if (! model)
     return false;
 
+  NSError* error;
+
   // The GTP engine saves its file into the temporary directory, but the final
   // destination is in the archive folder
   NSString* temporaryDirectory = NSTemporaryDirectory();
@@ -97,6 +107,8 @@
   {
     [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
     assert(0);
+    NSString* errorMessage = [NSString stringWithFormat:@"Internal error: GTP engine failed to process 'savesgf' command, reason: %@", [command.response parsedResponse]];
+    [self showAlertWithMessage:errorMessage];
     return false;
   }
 
@@ -104,26 +116,53 @@
   // operation fails)
   if ([fileManager fileExistsAtPath:filePath])
   {
-    BOOL success = [fileManager removeItemAtPath:filePath error:nil];
+    BOOL success = [fileManager removeItemAtPath:filePath error:&error];
     if (! success)
     {
       [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
       assert(0);
+      [self showAlertWithError:error];
       return false;
     }
   }
 
-  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFilePath toPath:filePath error:nil];
+  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFilePath toPath:filePath error:&error];
   if (! success)
   {
     [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
     assert(0);
+    [self showAlertWithError:error];
     return false;
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.gameName];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays "failed to save game" alert with the error details stored
+/// in @a error.
+// -----------------------------------------------------------------------------
+- (void) showAlertWithError:(NSError*)error
+{
+  NSString* errorMessage = [NSString stringWithFormat:@"Internal error: Failed to save game, reason: %@", [error localizedDescription]];
+  [self showAlertWithMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays "failed to save game" alert with the error details stored
+/// in @a message.
+// -----------------------------------------------------------------------------
+- (void) showAlertWithMessage:(NSString*)message
+{
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to save game"
+                                                  message:message
+                                                 delegate:nil
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"Ok", nil];
+  alert.tag = AlertViewTypeSaveGameFailed;
+  [alert show];
 }
 
 @end

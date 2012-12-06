@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,46 +20,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BackupGameCommand class is responsible for backing up the game
-/// that is currently in progress in the event that the application is put in
-/// the background by the application.
+/// @brief The BackupGameCommand class is responsible for saving the current
+/// game to an .sgf file that is not visible in the archive.
 ///
 /// BackupGameCommand writes an .sgf file to a fixed location in the
 /// application's library folder. Because the backup file is not in the shared
-/// document folder, it is not visible/accessible in iTunes.
+/// document folder, it is visible/accessible neither in iTunes, nor on the
+/// in-app tab "Archive".
+///
+/// BackupGameCommand delegates its task to the GTP engine via the "savesgf" GTP
+/// command. If the .sgf file already exists, it is overwritten.
+///
+/// BackupGameCommand executes synchronously.
 ///
 /// @see RestoreGameCommand.
-///
-/// @note BackupGameCommand executes asynchronously in a secondary thread.
-///
-///
-/// @par Gory implementation details
-///
-/// The reason for having a proper thread main loop and several subtasks is
-/// that the response to the savesgf GTP command cannot be delivered otherwise.
-///
-/// The initial implementation of BackupGameCommand used an NSBlockOperation to
-/// run the background task, but this resulted in the loss of the GtpResponse
-/// object, and GtpClient being unable to post
-/// #gtpResponseWasReceivedNotification.
-///
-/// The reason for these problems:
-/// - The secondary thread created by NSBlockOperation ended as soon as the
-///   GtpCommand had finished executing
-/// - GtpClient earlier had queued a performSelector: for the secondary thread
-/// - But the selector was, of course, never performed because the thread had
-///   already exited
-///
-/// The solution for this problem was to create a thread that keeps executing
-/// its run loop long enough so that the queued performSelector: has a chance
-/// to execute.
-///
-/// To bring a semblance of order and architecture into this mess, the command
-/// implementation uses the concept of "subtasks":
-/// - Subtask 1 is the actual main background task: Submitting the "savesgf"
-///   command to the GTP engine.
-/// - Subtask 2 is the actual subtask: Waiting for the GTP response.
-/// The main task is ended when the last subtask finishes its work.
 // -----------------------------------------------------------------------------
 @interface BackupGameCommand : CommandBase
 {

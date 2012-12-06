@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayMoveCommand.h"
 #import "ComputerPlayMoveCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -178,6 +179,8 @@
     assert(0);
     return;
   }
+
+  [[[BackupGameCommand alloc] init] submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn

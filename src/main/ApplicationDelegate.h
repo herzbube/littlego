@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,11 @@
 /// The single instance of ApplicationDelegate is available to clients via the
 /// class method sharedDelegate().
 // -----------------------------------------------------------------------------
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate, MBProgressHUDDelegate, BWQuincyManagerDelegate>
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate,
+                                           UITabBarControllerDelegate,
+                                           UINavigationControllerDelegate,
+                                           MBProgressHUDDelegate,
+                                           BWQuincyManagerDelegate>
 {
 @private
   /// @name Outlets
@@ -73,6 +77,7 @@
 - (void) setupSound;
 - (void) setupGUI;
 - (void) setupFuego;
+- (void) setupTabBarController;
 - (void) writeUserDefaults;
 - (UIViewController*) tabController:(enum TabType)tabID;
 - (UIView*) tabView:(enum TabType)tabID;

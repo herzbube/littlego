@@ -50,6 +50,8 @@ Folder structure
  +-- LICENSE.html      The Apache license in HTML format (for display on the
  |                     device).
  +-- NOTICE            Attribution notices.
+ +-- README.mediawiki  Introduction to the project. This file is formatted in
+ |                     Mediawiki markup and rendered as the front page on GitHub.
  +-- 3rdparty          This folder does not exist in a pristine clone of the
  |                     Git repository. It is created when the 3rdparty software
  |                     packages required to run Little Go are downloaded and
@@ -73,12 +75,6 @@ Folder structure
 Document reference
 ------------------
 Documents described here are located in the Documents folder.
-
-README
-  This document is the starting point for end users. It provides a quick
-  overview of what Little Go is about, points to other interesting documents
-  of the project, and also contains other important information that should be
-  immediately accessible to new or recurring users.
 
 TODO
   This document contains a list with not-so-important features (aka
@@ -107,6 +103,12 @@ ChangeLog
 
 ReleaseSteps
   This document lists the steps needed to make a project release.
+
+MANUAL
+  This document contains a complete documentation of the application's end user
+  functionality in prose. The file is parsed and displayed in game under the
+  "Help" tab. For this to work, the content of this file must follow certain
+  guidelines that are documented in DocumentGenerator.h.
 
 
 Other files
@@ -418,6 +420,17 @@ Architecture and implementation notes
       is busy so that he knows why some UI elements are disabled
     - Currently the indicator is located in the toolbar, this might change in
       a future version.
+- Exceptions: Exceptions should not be used in Cocoa or iOS applications in the
+  same liberal way as someone coming from Java or C++ might expect (see [1]).
+  In this project, exceptions are occasionally raised, in situations where
+  something weird and totally unexpected happened. Most of the time this
+  indicates a programming error of some sort which should be fixed immediately.
+  Instead of trying to recover from these weird and totally unexpected
+  situations, the policy is to fail early. The drawback is that end users will
+  see a crash if an exception-triggering bug makes it into production. This is
+  a price I am willing to pay, also there is now a crash reporting service in
+  place which vastly improves chances that I get notified about the problem.
+  [1] http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Exceptions/Exceptions.html
 
 
 Coding guidelines
@@ -540,12 +553,9 @@ Notes about the configuration:
 Version control
 ---------------
 The version control system used to maintain this project is Git. The canonical
-repository currently resides here:
-- URL for cloning: http://git.herzbube.ch/littlego.git
-- URL for browsing: http://git.herzbube.ch/gitweb.cgi/littlego.git
-
-I plan to move to GitHub at some time in the future. More interest in the
-project by other people will make the move sooner.
+repository currently resides on GitHub:
+- URL for cloning: git://github.com/herzbube/littlego.git
+- URL for browsing: https://github.com/herzbube/littlego
 
 The branching model adopted by the project is described in this article:
 http://nvie.com/posts/a-successful-git-branching-model/.
@@ -623,6 +633,10 @@ Image Creation Guidelines" of [12], and in [21].
 Archiving an object graph to a file, and restoring the objects from such an
 archive file, is explained in [22].
 
+[23] shows how to use the NSPredicate class to represent logical expressions in
+an object form, and how the clever use of predicates can make your code much
+more expressive.
+
 The base for all of the following references is the "iOS Developer Library",
 found under this URL: https://developer.apple.com/library/ios/navigation/.
 
@@ -648,6 +662,7 @@ found under this URL: https://developer.apple.com/library/ios/navigation/.
 [20] iOS Developer Library > Guides > Blocks Programming Topics
 [21] iOS Developer Library > Reference > Information Property List Key Reference
 [22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
+[23] iOS Developer Library > Guides > Predicate Programming Guide
 
 
 Compilation command
@@ -1186,3 +1201,40 @@ automation to the process:
 [2] http://www.bugsense.com/pricing
 [3] https://github.com/TheRealKerni/QuincyKit
 [4] http://wiki.herzbube.ch/index.php/QuincyKit
+
+
+Strategy for saving data / preventing data loss
+-----------------------------------------------
+There are two types of data that need to be saved:
+- Preferences data. This data is saved by the app itself. The function doing
+  this is ApplicationDelegate::writeUserDefaults().
+- The game in progress (as an .sgf). Saving this data is delegated to the Fuego
+  engine. This is done in BackupGameCommand.
+
+Before 0.9.0 the strategy simply was to save data when the application is
+suspended (applicationDidEnterBackground), and to restore it when the
+application did launch (application:didFinishLaunchingWithOptions:()). This
+strategy is sufficient for the normal application lifecycle, but has one severe
+weakness: It assumes that the application never crashes!
+
+From 0.9.0 onwards, the strategy was changed to cope with crashes that might
+occur at - almost - any time. It goes like this:
+
+- The game in progress is saved after each move, overwriting the .sgf file from
+  the previous backup operation. This gives maximum protection against crashes
+  (assuming that there is no crash during the game-saving routine itself), for
+  the price of additional file activity and processing power. I have not
+  measured the impact with Instruments, but for the moment I assume that it is
+  not too high: 10 KB of data saved for a large game doesn't seem too much, and
+  the processing power used for the backup should be neglible in comparison to
+  Fuego's consumption.
+- Preferences data is saved only when the user switches tabs. This is not as
+  thorough as saving the game in progress, but it should be sufficient. It would
+  have been a larger effort to introduce events for each and every preferences
+  change, so I have decided to go for the optimization with the tab changes - an
+  event which is simple to detect. I am also assuming that 1) losing a bit of
+  preferences data in case of a crash is not as grave losing the game in
+  progress (imagine you lose a game of several hours), and 2) that changing
+  preferences is a relatively well-tested process that is not likely to trigger
+  a crash, so saving data can wait until the user switches tabs to do other,
+  potentially more dangerous things.

@@ -15,21 +15,24 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "CommandBase.h"
+
+// Forward declarations
+@class GoGame;
+
+
 // -----------------------------------------------------------------------------
-/// @brief The CrashReportingModel class provides user defaults data to its
-/// clients that describe the behaviour of the crash reporting service.
+/// @brief The InterruptComputerCommand class is responsible for interrupting
+/// the computer if it is currently thinking.
+///
+/// The Research document has detailed information on how Fuego handles
+/// interrupts.
 // -----------------------------------------------------------------------------
-@interface CrashReportingModel : NSObject
+@interface InterruptComputerCommand : CommandBase
 {
 }
 
 - (id) init;
-- (void) readUserDefaults;
-- (void) writeUserDefaults;
-
-@property(nonatomic, assign) bool collectCrashData;
-@property(nonatomic, assign) bool automaticReport;
-@property(nonatomic, assign) bool allowContact;
-@property(nonatomic, retain) NSString* contactEmail;
 
 @end

@@ -18,6 +18,8 @@
 // Project includes
 #import "LoadGameCommand.h"
 #import "NewGameCommand.h"
+#import "../backup/BackupGameCommand.h"
+#import "../backup/CleanBackupCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
@@ -27,6 +29,7 @@
 #import "../../player/Player.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
@@ -76,6 +79,7 @@
 @synthesize whitePlayer;
 @synthesize gameName;
 @synthesize waitUntilDone;
+@synthesize restoreMode;
 
 
 // -----------------------------------------------------------------------------
@@ -95,6 +99,7 @@
   self.whitePlayer = nil;
   self.gameName = aGameName;
   self.waitUntilDone = false;
+  self.restoreMode = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
   m_komi = nil;
@@ -327,7 +332,8 @@
 /// @brief Performs all steps required to handle failed command execution.
 ///
 /// Failure may occur during any of the steps in this command. An alert with
-/// @a message is displayed to notify the user of the problem.
+/// @a message is displayed to notify the user of the problem. In addition, the
+/// message is written to the application log.
 // -----------------------------------------------------------------------------
 - (void) handleCommandFailed:(NSString*)message
 {
@@ -337,6 +343,7 @@
 
   [self cleanup];
   [self showAlert:message];
+  DDLogError(message);
 }
 
 // -----------------------------------------------------------------------------
@@ -352,6 +359,16 @@
   model.blackPlayerUUID = self.blackPlayer.uuid;
   model.whitePlayerUUID = self.whitePlayer.uuid;
 
+  if (self.restoreMode)
+  {
+    // Since we are restoring from a backup we want to keep it
+  }
+  else
+  {
+    // Delete the current backup, a new backup with the moves from the archive
+    // we are currently loading will be made later on
+    [[[CleanBackupCommand alloc] init] submit];
+  }
   NewGameCommand* command = [[NewGameCommand alloc] init];
   // If command was successful, the board was already set up by the "loadsgf"
   // GTP command. We must not setup the board again, or we will lose all moves
@@ -453,7 +470,10 @@
 	m_progressHUD.determinateStyle = MBDeterminateStyleBar;
 	m_progressHUD.dimBackground = YES;
 	m_progressHUD.delegate = self;
-	m_progressHUD.labelText = @"Loading game...";
+  if (self.restoreMode)
+    m_progressHUD.labelText = @"Restoring game...";
+  else
+    m_progressHUD.labelText = @"Loading game...";
 	[m_progressHUD showWhileExecuting:@selector(replayMoves:) onTarget:self withObject:moveList animated:YES];
 
   [self retain];
@@ -496,42 +516,91 @@
   float stepIncrease = 1.0 / totalSteps;
   float progress = 0.0;
 
-  bool hasResigned = false;
-  int movesReplayed = 0;
-  float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
-  for (NSString* move in moveList)
+  @try
   {
-    if (hasResigned)
+    bool hasResigned = false;
+    int movesReplayed = 0;
+    float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
+    for (NSString* move in moveList)
     {
-      // If a resign move came in, it should have been the last move.
-      // Our reaction to this is to simply discard any follow-up moves.
-      assert(0);
-      break;
-    }
+      if (hasResigned)
+      {
+        // If a resign move came in, it should have been the last move.
+        // Our reaction to this is to simply discard any follow-up moves.
+        assert(0);
+        break;
+      }
 
-    NSArray* moveComponents = [move componentsSeparatedByString:@" "];
-    NSString* vertexString = [[moveComponents objectAtIndex:1] lowercaseString];
+      NSArray* moveComponents = [move componentsSeparatedByString:@" "];
+      NSString* colorString = [[moveComponents objectAtIndex:0] lowercaseString];
+      NSString* vertexString = [[moveComponents objectAtIndex:1] lowercaseString];
 
-    if ([vertexString isEqualToString:@"pass"])
-      [game pass];
-    else if ([vertexString isEqualToString:@"resign"])  // not sure if this is ever sent
-    {
-      [game resign];
-      hasResigned = true;
-    }
-    else
-    {
-      GoPoint* point = [board pointAtVertex:vertexString];
-      [game play:point];
-    }
-    ++movesReplayed;
 
-    if (movesReplayed >= nextProgressUpdate)
-    {
-      nextProgressUpdate += movesPerStep;
-      progress += stepIncrease;
-      m_progressHUD.progress = progress;
+      // Sanitary check 1: Is the move by the correct player?
+      NSString* expectedColorString;
+      NSString* expectedColorName;
+      NSString* otherColorName;
+      if ([game currentPlayer].isBlack)
+      {
+        expectedColorString = @"b";
+        expectedColorName = @"Black";
+        otherColorName = @"White";
+      }
+      else
+      {
+        expectedColorString = @"w";
+        expectedColorName = @"White";
+        otherColorName = @"Black";
+      }
+      if (! [colorString isEqualToString:expectedColorString])
+      {
+        NSString* errorMessageFormat = @"Game contains a move by the wrong player: Move %d, should have been played by %@, but was played by %@.";
+        NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, otherColorName];
+        [self handleCommandFailed:errorMessage];
+        return;
+      }
+      // End sanitary check 1
+
+      
+      if ([vertexString isEqualToString:@"pass"])
+        [game pass];
+      else if ([vertexString isEqualToString:@"resign"])  // not sure if this is ever sent
+      {
+        [game resign];
+        hasResigned = true;
+      }
+      else
+      {
+        GoPoint* point = [board pointAtVertex:vertexString];
+        
+        // Sanitary check 2: Is the move legal?
+        if (! [game isLegalMove:point])
+        {
+          NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@.";
+          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, [vertexString uppercaseString]];
+          [self handleCommandFailed:errorMessage];
+          return;
+        }
+        // End sanitary check 2
+
+        [game play:point];
+      }
+      ++movesReplayed;
+
+      if (movesReplayed >= nextProgressUpdate)
+      {
+        nextProgressUpdate += movesPerStep;
+        progress += stepIncrease;
+        m_progressHUD.progress = progress;
+      }
     }
+  }
+  @catch (NSException* exception)
+  {
+    NSString* errorMessageFormat = @"An unexpected error occurred.\n\nException name: %@.\n\nException reason: %@.";
+    NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
+    [self handleCommandFailed:errorMessage];
+    return;
   }
 }
 
@@ -543,6 +612,10 @@
   [progressHUD removeFromSuperview];
   [progressHUD release];
   [self autorelease];
+  if (self.restoreMode)
+    ;  // no need to create a backup, we already have the one we are restoring from
+  else
+    [[[BackupGameCommand alloc] init] submit];
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
   [self cleanup];

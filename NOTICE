@@ -1,12 +1,46 @@
 Little Go
-Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+
+The information in this file is also available when displaying the "About" and
+the "Licenses" tab from within the running application. The license files are
+located in the source distribution in the subfolder resource/html.
+
 
 This product uses the Go engine and computer player provided by the Fuego
 library. Minor modifications have been made to the Fuego build process, and the
-Fuego source code, to be able to build and use Fuego as a static library. The
-original Fuego software is available from
+Fuego source code, to be able to build and use Fuego as a static library. Fuego
+has been released under the LGPL license, the original software is available
+from
   http://fuego.sourceforge.net/
 
 Fuego, and by inheritance this product, make use of various facilities provided
-by the Boost library. The original Boost software is available from
+by the Boost library. Boost is released under the Boost Software license, the
+original software is available from
   http://www.boost.org/
+
+MBProgressHUD is used in this product to display progress meters. A copy of the
+source code has been integrated directly into this product. The original, which
+is copyright by Matej Bukovinski and released under the MIT license, is
+available from
+  https://github.com/matej/MBProgressHUD
+
+Logging is achieved via the Cocoa Lumberjack framework, copyright by Deusty LLC
+and released under the BSD 2-Clause license. The original source code is
+available from
+  https://github.com/robbiehanson/CocoaLumberjack
+  
+Reading and writing Zip archives is possible through the use of the ZipKit
+framework. ZipKit was developed by Karl Moskowski and has been released under a
+BSD-style license. The original source code is available from
+  https://bitbucket.org/kolpanic/zipkit/
+
+This product uses QuincyKit to provide a crash reporting service. QuincyKit in
+turn incorporates the PLCrashReporter framework and the protobuf-c library to
+achieve its task. QuincyKit and PLCrashReporter have been released under the MIT
+license, while protobuf-c has been released under the Apache license v2.0.
+Quincy is copyright by Andreas Linde, PLCrashReporter is copyright by Plausible
+Labs Cooperative, Inc., and protobuf-c is copyright by Dave Benson. The source
+code of the three components is available from
+  https://github.com/therealkerni/QuincyKit
+  http://code.google.com/p/plcrashreporter/
+  http://code.google.com/p/protobuf-c/

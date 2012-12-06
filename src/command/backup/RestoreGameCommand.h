@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@
 /// up game during application startup.
 ///
 /// If RestoreGameCommand finds a backup .sgf file in the application's library
-/// folder, it assumes that the application was killed while suspended. It
-/// starts a new game with the content of the backup .sgf file and using the
-/// current user defaults for "new games". The net effect is that the
-/// application is restored as close as possible to the state it had when it
+/// folder, it assumes that the application crashed or was killed while
+/// suspended. It starts a new game with the content of the backup .sgf file
+/// and using the current user defaults for "new games". The net effect is that
+/// the application is restored as close as possible to the state it had when it
 /// was last seen alive by the user.
 ///
 /// If RestoreGameCommand finds no backup .sgf file, it simply starts a new

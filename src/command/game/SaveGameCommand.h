@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 /// game to the archive.
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
-/// command. If a game with the same name already exists, it is overwritten.
+/// command. If a game with the same name already exists, it is overwritten. If
+/// an error occurs, SaveGameCommand displays an alert view.
 ///
 /// SaveGameCommand executes synchronously.
 // -----------------------------------------------------------------------------

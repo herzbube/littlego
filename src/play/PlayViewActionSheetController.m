@@ -21,8 +21,11 @@
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
+#import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../archive/ArchiveViewModel.h"
+#import "../command/backup/BackupGameCommand.h"
+#import "../command/backup/CleanBackupCommand.h"
 #import "../command/game/SaveGameCommand.h"
 #import "../command/game/NewGameCommand.h"
 
@@ -244,6 +247,7 @@ enum ActionSheetButton
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
   scoringModel.scoringMode = ! scoringModel.scoringMode;
+  [scoringModel.score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -254,7 +258,12 @@ enum ActionSheetButton
 - (void) resign
 {
   // TODO ask user for confirmation because this action cannot be undone
+  
+  // TODO Tell Fuego about the resignation (but there is no GTP command for
+  // this)
+
   [[GoGame sharedGame] resign];
+  [[[BackupGameCommand alloc] init] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -360,7 +369,10 @@ enum ActionSheetButton
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {
   if (didStartNewGame)
+  {
+    [[[CleanBackupCommand alloc] init] submit];
     [[[NewGameCommand alloc] init] submit];
+  }
   [self.modalMaster dismissModalViewControllerAnimated:YES];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
@@ -370,6 +382,36 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
+  // TODO Change this check for illegal characters to also use NSPredicate.
+  // Note that in a first attempt, the following predicate format string did
+  // not work: @"SELF MATCHES '[/\\\\|]+'"
+  NSString* illegalCharacterString = @"/\\|";
+  NSCharacterSet* illegalCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"/\\|"];
+  NSRange range = [text rangeOfCharacterFromSet:illegalCharacterSet];
+  if (range.location != NSNotFound)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"The name you entered contains one or more of the following illegal characters: %@. Please remove the character(s) and try again.", illegalCharacterString];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Illegal characters in game name"
+                                                    message:errorMessage
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeSaveGame;
+    [alert show];
+    return false;
+  }
+  NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:@"SELF MATCHES '^(.|..)$'"];
+  if ([predicateReservedWords evaluateWithObject:text])
+  {
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Illegal game name"
+                                                    message:@"The name you entered is a reserved word and cannot be used for saving games."
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeSaveGame;
+    [alert show];
+    return false;
+  }
   return true;
 }
 

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UndoMoveCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -114,6 +115,8 @@
   }
 
   [self.game undo];
+
+  [[[BackupGameCommand alloc] init] submit];
 
   // If it's now the computer player's turn, the "undo" above took back the
   // computer player's move

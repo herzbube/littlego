@@ -175,6 +175,7 @@ enum AlertViewType
   AlertViewTypeSaveGame,
   AlertViewTypeRenameGame,
   AlertViewTypeLoadGameFailed,
+  AlertViewTypeSaveGameFailed,
   AlertViewTypeUndoMoveFailed,
   AlertViewTypeAddToCannedCommands,
   AlertViewTypeMemoryWarning,
@@ -475,6 +476,7 @@ extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
+extern NSString* interruptButtonIconResource;
 extern NSString* bugReportMessageTemplateResource;
 //@}
 

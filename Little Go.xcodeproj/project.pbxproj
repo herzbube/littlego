@@ -36,6 +36,7 @@
 		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
 		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
+		CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */ = {isa = PBXBuildFile; fileRef = CD04987C164C6AD5007E0721 /* README.mediawiki */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -252,6 +253,9 @@
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
+		CDF82294164D450500F53C01 /* 298-circlex.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82292164D450500F53C01 /* 298-circlex.png */; };
+		CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82293164D450500F53C01 /* 298-circlex@2x.png */; };
+		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
 		CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
 		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */; };
@@ -320,6 +324,7 @@
 		CD02862E1640AEE100CF23A1 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
 		CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CD0286401640B4A800CF23A1 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
+		CD04987C164C6AD5007E0721 /* README.mediawiki */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mediawiki; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -569,7 +574,6 @@
 		CDE4057313EB081C0091E719 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		CDE4057413EB081C0091E719 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
-		CDEC288012F477E70069F5B7 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
@@ -591,6 +595,10 @@
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
+		CDF82292164D450500F53C01 /* 298-circlex.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex.png"; sourceTree = "<group>"; };
+		CDF82293164D450500F53C01 /* 298-circlex@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex@2x.png"; sourceTree = "<group>"; };
+		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
+		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
 		CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityIndicatorController.h; sourceTree = "<group>"; };
 		CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityIndicatorController.m; sourceTree = "<group>"; };
 		CDF8B6FD14D722BA00940D3E /* StatusLineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusLineController.h; sourceTree = "<group>"; };
@@ -691,6 +699,7 @@
 				CD1087701323D07800E83543 /* LICENSE */,
 				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
+				CD04987C164C6AD5007E0721 /* README.mediawiki */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
@@ -1033,6 +1042,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
+				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
+				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
 				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
 			);
@@ -1079,6 +1090,8 @@
 				CDB0A30A152B72FB003B2BBF /* 162-receipt@2x.png */,
 				CDE1A13E14C1CED200317ECA /* 213-reply.png */,
 				CDE1A13F14C1CED200317ECA /* 213-reply@2x.png */,
+				CDF82292164D450500F53C01 /* 298-circlex.png */,
+				CDF82293164D450500F53C01 /* 298-circlex@2x.png */,
 				CDE1A14814C1CED200317ECA /* computer-play.png */,
 				CDE1A14914C1CED200317ECA /* computer-play@2x.png */,
 				CDE1A14A14C1CED200317ECA /* gogrid2x2.png */,
@@ -1204,7 +1217,6 @@
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CD00A34D1487F9CF004E1A0C /* MANUAL */,
-				CDEC288012F477E70069F5B7 /* README */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
 				CDEC288312F477E70069F5B7 /* Research */,
@@ -1451,6 +1463,9 @@
 				CD899E3D1643477300329154 /* Quincy.bundle in Resources */,
 				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
+				CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */,
+				CDF82294164D450500F53C01 /* 298-circlex.png in Resources */,
+				CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1625,7 @@
 				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
+				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

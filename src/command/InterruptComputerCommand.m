@@ -16,20 +16,16 @@
 
 
 // Project includes
-#import "RestoreGameCommand.h"
-#import "../game/LoadGameCommand.h"
-#import "../game/NewGameCommand.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../go/GoGame.h"
-#import "../../player/PlayerModel.h"
-#import "../../player/Player.h"
-#import "../../newgame/NewGameModel.h"
+#import "InterruptComputerCommand.h"
+#import "../go/GoGame.h"
+#import "../gtp/GtpClient.h"
+#import "../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RestoreGameCommand.
+/// @brief Class extension with private methods for InterruptComputerCommand.
 // -----------------------------------------------------------------------------
-@interface RestoreGameCommand()
+@interface InterruptComputerCommand()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -37,13 +33,13 @@
 @end
 
 
-@implementation RestoreGameCommand
+@implementation InterruptComputerCommand
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a RestoreGameCommand object.
+/// @brief Initializes a InterruptComputerCommand object.
 ///
-/// @note This is the designated initializer of RestoreGameCommand.
+/// @note This is the designated initializer of InterruptComputerCommand.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -52,11 +48,19 @@
   if (! self)
     return nil;
 
+  GoGame* sharedGame = [GoGame sharedGame];
+  assert(sharedGame);
+  if (! sharedGame)
+    return nil;
+  assert(sharedGame.isComputerThinking);
+  if (! sharedGame.isComputerThinking)
+    return nil;
+
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this RestoreGameCommand object.
+/// @brief Deallocates memory allocated by this InterruptComputerCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -68,31 +72,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  NSString* sgfBackupFilePath = [appSupportDirectory stringByAppendingPathComponent:sgfBackupFileName];
-
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:sgfBackupFilePath])
-  {
-    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
-    PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
-    Player* blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
-    Player* whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
-
-    LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
-    loadCommand.restoreMode = true;
-    loadCommand.waitUntilDone = true;
-    loadCommand.blackPlayer = blackPlayer;
-    loadCommand.whitePlayer = whitePlayer;
-    [loadCommand submit];  // not all parts of the command are executed synchronously
-  }
-  else
-  {
-    [[[NewGameCommand alloc] init] submit];
-  }
-
+  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  GtpClient* gtpClient = delegate.gtpClient;
+  [gtpClient interrupt];
   return true;
 }
 

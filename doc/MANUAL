@@ -62,6 +62,12 @@ buttons are explained from left to right.
 - "Action" button: Tapping this displays a menu with these additional functions:
   Switch to scoring mode (to get territory scores), resign the game, save the
   game, and start a new game.
+- "Interrupt" button: This button is visible only while the computer is
+  thinking. You can tap the button to interrupt and force the computer to play
+  its best move <em>right now</em>. If the computer was playing on your behalf,
+  it will immediately start thinking about its own move, so you may have to
+  interrupt again (e.g. if you want to access the menu behind the "Action"
+  button).
 
 
 --------------------------------------------------------------------------------
@@ -157,6 +163,18 @@ If a computer vs. computer game is currently in progress, you have to pause the
 game for the button to become enabled. This limitation should be removed in one
 of the next releases of Little Go.
 
+============================================================
+I cannot load a game, the game is reported to contain errors
+============================================================
+Little Go will never be able to gracefully handle .sgf files with content that
+violates the game rules (e.g. two black moves in a row). My vision for Little Go
+is a program that lets you play the game of Go. Nothing more. Saving a game in
+Little Go will result in an .sgf with legal moves, so this is what the app
+should be able to load again. Nothing more.
+
+If you still believe that Little Go should be able to load one of your .sgf game
+files, then please write a bug report and attach the .sgf file in question.
+
 ===================================================
 File sharing via iTunes does not update the archive
 ===================================================
@@ -229,11 +247,13 @@ other, you should study the technical information in the "GTP engine" section.
 How to play
 --------------------------------------------------------------------------------
 
+================
 How to read this
 ================
 This section is written as a "narrative" which should be read from top to bottom
 by first-time users.
 
+===================
 Starting a new game
 ===================
 When you launch the app it displays the "Play" view with the game board. It also
@@ -266,9 +286,11 @@ of the intersection where the stone would be placed should you release it now.
 The computer player
 ===================
 If your opponent is a computer player, it will take over immediately after you
-have made your move. In the current version of Little Go you have to wait until
-the computer player has made its turn before you can take further actions. In a
-future version you will get the opportunity to interrupt the computer player.
+have made your move. While the computer player is thinking, an "Interrupt"
+button is displayed in the toolbar. Usually you will want to wait until the
+computer has finished thinking and made its move, but if you want you can tap
+the button to interrupt and force the computer to play its best move
+<em>right now</em>.
 
 If you want to do something else while the computer is thinking, you can always
 switch to one of the other tabs (e.g. to read more of this help). If you would
@@ -288,11 +310,13 @@ each other. Only the black player's profile is relevant, so it doesn't matter
 much which player you select to play white.
 
 In a computer vs. computer game you can't do much more than enjoy watching them
-battling it out ☺. If you want to interrupt the game you have to tap the "Pause"
+battling it out ☺. The "Interrupt" toolbar button lets you cut short the current
+computer player's thinking, forcing it to play the best move it has calculated
+so far. If you want to interrupt the whole game you have to tap the "Pause"
 toolbar button. Once the computer player whose turn it currently is has finished
 its move, the "Action" toolbar button becomes enabled so that you can, for
-instance, start a new game. Tap the "Continue" toolbar button to let the players
-continue their match.
+instance, save the game in progress or start a new game. Tap the "Continue"
+toolbar button to let the players continue their match.
 
 A computer vs. computer game is automatically paused when the device's screen is
 locked, when you receive a phone call, or whenever some other interruption
@@ -304,13 +328,17 @@ participating in the game.
 Other actions
 =============
 If you don't know where to play, or are just lazy ☺, you can let the computer
-play for you by tapping the "Play for me" toolbar button.
+play for you by tapping the "Play for me" toolbar button. Even though the
+computer is now playing on your behalf, you can interrupt it by tapping the
+"Interrupt" toolbar button. If your opponent is a computer player, that player
+will immediately take over, just as if you had made your own move. You may have
+to interrupt again, e.g. if you want to access the menu behind the "Action"
+button.
 
-If you are not happy with the move, or if you just wanted to see where the
-computer would play, you can tap the "Undo" toolbar button. Of course, this
-also works for moves you made yourself. Note that to be able to undo your move,
-the computer player's move must be taken back as well. If the game is a human
-vs. human game, undo will take back only one move.
+If you are not happy with a move you or your opponent made, you can tap the
+"Undo" toolbar button. Note that to be able to undo your move, the computer
+player's move must be taken back as well. If the game is a human vs. human game,
+undo will take back only one move.
 
 Tapping the toolbar button with the "rows & columns" symbol will take you to the
 Game info view. This view tells you all sorts of interesting things about the
@@ -516,7 +544,7 @@ to.
   you feel that the profile is too weak for you.
 - Playing strength 1 sets "maximum games" to 500.
 - Playing strength 2 sets "maximum games" to 5000.
-- Playing strength 3 sets "maximum games" to 10000.
+- Playing strength 3 sets "maximum games" to 10'000.
 - Playing strengths 1-3 do not allow pondering, and they disable
   "reuse subtree".
 - Playing strength 4 enables "reuse subtree" and removes the limit on

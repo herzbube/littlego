@@ -29,13 +29,17 @@
 #import "../go/GoScore.h"
 #import "../go/GoPoint.h"
 #import "../player/Player.h"
+#import "../command/InterruptComputerCommand.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
 #import "../command/move/UndoMoveCommand.h"
-#import "../command/game/PauseGameCommand.h"
 #import "../command/game/ContinueGameCommand.h"
+#import "../command/game/PauseGameCommand.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
+
+// System includes
+#import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
@@ -61,6 +65,7 @@
 - (void) undo:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
+- (void) interrupt:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) gameActions:(id)sender;
 - (void) done:(id)sender;
@@ -104,6 +109,7 @@
 - (void) updateUndoButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
+- (void) updateInterruptButtonState;
 - (void) updateGameInfoButtonState;
 - (void) updateGameActionsButtonState;
 - (void) updateDoneButtonState;
@@ -118,7 +124,7 @@
 - (CGRect) playViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
-- (void) updateFramesOfViewsWithoutAutoResizing;
+- (int) statusLineNumberOfTextLines;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 //@}
@@ -174,6 +180,9 @@
 /// @brief The "Continue" button. Tapping this button causes the game to
 /// continue if it is paused while two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
+/// @brief The "Interrupt" button. Tapping this button interrupts the computer
+/// player while it is thinking.
+@property(nonatomic, retain) UIBarButtonItem* interruptButton;
 /// @brief Dummy button that creates an expanding space between the "New"
 /// button and its predecessors.
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
@@ -206,6 +215,7 @@
 @synthesize undoButton;
 @synthesize pauseButton;
 @synthesize continueButton;
+@synthesize interruptButton;
 @synthesize flexibleSpaceButton;
 @synthesize gameInfoButton;
 @synthesize gameActionsButton;
@@ -237,6 +247,7 @@
   self.undoButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
+  self.interruptButton = nil;
   self.flexibleSpaceButton = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
@@ -312,6 +323,8 @@
   self.playView.contentMode = UIViewContentModeRedraw;
 
   // Other configuration
+  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLine.numberOfLines = [self statusLineNumberOfTextLines];
   self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 }
 
@@ -375,7 +388,7 @@
   int playViewFullHeight = (superViewSize.height
                             - [UiElementMetrics toolbarHeight]
                             - [UiElementMetrics spacingVertical]
-                            - [UiElementMetrics labelHeight]);
+                            - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]));
 
   // Now make the view square so that auto-rotation on orientation change does
   // not cause the view to be squashed or stretched. This is possibly not
@@ -406,11 +419,11 @@
 {
   CGSize superViewSize = self.frontSideView.bounds.size;
   int statusLineViewX = 0;
-  int statusLineViewY = superViewSize.height - [UiElementMetrics labelHeight];
+  int statusLineViewY = superViewSize.height - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]);
   int statusLineViewWidth = (superViewSize.width
                              - [UiElementMetrics spacingHorizontal]
                              - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  int statusLineViewHeight = [UiElementMetrics labelHeight];
+  int statusLineViewHeight = [UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines];
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
 
@@ -427,6 +440,17 @@
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns how many number of text lines the status line should display.
+// -----------------------------------------------------------------------------
+- (int) statusLineNumberOfTextLines
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 2;
+  else
+    return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -503,6 +527,10 @@
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
                                                          action:@selector(continue:)] autorelease];
+  self.interruptButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:interruptButtonIconResource]
+                                                           style:UIBarButtonItemStyleBordered
+                                                          target:self
+                                                          action:@selector(interrupt:)] autorelease];
   self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:gameInfoButtonIconResource]
                                                           style:UIBarButtonItemStyleBordered
                                                          target:self
@@ -564,6 +592,7 @@
   self.undoButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
+  self.interruptButton = nil;
   self.flexibleSpaceButton = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
@@ -581,10 +610,35 @@
 {
   // Default does nothing, we don't have to invoke [super viewWillAppear]
 
-  // We don't know whether we really need to invoke this method, but if we
-  // don't, then an interface orientation change while this controller was not
-  // visible will go unnoticed.
-  [self updateFramesOfViewsWithoutAutoResizing];
+  // If an interface orientation change occurred while the "Play" tab was not
+  // visible, this controller's roation handling in
+  // willAnimateRotationToInterfaceOrientation:duration:() was never executed.
+  // We therefore provide some additional handling here.
+
+  // Either the frontside or the backside view is currently not part of the
+  // view hierarchy, so we must update it manually. The other one who *IS* part
+  // of the view hierarchy has already been automatically updated by UIKit.
+  if (! self.frontSideView.superview)
+    self.frontSideView.frame = self.view.bounds;
+  else
+    self.backSideView.frame = self.view.bounds;
+  // Calculate the PlayView frame only after we can be sure that the superview's
+  // bounds are correct (either by the manual update above, or by an automatic
+  // update by UIKit).
+  CGRect currentPlayViewFrame = self.playView.frame;
+  CGRect newPlayViewFrame = [self playViewFrame];
+  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
+  {
+    // Apparently UIKit invokes viewWillAppear:() while an animation is running.
+    // This usage of CATransaction prevents the size change from being animated.
+    // If we don't do this, a shrinking animation will take place when an
+    // interface rotation to landscape occurred.
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.playView.frame = newPlayViewFrame;
+    [self.playView frameChanged];
+    [CATransaction commit];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -602,14 +656,17 @@
 // -----------------------------------------------------------------------------
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
-  // Only perform animation if the play view is visible. If the game info view
-  // is visible on the backside, UIKit animates the rotation for us.
   if (self.frontSideView.superview)
   {
-    // Orientation of view controllers has already changed at this point, and
-    // the bounds of all views have been changed, so we can safely calculate the
-    // new frame
+    // Manually update backside view because it is currently not part of the
+    // view hierarchy
+    self.backSideView.frame = self.view.bounds;
+    // The frontside view is part of the view hierarchy, so its bounds have
+    // been automatically changed and we can safely calculate the new PlayView
+    // frame
     CGRect playViewFrame = [self playViewFrame];
+    // Because we don't allow the Play view to autoresize we need to perform its
+    // animation ourselves.
     [UIView animateWithDuration:duration
                           delay:0
                         options:UIViewAnimationCurveEaseOut
@@ -619,37 +676,18 @@
                      }
                      completion:NULL];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called by UIKit after interface rotation ends.
-// -----------------------------------------------------------------------------
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
-{
-  // One of the views was not resized because it was not part of the view
-  // hierarchy during rotation. Here we fix this...
-  [self updateFramesOfViewsWithoutAutoResizing];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Adjust the frame propery of all views that are not automatically
-/// resized (most views are auto-resized due to their autoresizingMask.
-// -----------------------------------------------------------------------------
-- (void) updateFramesOfViewsWithoutAutoResizing
-{
-  if (! self.frontSideView.superview)
-    self.frontSideView.frame = self.view.bounds;
   else
-    self.backSideView.frame = self.view.bounds;
-
-  // Always update PlayView. With this we handle
-  // - Missing update if "Play" view is visible, but only the backside view is
-  //   currently displayed
-  // - Missing update if "Play" view is not visible
-  // If the PlayView already has the correct frame, we hope that setting it
-  // again will result in a no-op.
-  CGRect playViewFrame = [self playViewFrame];
-  self.playView.frame = playViewFrame;
+  {
+    // Manually update frontside view because it is currently not part of the
+    // view hierarchy
+    self.frontSideView.frame = self.view.bounds;
+    // Calculate the PlayView frame only after the manual change of its
+    // superview's bounds
+    CGRect playViewFrame = [self playViewFrame];
+    // The PlayView is not visible, so no need to animate the frame size change
+    self.playView.frame = playViewFrame;
+    [self.playView frameChanged];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -701,6 +739,16 @@
 - (void) continue:(id)sender
 {
   ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
+  [command submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Interrupt" button. Interrupts the
+/// computer while it is thinking.
+// -----------------------------------------------------------------------------
+- (void) interrupt:(id)sender
+{
+  InterruptComputerCommand* command = [[InterruptComputerCommand alloc] init];
   [command submit];
 }
 
@@ -932,7 +980,10 @@
   [self updateButtonStates];
   [self updatePanningEnabled];
   if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+  {
     self.scoringModel.scoringMode = true;
+    [self.scoringModel.score calculateWaitUntilDone:false];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -941,6 +992,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
+  [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
 }
@@ -963,7 +1015,6 @@
   [self updateButtonStates];
   [self updatePanningEnabled];  // disable panning
   [self updateTappingEnabled];
-  [self.scoringModel.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -1017,14 +1068,20 @@
       case GoGameTypeComputerVsComputer:
         [toolbarItems addObject:self.pauseButton];
         [toolbarItems addObject:self.continueButton];
+        [toolbarItems addObject:self.interruptButton];
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
         break;
       default:
-        [toolbarItems addObject:self.playForMeButton];
-        [toolbarItems addObject:self.passButton];
-        [toolbarItems addObject:self.undoButton];
+        if ([GoGame sharedGame].isComputerThinking)
+          [toolbarItems addObject:self.interruptButton];
+        else
+        {
+          [toolbarItems addObject:self.playForMeButton];
+          [toolbarItems addObject:self.passButton];
+          [toolbarItems addObject:self.undoButton];
+        }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
@@ -1044,6 +1101,7 @@
   [self updateUndoButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
+  [self updateInterruptButtonState];
   [self updateGameInfoButtonState];
   [self updateGameActionsButtonState];
   [self updateDoneButtonState];
@@ -1212,6 +1270,25 @@
     }
   }
   self.continueButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Interrupt" button.
+// -----------------------------------------------------------------------------
+- (void) updateInterruptButtonState
+{
+  BOOL enabled = NO;
+  if (self.scoringModel.scoringMode)
+  {
+    if (self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
+  {
+    if ([GoGame sharedGame].isComputerThinking)
+      enabled = YES;
+  }
+  self.interruptButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
