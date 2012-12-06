@@ -305,9 +305,10 @@ help section.
 ==========================
 Computer vs. Computer game
 ==========================
-When you start a new game you can select two computer players to play against
-each other. Only the black player's profile is relevant, so it doesn't matter
-much which player you select to play white.
+When you start a new game you can select a computer player to play against
+itself. Because only one profile (see "Players & Profiles" help section) can be
+active at a time, it is not possible to select different players for black and
+white.
 
 In a computer vs. computer game you can't do much more than enjoy watching them
 battling it out ☺. The "Interrupt" toolbar button lets you cut short the current
@@ -372,6 +373,8 @@ To become active, a profile must be associated with a computer player, and that
 player must participate in a game. If you make changes to a profile, those
 changes will take effect only after you start a new game with a computer player
 which uses the profile.
+
+Only one profile can be active at any given time.
 
 =====================
 The "Default" profile

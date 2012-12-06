@@ -146,4 +146,20 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a filtered list of player objects where all players are
+/// either humans (@a human is true) or computers (@a human is false).
+// -----------------------------------------------------------------------------
+- (NSArray*) playerListHuman:(bool)human
+{
+  NSMutableArray* filteredPlayerList = [NSMutableArray arrayWithCapacity:0];
+  for (Player* player in self.playerList)
+  {
+    if (human != player.human)
+      continue;
+    [filteredPlayerList addObject:player];
+  }
+  return filteredPlayerList;
+}
+
 @end

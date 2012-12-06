@@ -57,6 +57,22 @@
 /// NewGameController expects to be configured with a delegate that can be
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
+///
+/// The controller logic of NewGameController can be roughly described like
+/// this:
+/// - For each segment of the segmented control there is a separate set of
+///   (private) properties that store the choices made by the user on that
+///   segment
+/// - When the user switches from one segment to the next these private
+///   properties do not change so that when the user switches back to the
+///   original segment it will appear exactly as the user left it
+/// - The two public properties blackPlayer and whitePlayer, however, are
+///   continuously updated to reflect the choices made by the user. When the
+///   controller is dismissed, the delegate can thus access the two Player
+///   objects stored in the public properties to set up the new game
+/// - When the user wants to pick a new player she can only choose from a set
+///   of players of the appropriate type (i.e. either human or computer
+///   players).
 // -----------------------------------------------------------------------------
 @interface NewGameController : UITableViewController <ItemPickerDelegate, HandicapSelectionDelegate, KomiSelectionDelegate, UIAlertViewDelegate>
 {

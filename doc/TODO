@@ -97,11 +97,6 @@ Priority 2 (nice to have)
   the user.
   - We can't use memory warnings for this because we don't get a recovery
     message when memory conditions normalize
-- Instead of displaying a warning about which profile is used in the "New game"
-  view for computer vs. computer games, or human vs. human games,  it's
-  probably better to always display the profile name that is used - simpler and
-  more consistent. Also investigage if displaying the profile name would be an
-  improvement.
 - Add territory statistics from Fuego to gauge who owns an area
   - Could also be used for scoring since it provides a percentage value for
     each point
@@ -145,8 +140,6 @@ Priority 2 (nice to have)
   - Test application shutdown to see whether there are no memory leaks
 - Use color red instead of blue for cross-hair lines (and stone?) if the move is
   not legal
-- Add a grayed out message to the Archive tab when there are no archived games,
-  saying something like "You don't have any archived games."
 - Define if it should be possible to load a game while scoring is in progress.
   Currently this works accidentally only. Also add a test case for this to the
   TESTING document.

@@ -35,6 +35,7 @@
 - (void) add:(Player*)player;
 - (void) remove:(Player*)player;
 - (Player*) playerWithUUID:(NSString*)uuid;
+- (NSArray*) playerListHuman:(bool)human;
 
 @property(nonatomic, assign) int playerCount;
 @property(nonatomic, retain) NSArray* playerList;
