@@ -134,9 +134,14 @@ NSString* pauseButtonIconResource = @"48-pause.png";
 NSString* continueButtonIconResource = @"49-play.png";
 NSString* gameInfoButtonIconResource = @"tabular.png";
 NSString* interruptButtonIconResource = @"298-circlex.png";
+NSString* humanIconResource = @"111-user.png";
+NSString* computerIconResource = @"computer.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
 NSString* stoneWhiteImageResource = @"stone-white.png";
 NSString* stoneCrosshairImageResource = @"stone-crosshair.png";
+NSString* computerVsComputerImageResource = @"computer-vs-computer.png";
+NSString* humanVsComputerImageResource = @"human-vs-computer.png";
+NSString* humanVsHumanImageResource = @"human-vs-human.png";
 NSString* bugReportMessageTemplateResource = @"bug-report-message-template.txt";
 
 // Constants (mostly keys) for user defaults
