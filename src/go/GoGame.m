@@ -492,40 +492,36 @@
     {
       if ([neighbour blackStone] == nextMoveIsBlack)
         continue;
-      // Can we capture the stone (or the group to which it belongs)?
-      if ([neighbour liberties] == 1)
-      {
-        // Yes, we can capture the group. If the group is larger than 1 stone
-        // it can't be a Ko, so the move is legal
-        GoBoardRegion* neighbourRegion = neighbour.region;
-        if ([neighbourRegion size] > 1)
-          return true;
-        else if (isKoStillPossible)
-        {
-          // There is a Ko (and the move is illegal) if both of the following
-          // conditions are true:
-          // 1) The opposing stone was just played during the last turn, and
-          // 2) The opposing stone captured a single stone located on the point
-          //    that we are currently examining
-          GoPoint* lastMovePoint = self.lastMove.point;
-          if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
-          {
-            NSArray* lastMoveCapturedStones = self.lastMove.capturedStones;
-            if (1 == lastMoveCapturedStones.count && [lastMoveCapturedStones containsObject:point])
-              return false;
-            else
-              return true;  // condition 2 failed, no Ko
-          }
-          else
-            return true;  // condition 1 failed, no Ko
-        }
-        else
-        {
-          // Since it can't be Ko, and we *CAN* capture the group, the move
-          // is legal.
-          return true;
-        }
-      }
+      // Can we capture the stone (or the group to which it belongs)? If not
+      // then we can immediately examine the next neighbour.
+      if ([neighbour liberties] > 1)
+        continue;
+      // Yes, we can capture the group. Now the only thing that can still make
+      // the move illegal is a Ko. First check if a previous part of the logic
+      // has already found that a Ko is no longer possible.
+      if (! isKoStillPossible)
+        return true;  // Ko is no longer possible, so the move is legal
+      // A Ko is still possible. Next we check if the group we would like to
+      // capture is larger than 1 stone. If it is it can't be a Ko, so the move
+      // is legal.
+      GoBoardRegion* neighbourRegion = neighbour.region;
+      if ([neighbourRegion size] > 1)
+        return true;
+      // The group we would like to capture is just one stone. If that stone
+      // was not placed in the previous move it can't be Ko and the move is
+      // legal.
+      GoPoint* lastMovePoint = self.lastMove.point;
+      if (! lastMovePoint || ! [lastMovePoint isEqualToPoint:neighbour])
+        return true;
+      // The stone we would like to capture was placed in the previous move. If
+      // that move captured a) a single stone, and b) that stone was located on
+      // the point that we are currently examining, then we finally know that
+      // it is Ko and that the move is illegal.
+      NSArray* lastMoveCapturedStones = self.lastMove.capturedStones;
+      if (1 == lastMoveCapturedStones.count && [lastMoveCapturedStones containsObject:point])
+        return false;
+      else
+        return true;
     }
 
     // If we arrive here, no opposing stones can be captured and there are no
