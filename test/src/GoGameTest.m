@@ -504,8 +504,9 @@
   STAssertTrue([m_game isLegalMove:point7], nil);
   [m_game play:point7];
 
-  // Setup situation that resembles Ko, but is not, because it allows to
-  // capture back more than 1 stone
+  // Setup situation that resembles Ko, but is not, because it's not a
+  // repetition of the board position: Black first captures two white stones,
+  // then recaptures only one white stone
   [m_game play:[m_game.board pointAtVertex:@"Q18"]];
   [m_game play:[m_game.board pointAtVertex:@"R18"]];
   [m_game play:[m_game.board pointAtVertex:@"R17"]];
@@ -647,5 +648,24 @@
   STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point4Region size], failureDescription);
   STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point5Region size], failureDescription);
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Regression test for GitHub issue 2 ("Ko is erroneously detected
+/// (again)"). Exercises the isLegalMove().
+// -----------------------------------------------------------------------------
+- (void) testIssue2
+{
+  [m_game play:[m_game.board pointAtVertex:@"A2"]];
+  [m_game play:[m_game.board pointAtVertex:@"B2"]];
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  // Black captures a single white stone that was played in the previous move
+  GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
+  STAssertTrue([m_game isLegalMove:point1], nil);
+  [m_game play:point1];
+}
+
 
 @end
