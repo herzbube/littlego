@@ -563,8 +563,16 @@ http://nvie.com/posts/a-successful-git-branching-model/.
 
 Bugtracking
 -----------
-The bugtracker for the Little Go project is currently located at this URL:
-https://bugs.herzbube.ch/.
+The bugtracker for the Little Go project is located on GitHub [1]. If you want
+to submit a new issue you must be a registered GitHub user (it's free and they
+won't bother you with spam!).
+
+Before version 0.9.1, all issues were tracked on my private bugtracker [2]. If
+you are really desperate about the project's history :-) you can browse the few
+but closed bugs that are still floating around there.
+
+[1] https://github.com/herzbube/littlego/issues
+[2] https://bugs.herzbube.ch/
 
 
 iOS topics covered in this project
