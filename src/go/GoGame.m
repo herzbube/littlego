@@ -502,13 +502,22 @@
           return true;
         else if (isKoStillPossible)
         {
-          // There is a Ko if the opposing stone was just played during the
-          // last turn, so the move is illegal
+          // There is a Ko (and the move is illegal) if both of the following
+          // conditions are true:
+          // 1) The opposing stone was just played during the last turn, and
+          // 2) The opposing stone captured a single stone located on the point
+          //    that we are currently examining
           GoPoint* lastMovePoint = self.lastMove.point;
           if (lastMovePoint && [lastMovePoint isEqualToPoint:neighbour])
-            return false;
+          {
+            NSArray* lastMoveCapturedStones = self.lastMove.capturedStones;
+            if (1 == lastMoveCapturedStones.count && [lastMoveCapturedStones containsObject:point])
+              return false;
+            else
+              return true;  // condition 2 failed, no Ko
+          }
           else
-            return true;  // no Ko -> capturing is possible -> the move is legal
+            return true;  // condition 1 failed, no Ko
         }
         else
         {
