@@ -4,10 +4,9 @@ This document gives a broad view of the plan for future development of the
 project. There is no time schedule associated with releases. It happens when it
 happens :-)
 
-In addition to this roadmap document, there is a TODO list that contains minor
-features and technical stuff, ideas for which come up on-the-fly. If something
-on the TODO list becomes important, it is possible to move it from there to
-this roadmap.
+In addition to this roadmap document, there are many issues in the ticket
+tracker that contain minor features and technical stuff, ideas for which come
+up on-the-fly.
 
 
 The roadmap

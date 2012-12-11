@@ -76,18 +76,11 @@ Document reference
 ------------------
 Documents described here are located in the Documents folder.
 
-TODO
-  This document contains a list with not-so-important features (aka
-  "good ideas" :-); the list is sorted by priority, which provides a rough
-  indicator in what order the features should be implemented. Things listed
-  in the Roadmap are much more important and should be implemented before
-  things in TODO.
-
 Roadmap
   This document contains a list with important features and the order in
   which they should be implemented. The purpose of this list is to avoid
-  distraction by the "good ideas" listed in TODO, which may sometimes be more
-  attractive to implement but are not this important.
+  distraction by "good ideas" that may may sometimes be more attractive to
+  implement but are not this important.
 
 ChangeLog
   This document should not duplicate SCM log messages. Its entries should be

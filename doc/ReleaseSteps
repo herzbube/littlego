@@ -5,7 +5,7 @@ This document lists the steps needed to make a project release.
 
 Before the release
 ------------------
-- If necessary, update the TODO file
+- Make sure that the issues in the bugtracker are up to date
 - If necessary, add an upgrade method to UserDefaultsUpdater
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
