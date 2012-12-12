@@ -52,6 +52,10 @@
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
+/// @name Helpers
+//@{
+- (bool) isSelectionValid;
+//@}
 @end
 
 
@@ -140,6 +144,7 @@
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                          target:self
                                                                                          action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
 
 // -----------------------------------------------------------------------------
@@ -240,6 +245,19 @@
     newCell.accessoryType = UITableViewCellAccessoryCheckmark;
   // Last but not least, remember the new selection
   self.indexOfSelectedItem = indexOfNewSelectedItem;
+
+  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the currently selected item is valid.
+// -----------------------------------------------------------------------------
+- (bool) isSelectionValid
+{
+  if (self.indexOfSelectedItem < 0 || self.indexOfSelectedItem >= self.itemList.count)
+    return false;
+  else
+    return true;
 }
 
 @end
