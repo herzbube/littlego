@@ -70,7 +70,7 @@
 /// context or purpose that an instance of ItemPickerController was created for.
 @property(nonatomic, retain) id context;
 /// @brief The title to be displayed in the navigation item.
-@property(nonatomic, retain) NSString* title;
+@property(nonatomic, retain, readonly) NSString* title;
 /// @brief The string to be displayed as the title of the table view's footer.
 @property(nonatomic, retain) NSString* footerTitle;
 /// @brief This is the delegate that will be informed when the user has finished
@@ -78,13 +78,13 @@
 @property(nonatomic, assign) id<ItemPickerDelegate> delegate;
 /// @brief This contains the index of the item that is selected by default when
 /// the selection process begins. Can be -1 to indicate no default selection.
-@property(nonatomic, assign) int indexOfDefaultItem;
+@property(nonatomic, assign, readonly) int indexOfDefaultItem;
 /// @brief When the selection process finishes with the user tapping "done",
 /// this contains the index of the item picked by the user.
-@property(nonatomic, assign) int indexOfSelectedItem;
+@property(nonatomic, assign, readonly) int indexOfSelectedItem;
 /// @brief Array of NSString* objects with texts that should be displayed as the
 /// items available for selection. Items appear in the GUI in the same order as
 /// objects in this array.
-@property(nonatomic, retain) NSArray* itemList;
+@property(nonatomic, retain, readonly) NSArray* itemList;
 
 @end

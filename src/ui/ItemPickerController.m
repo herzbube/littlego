@@ -56,6 +56,13 @@
 //@{
 - (bool) isSelectionValid;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) NSString* title;
+@property(nonatomic, assign, readwrite) int indexOfDefaultItem;
+@property(nonatomic, assign, readwrite) int indexOfSelectedItem;
+@property(nonatomic, retain, readwrite) NSArray* itemList;
+//@}
 @end
 
 
