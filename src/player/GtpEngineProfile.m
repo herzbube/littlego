@@ -169,7 +169,7 @@
   GtpCommand* command;
 
   long long fuegoMaxMemoryInBytes = self.fuegoMaxMemory * 1000000;
-  commandString = [NSString stringWithFormat:@"uct_max_memory %d", fuegoMaxMemoryInBytes];
+  commandString = [NSString stringWithFormat:@"uct_max_memory %lld", fuegoMaxMemoryInBytes];
   command = [GtpCommand command:commandString];
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_search number_threads %d", self.fuegoThreadCount];

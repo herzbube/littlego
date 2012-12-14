@@ -65,7 +65,7 @@
 // -----------------------------------------------------------------------------
 + (NSString*) stringFromUIColor:(UIColor*)color
 {
-  return [NSString stringWithFormat:@"{0.5f, %0.5f, %0.5f, %0.5f}", 
+  return [NSString stringWithFormat:@"{%0.5f, %0.5f, %0.5f, %0.5f}", 
                                     color.red, color.green, color.blue,
                                     color.alpha];
 }

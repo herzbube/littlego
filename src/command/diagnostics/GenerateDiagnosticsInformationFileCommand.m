@@ -143,8 +143,7 @@
   }
   @catch (NSException* exception)
   {
-    NSString* logMessage = [NSString stringWithFormat:@"GenerateDiagnosticsInformationFileCommand: Failed with exception %@. Exception reason: %@", [exception name], [exception reason]];
-    DDLogError(logMessage);
+    DDLogError(@"GenerateDiagnosticsInformationFileCommand failed with exception %@", exception);
     success = false;
   }
   @finally
@@ -344,7 +343,7 @@
 // -----------------------------------------------------------------------------
 - (void) setup
 {
-  NSString* logMessage = [NSString stringWithFormat:@"GenerateDiagnosticsInformationFileCommand: Creating folder ", self.diagnosticsInformationFolderPath];
+  NSString* logMessage = [NSString stringWithFormat:@"GenerateDiagnosticsInformationFileCommand: Creating folder %@", self.diagnosticsInformationFolderPath];
   DDLogInfo(logMessage);
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFilePath];
