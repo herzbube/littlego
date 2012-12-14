@@ -117,23 +117,22 @@ MACOSX_CONFIGUREFLAGS=""
 #     |    +-- software2
 #     |    [...]
 #     +-- install
-#         +-- Developer
-#              +-- Platforms
-#              |   +-- iPhoneOS.platform/Developer/SDKs/iPhoneOS4.2.sdk
-#              |   |    +-- bin
-#              |   |    +-- include
-#              |   |    +-- lib
-#              |   |    [...]
-#              |   +-- iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk
-#              |        +-- bin
-#              |        +-- include
-#              |        +-- lib
-#              |        [...]
-#              +-- SDKs/MacOSX10.6.sdk
-#                   +-- bin
-#                   +-- include
-#                   +-- lib
-#                   [...]
+#         +-- Xcode.app/Contents/Developer/Platforms
+#              +-- iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk
+#              |    +-- bin
+#              |    +-- include
+#              |    +-- lib
+#              |    [...]
+#              +-- iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk
+#              |    +-- bin
+#              |    +-- include
+#              |    +-- lib
+#              |    [...]
+#              +-- MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+#              |    +-- bin
+#              |    +-- include
+#              |    +-- lib
+#              |    [...]
 # ----------------------------------------------------------------------
 if test -z "$BUILD_BASEDIR"; then
   echo "Environment variable BUILD_BASEDIR is not set"
