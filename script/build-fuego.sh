@@ -200,7 +200,21 @@ PRE_BUILD_STEPS_SOFTWARE()
   echo "Successfully applied all patches"
 
   echo "Running autoreconf..."
+  which autoreconf >/dev/null
+  if test $? -ne 0; then
+    echo "autoreconf not found, maybe you need to provide this through fink or macports?"
+    return 1
+  fi
+  which aclocal >/dev/null
+  if test $? -ne 0; then
+    echo "automake not found, maybe you need to provide this through fink or macports?"
+    return 1
+  fi
   autoreconf -i
+  if test $? -ne 0; then
+    echo "Error running autoreconf"
+    return 1
+  fi
 
   touch "$PATCH_GUARD_FILE"
 }
