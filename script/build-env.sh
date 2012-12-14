@@ -14,8 +14,12 @@
 #   base directory from which all build activities will occur
 # - The environment variable SOFTWARE_NAME must contain the name of the software
 #   to build
-# - It is expected that the Developer Tools (Xcode, SDKs etc.) are located in
-#   /Developer
+# - It is expected that everything necessary for the build is located in the
+#   path displayed by "xcode-select -print-path"
+# - Some 3rd party software packages (notably Boost, possibly others as well)
+#   require that the command line developer tools are also installed (e.g.
+#   /usr/bin/gcc). They can be installed from within Xcode, under
+#   Preferences > Downloads > Components.
 #
 # Notes:
 # - If CXX is left undefined, configure will abort at some stage due to a linker
@@ -36,9 +40,9 @@
 # Subsequent sections are based on settings in this section,
 # you should not need to change anything in these other sections.
 # ----------------------------------------------------------------------
-IPHONEOS_BASESDK_VERSION=5.1
-IPHONE_SIMULATOR_BASESDK_VERSION=5.1
-MACOSX_BASESDK_VERSION=10.6  # If you use 10.4u, set deployment target separately
+IPHONEOS_BASESDK_VERSION=6.0
+IPHONE_SIMULATOR_BASESDK_VERSION=6.0
+MACOSX_BASESDK_VERSION=10.8  # If you use 10.4u, set deployment target separately
 
 # Deployment target variables must be exported because they are actually
 # used as environment variables, not just as input for constructing a command
@@ -85,7 +89,11 @@ MACOSX_BJAMFLAGS="architecture=x86 target-os=darwin"
 COMMON_CONFIGUREFLAGS="--disable-shared --enable-static"
 IPHONEOS_CONFIGUREFLAGS="--host=arm-apple-darwin10"
 IPHONE_SIMULATOR_CONFIGUREFLAGS="--host=i386-apple-darwin10"
+# possibly new:
+#IPHONE_SIMULATOR_CONFIGUREFLAGS="--host=i686-apple-darwin10"
 MACOSX_CONFIGUREFLAGS=""
+# possibly new:
+#MACOSX_CONFIGUREFLAGS="--host=i686-apple-darwin11"
 
 # ----------------------------------------------------------------------
 # Locations
@@ -136,7 +144,8 @@ PREFIX_BASEDIR="$BUILD_BASEDIR/install"           # build results are installed 
 # ----------------------------------------------------------------------
 # All platforms
 # ----------------------------------------------------------------------
-PLATFORMS_BASEDIR="/Developer/Platforms"
+XCODE_SELECT_PATH="$(xcode-select -print-path)"
+PLATFORMS_BASEDIR="$XCODE_SELECT_PATH/Platforms"
 
 # ----------------------------------------------------------------------
 # iPhoneOS platform
@@ -168,9 +177,9 @@ IPHONE_SIMULATOR_XCODEBUILD_SDKNAME="${IPHONE_SIMULATOR_XCODEBUILD_SDKPREFIX}${I
 # Mac OS X platform
 # ----------------------------------------------------------------------
 MACOSX_PREFIX="MacOSX"
-MACOSX_PLATFORMDIR="/."   # there is no real platform directory for Mac OS X
+MACOSX_PLATFORMDIR="$PLATFORMS_BASEDIR/$MACOSX_PREFIX.platform"
 MACOSX_BASESDK_DIR="$MACOSX_PLATFORMDIR/Developer/SDKs/${MACOSX_PREFIX}${MACOSX_BASESDK_VERSION}.sdk"
-MACOSX_BINDIR="$MACOSX_PLATFORMDIR/Developer/usr/bin"
+MACOSX_BINDIR="$MACOSX_BASESDK_DIR/usr/bin"
 MACOSX_CC="$MACOSX_BINDIR/llvm-gcc-$MACOSX_GCC_VERSION"
 MACOSX_CXX="$MACOSX_BINDIR/llvm-g++-$MACOSX_GCC_VERSION"
 MACOSX_PREFIXDIR="${PREFIX_BASEDIR}${MACOSX_BASESDK_DIR}"
