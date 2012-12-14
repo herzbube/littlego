@@ -40,6 +40,13 @@
 # Subsequent sections are based on settings in this section,
 # you should not need to change anything in these other sections.
 # ----------------------------------------------------------------------
+# Disable a platform build by setting the platform-specific variable to 0, or by
+# commenting out the platform-specific line so that the variable becomes
+# undefined
+IPHONEOS_BUILD_ENABLED=1
+IPHONE_SIMULATOR_BUILD_ENABLED=1
+#MACOSX_BUILD_ENABLED=1
+
 IPHONEOS_BASESDK_VERSION=6.0
 IPHONE_SIMULATOR_BASESDK_VERSION=6.0
 MACOSX_BASESDK_VERSION=10.8  # If you use 10.4u, set deployment target separately
