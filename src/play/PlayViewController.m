@@ -118,6 +118,7 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) releaseObjects;
 - (CGRect) mainViewFrame;
 - (CGRect) subViewFrame;
 - (CGRect) toolbarViewFrame;
@@ -234,6 +235,15 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
@@ -256,7 +266,6 @@
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -464,12 +473,16 @@
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   if (! delegate.applicationReadyForAction)
   {
+    // This branch is executed during application startup
     self.controllerReadyForAction = false;
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
   }
   else
   {
+    // This branch is executed if the view is reloaded during the normal
+    // app lifecycle (e.g. because it was previously unloaded due to a memory
+    // warning)
     [self makeControllerReadyForAction];
     self.controllerReadyForAction = true;
   }
@@ -579,28 +592,14 @@
 {
   [super viewDidUnload];
 
-  self.frontSideView = nil;
-  self.backSideView = nil;
-  self.playView = nil;
-  self.toolbar = nil;
-  self.statusLine = nil;
-  self.activityIndicator = nil;
-  self.statusLineController = nil;
-  self.activityIndicatorController = nil;
-  self.playForMeButton = nil;
-  self.passButton = nil;
-  self.undoButton = nil;
-  self.pauseButton = nil;
-  self.continueButton = nil;
-  self.interruptButton = nil;
-  self.flexibleSpaceButton = nil;
-  self.gameInfoButton = nil;
-  self.gameActionsButton = nil;
-  self.doneButton = nil;
-  self.scoringModel = nil;
-  self.longPressRecognizer = nil;
-  self.tapRecognizer = nil;
-  self.gameInfoScore = nil;
+  // Here we need to undo all of the stuff that is happening in
+  // makeControllerReadyForAction(), because makeControllerReadyForAction()
+  // will be invoked again later by viewDidLoad(). Notes:
+  // - If the game info view is currently visible, it will not be visible
+  //   anymore when viewDidLoad() is invoked the next time
+  self.controllerReadyForAction = false;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self releaseObjects];
 }
 
 // -----------------------------------------------------------------------------
