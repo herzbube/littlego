@@ -12,29 +12,21 @@ minimum requirement for running this version of Little Go is iOS 4.3.
 For a detailed description of Little Go's features, see the MANUAL document
 (also available in-game from the "Help" tab).
 
-You can check for the most recent version of Little Go in Apple's
-[http://itunes.apple.com/us/app/little-go/id490753989?ls=1&mt=8 App Store]. If
-you are interested in Little Go as a developer, you can either clone
-[https://github.com/herzbube/littlego/ the GitHub repository], or download a
-release snapshot of the source code from
-[http://www.herzbube.ch/littlego the project website]. Once you have
-unpacked the source tar ball you should first read the README.developer
-document.
+If you are interested in Little Go as a developer, you can either clone the
+source code repository [https://github.com/herzbube/littlego/ on GitHub], or
+download a release snapshot of the source code for one of the release tags. Release
+snapshots are also available
+[https://github.com/herzbube/littlego/tags from GitHub]. Either way, you should
+read the quick-start guide in <code>README.developer</code> to get up and
+running.
 
 
 == Changes in this release ==
 
-This is the Little Go feature release 0.9.0. The following major improvements
-have been made:
+This is the Little Go bugfix release 0.9.1. There is only one change, and that's
+a fix for an embarassing bug in the Ko detection logic.
 
-* 3 new settings have been added to profiles (maximum number of playout games, maximum thinking time, ponder time). These settings provide much improved control over the computer player's playing strength.
-* Individual profile settings are now hidden in an "Advanced configuration" screen. The user can still tweak those settings if she wants to, but there is also a simplified "playing strength" screen where, by selecting a playing strength, the user adjusts several profile settings in a single action, without having to know the technical details behind each setting.
-* The computer player can now be interrupted when it is thinking.
-* The user can now choose to send a crash report if the app crashes (available when the app is launched the next time after the crash). Settings are available on the "Diagnostics" tab. Read the in-game manual for more information.
-* The user can now send send a bug report email with attached diagnostics information file from within the app. The function is available on the "Diagnostics" tab. Read the in-game manual for more information.
-
-In addition there have been quite a few bugfixes. As usual the ChangeLog
-document has all the details.
+The ChangeLog document has a few more details.
 
 
 == Known bugs ==
@@ -44,9 +36,12 @@ See the "Troubleshooting" section in the MANUAL document.
 
 == Links and resources ==
 
+* [http://www.herzbube.ch/littlego Project website]
+* [http://itunes.apple.com/us/app/little-go/id490753989?ls=1&mt=8 App Store link]
+* The source code respository is [https://github.com/herzbube/littlego/ on GitHub]
+* The bugtracker resides [https://github.com/herzbube/littlego/issues on GitHub], too. If you want to submit a new issue there you must be a registered GitHub user (it's free and they won't bother you with spam!). Since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab. Last but not least, you can also email me directly.
 * On Little Go's [https://trello.com/board/little-go/4fd84c295027333d460dcc32 Trello board] you can see what I am currently working on.
 * Little Go also has an [https://www.ohloh.net/p/littlego Ohloh page] that provides mildly interesting source code statistics.
-* The official bugtracker currently resides at [https://bugs.herzbube.ch/ this Bugzilla site]. Due to spamming the site unfortunately is read-only for anonymous users, and registration of new accounts is not possible. If you want to report a bug, please email me directly or create a new issue on GitHub (only possible if you have a GitHub account). Note that since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab.
 
 
 == License and source code ==

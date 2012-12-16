@@ -1,3 +1,14 @@
+Sun Dec 09 2012   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.9.0
+- Bugfixes
+  - Another bug in the Ko detection logic is now fixed. For instance the
+    following sequence: Black A2, White B2, Black pass, White C1, Black pass,
+    White A1. If Black now tries to capture on B1, this was erroneously thought
+    to be illegal due to Ko.
+- Technical changes
+  - The project's bugtracker is now hosted on GitHub
+    (https://github.com/herzbube/littlego/issues)
+
 Fri Nov 23 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.9.0
 - Features

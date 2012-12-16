@@ -5,6 +5,8 @@ This document lists the steps needed to make a project release.
 
 Before the release
 ------------------
+- Create a release branch. All remaining work will be done in this branch.
+  git checkout -b release-0.9.0 develop
 - Make sure that the issues in the bugtracker are up to date
 - If necessary, add an upgrade method to UserDefaultsUpdater
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
@@ -12,15 +14,17 @@ Before the release
 - Update the ChangeLog
   - The main source for this is the git commit log
   - The bug tracker may also have useful information. For instance, run the
-    following query to see the bugs that were fixed for release 0.9.0:
-    https://bugs.herzbube.ch/buglist.cgi?query_format=advanced&target_milestone=0.9.0&product=Little%20Go
+    following query to see the bugs that were fixed for milestone 1 (where
+    milestone 1 might correspond to release 0.9.1):
+    https://github.com/herzbube/littlego/issues?milestone=1&page=1&state=closed
   - Also add notes about changes to the user defaults, especially if some of
     the user's preferences are clobbered by UserDefaultsUpdater
 - Replace the "Changes in this release" section of README.mediawiki with a
   collection of the most important changes from the ChangeLog.
 - Update the "Troubleshooting" section in the MANUAL file if there are any new
   "known bugs"
-- Change the release date in the following files:
+- If the release is made for a major new version, change the release date in
+  the following files:
   - Roadmap
 - Make sure that the version number is up to date in the following files:
   - README.mediawiki
@@ -104,31 +108,25 @@ Make an AppStore distribution (production release)
   App Store
 
 
-Make the source code distribution
----------------------------------
-- Once the release is official, tag and sign it in Git
-  cd <projectdir>
+Make the release
+----------------
+- Once the release is official, merge all changes in the release branch into
+  master
+  git checkout master
+  git merge release-0.9.0
+- Tag and sign the release
   git tag -s -m "tagging release x.y" x.y <commit hash>
-- Update the blessed repository
-  cd <projectdir>
+- Update the GitHub repository
   git push
   git push --tags
-- Make the tar ball
-  cd <projectdir>
-  ./script/makedist.sh 0.7
-- Make the source distribution available on the project website
-  - Create a new directory in the public web space
-  - Copy ChangeLog, README and tar ball (.tar.gz) into the new directory
-  - Double-check that third party source code tar balls are also available for
-    download
+- Update the website
   - Update the "download latest" link on http://www.herzbube.ch/software
+  - Update the project website
+  - Write a release note blog post
 - Add the new version number to the bug tracker so that issues can be reported
-- Update the project website to announce the new release
 
 
 After the release
 -----------------
-- Cleanup
+- Optional cleanup
   rm -rf ~/Library/Developer/Xcode/DerivedData/Little_Go-*
-- Bump the version number to the next planned release; check above under
-  "Before the release" which files are affected

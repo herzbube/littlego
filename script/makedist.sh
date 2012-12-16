@@ -3,6 +3,9 @@
 # =========================================================================
 # Creates the source distribution (.tar.gz) of Little Go.
 #
+# THIS SCRIPT IS NO LONGER MAINTAINED. SOURCE DISTRIBUTIONS ARE NOW AVAILABLE
+# DIRECTLY FROM GITHUB.
+#
 # Assumes that this script is run from a subdirectory nested one level deep
 # within the project folder. Also assumes that the project folder is a Git
 # working tree with all changes necessary for the release committed.
