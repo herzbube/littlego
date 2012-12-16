@@ -163,6 +163,9 @@
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
+/// @brief The controller that manages the "Game Info" view. This property is
+/// nil if the "Game Info" view is currently not visible.
+@property(nonatomic, retain) GameInfoViewController* gameInfoController;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
@@ -208,6 +211,7 @@
 @synthesize activityIndicator;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
+@synthesize gameInfoController;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize undoButton;
@@ -249,6 +253,7 @@
   self.activityIndicator = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.gameInfoController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
   self.undoButton = nil;
@@ -514,6 +519,7 @@
 
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.gameInfoController = nil;
 
   self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
                                                            style:UIBarButtonItemStyleBordered
@@ -764,8 +770,7 @@
     }
     score = self.gameInfoScore;
   }
-  GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
-  [gameInfoController retain];
+  self.gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
   [self.backSideView addSubview:gameInfoController.view];
 
   bool flipToFrontSideView = false;
@@ -780,7 +785,8 @@
   bool flipToFrontSideView = true;
   [self flipToFrontSideView:flipToFrontSideView];
   [controller.view removeFromSuperview];
-  [controller release];
+  assert(self.gameInfoController == controller);
+  self.gameInfoController = nil;
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)
   {
