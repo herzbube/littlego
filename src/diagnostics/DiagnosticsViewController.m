@@ -148,6 +148,7 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super dealloc];
 }
 
@@ -193,8 +194,15 @@ enum ApplicationLogSectionItem
 // -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super viewDidUnload];
+
+  // Super's viewDidUnload does not release self.view/self.tableView for us,
+  // possibly because we override loadView and create the view ourselves
+  self.view = nil;
+  self.tableView = nil;
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 // -----------------------------------------------------------------------------

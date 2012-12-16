@@ -288,6 +288,14 @@ enum MoveStatisticsSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Super's viewDidUnload does not release self.view/self.tableView for us,
+  // possibly because we override loadView and create the view ourselves
+  self.view = nil;
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -785,7 +793,7 @@ enum MoveStatisticsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting a board size.
+/// @brief Invoked when the user wants to dismiss the Game Info view.
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {

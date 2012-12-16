@@ -179,6 +179,12 @@ enum GtpEngineProfilesSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.playerModel = nil;
+  self.gtpEngineProfileModel = nil;
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 // -----------------------------------------------------------------------------
