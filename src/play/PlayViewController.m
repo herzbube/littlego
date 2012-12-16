@@ -131,8 +131,6 @@
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief True if this controller has been set up is now "ready for action".
-@property(nonatomic, assign) bool controllerReadyForAction;
 /// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the long-press gesture.
@@ -202,7 +200,6 @@
 
 @implementation PlayViewController
 
-@synthesize controllerReadyForAction;
 @synthesize frontSideView;
 @synthesize backSideView;
 @synthesize playView;
@@ -474,7 +471,6 @@
   if (! delegate.applicationReadyForAction)
   {
     // This branch is executed during application startup
-    self.controllerReadyForAction = false;
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
   }
@@ -484,7 +480,6 @@
     // app lifecycle (e.g. because it was previously unloaded due to a memory
     // warning)
     [self makeControllerReadyForAction];
-    self.controllerReadyForAction = true;
   }
 }
 
@@ -597,7 +592,6 @@
   // will be invoked again later by viewDidLoad(). Notes:
   // - If the game info view is currently visible, it will not be visible
   //   anymore when viewDidLoad() is invoked the next time
-  self.controllerReadyForAction = false;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self releaseObjects];
 }
@@ -949,7 +943,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
   
   [self makeControllerReadyForAction];
-  self.controllerReadyForAction = true;
 }
 
 // -----------------------------------------------------------------------------
