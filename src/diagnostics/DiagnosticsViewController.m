@@ -484,7 +484,6 @@ enum ApplicationLogSectionItem
 {
   SendBugReportController* controller = [SendBugReportController controller];
   [controller sendBugReport:self];
-  [controller retain];
 }
 
 // -----------------------------------------------------------------------------

@@ -194,6 +194,7 @@
 
   [self.modalViewControllerParent presentModalViewController:mailComposeViewController animated:YES];
   [mailComposeViewController release];
+  [self retain];  // must survive until the delegate method is invoked
 }
 
 // -----------------------------------------------------------------------------
@@ -235,6 +236,7 @@
       break;
     }
   }
+  [self autorelease];  // balance retain that is sent before the mail view is shown
 }
 
 @end
