@@ -18,6 +18,9 @@
 // Project includes
 #import "ArchiveViewModel.h"
 #import "ArchiveGame.h"
+#import "../go/GoGame.h"
+#import "../go/GoPlayer.h"
+#import "../player/Player.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -206,6 +209,36 @@
   if ([fileName isEqualToString:bugReportDiagnosticsInformationFileName])
     return true;
   return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a default name that can be used to save @a game right now.
+///
+/// The name is guaranteed to be unique at the time this method is invoked.
+///
+/// The name is suitable for display in the UI. The name pattern is
+/// "BBB vs. WWW iii", where
+/// - BBB = Black player name
+/// - WWW = White player name
+/// - iii = Numeric counter starting with 1. The counter does not use prefix
+///         zeroes.
+// -----------------------------------------------------------------------------
+- (NSString*) defaultGameName:(GoGame*)game;
+{
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* defaultGameName = nil;
+  NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
+  int suffix = 1;
+  while (true)
+  {
+    defaultGameName = [NSString stringWithFormat:@"%@ %d", prefix, suffix];
+    NSString* defaultFileName = [defaultGameName stringByAppendingString:@".sgf"];
+    NSString* defaultFilePath = [self.archiveFolder stringByAppendingPathComponent:defaultFileName];
+    if (! [fileManager fileExistsAtPath:defaultFilePath])
+      break;
+    suffix++;
+  }
+  return defaultGameName;
 }
 
 @end
