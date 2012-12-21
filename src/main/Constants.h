@@ -181,7 +181,9 @@ enum AlertViewType
   AlertViewTypeMemoryWarning,
   AlertViewTypeCannotSendBugReport,
   AlertViewTypeDiagnosticsInformationFileGenerated,
-  AlertViewTypeDiagnosticsInformationFileNotGenerated
+  AlertViewTypeDiagnosticsInformationFileNotGenerated,
+  AlertViewTypeComputerPlayedIllegalMove,
+  AlertViewTypeNewGameAfterComputerPlayedIllegalMove
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in

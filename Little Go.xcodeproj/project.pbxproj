@@ -156,6 +156,10 @@
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CD92EE961469EB83001EA980 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD92EE951469EB83001EA980 /* ScoringModel.m */; };
 		CD92EEA21469F0A9001EA980 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD92EE951469EB83001EA980 /* ScoringModel.m */; };
+		CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32AD15A10AD500439B4E /* SendBugReportController.m */; };
+		CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */; };
+		CD931EE41684E4C7002E1262 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48AD9815A7281C004A7096 /* MessageUI.framework */; };
+		CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC7A1425470B00214BBE /* SaveGameCommand.m */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -668,6 +672,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD931EE41684E4C7002E1262 /* MessageUI.framework in Frameworks */,
 				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
@@ -1707,6 +1712,9 @@
 				CD899E401643477900329154 /* BWQuincyManager.m in Sources */,
 				CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
+				CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */,
+				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
+				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

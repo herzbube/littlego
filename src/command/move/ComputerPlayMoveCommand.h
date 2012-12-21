@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../CommandBase.h"
+#import "../../diagnostics/SendBugReportController.h"
 
 // Forward declarations
 @class GoGame;
@@ -39,7 +40,7 @@
 /// the GTP response finally arrives, it triggers a callback to the code in
 /// ComputerPlayMoveCommand.
 // -----------------------------------------------------------------------------
-@interface ComputerPlayMoveCommand : CommandBase
+@interface ComputerPlayMoveCommand : CommandBase <SendBugReportControllerDelegate>
 {
 }
 
