@@ -87,5 +87,11 @@
 /// @brief This is the delegate that will be informed when the process of
 /// sending a bug report has finished. Setting the delegate is optional.
 @property(nonatomic, assign) id<SendBugReportControllerDelegate> delegate;
+/// @brief This text is inserted as the bug description into the bug report
+/// message template.
+@property(nonatomic, retain) NSString* bugReportDescription;
+/// @brief This array must contain NSString objects. These strings are inserted
+/// as "steps to reproduce" into the bug report message template.
+@property(nonatomic, retain) NSArray* bugReportStepsToReproduce;
 
 @end

@@ -44,6 +44,7 @@
 - (bool) canSendMail;
 - (bool) generateDiagnosticsInformationFileInternal;
 - (void) presentMailComposeController;
+- (NSString*) mailMessageBody;
 - (void) notifyDelegate;
 //@}
 /// @name Private properties
@@ -58,6 +59,8 @@
 @implementation SendBugReportController
 
 @synthesize delegate;
+@synthesize bugReportDescription;
+@synthesize bugReportStepsToReproduce;
 @synthesize sendBugReportMode;
 @synthesize modalViewControllerParent;
 @synthesize diagnosticsInformationFilePath;
@@ -87,6 +90,8 @@
     return nil;
 
   self.delegate = nil;
+  self.bugReportDescription = @"_____";
+  self.bugReportStepsToReproduce = [NSArray arrayWithObjects:@"_____", @"_____", @"_____", nil];
   self.sendBugReportMode = false;
   self.modalViewControllerParent = nil;
   self.diagnosticsInformationFilePath = nil;
@@ -100,6 +105,8 @@
 - (void) dealloc
 {
   self.delegate = nil;
+  self.bugReportDescription = nil;
+  self.bugReportStepsToReproduce = nil;
   self.modalViewControllerParent = nil;
   self.diagnosticsInformationFilePath = nil;
   [super dealloc];
@@ -201,8 +208,7 @@
 
   mailComposeViewController.toRecipients = [NSArray arrayWithObject:bugReportEmailRecipient];
   mailComposeViewController.subject = bugReportEmailSubject;
-  NSString* bugReportMessageTemplateFilePath = [[ApplicationDelegate sharedDelegate].resourceBundle pathForResource:bugReportMessageTemplateResource ofType:nil];
-  NSString* messageBody = [NSString stringWithContentsOfFile:bugReportMessageTemplateFilePath encoding:NSUTF8StringEncoding error:nil];
+  NSString* messageBody = [self mailMessageBody];
   [mailComposeViewController setMessageBody:messageBody isHTML:NO];
   NSData* data = [NSData dataWithContentsOfFile:self.diagnosticsInformationFilePath];
   NSString* mimeType = bugReportDiagnosticsInformationFileMimeType;
@@ -211,6 +217,27 @@
   [self.modalViewControllerParent presentModalViewController:mailComposeViewController animated:YES];
   [mailComposeViewController release];
   [self retain];  // must survive until the delegate method is invoked
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the message body for the bug report email.
+// -----------------------------------------------------------------------------
+- (NSString*) mailMessageBody
+{
+  NSString* bugReportStepLines = @"";
+  int bugReportStepNumber = 1;
+  for (NSString* bugReportStepString in self.bugReportStepsToReproduce)
+  {
+    NSString* bugReportStepLine = [NSString stringWithFormat:@"%d. %@", bugReportStepNumber, bugReportStepString];
+    if (bugReportStepNumber > 1)
+      bugReportStepLines = [bugReportStepLines stringByAppendingString:@"\n"];
+    bugReportStepLines = [bugReportStepLines stringByAppendingString:bugReportStepLine];
+    ++bugReportStepNumber;
+  }
+
+  NSString* bugReportMessageTemplateFilePath = [[ApplicationDelegate sharedDelegate].resourceBundle pathForResource:bugReportMessageTemplateResource ofType:nil];
+  NSString* bugReportMessageTemplateString = [NSString stringWithContentsOfFile:bugReportMessageTemplateFilePath encoding:NSUTF8StringEncoding error:nil];
+  return [NSString stringWithFormat:bugReportMessageTemplateString, self.bugReportDescription, bugReportStepLines];
 }
 
 // -----------------------------------------------------------------------------
