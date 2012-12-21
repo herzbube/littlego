@@ -35,14 +35,20 @@
 //@{
 - (void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error;
 //@}
+/// @name UIAlertViewDelegate protocol
+//@{
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+//@}
 /// @name Private helpers
 //@{
 - (bool) canSendMail;
 - (bool) generateDiagnosticsInformationFileInternal;
 - (void) presentMailComposeController;
+- (void) notifyDelegate;
 //@}
 /// @name Private properties
 //@{
+@property(nonatomic, assign) bool sendBugReportMode;
 @property(nonatomic, retain) UIViewController* modalViewControllerParent;
 @property(nonatomic, retain) NSString* diagnosticsInformationFilePath;
 //@}
@@ -51,6 +57,8 @@
 
 @implementation SendBugReportController
 
+@synthesize delegate;
+@synthesize sendBugReportMode;
 @synthesize modalViewControllerParent;
 @synthesize diagnosticsInformationFilePath;
 
@@ -78,6 +86,8 @@
   if (! self)
     return nil;
 
+  self.delegate = nil;
+  self.sendBugReportMode = false;
   self.modalViewControllerParent = nil;
   self.diagnosticsInformationFilePath = nil;
 
@@ -89,6 +99,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.delegate = nil;
   self.modalViewControllerParent = nil;
   self.diagnosticsInformationFilePath = nil;
   [super dealloc];
@@ -102,6 +113,7 @@
 - (void) sendBugReport:(UIViewController*)aModalViewControllerParent
 {
   self.modalViewControllerParent = aModalViewControllerParent;
+  self.sendBugReportMode = true;
   if (! [self canSendMail])
     return;
   if (! [self generateDiagnosticsInformationFileInternal])
@@ -116,15 +128,17 @@
 // -----------------------------------------------------------------------------
 - (void) generateDiagnosticsInformationFile
 {
+  self.sendBugReportMode = false;
   if (! [self generateDiagnosticsInformationFileInternal])
     return;
   UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Information generated"
                                                   message:[NSString stringWithFormat:@"Diagnostics information has been generated and is ready for transfer to your computer via iTunes file sharing. In iTunes look for the file named '%@'.", bugReportDiagnosticsInformationFileName]
-                                                 delegate:nil
+                                                 delegate:self
                                         cancelButtonTitle:nil
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeDiagnosticsInformationFileGenerated;
   [alert show];
+  [self retain];  // must survive until the delegate method is invoked
 }
 
 // -----------------------------------------------------------------------------
@@ -138,11 +152,12 @@
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
                                                     message:@"This device is not configured to send email."
-                                                   delegate:nil
+                                                   delegate:self
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeCannotSendBugReport;
     [alert show];
+    [self retain];  // must survive until the delegate method is invoked
   }
   return canSendMail;
 }
@@ -165,11 +180,12 @@
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
                                                     message:@"An error occurred while generating diagnostics information."
-                                                   delegate:nil
+                                                   delegate:self
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Very funny!", nil];
     alert.tag = AlertViewTypeDiagnosticsInformationFileNotGenerated;
     [alert show];
+    [self retain];  // must survive until the delegate method is invoked
   }
   return success;
 }
@@ -237,6 +253,32 @@
     }
   }
   [self autorelease];  // balance retain that is sent before the mail view is shown
+  [self notifyDelegate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user dismissing an alert view for which this controller
+/// is the delegate.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  [self autorelease];  // balance retain that is sent before an alert is shown
+  [self notifyDelegate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Notifies the delegate that the process managed by this controller
+/// has ended.
+// -----------------------------------------------------------------------------
+- (void) notifyDelegate
+{
+  if (self.delegate)
+  {
+    if (self.sendBugReportMode)
+      [self.delegate sendBugReportDidFinish:self];
+    else
+      [self.delegate generateDiagnosticsInformationFileDidFinish:self];
+  }
 }
 
 @end
