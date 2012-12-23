@@ -141,28 +141,6 @@
 {
   [super layoutSubviews];
 
-  // The content view width is wrong after we invoke super's layoutSubViews()
-  // above. For instance, on the iPhone simulator, the content view width is
-  // 320 before super's layoutSubviews() is invoked, and 270 afterwards. The 50
-  // points difference are made up of the following:
-  // a) 20 points for the distance from both the left and right screen edge
-  //    (2 * 10 points). This is correct.
-  // b) 30 points for the accessory view (20 points view width + 10 points for
-  //    spacing between content and accessory view). IMHO, this is a bug in
-  //    UIKit, after all the accessory view is hidden (accessoryType is
-  //    UITableViewCellAccessoryNone) and should not be included in layout
-  //    calculations.
-  // Also see http://stackoverflow.com/questions/13224556/wrong-contentview-width-in-custom-uitableviewcell.
-  //
-  // The consequence is that we need to calculate the content view width
-  // ourselves. We also need to apply that width to the content view - if we
-  // don't do this the view is too narrow and touch events on the right-hand
-  // side of the cell do not reach the text field. The clear button does not
-  // work correctly in this situation.
-  CGRect contentViewFrame = self.contentView.frame;
-  contentViewFrame.size.width = [UiElementMetrics tableViewCellContentViewWidth];
-  self.contentView.frame = contentViewFrame;
-
   // Start with the assumption that the text field is going to get the entire
   // cell for itself
   CGRect textFieldFrame = self.contentView.bounds;
