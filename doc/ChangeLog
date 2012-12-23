@@ -1,5 +1,27 @@
+Sun Dec 22 2012   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.9.2
+- Bugfixes
+  - Fix for crash if Play tab is not visible and low memory conditions occur
+    (issue #86)
+  - Fix for crash if an error occurs while loading an archived game, e.g.
+    because the game contains an illegal move (issue #88)
+  - Fix for crash when Little Go thinks that a move made by the computer player
+    is illegal. Note that the root cause of the problem has not yet been
+    identified, but at least the app no longer crashes when the condition
+    occurs. Instead you will be asked to submit a bug report (please do!), the
+    game in progress is automatically saved to the archive and a new game is
+    started to bring the app back into a stable state. This temporary solution
+    will remain in place until I can track down and fix the actual bug
+    (issue #90).
+  - Fix for memory leak that occurs when the Game Info view has been selected
+    on the Play tab, but the Play tab is not visible and low memory conditions
+    occur (issue #87)
+  - Fix for memory leak when a bug report is sent (issue #91)
+  - Fix for GUI update errors on Play tab after an error occurs while loading a
+    game (issue #89)
+
 Sun Dec 09 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.9.0
+- Release of version 0.9.1
 - Bugfixes
   - Another bug in the Ko detection logic is now fixed. For instance the
     following sequence: Black A2, White B2, Black pass, White C1, Black pass,

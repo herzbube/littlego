@@ -23,8 +23,10 @@ running.
 
 == Changes in this release ==
 
-This is the Little Go bugfix release 0.9.1. There is only one change, and that's
-a fix for an embarassing bug in the Ko detection logic.
+This is the Little Go bugfix release 0.9.2. Thanks to the crash reporting
+service introduced in 0.9.0, three crash sources have been identified and fixed
+in this release. In addition, two memory leaks were found and eliminated, and a
+bug causing GUI updates on the Play tab to become disrupted was fixed.
 
 The ChangeLog document has a few more details.
 
@@ -39,7 +41,7 @@ See the "Troubleshooting" section in the MANUAL document.
 * [http://www.herzbube.ch/littlego Project website]
 * [http://itunes.apple.com/us/app/little-go/id490753989?ls=1&mt=8 App Store link]
 * The source code respository is [https://github.com/herzbube/littlego/ on GitHub]
-* The bugtracker resides [https://github.com/herzbube/littlego/issues on GitHub], too. If you want to submit a new issue there you must be a registered GitHub user (it's free and they won't bother you with spam!). Since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab. Last but not least, you can also email me directly.
+* The bugtracker is also [https://github.com/herzbube/littlego/issues on GitHub]. If you want to submit a new issue there you must be a registered GitHub user (it's free and they won't bother you with spam!). Since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab. Last but not least, you can also email me directly.
 * On Little Go's [https://trello.com/board/little-go/4fd84c295027333d460dcc32 Trello board] you can see what I am currently working on.
 * Little Go also has an [https://www.ohloh.net/p/littlego Ohloh page] that provides mildly interesting source code statistics.
 
