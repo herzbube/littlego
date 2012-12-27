@@ -9,5 +9,6 @@ Little Go.xcodeproj/xcuserdata
 3rdparty/
 doxygen/html
 dist/
+crash/
 .DS_Store
 
