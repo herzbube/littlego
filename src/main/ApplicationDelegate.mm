@@ -37,6 +37,7 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
 #import "../play/PlayViewModel.h"
+#import "../play/BoardPositionModel.h"
 #import "../play/ScoringModel.h"
 #import "../play/SoundHandling.h"
 #import "../archive/ArchiveViewModel.h"
@@ -120,6 +121,7 @@
 @synthesize gtpEngineProfileModel;
 @synthesize scoringModel;
 @synthesize playViewModel;
+@synthesize boardPositionModel;
 @synthesize soundHandling;
 @synthesize game;
 @synthesize archiveViewModel;
@@ -176,6 +178,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.playViewModel = nil;
+  self.boardPositionModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
   self.game = nil;
@@ -482,6 +485,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 
   // Disable edit button in the "more" navigation controller
   self.tabBarController.customizableViewControllers = [NSArray array];
+
+  self.boardPositionModel = [[[BoardPositionModel alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------

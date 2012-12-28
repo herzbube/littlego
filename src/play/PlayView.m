@@ -55,6 +55,7 @@
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goMoveModelChanged:(NSNotification*)notification;
+- (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
@@ -248,6 +249,7 @@ static PlayView* sharedPlayView = nil;
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goMoveModelChanged:) name:goMoveModelChanged object:nil];
+  [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
@@ -447,7 +449,16 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goMoveModelChanged:(NSNotification*)notification
 {
-  [self notifyLayerDelegates:PVLDEventLastMoveChanged eventInfo:nil];
+  [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #playViewBoardPositionChanged notification.
+// -----------------------------------------------------------------------------
+- (void) playViewBoardPositionChanged:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
   [self delayedUpdate];
 }
 

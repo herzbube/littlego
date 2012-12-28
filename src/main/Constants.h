@@ -306,6 +306,17 @@ extern NSString* computerPlayerThinkingStops;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Play view related notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the board position displayed on the Play
+/// view has changed.
+///
+/// The BoardPositionModel object is associated with the notification.
+extern NSString* playViewBoardPositionChanged;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Archive related notifications
 // -----------------------------------------------------------------------------
 //@{

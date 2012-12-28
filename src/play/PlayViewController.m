@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayViewController.h"
 #import "PlayView.h"
+#import "BoardPositionModel.h"
 #import "DebugPlayViewController.h"
 #import "StatusLineController.h"
 #import "ActivityIndicatorController.h"
@@ -94,7 +95,7 @@
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goMoveModelChanged:(NSNotification*)notification;
+- (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
@@ -564,7 +565,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goMoveModelChanged:) name:goMoveModelChanged object:nil];
+  [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
@@ -727,15 +728,21 @@
 // -----------------------------------------------------------------------------
 - (void) oneMoveBack:(id)sender
 {
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  int currentBoardPosition = boardPositionModel.currentBoardPosition;
+  boardPositionModel.currentBoardPosition = currentBoardPosition - 1;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Forward" button. Goes back one move
-/// in the game's move history. The board is updated to display the new
+/// @brief Reacts to a tap gesture on the "Forward" button. Goes forward one
+/// move in the game's move history. The board is updated to display the new
 /// situation.
 // -----------------------------------------------------------------------------
 - (void) oneMoveForward:(id)sender
 {
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  int currentBoardPosition = boardPositionModel.currentBoardPosition;
+  boardPositionModel.currentBoardPosition = currentBoardPosition + 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -1014,12 +1021,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goMoveModelChanged notification.
+/// @brief Responds to the #playViewBoardPositionChanged notification.
 // -----------------------------------------------------------------------------
-- (void) goMoveModelChanged:(NSNotification*)notification
+- (void) playViewBoardPositionChanged:(NSNotification*)notification
 {
-  // Mainly here for updating the "back" button
-  [self updateButtonStates];
+  [self updateBackButtonState];
+  [self updateForwardButtonState];
 }
 
 // -----------------------------------------------------------------------------
@@ -1205,20 +1212,11 @@
       {
         if ([GoGame sharedGame].isComputerThinking)
           break;
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasStarted:
-          {
-            GoMove* lastMove = [GoGame sharedGame].lastMove;
-            if (lastMove == nil)
-              enabled = NO;
-            else
-              enabled = YES;
-            break;
-          }
-          default:
-            break;
-        }
+        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+        if (boardPositionModel.isFirstPosition)
+          enabled = NO;
+        else
+          enabled = YES;
         break;
       }
     }
@@ -1242,21 +1240,11 @@
       {
         if ([GoGame sharedGame].isComputerThinking)
           break;
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasStarted:
-          {
-            GoMove* firstMove = [GoGame sharedGame].firstMove;
-            GoMove* lastMove = [GoGame sharedGame].lastMove;
-            if (firstMove == lastMove)
-              enabled = NO;
-            else
-              enabled = YES;
-            break;
-          }
-          default:
-            break;
-        }
+        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+        if (boardPositionModel.isLastPosition)
+          enabled = NO;
+        else
+          enabled = YES;
         break;
       }
     }

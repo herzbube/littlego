@@ -19,10 +19,12 @@
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
+#import "../BoardPositionModel.h"
 #import "../ScoringModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoPlayer.h"
+#import "../../main/ApplicationDelegate.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -122,7 +124,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventLastMoveChanged:
+    case PVLDEventBoardPositionChanged:
     case PVLDEventMarkLastMoveChanged:
     case PVLDEventScoringModeEnabled:   // temporarily disable symbols
     case PVLDEventScoringModeDisabled:  // re-enable symbols
@@ -153,7 +155,8 @@
 
   if (self.playViewModel.markLastMove)
   {
-    GoMove* lastMove = [GoGame sharedGame].lastMove;
+    BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+    GoMove* lastMove = boardPositionModel.currentMove;
     if (lastMove && GoMoveTypePlay == lastMove.type)
     {
       if (lastMove.player.isBlack)

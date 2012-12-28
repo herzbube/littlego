@@ -44,6 +44,8 @@ NSString* goMoveModelChanged = @"GoMoveModelChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
+// Play view related notifications
+NSString* playViewBoardPositionChanged = @"PlayViewBoardPositionChanged";
 // Archive related notifications
 NSString* gameSavedToArchive = @"GameSavedToArchive";
 NSString* gameLoadedFromArchive = @"GameLoadedFromArchive";

@@ -26,7 +26,7 @@ enum PlayViewLayerDelegateEvent
   PVLDEventRectangleChanged,
   PVLDEventGoGameStarted,
   /// @brief Occurs when a move is played or undone.
-  PVLDEventLastMoveChanged,
+  PVLDEventBoardPositionChanged,
   PVLDEventMarkLastMoveChanged,
   PVLDEventDisplayCoordinatesChanged,
   PVLDEventDisplayMoveNumbersChanged,

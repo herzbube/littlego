@@ -110,7 +110,7 @@
       self.dirty = true;
       break;      
     }
-    case PVLDEventLastMoveChanged:
+    case PVLDEventBoardPositionChanged:
     {
       self.dirty = true;
       break;

@@ -29,6 +29,7 @@
 @class PlayerModel;
 @class GtpEngineProfileModel;
 @class PlayViewModel;
+@class BoardPositionModel;
 @class ScoringModel;
 @class SoundHandling;
 @class GoGame;
@@ -121,6 +122,9 @@
 @property(nonatomic, retain) GtpEngineProfileModel* gtpEngineProfileModel;
 /// @brief Model object that stores attributes used to manage the Play view.
 @property(nonatomic, retain) PlayViewModel* playViewModel;
+/// @brief Model object that manages data related to the board position
+/// displayed on the Play view.
+@property(nonatomic, retain) BoardPositionModel* boardPositionModel;
 /// @brief Model object that stores attributes used for scoring.
 @property(nonatomic, retain) ScoringModel* scoringModel;
 /// @brief Object that handles sounds and vibration.

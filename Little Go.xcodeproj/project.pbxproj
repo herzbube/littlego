@@ -90,6 +90,8 @@
 		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
+		CD15A48C168D21A200D4472A /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A48B168D21A200D4472A /* BoardPositionModel.m */; };
+		CD15A48D168E0A7A00D4472A /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A48B168D21A200D4472A /* BoardPositionModel.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
@@ -432,6 +434,8 @@
 		CD15A47F168CBE7F00D4472A /* GoMoveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModel.m; sourceTree = "<group>"; };
 		CD15A482168D044400D4472A /* GoMoveModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModelTest.h; sourceTree = "<group>"; };
 		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
+		CD15A48A168D21A100D4472A /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
+		CD15A48B168D21A200D4472A /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
@@ -948,6 +952,8 @@
 				CDF8B76714D9E91F00940D3E /* layer */,
 				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
 				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
+				CD15A48A168D21A100D4472A /* BoardPositionModel.h */,
+				CD15A48B168D21A200D4472A /* BoardPositionModel.m */,
 				CD0DFEDA14F01C17000FE1B5 /* DebugPlayViewController.h */,
 				CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */,
 				CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */,
@@ -1740,6 +1746,7 @@
 				CD55576616702DBC003B957B /* TableViewSegmentedCell.m in Sources */,
 				CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */,
 				CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */,
+				CD15A48C168D21A200D4472A /* BoardPositionModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1823,6 +1830,7 @@
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
+				CD15A48D168E0A7A00D4472A /* BoardPositionModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
