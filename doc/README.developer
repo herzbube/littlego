@@ -512,6 +512,10 @@ Notes about the "Unit test" target:
     reason, this build setting is correct by default in the main application
     target, but incorrect in the "Unit test" target.
 
+A final note about logging: The log file for unit tests run in the simulator
+environment is located in
+~/Library/Application Support/iPhone Simulator/Documents/Logs.
+
 [1] http://developer.apple.com/library/ios/#documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
 
 

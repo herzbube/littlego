@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,21 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoGameTest class contains unit tests that exercise the GoGame
-/// class.
+/// @brief The GoMoveModelTest class contains unit tests that exercise the
+/// GoMoveModel class.
 // -----------------------------------------------------------------------------
-@interface GoGameTest : BaseTestCase
+@interface GoMoveModelTest : BaseTestCase
 {
 }
 
-- (void) testSharedGame;
 - (void) testInitialState;
-- (void) testNewGame;
-- (void) testType;
-- (void) testBoard;
-- (void) testHandicapPoints;
-- (void) testCurrentPlayer;
+- (void) testAppendMove;
+- (void) testDiscardLastMove;
+- (void) testDiscardMovesFromIndex;
+- (void) testDiscardAllMoves;
+- (void) testMoveAtIndex;
+- (void) testNumberOfMoves;
 - (void) testFirstMove;
 - (void) testLastMove;
-- (void) testState;
-- (void) testReasonForGameHasEnded;
-- (void) testPlay;
-- (void) testPass;
-- (void) testResign;
-- (void) testPause;
-- (void) testContinue;
-- (void) testIsLegalMove;
-- (void) testIsComputerPlayersTurn;
-- (void) testDiscardCausesRegionToFragment;
 
 @end

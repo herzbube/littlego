@@ -46,7 +46,7 @@
 @property(nonatomic, assign, readwrite) enum GoMoveType type;
 @property(nonatomic, retain, readwrite) GoPlayer* player;
 @property(nonatomic, assign, readwrite) GoMove* previous;
-@property(nonatomic, retain, readwrite) GoMove* next;
+@property(nonatomic, assign, readwrite) GoMove* next;
 @property(nonatomic, retain, readwrite) NSArray* capturedStones;
 //@}
 @end
@@ -162,11 +162,15 @@
 {
   self.player = nil;
   point = nil;  // don't use self, otherwise we trigger the setter!
-  self.previous = nil;  // not strictly necessary since we don't retain it
+  if (self.previous)
+  {
+    self.previous.next = nil;  // remove reference to self
+    self.previous = nil;  // not strictly necessary since we don't retain it
+  }
   if (self.next)
   {
     self.next.previous = nil;  // remove reference to self
-    self.next = nil;
+    self.next = nil;  // not strictly necessary since we don't retain it
   }
   self.capturedStones = nil;
   [super dealloc];
@@ -278,8 +282,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Reverts the board to the state it had before this GoMove was played.
-/// Also removes references from/to the predecessor GoMove, which usually causes
-/// this GoMove to be deallocated.
+/// Also removes references from/to the predecessor GoMove.
 ///
 /// As a side-effect of this method, GoBoardRegions may become fragmented
 /// and/or multiple GoBoardRegions may merge with other regions.
@@ -317,16 +320,14 @@
     [GoUtilities movePointToNewRegion:thePoint];
   }
 
-  // Remove references from/to predecessor. This decreases the retain count of
-  // this GoMove and may lead to deallocation
+  // Remove references from/to predecessor
   if (self.previous)
   {
     self.previous.next = nil;
     self.previous = nil;
   }
 
-  // Not strictly necessary since we expect to be deallocated soon
-  point = nil;  // make sure not to use the setter here!
+  point = nil;  // don't use self, otherwise we trigger the setter!
   self.player = nil;
 }
 

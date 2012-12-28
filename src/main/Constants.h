@@ -275,18 +275,17 @@ extern NSString* goGameDidCreate;
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* goGameStateChanged;
-/// @brief Is sent to indicate that the first move of the game has changed. May
-/// occur when the first move of the game is played, or when the first move is
-/// removed by an undo.
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name GoMove related notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the content of GoMoveModel has changed.
+/// This typically occurs when a move is played.
 ///
-/// The GoGame object is associated with the notification.
-extern NSString* goGameFirstMoveChanged;
-/// @brief Is sent to indicate that the last move of the game has changed. May
-/// occur whenever a move is played, or when the most recent move of the game
-/// is removed by an undo.
-///
-/// The GoGame object is associated with the notification.
-extern NSString* goGameLastMoveChanged;
+/// The GoMoveModel object is associated with the notification.
+extern NSString* goMoveModelChanged;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -598,8 +597,7 @@ extern NSString* goGameHandicapPointsKey;
 extern NSString* goGameKomiKey;
 extern NSString* goGamePlayerBlackKey;
 extern NSString* goGamePlayerWhiteKey;
-extern NSString* goGameFirstMoveKey;
-extern NSString* goGameLastMoveKey;
+extern NSString* goGameMoveModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
@@ -615,6 +613,8 @@ extern NSString* goMovePreviousKey;
 extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveComputerGeneratedKey;
+// GoMoveModel keys
+extern NSString* goMoveModelMoveListKey;
 // GoBoard keys
 extern NSString* goBoardSizeKey;
 extern NSString* goBoardVertexDictKey;

@@ -45,7 +45,7 @@
 /// @name Notification responders
 //@{
 - (void) goGameStateChanged:(NSNotification*)notification;
-- (void) goGameLastMoveChanged:(NSNotification*)notification;
+- (void) goMoveModelChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
@@ -100,7 +100,7 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
+  [center addObserver:self selector:@selector(goMoveModelChanged:) name:goMoveModelChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
@@ -228,9 +228,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameLastMoveChanged notification.
+/// @brief Responds to the #goMoveModelChanged notification.
 // -----------------------------------------------------------------------------
-- (void) goGameLastMoveChanged:(NSNotification*)notification
+- (void) goMoveModelChanged:(NSNotification*)notification
 {
   // Need this to display "player has passed" message
   [self updateStatusLine];

@@ -39,8 +39,8 @@ NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 NSString* goGameWillCreate = @"GoGameWillCreate";
 NSString* goGameDidCreate = @"GoGameDidCreate";
 NSString* goGameStateChanged = @"GoGameStateChanged";
-NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
-NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";
+// GoMove related notifications
+NSString* goMoveModelChanged = @"GoMoveModelChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
@@ -237,7 +237,7 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 1;
+const int nscodingVersion = 2;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // GoGame keys
 NSString* goGameTypeKey = @"Type";
@@ -246,8 +246,7 @@ NSString* goGameHandicapPointsKey = @"HandicapPoints";
 NSString* goGameKomiKey = @"Komi";
 NSString* goGamePlayerBlackKey = @"PlayerBlack";
 NSString* goGamePlayerWhiteKey = @"PlayerWhite";
-NSString* goGameFirstMoveKey = @"FirstMove";
-NSString* goGameLastMoveKey = @"LastMove";
+NSString* goGameMoveModelKey = @"MoveModel";
 NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
@@ -263,6 +262,8 @@ NSString* goMovePreviousKey = @"Previous";
 NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveComputerGeneratedKey = @"ComputerGenerated";
+// GoMoveModel keys
+NSString* goMoveModelMoveListKey = @"MoveList";
 // GoBoard keys
 NSString* goBoardSizeKey = @"Size";
 NSString* goBoardVertexDictKey = @"VertexDict";

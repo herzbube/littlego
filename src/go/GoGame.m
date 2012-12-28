@@ -19,6 +19,7 @@
 #import "GoGame.h"
 #import "GoPlayer.h"
 #import "GoMove.h"
+#import "GoMoveModel.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoUtilities.h"
@@ -42,8 +43,6 @@
 //@}
 /// @name Setters needed for posting notifications to notify our observers
 //@{
-- (void) setFirstMove:(GoMove*)newValue;
-- (void) setLastMove:(GoMove*)newValue;
 - (void) setComputerThinks:(bool)newValue;
 //@}
 @end
@@ -57,8 +56,7 @@
 @synthesize komi;
 @synthesize playerBlack;
 @synthesize playerWhite;
-@synthesize firstMove;
-@synthesize lastMove;
+@synthesize moveModel;
 @synthesize state;
 @synthesize reasonForGameHasEnded;
 @synthesize computerThinks;
@@ -103,8 +101,7 @@
   komi = 0;
   playerBlack = nil;
   playerWhite = nil;
-  firstMove = nil;
-  lastMove = nil;
+  moveModel = [[GoMoveModel alloc] init];
   state = GoGameStateGameHasNotYetStarted;
   reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
@@ -132,8 +129,7 @@
   komi = [decoder decodeDoubleForKey:goGameKomiKey];
   playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
   playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
-  firstMove = [[decoder decodeObjectForKey:goGameFirstMoveKey] retain];
-  lastMove = [[decoder decodeObjectForKey:goGameLastMoveKey] retain];
+  moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
   state = [decoder decodeIntForKey:goGameStateKey];
   reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
@@ -158,33 +154,24 @@
   }
   self.playerBlack = nil;
   self.playerWhite = nil;
-  self.firstMove = nil;
-  self.lastMove = nil;
+  self.moveModel = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setFirstMove:(GoMove*)newValue
+- (GoMove*) firstMove
 {
-  if (firstMove == newValue)
-    return;
-  [firstMove release];
-  firstMove = [newValue retain];
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameFirstMoveChanged object:self];
+  return self.moveModel.firstMove;
 }
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setLastMove:(GoMove*)newValue
+- (GoMove*) lastMove
 {
-  if (lastMove == newValue)
-    return;
-  [lastMove release];
-  lastMove = [newValue retain];
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameLastMoveChanged object:self];
+  return self.moveModel.lastMove;
 }
 
 // -----------------------------------------------------------------------------
@@ -254,9 +241,7 @@
   }
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
+  [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is
   // important for observer notifications
@@ -285,9 +270,7 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
-  if (! self.firstMove)
-    self.firstMove = move;
-  self.lastMove = move;
+  [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is
   // important for observer notifications
@@ -323,50 +306,6 @@
   
   self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
   self.state = GoGameStateGameHasEnded;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players taking back his move.
-///
-/// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
-/// there are no moves that can be taken back (typically because all moves have
-/// already been taken back).
-// -----------------------------------------------------------------------------
-- (void) undo
-{
-  if (GoGameStateGameHasStarted != self.state)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Undo is possible only while GoGame object is in state GoGameStateGameHasStarted"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  if (! self.firstMove)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"No moves to undo"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  GoMove* undoMove = self.lastMove;
-  GoMove* newLastMove = undoMove.previous;  // get this reference before it disappears
-  [undoMove undo];  // many side-effects here (e.g. region handling) !!!
-
-  // One of the following statements will cause the retain count of lastMove
-  // to drop to zero
-  // -> the object will be deallocated
-  self.lastMove = newLastMove;  // is nil if we are undoing the first move
-  if (self.firstMove == undoMove)
-    self.firstMove = nil;
-
-  // No game state change
-  // - Since we are able to undo moves, this clearly means that we are in state
-  //   GoGameStateGameHasStarted
-  // - But undoing a move will never cause the game to revert to state
-  //   GoGameStateGameHasNotYetStarted
 }
 
 // -----------------------------------------------------------------------------
@@ -626,8 +565,7 @@
   [encoder encodeDouble:self.komi forKey:goGameKomiKey];
   [encoder encodeObject:self.playerBlack forKey:goGamePlayerBlackKey];
   [encoder encodeObject:self.playerWhite forKey:goGamePlayerWhiteKey];
-  [encoder encodeObject:self.firstMove forKey:goGameFirstMoveKey];
-  [encoder encodeObject:self.lastMove forKey:goGameLastMoveKey];
+  [encoder encodeObject:self.moveModel forKey:goGameMoveModelKey];
   [encoder encodeInt:self.state forKey:goGameStateKey];
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];

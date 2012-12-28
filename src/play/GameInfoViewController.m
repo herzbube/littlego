@@ -454,7 +454,7 @@ enum MoveStatisticsSectionItem
                 GoMove* lastMove = game.lastMove;
                 if (! lastMove)
                 {
-                  cell.detailTextLabel.text = @"None";  // all moves were taken back with undo
+                  cell.detailTextLabel.text = @"None";
                 }
                 else
                 {

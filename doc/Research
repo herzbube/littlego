@@ -754,8 +754,7 @@ DisplayMoveNumbersChanged                Symbols              0-n rectangles, on
 InconsistentTerritoryMarkupTypeChanged   Territory            Entire layer
 CrossHairChanged                         Cross-hair           A set of rectangles to remove the old and draw the new cross-hair
 GoGameDidCreate                          All layers           Entire layers (a new game might include a board size change)
-GoGameFirstMoveChanged                   ?                    Do we need this event? Can't we handle this with GoGameLastMoveChanged?
-GoGameLastMoveChanged                    Stones               1-n rectangles, for the stone being placed/undone + stones being captured/replaced
+goMoveModelChanged                       Stones               1-n rectangles, for a stone being placed + stones being captured/replaced
                                          Symbols              Update last move marker
 GoScoreScoringModeEnabled                Symbols              Hide layer
                                          Territory            Show layer

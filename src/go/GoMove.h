@@ -43,8 +43,7 @@
 ///
 /// GoMove has undo support. Invoking undo() reverts the board to the state it
 /// had before the GoMove was played. Invoking undo() also removes references
-/// from/to the predecessor GoMove, which usually causes the GoMove to be
-/// deallocated.
+/// from/to the predecessor GoMove.
 // -----------------------------------------------------------------------------
 @interface GoMove : NSObject <NSCoding>
 {
@@ -62,10 +61,10 @@
 @property(nonatomic, assign) GoPoint* point;
 /// @brief The predecessor to this GoMove object. nil if this is the first move
 /// of the game.
-@property(nonatomic, assign, readonly) GoMove* previous;  // do not retain, otherwise there would be a retain cycle
+@property(nonatomic, assign, readonly) GoMove* previous;
 /// @brief The successor to this GoMove object. nil if this is the last move
 /// of the game.
-@property(nonatomic, retain, readonly) GoMove* next;      // retain here, making us the parent, and next the child
+@property(nonatomic, assign, readonly) GoMove* next;
 /// @brief Keeps track of stones that were captured by this move.
 ///
 /// If not empty, the array contains an unordered list of GoPoint objects. Also,

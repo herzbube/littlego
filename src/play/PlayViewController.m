@@ -32,7 +32,6 @@
 #import "../command/InterruptComputerCommand.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
-#import "../command/move/UndoMoveCommand.h"
 #import "../command/game/ContinueGameCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../ui/UiElementMetrics.h"
@@ -62,7 +61,8 @@
 //@{
 - (void) pass:(id)sender;
 - (void) playForMe:(id)sender;
-- (void) undo:(id)sender;
+- (void) oneMoveBack:(id)sender;
+- (void) oneMoveForward:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
@@ -94,7 +94,7 @@
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goGameLastMoveChanged:(NSNotification*)notification;
+- (void) goMoveModelChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
@@ -106,7 +106,8 @@
 - (void) updateButtonStates;
 - (void) updatePlayForMeButtonState;
 - (void) updatePassButtonState;
-- (void) updateUndoButtonState;
+- (void) updateBackButtonState;
+- (void) updateForwardButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
 - (void) updateInterruptButtonState;
@@ -170,10 +171,12 @@
 /// @brief The "Pass" button. Tapping this button generates a "Pass" move for
 /// the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* passButton;
-/// @brief The "Undo" button. Tapping this button takes back the last move made
-/// by a human player, including any computer player moves that were made in
-/// response.
-@property(nonatomic, retain) UIBarButtonItem* undoButton;
+/// @brief The "Back" button. Tapping this button goes back one move in the
+/// game's move history. The board is updated to display the new situation.
+@property(nonatomic, retain) UIBarButtonItem* oneMoveBackButton;
+/// @brief The "Forward" button. Tapping this button goes forward one move in
+/// the game's move history. The board is updated to display the new situation.
+@property(nonatomic, retain) UIBarButtonItem* oneMoveForwardButton;
 /// @brief The "Pause" button. Tapping this button causes the game to pause if
 /// two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
@@ -212,7 +215,8 @@
 @synthesize activityIndicatorController;
 @synthesize playForMeButton;
 @synthesize passButton;
-@synthesize undoButton;
+@synthesize oneMoveBackButton;
+@synthesize oneMoveForwardButton;
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize interruptButton;
@@ -244,7 +248,8 @@
   self.activityIndicatorController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
-  self.undoButton = nil;
+  self.oneMoveBackButton = nil;
+  self.oneMoveForwardButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
@@ -515,10 +520,14 @@
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(pass:)] autorelease];
-  self.undoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:undoButtonIconResource]
-                                                      style:UIBarButtonItemStyleBordered
-                                                     target:self
-                                                     action:@selector(undo:)] autorelease];
+  self.oneMoveBackButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:backButtonIconResource]
+                                                             style:UIBarButtonItemStyleBordered
+                                                            target:self
+                                                            action:@selector(oneMoveBack:)] autorelease];
+  self.oneMoveForwardButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playButtonIconResource]
+                                                                style:UIBarButtonItemStyleBordered
+                                                               target:self
+                                                               action:@selector(oneMoveForward:)] autorelease];
   self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
                                                        style:UIBarButtonItemStyleBordered
                                                       target:self
@@ -555,7 +564,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
+  [center addObserver:self selector:@selector(goMoveModelChanged:) name:goMoveModelChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
@@ -589,7 +598,8 @@
   self.activityIndicatorController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
-  self.undoButton = nil;
+  self.oneMoveBackButton = nil;
+  self.oneMoveForwardButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
@@ -712,14 +722,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Undo" button. Takes back the last
-/// move made by a human player, including any computer player moves that were
-/// made in response.
+/// @brief Reacts to a tap gesture on the "Back" button. Goes back one move in
+/// the game's move history. The board is updated to display the new situation.
 // -----------------------------------------------------------------------------
-- (void) undo:(id)sender
+- (void) oneMoveBack:(id)sender
 {
-  UndoMoveCommand* command = [[UndoMoveCommand alloc] init];
-  [command submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Forward" button. Goes back one move
+/// in the game's move history. The board is updated to display the new
+/// situation.
+// -----------------------------------------------------------------------------
+- (void) oneMoveForward:(id)sender
+{
 }
 
 // -----------------------------------------------------------------------------
@@ -733,8 +749,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Undo" button. Continues the game if
-/// it is paused while two computer players play against each other.
+/// @brief Reacts to a tap gesture on the "Continue" button. Continues the game
+/// if it is paused while two computer players play against each other.
 // -----------------------------------------------------------------------------
 - (void) continue:(id)sender
 {
@@ -998,11 +1014,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameLastMoveChanged notification.
+/// @brief Responds to the #goMoveModelChanged notification.
 // -----------------------------------------------------------------------------
-- (void) goGameLastMoveChanged:(NSNotification*)notification
+- (void) goMoveModelChanged:(NSNotification*)notification
 {
-  // Mainly here for updating the "undo" button
+  // Mainly here for updating the "back" button
   [self updateButtonStates];
 }
 
@@ -1080,7 +1096,8 @@
         {
           [toolbarItems addObject:self.playForMeButton];
           [toolbarItems addObject:self.passButton];
-          [toolbarItems addObject:self.undoButton];
+          [toolbarItems addObject:self.oneMoveBackButton];
+          [toolbarItems addObject:self.oneMoveForwardButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
@@ -1098,7 +1115,8 @@
 {
   [self updatePlayForMeButtonState];
   [self updatePassButtonState];
-  [self updateUndoButtonState];
+  [self updateBackButtonState];
+  [self updateForwardButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
   [self updateInterruptButtonState];
@@ -1172,9 +1190,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Undo" button.
+/// @brief Updates the enabled state of the "Back" button.
 // -----------------------------------------------------------------------------
-- (void) updateUndoButtonState
+- (void) updateBackButtonState
 {
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
@@ -1193,14 +1211,9 @@
           {
             GoMove* lastMove = [GoGame sharedGame].lastMove;
             if (lastMove == nil)
-              enabled = NO;                         // no move yet
-            else if (lastMove.player.player.human)
-              enabled = YES;                        // last move by human player
-            else if (lastMove.previous == nil)
-              enabled = NO;                         // last move by computer, but no other move before that
+              enabled = NO;
             else
-              enabled = YES;                        // last move by computer, and another move before that
-            // -> assume it's by a human player because game type has been checked before
+              enabled = YES;
             break;
           }
           default:
@@ -1210,7 +1223,45 @@
       }
     }
   }
-  self.undoButton.enabled = enabled;
+  self.oneMoveBackButton.enabled = enabled;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Forward" button.
+// -----------------------------------------------------------------------------
+- (void) updateForwardButtonState
+{
+  BOOL enabled = NO;
+  if (! self.scoringModel.scoringMode)
+  {
+    switch ([GoGame sharedGame].type)
+    {
+      case GoGameTypeComputerVsComputer:
+        break;
+      default:
+      {
+        if ([GoGame sharedGame].isComputerThinking)
+          break;
+        switch ([GoGame sharedGame].state)
+        {
+          case GoGameStateGameHasStarted:
+          {
+            GoMove* firstMove = [GoGame sharedGame].firstMove;
+            GoMove* lastMove = [GoGame sharedGame].lastMove;
+            if (firstMove == lastMove)
+              enabled = NO;
+            else
+              enabled = YES;
+            break;
+          }
+          default:
+            break;
+        }
+        break;
+      }
+    }
+  }
+  self.oneMoveForwardButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------

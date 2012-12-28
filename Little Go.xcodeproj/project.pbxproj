@@ -40,7 +40,6 @@
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
-		CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */; };
 		CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
@@ -88,6 +87,9 @@
 		CD10887D1326D2C100E83543 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
 		CD15A476168BA34400D4472A /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A474168BA34400D4472A /* back.png */; };
 		CD15A477168BA34400D4472A /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A475168BA34400D4472A /* back@2x.png */; };
+		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
+		CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
+		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
@@ -355,8 +357,6 @@
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerPlayMoveCommand.m; sourceTree = "<group>"; };
-		CD05AA4F1423C4FD00214BBE /* UndoMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UndoMoveCommand.h; sourceTree = "<group>"; };
-		CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UndoMoveCommand.m; sourceTree = "<group>"; };
 		CD05AA701423D80500214BBE /* ContinueGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinueGameCommand.h; sourceTree = "<group>"; };
 		CD05AA711423D80500214BBE /* ContinueGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinueGameCommand.m; sourceTree = "<group>"; };
 		CD05AA731423D80C00214BBE /* PauseGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PauseGameCommand.h; sourceTree = "<group>"; };
@@ -428,6 +428,10 @@
 		CD10887C1326D2C100E83543 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
 		CD15A474168BA34400D4472A /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		CD15A475168BA34400D4472A /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
+		CD15A47E168CBE7F00D4472A /* GoMoveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModel.h; sourceTree = "<group>"; };
+		CD15A47F168CBE7F00D4472A /* GoMoveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModel.m; sourceTree = "<group>"; };
+		CD15A482168D044400D4472A /* GoMoveModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModelTest.h; sourceTree = "<group>"; };
+		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
@@ -823,8 +827,6 @@
 				CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */,
 				CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */,
 				CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */,
-				CD05AA4F1423C4FD00214BBE /* UndoMoveCommand.h */,
-				CD05AA501423C4FD00214BBE /* UndoMoveCommand.m */,
 			);
 			path = move;
 			sourceTree = "<group>";
@@ -891,6 +893,8 @@
 				CD10881B13255A4700E83543 /* GoGame.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
 				CD10881E13255A6100E83543 /* GoMove.m */,
+				CD15A47E168CBE7F00D4472A /* GoMoveModel.h */,
+				CD15A47F168CBE7F00D4472A /* GoMoveModel.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -1042,6 +1046,8 @@
 				CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */,
 				CD85B58E1401C137001715B8 /* GoGameTest.h */,
 				CD85B58F1401C137001715B8 /* GoGameTest.m */,
+				CD15A482168D044400D4472A /* GoMoveModelTest.h */,
+				CD15A483168D044400D4472A /* GoMoveModelTest.m */,
 				CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */,
 				CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
@@ -1658,7 +1664,6 @@
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
-				CD05AA511423C4FD00214BBE /* UndoMoveCommand.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
@@ -1734,6 +1739,7 @@
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 				CD55576616702DBC003B957B /* TableViewSegmentedCell.m in Sources */,
 				CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */,
+				CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1815,6 +1821,8 @@
 				CD899E401643477900329154 /* BWQuincyManager.m in Sources */,
 				CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
+				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
+				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
