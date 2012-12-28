@@ -230,7 +230,7 @@
   GoMove* move = [GoMove move:GoMoveTypePlay by:self.currentPlayer after:self.lastMove];
   @try
   {
-    move.point = aPoint;  // many side-effects here (e.g. region handling) !!!
+    move.point = aPoint;
   }
   @catch (NSException* exception)
   {
@@ -241,6 +241,7 @@
   }
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
+  // GoMoveModel invokes doIt() for us
   [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is
@@ -270,6 +271,7 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
+  // GoMoveModel invokes doIt() for us
   [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is

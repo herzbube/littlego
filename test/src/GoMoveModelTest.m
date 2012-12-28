@@ -23,6 +23,7 @@
 #import <go/GoGame.h>
 #import <go/GoMove.h>
 #import <go/GoMoveModel.h>
+#import <go/GoPoint.h>
 
 
 @implementation GoMoveModelTest
@@ -46,11 +47,23 @@
 // -----------------------------------------------------------------------------
 - (void) testAppendMove
 {
+  NSUInteger expectedNumberOfRegions = 2;
+
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
+  GoBoardRegion* mainRegion = point1.region;
+  STAssertNotNil(mainRegion, nil);
+  move1.point = point1;
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  STAssertEquals(GoColorNone, point1.stoneState, nil);
   [moveModel appendMove:move1];
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  // Check that the GoMove object's doIt() was invoked
+  STAssertEquals(GoColorBlack, point1.stoneState, nil);
+  STAssertTrue(point1.region != mainRegion, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
   STAssertThrowsSpecificNamed([moveModel appendMove:nil],
                               NSException, NSInvalidArgumentException, @"appendMove with nil object");
 }
@@ -60,19 +73,34 @@
 // -----------------------------------------------------------------------------
 - (void) testDiscardLastMove
 {
+  NSUInteger expectedNumberOfRegions = 2;
+  
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
-  move1.point = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
+  GoBoardRegion* mainRegion = point1.region;
+  STAssertNotNil(mainRegion, nil);
+  move1.point = point1;
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
   [moveModel appendMove:move1];
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
   [moveModel appendMove:move2];
   STAssertEquals(moveModel.numberOfMoves, 2, nil);
+  STAssertEquals(GoColorBlack, point1.stoneState, nil);
+  STAssertTrue(point1.region != mainRegion, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
   [moveModel discardLastMove];
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
   [moveModel discardLastMove];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  // Check that the GoMove object's undo() was invoked
+  STAssertEquals(GoColorNone, point1.stoneState, nil);
+  STAssertEquals(point1.region, mainRegion, nil);
+  expectedNumberOfRegions = 1;
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
   STAssertThrowsSpecificNamed([moveModel discardLastMove],
                               NSException, NSRangeException, @"discardLastMove with no moves");
 }
@@ -82,15 +110,23 @@
 // -----------------------------------------------------------------------------
 - (void) testDiscardMovesFromIndex
 {
+  NSUInteger expectedNumberOfRegions = 2;
+
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
-  move1.point = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
+  GoBoardRegion* mainRegion = point1.region;
+  STAssertNotNil(mainRegion, nil);
+  move1.point = point1;
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
   GoMove* move3 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:move2];
   [moveModel appendMove:move1];
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
   STAssertEquals(moveModel.numberOfMoves, 3, nil);
+  STAssertEquals(GoColorBlack, point1.stoneState, nil);
+  STAssertTrue(point1.region != mainRegion, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
 
   STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:3],
                               NSException, NSRangeException, @"discardMovesFromIndex when model has moves");
@@ -102,6 +138,12 @@
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
   [moveModel discardMovesFromIndex:0];  // discard single move
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  // Check that the GoMove object's undo() was invoked
+  STAssertEquals(GoColorNone, point1.stoneState, nil);
+  STAssertEquals(point1.region, mainRegion, nil);
+  expectedNumberOfRegions = 1;
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
   STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:0],
                               NSException, NSRangeException, @"discardMovesFromIndex when model has no moves");
 }
@@ -111,16 +153,32 @@
 // -----------------------------------------------------------------------------
 - (void) testDiscardAllMoves
 {
+  NSUInteger expectedNumberOfRegions = 2;
+
   GoMoveModel* moveModel = m_game.moveModel;
-  GoMove* move1 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
+  GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
+  GoBoardRegion* mainRegion = point1.region;
+  STAssertNotNil(mainRegion, nil);
+  move1.point = point1;
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
   GoMove* move3 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:move2];
   [moveModel appendMove:move1];
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
   STAssertEquals(moveModel.numberOfMoves, 3, nil);
+  STAssertEquals(GoColorBlack, point1.stoneState, nil);
+  STAssertTrue(point1.region != mainRegion, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  
   [moveModel discardAllMoves];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  // Check that the GoMove object's undo() was invoked
+  STAssertEquals(GoColorNone, point1.stoneState, nil);
+  STAssertEquals(point1.region, mainRegion, nil);
+  expectedNumberOfRegions = 1;
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
   STAssertThrowsSpecificNamed([moveModel discardAllMoves],
                               NSException, NSRangeException, @"discardAllMoves with no moves");
 }

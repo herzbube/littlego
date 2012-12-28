@@ -96,18 +96,21 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adds the GoMove object @a move to this model.
+/// @brief Adds the GoMove object @a move to this model. Also invokes doIt()
+/// on @a move.
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
   [moveList addObject:move];
+  [move doIt];
   [[NSNotificationCenter defaultCenter] postNotificationName:goMoveModelChanged object:self];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards the last GoMove object in this model.
+/// @brief Discards the last GoMove object in this model. Also invokes undo()
+/// on the GoMove object.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 // -----------------------------------------------------------------------------
@@ -118,7 +121,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Discards all GoMove objects in this model starting with the object
-/// at position @a index.
+/// at position @a index. . Also invokes undo() on the GoMove objects that were
+/// removed.
 ///
 /// Raises @e NSRangeException if @a index is <0 or exceeds the number of
 /// GoMove objects in this model.
@@ -152,7 +156,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards all GoMove objects in this model.
+/// @brief Discards all GoMove objects in this model. Also invokes undo() on
+/// the GoMove objects that were removed.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 // -----------------------------------------------------------------------------

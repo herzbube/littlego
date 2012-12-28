@@ -190,32 +190,16 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Associates the GoPoint @a newValue with this GoMove. This GoMove
-/// must be of type #GoMoveTypePlay and must not have already a point associated
-/// with it.
+/// @brief Associates the GoPoint @a newValue with this GoMove.
 ///
-/// Invoking this method effectively places a stone at GoPoint @a newValue. The
-/// caller must have checked whether placing the stone at @a newValue is a
+/// The caller must have checked whether placing the stone at @a newValue is a
 /// legal move.
 ///
-/// This method performs the following operations as a side-effect:
-/// - Updates GoPoint.stoneState for GoPoint @a newValue.
-/// - Updates GoPoint.region for GoPoint @a newValue. GoBoardRegions may become
-///   fragmented and/or multiple GoBoardRegions may merge with other regions.
-/// - If placing the stone reduces an opposing stone group to 0 (zero)
-///   liberties, that stone group is captured. The GoBoardRegion representing
-///   the captured stone group turns back into an empty area.
-///
 /// Raises an @e NSInternalInconsistencyException if this GoMove is not of type
-/// #GoMoveTypePlay, or if another GoPoint object is already associated with
-/// this GoMove.
-///
-/// Raises an @e NSInvalidArgumentException if @a newValue is nil, or if the
-/// color of @a newValue is not #GoColorNone.
+/// #GoMoveTypePlay.
 // -----------------------------------------------------------------------------
 - (void) setPoint:(GoPoint*)newValue
 {
-  // Perform a few cheap precondition checks
   if (GoMoveTypePlay != self.type)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
@@ -223,48 +207,68 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (point != nil)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:[NSString stringWithFormat:@"GoMove already has an associated GoPoint (%@)", point]
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  if (! newValue)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"GoPoint argument is nil"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  if (GoColorNone != newValue.stoneState)
-  {
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:[NSString stringWithFormat:@"GoPoint color is not GoColorNone (actual color is %d)", newValue.stoneState]
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  // ----------------------------------------------------------------------
-  // The precondition that this move is legal is not checked because the check
-  // is too expensive and adds a new dependency.
-  // ----------------------------------------------------------------------
 
   point = newValue;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Modifies the board to reflect the state after this GoMove was played.
+///
+/// Invoking this method has no effect unless this GoMove is of type
+/// #GoMoveTypePlay.
+///
+/// If this GoMove is of type #GoMoveTypePlay, this method effectively places a
+/// stone at the intersection referred to by the GoPoint object stored in the
+/// @e point property. This placing of a stone includes the following
+/// modifications:
+/// - Updates GoPoint.stoneState for the GoPoint object in property @e point.
+/// - Updates GoPoint.region for the GoPoint object in property @e point. As a
+///   result, GoBoardRegions may become fragmented and/or multiple
+///   GoBoardRegions may merge with other regions.
+/// - If placing the stone reduces an opposing stone group to 0 (zero)
+///   liberties, that stone group is captured. The GoBoardRegion representing
+///   the captured stone group turns back into an empty area.
+///
+/// Raises an @e NSInternalInconsistencyException if this GoMove is of type
+/// #GoMoveTypePlay and one of the following conditions is true:
+/// - The @e point property is nil
+/// - The color of the GoPoint object in the @e point property is not
+///   #GoColorNone (i.e. there already is a stone on the intersection).
+// -----------------------------------------------------------------------------
+- (void) doIt
+{
+  // Nothing to do for pass moves
+  if (GoMoveTypePass == self.type)
+    return;
+
+  if (! self.point)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"GoMove has no associated GoPoint"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (GoColorNone != self.point.stoneState)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:[NSString stringWithFormat:@"Color of GoPoint %@ is not GoColorNone (actual color is %d)", self.point, self.point.stoneState]
+                                                   userInfo:nil];
+    @throw exception;
+  }
 
   // Update the point's stone state *BEFORE* moving it to a new region
   if (self.player.black)
-    newValue.stoneState = GoColorBlack;
+    self.point.stoneState = GoColorBlack;
   else
-    newValue.stoneState = GoColorWhite;
-  [GoUtilities movePointToNewRegion:newValue];
+    self.point.stoneState = GoColorWhite;
+  [GoUtilities movePointToNewRegion:self.point];
 
   // Check neighbours for captures
-  for (GoPoint* neighbour in newValue.neighbours)
+  for (GoPoint* neighbour in self.point.neighbours)
   {
     if (! neighbour.hasStone)
       continue;
-    if (neighbour.blackStone == newValue.blackStone)
+    if (neighbour.blackStone == self.point.blackStone)
       continue;
     if ([neighbour liberties] > 0)
       continue;
@@ -282,53 +286,61 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Reverts the board to the state it had before this GoMove was played.
-/// Also removes references from/to the predecessor GoMove.
 ///
 /// As a side-effect of this method, GoBoardRegions may become fragmented
 /// and/or multiple GoBoardRegions may merge with other regions.
 ///
 /// Raises an @e NSInternalInconsistencyException if this GoMove is of type
-/// #GoMoveTypePlay but has no associated GoPoint object.
+/// #GoMoveTypePlay and one of the following conditions is true:
+/// - The @e point property is nil
+/// - The color of the GoPoint object in the @e point property does not match
+///   the color of the player in the @e player property.
 // -----------------------------------------------------------------------------
 - (void) undo
 {
-  if (GoMoveTypePlay == self.type)
+  // Nothing to do for pass moves
+  if (GoMoveTypePass == self.type)
+    return;
+
+  if (! point)
   {
-    if (! point)
-    {
-      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:@"GoMove has no associated GoPoint"
-                                                     userInfo:nil];
-      @throw exception;
-    }
-
-    // Update stone state of captured stones *BEFORE* handling the actual point
-    // of this move. This makes sure that GoUtilities::movePointToNewRegion:()
-    // further down does not join regions incorrectly.
-    enum GoColor capturedStoneColor;
-    if (self.player.black)
-      capturedStoneColor = GoColorWhite;
-    else
-      capturedStoneColor = GoColorBlack;
-    for (GoPoint* capture in self.capturedStones)
-      capture.stoneState = capturedStoneColor;
-    [(NSMutableArray*)capturedStones removeAllObjects];
-
-    // Update the point's stone state *BEFORE* moving it to a new region
-    GoPoint* thePoint = self.point;
-    thePoint.stoneState = GoColorNone;
-    [GoUtilities movePointToNewRegion:thePoint];
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:@"GoMove has no associated GoPoint"
+                                                   userInfo:nil];
+    @throw exception;
   }
 
-  // Remove references from/to predecessor
-  if (self.previous)
+  enum GoColor playedStoneColor;
+  enum GoColor capturedStoneColor;
+  if (self.player.black)
   {
-    self.previous.next = nil;
-    self.previous = nil;
+    playedStoneColor = GoColorBlack;
+    capturedStoneColor = GoColorWhite;
+  }
+  else
+  {
+    playedStoneColor = GoColorWhite;
+    capturedStoneColor = GoColorBlack;
+  }
+  if (playedStoneColor != self.point.stoneState)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:[NSString stringWithFormat:@"Color of GoPoint %@ does not match player color %d (actual color is %d)", self.point, playedStoneColor, self.point.stoneState]
+                                                   userInfo:nil];
+    @throw exception;
   }
 
-  point = nil;  // don't use self, otherwise we trigger the setter!
-  self.player = nil;
+  // Update stone state of captured stones *BEFORE* handling the actual point
+  // of this move. This makes sure that GoUtilities::movePointToNewRegion:()
+  // further down does not join regions incorrectly.
+  for (GoPoint* capture in self.capturedStones)
+    capture.stoneState = capturedStoneColor;
+  [(NSMutableArray*)capturedStones removeAllObjects];
+
+  // Update the point's stone state *BEFORE* moving it to a new region
+  GoPoint* thePoint = self.point;
+  thePoint.stoneState = GoColorNone;
+  [GoUtilities movePointToNewRegion:thePoint];
 }
 
 // -----------------------------------------------------------------------------
