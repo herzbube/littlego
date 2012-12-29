@@ -20,6 +20,9 @@
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoMoveModel.h"
+#import "../go/GoPlayer.h"
+#import "../go/GoUtilities.h"
+#import "../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
@@ -44,6 +47,8 @@
 
 @implementation BoardPositionModel
 
+@synthesize discardFutureMovesAlert;
+@synthesize playOnComputersTurnAlert;
 @synthesize currentBoardPosition;
 
 
@@ -59,6 +64,8 @@
   if (! self)
     return nil;
 
+  self.discardFutureMovesAlert = discardFutureMovesAlertDefault;
+  self.playOnComputersTurnAlert = playOnComputersTurnAlertDefault;
   self.currentBoardPosition = 0;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -75,6 +82,30 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes default values in this model with user defaults data.
+// -----------------------------------------------------------------------------
+- (void) readUserDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:boardPositionKey];
+  self.discardFutureMovesAlert = [[dictionary valueForKey:discardFutureMovesAlertKey] boolValue];
+  self.playOnComputersTurnAlert = [[dictionary valueForKey:playOnComputersTurnAlertKey] boolValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Writes current values in this model to the user default system's
+/// application domain.
+// -----------------------------------------------------------------------------
+- (void) writeUserDefaults
+{
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:self.discardFutureMovesAlert] forKey:discardFutureMovesAlertKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.playOnComputersTurnAlert] forKey:playOnComputersTurnAlertKey];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setObject:dictionary forKey:boardPositionKey];
 }
 
 // -----------------------------------------------------------------------------
@@ -143,6 +174,14 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
+- (GoPlayer*) currentPlayer
+{
+  return [GoUtilities playerAfter:self.currentMove inGame:[GoGame sharedGame]];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isFirstPosition
 {
   return (0 == self.currentBoardPosition);
@@ -157,6 +196,14 @@
   int indexOfLastMove = numberOfMoves - 1;
   int indexOfCurrentMove = self.currentBoardPosition - 1;
   return (indexOfCurrentMove == indexOfLastMove);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (bool) isComputerPlayersTurn
+{
+  return (! self.currentPlayer.player.isHuman);
 }
 
 // -----------------------------------------------------------------------------

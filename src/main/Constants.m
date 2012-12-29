@@ -59,6 +59,10 @@ NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
 NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 
+// Board position settings default values
+const bool discardFutureMovesAlertDefault = true;
+const bool playOnComputersTurnAlertDefault = true;
+
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
 const int maximumPlayingStrength = 5;
@@ -236,6 +240,10 @@ NSString* collectCrashDataKey = @"CrashReportActivated";
 NSString* automaticReportCrashDataKey = @"AutomaticallySendCrashReports";
 NSString* allowContactCrashDataKey = @"CrashDataContactAllowKey";
 NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
+// Board position settings
+NSString* boardPositionKey = @"BoardPosition";
+NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
+NSString* playOnComputersTurnAlertKey = @"PlayOnComputersTurnAlert";
 
 // Constants for NSCoding
 // General constants

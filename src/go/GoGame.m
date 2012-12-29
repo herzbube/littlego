@@ -480,18 +480,7 @@
 // -----------------------------------------------------------------------------
 - (GoPlayer*) currentPlayer
 {
-  GoMove* move = self.lastMove;
-  if (! move)
-  {
-    if (0 == self.handicapPoints.count)
-      return self.playerBlack;
-    else
-      return self.playerWhite;
-  }
-  else if (move.player == self.playerBlack)
-    return self.playerWhite;
-  else
-    return self.playerBlack;
+  return [GoUtilities playerAfter:self.lastMove inGame:self];
 }
 
 // -----------------------------------------------------------------------------

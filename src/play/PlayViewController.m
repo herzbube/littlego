@@ -88,6 +88,10 @@
 //@{
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
 //@}
+/// @name UIAlertViewDelegate protocol
+//@{
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+//@}
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
@@ -100,6 +104,7 @@
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Updaters
 //@{
@@ -570,6 +575,9 @@
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  // KVO observing
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  [boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
 
   // We invoke this to set up initial state because we did not get
   // get goGameDidCreate for the initial game (viewDidLoad gets called too
@@ -828,6 +836,14 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to the user dismissing an alert view for which this controller
+/// is the delegate.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Flips the main play view (on the frontside) over to the game info
 /// view (on the backside), and vice versa.
 // -----------------------------------------------------------------------------
@@ -913,24 +929,73 @@
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
-      // fall-through intentional
+    {
+      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+      if (! boardPositionModel.isLastPosition && boardPositionModel.isComputerPlayersTurn)
+      {
+        if (boardPositionModel.playOnComputersTurnAlert)
+        {
+          UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"It is the computer's turn"
+                                                          message:@"You are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play."
+                                                         delegate:self
+                                                cancelButtonTitle:nil
+                                                otherButtonTitles:@"Ok", nil];
+          alert.tag = AlertViewTypeCannotPlayOnComputersTurn;
+          // Displaying an alert cancels this round of gesture recognizing (i.e.
+          // the gesture recognizer sends UIGestureRecognizerStateCancelled)
+          [alert show];
+        }
+      }
+      else
+      {
+        [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
+      }
+      break;
+    }
     case UIGestureRecognizerStateChanged:
+    {
       [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
       break;
+    }
     case UIGestureRecognizerStateEnded:
+    {
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       if (isLegalMove)
       {
-        PlayMoveCommand* command = [[PlayMoveCommand alloc] initWithPoint:crossHairPoint];
-        [command submit];
+        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+        if (! boardPositionModel.isLastPosition)
+        {
+          if (boardPositionModel.discardFutureMovesAlert)
+          {
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
+                                                            message:@"You are looking at a board position in the middle of the game. If you play now, all moves that have been made after this position will be discarded.\n\nDo you want to continue?"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"No"
+                                                  otherButtonTitles:@"Yes", nil];
+            alert.tag = AlertViewTypePlayingNowWillDiscardAllFutureMoves;
+            [alert show];
+            break;
+          }
+        }
+        else
+        {
+          PlayMoveCommand* command = [[PlayMoveCommand alloc] initWithPoint:crossHairPoint];
+          [command submit];
+        }
       }
       break;
+    }
     case UIGestureRecognizerStateCancelled:
-      // TODO Phone call? How to test this?
+    {
+      // Occurs, for instance, if an alert is displayed while a gesture is
+      // being handled.
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       break;
+    }
     default:
-      return;
+    {
+      break;
+    }
   }
 }
 
@@ -1027,6 +1092,7 @@
 {
   [self updateBackButtonState];
   [self updateForwardButtonState];
+  [self updatePanningEnabled];  // disable if computer player's turn & playOnComputersTurnAlert is disabled
 }
 
 // -----------------------------------------------------------------------------
@@ -1067,6 +1133,19 @@
 {
   [self updateButtonStates];
   [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (object == boardPositionModel)
+  {
+    if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
+      [self updatePanningEnabled];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1438,7 +1517,20 @@
   {
     case GoGameStateGameHasNotYetStarted:
     case GoGameStateGameHasStarted:
-      self.panningEnabled = ! [game isComputerThinking];
+      if (game.isComputerThinking)
+        self.panningEnabled = false;
+      else
+      {
+        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+        if (boardPositionModel.isLastPosition)
+          self.panningEnabled = true;
+        else if (! boardPositionModel.isComputerPlayersTurn)
+          self.panningEnabled = true;
+        else if (boardPositionModel.playOnComputersTurnAlert)
+          self.panningEnabled = true;
+        else
+          self.panningEnabled = false;
+      }
       break;
     default:  // specifically GoGameStateGameHasEnded
       self.panningEnabled = false;

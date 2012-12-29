@@ -181,7 +181,9 @@ enum AlertViewType
   AlertViewTypeMemoryWarning,
   AlertViewTypeCannotSendBugReport,
   AlertViewTypeDiagnosticsInformationFileGenerated,
-  AlertViewTypeDiagnosticsInformationFileNotGenerated
+  AlertViewTypeDiagnosticsInformationFileNotGenerated,
+  AlertViewTypeCannotPlayOnComputersTurn,
+  AlertViewTypePlayingNowWillDiscardAllFutureMoves
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -367,6 +369,14 @@ extern NSString* goScoreCalculationStarts;
 ///
 /// The GoScore object is associated with the notification.
 extern NSString* goScoreCalculationEnds;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Board position settings default values
+// -----------------------------------------------------------------------------
+//@{
+extern const bool discardFutureMovesAlertDefault;
+extern const bool playOnComputersTurnAlertDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -592,6 +602,10 @@ extern NSString* collectCrashDataKey;
 extern NSString* automaticReportCrashDataKey;
 extern NSString* allowContactCrashDataKey;
 extern NSString* contactEmailCrashDataKey;
+// Board position settings
+extern NSString* boardPositionKey;
+extern NSString* discardFutureMovesAlertKey;
+extern NSString* playOnComputersTurnAlertKey;
 //@}
 
 // -----------------------------------------------------------------------------

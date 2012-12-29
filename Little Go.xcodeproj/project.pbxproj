@@ -188,6 +188,7 @@
 		CD9FB5561687E1410042AA89 /* rewind@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB54E1687E1410042AA89 /* rewind@2x.png */; };
 		CD9FB5571687E1410042AA89 /* rewindtostart.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB54F1687E1410042AA89 /* rewindtostart.png */; };
 		CD9FB5581687E1410042AA89 /* rewindtostart@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */; };
+		CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
@@ -520,6 +521,8 @@
 		CD9FB54E1687E1410042AA89 /* rewind@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewind@2x.png"; sourceTree = "<group>"; };
 		CD9FB54F1687E1410042AA89 /* rewindtostart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rewindtostart.png; sourceTree = "<group>"; };
 		CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewindtostart@2x.png"; sourceTree = "<group>"; };
+		CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionSettingsController.h; sourceTree = "<group>"; };
+		CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionSettingsController.m; sourceTree = "<group>"; };
 		CDA595AF1401383E00B250D8 /* Unit tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDA596111401741800B250D8 /* GoVertexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertexTest.h; sourceTree = "<group>"; };
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
@@ -981,6 +984,8 @@
 		CD1088571326CBB300E83543 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */,
+				CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
 				CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */,
@@ -1747,6 +1752,7 @@
 				CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */,
 				CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */,
 				CD15A48C168D21A200D4472A /* BoardPositionModel.m in Sources */,
+				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

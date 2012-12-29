@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoMove;
+@class GoPlayer;
 
 
 // -----------------------------------------------------------------------------
@@ -28,7 +29,11 @@
 }
 
 - (id) init;
+- (void) readUserDefaults;
+- (void) writeUserDefaults;
 
+@property(nonatomic, assign) bool discardFutureMovesAlert;
+@property(nonatomic, assign) bool playOnComputersTurnAlert;
 /// @brief Returns the board position currently displayed by the Play view.
 ///
 /// Board position 0 refers to the beginning of the game, i.e. no moves have
@@ -44,6 +49,9 @@
 /// @brief Returns the GoMove object that corresponds to
 /// @e currentBoardPosition. Returns nil for board position 0.
 @property(nonatomic, assign, readonly) GoMove* currentMove;
+/// @brief Returns the player whose turn it is to play in the current board
+/// position.
+@property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
 /// @brief Returns true if the current board position is the first position that
 /// can possibly be displayed.
 ///
@@ -56,5 +64,8 @@
 /// This is a convenience property that returns true if the current board
 /// position displays the last move of the game.
 @property(nonatomic, assign, readonly) bool isLastPosition;
+/// @brief Returns true if it is the computer player's turn to play in the
+/// current board position.
+@property(nonatomic, assign, readonly) bool isComputerPlayersTurn;
 
 @end

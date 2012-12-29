@@ -61,7 +61,7 @@
 /// rotates. This requires special code because PlayViewController's regular
 /// rotation code is not triggered by UIKit in this situation.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate>
+@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
 {
 }
 

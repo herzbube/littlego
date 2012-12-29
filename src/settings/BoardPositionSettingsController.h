@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,30 +15,14 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GoGame;
-@class GoMove;
-@class GoPlayer;
-@class GoPoint;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The GoUtilities class is a container for various utility functions
-/// that operate on all sorts of objects from the Go module.
-///
-/// @ingroup go
-///
-/// All functions in GoUtilities are class methods, so there is no need to
-/// create an instance of GoUtilities.
+/// @brief The BoardPositionSettingsController class is responsible for managing
+/// user interaction on the "Board position" user preferences view.
 // -----------------------------------------------------------------------------
-@interface GoUtilities : NSObject
+@interface BoardPositionSettingsController : UITableViewController
 {
 }
 
-+ (void) movePointToNewRegion:(GoPoint*)thePoint;
-+ (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize;
-+ (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game;
-+ (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize;
-+ (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game;
++ (BoardPositionSettingsController*) controller;
 
 @end

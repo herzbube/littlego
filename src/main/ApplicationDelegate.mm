@@ -433,6 +433,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
+  self.boardPositionModel = [[[BoardPositionModel alloc] init] autorelease];
   self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
@@ -442,6 +443,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
   [self.playViewModel readUserDefaults];
+  [self.boardPositionModel readUserDefaults];
   [self.scoringModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
@@ -458,6 +460,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel writeUserDefaults];
   [self.gtpEngineProfileModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
+  [self.boardPositionModel writeUserDefaults];
   [self.scoringModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
@@ -485,8 +488,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 
   // Disable edit button in the "more" navigation controller
   self.tabBarController.customizableViewControllers = [NSArray array];
-
-  self.boardPositionModel = [[[BoardPositionModel alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------

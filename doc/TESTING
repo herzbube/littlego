@@ -233,6 +233,38 @@ Computer vs. computer game
 - The menu must not display "resign"
 
 
+Board position
+- Make sure that all alerts in the "Board position" user preferences are enabled
+- Create a new computer vs. human game that uses a handicap
+- Make a few moves until the computer actually requires some time to make its
+  move. Whenever the computer player is thinking, any controls that allow to
+  view board positions must be disabled.
+- Any controls that allow to view earlier board positions must be enabled.
+- Any controls that allow to view later board positions must be disabled.
+- Go back one move
+- Any controls that allow to view later board positions must now be enabled.
+- Try to make a move. An alert must be displayed that informs the user that it
+  is not possible to make a move while it is the computer player's turn.
+- Turn off the "Play on computer player's turn alert" in the user preferences
+- Try to make a move. No alert is displayed, no move can be made.
+- Go back one move
+- Make a move. An alert must be displayed that informs the user that all future
+  moves will be discarded.
+- Cancel the move. The move must not be played.
+- Make a move again. This time when the alert is displayed confirm that you want
+  to make the move. The following must happen
+  - The move must be played
+  - The computer player must immediately respond with a move
+  - When the computer player has made its mvoe, any controls that allow to view
+    later board positions must be disabled, any controls that allow to view
+    earlier board positions must be enabled.
+- Go back two moves
+- Turn off the "Discard future moves alert" in the user preferences
+- Make a move again. This time no alert is displayed, the move is just played
+  and the same sequence of events occurs as before when the alert was displayed.
+- Go back to the beginning of the game. Only the handicap stones are displayed.
+
+
 Players & profiles
 - Navigate to the players & profiles preferences screen
 - Tap the edit button

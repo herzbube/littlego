@@ -40,6 +40,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 + (void) upgradeToVersion2:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion4:(NSDictionary*)registrationDomainDefaults;
++ (void) upgradeToVersion5:(NSDictionary*)registrationDomainDefaults;
 //@}
 /// @name Internal helpers
 //@{
@@ -303,6 +304,28 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
     }
     [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 5.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion5:(NSDictionary*)registrationDomainDefaults
+{
+  // Add new dictionary with board position settings.
+  //
+  // Note: Although it would be much easier to do nothing in this upgrade and
+  // simply let the application pick up the settings from the registration
+  // domain defaults, doing so has the potential to make future upgrades more
+  // complicated (e.g. a future upgrade inserting a new board position settings
+  // key would first have to check if the dictionary is present). It is
+  // therefore better not to postpone this work and just do what we need to do
+  // right here where it belongs to the correct format version.
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:discardFutureMovesAlertDefault] forKey:discardFutureMovesAlertKey];
+  [dictionary setValue:[NSNumber numberWithBool:playOnComputersTurnAlertDefault] forKey:playOnComputersTurnAlertKey];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setObject:dictionary forKey:boardPositionKey];
 }
 
 // -----------------------------------------------------------------------------
