@@ -241,7 +241,7 @@
   }
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
-  // GoMoveModel invokes doIt() for us
+  [move doIt];
   [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is
@@ -271,7 +271,7 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
   move.computerGenerated = self.nextMoveIsComputerGenerated;
 
-  // GoMoveModel invokes doIt() for us
+  [move doIt];
   [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is

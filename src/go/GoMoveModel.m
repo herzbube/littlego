@@ -96,21 +96,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adds the GoMove object @a move to this model. Also invokes doIt()
-/// on @a move.
+/// @brief Adds the GoMove object @a move to this model.
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
   [moveList addObject:move];
-  [move doIt];
   [[NSNotificationCenter defaultCenter] postNotificationName:goMoveModelChanged object:self];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards the last GoMove object in this model. Also invokes undo()
-/// on the GoMove object.
+/// @brief Discards the last GoMove object in this model.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 // -----------------------------------------------------------------------------
@@ -121,8 +118,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Discards all GoMove objects in this model starting with the object
-/// at position @a index. . Also invokes undo() on the GoMove objects that were
-/// removed.
+/// at position @a index.
 ///
 /// Raises @e NSRangeException if @a index is <0 or exceeds the number of
 /// GoMove objects in this model.
@@ -147,8 +143,6 @@
   int numberOfMovesToDiscard = moveList.count - index;
   while (numberOfMovesToDiscard > 0)
   {
-    GoMove* lastMove = [moveList lastObject];
-    [lastMove undo];
     [moveList removeLastObject];
     --numberOfMovesToDiscard;
   }
@@ -156,8 +150,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards all GoMove objects in this model. Also invokes undo() on
-/// the GoMove objects that were removed.
+/// @brief Discards all GoMove objects in this model.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 // -----------------------------------------------------------------------------

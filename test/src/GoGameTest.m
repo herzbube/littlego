@@ -568,8 +568,9 @@
   STAssertEquals(expectedSizeOfRegionWhenMerged, [mergedRegion size], nil);
 
   // Remove the connecting stone
-  [m_game.moveModel discardLastMove];
-  [self verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:@"after discarding"];
+  GoMove* lastMove = m_game.lastMove;
+  [lastMove undo];
+  [self verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:@"after undoing"];
 }
 
 // -----------------------------------------------------------------------------
