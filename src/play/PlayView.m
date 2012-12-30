@@ -54,7 +54,6 @@
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goMoveModelChanged:(NSNotification*)notification;
 - (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
@@ -248,7 +247,6 @@ static PlayView* sharedPlayView = nil;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goMoveModelChanged:) name:goMoveModelChanged object:nil];
   [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
@@ -441,15 +439,6 @@ static PlayView* sharedPlayView = nil;
   [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goMoveModelChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goMoveModelChanged:(NSNotification*)notification
-{
-  [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
   [self delayedUpdate];
 }
 

@@ -287,6 +287,9 @@ extern NSString* goGameStateChanged;
 /// This typically occurs when a move is played.
 ///
 /// The GoMoveModel object is associated with the notification.
+///
+/// @note Play view related objects should listen for notification
+/// #playViewBoardPositionChanged rather than this notification.
 extern NSString* goMoveModelChanged;
 //@}
 
