@@ -40,7 +40,7 @@
 //@}
 /// @name Private methods
 //@{
-- (void) updateBoardToNewPosition:(int)newBoardPosition;
+- (void) updateGoObjectsToNewPosition:(int)newBoardPosition;
 //@}
 @end
 
@@ -128,7 +128,7 @@
     @throw exception;
   }
 
-  [self updateBoardToNewPosition:newBoardPosition];
+  [self updateGoObjectsToNewPosition:newBoardPosition];
 
   currentBoardPosition = newBoardPosition;
   [[NSNotificationCenter defaultCenter] postNotificationName:playViewBoardPositionChanged object:self];
@@ -137,7 +137,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper method for setCurrentBoardPosition:()
 // -----------------------------------------------------------------------------
-- (void) updateBoardToNewPosition:(int)newBoardPosition
+- (void) updateGoObjectsToNewPosition:(int)newBoardPosition
 {
   GoMoveModel* moveModel = [GoGame sharedGame].moveModel;
   int indexOfTargetMove = newBoardPosition - 1;
@@ -208,20 +208,72 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
+///
+/// This method responds by setting the current board position to 0 (zero) and
+/// sending #playViewBoardPositionChanged.
 // -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
 {
+  // Don't invoke property's setter since there is no need to update the state
+  // of Go objects
   currentBoardPosition = 0;
   [[NSNotificationCenter defaultCenter] postNotificationName:playViewBoardPositionChanged object:self];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goMoveModelChanged notification.
+///
+/// @note The following details are rather deep implementation notes made to
+/// understand the maybe not-so-obvious interaction between the Play view
+/// classes, GoMoveModel and BoardPositionmodel. If any changes are made to this
+/// method, the scenarios described must be taken into account.
+///
+/// This method responds in the following ways:
+/// - If the current board position is larger than the number of moves in
+///   GoMoveModel, the current board position is adjusted so that it refers to
+///   the last move in GoMoveModel. This is purely a safety mechanism, it is not
+///   expected that this scenario actually occurs.
+/// - If the current board position refers to the previous-to-last move in
+///   GoMoveModel, then the current board position is advanced to refer to the
+///   last move in GoMoveModel. This covers the following "regular play"
+///   scenario: The Play view displays the most recent board position, a new
+///   move is made, the Play view should update itself to display the board
+///   position after the new move.
+/// - If the current board position refers to any other move in GoMoveModel,
+///   nothing happens and #goMoveModelChanged is ignored. This covers the
+///   scenario where a new move is made while viewing a board position in the
+///   middle of the game. In this scenario, #goMoveModelChanged is sent for the
+///   first time (and can be ignored) when all future moves after the current
+///   board position are discarded. #goMoveModelChanged will be sent a second
+///   time later on, when the new move is actually made. On this occasion
+///   where the board position will be a
+///
+/// #playViewBoardPositionChanged is sent if the current board position is
+/// changed in any way.
 // -----------------------------------------------------------------------------
 - (void) goMoveModelChanged:(NSNotification*)notification
 {
   GoMoveModel* moveModel = [GoGame sharedGame].moveModel;
   int numberOfMoves = moveModel.numberOfMoves;
+
+  if (currentBoardPosition > numberOfMoves)
+  {
+    // Unexpected scenario (see method docs)
+    DDLogWarn(@"Current board position %d is greater than the number of moves %d", currentBoardPosition, numberOfMoves);
+  }
+  else if ((currentBoardPosition + 1) == numberOfMoves)
+  {
+    // Scenario "regular play" (see method docs)
+  }
+  else
+  {
+    // Scenario "move is made while viewing a board position in the middle of
+    // the game" (see method docs)
+    return;
+  }
+
+  // Don't invoke property's setter since there is no need to update the state
+  // of Go objects
   currentBoardPosition = numberOfMoves;
   [[NSNotificationCenter defaultCenter] postNotificationName:playViewBoardPositionChanged object:self];
 }

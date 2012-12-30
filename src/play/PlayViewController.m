@@ -31,6 +31,7 @@
 #import "../go/GoPoint.h"
 #import "../player/Player.h"
 #import "../command/InterruptComputerCommand.h"
+#import "../command/boardposition/DiscardAndPlayCommand.h"
 #import "../command/move/ComputerPlayMoveCommand.h"
 #import "../command/move/PlayMoveCommand.h"
 #import "../command/game/ContinueGameCommand.h"
@@ -134,6 +135,8 @@
 - (int) statusLineNumberOfTextLines;
 - (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
+- (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+- (void) alertCannotPlayOnComputersTurn;
 //@}
 /// @name Privately declared properties
 //@{
@@ -155,6 +158,14 @@
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
 @property(nonatomic, retain) GoScore* gameInfoScore;
+/// @brief The command to execute a human player's move.
+///
+/// This property is required to temporarily store a command object from the
+/// time an alert is displayed until the user dismisses the alert and the alert
+/// handler is invoked.
+///
+/// The command object is not retained.
+@property(nonatomic, assign) DiscardAndPlayCommand* discardAndPlayCommand;
 /// @brief The frontside view. A superview of @e playView.
 @property(nonatomic, retain) UIView* frontSideView;
 /// @brief The backside view with information about the current game.
@@ -236,6 +247,7 @@
 @synthesize panningEnabled;
 @synthesize tappingEnabled;
 @synthesize gameInfoScore;
+@synthesize discardAndPlayCommand;
 
 
 // -----------------------------------------------------------------------------
@@ -267,6 +279,7 @@
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
+  self.discardAndPlayCommand = nil;
   [super dealloc];
 }
 
@@ -563,6 +576,7 @@
                                                                             action:nil] autorelease];
 
   self.gameInfoScore = nil;
+  self.discardAndPlayCommand = nil;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
@@ -620,6 +634,7 @@
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
+  self.discardAndPlayCommand = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -715,8 +730,16 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
-  PlayMoveCommand* command = [[PlayMoveCommand alloc] initPass];
-  [command submit];
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPositionModel.isLastPosition || ! boardPositionModel.isComputerPlayersTurn)
+  {
+    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
+    [self playOrAlertWithCommand:command];
+  }
+  else
+  {
+    [self alertCannotPlayOnComputersTurn];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -726,8 +749,16 @@
 // -----------------------------------------------------------------------------
 - (void) playForMe:(id)sender
 {
-  ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-  [command submit];
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPositionModel.isLastPosition || ! boardPositionModel.isComputerPlayersTurn)
+  {
+    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPlayForMe];
+    [self playOrAlertWithCommand:command];
+  }
+  else
+  {
+    [self alertCannotPlayOnComputersTurn];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -841,6 +872,26 @@
 // -----------------------------------------------------------------------------
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+  if (AlertViewTypePlayingNowWillDiscardAllFutureMoves != alertView.tag)
+    return;
+  switch (buttonIndex)
+  {
+    case AlertViewButtonTypeNo:
+    {
+      [self.discardAndPlayCommand release];
+      self.discardAndPlayCommand = nil;
+    }
+    case AlertViewButtonTypeYes:
+    {
+      [self.discardAndPlayCommand submit];  // deallocates the command
+      self.discardAndPlayCommand = nil;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -932,24 +983,9 @@
     {
       BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
       if (! boardPositionModel.isLastPosition && boardPositionModel.isComputerPlayersTurn)
-      {
-        if (boardPositionModel.playOnComputersTurnAlert)
-        {
-          UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"It is the computer's turn"
-                                                          message:@"You are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play."
-                                                         delegate:self
-                                                cancelButtonTitle:nil
-                                                otherButtonTitles:@"Ok", nil];
-          alert.tag = AlertViewTypeCannotPlayOnComputersTurn;
-          // Displaying an alert cancels this round of gesture recognizing (i.e.
-          // the gesture recognizer sends UIGestureRecognizerStateCancelled)
-          [alert show];
-        }
-      }
+        [self alertCannotPlayOnComputersTurn];
       else
-      {
         [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
-      }
       break;
     }
     case UIGestureRecognizerStateChanged:
@@ -962,26 +998,8 @@
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       if (isLegalMove)
       {
-        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-        if (! boardPositionModel.isLastPosition)
-        {
-          if (boardPositionModel.discardFutureMovesAlert)
-          {
-            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
-                                                            message:@"You are looking at a board position in the middle of the game. If you play now, all moves that have been made after this position will be discarded.\n\nDo you want to continue?"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"No"
-                                                  otherButtonTitles:@"Yes", nil];
-            alert.tag = AlertViewTypePlayingNowWillDiscardAllFutureMoves;
-            [alert show];
-            break;
-          }
-        }
-        else
-        {
-          PlayMoveCommand* command = [[PlayMoveCommand alloc] initWithPoint:crossHairPoint];
-          [command submit];
-        }
+        DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initWithPoint:crossHairPoint];
+        [self playOrAlertWithCommand:command];
       }
       break;
     }
@@ -1090,9 +1108,8 @@
 // -----------------------------------------------------------------------------
 - (void) playViewBoardPositionChanged:(NSNotification*)notification
 {
-  [self updateBackButtonState];
-  [self updateForwardButtonState];
-  [self updatePanningEnabled];  // disable if computer player's turn & playOnComputersTurnAlert is disabled
+  [self updateButtonStates];
+  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1144,7 +1161,10 @@
   if (object == boardPositionModel)
   {
     if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
+    {
+      [self updateButtonStates];
       [self updatePanningEnabled];
+    }
   }
 }
 
@@ -1231,8 +1251,18 @@
         {
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
-            enabled = YES;
+          {
+            BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+            if (boardPositionModel.isLastPosition)
+              enabled = YES;
+            else if (! boardPositionModel.isComputerPlayersTurn)
+              enabled = YES;
+            else if (boardPositionModel.playOnComputersTurnAlert)
+              enabled = YES;
+            else
+              enabled = NO;
             break;
+          }
           default:
             break;
         }
@@ -1263,8 +1293,18 @@
         {
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
-            enabled = YES;
+          {
+            BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+            if (boardPositionModel.isLastPosition)
+              enabled = YES;
+            else if (! boardPositionModel.isComputerPlayersTurn)
+              enabled = YES;
+            else if (boardPositionModel.playOnComputersTurnAlert)
+              enabled = YES;
+            else
+              enabled = NO;
             break;
+          }
           default:
             break;
         }
@@ -1547,6 +1587,70 @@
     self.tappingEnabled = ! self.scoringModel.score.scoringInProgress;
   else
     self.tappingEnabled = false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Executes @a command, or displays an alert and delays execution until
+/// the alert is dismissed by the user.
+///
+/// @a command represents one of several possible ways how a human player can
+/// make a move: Either a regular pass or play move, or a "play for me" move.
+/// @a command must have a retain count of 1 so that its submit() method can be
+/// invoked.
+///
+/// If the Play view currently displays the board position after the most recent
+/// move, @a command is executed immediately.
+///
+/// If a board position in the middle of the game is displayed, an alert is
+/// displayed that warns the user that playing now will discard all future
+/// moves. If the user confirms that this is OK, @a command is executed. If the
+/// user cancels the operation, @a command is not executed. Handling of the
+/// user's response happens in alertView:didDismissWithButtonIndex:().
+///
+/// The user can suppress the alert in the user preferences. In this case
+/// @a command is immediately executed.
+// -----------------------------------------------------------------------------
+- (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command
+{
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPositionModel.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
+  {
+    [command submit];  // deallocates the command
+  }
+  else
+  {
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
+                                                    message:@"You are looking at a board position in the middle of the game. If you play now, all moves that have been made after this position will be discarded.\n\nDo you want to continue?"
+                                                   delegate:self
+                                          cancelButtonTitle:@"No"
+                                          otherButtonTitles:@"Yes", nil];
+    alert.tag = AlertViewTypePlayingNowWillDiscardAllFutureMoves;
+    [alert show];
+    // Store command object for later use by the alert handler
+    self.discardAndPlayCommand = command;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays the alert #AlertViewTypeCannotPlayOnComputersTurn.
+///
+/// The user can suppress the alert in the user preferences.
+// -----------------------------------------------------------------------------
+- (void) alertCannotPlayOnComputersTurn
+{
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPositionModel.playOnComputersTurnAlert)
+  {
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Cannot play during computer's turn"
+                                                    message:@"You are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play.\n\nNote: You can disable this alert in the board position settings."
+                                                   delegate:self
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeCannotPlayOnComputersTurn;
+    // Displaying an alert cancels this round of gesture recognizing (i.e.
+    // the gesture recognizer sends UIGestureRecognizerStateCancelled)
+    [alert show];
+  }
 }
 
 @end

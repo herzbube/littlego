@@ -388,11 +388,17 @@ Recommend a move
 
 Setup a position
 - The "gogui-setup" GTP command can be used to setup a position on the board
-  without making play moves. This command exists because GTP v2 does not define
-  such a command
+  without making play moves. For instance, an .sgf file saved after
+  "gogui-setup" will not contain moves, just the board setup). This command
+  exists because GTP v2 does not define such a command. The format is
+  "gogui-setup <color> <vertex> [...]". The colors do not need to alternate.
 - The "gogui-setup_player" command is used to define the color that should play
   first after a setup has been made. This command is submitted immediately
-  after gogui-setup
+  after gogui-setup. The format is "gogui-setup_player <color>".
+- The "gogui-play_sequence" GTP command uses the same format as "gogui-setup",
+  but makes actual play moves. The player that should play first after the
+  setup has been made is determined automatically (but can be changed using
+  "gogui-setup_player").
 
 Territory statistics
 - The "uct_stat_territory" GTP command displays territory statistics

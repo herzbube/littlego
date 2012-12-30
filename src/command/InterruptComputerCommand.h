@@ -18,9 +18,6 @@
 // Project includes
 #import "CommandBase.h"
 
-// Forward declarations
-@class GoGame;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The InterruptComputerCommand class is responsible for interrupting
