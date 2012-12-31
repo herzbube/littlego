@@ -17,6 +17,7 @@
 
 // Project includes
 #import "DiscardAndPlayCommand.h"
+#import "../game/ContinueGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../move/PlayMoveCommand.h"
 #import "../../go/GoGame.h"
@@ -38,7 +39,8 @@
 enum PlayCommandType
 {
   PlayCommandTypePlayMove,
-  PlayCommandTypePlayForMe
+  PlayCommandTypePlayForMe,
+  PlayCommandTypeContinue
 };
 
 
@@ -109,6 +111,15 @@ enum PlayCommandType
 - (id) initPlayForMe
 {
   return [self initWithCommandType:PlayCommandTypePlayForMe];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a DiscardAndPlayCommand object that will continue a
+/// computer vs. computer game that is paused.
+// -----------------------------------------------------------------------------
+- (id) initContinue
+{
+  return [self initWithCommandType:PlayCommandTypeContinue];
 }
 
 // -----------------------------------------------------------------------------
@@ -285,6 +296,11 @@ enum PlayCommandType
     case PlayCommandTypePlayForMe:
     {
       command = [[ComputerPlayMoveCommand alloc] init];
+      break;
+    }
+    case PlayCommandTypeContinue:
+    {
+      command = [[ContinueGameCommand alloc] init];
       break;
     }
     default:

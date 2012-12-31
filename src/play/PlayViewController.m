@@ -32,8 +32,6 @@
 #import "../player/Player.h"
 #import "../command/InterruptComputerCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
-#import "../command/move/ComputerPlayMoveCommand.h"
-#import "../command/move/PlayMoveCommand.h"
 #import "../command/game/ContinueGameCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../ui/UiElementMetrics.h"
@@ -800,8 +798,8 @@
 // -----------------------------------------------------------------------------
 - (void) continue:(id)sender
 {
-  ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
-  [command submit];
+  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initContinue];
+  [self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -1083,9 +1081,12 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameTypeComputerVsComputer == game.type)
+    [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
-  if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+  if (GoGameStateGameHasEnded == game.state)
   {
     self.scoringModel.scoringMode = true;
     [self.scoringModel.score calculateWaitUntilDone:false];
@@ -1175,9 +1176,10 @@
 - (void) populateToolbar
 {
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
+  GoGame* game = [GoGame sharedGame];
   if (self.scoringModel.scoringMode)
   {
-    if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
+    if (GoGameStateGameHasEnded != game.state)
       [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     [toolbarItems addObject:self.flexibleSpaceButton];
     [toolbarItems addObject:self.gameInfoButton];
@@ -1185,23 +1187,33 @@
   }
   else
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
-        [toolbarItems addObject:self.pauseButton];
-        [toolbarItems addObject:self.continueButton];
-        [toolbarItems addObject:self.interruptButton];
+        if (GoGameStateGameIsPaused == game.state)
+          [toolbarItems addObject:self.continueButton];
+        else
+          [toolbarItems addObject:self.pauseButton];
+        if (game.isComputerThinking)
+          [toolbarItems addObject:self.interruptButton];
+        if (GoGameStateGameIsPaused == game.state && ! game.isComputerThinking)
+        {
+          [toolbarItems addObject:self.flexibleSpaceButton];
+          [toolbarItems addObject:self.oneMoveBackButton];
+          [toolbarItems addObject:self.oneMoveForwardButton];
+        }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
         break;
       default:
-        if ([GoGame sharedGame].isComputerThinking)
+        if (game.isComputerThinking)
           [toolbarItems addObject:self.interruptButton];
         else
         {
           [toolbarItems addObject:self.playForMeButton];
           [toolbarItems addObject:self.passButton];
+          [toolbarItems addObject:self.flexibleSpaceButton];
           [toolbarItems addObject:self.oneMoveBackButton];
           [toolbarItems addObject:self.oneMoveForwardButton];
         }
@@ -1323,21 +1335,11 @@
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
   {
-    switch ([GoGame sharedGame].type)
+    if (! [GoGame sharedGame].isComputerThinking)
     {
-      case GoGameTypeComputerVsComputer:
-        break;
-      default:
-      {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-        if (boardPositionModel.isFirstPosition)
-          enabled = NO;
-        else
-          enabled = YES;
-        break;
-      }
+      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+      if (! boardPositionModel.isFirstPosition)
+        enabled = YES;
     }
   }
   self.oneMoveBackButton.enabled = enabled;
@@ -1351,21 +1353,11 @@
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
   {
-    switch ([GoGame sharedGame].type)
+    if (! [GoGame sharedGame].isComputerThinking)
     {
-      case GoGameTypeComputerVsComputer:
-        break;
-      default:
-      {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-        if (boardPositionModel.isLastPosition)
-          enabled = NO;
-        else
-          enabled = YES;
-        break;
-      }
+      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+      if (! boardPositionModel.isLastPosition)
+        enabled = YES;
     }
   }
   self.oneMoveForwardButton.enabled = enabled;
@@ -1593,10 +1585,10 @@
 /// @brief Executes @a command, or displays an alert and delays execution until
 /// the alert is dismissed by the user.
 ///
-/// @a command represents one of several possible ways how a human player can
-/// make a move: Either a regular pass or play move, or a "play for me" move.
-/// @a command must have a retain count of 1 so that its submit() method can be
-/// invoked.
+/// @a command is set up so that it knows what type of move it should generate.
+/// See the class documentation of DiscardAndPlayCommand for details about which
+/// types of moves are supported. @a command must have a retain count of 1 so
+/// that the command's submit() method can be invoked.
 ///
 /// If the Play view currently displays the board position after the most recent
 /// move, @a command is executed immediately.
@@ -1619,8 +1611,14 @@
   }
   else
   {
+    NSString* messageString;
+    NSString* formatString = @"You are looking at a board position in the middle of the game. %@, all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+    if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
+      messageString = [NSString stringWithFormat:formatString, @"If you let the computer play now"];
+    else
+      messageString = [NSString stringWithFormat:formatString, @"If you play now"];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
-                                                    message:@"You are looking at a board position in the middle of the game. If you play now, all moves that have been made after this position will be discarded.\n\nDo you want to continue?"
+                                                    message:messageString
                                                    delegate:self
                                           cancelButtonTitle:@"No"
                                           otherButtonTitles:@"Yes", nil];

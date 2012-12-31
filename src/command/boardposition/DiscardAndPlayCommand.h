@@ -42,6 +42,8 @@
 /// - initPass:() results in a #GoMoveTypePass move made by a human player
 /// - initPlayForMe() results in a move made by the computer on behalf of the
 ///   human player
+/// - initContinue() results in a paused computer vs. computer game being
+///   continued
 // -----------------------------------------------------------------------------
 @interface DiscardAndPlayCommand : CommandBase
 {
@@ -50,5 +52,6 @@
 - (id) initWithPoint:(GoPoint*)aPoint;
 - (id) initPass;
 - (id) initPlayForMe;
+- (id) initContinue;
 
 @end
