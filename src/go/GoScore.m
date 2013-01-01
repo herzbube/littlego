@@ -18,6 +18,7 @@
 // Project includes
 #import "GoScore.h"
 #import "GoBoard.h"
+#import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
 #import "GoMove.h"
@@ -773,7 +774,7 @@
 
   // Captured stones and move statistics
   numberOfMoves = 0;
-  GoMove* move = game.firstMove;
+  GoMove* move = self.game.boardPosition.currentMove;
   while (move != nil)
   {
     ++numberOfMoves;
@@ -805,7 +806,7 @@
       default:
         break;
     }
-    move = move.next;
+    move = move.previous;
   }
 
   // Territory & dead stones
