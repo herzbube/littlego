@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,18 +18,15 @@
 // Project includes
 #import "GameInfoViewController.h"
 #import "PlayViewActionSheetController.h"
-
-// Forward declarations
-@class PlayView;
+#import "gesture/PanGestureController.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewController class is responsible for managing user
 /// interaction on the "Play" view.
 ///
-/// PlayViewController reacts to the following user input:
-/// - Dragging, or panning, gesture in the view's Go board area
-///   This is used to place a stone on the board.
+/// PlayViewController delegates handling of gestures to various subcontrollers.
+/// PlayViewController directly reacts to the following user input:
 /// - Tapping gesture on buttons that trigger a Go move
 /// - Tapping gesture on the "Game Actions" button
 ///
@@ -61,7 +58,7 @@
 /// rotates. This requires special code because PlayViewController's regular
 /// rotation code is not triggered by UIKit in this situation.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
+@interface PlayViewController : UIViewController <PanGestureControllerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
 {
 }
 

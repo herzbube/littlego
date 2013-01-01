@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,12 +23,10 @@
 #import "StatusLineController.h"
 #import "ActivityIndicatorController.h"
 #import "ScoringModel.h"
+#import "gesture/TapGestureController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
-#import "../go/GoMove.h"
-#import "../go/GoPlayer.h"
-#import "../go/GoPoint.h"
 #import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../command/InterruptComputerCommand.h"
@@ -71,14 +69,10 @@
 - (void) gameActions:(id)sender;
 - (void) done:(id)sender;
 //@}
-/// @name Handlers for recognized gestures
+/// @name PanGestureControllerDelegate protocol
 //@{
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name UIGestureRecognizerDelegate protocol
-//@{
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
+- (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
 //@}
 /// @name GameInfoViewControllerDelegate protocol
 //@{
@@ -119,8 +113,6 @@
 - (void) updateGameInfoButtonState;
 - (void) updateGameActionsButtonState;
 - (void) updateDoneButtonState;
-- (void) updatePanningEnabled;
-- (void) updateTappingEnabled;
 //@}
 /// @name Private helpers
 //@{
@@ -142,16 +134,6 @@
 @property(nonatomic, assign) bool controllerReadyForAction;
 /// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
-/// @brief The gesture recognizer used to detect the long-press gesture.
-@property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
-/// @brief The gesture recognizer used to detect the tap gesture.
-@property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
-/// @brief True if a panning gesture is currently allowed, false if not (e.g.
-/// while a computer player is thinking).
-@property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
-/// @brief True if a tapping gesture is currently allowed, false if not (e.g.
-/// if scoring mode is not enabled).
-@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 /// @brief GoScore object used while the game info view is displayed and scoring
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
@@ -180,6 +162,10 @@
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
+/// @brief The controller that manages panning gestures.
+@property(nonatomic, retain) PanGestureController* panGestureController;
+/// @brief The controller that manages tapping gestures.
+@property(nonatomic, retain) TapGestureController* tapGestureController;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
@@ -228,6 +214,8 @@
 @synthesize activityIndicator;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
+@synthesize panGestureController;
+@synthesize tapGestureController;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize oneMoveBackButton;
@@ -240,10 +228,6 @@
 @synthesize gameActionsButton;
 @synthesize doneButton;
 @synthesize scoringModel;
-@synthesize longPressRecognizer;
-@synthesize tapRecognizer;
-@synthesize panningEnabled;
-@synthesize tappingEnabled;
 @synthesize gameInfoScore;
 @synthesize discardAndPlayCommand;
 
@@ -262,6 +246,8 @@
   self.activityIndicator = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.panGestureController = nil;
+  self.tapGestureController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
   self.oneMoveBackButton = nil;
@@ -274,8 +260,6 @@
   self.gameActionsButton = nil;
   self.doneButton = nil;
   self.scoringModel = nil;
-  self.longPressRecognizer = nil;
-  self.tapRecognizer = nil;
   self.gameInfoScore = nil;
   self.discardAndPlayCommand = nil;
   [super dealloc];
@@ -510,24 +494,10 @@
     assert(0);
   }
 
-  self.panningEnabled = false;
-  self.tappingEnabled = false;
-
-  self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
-	[self.longPressRecognizer release];
-	[self.playView addGestureRecognizer:self.longPressRecognizer];
-  self.longPressRecognizer.delegate = self;
-  self.longPressRecognizer.minimumPressDuration = 0;  // place stone immediately
-  CGFloat infiniteMovement = CGFLOAT_MAX;
-  self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
-
-  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
-	[self.tapRecognizer release];
-	[self.playView addGestureRecognizer:self.tapRecognizer];
-  self.tapRecognizer.delegate = self;
-
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:self.scoringModel delegate:self] autorelease];
+  self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:self.scoringModel] autorelease];
 
   self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
                                                            style:UIBarButtonItemStyleBordered
@@ -616,6 +586,8 @@
   self.activityIndicator = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.panGestureController = nil;
+  self.tapGestureController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
   self.oneMoveBackButton = nil;
@@ -628,8 +600,6 @@
   self.gameActionsButton = nil;
   self.doneButton = nil;
   self.scoringModel = nil;
-  self.longPressRecognizer = nil;
-  self.tapRecognizer = nil;
   self.gameInfoScore = nil;
   self.discardAndPlayCommand = nil;
 }
@@ -838,6 +808,23 @@
   [self flipToFrontSideView:flipToFrontSideView];
 }
 
+
+// -----------------------------------------------------------------------------
+/// @brief PanGestureControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller
+{
+  [self alertCannotPlayOnComputersTurn];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief PanGestureControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command
+{
+  [self playOrAlertWithCommand:command];
+}
+
 // -----------------------------------------------------------------------------
 /// @brief GameInfoViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -935,116 +922,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a dragging, or panning, gesture in the view's Go board
-/// area.
-// -----------------------------------------------------------------------------
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
-{
-  // TODO move the following summary somewhere else where it is not buried in
-  // code and forgotten...
-  // 1. Touching the screen starts stone placement
-  // 2. Stone is placed when finger leaves the screen and the stone is placed
-  //    in a valid location
-  // 3. Stone placement can be cancelled by placing in an invalid location
-  // 4. Invalid locations are: Another stone is already placed on the point;
-  //    placing the stone would be suicide; the point is guarded by a Ko; the
-  //    point is outside the board
-  // 5. While panning/dragging, provide continuous feedback on the current
-  //    stone location
-  //    - Display a stone of the correct color at the current location
-  //    - Mark up the stone differently from already placed stones
-  //    - Mark up the stone differently if it is in a valid location, and if
-  //      it is in an invalid location
-  //    - Display in the status line the vertex of the current location
-  //    - If the location is invalid, display the reason in the status line
-  //    - If placing a stone would capture other stones, mark up those stones
-  //      and display in the status line how many stones would be captured
-  //    - If placing a stone would set a group (your own or an enemy group) to
-  //      atari, mark up that group
-  // 6. Place the stone with an offset to the fingertip position so that the
-  //    user can see the stone location
-
-  CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* crossHairPoint = [self.playView crossHairPointNear:panningLocation];
-
-  // TODO If the move is not legal, determine the reason (another stone is
-  // already placed on the point; suicide move; guarded by Ko rule)
-  bool isLegalMove = false;
-  if (crossHairPoint)
-    isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairPoint];
-
-  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
-  switch (recognizerState)
-  {
-    case UIGestureRecognizerStateBegan:
-    {
-      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (! boardPosition.isLastPosition && boardPosition.isComputerPlayersTurn)
-        [self alertCannotPlayOnComputersTurn];
-      else
-        [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
-      break;
-    }
-    case UIGestureRecognizerStateChanged:
-    {
-      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
-      break;
-    }
-    case UIGestureRecognizerStateEnded:
-    {
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
-      if (isLegalMove)
-      {
-        DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initWithPoint:crossHairPoint];
-        [self playOrAlertWithCommand:command];
-      }
-      break;
-    }
-    case UIGestureRecognizerStateCancelled:
-    {
-      // Occurs, for instance, if an alert is displayed while a gesture is
-      // being handled.
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tapping gesture in the view's Go board area.
-// -----------------------------------------------------------------------------
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
-{
-  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
-  if (UIGestureRecognizerStateEnded != recognizerState)
-    return;
-  CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* deadStonePoint = [self.playView pointNear:tappingLocation];
-  if (! deadStonePoint || ! [deadStonePoint hasStone])
-    return;
-  [self.scoringModel.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
-  [self.scoringModel.score calculateWaitUntilDone:false];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIGestureRecognizerDelegate protocol method. Disables gesture
-/// recognition while interactionEnabled() is false.
-// -----------------------------------------------------------------------------
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-{
-  if (gestureRecognizer == self.longPressRecognizer)
-    return self.isPanningEnabled;
-  else if (gestureRecognizer == self.tapRecognizer)
-    return self.isTappingEnabled;
-  else
-    return false;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the #applicationIsReadyForAction notification.
 // -----------------------------------------------------------------------------
 - (void) applicationIsReadyForAction:(NSNotification*)notification
@@ -1076,7 +953,6 @@
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [self populateToolbar];
   [self updateButtonStates];
-  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1088,7 +964,6 @@
   if (GoGameTypeComputerVsComputer == game.type)
     [self populateToolbar];
   [self updateButtonStates];
-  [self updatePanningEnabled];
   if (GoGameStateGameHasEnded == game.state)
   {
     self.scoringModel.scoringMode = true;
@@ -1104,7 +979,6 @@
 {
   [self populateToolbar];
   [self updateButtonStates];
-  [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1114,8 +988,6 @@
 {
   [self populateToolbar];
   [self updateButtonStates];
-  [self updatePanningEnabled];  // disable panning
-  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1125,8 +997,6 @@
 {
   [self populateToolbar];
   [self updateButtonStates];
-  [self updatePanningEnabled];  // enable panning
-  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1135,7 +1005,6 @@
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
   [self updateButtonStates];
-  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1144,7 +1013,6 @@
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   [self updateButtonStates];
-  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -1157,13 +1025,11 @@
     if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
     {
       [self updateButtonStates];
-      [self updatePanningEnabled];
     }
   }
   else if (object == [GoGame sharedGame].boardPosition)
   {
     [self updateButtonStates];
-    [self updatePanningEnabled];
   }
 }
 
@@ -1517,66 +1383,6 @@
       enabled = YES;
   }
   self.doneButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether panning is enabled.
-// -----------------------------------------------------------------------------
-- (void) updatePanningEnabled
-{
-  if (self.scoringModel.scoringMode)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  GoGame* game = [GoGame sharedGame];
-  if (! game)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  if (GoGameTypeComputerVsComputer == game.type)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  switch (game.state)
-  {
-    case GoGameStateGameHasNotYetStarted:
-    case GoGameStateGameHasStarted:
-      if (game.isComputerThinking)
-        self.panningEnabled = false;
-      else
-      {
-        GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-        if (boardPosition.isLastPosition)
-          self.panningEnabled = true;
-        else if (! boardPosition.isComputerPlayersTurn)
-          self.panningEnabled = true;
-        else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
-          self.panningEnabled = true;
-        else
-          self.panningEnabled = false;
-      }
-      break;
-    default:  // specifically GoGameStateGameHasEnded
-      self.panningEnabled = false;
-      break;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether tapping is enabled.
-// -----------------------------------------------------------------------------
-- (void) updateTappingEnabled
-{
-  if (self.scoringModel.scoringMode)
-    self.tappingEnabled = ! self.scoringModel.score.scoringInProgress;
-  else
-    self.tappingEnabled = false;
 }
 
 // -----------------------------------------------------------------------------
