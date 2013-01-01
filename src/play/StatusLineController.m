@@ -20,6 +20,7 @@
 #import "ScoringModel.h"
 #import "PlayView.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
@@ -175,12 +176,12 @@
           case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
           case GoGameStateGameHasStarted:
           {
-            GoMove* lastMove = game.lastMove;
-            if (GoMoveTypePass == lastMove.type)
+            GoMove* move = game.boardPosition.currentMove;
+            if (GoMoveTypePass == move.type)
             {
               // TODO fix when GoColor class is added
               NSString* color;
-              if (lastMove.player.black)
+              if (move.player.black)
                 color = @"Black";
               else
                 color = @"White";
