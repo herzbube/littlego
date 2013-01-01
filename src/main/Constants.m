@@ -39,13 +39,9 @@ NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 NSString* goGameWillCreate = @"GoGameWillCreate";
 NSString* goGameDidCreate = @"GoGameDidCreate";
 NSString* goGameStateChanged = @"GoGameStateChanged";
-// GoMove related notifications
-NSString* goMoveModelChanged = @"GoMoveModelChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
-// Play view related notifications
-NSString* playViewBoardPositionChanged = @"PlayViewBoardPositionChanged";
 // Archive related notifications
 NSString* gameSavedToArchive = @"GameSavedToArchive";
 NSString* gameLoadedFromArchive = @"GameLoadedFromArchive";
@@ -261,6 +257,8 @@ NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameNextMoveIsComputerGeneratedKey = @"NextMoveIsComputerGenerated";
+NSString* goGameBoardPositionKey = @"BoardPosition";
+
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
@@ -274,6 +272,7 @@ NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveComputerGeneratedKey = @"ComputerGenerated";
 // GoMoveModel keys
 NSString* goMoveModelMoveListKey = @"MoveList";
+NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
 // GoBoard keys
 NSString* goBoardSizeKey = @"Size";
 NSString* goBoardVertexDictKey = @"VertexDict";

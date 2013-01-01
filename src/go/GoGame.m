@@ -17,11 +17,12 @@
 
 // Project includes
 #import "GoGame.h"
-#import "GoPlayer.h"
+#import "GoBoardPosition.h"
+#import "GoBoardRegion.h"
 #import "GoMove.h"
 #import "GoMoveModel.h"
+#import "GoPlayer.h"
 #import "GoPoint.h"
-#import "GoBoardRegion.h"
 #import "GoUtilities.h"
 #import "../player/Player.h"
 #import "../main/ApplicationDelegate.h"
@@ -61,6 +62,7 @@
 @synthesize reasonForGameHasEnded;
 @synthesize computerThinks;
 @synthesize nextMoveIsComputerGenerated;
+@synthesize boardPosition;
 
 
 // -----------------------------------------------------------------------------
@@ -106,6 +108,9 @@
   reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   computerThinks = false;
   nextMoveIsComputerGenerated = false;
+  // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
+  // GoMoveModel to be already around
+  boardPosition = [[GoBoardPosition alloc] initWithGame:self];
 
   return self;
 }
@@ -134,6 +139,7 @@
   reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
   nextMoveIsComputerGenerated = [decoder decodeBoolForKey:goGameNextMoveIsComputerGeneratedKey];
+  boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
 
   return self;
 }
@@ -154,6 +160,9 @@
   }
   self.playerBlack = nil;
   self.playerWhite = nil;
+  // Deallocate GoBoardPosition before GoMoveModel because GoBoardPosition
+  // requires GoMoveModel to still be around
+  self.boardPosition = nil;
   self.moveModel = nil;
   [super dealloc];
 }
@@ -561,6 +570,7 @@
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
   [encoder encodeBool:self.nextMoveIsComputerGenerated forKey:goGameNextMoveIsComputerGeneratedKey];
+  [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
 }
 
 @end

@@ -97,6 +97,8 @@
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD36593C1691C49F00D75466 /* 40-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593A1691C49F00D75466 /* 40-forward.png */; };
 		CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593B1691C49F00D75466 /* 40-forward@2x.png */; };
+		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
+		CD3659421693533600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD393F751669210E009DF814 /* stone-black.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F721669210E009DF814 /* stone-black.png */; };
 		CD393F761669210E009DF814 /* stone-crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F731669210E009DF814 /* stone-crosshair.png */; };
 		CD393F771669210E009DF814 /* stone-white.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F741669210E009DF814 /* stone-white.png */; };
@@ -445,6 +447,8 @@
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
 		CD36593A1691C49F00D75466 /* 40-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward.png"; sourceTree = "<group>"; };
 		CD36593B1691C49F00D75466 /* 40-forward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward@2x.png"; sourceTree = "<group>"; };
+		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
+		CD36594016931F8500D75466 /* GoBoardPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPosition.m; sourceTree = "<group>"; };
 		CD393F721669210E009DF814 /* stone-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-black.png"; sourceTree = "<group>"; };
 		CD393F731669210E009DF814 /* stone-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-crosshair.png"; sourceTree = "<group>"; };
 		CD393F741669210E009DF814 /* stone-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white.png"; sourceTree = "<group>"; };
@@ -901,6 +905,8 @@
 			children = (
 				CD10881713255A4000E83543 /* GoBoard.h */,
 				CD10881813255A4000E83543 /* GoBoard.m */,
+				CD36593F16931F8500D75466 /* GoBoardPosition.h */,
+				CD36594016931F8500D75466 /* GoBoardPosition.m */,
 				CDBB0359133537C8007C1C3E /* GoBoardRegion.h */,
 				CDBB035A133537C8007C1C3E /* GoBoardRegion.m */,
 				CD10881A13255A4700E83543 /* GoGame.h */,
@@ -1775,6 +1781,7 @@
 				CD15A48C168D21A200D4472A /* BoardPositionModel.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
 				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
+				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1859,6 +1866,7 @@
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 				CD15A48D168E0A7A00D4472A /* BoardPositionModel.m in Sources */,
+				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

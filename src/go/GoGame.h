@@ -17,9 +17,10 @@
 
 // Forward declarations
 @class GoBoard;
-@class GoPlayer;
+@class GoBoardPosition;
 @class GoMove;
 @class GoMoveModel;
+@class GoPlayer;
 @class GoPoint;
 
 
@@ -119,9 +120,14 @@
 /// its @e computerGenerated flag set to true.
 ///
 /// TODO This is a nasty little hack to allow GoGame to set the GoMove object's
-/// flag before sending #goMoveModelChanged. This timing hack allows observers
-/// to check the GoMove object's flag when they react to one of those
-/// notifications. To remove this hack we need to do some redesigning...
+/// flag before triggering any notifications that a new move has been made. This
+/// timing hack allows observers to check the GoMove object's flag when they
+/// react to one of those notifications. To remove this hack we need to do some
+/// redesigning...
 @property(nonatomic, assign) bool nextMoveIsComputerGenerated;
+/// @brief The model object that defines defines which position of the Go board
+/// is currently described by the GoPoint and GoBoardRegion objects attached to
+/// this GoGame.
+@property(nonatomic, retain) GoBoardPosition* boardPosition;
 
 @end

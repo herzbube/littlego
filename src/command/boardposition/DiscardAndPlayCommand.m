@@ -20,6 +20,7 @@
 #import "../game/ContinueGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../move/PlayMoveCommand.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoMoveModel.h"
@@ -28,8 +29,6 @@
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../play/BoardPositionModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -177,12 +176,11 @@ enum PlayCommandType
   assert(GoGameStateGameHasEnded != gameState);
   if (GoGameStateGameHasEnded == gameState)
     return false;
-  GoMoveModel* moveModel = game.moveModel;
-
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPositionModel.isLastPosition)
+  GoBoardPosition* boardPosition = game.boardPosition;
+  if (boardPosition.isLastPosition)
     return true;
-  int indexOfFirstMoveToDiscard = boardPositionModel.currentBoardPosition;
+  int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
+  GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
   return true;
 }

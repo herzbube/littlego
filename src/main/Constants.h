@@ -265,32 +265,23 @@ extern NSString* gtpEngineIdleNotification;
 ///
 /// This notification is sent while the old GoGame object and its dependent
 /// objects (e.g. GoBoard) are still around and fully functional.
+///
+/// The old GoGame object is associated with the notification.
+///
+/// @note If this notification is sent during application startup, i.e. the
+/// first game is about to be created, the old GoGame object is nil.
 extern NSString* goGameWillCreate;
 /// @brief Is sent to indicate that a new GoGame object has been created. This
 /// notification is sent after the GoGame object and its dependent objects (e.g.
 /// GoBoard) have been fully configured.
 ///
-/// The GoGame object is associated with the notification.
+/// The new GoGame object is associated with the notification.
 extern NSString* goGameDidCreate;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
 /// i.e. the game has started or ended.
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* goGameStateChanged;
-//@}
-
-// -----------------------------------------------------------------------------
-/// @name GoMove related notifications
-// -----------------------------------------------------------------------------
-//@{
-/// @brief Is sent to indicate that the content of GoMoveModel has changed.
-/// This typically occurs when a move is played.
-///
-/// The GoMoveModel object is associated with the notification.
-///
-/// @note Play view related objects should listen for notification
-/// #playViewBoardPositionChanged rather than this notification.
-extern NSString* goMoveModelChanged;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -308,17 +299,6 @@ extern NSString* computerPlayerThinkingStarts;
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* computerPlayerThinkingStops;
-//@}
-
-// -----------------------------------------------------------------------------
-/// @name Play view related notifications
-// -----------------------------------------------------------------------------
-//@{
-/// @brief Is sent to indicate that the board position displayed on the Play
-/// view has changed.
-///
-/// The BoardPositionModel object is associated with the notification.
-extern NSString* playViewBoardPositionChanged;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -630,6 +610,7 @@ extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
 extern NSString* goGameNextMoveIsComputerGeneratedKey;
+extern NSString* goGameBoardPositionKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
@@ -643,6 +624,7 @@ extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveComputerGeneratedKey;
 // GoMoveModel keys
 extern NSString* goMoveModelMoveListKey;
+extern NSString* goMoveModelNumberOfMovesKey;
 // GoBoard keys
 extern NSString* goBoardSizeKey;
 extern NSString* goBoardVertexDictKey;

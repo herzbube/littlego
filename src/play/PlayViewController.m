@@ -24,11 +24,12 @@
 #import "ActivityIndicatorController.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
-#import "../go/GoScore.h"
 #import "../go/GoPoint.h"
+#import "../go/GoScore.h"
 #import "../player/Player.h"
 #import "../command/InterruptComputerCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
@@ -98,7 +99,6 @@
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
@@ -582,14 +582,13 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   // KVO observing
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  [boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
+  [[ApplicationDelegate sharedDelegate].boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
+  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 
   // We invoke this to set up initial state because we did not get
   // get goGameDidCreate for the initial game (viewDidLoad gets called too
@@ -728,8 +727,8 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPositionModel.isLastPosition || ! boardPositionModel.isComputerPlayersTurn)
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  if (boardPosition.isLastPosition || ! boardPosition.isComputerPlayersTurn)
   {
     DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
     [self playOrAlertWithCommand:command];
@@ -747,8 +746,8 @@
 // -----------------------------------------------------------------------------
 - (void) playForMe:(id)sender
 {
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPositionModel.isLastPosition || ! boardPositionModel.isComputerPlayersTurn)
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  if (boardPosition.isLastPosition || ! boardPosition.isComputerPlayersTurn)
   {
     DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPlayForMe];
     [self playOrAlertWithCommand:command];
@@ -765,9 +764,9 @@
 // -----------------------------------------------------------------------------
 - (void) oneMoveBack:(id)sender
 {
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  int currentBoardPosition = boardPositionModel.currentBoardPosition;
-  boardPositionModel.currentBoardPosition = currentBoardPosition - 1;
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int currentBoardPosition = boardPosition.currentBoardPosition;
+  boardPosition.currentBoardPosition = currentBoardPosition - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -777,9 +776,9 @@
 // -----------------------------------------------------------------------------
 - (void) oneMoveForward:(id)sender
 {
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  int currentBoardPosition = boardPositionModel.currentBoardPosition;
-  boardPositionModel.currentBoardPosition = currentBoardPosition + 1;
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int currentBoardPosition = boardPosition.currentBoardPosition;
+  boardPosition.currentBoardPosition = currentBoardPosition + 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -979,8 +978,8 @@
   {
     case UIGestureRecognizerStateBegan:
     {
-      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-      if (! boardPositionModel.isLastPosition && boardPositionModel.isComputerPlayersTurn)
+      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+      if (! boardPosition.isLastPosition && boardPosition.isComputerPlayersTurn)
         [self alertCannotPlayOnComputersTurn];
       else
         [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
@@ -1062,6 +1061,8 @@
 // -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
 {
+  GoGame* oldGame = [notification object];
+  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   // Disable scoring mode while the old GoGame is still around
   self.scoringModel.scoringMode = false;
 }
@@ -1071,6 +1072,8 @@
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
+  GoGame* newGame = [notification object];
+  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [self populateToolbar];
   [self updateButtonStates];
   [self updatePanningEnabled];
@@ -1100,15 +1103,6 @@
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
   [self populateToolbar];
-  [self updateButtonStates];
-  [self updatePanningEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #playViewBoardPositionChanged notification.
-// -----------------------------------------------------------------------------
-- (void) playViewBoardPositionChanged:(NSNotification*)notification
-{
   [self updateButtonStates];
   [self updatePanningEnabled];
 }
@@ -1158,14 +1152,18 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (object == boardPositionModel)
+  if (object == [ApplicationDelegate sharedDelegate].boardPositionModel)
   {
     if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
     {
       [self updateButtonStates];
       [self updatePanningEnabled];
     }
+  }
+  else if (object == [GoGame sharedGame].boardPosition)
+  {
+    [self updateButtonStates];
+    [self updatePanningEnabled];
   }
 }
 
@@ -1264,12 +1262,12 @@
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
-            BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-            if (boardPositionModel.isLastPosition)
+            GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+            if (boardPosition.isLastPosition)
               enabled = YES;
-            else if (! boardPositionModel.isComputerPlayersTurn)
+            else if (! boardPosition.isComputerPlayersTurn)
               enabled = YES;
-            else if (boardPositionModel.playOnComputersTurnAlert)
+            else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
               enabled = YES;
             else
               enabled = NO;
@@ -1306,12 +1304,12 @@
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
-            BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-            if (boardPositionModel.isLastPosition)
+            GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+            if (boardPosition.isLastPosition)
               enabled = YES;
-            else if (! boardPositionModel.isComputerPlayersTurn)
+            else if (! boardPosition.isComputerPlayersTurn)
               enabled = YES;
-            else if (boardPositionModel.playOnComputersTurnAlert)
+            else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
               enabled = YES;
             else
               enabled = NO;
@@ -1337,8 +1335,8 @@
   {
     if (! [GoGame sharedGame].isComputerThinking)
     {
-      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-      if (! boardPositionModel.isFirstPosition)
+      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+      if (! boardPosition.isFirstPosition)
         enabled = YES;
     }
   }
@@ -1355,8 +1353,8 @@
   {
     if (! [GoGame sharedGame].isComputerThinking)
     {
-      BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-      if (! boardPositionModel.isLastPosition)
+      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+      if (! boardPosition.isLastPosition)
         enabled = YES;
     }
   }
@@ -1553,12 +1551,12 @@
         self.panningEnabled = false;
       else
       {
-        BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-        if (boardPositionModel.isLastPosition)
+        GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+        if (boardPosition.isLastPosition)
           self.panningEnabled = true;
-        else if (! boardPositionModel.isComputerPlayersTurn)
+        else if (! boardPosition.isComputerPlayersTurn)
           self.panningEnabled = true;
-        else if (boardPositionModel.playOnComputersTurnAlert)
+        else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
           self.panningEnabled = true;
         else
           self.panningEnabled = false;
@@ -1604,8 +1602,9 @@
 // -----------------------------------------------------------------------------
 - (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command
 {
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPositionModel.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
+  if (boardPosition.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
   {
     [command submit];  // deallocates the command
   }

@@ -44,8 +44,9 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameWillCreate:(NSNotification*)notification;
+- (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
-- (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
@@ -92,15 +93,16 @@
   self = [super init];
   if (! self)
     return nil;
-  
+
   self.statusLine = nil;
-  
+
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.scoringModel = delegate.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
@@ -108,7 +110,8 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   // KVO observing
   [[PlayView sharedView] addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
-  
+  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+
   return self;
 }
 
@@ -119,6 +122,7 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[PlayView sharedView] removeObserver:self forKeyPath:@"crossHairPoint"];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.statusLine = nil;
   self.scoringModel = nil;
   [super dealloc];
@@ -220,19 +224,28 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  GoGame* oldGame = [notification object];
+  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  GoGame* newGame = [notification object];
+  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameStateChanged notification.
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  [self updateStatusLine];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #playViewBoardPositionChanged notification.
-// -----------------------------------------------------------------------------
-- (void) playViewBoardPositionChanged:(NSNotification*)notification
-{
-  // Need this to display "player has passed" message
   [self updateStatusLine];
 }
 
@@ -275,7 +288,6 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  // React to cross-hair point changes
   [self updateStatusLine];
 }
 

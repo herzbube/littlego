@@ -30,8 +30,9 @@
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
 #import "../main/ApplicationDelegate.h"
-#import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoBoardPosition.h"
+#import "../go/GoGame.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
 #import "../utility/NSStringAdditions.h"
@@ -53,8 +54,8 @@
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
+- (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
-- (void) playViewBoardPositionChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
@@ -194,6 +195,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
   [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 
   self.playViewModel = nil;
   self.scoringModel = nil;
@@ -246,8 +248,8 @@ static PlayView* sharedPlayView = nil;
   self.updatesWereDelayed = false;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(playViewBoardPositionChanged:) name:playViewBoardPositionChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
@@ -257,17 +259,19 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"placeStoneUnderFinger" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
-  
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+    [game.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
-  
+
   // Calculate an initial set of metrics. Later, layer delegates observe
   // PlayViewMetrics for rectangle and board size changes and update their
   // layers automatically.
   self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
                                                           model:playViewModel] autorelease];
   // If we already have a game, recalculate
-  GoGame* game = [GoGame sharedGame];
   if (game)
     [self.playViewMetrics updateWithBoardSize:game.board.size];
 
@@ -432,22 +436,24 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  GoGame* oldGame = [notification object];
+  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
+  GoGame* newGame = [notification object];
+  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #playViewBoardPositionChanged notification.
-// -----------------------------------------------------------------------------
-- (void) playViewBoardPositionChanged:(NSNotification*)notification
-{
-  [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -513,6 +519,11 @@ static PlayView* sharedPlayView = nil;
     }
     else if ([keyPath isEqualToString:@"placeStoneUnderFinger"])
       [self updateCrossHairPointDistanceFromFinger];
+  }
+  else if (object == [GoGame sharedGame].boardPosition)
+  {
+    [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
+    [self delayedUpdate];
   }
 }
 

@@ -37,12 +37,17 @@
 //@{
 @property(nonatomic, retain) NSMutableArray* moveList;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) int numberOfMoves;
+//@}
 @end
 
 
 @implementation GoMoveModel
 
 @synthesize moveList;
+@synthesize numberOfMoves;
 
 
 // -----------------------------------------------------------------------------
@@ -58,6 +63,7 @@
     return nil;
 
   self.moveList = [NSMutableArray arrayWithCapacity:0];
+  self.numberOfMoves = 0;
 
   return self;
 }
@@ -74,6 +80,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.moveList = [decoder decodeObjectForKey:goMoveModelMoveListKey];
+  self.numberOfMoves = [decoder decodeIntForKey:goMoveModelNumberOfMovesKey];
 
   return self;
 }
@@ -88,14 +95,6 @@
 }
 
 // -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (int) numberOfMoves
-{
-  return moveList.count;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Adds the GoMove object @a move to this model.
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
@@ -103,7 +102,7 @@
 - (void) appendMove:(GoMove*)move
 {
   [moveList addObject:move];
-  [[NSNotificationCenter defaultCenter] postNotificationName:goMoveModelChanged object:self];
+  self.numberOfMoves = moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------
@@ -146,7 +145,8 @@
     [moveList removeLastObject];
     --numberOfMovesToDiscard;
   }
-  [[NSNotificationCenter defaultCenter] postNotificationName:goMoveModelChanged object:self];
+
+  self.numberOfMoves = moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------
@@ -197,6 +197,7 @@
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.moveList forKey:goMoveModelMoveListKey];
+  [encoder encodeInt:self.numberOfMoves forKey:goMoveModelNumberOfMovesKey];
 }
 
 @end

@@ -19,12 +19,11 @@
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
-#import "../BoardPositionModel.h"
 #import "../ScoringModel.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoPlayer.h"
-#import "../../main/ApplicationDelegate.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -155,8 +154,7 @@
 
   if (self.playViewModel.markLastMove)
   {
-    BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-    GoMove* lastMove = boardPositionModel.currentMove;
+    GoMove* lastMove = [GoGame sharedGame].boardPosition.currentMove;
     if (lastMove && GoMoveTypePlay == lastMove.type)
     {
       if (lastMove.player.isBlack)
