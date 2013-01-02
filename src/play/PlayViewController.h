@@ -16,8 +16,7 @@
 
 
 // Project includes
-#import "GameInfoViewController.h"
-#import "PlayViewActionSheetController.h"
+#import "ToolbarController.h"
 #import "gesture/PanGestureController.h"
 
 
@@ -58,7 +57,7 @@
 /// rotates. This requires special code because PlayViewController's regular
 /// rotation code is not triggered by UIKit in this situation.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <PanGestureControllerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
+@interface PlayViewController : UIViewController <PanGestureControllerDelegate, ToolbarControllerDelegate, UIAlertViewDelegate>
 {
 }
 
