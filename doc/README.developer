@@ -634,8 +634,14 @@ archive file, is explained in [22].
 an object form, and how the clever use of predicates can make your code much
 more expressive.
 
-The base for all of the following references is the "iOS Developer Library",
-found under this URL: https://developer.apple.com/library/ios/navigation/.
+A handy feature of the Objective-C runtime is called "Associative references":
+It allows to attach an object reference to another object under a certain name,
+and to retrieve the referenced object at a later time, e.g. in a delegate
+method. The required C functions are documented in [26].
+
+Unless otherwise noted, the base for all of the following references is the
+"iOS Developer Library", found under this URL:
+https://developer.apple.com/library/ios/navigation/.
 
 [1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Developer Library > Guides > Threading Programming Guide
@@ -660,6 +666,8 @@ found under this URL: https://developer.apple.com/library/ios/navigation/.
 [21] iOS Developer Library > Reference > Information Property List Key Reference
 [22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
 [23] iOS Developer Library > Guides > Predicate Programming Guide
+[24] iOS Developer Library > Guides > Predicate Programming Guide
+[25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
 
 
 Compilation command

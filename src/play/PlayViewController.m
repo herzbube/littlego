@@ -33,6 +33,7 @@
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
+#import <objc/runtime.h>
 
 
 // -----------------------------------------------------------------------------
@@ -110,14 +111,6 @@
 @property(nonatomic, retain) PanGestureController* panGestureController;
 /// @brief The controller that manages tapping gestures.
 @property(nonatomic, retain) TapGestureController* tapGestureController;
-/// @brief The command to execute a human player's move.
-///
-/// This property is required to temporarily store a command object from the
-/// time an alert is displayed until the user dismisses the alert and the alert
-/// handler is invoked.
-///
-/// The command object is not retained.
-@property(nonatomic, assign) DiscardAndPlayCommand* discardAndPlayCommand;
 //@}
 @end
 
@@ -136,7 +129,6 @@
 @synthesize activityIndicatorController;
 @synthesize panGestureController;
 @synthesize tapGestureController;
-@synthesize discardAndPlayCommand;
 
 
 // -----------------------------------------------------------------------------
@@ -156,7 +148,6 @@
   self.activityIndicatorController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
-  self.discardAndPlayCommand = nil;
   [super dealloc];
 }
 
@@ -396,8 +387,6 @@
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
-
-  self.discardAndPlayCommand = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -423,7 +412,6 @@
   self.activityIndicatorController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
-  self.discardAndPlayCommand = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -596,17 +584,18 @@
 {
   if (AlertViewTypePlayingNowWillDiscardAllFutureMoves != alertView.tag)
     return;
+  DiscardAndPlayCommand* discardAndPlayCommand = objc_getAssociatedObject(alertView, "discardAndPlayCommand");
+  objc_setAssociatedObject(alertView, "discardAndPlayCommand", nil, OBJC_ASSOCIATION_ASSIGN);
   switch (buttonIndex)
   {
     case AlertViewButtonTypeNo:
     {
-      [self.discardAndPlayCommand release];
-      self.discardAndPlayCommand = nil;
+      [discardAndPlayCommand release];
+      discardAndPlayCommand = nil;
     }
     case AlertViewButtonTypeYes:
     {
-      [self.discardAndPlayCommand submit];  // deallocates the command
-      self.discardAndPlayCommand = nil;
+      [discardAndPlayCommand submit];  // deallocates the command
       break;
     }
     default:
@@ -673,7 +662,7 @@
     alert.tag = AlertViewTypePlayingNowWillDiscardAllFutureMoves;
     [alert show];
     // Store command object for later use by the alert handler
-    self.discardAndPlayCommand = command;
+    objc_setAssociatedObject(alert, "discardAndPlayCommand", command, OBJC_ASSOCIATION_ASSIGN);
   }
 }
 
