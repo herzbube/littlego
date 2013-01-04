@@ -38,6 +38,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameDidCreate:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
@@ -89,6 +90,7 @@
   self.scoringModel = delegate.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
@@ -129,6 +131,16 @@
     else
       [self.activityIndicator stopAnimating];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  // In case a new game is started abruptly without cleaning up state in the
+  // old game
+  [self updateActivityIndicator];
 }
 
 // -----------------------------------------------------------------------------

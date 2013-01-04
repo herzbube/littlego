@@ -125,6 +125,7 @@ enum ResponseStringSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.logItem = nil;
   [super dealloc];
 }
@@ -164,6 +165,10 @@ enum ResponseStringSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 // -----------------------------------------------------------------------------

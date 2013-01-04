@@ -235,7 +235,7 @@
   if (! [self isLegalMove:aPoint])
   {
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point argument is not a legal move"
+                                                     reason:[NSString stringWithFormat:@"Point argument is not a legal move: %@", aPoint.vertex]
                                                    userInfo:nil];
     @throw exception;
   }
@@ -248,7 +248,7 @@
   @catch (NSException* exception)
   {
     NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
-                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on point. Exception message = %@", [exception reason]]
+                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex, exception]
                                                       userInfo:nil];
     @throw newException;
   }

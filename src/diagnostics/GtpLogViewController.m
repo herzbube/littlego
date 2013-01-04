@@ -122,6 +122,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.model = nil;
   [super dealloc];
 }
@@ -195,6 +196,15 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Super's viewDidUnload does not release self.view/self.tableView for us,
+  // possibly because we override loadView and create the view ourselves
+  self.view = nil;
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.model = nil;
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 // -----------------------------------------------------------------------------

@@ -20,9 +20,7 @@
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoGame.h"
-#import "../go/GoPlayer.h"
 #import "../go/GoScore.h"
-#import "../player/Player.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../command/backup/BackupGameCommand.h"
 #import "../command/backup/CleanBackupCommand.h"
@@ -274,30 +272,7 @@ enum ActionSheetButton
 - (void) saveGame
 {
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  GoGame* game = [GoGame sharedGame];
-
-  // Determine default file name, which must be a name for which no file exists
-  // yet. The file name pattern is this:
-  //   BBB vs. WWW iii.sgf
-  // where
-  // - BBB = Black player name
-  // - WWW = White player name
-  // - iii = Numeric counter starting with 1. The counter does not use prefix
-  //         zeroes.
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* defaultGameName = nil;
-  NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
-  int suffix = 1;
-  while (true)
-  {
-    defaultGameName = [NSString stringWithFormat:@"%@ %d", prefix, suffix];
-    NSString* defaultFileName = [defaultGameName stringByAppendingString:@".sgf"];
-    NSString* defaultFilePath = [model.archiveFolder stringByAppendingPathComponent:defaultFileName];
-    if (! [fileManager fileExistsAtPath:defaultFilePath])
-      break;
-    suffix++;
-  }
-
+  NSString* defaultGameName = [model defaultGameName:[GoGame sharedGame]];
   EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
                                                                              style:EditTextControllerStyleTextField
                                                                           delegate:self] retain];

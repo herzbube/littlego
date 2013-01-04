@@ -107,7 +107,7 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  
+
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.archiveViewModel = delegate.archiveViewModel;
 
@@ -128,6 +128,15 @@
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Super's viewDidUnload does not release self.view/self.tableView for us,
+  // possibly because we override loadView and create the view ourselves
+  self.view = nil;
+  self.tableView = nil;
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
+  self.archiveViewModel = nil;
   self.placeholderView = nil;
 }
 

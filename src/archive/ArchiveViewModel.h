@@ -18,6 +18,7 @@
 
 // Forward declarations
 @class ArchiveGame;
+@class GoGame;
 
 
 // -----------------------------------------------------------------------------
@@ -39,6 +40,7 @@
 - (void) writeUserDefaults;
 - (ArchiveGame*) gameAtIndex:(int)index;
 - (ArchiveGame*) gameWithName:(NSString*)name;
+- (NSString*) defaultGameName:(GoGame*)game;
 
 /// @brief Path to folder that contains files with archived games.
 @property(nonatomic, retain) NSString* archiveFolder;

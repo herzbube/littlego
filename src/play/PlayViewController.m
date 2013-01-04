@@ -118,6 +118,7 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) releaseObjects;
 - (CGRect) mainViewFrame;
 - (CGRect) subViewFrame;
 - (CGRect) toolbarViewFrame;
@@ -130,8 +131,6 @@
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief True if this controller has been set up is now "ready for action".
-@property(nonatomic, assign) bool controllerReadyForAction;
 /// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the long-press gesture.
@@ -164,6 +163,9 @@
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
+/// @brief The controller that manages the "Game Info" view. This property is
+/// nil if the "Game Info" view is currently not visible.
+@property(nonatomic, retain) GameInfoViewController* gameInfoController;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
@@ -201,7 +203,6 @@
 
 @implementation PlayViewController
 
-@synthesize controllerReadyForAction;
 @synthesize frontSideView;
 @synthesize backSideView;
 @synthesize playView;
@@ -210,6 +211,7 @@
 @synthesize activityIndicator;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
+@synthesize gameInfoController;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize undoButton;
@@ -234,6 +236,15 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
@@ -242,6 +253,7 @@
   self.activityIndicator = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.gameInfoController = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
   self.undoButton = nil;
@@ -256,7 +268,6 @@
   self.longPressRecognizer = nil;
   self.tapRecognizer = nil;
   self.gameInfoScore = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -464,14 +475,16 @@
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   if (! delegate.applicationReadyForAction)
   {
-    self.controllerReadyForAction = false;
+    // This branch is executed during application startup
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
   }
   else
   {
+    // This branch is executed if the view is reloaded during the normal
+    // app lifecycle (e.g. because it was previously unloaded due to a memory
+    // warning)
     [self makeControllerReadyForAction];
-    self.controllerReadyForAction = true;
   }
 }
 
@@ -506,6 +519,7 @@
 
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.gameInfoController = nil;
 
   self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
                                                            style:UIBarButtonItemStyleBordered
@@ -579,28 +593,13 @@
 {
   [super viewDidUnload];
 
-  self.frontSideView = nil;
-  self.backSideView = nil;
-  self.playView = nil;
-  self.toolbar = nil;
-  self.statusLine = nil;
-  self.activityIndicator = nil;
-  self.statusLineController = nil;
-  self.activityIndicatorController = nil;
-  self.playForMeButton = nil;
-  self.passButton = nil;
-  self.undoButton = nil;
-  self.pauseButton = nil;
-  self.continueButton = nil;
-  self.interruptButton = nil;
-  self.flexibleSpaceButton = nil;
-  self.gameInfoButton = nil;
-  self.gameActionsButton = nil;
-  self.doneButton = nil;
-  self.scoringModel = nil;
-  self.longPressRecognizer = nil;
-  self.tapRecognizer = nil;
-  self.gameInfoScore = nil;
+  // Here we need to undo all of the stuff that is happening in
+  // makeControllerReadyForAction(), because makeControllerReadyForAction()
+  // will be invoked again later by viewDidLoad(). Notes:
+  // - If the game info view is currently visible, it will not be visible
+  //   anymore when viewDidLoad() is invoked the next time
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self releaseObjects];
 }
 
 // -----------------------------------------------------------------------------
@@ -771,8 +770,7 @@
     }
     score = self.gameInfoScore;
   }
-  GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
-  [gameInfoController retain];
+  self.gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
   [self.backSideView addSubview:gameInfoController.view];
 
   bool flipToFrontSideView = false;
@@ -787,7 +785,8 @@
   bool flipToFrontSideView = true;
   [self flipToFrontSideView:flipToFrontSideView];
   [controller.view removeFromSuperview];
-  [controller release];
+  assert(self.gameInfoController == controller);
+  self.gameInfoController = nil;
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)
   {
@@ -950,7 +949,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
   
   [self makeControllerReadyForAction];
-  self.controllerReadyForAction = true;
 }
 
 // -----------------------------------------------------------------------------

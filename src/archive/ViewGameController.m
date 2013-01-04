@@ -172,6 +172,11 @@ enum GameAttributesSectionItem
 - (void) viewDidUnload
 {
   [super viewDidUnload];
+
+  // Undo all of the stuff that is happening in viewDidLoad
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.game removeObserver:self forKeyPath:@"fileDate"];
+  self.navigationItem.rightBarButtonItem = nil;
 }
 
 // -----------------------------------------------------------------------------

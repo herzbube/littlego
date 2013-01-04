@@ -2,11 +2,9 @@ Hi,
 
 I believe I have found a bug in your iOS app Little Go. This is what I have found out about the problem.
 
-Description: _____
+Description: %@
 
 Steps to reproduce:
-1. _____
-2. _____
-3. _____
+%@
 
 Thanks for having a look at this.

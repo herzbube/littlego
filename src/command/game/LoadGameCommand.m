@@ -65,7 +65,6 @@
 - (void) setupKomi:(NSString*)komiFromGtp;
 - (void) setupMoves:(NSString*)movesFromGtp;
 - (void) triggerComputerPlayer;
-- (void) cleanup;
 - (void) showAlert:(NSString*)message;
 - (void) replayMoves:(NSArray*)moveList;
 //@}
@@ -122,6 +121,11 @@
   [m_komi release];
   [m_moves release];
   [m_oldCurrentDirectory release];
+  // Re-enable play view updates. We do this here because dealloc always runs,
+  // and it runs exactly once, regardless of which execution path is taken in
+  // the command (currently known paths are: command succeeds, failure before
+  // move replay starts, failure while moves are replayed)
+  [[PlayView sharedView] actionEnds];
   [super dealloc];
 }
 
@@ -341,8 +345,9 @@
   // state that matches the state of the GTP engine.
   [self startNewGameForSuccessfulCommand:false boardSize:gDefaultBoardSize];
 
-  [self cleanup];
-  [self showAlert:message];
+  // Alert must be shown on main thread, otherwise there is the possibility of
+  // a crash (it's real, I've seen the crash reports!)
+  [self performSelectorOnMainThread:@selector(showAlert:) withObject:message waitUntilDone:YES];
   DDLogError(message);
 }
 
@@ -597,7 +602,7 @@
   }
   @catch (NSException* exception)
   {
-    NSString* errorMessageFormat = @"An unexpected error occurred.\n\nException name: %@.\n\nException reason: %@.";
+    NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report, if possible with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
     NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
     [self handleCommandFailed:errorMessage];
     return;
@@ -618,7 +623,6 @@
     [[[BackupGameCommand alloc] init] submit];
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
-  [self cleanup];
 }
 
 // -----------------------------------------------------------------------------
@@ -631,16 +635,6 @@
     ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
     [command submit];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Performs mandatory cleanup steps. This method is intended to be
-/// invoked just before the command finishes executing.
-// -----------------------------------------------------------------------------
-- (void) cleanup
-{
-  // Re-enable play view updates
-  [[PlayView sharedView] actionEnds];
 }
 
 // -----------------------------------------------------------------------------

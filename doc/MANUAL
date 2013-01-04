@@ -125,6 +125,16 @@ the description of the individual profile settings.
 Troubleshooting
 --------------------------------------------------------------------------------
 
+====================================
+Computer player making illegal moves
+====================================
+There is a known issue (#90 on GitHub) where Little Go sometimes thinks that
+the computer player (i.e. Fuego) has made a move that is illegal. Until the root
+cause of the problem has been identified and fixed, when this condition occurs
+you will be asked to submit a bug report (please do!), the game in progress is
+automatically saved to the archive and a new game is started to bring the app
+back into a stable state.
+
 =====================================================
 I can/can't do X - isn't this against the game rules?
 =====================================================
@@ -137,7 +147,6 @@ a stone), you can try to work around the problem by saving the game that is
 currently in progress, then reloading the game you just saved. Loading a saved
 game is a generally useful strategy to bring Little Go back into a sane state
 whenever the app behaves buggy.
-
 
 =============
 Memory issues

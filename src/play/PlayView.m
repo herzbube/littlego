@@ -334,6 +334,7 @@ static PlayView* sharedPlayView = nil;
 - (void) actionStarts
 {
   self.actionsInProgress++;
+  DDLogVerbose(@"PlayView, actionStarts, new value for self.actionsInProgress = %d", self.actionsInProgress);
 }
 
 // -----------------------------------------------------------------------------
@@ -348,6 +349,7 @@ static PlayView* sharedPlayView = nil;
     if (self.updatesWereDelayed)
       [self updateLayers];
   }
+  DDLogVerbose(@"PlayView, actionEnds, new value for self.actionsInProgress = %d", self.actionsInProgress);
 }
 
 // -----------------------------------------------------------------------------
