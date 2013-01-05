@@ -167,6 +167,13 @@ static PlayView* sharedPlayView = nil;
   sharedPlayView = self;
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  self.playViewModel = delegate.playViewModel;
+  self.scoringModel = delegate.scoringModel;
+  // Cannot delay creation of the metrics object to makeViewReadyForDrawing()
+  // because external forces need access to the boardFrame property
+  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
+                                                          model:playViewModel] autorelease];
+
   if (! delegate.applicationReadyForAction)
   {
     self.viewReadyForDrawing = false;
@@ -236,10 +243,6 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) makeViewReadyForDrawing
 {
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.playViewModel = delegate.playViewModel;
-  self.scoringModel = delegate.scoringModel;
-
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointDistanceFromFinger = 0;
@@ -266,11 +269,6 @@ static PlayView* sharedPlayView = nil;
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
 
-  // Calculate an initial set of metrics. Later, layer delegates observe
-  // PlayViewMetrics for rectangle and board size changes and update their
-  // layers automatically.
-  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
-                                                          model:playViewModel] autorelease];
   // If we already have a game, recalculate
   if (game)
     [self.playViewMetrics updateWithBoardSize:game.board.size];
@@ -426,7 +424,7 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked when the frame of this view changes.
+/// @brief Is invoked by PlayViewController when the frame of this view changes.
 // -----------------------------------------------------------------------------
 - (void) frameChanged
 {
@@ -614,6 +612,17 @@ static PlayView* sharedPlayView = nil;
 - (GoPoint*) pointNear:(CGPoint)coordinates
 {
   return [playViewMetrics pointNear:coordinates];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (CGRect) boardFrame
+{
+  return CGRectMake(self.frame.origin.x + playViewMetrics.topLeftBoardCornerX,
+                    self.frame.origin.y + playViewMetrics.topLeftBoardCornerY,
+                    playViewMetrics.boardSideLength,
+                    playViewMetrics.boardSideLength);
 }
 
 @end

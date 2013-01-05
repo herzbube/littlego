@@ -107,5 +107,11 @@
 /// This property cannot be monitored via KVO.
 @property(nonatomic, assign) bool crossHairPointIsLegalMove;
 //@}
+/// @brief The inner frame within the entire Play view that is the Go board.
+/// This is useful for aligning other views on the Play tab with the Go board.
+///
+/// The coordinates of of the inner frame rect's origin are in the coordinate
+/// system of the PlayView superview, the same as the PlayView's frame property.
+@property(nonatomic, assign, readonly) CGRect boardFrame;
 
 @end
