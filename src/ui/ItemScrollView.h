@@ -40,18 +40,35 @@ enum ItemScrollViewOrientation
 
 // -----------------------------------------------------------------------------
 /// @brief The data source of ItemScrollView must adopt the
-/// ItemScrollViewDataSource protocol. The data source is responsible for
-/// providing new item views when they are requested by
-/// ItemScrollViewDataSource.
+/// ItemScrollViewDataSource protocol.
+///
+/// The data source is responsible for providing new item views when they are
+/// requested by ItemScrollViewDataSource.
 // -----------------------------------------------------------------------------
 @protocol ItemScrollViewDataSource
+@required
 /// @brief This method is invoked once to calculate the scroll view's content
 /// size.
 - (int) numberOfItemsInItemScrollView:(ItemScrollView*)itemScrollView;
-/// @brief This method is invoked once to calculate the scroll view's content
-/// size.
-- (int) itemWidthOrHeightInItemScrollView:(ItemScrollView*)itemScrollView;
+/// @brief This method is invoked whenever the ItemScrollView needs item views
+/// to populate the visible content area.
 - (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index;
+
+@optional
+/// @brief This method is invoked once to calculate the scroll view's content
+/// size width.
+///
+/// This method is invoked only if the ItemScrollView's orientation is
+/// horizontal. Data sources do not need to implement this if the ItemScrollView
+/// orientation is vertical.
+- (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView;
+/// @brief This method is invoked once to calculate the scroll view's content
+/// size height.
+///
+/// This method is invoked only if the ItemScrollView's orientation is
+/// vertical. Data sources do not need to implement this if the ItemScrollView
+/// orientation is horizontal.
+- (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView;
 @end
 
 
@@ -94,7 +111,7 @@ enum ItemScrollViewOrientation
 /// user is scrolling quickly and a large number of new item views needs to be
 /// created in quick succession. For this reason it is recommended to make item
 /// views as light-weight as possible.
-/// 
+///
 ///
 /// @par Credits
 ///
@@ -115,6 +132,7 @@ enum ItemScrollViewOrientation
 
 - (id) initWithFrame:(CGRect)frame;
 - (id) initWithFrame:(CGRect)frame orientation:(enum ItemScrollViewOrientation)orientation;
+- (void) reloadData;
 
 /// @brief The orientation of the ItemScrollView, i.e. in which direction should
 /// scrolling be enabled.

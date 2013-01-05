@@ -35,6 +35,7 @@
 //@{
 - (void) setupItemContainerView;
 - (void) removeAllVisibleItems;
+- (void) resetScrollPosition;
 - (void) updateContentSize;
 - (void) updateVisibleAreaWithMinimumEdge:(CGFloat)minimumEdge maximumEdge:(CGFloat)maximumEdge;
 - (void) updateVisibleAreaAtMaximumEdge:(CGFloat)maximumVisible;
@@ -147,14 +148,22 @@
     @throw exception;
   }
   itemScrollViewDataSource = dataSource;
-
-  [self removeAllVisibleItems];
-  [self updateContentSize];
-  [self setNeedsDisplay];  // force layout update
+  [self reloadData];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for setItemScrollViewDataSource:()
+/// @brief Reloads everything from scratch.
+// -----------------------------------------------------------------------------
+- (void) reloadData
+{
+  [self removeAllVisibleItems];
+  [self resetScrollPosition];
+  [self updateContentSize];
+  [self setNeedsLayout];  // force layout update
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for reloadData()
 // -----------------------------------------------------------------------------
 - (void) removeAllVisibleItems
 {
@@ -167,17 +176,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for setItemScrollViewDataSource:()
+/// @brief Internal helper for reloadData()
+// -----------------------------------------------------------------------------
+- (void) resetScrollPosition
+{
+  self.contentOffset = CGPointMake(0, 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for reloadData()
 // -----------------------------------------------------------------------------
 - (void) updateContentSize
 {
   numberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
-  int itemWidthOrHeight = [itemScrollViewDataSource itemWidthOrHeightInItemScrollView:self];
-  CGFloat contentWidthOrHeight = numberOfItemsInItemScrollView * itemWidthOrHeight;
   if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
-    self.contentSize = CGSizeMake(contentWidthOrHeight, self.frame.size.height);
+  {
+    int itemWidth = [itemScrollViewDataSource itemWidthInItemScrollView:self];
+    CGFloat contentWidth = numberOfItemsInItemScrollView * itemWidth;
+    self.contentSize = CGSizeMake(contentWidth, self.frame.size.height);
+  }
   else
-    self.contentSize = CGSizeMake(self.frame.size.width, contentWidthOrHeight);
+  {
+    int itemHeight = [itemScrollViewDataSource itemHeightInItemScrollView:self];
+    CGFloat contentHeight = numberOfItemsInItemScrollView * itemHeight;
+    self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
+  }
   itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
 }
 
