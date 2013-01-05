@@ -20,7 +20,9 @@
 #import "ActivityIndicatorController.h"
 #import "BoardPositionModel.h"
 #import "DebugPlayViewController.h"
+#import "MoveListController.h"
 #import "PlayView.h"
+#import "PlayViewModel.h"
 #import "StatusLineController.h"
 #import "ToolbarController.h"
 #import "gesture/TapGestureController.h"
@@ -73,14 +75,22 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) makeControllerReadyForAction;
+- (void) setupMainView;
+- (void) setupSubviews;
+- (void) setupToolbar;
+- (void) setupPlayView;
+- (void) setupActivityIndicatorView;
+- (void) setupStatusLineView;
+- (void) setupMoveListView;
+- (void) setupDebugView;
 - (CGRect) mainViewFrame;
-- (CGRect) subViewFrame;
-- (CGRect) toolbarViewFrame;
+- (CGRect) subviewFrame;
+- (CGRect) toolbarFrame;
 - (CGRect) playViewFrame;
+- (CGRect) moveListViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
-- (int) statusLineNumberOfTextLines;
-- (void) makeControllerReadyForAction;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 - (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
 - (void) alertCannotPlayOnComputersTurn;
@@ -97,12 +107,16 @@
 @property(nonatomic, retain) PlayView* playView;
 /// @brief The toolbar that displays action buttons.
 @property(nonatomic, retain) UIToolbar* toolbar;
+/// @brief The view that displays the list of moves in the current game.
+@property(nonatomic, retain) ItemScrollView* moveListView;
 /// @brief The status line that displays messages to the user.
 @property(nonatomic, retain) UILabel* statusLine;
 /// @brief The activity indicator that is animated for long running operations.
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 /// @brief The controller that manages the toolbar.
 @property(nonatomic, retain) ToolbarController* toolbarController;
+/// @brief The controller that manages the move list.
+@property(nonatomic, retain) MoveListController* moveListController;
 /// @brief The controller that manages the status line.
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
@@ -122,9 +136,11 @@
 @synthesize backSideView;
 @synthesize playView;
 @synthesize toolbar;
+@synthesize moveListView;
 @synthesize statusLine;
 @synthesize activityIndicator;
 @synthesize toolbarController;
+@synthesize moveListController;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
 @synthesize panGestureController;
@@ -141,9 +157,11 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
+  self.moveListView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
+  self.moveListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.panGestureController = nil;
@@ -156,12 +174,8 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  // Create view hierarchy
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  CGRect subViewFrame = [self subViewFrame];
-  self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-  self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
+  [self setupMainView];
+
   // Add frontside view to the main view already here, do not wait until
   // makeControllerReadyForAction is invoked. Reason: If the user is holding the
   // device in landscape orientation while the application is starting up, iOS
@@ -172,58 +186,23 @@
   // fail. Because startup auto-rotation happens before
   // makeControllerReadyForAction is called, we must add the frontside view
   // to the main view here.
-  [self.view addSubview:self.frontSideView];
-  CGRect toolbarFrame = [self toolbarViewFrame];
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
-  [self.frontSideView addSubview:self.toolbar];
-  CGRect playViewFrame = [self playViewFrame];
-  self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
-  [self.frontSideView addSubview:self.playView];
-  CGRect statusLineViewFrame = [self statusLineViewFrame];
-  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
-  [self.frontSideView addSubview:self.statusLine];
-  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
-  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  [self.frontSideView addSubview:self.activityIndicator];
+  [self setupSubviews];
 
-  // Activate the following code to display controls that you can use to change
-  // Play view drawing parameters that are normally immutable at runtime. This
-  // is nice for debugging changes to the drawing system.
-//  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
-//  [self.frontSideView addSubview:debugPlayViewController.view];
-//  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
-//  debugPlayViewFrame.origin.y += toolbarFrame.size.height;
-//  debugPlayViewController.view.frame = debugPlayViewFrame;
-  
-  // Configure autoresizingMask properties for proper autorotation
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
-                                    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
-  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
-  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
-
-  // Set common background color for all elements on the frontside view
-  [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
-  self.playView.backgroundColor = [UIColor clearColor];
-  self.statusLine.backgroundColor = [UIColor clearColor];
-
-  // If the view is resized, the Go board needs to be redrawn (occurs during
-  // rotation animation)
-  self.playView.contentMode = UIViewContentModeRedraw;
-
-  // Other configuration
-  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
-  self.statusLine.numberOfLines = [self statusLineNumberOfTextLines];
-  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  // Setup of remaining views is delayed to makeControllerReadyForAction()
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of this controller's main view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief This is an internal helper invoked by loadView().
+// -----------------------------------------------------------------------------
+- (void) setupMainView
+{
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupMainView().
 // -----------------------------------------------------------------------------
 - (CGRect) mainViewFrame
 {
@@ -237,11 +216,24 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the frontside and backside subviews, taking
-/// into account the current interface orientation. Assumes that super views
-/// have the correct bounds.
+/// @brief This is an internal helper invoked by loadView().
 // -----------------------------------------------------------------------------
-- (CGRect) subViewFrame
+- (void) setupSubviews
+{
+  CGRect subViewFrame = [self subviewFrame];
+  self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
+  self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
+  [self.view addSubview:self.frontSideView];
+  self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  // Set common background color for all elements on the frontside view
+  [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupSubviews().
+// -----------------------------------------------------------------------------
+- (CGRect) subviewFrame
 {
   CGSize superViewSize = self.view.bounds.size;
   int subViewX = 0;
@@ -252,11 +244,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the toolbar view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (CGRect) toolbarViewFrame
+- (void) setupToolbar
+{
+  CGRect toolbarFrame = [self toolbarFrame];
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  [self.frontSideView addSubview:self.toolbar];
+  self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupToolbar().
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarFrame
 {
   CGSize superViewSize = self.frontSideView.bounds.size;
   int toolbarViewX = 0;
@@ -267,9 +268,23 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the play view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupPlayView
+{
+  CGRect playViewFrame = [self playViewFrame];
+  self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
+  [self.frontSideView addSubview:self.playView];
+  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
+  self.playView.backgroundColor = [UIColor clearColor];
+  // If the view is resized, the Go board needs to be redrawn (occurs during
+  // rotation animation)
+  self.playView.contentMode = UIViewContentModeRedraw;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupPlayView().
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
@@ -277,10 +292,7 @@
   // rectangle.
   CGSize superViewSize = self.frontSideView.bounds.size;
   int playViewFullWidth = superViewSize.width;
-  int playViewFullHeight = (superViewSize.height
-                            - [UiElementMetrics toolbarHeight]
-                            - [UiElementMetrics spacingVertical]
-                            - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]));
+  int playViewFullHeight = superViewSize.height - self.toolbar.frame.size.height;
 
   // Now make the view square so that auto-rotation on orientation change does
   // not cause the view to be squashed or stretched. This is possibly not
@@ -295,54 +307,128 @@
     playViewSideLength = playViewFullHeight;
 
   // Calculate the final values
-  int playViewX = (superViewSize.width - playViewSideLength) / 2;  // center horizontally
-  int playViewY = [UiElementMetrics toolbarHeight];                // place just below the toolbar
+  int playViewX = floor((superViewSize.width - playViewSideLength) / 2);  // center horizontally
+  int playViewY = (self.toolbar.frame.origin.y
+                   + self.toolbar.frame.size.height);
   int playViewWidth = playViewSideLength;
   int playViewHeight = playViewSideLength;
   return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the status line view, taking into account
-/// the current interface orientation. Assumes that super views have the
-/// correct bounds.
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (CGRect) statusLineViewFrame
+- (void) setupActivityIndicatorView
 {
-  CGSize superViewSize = self.frontSideView.bounds.size;
-  int statusLineViewX = 0;
-  int statusLineViewY = superViewSize.height - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]);
-  int statusLineViewWidth = (superViewSize.width
-                             - [UiElementMetrics spacingHorizontal]
-                             - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  int statusLineViewHeight = [UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines];
-  return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
+  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
+  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
+  [self.frontSideView addSubview:self.activityIndicator];
+  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
+  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the activity indicator view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief This is an internal helper invoked by setupActivityIndicatorView().
 // -----------------------------------------------------------------------------
 - (CGRect) activityIndicatorViewFrame
 {
-  CGSize superViewSize = self.frontSideView.bounds.size;
-  int activityIndicatorViewX = superViewSize.width - [UiElementMetrics activityIndicatorWidthAndHeight];
-  int activityIndicatorViewY = superViewSize.height - [UiElementMetrics activityIndicatorWidthAndHeight];
+  CGRect boardFrame = self.playView.boardFrame;
+  int activityIndicatorViewX = (boardFrame.origin.x
+                                + boardFrame.size.width
+                                - [UiElementMetrics activityIndicatorWidthAndHeight]);
+  int activityIndicatorViewY = boardFrame.origin.y + boardFrame.size.height;
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns how many number of text lines the status line should display.
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (int) statusLineNumberOfTextLines
+- (void) setupStatusLineView
+{
+  CGRect statusLineViewFrame = [self statusLineViewFrame];
+  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
+  [self.frontSideView addSubview:self.statusLine];
+  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
+  self.statusLine.backgroundColor = [UIColor clearColor];
+  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLine.numberOfLines = 1;
+  self.statusLine.font = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupStatusLineView().
+// -----------------------------------------------------------------------------
+- (CGRect) statusLineViewFrame
+{
+  CGRect boardFrame = self.playView.boardFrame;
+  CGRect activityIndicatorFrame = self.activityIndicator.frame;
+  int statusLineViewX = boardFrame.origin.x;
+  int statusLineViewWidth = (boardFrame.size.width
+                             - [UiElementMetrics spacingHorizontal]
+                             - activityIndicatorFrame.size.width);
+  UIFont* statusLineViewFont = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
+  CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
+                               constrainedToSize:constraintSize
+                                   lineBreakMode:UILineBreakModeWordWrap];
+  int statusLineViewHeight = statusLineTextSize.height;
+  int statusLineViewY = (boardFrame.origin.y
+                         + boardFrame.size.height
+                         + floor((activityIndicatorFrame.size.height - statusLineViewHeight) / 2));
+  return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupMoveListView
+{
+  self.moveListController = [[[MoveListController alloc] init] autorelease];
+  self.moveListView = self.moveListController.moveListView;
+  self.moveListView.frame = [self moveListViewFrame];
+  [self.frontSideView addSubview:self.moveListView];
+  self.moveListView.backgroundColor = [UIColor clearColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupMoveListView().
+// -----------------------------------------------------------------------------
+- (CGRect) moveListViewFrame
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return 2;
+  {
+    CGRect boardFrame = self.playView.boardFrame;
+    CGRect activityIndicatorFrame = self.activityIndicator.frame;
+    // TODO xxx either let controller do this, or do it all here
+    int moveListViewX = boardFrame.origin.x;
+    int moveListViewY = (activityIndicatorFrame.origin.y
+                         + activityIndicatorFrame.size.height);
+    int moveListViewWidth = boardFrame.size.width;
+    int moveListViewHeight = self.moveListController.moveListViewHeight;
+    return CGRectMake(moveListViewX, moveListViewY, moveListViewWidth, moveListViewHeight);
+  }
   else
-    return 1;
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupDebugView
+{
+  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
+  [self.frontSideView addSubview:debugPlayViewController.view];
+  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
+  debugPlayViewFrame.origin.y += self.toolbar.frame.size.height;
+  debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
 // -----------------------------------------------------------------------------
@@ -379,6 +465,16 @@
     assert(0);
   }
 
+  [self setupToolbar];
+  [self setupPlayView];
+  [self setupActivityIndicatorView];
+  [self setupStatusLineView];
+  [self setupMoveListView];
+  // Activate the following code to display controls that you can use to change
+  // Play view drawing parameters that are normally immutable at runtime. This
+  // is nice for debugging changes to the drawing system.
+//  [self setupDebugView];
+  
   self.toolbarController = [[[ToolbarController alloc] initWithToolbar:self.toolbar
                                                           scoringModel:scoringModel
                                                               delegate:self
@@ -387,6 +483,8 @@
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
+  
+  self.moveListView.itemScrollViewDataSource = moveListController;
 }
 
 // -----------------------------------------------------------------------------
@@ -405,9 +503,11 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
+  self.moveListView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
+  self.moveListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.panGestureController = nil;
