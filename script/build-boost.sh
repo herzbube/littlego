@@ -120,23 +120,33 @@ WRITE_BJAM_USERCONFIG()
   # - The next field specifies compiler options, the syntax is
   #   <option-name>option-value
   # - The last field specifies conditions
-  cat >> "$BJAM_USERCONFIG_FILE" <<EOF
+  if test "$IPHONEOS_BUILD_ENABLED" = "1"; then
+    cat >> "$BJAM_USERCONFIG_FILE" <<EOF
 using darwin : gcc~$IPHONEOS_PREFIX
    : $IPHONEOS_CC $IPHONEOS_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONEOS_CPPFLAGS $BOOST_IPHONEOS_CPPFLAGS
    : <striper>
    : <architecture>arm <target-os>iphone
    ;
+EOF
+  fi
+  if test "$IPHONE_SIMULATOR_BUILD_ENABLED" = "1"; then
+    cat >> "$BJAM_USERCONFIG_FILE" <<EOF
 using darwin : gcc~$IPHONE_SIMULATOR_PREFIX
    : $IPHONE_SIMULATOR_CC $IPHONE_SIMULATOR_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONESIMULATOR_CPPFLAGS $BOOST_IPHONE_SIMULATOR_CPPFLAGS
    : <striper>
    : <architecture>x86 <target-os>iphone
    ;
+EOF
+  fi
+  if test "$MACOSX_BUILD_ENABLED" = "1"; then
+    cat >> "$BJAM_USERCONFIG_FILE" <<EOF
 using darwin : gcc~$MACOSX_PREFIX
    : $MACOSX_CC $MACOSX_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $MACOSX_CPPFLAGS $BOOST_MACOSX_CPPFLAGS
    : <striper>
    : <target-os>darwin
    ;
 EOF
+  fi
 
   return 0
 }
@@ -252,20 +262,26 @@ RUN_BJAM()
       ;;
   esac
 
-  echo "$BJAM_OPERATION_VERB Boost for $IPHONEOS_PREFIX"
-  ./bjam --prefix="$IPHONEOS_PREFIXDIR"         $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $IPHONEOS_BJAMFLAGS         $BOOST_IPHONEOS_BJAMFLAGS         $BJAM_OPERATION
-  if test $? -ne 0; then
-    return 1
+  if test "$IPHONEOS_BUILD_ENABLED" = "1"; then
+    echo "$BJAM_OPERATION_VERB Boost for $IPHONEOS_PREFIX"
+    ./bjam --prefix="$IPHONEOS_PREFIXDIR"         $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $IPHONEOS_BJAMFLAGS         $BOOST_IPHONEOS_BJAMFLAGS         $BJAM_OPERATION
+    if test $? -ne 0; then
+      return 1
+    fi
   fi
-  echo "$BJAM_OPERATION_VERB Boost for $IPHONE_SIMULATOR_PREFIX"
-  ./bjam --prefix="$IPHONE_SIMULATOR_PREFIXDIR" $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $IPHONE_SIMULATOR_BJAMFLAGS $BOOST_IPHONE_SIMULATOR_BJAMFLAGS $BJAM_OPERATION
-  if test $? -ne 0; then
-    return 1
+  if test "$IPHONE_SIMULATOR_BUILD_ENABLED" = "1"; then
+    echo "$BJAM_OPERATION_VERB Boost for $IPHONE_SIMULATOR_PREFIX"
+    ./bjam --prefix="$IPHONE_SIMULATOR_PREFIXDIR" $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $IPHONE_SIMULATOR_BJAMFLAGS $BOOST_IPHONE_SIMULATOR_BJAMFLAGS $BJAM_OPERATION
+    if test $? -ne 0; then
+      return 1
+    fi
   fi
-  echo "$BJAM_OPERATION_VERB Boost for $MACOSX_PREFIX"
-  ./bjam --prefix="$MACOSX_PREFIXDIR"           $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $MACOSX_BJAMFLAGS           $BOOST_MACOSX_BJAMFLAGS           $BJAM_OPERATION
-  if test $? -ne 0; then
-    return 1
+  if test "$MACOSX_BUILD_ENABLED" = "1"; then
+    echo "$BJAM_OPERATION_VERB Boost for $MACOSX_PREFIX"
+    ./bjam --prefix="$MACOSX_PREFIXDIR"           $CLEAN_BJAMFLAG $COMMON_BJAMFLAGS $BOOST_COMMON_BJAMFLAGS $MACOSX_BJAMFLAGS           $BOOST_MACOSX_BJAMFLAGS           $BJAM_OPERATION
+    if test $? -ne 0; then
+      return 1
+    fi
   fi
 
   return 0
