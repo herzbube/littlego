@@ -17,15 +17,15 @@
 
 // Project includes
 #import "BoardPositionListController.h"
-#import "../go/GoBoardPosition.h"
-#import "../go/GoGame.h"
-#import "../go/GoMove.h"
-#import "../go/GoMoveModel.h"
-#import "../go/GoPlayer.h"
-#import "../go/GoPoint.h"
-#import "../go/GoVertex.h"
-#import "../ui/UiElementMetrics.h"
-#import "../ui/UiUtilities.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoMove.h"
+#import "../../go/GoMoveModel.h"
+#import "../../go/GoPlayer.h"
+#import "../../go/GoPoint.h"
+#import "../../go/GoVertex.h"
+#import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
