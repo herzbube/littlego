@@ -20,25 +20,25 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The MoveListController class xxx
+/// @brief The BoardPositionListController class xxx
 ///
 /// Properties have different values depending on the device type and the
 /// current device orientation.
 ///
-/// moveListView frame must be set by outsider
+/// boardPositionListView frame must be set by outsider
 // -----------------------------------------------------------------------------
-@interface MoveListController : NSObject <ItemScrollViewDataSource>
+@interface BoardPositionListController : NSObject <ItemScrollViewDataSource>
 {
 }
 
-+ (int) moveListViewFontSize;
++ (int) boardPositionListViewFontSize;
 - (id) init;
 
-/// @brief The move list view.
-@property(nonatomic, assign, readonly) ItemScrollView* moveListView;
-/// @brief The move list view's total width.
-@property(nonatomic, assign, readonly) int moveListViewWidth;
-/// @brief The move list view's total height.
-@property(nonatomic, assign, readonly) int moveListViewHeight;
+/// @brief The board position list view.
+@property(nonatomic, assign, readonly) ItemScrollView* boardPositionListView;
+/// @brief The board position list view's total width.
+@property(nonatomic, assign, readonly) int boardPositionListViewWidth;
+/// @brief The board position list view's total height.
+@property(nonatomic, assign, readonly) int boardPositionListViewHeight;
 
 @end

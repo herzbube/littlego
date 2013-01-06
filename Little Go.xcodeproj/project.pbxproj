@@ -200,7 +200,6 @@
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
-		CDAE4B921694BA26003CA31D /* MoveListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAE4B911694BA25003CA31D /* MoveListController.m */; };
 		CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FC152B6C62003B2BBF /* 42-info.png */; };
 		CDB0A2FF152B6C62003B2BBF /* 42-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */; };
 		CDB0A303152B6D53003B2BBF /* 108-badge.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A301152B6D53003B2BBF /* 108-badge.png */; };
@@ -236,6 +235,7 @@
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
 		CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
+		CDDD7699169A004000F42804 /* BoardPositionListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD7698169A004000F42804 /* BoardPositionListController.m */; };
 		CDE022D9155731740052ACE0 /* appicon-ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D6155731740052ACE0 /* appicon-ipad.png */; };
 		CDE022DA155731740052ACE0 /* appicon-iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D7155731740052ACE0 /* appicon-iphone.png */; };
 		CDE022DB155731740052ACE0 /* appicon-iphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D8155731740052ACE0 /* appicon-iphone@2x.png */; };
@@ -551,8 +551,6 @@
 		CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
 		CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameController.h; sourceTree = "<group>"; };
 		CDAB5ED013E483DE00C4A4AA /* NewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameController.m; sourceTree = "<group>"; };
-		CDAE4B901694BA25003CA31D /* MoveListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoveListController.h; sourceTree = "<group>"; };
-		CDAE4B911694BA25003CA31D /* MoveListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoveListController.m; sourceTree = "<group>"; };
 		CDB0A2FC152B6C62003B2BBF /* 42-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info.png"; sourceTree = "<group>"; };
 		CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info@2x.png"; sourceTree = "<group>"; };
 		CDB0A301152B6D53003B2BBF /* 108-badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "108-badge.png"; sourceTree = "<group>"; };
@@ -604,6 +602,8 @@
 		CDDD526114840A540027476B /* ScoringSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringSettingsController.m; sourceTree = "<group>"; };
 		CDDD52681485B05B0027476B /* DocumentGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentGenerator.h; sourceTree = "<group>"; };
 		CDDD52691485B05C0027476B /* DocumentGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentGenerator.m; sourceTree = "<group>"; };
+		CDDD7697169A004000F42804 /* BoardPositionListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionListController.h; sourceTree = "<group>"; };
+		CDDD7698169A004000F42804 /* BoardPositionListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListController.m; sourceTree = "<group>"; };
 		CDE022D6155731740052ACE0 /* appicon-ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-ipad.png"; sourceTree = "<group>"; };
 		CDE022D7155731740052ACE0 /* appicon-iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone.png"; sourceTree = "<group>"; };
 		CDE022D8155731740052ACE0 /* appicon-iphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-iphone@2x.png"; sourceTree = "<group>"; };
@@ -981,14 +981,14 @@
 				CDF8B76714D9E91F00940D3E /* layer */,
 				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
 				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
+				CDDD7697169A004000F42804 /* BoardPositionListController.h */,
+				CDDD7698169A004000F42804 /* BoardPositionListController.m */,
 				CD15A48A168D21A100D4472A /* BoardPositionModel.h */,
 				CD15A48B168D21A200D4472A /* BoardPositionModel.m */,
 				CD0DFEDA14F01C17000FE1B5 /* DebugPlayViewController.h */,
 				CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */,
 				CD721FE11461E8FA005EAC65 /* GameInfoViewController.h */,
 				CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */,
-				CDAE4B901694BA25003CA31D /* MoveListController.h */,
-				CDAE4B911694BA25003CA31D /* MoveListController.m */,
 				CD10887B1326D2C100E83543 /* PlayView.h */,
 				CD10887C1326D2C100E83543 /* PlayView.m */,
 				CDD48D891412BEFB00188B6A /* PlayViewActionSheetController.h */,
@@ -1813,7 +1813,7 @@
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD3A09A51693A50700ABDB5D /* ToolbarController.m in Sources */,
-				CDAE4B921694BA26003CA31D /* MoveListController.m in Sources */,
+				CDDD7699169A004000F42804 /* BoardPositionListController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

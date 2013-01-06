@@ -20,7 +20,7 @@
 #import "ActivityIndicatorController.h"
 #import "BoardPositionModel.h"
 #import "DebugPlayViewController.h"
-#import "MoveListController.h"
+#import "BoardPositionListController.h"
 #import "PlayView.h"
 #import "PlayViewModel.h"
 #import "StatusLineController.h"
@@ -82,13 +82,13 @@
 - (void) setupPlayView;
 - (void) setupActivityIndicatorView;
 - (void) setupStatusLineView;
-- (void) setupMoveListView;
+- (void) setupBoardPositionListView;
 - (void) setupDebugView;
 - (CGRect) mainViewFrame;
 - (CGRect) subviewFrame;
 - (CGRect) toolbarFrame;
 - (CGRect) playViewFrame;
-- (CGRect) moveListViewFrame;
+- (CGRect) boardPositionListViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
@@ -107,16 +107,17 @@
 @property(nonatomic, retain) PlayView* playView;
 /// @brief The toolbar that displays action buttons.
 @property(nonatomic, retain) UIToolbar* toolbar;
-/// @brief The view that displays the list of moves in the current game.
-@property(nonatomic, retain) ItemScrollView* moveListView;
+/// @brief The view that displays the list of board positions in the current
+/// game.
+@property(nonatomic, retain) ItemScrollView* boardPositionListView;
 /// @brief The status line that displays messages to the user.
 @property(nonatomic, retain) UILabel* statusLine;
 /// @brief The activity indicator that is animated for long running operations.
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 /// @brief The controller that manages the toolbar.
 @property(nonatomic, retain) ToolbarController* toolbarController;
-/// @brief The controller that manages the move list.
-@property(nonatomic, retain) MoveListController* moveListController;
+/// @brief The controller that manages the board position list.
+@property(nonatomic, retain) BoardPositionListController* boardPositionListController;
 /// @brief The controller that manages the status line.
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
@@ -136,11 +137,11 @@
 @synthesize backSideView;
 @synthesize playView;
 @synthesize toolbar;
-@synthesize moveListView;
+@synthesize boardPositionListView;
 @synthesize statusLine;
 @synthesize activityIndicator;
 @synthesize toolbarController;
-@synthesize moveListController;
+@synthesize boardPositionListController;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
 @synthesize panGestureController;
@@ -157,11 +158,11 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
-  self.moveListView = nil;
+  self.boardPositionListView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
-  self.moveListController = nil;
+  self.boardPositionListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.panGestureController = nil;
@@ -354,7 +355,7 @@
   self.statusLine.backgroundColor = [UIColor clearColor];
   self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
   self.statusLine.numberOfLines = 1;
-  self.statusLine.font = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+  self.statusLine.font = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
 }
 
 // -----------------------------------------------------------------------------
@@ -368,7 +369,7 @@
   int statusLineViewWidth = (boardFrame.size.width
                              - [UiElementMetrics spacingHorizontal]
                              - activityIndicatorFrame.size.width);
-  UIFont* statusLineViewFont = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+  UIFont* statusLineViewFont = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
                                constrainedToSize:constraintSize
@@ -383,31 +384,31 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (void) setupMoveListView
+- (void) setupBoardPositionListView
 {
-  self.moveListController = [[[MoveListController alloc] init] autorelease];
-  self.moveListView = self.moveListController.moveListView;
-  self.moveListView.frame = [self moveListViewFrame];
-  [self.frontSideView addSubview:self.moveListView];
-  self.moveListView.backgroundColor = [UIColor clearColor];
+  self.boardPositionListController = [[[BoardPositionListController alloc] init] autorelease];
+  self.boardPositionListView = self.boardPositionListController.boardPositionListView;
+  self.boardPositionListView.frame = [self boardPositionListViewFrame];
+  [self.frontSideView addSubview:self.boardPositionListView];
+  self.boardPositionListView.backgroundColor = [UIColor clearColor];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupMoveListView().
+/// @brief This is an internal helper invoked by setupBoardPositionListView().
 // -----------------------------------------------------------------------------
-- (CGRect) moveListViewFrame
+- (CGRect) boardPositionListViewFrame
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     CGRect boardFrame = self.playView.boardFrame;
     CGRect activityIndicatorFrame = self.activityIndicator.frame;
     // TODO xxx either let controller do this, or do it all here
-    int moveListViewX = boardFrame.origin.x;
-    int moveListViewY = (activityIndicatorFrame.origin.y
-                         + activityIndicatorFrame.size.height);
-    int moveListViewWidth = boardFrame.size.width;
-    int moveListViewHeight = self.moveListController.moveListViewHeight;
-    return CGRectMake(moveListViewX, moveListViewY, moveListViewWidth, moveListViewHeight);
+    int boardPositionListViewX = boardFrame.origin.x;
+    int boardPositionListViewY = (activityIndicatorFrame.origin.y
+                                  + activityIndicatorFrame.size.height);
+    int boardPositionListViewWidth = boardFrame.size.width;
+    int boardPositionListViewHeight = self.boardPositionListController.boardPositionListViewHeight;
+    return CGRectMake(boardPositionListViewX, boardPositionListViewY, boardPositionListViewWidth, boardPositionListViewHeight);
   }
   else
   {
@@ -469,7 +470,7 @@
   [self setupPlayView];
   [self setupActivityIndicatorView];
   [self setupStatusLineView];
-  [self setupMoveListView];
+  [self setupBoardPositionListView];
   // Activate the following code to display controls that you can use to change
   // Play view drawing parameters that are normally immutable at runtime. This
   // is nice for debugging changes to the drawing system.
@@ -484,7 +485,7 @@
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
   
-  self.moveListView.itemScrollViewDataSource = moveListController;
+  self.boardPositionListView.itemScrollViewDataSource = boardPositionListController;
 }
 
 // -----------------------------------------------------------------------------
@@ -503,11 +504,11 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
-  self.moveListView = nil;
+  self.boardPositionListView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
-  self.moveListController = nil;
+  self.boardPositionListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.panGestureController = nil;

@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "MoveListController.h"
+#import "BoardPositionListController.h"
 #import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
@@ -29,9 +29,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for MoveListController.
+/// @brief Class extension with private methods for BoardPositionListController.
 // -----------------------------------------------------------------------------
-@interface MoveListController()
+@interface BoardPositionListController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -55,13 +55,13 @@
 - (void) setupLabelSize;
 - (void) setupStoneImageSize;
 - (void) setupStoneImages;
-- (void) setupMoveViewSize;
-- (void) setupMoveListViewSize;
-- (void) setupMoveListView;
+- (void) setupBoardPositionViewSize;
+- (void) setupBoardPositionListViewSize;
+- (void) setupBoardPositionListView;
 - (NSString*) labelTextForMove:(GoMove*)move moveIndex:(int)moveIndex;
 - (UILabel*) labelWithText:(NSString*)labelText;
 - (UIImageView*) stoneImageViewForMove:(GoMove*)move;
-- (UIView*) moveViewForMove:(GoMove*)move;
+- (UIView*) boardPositionViewForMove:(GoMove*)move;
 - (UIImage*) stoneImageWithSize:(CGSize)size color:(UIColor*)color;
 //@}
 /// @name Privately declared properties
@@ -75,29 +75,29 @@
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
 @property(nonatomic, assign) CGRect stoneImageViewFrame;
-@property(nonatomic, assign) int moveViewWidth;
-@property(nonatomic, assign) int moveViewHeight;
-/// @brief Number of pixels to use for internal padding of a move view (i.e.
-/// how much space should be between the left move view edge and the label, and
-/// the right move view edge and the stone image).
-@property(nonatomic, assign) int moveViewHorizontalPadding;
-/// @brief Number of pixels to use for internal spacing of a move view (i.e.
-/// how much space should be between the label and the stone image).
-@property(nonatomic, assign) int moveViewHorizontalSpacing;
-@property(nonatomic, assign) CGRect moveViewFrame;
+@property(nonatomic, assign) int boardPositionViewWidth;
+@property(nonatomic, assign) int boardPositionViewHeight;
+/// @brief Number of pixels to use for internal padding of a board position view
+/// (i.e. how much space should be between the left view edge and the label,
+/// and the right view edge and the stone image).
+@property(nonatomic, assign) int boardPositionViewHorizontalPadding;
+/// @brief Number of pixels to use for internal spacing of a board position view
+/// (i.e. how much space should be between the label and the stone image).
+@property(nonatomic, assign) int boardPositionViewHorizontalSpacing;
+@property(nonatomic, assign) CGRect boardPositionViewFrame;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(nonatomic, assign, readwrite) ItemScrollView* moveListView;
-@property(nonatomic, assign, readwrite) int moveListViewWidth;
-@property(nonatomic, assign, readwrite) int moveListViewHeight;
+@property(nonatomic, assign, readwrite) ItemScrollView* boardPositionListView;
+@property(nonatomic, assign, readwrite) int boardPositionListViewWidth;
+@property(nonatomic, assign, readwrite) int boardPositionListViewHeight;
 //@}
 @end
 
 
-@implementation MoveListController
+@implementation BoardPositionListController
 
-@synthesize moveListView;
+@synthesize boardPositionListView;
 @synthesize labelWidth;
 @synthesize labelHeight;
 @synthesize labelNumberOfLines;
@@ -107,29 +107,28 @@
 @synthesize blackStoneImage;
 @synthesize whiteStoneImage;
 @synthesize stoneImageViewFrame;
-@synthesize moveViewWidth;
-@synthesize moveViewHeight;
-@synthesize moveViewHorizontalPadding;
-@synthesize moveViewHorizontalSpacing;
-@synthesize moveListViewWidth;
-@synthesize moveListViewHeight;
-@synthesize moveViewFrame;
+@synthesize boardPositionViewWidth;
+@synthesize boardPositionViewHeight;
+@synthesize boardPositionViewHorizontalPadding;
+@synthesize boardPositionViewHorizontalSpacing;
+@synthesize boardPositionListViewWidth;
+@synthesize boardPositionListViewHeight;
+@synthesize boardPositionViewFrame;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the size of the font used to render text in the move list
-/// view.
+/// @brief Returns the size of the font used to render text in the board
+/// position list view.
 // -----------------------------------------------------------------------------
-+ (int) moveListViewFontSize
++ (int) boardPositionListViewFontSize
 {
   return 11;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a MoveListController object that manages
-/// @a aMoveListView.
+/// @brief Initializes a BoardPositionListController object.
 ///
-/// @note This is the designated initializer of MoveListController.
+/// @note This is the designated initializer of BoardPositionListController.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -143,9 +142,9 @@
   [self setupLabelSize];
   [self setupStoneImageSize];
   [self setupStoneImages];
-  [self setupMoveViewSize];
-  [self setupMoveListViewSize];
-  [self setupMoveListView];
+  [self setupBoardPositionViewSize];
+  [self setupBoardPositionListViewSize];
+  [self setupBoardPositionListView];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
@@ -157,13 +156,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this MoveListController object.
+/// @brief Deallocates memory allocated by this BoardPositionListController
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  self.moveListView = nil;
+  self.boardPositionListView = nil;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
   [super dealloc];
@@ -179,8 +179,8 @@
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     self.labelNumberOfLines = 2;
-    self.moveViewHorizontalPadding = 2;
-    self.moveViewHorizontalSpacing = 2;
+    self.boardPositionViewHorizontalPadding = 2;
+    self.boardPositionViewHorizontalSpacing = 2;
   }
   else
   {
@@ -193,17 +193,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the size of the label used in each move view.
+/// @brief Calculates the size of the label used in each board position view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupLabelSize
 {
   // The text must include the word "Pass" because this is the longest string
-  // that can possibly appear in the label of a move view. The text must also
-  // include a line break because the label of a move view has 2 lines.
+  // that can possibly appear in the label of a board position view. The text
+  // must also include a line break because the label of a board position view
+  // has 2 lines.
   NSString* textToDetermineLabelSize = @"A\nPass";
-  UIFont* font = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+  UIFont* font = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize labelSize = [textToDetermineLabelSize sizeWithFont:font
                                           constrainedToSize:constraintSize
@@ -211,14 +212,15 @@
   self.labelWidth = labelSize.width;
   self.labelHeight = labelSize.height;
   self.labelOneLineHeight = self.labelHeight / self.labelNumberOfLines;
-  self.labelFrame = CGRectMake(self.moveViewHorizontalPadding,
+  self.labelFrame = CGRectMake(self.boardPositionViewHorizontalPadding,
                                0,
                                self.labelWidth,
                                self.labelHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the size of the stone image used in each move view.
+/// @brief Calculates the size of the stone image used in each board position
+/// view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
@@ -228,7 +230,7 @@
 
   CGFloat stoneImageViewX = (self.labelFrame.origin.x
                              + self.labelFrame.size.width
-                             + self.moveViewHorizontalSpacing);
+                             + self.boardPositionViewHorizontalSpacing);
   // Vertically center on the first line of the label.
   // Use floor() to prevent half-pixels, which would cause anti-aliasing when
   // drawing the image
@@ -240,7 +242,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the stone images displayed in each move view.
+/// @brief Creates the stone images displayed in each board position view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
@@ -253,20 +255,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the size of a move view.
+/// @brief Calculates the size of a board position view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
-- (void) setupMoveViewSize
+- (void) setupBoardPositionViewSize
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    self.moveViewWidth = ((2 * self.moveViewHorizontalPadding)
-                          + self.labelWidth
-                          + self.moveViewHorizontalSpacing
-                          + self.stoneImageWidthAndHeight);
-    self.moveViewHeight = self.labelHeight;
-    self.moveViewFrame = CGRectMake(0, 0, self.moveViewWidth, self.moveViewHeight);
+    self.boardPositionViewWidth = ((2 * self.boardPositionViewHorizontalPadding)
+                                   + self.labelWidth
+                                   + self.boardPositionViewHorizontalSpacing
+                                   + self.stoneImageWidthAndHeight);
+    self.boardPositionViewHeight = self.labelHeight;
+    self.boardPositionViewFrame = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
   }
   else
   {
@@ -279,17 +281,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the size of the move list view.
+/// @brief Calculates the size of the board position list view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
-- (void) setupMoveListViewSize
+- (void) setupBoardPositionListViewSize
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     // TODO xxx should align with Go board, also what about buttons?
-    self.moveListViewWidth = [UiElementMetrics screenWidth];
-    self.moveListViewHeight = self.moveViewHeight;
+    self.boardPositionListViewWidth = [UiElementMetrics screenWidth];
+    self.boardPositionListViewHeight = self.boardPositionViewHeight;
   }
   else
   {
@@ -302,21 +304,21 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and sets up the move list view.
+/// @brief Creates and sets up the board position list view.
 ///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
-- (void) setupMoveListView
+- (void) setupBoardPositionListView
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    CGRect moveListViewFrame = CGRectMake(0,
-                                          0,
-                                          self.moveListViewWidth,
-                                          self.moveListViewHeight);
-    enum ItemScrollViewOrientation moveListViewOrientation = ItemScrollViewOrientationHorizontal;
-    self.moveListView = [[ItemScrollView alloc] initWithFrame:moveListViewFrame
-                                                  orientation:moveListViewOrientation];
+    CGRect boardPositionListViewFrame = CGRectMake(0,
+                                                   0,
+                                                   self.boardPositionListViewWidth,
+                                                   self.boardPositionListViewHeight);
+    enum ItemScrollViewOrientation boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
+    self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:boardPositionListViewFrame
+                                                           orientation:boardPositionListViewOrientation];
   }
   else
   {
@@ -344,7 +346,7 @@
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [self.moveListView reloadData];
+  [self.boardPositionListView reloadData];
 }
 
 // -----------------------------------------------------------------------------
@@ -352,7 +354,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  [self.moveListView reloadData];
+  [self.boardPositionListView reloadData];
 }
 
 // -----------------------------------------------------------------------------
@@ -370,7 +372,7 @@
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    return self.moveViewWidth;
+    return self.boardPositionViewWidth;
   }
   else
   {
@@ -403,10 +405,10 @@
   NSString* labelText = [self labelTextForMove:move moveIndex:index];
   UILabel* label = [self labelWithText:labelText];
   UIImageView* stoneImageView = [self stoneImageViewForMove:move];
-  UIView* moveView = [self moveViewForMove:move];
-  [moveView addSubview:label];
-  [moveView addSubview:stoneImageView];
-  return moveView;
+  UIView* boardPositionView = [self boardPositionViewForMove:move];
+  [boardPositionView addSubview:label];
+  [boardPositionView addSubview:stoneImageView];
+  return boardPositionView;
 }
 
 // -----------------------------------------------------------------------------
@@ -429,7 +431,7 @@
 - (UILabel*) labelWithText:(NSString*)labelText
 {
   UILabel* label = [[[UILabel alloc] initWithFrame:self.labelFrame] autorelease];
-  label.font = [UIFont systemFontOfSize:[MoveListController moveListViewFontSize]];
+  label.font = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
   [label setNumberOfLines:self.labelNumberOfLines];
   label.backgroundColor = [UIColor clearColor];
   label.text = labelText;
@@ -454,14 +456,14 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper for itemScrollView:itemViewAtIndex:().
 // -----------------------------------------------------------------------------
-- (UIView*) moveViewForMove:(GoMove*)move
+- (UIView*) boardPositionViewForMove:(GoMove*)move
 {
-  UIView* moveView = [[[UIView alloc] initWithFrame:self.moveViewFrame] autorelease];
+  UIView* boardPositionView = [[[UIView alloc] initWithFrame:self.boardPositionViewFrame] autorelease];
   if (move.player.black)
-    moveView.backgroundColor = [UIColor whiteColor];
+    boardPositionView.backgroundColor = [UIColor whiteColor];
   else
-    moveView.backgroundColor = [UIColor lightGrayColor];
-  return moveView;
+    boardPositionView.backgroundColor = [UIColor lightGrayColor];
+  return boardPositionView;
 }
 
 // -----------------------------------------------------------------------------
