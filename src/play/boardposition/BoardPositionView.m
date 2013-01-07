@@ -24,6 +24,10 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
+#import "../../utility/UIColorAdditions.h"
+
+// System includes
+#import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
@@ -34,16 +38,19 @@
 //@{
 - (void) dealloc;
 //@}
+/// @name Overrides from superclass
+//@{
+- (void) layoutSubviews;
+//@}
 /// @name Private helpers
 //@{
-- (void) setupView;
 - (NSString*) labelTextForMove:(GoMove*)move moveIndex:(int)moveIndex;
 - (UILabel*) labelWithText:(NSString*)labelText;
 - (UIImageView*) stoneImageViewForMove:(GoMove*)move;
+- (void) setupBackgroundColorForMove:(GoMove*)move;
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, assign) int boardPosition;
 @property(nonatomic, assign) BoardPositionViewMetrics* viewMetrics;
 //@}
 @end
@@ -52,6 +59,7 @@
 @implementation BoardPositionView
 
 @synthesize boardPosition;
+@synthesize currentBoardPosition;
 @synthesize viewMetrics;
 
 
@@ -70,9 +78,10 @@
     return nil;
 
   self.boardPosition = aBoardPosition;
+  self.currentBoardPosition = false;
   self.viewMetrics = aViewMetrics;
 
-  [self setupView];
+  self.frame = self.viewMetrics.boardPositionViewFrame;
 
   return self;
 }
@@ -88,14 +97,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the layout of this BoardPositionView.
-///
-/// This is an internal helper invoked during initialization.
+/// @brief This overrides the superclass implementation.
 // -----------------------------------------------------------------------------
-- (void) setupView
+- (void) layoutSubviews
 {
-  self.frame = self.viewMetrics.boardPositionViewFrame;
+  [super layoutSubviews];
 
+  GoMove* move = nil;
   if (0 == self.boardPosition)
   {
     // TODO xxx do stuff for board position 0
@@ -103,22 +111,19 @@
   else
   {
     int moveIndex = self.boardPosition - 1;
-    GoMove* move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
+    move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
     NSString* labelText = [self labelTextForMove:move moveIndex:moveIndex];
     UILabel* label = [self labelWithText:labelText];
     UIImageView* stoneImageView = [self stoneImageViewForMove:move];
     [self addSubview:label];
     [self addSubview:stoneImageView];
-
-    if (move.player.black)
-      self.backgroundColor = [UIColor whiteColor];
-    else
-      self.backgroundColor = [UIColor lightGrayColor];
   }
+
+  [self setupBackgroundColorForMove:move];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper for setupView().
+/// @brief This is an internal helper for layoutSubviews().
 // -----------------------------------------------------------------------------
 - (NSString*) labelTextForMove:(GoMove*)move moveIndex:(int)moveIndex
 {
@@ -132,7 +137,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper for setupView().
+/// @brief This is an internal helper for layoutSubviews().
 // -----------------------------------------------------------------------------
 - (UILabel*) labelWithText:(NSString*)labelText
 {
@@ -145,7 +150,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper for setupView().
+/// @brief This is an internal helper for layoutSubviews().
 // -----------------------------------------------------------------------------
 - (UIImageView*) stoneImageViewForMove:(GoMove*)move
 {
@@ -157,6 +162,45 @@
   UIImageView* stoneImageView = [[[UIImageView alloc] initWithImage:stoneImage] autorelease];
   stoneImageView.frame = self.viewMetrics.stoneImageViewFrame;
   return stoneImageView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper for layoutSubviews().
+// -----------------------------------------------------------------------------
+- (void) setupBackgroundColorForMove:(GoMove*)move
+{
+  if (self.currentBoardPosition)
+  {
+    self.backgroundColor = [UIColor colorWithRed:0.0f
+                                           green:0.667f
+                                            blue:1.0f
+                                           alpha:1.0f];
+  }
+  else if (0 == self.boardPosition)
+  {
+    if (0 == [GoGame sharedGame].handicapPoints.count)
+      self.backgroundColor = [UIColor lightGrayColor];
+    else
+      self.backgroundColor = [UIColor whiteColor];
+  }
+  else
+  {
+    if (move.player.black)
+      self.backgroundColor = [UIColor whiteColor];
+    else
+      self.backgroundColor = [UIColor lightGrayColor];
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setCurrentBoardPosition:(bool)newValue
+{
+  if (currentBoardPosition == newValue)
+    return;
+  currentBoardPosition = newValue;
+  [self setNeedsLayout];
 }
 
 @end

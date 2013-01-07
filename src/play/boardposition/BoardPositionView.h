@@ -30,4 +30,9 @@
 
 - (id) initWithBoardPosition:(int)boardPosition viewMetrics:(BoardPositionViewMetrics*)viewMetrics;
 
+/// @brief The board position that this view represents.
+@property(nonatomic, assign) int boardPosition;
+/// @brief True if this view represents the current board position.
+@property(nonatomic, assign, readwrite) bool currentBoardPosition;
+
 @end

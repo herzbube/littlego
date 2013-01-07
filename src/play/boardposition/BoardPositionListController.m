@@ -19,8 +19,8 @@
 #import "BoardPositionListController.h"
 #import "BoardPositionView.h"
 #import "BoardPositionViewMetrics.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoMoveModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -84,7 +84,9 @@
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   // KVO observing
-  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 
   return self;
 }
@@ -96,7 +98,9 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   self.boardPositionViewMetrics = nil;
   self.boardPositionListView = nil;
   [super dealloc];
@@ -133,7 +137,9 @@
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
-  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* boardPosition = oldGame.boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------
@@ -142,7 +148,9 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  GoBoardPosition* boardPosition = newGame.boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   [self.boardPositionListView reloadData];
 }
 
@@ -159,7 +167,7 @@
 // -----------------------------------------------------------------------------
 - (int) numberOfItemsInItemScrollView:(ItemScrollView*)itemScrollView
 {
-  return [GoGame sharedGame].moveModel.numberOfMoves;
+  return [GoGame sharedGame].boardPosition.numberOfBoardPositions;
 }
 
 // -----------------------------------------------------------------------------
@@ -198,7 +206,12 @@
 // -----------------------------------------------------------------------------
 - (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index
 {
-  return [[[BoardPositionView alloc] initWithBoardPosition:index viewMetrics:self.boardPositionViewMetrics] autorelease];
+  BoardPositionView* view = [[[BoardPositionView alloc] initWithBoardPosition:index
+                                                                  viewMetrics:self.boardPositionViewMetrics] autorelease];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  if (index == boardPosition.currentBoardPosition)
+    view.currentBoardPosition = true;
+  return view;
 }
 
 @end

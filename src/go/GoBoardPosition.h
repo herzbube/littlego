@@ -70,7 +70,10 @@
 ///
 /// @par Notifications
 ///
-/// Use KVO to observe @e currentBoardPosition for changes.
+/// Use KVO to observe @e currentBoardPosition and @e numberOfBoardPositions for
+/// changes. In case both properties change their value in response to the same
+/// event, the notification for @e numberOfBoardPositions is sent before the
+/// notification for @e currentBoardPosition.
 // -----------------------------------------------------------------------------
 @interface GoBoardPosition : NSObject
 {
@@ -106,5 +109,8 @@
 /// This is a convenience property that returns true if the current board
 /// position displays the last move of the game.
 @property(nonatomic, assign, readonly) bool isLastPosition;
+/// @brief The number of board positions in the GoGame associated with this
+/// GoBoardPosition.
+@property(nonatomic, assign, readonly) int numberOfBoardPositions;
 
 @end

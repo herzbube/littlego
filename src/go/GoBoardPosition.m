@@ -45,6 +45,10 @@
 //@{
 @property(nonatomic, assign) GoGame* game;
 //@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) int numberOfBoardPositions;
+//@}
 @end
 
 
@@ -52,6 +56,7 @@
 
 @synthesize game;
 @synthesize currentBoardPosition;
+@synthesize numberOfBoardPositions;
 
 
 // -----------------------------------------------------------------------------
@@ -69,6 +74,7 @@
 
   game = aGame;
   currentBoardPosition = 0;  // don't use self to avoid the setter
+  numberOfBoardPositions = game.moveModel.numberOfMoves + 1;
 
   // KVO observing
   [game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
@@ -216,6 +222,11 @@
 {
   GoMoveModel* moveModel = object;
   int numberOfMoves = moveModel.numberOfMoves;
+
+  // Trigger KVO notification for numberOfBoardPositions before notification
+  // for currentBoardPosition. This order is defined in the class docs; it is
+  // important for observers that observer both properties.
+  self.numberOfBoardPositions = numberOfMoves + 1;
 
   if (currentBoardPosition > numberOfMoves)
   {
