@@ -76,6 +76,7 @@
 		CD0DFEDC14F01C21000FE1B5 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */; };
 		CD0FE902169A122400053671 /* BoardPositionListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListController.m */; };
 		CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE901169A122400053671 /* BoardPositionModel.m */; };
+		CD0FE906169A135400053671 /* BoardPositionView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE905169A134C00053671 /* BoardPositionView.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
 		CD108812132559DE00E83543 /* GtpCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD108811132559DE00E83543 /* GtpCommand.m */; };
@@ -126,6 +127,7 @@
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
+		CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */; };
 		CD55576616702DBC003B957B /* TableViewSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55576516702DBC003B957B /* TableViewSegmentedCell.m */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -417,6 +419,8 @@
 		CD0FE8FF169A122400053671 /* BoardPositionListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListController.m; sourceTree = "<group>"; };
 		CD0FE900169A122400053671 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
 		CD0FE901169A122400053671 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
+		CD0FE904169A134C00053671 /* BoardPositionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionView.h; sourceTree = "<group>"; };
+		CD0FE905169A134C00053671 /* BoardPositionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionView.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		CD1087711323D07800E83543 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		CD1087871323D83F00E83543 /* GtpClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GtpClient.mm; sourceTree = "<group>"; };
@@ -486,6 +490,8 @@
 		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
 		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
 		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
+		CD4B2596169A536F0023DE40 /* BoardPositionViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionViewMetrics.h; sourceTree = "<group>"; };
+		CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionViewMetrics.m; sourceTree = "<group>"; };
 		CD55576416702DBC003B957B /* TableViewSegmentedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewSegmentedCell.h; sourceTree = "<group>"; };
 		CD55576516702DBC003B957B /* TableViewSegmentedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewSegmentedCell.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
@@ -901,6 +907,10 @@
 				CD0FE8FF169A122400053671 /* BoardPositionListController.m */,
 				CD0FE900169A122400053671 /* BoardPositionModel.h */,
 				CD0FE901169A122400053671 /* BoardPositionModel.m */,
+				CD0FE904169A134C00053671 /* BoardPositionView.h */,
+				CD0FE905169A134C00053671 /* BoardPositionView.m */,
+				CD4B2596169A536F0023DE40 /* BoardPositionViewMetrics.h */,
+				CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */,
 			);
 			path = boardposition;
 			sourceTree = "<group>";
@@ -1821,6 +1831,8 @@
 				CD3A09A51693A50700ABDB5D /* ToolbarController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListController.m in Sources */,
 				CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */,
+				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
+				CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

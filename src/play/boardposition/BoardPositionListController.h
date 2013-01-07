@@ -93,14 +93,9 @@
 {
 }
 
-+ (int) boardPositionListViewFontSize;
 - (id) init;
 
 /// @brief The board position list view.
 @property(nonatomic, assign, readonly) ItemScrollView* boardPositionListView;
-/// @brief The board position list view's total width.
-@property(nonatomic, assign, readonly) int boardPositionListViewWidth;
-/// @brief The board position list view's total height.
-@property(nonatomic, assign, readonly) int boardPositionListViewHeight;
 
 @end

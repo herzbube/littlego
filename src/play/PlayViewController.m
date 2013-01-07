@@ -25,6 +25,7 @@
 #import "ToolbarController.h"
 #import "boardposition/BoardPositionListController.h"
 #import "boardposition/BoardPositionModel.h"
+#import "boardposition/BoardPositionViewMetrics.h"
 #import "gesture/TapGestureController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
@@ -88,7 +89,7 @@
 - (CGRect) subviewFrame;
 - (CGRect) toolbarFrame;
 - (CGRect) playViewFrame;
-- (CGRect) boardPositionListViewFrame;
+- (CGPoint) boardPositionListViewPosition;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
@@ -355,7 +356,7 @@
   self.statusLine.backgroundColor = [UIColor clearColor];
   self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
   self.statusLine.numberOfLines = 1;
-  self.statusLine.font = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
+  self.statusLine.font = [UIFont systemFontOfSize:[BoardPositionViewMetrics boardPositionViewFontSize]];
 }
 
 // -----------------------------------------------------------------------------
@@ -369,7 +370,7 @@
   int statusLineViewWidth = (boardFrame.size.width
                              - [UiElementMetrics spacingHorizontal]
                              - activityIndicatorFrame.size.width);
-  UIFont* statusLineViewFont = [UIFont systemFontOfSize:[BoardPositionListController boardPositionListViewFontSize]];
+  UIFont* statusLineViewFont = [UIFont systemFontOfSize:[BoardPositionViewMetrics boardPositionViewFontSize]];
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
                                constrainedToSize:constraintSize
@@ -388,7 +389,9 @@
 {
   self.boardPositionListController = [[[BoardPositionListController alloc] init] autorelease];
   self.boardPositionListView = self.boardPositionListController.boardPositionListView;
-  self.boardPositionListView.frame = [self boardPositionListViewFrame];
+  CGRect boardPositionListViewFrame = self.boardPositionListView.frame;
+  boardPositionListViewFrame.origin = [self boardPositionListViewPosition];
+  self.boardPositionListView.frame = boardPositionListViewFrame;
   [self.frontSideView addSubview:self.boardPositionListView];
   self.boardPositionListView.backgroundColor = [UIColor clearColor];
 }
@@ -396,19 +399,16 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by setupBoardPositionListView().
 // -----------------------------------------------------------------------------
-- (CGRect) boardPositionListViewFrame
+- (CGPoint) boardPositionListViewPosition
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    CGRect boardFrame = self.playView.boardFrame;
-    CGRect activityIndicatorFrame = self.activityIndicator.frame;
     // TODO xxx either let controller do this, or do it all here
-    int boardPositionListViewX = boardFrame.origin.x;
+    CGRect activityIndicatorFrame = self.activityIndicator.frame;
+    int boardPositionListViewX = self.playView.boardFrame.origin.x;
     int boardPositionListViewY = (activityIndicatorFrame.origin.y
                                   + activityIndicatorFrame.size.height);
-    int boardPositionListViewWidth = boardFrame.size.width;
-    int boardPositionListViewHeight = self.boardPositionListController.boardPositionListViewHeight;
-    return CGRectMake(boardPositionListViewX, boardPositionListViewY, boardPositionListViewWidth, boardPositionListViewHeight);
+    return CGPointMake(boardPositionListViewX, boardPositionListViewY);
   }
   else
   {
