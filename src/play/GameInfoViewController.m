@@ -692,7 +692,7 @@ enum MoveStatisticsSectionItem
         case TitleColumn:
           return @"Komi";
         case WhitePlayerColumn:
-          return [NSString stringWithKomi:self.score.komi];
+          return [NSString stringWithKomi:self.score.komi numericZeroValue:false];
         default:
           assert(0);
           break;

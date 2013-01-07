@@ -24,6 +24,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
+#import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 
 // System includes
@@ -44,6 +45,7 @@
 //@}
 /// @name Private helpers
 //@{
+- (NSString*) labelTextForFirstBoardPosition;
 - (NSString*) labelTextForMove:(GoMove*)move moveIndex:(int)moveIndex;
 - (UILabel*) labelWithText:(NSString*)labelText;
 - (UIImageView*) stoneImageViewForMove:(GoMove*)move;
@@ -106,7 +108,9 @@
   GoMove* move = nil;
   if (0 == self.boardPosition)
   {
-    // TODO xxx do stuff for board position 0
+    NSString* labelText = [self labelTextForFirstBoardPosition];
+    UILabel* label = [self labelWithText:labelText];
+    [self addSubview:label];
   }
   else
   {
@@ -118,7 +122,6 @@
     [self addSubview:label];
     [self addSubview:stoneImageView];
   }
-
   [self setupBackgroundColorForMove:move];
 }
 
@@ -139,6 +142,16 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper for layoutSubviews().
 // -----------------------------------------------------------------------------
+- (NSString*) labelTextForFirstBoardPosition
+{
+  GoGame* game = [GoGame sharedGame];
+  NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
+  return [NSString stringWithFormat:@"H: %1d\nK: %@", game.handicapPoints.count, komiString];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper for layoutSubviews().
+// -----------------------------------------------------------------------------
 - (UILabel*) labelWithText:(NSString*)labelText
 {
   UILabel* label = [[[UILabel alloc] initWithFrame:self.viewMetrics.labelFrame] autorelease];
@@ -146,6 +159,11 @@
   [label setNumberOfLines:self.viewMetrics.labelNumberOfLines];
   label.backgroundColor = [UIColor clearColor];
   label.text = labelText;
+  // Size-to-fit because for board position 0 the label text is wider than
+  // labelFrame.size.width (but that's OK since for board position 0 the view
+  // does not display a stone image)
+  if (self.boardPosition == 0)
+    [label sizeToFit];
   return label;
 }
 

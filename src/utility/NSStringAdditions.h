@@ -28,7 +28,7 @@
 @interface NSString(NSStringAdditions)
 + (NSString*) UUIDString;
 - (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
-+ (NSString*) stringWithKomi:(double)komi;
++ (NSString*) stringWithKomi:(double)komi numericZeroValue:(bool)numericZeroValue;
 + (NSString*) stringWithFractionValue:(double)value;
 - (NSString*) stringByAppendingDeviceSuffix;
 @end

@@ -219,7 +219,7 @@ enum NoHandicapGameSectionItem
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
 
   double cellKomiValue = [self komiValueForRowAtIndexPath:indexPath];
-  cell.textLabel.text = [NSString stringWithKomi:cellKomiValue];
+  cell.textLabel.text = [NSString stringWithKomi:cellKomiValue numericZeroValue:false];
 
   if (cellKomiValue == self.komi)
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
