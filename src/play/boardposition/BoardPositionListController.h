@@ -89,7 +89,7 @@
 ///   naturally scrolled to the new board position and then stopped when the new
 ///   board position came into view.
 // -----------------------------------------------------------------------------
-@interface BoardPositionListController : NSObject <ItemScrollViewDataSource>
+@interface BoardPositionListController : NSObject <ItemScrollViewDataSource, ItemScrollViewDelegate>
 {
 }
 

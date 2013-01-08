@@ -484,8 +484,6 @@
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
-  
-  self.boardPositionListView.itemScrollViewDataSource = boardPositionListController;
 }
 
 // -----------------------------------------------------------------------------

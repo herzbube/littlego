@@ -44,6 +44,10 @@
 - (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView;
 - (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView;
 //@}
+/// @name ItemScrollViewDelegate protocol
+//@{
+- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView;
+//@}
 /// @name Private helpers
 //@{
 //@}
@@ -120,6 +124,8 @@
     enum ItemScrollViewOrientation boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
     self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:boardPositionListViewFrame
                                                            orientation:boardPositionListViewOrientation];
+    self.boardPositionListView.itemScrollViewDelegate = self;
+    self.boardPositionListView.itemScrollViewDataSource = self;
   }
   else
   {
@@ -199,6 +205,16 @@
                                                    reason:@"Not implemented yet"
                                                  userInfo:nil];
   @throw exception;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ItemScrollViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
+{
+  BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  boardPosition.currentBoardPosition = boardPositionView.boardPosition;
 }
 
 // -----------------------------------------------------------------------------
