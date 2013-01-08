@@ -33,9 +33,10 @@ enum ItemScrollViewOrientation
 /// protocol. The delegate is responsible for handling all non-scrolling user
 /// interaction.
 // -----------------------------------------------------------------------------
-@protocol ItemScrollViewDelegate
+@protocol ItemScrollViewDelegate <NSObject>
 @optional
 - (void) itemScrollView:(ItemScrollView*)itemScrollView willDisplayItemView:(UIView*)itemView;
+- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView;
 @end
 
 // -----------------------------------------------------------------------------
@@ -45,7 +46,7 @@ enum ItemScrollViewOrientation
 /// The data source is responsible for providing new item views when they are
 /// requested by ItemScrollViewDataSource.
 // -----------------------------------------------------------------------------
-@protocol ItemScrollViewDataSource
+@protocol ItemScrollViewDataSource <NSObject>
 @required
 /// @brief This method is invoked once to calculate the scroll view's content
 /// size.
@@ -126,7 +127,7 @@ enum ItemScrollViewOrientation
 /// I found the reference to the demo at StackOverflow:
 /// http://stackoverflow.com/questions/6736295/iphone-uiscrollview-continuous-circular-scrolling
 // -----------------------------------------------------------------------------
-@interface ItemScrollView : UIScrollView <UIScrollViewDelegate>
+@interface ItemScrollView : UIScrollView <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 {
 }
 

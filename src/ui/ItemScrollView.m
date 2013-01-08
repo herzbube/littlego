@@ -31,9 +31,14 @@
 //@{
 - (void) layoutSubviews;
 //@}
+/// @name Gesture handler
+//@{
+- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
+//@}
 /// @name Helpers
 //@{
 - (void) setupItemContainerView;
+- (void) setupTapGestureRecognizer;
 - (void) removeAllVisibleItems;
 - (void) resetScrollPosition;
 - (void) updateContentSize;
@@ -52,6 +57,7 @@
 //@{
 @property(nonatomic, assign) int numberOfItemsInItemScrollView;
 @property(nonatomic, retain) NSMutableArray* visibleItems;
+@property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -68,6 +74,7 @@
 @synthesize itemScrollViewDataSource;
 @synthesize numberOfItemsInItemScrollView;
 @synthesize visibleItems;
+@synthesize tapRecognizer;
 @synthesize itemContainerView;
 
 
@@ -103,6 +110,7 @@
   numberOfItemsInItemScrollView = 0;
   visibleItems = [[NSMutableArray alloc] init];
   [self setupItemContainerView];
+  [self setupTapGestureRecognizer];
 
   return self;
 }
@@ -116,6 +124,7 @@
   itemScrollViewDataSource = nil;
   // Using self triggers the setter which releases the object
   self.visibleItems = nil;
+  self.tapRecognizer = nil;
   self.itemContainerView = nil;
   [super dealloc];
 }
@@ -132,7 +141,40 @@
   itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
   [self addSubview:itemContainerView];
 
-  [itemContainerView setUserInteractionEnabled:NO];
+  // Must be enabled so that hit-testing works in handleTapFrom:()
+  itemContainerView.userInteractionEnabled = YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and sets up the gesture recognizer that is used to detect
+/// taps on item views.
+///
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupTapGestureRecognizer
+{
+  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
+	[self.tapRecognizer release];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setItemScrollViewDelegate:(id<ItemScrollViewDelegate>)delegate
+{
+  if (delegate == itemScrollViewDelegate)
+    return;
+  itemScrollViewDelegate = delegate;
+  if (itemScrollViewDelegate)
+  {
+    [self addGestureRecognizer:self.tapRecognizer];
+  }
+  else
+  {
+    // Without a delegate there is no point in wasting cycles on recognizing
+    // gestures
+    [self removeGestureRecognizer:self.tapRecognizer];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -302,7 +344,7 @@
   
   NSArray* newLastItemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:indexOfNewItem], nil];
   [visibleItems addObject:newLastItemArray];
-  
+
   return itemView;
 }
 
@@ -328,7 +370,10 @@
   itemView.frame = newItemViewFrame;
 
   if (itemScrollViewDelegate)
-    [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+  {
+    if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
+      [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+  }
 
   return newMinimumEdge;
 }
@@ -396,7 +441,10 @@
   itemView.frame = newItemViewFrame;
 
   if (itemScrollViewDelegate)
-    [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+  {
+    if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
+      [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+  }
 
   return newMaximumEdge;
 }
@@ -469,6 +517,20 @@
   [visibleItems addObject:itemArray];
 
   return itemView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tapping gesture on any item view.
+// -----------------------------------------------------------------------------
+- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
+{
+  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
+  if (UIGestureRecognizerStateEnded != recognizerState)
+    return;
+  CGPoint tappingLocation = [gestureRecognizer locationInView:self];
+  UIView* itemView = [self hitTest:tappingLocation withEvent:nil];
+  if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
+    [itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
 }
 
 @end
