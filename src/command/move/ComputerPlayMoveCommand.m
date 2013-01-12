@@ -129,12 +129,7 @@
 
   [[[BackupGameCommand alloc] init] submit];
 
-  // Thinking state must change after any of the other things; this order is
-  // important for observer notifications
-  self.game.computerThinks = false;
-
-  // Let computer continue playing if the game state allows it and it is
-  // actually a computer player's turn
+  bool computerGoesOnPlaying = false;
   switch (self.game.state)
   {
     case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
@@ -142,11 +137,20 @@
       break;
     default:
       if ([self.game isComputerPlayersTurn])
-      {
-        ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-        [command submit];
-      }
+        computerGoesOnPlaying = true;
       break;
+  }
+
+  if (computerGoesOnPlaying)
+  {
+    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+    [command submit];
+  }
+  else
+  {
+    // Thinking state must change after any of the other things; this order is
+    // important for observer notifications.
+    self.game.computerThinks = false;
   }
 }
 
