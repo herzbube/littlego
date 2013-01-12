@@ -42,6 +42,9 @@
 - (void) removeAllVisibleItems;
 - (void) resetScrollPosition;
 - (void) updateContentSize;
+- (void) cleanupExcessItemViews;
+- (void) updateContentOffsetAfterNumberOfItemsHasDecreased;
+- (bool) isContentOffsetValid;
 - (void) updateVisibleAreaWithMinimumEdge:(CGFloat)minimumEdge maximumEdge:(CGFloat)maximumEdge;
 - (void) updateVisibleAreaAtMaximumEdge:(CGFloat)maximumVisible;
 - (void) updateVisibleAreaFromMinimumEdge:(CGFloat)minimumVisible;
@@ -220,7 +223,7 @@
 {
   [self removeAllVisibleItems];
   [self resetScrollPosition];
-  [self updateContentSize];
+  [self updateNumberOfItems];
   [self setNeedsLayout];  // force layout update
 }
 
@@ -246,30 +249,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for reloadData() and updateNumberOfItems().
-// -----------------------------------------------------------------------------
-- (void) updateContentSize
-{
-  int newNumberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
-  if (newNumberOfItemsInItemScrollView == numberOfItemsInItemScrollView)
-    return;
-  // Use self to trigger KVO
-  self.numberOfItemsInItemScrollView = newNumberOfItemsInItemScrollView;
-  int itemExtent = [self itemViewExtent];
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
-  {
-    CGFloat contentWidth = numberOfItemsInItemScrollView * itemExtent;
-    self.contentSize = CGSizeMake(contentWidth, self.frame.size.height);
-  }
-  else
-  {
-    CGFloat contentHeight = numberOfItemsInItemScrollView * itemExtent;
-    self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
-  }
-  itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Queries the data source for an updated number of items to be
 /// displayed, then updates the content size without reloading data.
 ///
@@ -285,15 +264,101 @@
 /// is immediate).
 ///
 /// If items come into view by this scrolling that previously were not visible,
-/// the data source is queried for the new item views in the usual manner.
+/// the data source is queried for the new item views in the usual manner as
+/// soon as UIKit updates the scroll view layout.
 // -----------------------------------------------------------------------------
 - (void) updateNumberOfItems
 {
+  int newNumberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
+  if (newNumberOfItemsInItemScrollView == numberOfItemsInItemScrollView)
+    return;
+  // Use self to trigger KVO
+  int oldNumberOfItemsInItemScrollView = numberOfItemsInItemScrollView;
+  self.numberOfItemsInItemScrollView = newNumberOfItemsInItemScrollView;
   [self updateContentSize];
-  // TODO xxx do we need to update content offset? what is UIScrollView doing if
-  // the content size is changed? does it reset the content offset? always?
-  // or only if the new content size is smaller than the previous size? or does
-  // it already do what we want?
+  if (newNumberOfItemsInItemScrollView < oldNumberOfItemsInItemScrollView)
+  {
+    [self cleanupExcessItemViews];
+    [self updateContentOffsetAfterNumberOfItemsHasDecreased];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateNumberOfItems().
+// -----------------------------------------------------------------------------
+- (void) updateContentSize
+{
+  int itemExtent = [self itemViewExtent];
+  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  {
+    CGFloat contentWidth = numberOfItemsInItemScrollView * itemExtent;
+    self.contentSize = CGSizeMake(contentWidth, self.frame.size.height);
+  }
+  else
+  {
+    CGFloat contentHeight = numberOfItemsInItemScrollView * itemExtent;
+    self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
+  }
+  itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateNumberOfItems().
+// -----------------------------------------------------------------------------
+- (void) cleanupExcessItemViews
+{
+  int indexOfLastItemView = numberOfItemsInItemScrollView - 1;
+  int maximumEdgeOfLastItemView = [self maximumEdgeOfItemViewWithIndex:indexOfLastItemView];
+  [self removeItemsAfterMaximumEdge:maximumEdgeOfLastItemView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateNumberOfItems().
+// -----------------------------------------------------------------------------
+- (void) updateContentOffsetAfterNumberOfItemsHasDecreased
+{
+  if ([self isContentOffsetValid])
+    return;
+  CGPoint newContentOffset;
+  if (0 == numberOfItemsInItemScrollView)
+  {
+    newContentOffset = CGPointZero;
+  }
+  else
+  {
+    int indexOfLastItemView = numberOfItemsInItemScrollView - 1;
+    CGPoint newContentOffset = [self contentOffsetOfItemViewAtMaximumEdgeWithIndex:indexOfLastItemView];
+    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    {
+      if (newContentOffset.x < 0)
+        newContentOffset.x = 0;
+    }
+    else
+    {
+      if (newContentOffset.y < 0)
+        newContentOffset.y = 0;
+    }
+  }
+  [self setContentOffset:newContentOffset animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateContentOffsetAfterNumberOfItemsHasDecreased().
+// -----------------------------------------------------------------------------
+- (bool) isContentOffsetValid
+{
+  bool contentOffsetIsValid = true;
+  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  {
+    if (self.contentOffset.x + self.frame.size.width > self.contentSize.width)
+      contentOffsetIsValid = false;
+  }
+  else
+  {
+    if (self.contentOffset.y + self.frame.size.height > self.contentSize.height)
+      contentOffsetIsValid = false;
+  }
+  return contentOffsetIsValid;
 }
 
 // -----------------------------------------------------------------------------
