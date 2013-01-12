@@ -19,6 +19,7 @@
 #import "BoardPositionListController.h"
 #import "BoardPositionView.h"
 #import "BoardPositionViewMetrics.h"
+#import "../ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
@@ -36,6 +37,10 @@
 //@{
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
+- (void) computerPlayerThinkingStarts:(NSNotification*)notification;
+- (void) computerPlayerThinkingStops:(NSNotification*)notification;
 - (void) longRunningActionStarts:(NSNotification*)notification;
 - (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
@@ -57,6 +62,12 @@
 - (void) updateAllData;
 - (void) updateCurrentBoardPosition;
 - (void) updateNumberOfItems;
+- (void) updateTappingEnabled;
+//@}
+/// @name Private helpers
+//@{
+- (void) setupBoardPositionListView;
+- (void) setupNotificationResponders;
 //@}
 /// @name Privately declared properties
 //@{
@@ -66,6 +77,7 @@
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) int oldBoardPosition;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
+@property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -83,6 +95,7 @@
 @synthesize currentBoardPositionNeedsUpdate;
 @synthesize oldBoardPosition;
 @synthesize numberOfItemsNeedsUpdate;
+@synthesize tappingEnabledNeedsUpdate;
 
 
 // -----------------------------------------------------------------------------
@@ -103,18 +116,10 @@
   self.currentBoardPositionNeedsUpdate = false;
   self.oldBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
+  self.tappingEnabledNeedsUpdate = false;
 
   [self setupBoardPositionListView];
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
-  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  // KVO observing
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  [self setupNotificationResponders];
 
   return self;
 }
@@ -162,6 +167,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  // KVO observing
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
@@ -182,6 +207,42 @@
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.allDataNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeEnabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringModeDisabled notification.
+// -----------------------------------------------------------------------------
+- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts notification.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingStarts:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStops notification.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingStops:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -247,6 +308,7 @@
   [self updateAllData];
   [self updateCurrentBoardPosition];
   [self updateNumberOfItems];
+  [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -318,6 +380,25 @@
   // position) if it currently displays views whose index is beyond the new
   // number of board positions
   [self.boardPositionListView updateNumberOfItems];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates whether tapping is enabled.
+// -----------------------------------------------------------------------------
+- (void) updateTappingEnabled
+{
+  if (! self.tappingEnabledNeedsUpdate)
+    return;
+  self.tappingEnabledNeedsUpdate = false;
+  bool tappingEnabled = true;
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  if (applicationDelegate.scoringModel.scoringMode)
+    tappingEnabled = false;
+  else if ([GoGame sharedGame].isComputerThinking)
+    tappingEnabled = false;
+  else
+    tappingEnabled = true;
+  self.boardPositionListView.tappingEnabled = tappingEnabled;
 }
 
 // -----------------------------------------------------------------------------
