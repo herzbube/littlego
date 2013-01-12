@@ -166,5 +166,8 @@ enum ItemScrollViewOrientation
 @property(nonatomic, retain, readonly) UIView* itemContainerView;
 /// @brief The total number of items that the ItemScrollView currently manages.
 @property(nonatomic, assign, readonly) int numberOfItemsInItemScrollView;
+/// @brief If this property is true, tapping on item views is detected and the
+/// delegate is notified of the event. Tap detection is enabled by default.
+@property(nonatomic, assign) bool tappingEnabled;
 
 @end

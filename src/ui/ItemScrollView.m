@@ -39,6 +39,7 @@
 //@{
 - (void) setupItemContainerView;
 - (void) setupTapGestureRecognizer;
+- (void) updateTapRecognition;
 - (void) removeAllVisibleItems;
 - (void) resetScrollPosition;
 - (void) updateContentSize;
@@ -99,6 +100,7 @@
 @synthesize tapRecognizer;
 @synthesize itemContainerView;
 @synthesize numberOfItemsInItemScrollView;
+@synthesize tappingEnabled;
 
 
 // -----------------------------------------------------------------------------
@@ -131,9 +133,10 @@
   itemScrollViewDelegate = nil;
   itemScrollViewDataSource = nil;
   visibleItems = [[NSMutableArray alloc] init];
+  tappingEnabled = true;
+  numberOfItemsInItemScrollView = 0;
   [self setupItemContainerView];
   [self setupTapGestureRecognizer];
-  numberOfItemsInItemScrollView = 0;
 
   return self;
 }
@@ -163,7 +166,6 @@
   itemContainerView = [[UIView alloc] init];
   itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
   [self addSubview:itemContainerView];
-
   // Must be enabled so that hit-testing works in handleTapFrom:()
   itemContainerView.userInteractionEnabled = YES;
 }
@@ -188,16 +190,7 @@
   if (delegate == itemScrollViewDelegate)
     return;
   itemScrollViewDelegate = delegate;
-  if (itemScrollViewDelegate)
-  {
-    [self addGestureRecognizer:self.tapRecognizer];
-  }
-  else
-  {
-    // Without a delegate there is no point in wasting cycles on recognizing
-    // gestures
-    [self removeGestureRecognizer:self.tapRecognizer];
-  }
+  [self updateTapRecognition];
 }
 
 // -----------------------------------------------------------------------------
@@ -214,6 +207,35 @@
   }
   itemScrollViewDataSource = dataSource;
   [self reloadData];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setTappingEnabled:(bool)newValue
+{
+  if (newValue == tappingEnabled)
+    return;
+  tappingEnabled = newValue;
+  [self updateTapRecognition];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables tap recognition if both a delegate is present and if tapping
+/// is enabled in general. Otherwise disables tap recognition.
+// -----------------------------------------------------------------------------
+- (void) updateTapRecognition
+{
+  if (tappingEnabled && itemScrollViewDelegate)
+  {
+    [self addGestureRecognizer:self.tapRecognizer];
+  }
+  else
+  {
+    // Without a delegate there is no point in wasting cycles on recognizing
+    // gestures
+    [self removeGestureRecognizer:self.tapRecognizer];
+  }
 }
 
 // -----------------------------------------------------------------------------
