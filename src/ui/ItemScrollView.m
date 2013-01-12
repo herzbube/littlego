@@ -47,22 +47,42 @@
 - (void) updateVisibleAreaFromMinimumEdge:(CGFloat)minimumVisible;
 - (void) removeItemsAfterMaximumEdge:(CGFloat)maximumVisible;
 - (void) removeItemsBeforeMinimumEdge:(CGFloat)maximumVisible;
-- (UIView*) firstItemView;
+- (UIView*) itemViewWithIndex:(int)index;
 - (UIView*) nextItemView;
 - (UIView*) previousItemView;
 - (CGFloat) placeItemView:(UIView*)itemView withMinimumEdgeAt:(CGFloat)position;
 - (CGFloat) placeItemView:(UIView*)itemView withMaximumEdgeAt:(CGFloat)position;
+- (bool) isBeforeFirstVisibleItemViewIndex:(int)index;
+- (bool) isAfterLastVisibleItemViewIndex:(int)index;
+- (CGPoint) contentOffsetOfItemViewAtMinimumEdgeWithIndex:(int)index;
+- (CGPoint) contentOffsetOfItemViewAtMaximumEdgeWithIndex:(int)index;
+- (int) indexOfItemViewWithFrameContainingPosition:(CGFloat)position;
+- (CGFloat) minimumEdgeOfItemViewWithIndex:(int)index;
+- (CGFloat) maximumEdgeOfItemViewWithIndex:(int)index;
+- (int) itemViewExtent;
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, assign) int numberOfItemsInItemScrollView;
+/// @brief Array that contains the item views and their indexes that are
+/// currently visible in the ItemScrollView.
+///
+/// Each entry in the @e visibleItems array is another array with two elements:
+/// The first element is the item view (an UIView object), and the second
+/// element is the item view's index (an NSNumber object with an int value).
+///
+/// There are 4 accessor methods that conveniently provide access to the first
+/// and the last item view in the array, and the index of the first and the last
+/// item view.
 @property(nonatomic, retain) NSMutableArray* visibleItems;
+/// @brief The gesture recognizer that handles tap gestures on the visible
+/// item views.
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum ItemScrollViewOrientation itemScrollViewOrientation;
 @property(nonatomic, retain, readwrite) UIView* itemContainerView;
+@property(nonatomic, assign, readwrite) int numberOfItemsInItemScrollView;
 //@}
 @end
 
@@ -72,10 +92,10 @@
 @synthesize itemScrollViewOrientation;
 @synthesize itemScrollViewDelegate;
 @synthesize itemScrollViewDataSource;
-@synthesize numberOfItemsInItemScrollView;
 @synthesize visibleItems;
 @synthesize tapRecognizer;
 @synthesize itemContainerView;
+@synthesize numberOfItemsInItemScrollView;
 
 
 // -----------------------------------------------------------------------------
@@ -107,10 +127,10 @@
   itemScrollViewOrientation = orientation;
   itemScrollViewDelegate = nil;
   itemScrollViewDataSource = nil;
-  numberOfItemsInItemScrollView = 0;
   visibleItems = [[NSMutableArray alloc] init];
   [self setupItemContainerView];
   [self setupTapGestureRecognizer];
+  numberOfItemsInItemScrollView = 0;
 
   return self;
 }
@@ -194,7 +214,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reloads everything from scratch.
+/// @brief Reloads everything from scratch. The scroll position is also reset.
 // -----------------------------------------------------------------------------
 - (void) reloadData
 {
@@ -226,24 +246,167 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for reloadData()
+/// @brief Internal helper for reloadData() and updateNumberOfItems().
 // -----------------------------------------------------------------------------
 - (void) updateContentSize
 {
-  numberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
+  int newNumberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
+  if (newNumberOfItemsInItemScrollView == numberOfItemsInItemScrollView)
+    return;
+  // Use self to trigger KVO
+  self.numberOfItemsInItemScrollView = newNumberOfItemsInItemScrollView;
+  int itemExtent = [self itemViewExtent];
   if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
   {
-    int itemWidth = [itemScrollViewDataSource itemWidthInItemScrollView:self];
-    CGFloat contentWidth = numberOfItemsInItemScrollView * itemWidth;
+    CGFloat contentWidth = numberOfItemsInItemScrollView * itemExtent;
     self.contentSize = CGSizeMake(contentWidth, self.frame.size.height);
   }
   else
   {
-    int itemHeight = [itemScrollViewDataSource itemHeightInItemScrollView:self];
-    CGFloat contentHeight = numberOfItemsInItemScrollView * itemHeight;
+    CGFloat contentHeight = numberOfItemsInItemScrollView * itemExtent;
     self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
   }
   itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Queries the data source for an updated number of items to be
+/// displayed, then updates the content size without reloading data.
+///
+/// The content offset usually remains unaffected by this method.
+///
+/// The content offset is adjusted, however, if one or more item views are
+/// currently displayed whose item index exceeds the new number of items
+/// reported by the data source. The content offset is adjusted so that the
+/// item view with the new maximum index is positioned at the right or bottom
+/// edge of the scroll view. This can also be pictured as the user scrolling
+/// leftwards/upwards to the item view with the new maximum index (although no
+/// scrolling takes place in actuality, the transition to the new content offset
+/// is immediate).
+///
+/// If items come into view by this scrolling that previously were not visible,
+/// the data source is queried for the new item views in the usual manner.
+// -----------------------------------------------------------------------------
+- (void) updateNumberOfItems
+{
+  [self updateContentSize];
+  // TODO xxx do we need to update content offset? what is UIScrollView doing if
+  // the content size is changed? does it reset the content offset? always?
+  // or only if the new content size is smaller than the previous size? or does
+  // it already do what we want?
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the item view at index position @a index is currently
+/// visible in this scroll view.
+// -----------------------------------------------------------------------------
+- (bool) isVisibleItemViewAtIndex:(int)index
+{
+  if (0 == visibleItems.count)
+    return false;
+  else if ([self isBeforeFirstVisibleItemViewIndex:index])
+    return false;
+  else if ([self isAfterLastVisibleItemViewIndex:index])
+    return false;
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the content offset so that the target item view at index
+/// position @a index becomes fully visible.
+///
+/// If item views are already visible, the content offset update is made as if
+/// the user had naturally scrolled from the current offset position to the new
+/// offset position and then stopped when the target item view came into view.
+///
+/// If no item views are currently visible, the behaviour is as if the item view
+/// with index 0 were currently visible.
+///
+/// If @a animated is false, the content offset change is immediate. The data
+/// source is queried for 1-n item views that are visible at the new offset
+/// position.
+///
+/// If @a animated is true the content offset change is animated. The data
+/// source is additionally queried for item views that become visible
+/// "on the way" to the new offset position.
+///
+/// @note The content offset is not changed if the item view at index position
+/// @a index is already visible.
+// -----------------------------------------------------------------------------
+- (void) makeVisibleItemViewAtIndex:(int)index animated:(bool)animated
+{
+  CGPoint newContentOffset;
+  if (0 == visibleItems.count || [self isAfterLastVisibleItemViewIndex:index])
+  {
+    newContentOffset = [self contentOffsetOfItemViewAtMaximumEdgeWithIndex:index];
+    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    {
+      if (newContentOffset.x < 0)
+        newContentOffset.x = 0;
+    }
+    else
+    {
+      if (newContentOffset.y < 0)
+        newContentOffset.y = 0;
+    }
+  }
+  else if ([self isBeforeFirstVisibleItemViewIndex:index])
+    newContentOffset = [self contentOffsetOfItemViewAtMinimumEdgeWithIndex:index];
+  else
+    return;  // is visible
+
+  [self setContentOffset:newContentOffset animated:(animated ? YES : NO)];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the content offset needed to place the item view at index
+/// position @a index so that its minimum edge aligns with the scroll view's
+/// minimum edge.
+///
+/// Internal helper for makeVisibleItemViewAtIndex:animated:()
+///
+/// @note The content offset returned by this method is too large if not enough
+/// item views follow after the target item view to fill an entire page of the
+/// scroll view. If such a content offset were used, the scroll view would
+/// display an empty area at its maximum edge. Callers can detect the scenario
+/// by checking whether the returned offset has a coordinate component that,
+/// together with the scroll view's frame, exceeds the content size.
+// -----------------------------------------------------------------------------
+- (CGPoint) contentOffsetOfItemViewAtMinimumEdgeWithIndex:(int)index
+{
+  CGFloat contentOffsetX = 0;
+  CGFloat contentOffsetY = 0;
+  CGFloat minimumEdgeOfItemView = [self minimumEdgeOfItemViewWithIndex:index];
+  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    contentOffsetX = minimumEdgeOfItemView;
+  else
+    contentOffsetY = minimumEdgeOfItemView;
+  return CGPointMake(contentOffsetX, contentOffsetY);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the content offset needed to place the item view at index
+/// position @a index so that its maximum edge aligns with the scroll view's
+/// maximum edge.
+///
+/// Internal helper for makeVisibleItemViewAtIndex:animated:()
+///
+/// @note The content offset returned by this method is too small if not enough
+/// item views precede the target item view to fill an entire page of the
+/// scroll view. If such a content offset were used, the scroll view would
+/// display an empty area at its minimum edge. Callers can detect the scenario
+/// by checking whether the returned offset has a negative coordinate component.
+// -----------------------------------------------------------------------------
+- (CGPoint) contentOffsetOfItemViewAtMaximumEdgeWithIndex:(int)index
+{
+  CGFloat contentOffsetX = 0;
+  CGFloat contentOffsetY = 0;
+  CGFloat maximumEdgeOfItemView = [self maximumEdgeOfItemViewWithIndex:index];
+  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    contentOffsetX = maximumEdgeOfItemView - self.frame.size.width + 1;
+  else
+    contentOffsetY = maximumEdgeOfItemView - self.frame.size.height + 1;
+  return CGPointMake(contentOffsetX, contentOffsetY);
 }
 
 // -----------------------------------------------------------------------------
@@ -253,6 +416,10 @@
 - (void) layoutSubviews
 {
   [super layoutSubviews];
+
+  // Methods that are subsequently invoked no longer check this!
+  if (0 == numberOfItemsInItemScrollView)
+    return;
 
   CGRect visibleBounds = [self convertRect:self.bounds toView:itemContainerView];
   CGFloat minimumVisible;
@@ -274,9 +441,12 @@
 /// @brief Updates the visible area in the range between @a minimumEdge and
 /// @a maximumEdge.
 ///
-/// This method is usually invoked because of scrolling. This method checks if
-/// new item views have become visible in the visible area. If not, then nothing
-/// happens. If yes, the following two-step process is initiated:
+/// This method is usually invoked because of scrolling, but also when the
+/// scroll view is laid out for the first time.
+///
+/// This method checks if new item views have become visible in the visible
+/// area. If not, then nothing happens. If yes, the following two-step process
+/// is initiated:
 /// - New item view are requested from the data source and added as subviews to
 ///   the container view so that they become visible at either the minimum or
 ///   the maximum edge (depending on the direction of scrolling)
@@ -287,17 +457,20 @@
 /// extends on the X- or Y-axis. If the orientation is horizontal, the
 /// minimum/maximum edges are on the left/right. If the orientation is vertical,
 /// the minimum/maximum edges are at the top/bottom.
+///
+/// @note Special handling in this method guarantees that helper methods always
+/// have at least one visible item view at the time they are invoked.
 // -----------------------------------------------------------------------------
 - (void) updateVisibleAreaWithMinimumEdge:(CGFloat)minimumEdge maximumEdge:(CGFloat)maximumEdge
 {
-  // To make the implementation of subsequent steps easier we need to make sure
+  // To make the implementation of subsequent steps simpler we need to make sure
   // that the array already contains at least one item view
   if (visibleItems.count == 0)
   {
-    UIView* itemView = [self firstItemView];
-    if (nil == itemView)  // check if data source does not provide any items
-      return;
-    [self placeItemView:itemView withMinimumEdgeAt:minimumEdge];
+    int indexOfInitialItemView = [self indexOfItemViewWithFrameContainingPosition:minimumEdge];
+    UIView* initialItemView = [self itemViewWithIndex:indexOfInitialItemView];
+    CGFloat minimumEdgeOfInitialItemView = [self minimumEdgeOfItemViewWithIndex:indexOfInitialItemView];
+    [self placeItemView:initialItemView withMinimumEdgeAt:minimumEdgeOfInitialItemView];
   }
 
   [self updateVisibleAreaAtMaximumEdge:maximumEdge];
@@ -308,12 +481,29 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Internal helper for updateVisibleAreaWithMinimumEdge:maximumEdge:().
+///
+/// Is invoked at the time when no item views are visible in this scroll view.
+/// Acquires the initial item view from the data source, adds it as a subview
+/// to the container view and adds it to the list of visible item views.
+// -----------------------------------------------------------------------------
+- (UIView*) itemViewWithIndex:(int)index
+{
+  UIView* itemView = [itemScrollViewDataSource itemScrollView:self itemViewAtIndex:index];
+  [itemContainerView addSubview:itemView];
+
+  NSArray* itemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:index], nil];
+  [visibleItems addObject:itemArray];
+
+  return itemView;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Internal helper for updateVisibleAreaWithMinimumEdge:maximumEdge:()
 // -----------------------------------------------------------------------------
 - (void) updateVisibleAreaAtMaximumEdge:(CGFloat)maximumVisible
 {
-  NSArray* lastItemArray = [visibleItems lastObject];
-  UIView* lastItemView = [lastItemArray objectAtIndex:0];
+  UIView* lastItemView = [self lastVisibleItemView];
   CGFloat maximumEdge;
   if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
     maximumEdge = CGRectGetMaxX(lastItemView.frame);
@@ -333,9 +523,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) nextItemView
 {
-  NSArray* lastItemArray = [visibleItems lastObject];
-  NSNumber* lastItemIndex = [lastItemArray lastObject];
-  int indexOfNewItem = [lastItemIndex intValue] + 1;
+  int indexOfNewItem = [self indexOfLastVisibleItemView] + 1;
   if (indexOfNewItem >= numberOfItemsInItemScrollView)  // check for bouncing
     return nil;
   
@@ -383,8 +571,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateVisibleAreaFromMinimumEdge:(CGFloat)minimumVisible
 {
-  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
-  UIView* firstItemView = [firstItemArray objectAtIndex:0];
+  UIView* firstItemView = [self firstVisibleItemView];
   CGFloat minimumEdge;
   if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
     minimumEdge = CGRectGetMinX(firstItemView.frame);
@@ -400,13 +587,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for updateVisibleAreaFromMinimumEdge:()
+/// @brief Internal helper for updateVisibleAreaFromMinimumEdge:().
 // -----------------------------------------------------------------------------
 - (UIView*) previousItemView
 {
-  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
-  NSNumber* firstItemIndex = [firstItemArray lastObject];
-  int indexOfNewItem = [firstItemIndex intValue] - 1;
+  int indexOfNewItem = [self indexOfFirstVisibleItemView] - 1;
   if (indexOfNewItem < 0)  // check for bouncing
     return nil;
 
@@ -454,8 +639,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeItemsAfterMaximumEdge:(CGFloat)maximumVisible
 {
-  NSArray* lastItemArray = [visibleItems lastObject];
-  UIView* lastItemView = [lastItemArray objectAtIndex:0];
+  UIView* lastItemView = [self lastVisibleItemView];
   while (true)
   {
     if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
@@ -470,8 +654,7 @@
     }
     [lastItemView removeFromSuperview];
     [visibleItems removeLastObject];
-    lastItemArray = [visibleItems lastObject];
-    lastItemView = [lastItemArray objectAtIndex:0];
+    lastItemView = [self lastVisibleItemView];
   }
 }
 
@@ -480,8 +663,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeItemsBeforeMinimumEdge:(CGFloat)minimumVisible
 {
-  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
-  UIView* firstItemView = [firstItemArray objectAtIndex:0];
+  UIView* firstItemView = [self firstVisibleItemView];
   while (true)
   {
     if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
@@ -496,27 +678,8 @@
     }
     [firstItemView removeFromSuperview];
     [visibleItems removeObjectAtIndex:0];
-    firstItemArray = [visibleItems objectAtIndex:0];
-    firstItemView = [firstItemArray objectAtIndex:0];
+    firstItemView = [self firstVisibleItemView];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Internal helper for updateVisibleAreaWithMinimumEdge:maximumEdge:()
-// -----------------------------------------------------------------------------
-- (UIView*) firstItemView
-{
-  if (0 == numberOfItemsInItemScrollView)
-    return nil;
-
-  int indexOfItem = 0;
-  UIView* itemView = [itemScrollViewDataSource itemScrollView:self itemViewAtIndex:indexOfItem];
-  [itemContainerView addSubview:itemView];
-
-  NSArray* itemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:indexOfItem], nil];
-  [visibleItems addObject:itemArray];
-
-  return itemView;
 }
 
 // -----------------------------------------------------------------------------
@@ -531,6 +694,163 @@
   UIView* itemView = [self hitTest:tappingLocation withEvent:nil];
   if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
     [itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the index of the first of the item views that are currently
+/// visible in this scroll view.
+///
+/// Returns -1 if no item views are currently visible.
+// -----------------------------------------------------------------------------
+- (int) indexOfFirstVisibleItemView
+{
+  if (0 == visibleItems.count)
+    return -1;
+  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
+  NSNumber* firstItemIndex = [firstItemArray lastObject];
+  return [firstItemIndex intValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the index of the last of the item views that are currently
+/// visible in this scroll view.
+///
+/// Returns -1 if no item views are currently visible.
+// -----------------------------------------------------------------------------
+- (int) indexOfLastVisibleItemView
+{
+  NSArray* lastItemArray = [visibleItems lastObject];
+  NSNumber* lastItemIndex = [lastItemArray lastObject];
+  return [lastItemIndex intValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the index of visible item view @a view. Returns -1 if @a view
+/// is not visible.
+// -----------------------------------------------------------------------------
+- (int) indexOfVisibleItemView:(UIView*)view
+{
+  for (NSArray* array in visibleItems)
+  {
+    if ([array objectAtIndex:0] == view)
+    {
+      NSNumber* visibleIndex = [array lastObject];
+      return [visibleIndex intValue];
+    }
+  }
+  return -1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the first of the item views that are currently visible in
+/// this scroll view.
+///
+/// Returns nil if no item views are currently visible.
+// -----------------------------------------------------------------------------
+- (UIView*) firstVisibleItemView
+{
+  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
+  return [firstItemArray objectAtIndex:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the last of the item views that are currently visible in
+/// this scroll view.
+///
+/// Returns nil if no item views are currently visible.
+// -----------------------------------------------------------------------------
+- (UIView*) lastVisibleItemView
+{
+  NSArray* lastItemArray = [visibleItems lastObject];
+  return [lastItemArray objectAtIndex:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the visible item view at index position @a index.
+///
+/// Returns nil if the item view at index position @a index is not currently not
+/// visible.
+// -----------------------------------------------------------------------------
+- (UIView*) visibleItemViewAtIndex:(int)index
+{
+  for (NSArray* array in visibleItems)
+  {
+    NSNumber* visibleIndex = [array lastObject];
+    if ([visibleIndex intValue] == index)
+      return [array objectAtIndex:0];
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the item view at index position @a index is before
+/// the first of the item views that are currently visible in this scroll view.
+/// Returns false otherwise (or if no item views are currently visible).
+// -----------------------------------------------------------------------------
+- (bool) isBeforeFirstVisibleItemViewIndex:(int)index;
+{
+  int indexOfFirstVisibleItemView = [self indexOfFirstVisibleItemView];
+  if (-1 == indexOfFirstVisibleItemView)
+    return false;
+  if (index < indexOfFirstVisibleItemView)
+    return true;
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the item view at index position @a index is after
+/// the last of the item views that are currently visible in this scroll view.
+/// Returns false otherwise (or if no item views are currently visible).
+// -----------------------------------------------------------------------------
+- (bool) isAfterLastVisibleItemViewIndex:(int)index;
+{
+  int indexOfLastVisibleItemView = [self indexOfLastVisibleItemView];
+  if (-1 == indexOfLastVisibleItemView)
+    return false;
+  if (index > indexOfLastVisibleItemView)
+    return true;
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the index of the item view whose frame contains @a position.
+// -----------------------------------------------------------------------------
+- (int) indexOfItemViewWithFrameContainingPosition:(CGFloat)position
+{
+  int index = floor(position / [self itemViewExtent]);
+  return index;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the minimum edge of the item view at index position @a index.
+// -----------------------------------------------------------------------------
+- (CGFloat) minimumEdgeOfItemViewWithIndex:(int)index
+{
+  CGFloat minimumEdge = [self itemViewExtent] * index;
+  return minimumEdge;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the minimum edge of the item view at index position @a index.
+// -----------------------------------------------------------------------------
+- (CGFloat) maximumEdgeOfItemViewWithIndex:(int)index
+{
+  CGFloat maximumEdge = (index + 1) * [self itemViewExtent] - 1;
+  return maximumEdge;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the extent of an item view. The extent is either the width or
+/// height of the view, depending on the orientation of the ItemScrollView.
+// -----------------------------------------------------------------------------
+- (int) itemViewExtent
+{
+  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    return [itemScrollViewDataSource itemWidthInItemScrollView:self];
+  else
+    return [itemScrollViewDataSource itemHeightInItemScrollView:self];
 }
 
 @end

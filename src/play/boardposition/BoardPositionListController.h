@@ -67,19 +67,19 @@
 ///
 /// @par Content and scroll position updates
 ///
-/// The content of the board position list view is updated whenever a change
-/// occurs in the game's GoMoveModel instance. Usually this does not result in
-/// an update of the scrolling position, with one exception: If the board
-/// position list view currently displays board positions for moves that no
-/// longer exist in the GoMoveModel instance. In this scenario,
+/// The content of the board position list view is updated whenever the number
+/// of board positions changes in the game's GoBoardPosition instance. Usually
+/// this does not result in an update of the scrolling position. There is,
+/// however, one exception: If the board position list view currently displays
+/// board positions that no longer exist. In this scenario,
 /// BoardPositionListController places the new scrolling position so that the
-/// last board position of the game is displayed by the next view update (this
-/// simple solution is possible because only moves towards the end of the game
-/// can be discarded).
+/// next view update displays the last board position of the game (this simple
+/// solution is possible because only board positions towards the end of the
+/// game can be discarded).
 ///
 /// The scroll position of the move list view is updated in response to a change
-/// of the board position in the game's GoBoardPosition instance. The following
-/// rules apply:
+/// of the current board position in the game's GoBoardPosition instance. The
+/// following rules apply:
 /// - The scroll position is not updated if the subview for the new board
 ///   position is at least partially visible
 /// - The scroll position is updated if the subview for the new board position
@@ -88,6 +88,27 @@
 ///   position list view. The scroll position update is made as if the user had
 ///   naturally scrolled to the new board position and then stopped when the new
 ///   board position came into view.
+///
+///
+/// @par Delayed updates
+///
+/// BoardPositionListController utilizes the #longRunningActionStarts and
+/// #longRunningActionEnds notifications to delay view updates.
+///
+/// Methods in BoardPositionListController that need to update something in the
+/// board position list view should not trigger the update themselves, instead
+/// they should do the following:
+/// - Set one of several "needs update" flags to indicate what needs to be
+///   updated. For each type of update there is a corresponding private bool
+///   property (e.g @e numberOfItemsNeedsUpdate).
+/// - Invoke the private helper delayedUpdate(). This helper will immediately
+///   invoke updater methods if no long-running action is currently in progress,
+///   otherwise it will do nothing.
+///
+/// When the last long-running action terminates, delayedUpdate() is invoked,
+/// which in turn invokes all updater methods (since now no more actions are in
+/// progress). An updater method will always check if its "needs update" flag
+/// has been set.
 // -----------------------------------------------------------------------------
 @interface BoardPositionListController : NSObject <ItemScrollViewDataSource, ItemScrollViewDelegate>
 {

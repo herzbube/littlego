@@ -218,7 +218,18 @@
   if (currentBoardPosition == newValue)
     return;
   currentBoardPosition = newValue;
-  [self setNeedsLayout];
+
+  GoMove* move = nil;
+  if (0 == self.boardPosition)
+    ;
+  else
+  {
+    int moveIndex = self.boardPosition - 1;
+    move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
+  }
+  [self setupBackgroundColorForMove:move];
+//  [self setNeedsLayout];
+//  [self setNeedsDisplay];
 }
 
 @end

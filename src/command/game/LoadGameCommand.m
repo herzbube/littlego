@@ -33,7 +33,6 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../play/PlayView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -133,7 +132,9 @@
   if (! self.filePath || ! self.blackPlayer || ! self.whitePlayer)
     return false;
 
-  [[PlayView sharedView] actionStarts];  // disable play view updates
+  // Disable view updates on Play tab
+  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionStarts object:nil];
+
   [GtpUtilities stopPondering];
 
   // Need to work with temporary file whose name is known and guaranteed to not
@@ -639,8 +640,8 @@
 // -----------------------------------------------------------------------------
 - (void) cleanup
 {
-  // Re-enable play view updates
-  [[PlayView sharedView] actionEnds];
+  // Re-enable view updates on Play tab
+  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
 }
 
 // -----------------------------------------------------------------------------

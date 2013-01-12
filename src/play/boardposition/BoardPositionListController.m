@@ -21,6 +21,7 @@
 #import "BoardPositionViewMetrics.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -35,6 +36,8 @@
 //@{
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name ItemScrollViewDataSource protocol
@@ -48,12 +51,21 @@
 //@{
 - (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView;
 //@}
-/// @name Private helpers
+/// @name Updaters
 //@{
+- (void) delayedUpdate;
+- (void) updateAllData;
+- (void) updateCurrentBoardPosition;
+- (void) updateNumberOfItems;
 //@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
+@property(nonatomic, assign) int actionsInProgress;
+@property(nonatomic, assign) bool allDataNeedsUpdate;
+@property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
+@property(nonatomic, assign) int oldBoardPosition;
+@property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -66,6 +78,11 @@
 
 @synthesize boardPositionViewMetrics;
 @synthesize boardPositionListView;
+@synthesize actionsInProgress;
+@synthesize allDataNeedsUpdate;
+@synthesize currentBoardPositionNeedsUpdate;
+@synthesize oldBoardPosition;
+@synthesize numberOfItemsNeedsUpdate;
 
 
 // -----------------------------------------------------------------------------
@@ -81,15 +98,22 @@
     return nil;
 
   self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+  self.actionsInProgress = 0;
+  self.allDataNeedsUpdate = false;
+  self.currentBoardPositionNeedsUpdate = false;
+  self.oldBoardPosition = -1;
+  self.numberOfItemsNeedsUpdate = false;
 
   [self setupBoardPositionListView];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 
   return self;
@@ -155,9 +179,33 @@
 {
   GoGame* newGame = [notification object];
   GoBoardPosition* boardPosition = newGame.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  [self.boardPositionListView reloadData];
+  self.allDataNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+    [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -165,7 +213,111 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
+  if ([keyPath isEqualToString:@"currentBoardPosition"])
+  {
+    // The old board position is used to find the BoardPositionView whose
+    // currentBoardPosition flag needs to be cleared. If several notifications
+    // are received while updates are delayed, the old board position in the
+    // first notification is the one we need to remember, since the follow-up
+    // notifications never caused a BoardPositionView to be updated.
+    if (! self.currentBoardPositionNeedsUpdate)
+      self.oldBoardPosition = [[change objectForKey:NSKeyValueChangeOldKey] intValue];
+    self.currentBoardPositionNeedsUpdate = true;
+    [self delayedUpdate];
+  }
+  else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
+  {
+    self.numberOfItemsNeedsUpdate = true;
+    [self delayedUpdate];
+  }
+  else
+  {
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if (self.actionsInProgress > 0)
+    return;
+  [self updateAllData];
+  [self updateCurrentBoardPosition];
+  [self updateNumberOfItems];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Reloads all data in the board position list view.
+// -----------------------------------------------------------------------------
+- (void) updateAllData
+{
+  if (! self.allDataNeedsUpdate)
+    return;
+  self.allDataNeedsUpdate = false;
   [self.boardPositionListView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Sets the currentBoardPosition flag on the BoardPositionView objects for the
+/// old/new board positions. Also makes sure that the new board position becomes
+/// visible in the board position list view.
+// -----------------------------------------------------------------------------
+- (void) updateCurrentBoardPosition
+{
+  if (! self.currentBoardPositionNeedsUpdate)
+    return;
+  self.currentBoardPositionNeedsUpdate = false;
+
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int newBoardPosition = boardPosition.currentBoardPosition;
+
+  if ([self.boardPositionListView isVisibleItemViewAtIndex:self.oldBoardPosition])
+  {
+    UIView* itemView = [self.boardPositionListView visibleItemViewAtIndex:self.oldBoardPosition];
+    BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
+    boardPositionView.currentBoardPosition = false;
+  }
+
+  if ([self.boardPositionListView isVisibleItemViewAtIndex:newBoardPosition])
+  {
+    UIView* itemView = [self.boardPositionListView visibleItemViewAtIndex:newBoardPosition];
+    BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
+    boardPositionView.currentBoardPosition = true;
+  }
+  else
+  {
+    // Triggers itemScrollView:itemViewAtIndex() where we will set up a new
+    // view with the "currentBoardPosition" flag set correctly
+    // TODO xxx: animated should be false if this is the result of a new game
+    // being loaded
+    [self.boardPositionListView makeVisibleItemViewAtIndex:newBoardPosition animated:false];
+  }
+
+  self.oldBoardPosition = -1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Updates the number of items (i.e. board positions) in the board position
+/// list view.
+// -----------------------------------------------------------------------------
+- (void) updateNumberOfItems
+{
+  if (! self.numberOfItemsNeedsUpdate)
+    return;
+  self.numberOfItemsNeedsUpdate = false;
+  // ItemScrollView takes care of moving the content offset (i.e. scrolling
+  // position) if it currently displays views whose index is beyond the new
+  // number of board positions
+  [self.boardPositionListView updateNumberOfItems];
 }
 
 // -----------------------------------------------------------------------------

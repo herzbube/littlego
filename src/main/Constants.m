@@ -54,6 +54,9 @@ NSString* goScoreScoringModeEnabled = @"GoScoreScoringModeEnabled";
 NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
 NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
+// Other notifications
+NSString* longRunningActionStarts = @"LongRunningActionStarts";
+NSString* longRunningActionEnds = @"LongRunningActionEnds";
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;

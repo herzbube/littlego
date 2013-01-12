@@ -43,18 +43,14 @@
 ///
 /// @par Delayed updates
 ///
-/// If a long-running action is started (the typical example is loading a game)
-/// which would cause many view updates, a client can prevent those updates
-/// from taking place immediately by invoking actionStarts(). Events that would
-/// normally trigger drawing updates are processed as normal, but the drawing
-/// itself is delayed. When actionEnds() is invoked, all drawing updates that
-/// have accumulated are now coalesced into a single update.
+/// PlayView utilizes the #longRunningActionStarts and #longRunningActionEnds
+/// notifications to delay view updates. Events that would normally trigger
+/// drawing updates are processed as normal, but the drawing itself is delayed.
+/// When all #longRunningActionStarts notifications have been matched by a
+/// #longRunningActionEnds notification, all drawing updates that have
+/// accumulated are now coalesced into a single update.
 ///
-/// actionStarts() may be invoked multiple times, but each invocation must be
-/// paired with a matching call to actionEnds(). The drawing update occurs only
-/// when the last matching call to actionEnds() occurs.
-///
-/// @note Clients that want to update the view directly should invoke
+/// As a consequence, clients that want to update the view directly must invoke
 /// delayedUpdate() instead of setNeedsDisplay(). Using delayedUpdate() makes
 /// sure that the update occurs at the right time, either immediately, or after
 /// a long-running action has ended.
@@ -89,8 +85,6 @@
 - (GoPoint*) crossHairPointNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
 - (GoPoint*) pointNear:(CGPoint)coordinates;
-- (void) actionStarts;
-- (void) actionEnds;
 - (void) frameChanged;
 
 /// @name Cross-hair point properties

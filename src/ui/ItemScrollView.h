@@ -133,7 +133,18 @@ enum ItemScrollViewOrientation
 
 - (id) initWithFrame:(CGRect)frame;
 - (id) initWithFrame:(CGRect)frame orientation:(enum ItemScrollViewOrientation)orientation;
+
 - (void) reloadData;
+- (void) updateNumberOfItems;
+- (bool) isVisibleItemViewAtIndex:(int)index;
+- (void) makeVisibleItemViewAtIndex:(int)index animated:(bool)animated;
+
+- (int) indexOfFirstVisibleItemView;
+- (int) indexOfLastVisibleItemView;
+- (int) indexOfVisibleItemView:(UIView*)view;
+- (UIView*) firstVisibleItemView;
+- (UIView*) lastVisibleItemView;
+- (UIView*) visibleItemViewAtIndex:(int)index;
 
 /// @brief The orientation of the ItemScrollView, i.e. in which direction should
 /// scrolling be enabled.
@@ -153,5 +164,7 @@ enum ItemScrollViewOrientation
 ///
 /// This property is exposed to facilitate zooming by a controller.
 @property(nonatomic, retain, readonly) UIView* itemContainerView;
+/// @brief The total number of items that the ItemScrollView currently manages.
+@property(nonatomic, assign, readonly) int numberOfItemsInItemScrollView;
 
 @end

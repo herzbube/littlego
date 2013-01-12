@@ -59,6 +59,8 @@
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Private helpers
@@ -256,6 +258,8 @@ static PlayView* sharedPlayView = nil;
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
@@ -328,28 +332,6 @@ static PlayView* sharedPlayView = nil;
   NSMutableDictionary* newActions = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"contents", nil];
   subLayer.actions = newActions;
   [newActions release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) actionStarts
-{
-  self.actionsInProgress++;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
-// -----------------------------------------------------------------------------
-- (void) actionEnds
-{
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-  {
-    if (self.updatesWereDelayed)
-      [self updateLayers];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -480,6 +462,32 @@ static PlayView* sharedPlayView = nil;
 {
   [self notifyLayerDelegates:PVLDEventScoreCalculationEnds eventInfo:nil];
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+  {
+    if (self.updatesWereDelayed)
+      [self updateLayers];
+  }
 }
 
 // -----------------------------------------------------------------------------
