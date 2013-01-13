@@ -42,29 +42,31 @@ enum ItemScrollViewOrientation
 // -----------------------------------------------------------------------------
 /// @brief The data source of ItemScrollView must adopt the
 /// ItemScrollViewDataSource protocol.
-///
-/// The data source is responsible for providing new item views when they are
-/// requested by ItemScrollViewDataSource.
 // -----------------------------------------------------------------------------
 @protocol ItemScrollViewDataSource <NSObject>
 @required
-/// @brief This method is invoked once to calculate the scroll view's content
-/// size.
+/// @brief Returns the number of items or item views to be displayed by the
+/// ItemScrollView. Among other things, the result returned here is used to
+/// calculate the ItemScrollView's content size.
 - (int) numberOfItemsInItemScrollView:(ItemScrollView*)itemScrollView;
-/// @brief This method is invoked whenever the ItemScrollView needs item views
-/// to populate the visible content area.
+/// @brief Returns a view object that will be used by ItemScrollView to
+/// populate the visible content area.
+///
+/// ItemScrollView discards view objects that are no longer visible to save on
+/// memory. It is up to the data source to perform caching if performance is an
+/// issue.
 - (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index;
 
 @optional
-/// @brief This method is invoked once to calculate the scroll view's content
-/// size width.
+/// @brief Returns the width of an item view. Among other things, the result
+/// returned here is used to calculate the ItemScrollView's content size.
 ///
 /// This method is invoked only if the ItemScrollView's orientation is
 /// horizontal. Data sources do not need to implement this if the ItemScrollView
 /// orientation is vertical.
 - (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView;
-/// @brief This method is invoked once to calculate the scroll view's content
-/// size height.
+/// @brief Returns the height of an item view. Among other things, the result
+/// returned here is used to calculate the ItemScrollView's content size.
 ///
 /// This method is invoked only if the ItemScrollView's orientation is
 /// vertical. Data sources do not need to implement this if the ItemScrollView

@@ -21,20 +21,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewController class is responsible for managing user
-/// interaction on the "Play" view.
+/// @brief The PlayViewController class is the main controller on the "Play"
+/// tab. It does not manage user interaction on its own, instead it delegates
+/// this task to a variety of other sub-controllers.
 ///
-/// PlayViewController delegates handling of gestures to various subcontrollers.
-/// PlayViewController directly reacts to the following user input:
-/// - Tapping gesture on buttons that trigger a Go move
-/// - Tapping gesture on the "Game Actions" button
-///
-/// In addition, PlayViewController manages the transition to and from the
-/// "backside" view which displays information about the current game (including
-/// scoring information). The transition is usually triggered by the user
-/// tapping on a dedicated button. When the user wants to dismiss the game info
-/// view, PlayViewController transitions back to the "frontside" view, which is
-/// the main play view.
+/// PlayViewController has the following responsibilities:
+/// - Set up the view hierarchy on the "Play" tab
+/// - Create and configure sub-controllers
+/// - Manage the timing of these tasks during application launch
+/// - Rotate views on the "Play" tab when the device orientation changes
+/// - Manage the animation to and from the "backside" view which displays
+///   information about the current game. The transition is triggered by a
+///   sub-controller, but managed by PlayViewController because only
+///   PlayViewController knows the details of the view hierarchy
+/// - Display alerts that are used by more than one sub-controller
 ///
 ///
 /// @par Interface rotation

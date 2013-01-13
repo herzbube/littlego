@@ -20,7 +20,6 @@
 #import "ActivityIndicatorController.h"
 #import "DebugPlayViewController.h"
 #import "PlayView.h"
-#import "PlayViewModel.h"
 #import "StatusLineController.h"
 #import "ToolbarController.h"
 #import "boardposition/BoardPositionListController.h"
