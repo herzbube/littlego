@@ -24,8 +24,8 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../command/InterruptComputerCommand.h"
+#import "../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
-#import "../command/boardposition/SyncGTPEngineCommand.h"
 #import "../command/game/PauseGameCommand.h"
 
 
@@ -345,10 +345,7 @@
 // -----------------------------------------------------------------------------
 - (void) previousBoardPosition:(id)sender
 {
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  int currentBoardPosition = boardPosition.currentBoardPosition;
-  boardPosition.currentBoardPosition = currentBoardPosition - 1;
-  [[[SyncGTPEngineCommand alloc] init] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithPreviousBoardPosition] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -358,10 +355,7 @@
 // -----------------------------------------------------------------------------
 - (void) nextBoardPosition:(id)sender
 {
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  int currentBoardPosition = boardPosition.currentBoardPosition;
-  boardPosition.currentBoardPosition = currentBoardPosition + 1;
-  [[[SyncGTPEngineCommand alloc] init] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithNextBoardPosition] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -626,6 +620,9 @@
     if (GoGameStateGameHasEnded != game.state)
       [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     [toolbarItems addObject:self.flexibleSpaceButton];
+    [toolbarItems addObject:self.previousBoardPositionButton];
+    [toolbarItems addObject:self.nextBoardPositionButton];
+    [toolbarItems addObject:self.flexibleSpaceButton];
     [toolbarItems addObject:self.gameInfoButton];
     [toolbarItems addObject:self.gameActionsButton];
   }
@@ -781,7 +778,12 @@
 - (void) updatePreviousBoardPositionButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  if (self.scoringModel.scoringMode)
+  {
+    if (! self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
   {
     if (! [GoGame sharedGame].isComputerThinking)
     {
@@ -799,7 +801,12 @@
 - (void) updateNextBoardPositionButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  if (self.scoringModel.scoringMode)
+  {
+    if (! self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
   {
     if (! [GoGame sharedGame].isComputerThinking)
     {

@@ -158,6 +158,7 @@
 + (GoScore*) scoreForGame:(GoGame*)game withTerritoryScores:(bool)withTerritoryScores;
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup;
+- (void) reinitialize;
 - (NSString*) resultString;
 
 // -----------------------------------------------------------------------------

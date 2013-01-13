@@ -19,11 +19,9 @@
 #import "BoardPositionListController.h"
 #import "BoardPositionView.h"
 #import "BoardPositionViewMetrics.h"
-#import "../ScoringModel.h"
-#import "../../command/boardposition/SyncGTPEngineCommand.h"
+#import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -38,8 +36,6 @@
 //@{
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) computerPlayerThinkingStarts:(NSNotification*)notification;
 - (void) computerPlayerThinkingStops:(NSNotification*)notification;
 - (void) longRunningActionStarts:(NSNotification*)notification;
@@ -175,8 +171,6 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
@@ -208,24 +202,6 @@
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.allDataNeedsUpdate = true;
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
-{
-  self.tappingEnabledNeedsUpdate = true;
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
-{
-  self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -391,15 +367,10 @@
   if (! self.tappingEnabledNeedsUpdate)
     return;
   self.tappingEnabledNeedsUpdate = false;
-  bool tappingEnabled = true;
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  if (applicationDelegate.scoringModel.scoringMode)
-    tappingEnabled = false;
-  else if ([GoGame sharedGame].isComputerThinking)
-    tappingEnabled = false;
+  if ([GoGame sharedGame].isComputerThinking)
+    self.boardPositionListView.tappingEnabled = false;
   else
-    tappingEnabled = true;
-  self.boardPositionListView.tappingEnabled = tappingEnabled;
+    self.boardPositionListView.tappingEnabled = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -460,11 +431,8 @@
 - (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
 {
   BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (boardPosition.currentBoardPosition == boardPositionView.boardPosition)
-    return;
-  boardPosition.currentBoardPosition = boardPositionView.boardPosition;
-  [[[SyncGTPEngineCommand alloc] init] submit];
+  int newBoardPosition = boardPositionView.boardPosition;
+  [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] submit];
 }
 
 @end

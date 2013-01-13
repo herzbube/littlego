@@ -95,6 +95,7 @@
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
+		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD36593C1691C49F00D75466 /* 40-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593A1691C49F00D75466 /* 40-forward.png */; };
@@ -455,6 +456,8 @@
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
+		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
+		CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeBoardPositionCommand.m; sourceTree = "<group>"; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
 		CD36593A1691C49F00D75466 /* 40-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward.png"; sourceTree = "<group>"; };
@@ -1449,6 +1452,8 @@
 		CDF630A7168F50BA003C8BEF /* boardposition */ = {
 			isa = PBXGroup;
 			children = (
+				CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */,
+				CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */,
 				CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */,
 				CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */,
 				CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */,
@@ -1839,6 +1844,7 @@
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
+				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
