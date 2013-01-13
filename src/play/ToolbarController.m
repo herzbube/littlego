@@ -67,10 +67,13 @@
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Updaters
 //@{
+- (void) delayedUpdate;
 - (void) populateToolbar;
 - (void) updateButtonStates;
 - (void) updatePlayForMeButtonState;
@@ -86,6 +89,8 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) setupButtons;
+- (void) setupNotificationResponders;
 //@}
 /// @name Privately declared properties
 //@{
@@ -101,6 +106,10 @@
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
 @property(nonatomic, retain) GoScore* gameInfoScore;
+/// @brief Updates are delayed as long as this is above zero.
+@property(nonatomic, assign) int actionsInProgress;
+@property(nonatomic, assign) bool toolbarNeedsPopulation;
+@property(nonatomic, assign) bool buttonStatesNeedUpdate;
 /// @brief The "Play for me" button. Tapping this button causes the computer
 /// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
@@ -145,6 +154,9 @@
 @synthesize delegate;
 @synthesize parentViewController;
 @synthesize gameInfoScore;
+@synthesize actionsInProgress;
+@synthesize toolbarNeedsPopulation;
+@synthesize buttonStatesNeedUpdate;
 @synthesize playForMeButton;
 @synthesize passButton;
 @synthesize oneMoveBackButton;
@@ -177,9 +189,50 @@
   self.scoringModel = aScoringModel;
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
-
   self.gameInfoScore = nil;
+  self.actionsInProgress = 0;
+  [self setupButtons];
+  [self setupNotificationResponders];
 
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this ToolbarController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[ApplicationDelegate sharedDelegate].boardPositionModel removeObserver:self forKeyPath:@"playOnComputersTurnAlert"];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  self.toolbar = nil;
+  self.scoringModel = nil;
+  self.delegate = nil;
+  self.parentViewController = nil;
+  self.gameInfoScore = nil;
+  self.playForMeButton = nil;
+  self.passButton = nil;
+  self.oneMoveBackButton = nil;
+  self.oneMoveForwardButton = nil;
+  self.pauseButton = nil;
+  self.continueButton = nil;
+  self.interruptButton = nil;
+  self.flexibleSpaceButton = nil;
+  self.gameInfoButton = nil;
+  self.gameActionsButton = nil;
+  self.doneButton = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupButtons
+{
   self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
                                                            style:UIBarButtonItemStyleBordered
                                                           target:self
@@ -223,7 +276,13 @@
   self.flexibleSpaceButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                             target:nil
                                                                             action:nil] autorelease];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -234,41 +293,11 @@
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [[ApplicationDelegate sharedDelegate].boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-
-  [self populateToolbar];
-  [self updateButtonStates];
-
-  return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ToolbarController object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[ApplicationDelegate sharedDelegate].boardPositionModel removeObserver:self forKeyPath:@"playOnComputersTurnAlert"];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  self.toolbar = nil;
-  self.scoringModel = nil;
-  self.delegate = nil;
-  self.parentViewController = nil;
-  self.gameInfoScore = nil;
-  self.playForMeButton = nil;
-  self.passButton = nil;
-  self.oneMoveBackButton = nil;
-  self.oneMoveForwardButton = nil;
-  self.pauseButton = nil;
-  self.continueButton = nil;
-  self.interruptButton = nil;
-  self.flexibleSpaceButton = nil;
-  self.gameInfoButton = nil;
-  self.gameActionsButton = nil;
-  self.doneButton = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -450,8 +479,9 @@
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [self populateToolbar];
-  [self updateButtonStates];
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -461,8 +491,9 @@
 {
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeComputerVsComputer == game.type)
-    [self populateToolbar];
-  [self updateButtonStates];
+    self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
   if (GoGameStateGameHasEnded == game.state)
   {
     self.scoringModel.scoringMode = true;
@@ -476,8 +507,9 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  [self populateToolbar];
-  [self updateButtonStates];
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -485,8 +517,9 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification
 {
-  [self populateToolbar];
-  [self updateButtonStates];
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -494,8 +527,9 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification
 {
-  [self populateToolbar];
-  [self updateButtonStates];
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -503,7 +537,8 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
-  [self updateButtonStates];
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -511,7 +546,31 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  [self updateButtonStates];
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+    [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -523,13 +582,27 @@
   {
     if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
     {
-      [self updateButtonStates];
+      self.buttonStatesNeedUpdate = true;
+      [self delayedUpdate];
     }
   }
   else if (object == [GoGame sharedGame].boardPosition)
   {
-    [self updateButtonStates];
+    self.buttonStatesNeedUpdate = true;
+    [self delayedUpdate];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if (self.actionsInProgress > 0)
+    return;
+  [self populateToolbar];
+  [self updateButtonStates];
 }
 
 // -----------------------------------------------------------------------------
@@ -538,6 +611,10 @@
 // -----------------------------------------------------------------------------
 - (void) populateToolbar
 {
+  if (! self.toolbarNeedsPopulation)
+    return;
+  self.toolbarNeedsPopulation = false;
+
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
   if (self.scoringModel.scoringMode)
@@ -594,6 +671,10 @@
 // -----------------------------------------------------------------------------
 - (void) updateButtonStates
 {
+  if (! self.buttonStatesNeedUpdate)
+    return;
+  self.buttonStatesNeedUpdate = false;
+
   [self updatePlayForMeButtonState];
   [self updatePassButtonState];
   [self updateBackButtonState];
