@@ -41,8 +41,8 @@
 //@{
 - (void) pass:(id)sender;
 - (void) playForMe:(id)sender;
-- (void) oneMoveBack:(id)sender;
-- (void) oneMoveForward:(id)sender;
+- (void) previousBoardPosition:(id)sender;
+- (void) nextBoardPosition:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
@@ -79,8 +79,8 @@
 - (void) updateButtonStates;
 - (void) updatePlayForMeButtonState;
 - (void) updatePassButtonState;
-- (void) updateBackButtonState;
-- (void) updateForwardButtonState;
+- (void) updatePreviousBoardPositionButtonState;
+- (void) updateNextBoardPositionButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
 - (void) updateInterruptButtonState;
@@ -117,12 +117,12 @@
 /// @brief The "Pass" button. Tapping this button generates a "Pass" move for
 /// the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* passButton;
-/// @brief The "Back" button. Tapping this button goes back one move in the
-/// game's move history. The board is updated to display the new situation.
-@property(nonatomic, retain) UIBarButtonItem* oneMoveBackButton;
-/// @brief The "Forward" button. Tapping this button goes forward one move in
-/// the game's move history. The board is updated to display the new situation.
-@property(nonatomic, retain) UIBarButtonItem* oneMoveForwardButton;
+/// @brief Tapping this button selects the previous board position. The board is
+/// updated to display the new position.
+@property(nonatomic, retain) UIBarButtonItem* previousBoardPositionButton;
+/// @brief Tapping this button selects the next board position. The board is
+/// updated to display the new position.
+@property(nonatomic, retain) UIBarButtonItem* nextBoardPositionButton;
 /// @brief The "Pause" button. Tapping this button causes the game to pause if
 /// two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
@@ -160,8 +160,8 @@
 @synthesize buttonStatesNeedUpdate;
 @synthesize playForMeButton;
 @synthesize passButton;
-@synthesize oneMoveBackButton;
-@synthesize oneMoveForwardButton;
+@synthesize previousBoardPositionButton;
+@synthesize nextBoardPositionButton;
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize interruptButton;
@@ -217,8 +217,8 @@
   self.gameInfoScore = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
-  self.oneMoveBackButton = nil;
-  self.oneMoveForwardButton = nil;
+  self.previousBoardPositionButton = nil;
+  self.nextBoardPositionButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
@@ -242,14 +242,14 @@
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(pass:)] autorelease];
-  self.oneMoveBackButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:backButtonIconResource]
-                                                             style:UIBarButtonItemStyleBordered
-                                                            target:self
-                                                            action:@selector(oneMoveBack:)] autorelease];
-  self.oneMoveForwardButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playButtonIconResource]
-                                                                style:UIBarButtonItemStyleBordered
-                                                               target:self
-                                                               action:@selector(oneMoveForward:)] autorelease];
+  self.previousBoardPositionButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:backButtonIconResource]
+                                                                       style:UIBarButtonItemStyleBordered
+                                                                      target:self
+                                                                      action:@selector(previousBoardPosition:)] autorelease];
+  self.nextBoardPositionButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playButtonIconResource]
+                                                                   style:UIBarButtonItemStyleBordered
+                                                                  target:self
+                                                                  action:@selector(nextBoardPosition:)] autorelease];
   self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
                                                        style:UIBarButtonItemStyleBordered
                                                       target:self
@@ -339,10 +339,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Back" button. Goes back one move in
-/// the game's move history. The board is updated to display the new situation.
+/// @brief Reacts to a tap gesture on the "previous board position" button.
+/// Selects the board position before the current one. The board is updated to
+/// display the new position.
 // -----------------------------------------------------------------------------
-- (void) oneMoveBack:(id)sender
+- (void) previousBoardPosition:(id)sender
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
@@ -351,11 +352,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Forward" button. Goes forward one
-/// move in the game's move history. The board is updated to display the new
-/// situation.
+/// @brief Reacts to a tap gesture on the "next board position" button. Selects
+/// the board position before the current one. The board is updated to display
+/// the new position.
 // -----------------------------------------------------------------------------
-- (void) oneMoveForward:(id)sender
+- (void) nextBoardPosition:(id)sender
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
@@ -642,8 +643,8 @@
         if (GoGameStateGameIsPaused == game.state && ! game.isComputerThinking)
         {
           [toolbarItems addObject:self.flexibleSpaceButton];
-          [toolbarItems addObject:self.oneMoveBackButton];
-          [toolbarItems addObject:self.oneMoveForwardButton];
+          [toolbarItems addObject:self.previousBoardPositionButton];
+          [toolbarItems addObject:self.nextBoardPositionButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
@@ -657,8 +658,8 @@
           [toolbarItems addObject:self.playForMeButton];
           [toolbarItems addObject:self.passButton];
           [toolbarItems addObject:self.flexibleSpaceButton];
-          [toolbarItems addObject:self.oneMoveBackButton];
-          [toolbarItems addObject:self.oneMoveForwardButton];
+          [toolbarItems addObject:self.previousBoardPositionButton];
+          [toolbarItems addObject:self.nextBoardPositionButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
@@ -680,8 +681,8 @@
 
   [self updatePlayForMeButtonState];
   [self updatePassButtonState];
-  [self updateBackButtonState];
-  [self updateForwardButtonState];
+  [self updatePreviousBoardPositionButtonState];
+  [self updateNextBoardPositionButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
   [self updateInterruptButtonState];
@@ -775,9 +776,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Back" button.
+/// @brief Updates the enabled state of the "previous board position" button.
 // -----------------------------------------------------------------------------
-- (void) updateBackButtonState
+- (void) updatePreviousBoardPositionButtonState
 {
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
@@ -789,13 +790,13 @@
         enabled = YES;
     }
   }
-  self.oneMoveBackButton.enabled = enabled;
+  self.previousBoardPositionButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Forward" button.
+/// @brief Updates the enabled state of the "next board position" button.
 // -----------------------------------------------------------------------------
-- (void) updateForwardButtonState
+- (void) updateNextBoardPositionButtonState
 {
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
@@ -807,7 +808,7 @@
         enabled = YES;
     }
   }
-  self.oneMoveForwardButton.enabled = enabled;
+  self.nextBoardPositionButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
