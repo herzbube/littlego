@@ -18,6 +18,8 @@
 // Project includes
 #import "BackupGameCommand.h"
 #import "../../gtp/GtpCommand.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../play/boardposition/BoardPositionModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -25,6 +27,8 @@
 // -----------------------------------------------------------------------------
 @interface BackupGameCommand()
 - (void) dealloc;
+- (void) saveSgf;
+- (void) backupBoardPositionLastViewed;
 @end
 
 
@@ -42,7 +46,6 @@
   self = [super init];
   if (! self)
     return nil;
-
   return self;
 }
 
@@ -58,6 +61,16 @@
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
+{
+  [self saveSgf];
+  [self backupBoardPositionLastViewed];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (void) saveSgf
 {
   // Secretly and heinously change the working directory so that the .sgf
   // file goes to a directory that the user cannot look into
@@ -75,8 +88,15 @@
 
   // Switch back to the original directory
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
+}
 
-  return true;
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (void) backupBoardPositionLastViewed
+{
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  [boardPositionModel writeUserDefaults];
 }
 
 @end

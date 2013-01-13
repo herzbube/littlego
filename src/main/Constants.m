@@ -243,6 +243,7 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 NSString* playOnComputersTurnAlertKey = @"PlayOnComputersTurnAlert";
+NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 
 // Constants for NSCoding
 // General constants

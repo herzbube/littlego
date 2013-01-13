@@ -78,6 +78,7 @@
 }
 
 - (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName;
+- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object;
 
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;
@@ -90,5 +91,7 @@
 /// @brief True if the command is executed to restore a backup game. False
 /// (the default) if the command is executed to load a game from the archive.
 @property(nonatomic, assign) bool restoreMode;
+/// @brief True if the command triggered the computer player, false if not.
+@property(nonatomic, assign) bool didTriggerComputerPlayer;
 
 @end

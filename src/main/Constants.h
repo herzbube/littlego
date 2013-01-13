@@ -622,6 +622,7 @@ extern NSString* contactEmailCrashDataKey;
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
 extern NSString* playOnComputersTurnAlertKey;
+extern NSString* boardPositionLastViewedKey;
 //@}
 
 // -----------------------------------------------------------------------------

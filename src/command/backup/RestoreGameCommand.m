@@ -20,7 +20,9 @@
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../play/boardposition/BoardPositionModel.h"
 #import "../../player/PlayerModel.h"
 #import "../../player/Player.h"
 #import "../../newgame/NewGameModel.h"
@@ -30,10 +32,8 @@
 /// @brief Class extension with private methods for RestoreGameCommand.
 // -----------------------------------------------------------------------------
 @interface RestoreGameCommand()
-/// @name Initialization and deallocation
-//@{
 - (void) dealloc;
-//@}
+- (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand;
 @end
 
 
@@ -51,7 +51,6 @@
   self = [super init];
   if (! self)
     return nil;
-
   return self;
 }
 
@@ -86,6 +85,8 @@
     loadCommand.waitUntilDone = true;
     loadCommand.blackPlayer = blackPlayer;
     loadCommand.whitePlayer = whitePlayer;
+    [loadCommand whenFinishedPerformSelector:@selector(loadGameCommandFinished:)
+                                    onObject:self];  // self is retained
     [loadCommand submit];  // not all parts of the command are executed synchronously
   }
   else
@@ -94,6 +95,20 @@
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Is invoked when LoadGameCommand finishes executing.
+// -----------------------------------------------------------------------------
+- (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand
+{
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  // Integrity check in case the model has a stale value (e.g. due to an app
+  // crash)
+  if (boardPositionModel.boardPositionLastViewed > boardPosition.currentBoardPosition)
+    return;
+  boardPosition.currentBoardPosition = boardPositionModel.boardPositionLastViewed;
 }
 
 @end

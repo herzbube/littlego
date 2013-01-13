@@ -17,6 +17,8 @@
 
 // Project includes
 #import "BoardPositionModel.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
 
 
 // -----------------------------------------------------------------------------
@@ -34,6 +36,7 @@
 
 @synthesize discardFutureMovesAlert;
 @synthesize playOnComputersTurnAlert;
+@synthesize boardPositionLastViewed;
 
 
 // -----------------------------------------------------------------------------
@@ -50,6 +53,7 @@
 
   self.discardFutureMovesAlert = discardFutureMovesAlertDefault;
   self.playOnComputersTurnAlert = playOnComputersTurnAlertDefault;
+  self.boardPositionLastViewed = 0;
 
   return self;
 }
@@ -71,6 +75,7 @@
   NSDictionary* dictionary = [userDefaults dictionaryForKey:boardPositionKey];
   self.discardFutureMovesAlert = [[dictionary valueForKey:discardFutureMovesAlertKey] boolValue];
   self.playOnComputersTurnAlert = [[dictionary valueForKey:playOnComputersTurnAlertKey] boolValue];
+  self.boardPositionLastViewed = [[dictionary valueForKey:boardPositionLastViewedKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -79,9 +84,13 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  // See property documentation for why we do this
+  self.boardPositionLastViewed = [GoGame sharedGame].boardPosition.currentBoardPosition;
+
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:self.discardFutureMovesAlert] forKey:discardFutureMovesAlertKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playOnComputersTurnAlert] forKey:playOnComputersTurnAlertKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.boardPositionLastViewed] forKey:boardPositionLastViewedKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 }

@@ -67,6 +67,12 @@
 - (void) cleanup;
 - (void) showAlert:(NSString*)message;
 - (void) replayMoves:(NSArray*)moveList;
+- (void) performCallback;
+//@}
+/// @name Private properties
+//@{
+@property(nonatomic, retain) id callbackTarget;
+@property(nonatomic, assign) SEL callbackTargetSelector;
 //@}
 @end
 
@@ -79,6 +85,9 @@
 @synthesize gameName;
 @synthesize waitUntilDone;
 @synthesize restoreMode;
+@synthesize callbackTarget;
+@synthesize callbackTargetSelector;
+@synthesize didTriggerComputerPlayer;
 
 
 // -----------------------------------------------------------------------------
@@ -99,6 +108,9 @@
   self.gameName = aGameName;
   self.waitUntilDone = false;
   self.restoreMode = false;
+  self.callbackTarget = nil;
+  self.callbackTargetSelector = nil;
+  self.didTriggerComputerPlayer = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
   m_komi = nil;
@@ -117,11 +129,26 @@
   self.blackPlayer = nil;
   self.whitePlayer = nil;
   self.gameName = nil;
+  self.callbackTarget = nil;
+  self.callbackTargetSelector = nil;
   [m_handicap release];
   [m_komi release];
   [m_moves release];
   [m_oldCurrentDirectory release];
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets a selector @a selector that should be invoked on object
+/// @a object when this command finishes executing. @a object is retained.
+///
+/// When the callback occurs this LoadGameCommand object is passed as the
+/// argument to @a selector.
+// -----------------------------------------------------------------------------
+- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object
+{
+  self.callbackTarget = object;
+  self.callbackTargetSelector = selector;
 }
 
 // -----------------------------------------------------------------------------
@@ -631,6 +658,7 @@
   {
     ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
     [command submit];
+    self.didTriggerComputerPlayer = true;
   }
 }
 
@@ -640,6 +668,9 @@
 // -----------------------------------------------------------------------------
 - (void) cleanup
 {
+  // Invoke before the long-running action finishes, in case the object called
+  // back does something else that triggers many view updates
+  [self performCallback];
   // Re-enable view updates on Play tab
   [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
 }
@@ -657,6 +688,18 @@
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeLoadGameFailed;
   [alert show];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs callback if an object and selector were set with
+/// whenFinishedPerformSelector:onObject:().
+// -----------------------------------------------------------------------------
+- (void) performCallback
+{
+  if (! self.callbackTarget)
+    return;
+  [self.callbackTarget performSelector:self.callbackTargetSelector
+                            withObject:self];
 }
 
 @end
