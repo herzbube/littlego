@@ -54,6 +54,7 @@ enum PlayCommandType
 //@}
 /// @name Private helpers
 //@{
+- (bool) shouldDiscardMoves;
 - (bool) discardMoves;
 - (bool) syncGTPEngine;
 - (bool) syncGTPEngineClearBoard;
@@ -156,14 +157,32 @@ enum PlayCommandType
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  bool success = [self discardMoves];
-  if (success)
+  bool shouldDiscardMoves = [self shouldDiscardMoves];
+  if (shouldDiscardMoves)
   {
+    bool success = [self discardMoves];
+    if (! success)
+      return false;
     success = [self syncGTPEngine];
-    if (success)
-      success = [self playCommand];
+    if (! success)
+      return false;
   }
+  bool success = [self playCommand];
   return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true if moves need to be
+/// discarded, false otherwise.
+// -----------------------------------------------------------------------------
+- (bool) shouldDiscardMoves
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+  if (boardPosition.isLastPosition)
+    return false;
+  else
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -177,8 +196,6 @@ enum PlayCommandType
   if (GoGameStateGameHasEnded == gameState)
     return false;
   GoBoardPosition* boardPosition = game.boardPosition;
-  if (boardPosition.isLastPosition)
-    return true;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
   GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
