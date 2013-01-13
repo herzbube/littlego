@@ -654,7 +654,14 @@
 // -----------------------------------------------------------------------------
 - (void) triggerComputerPlayer
 {
-  if ([[GoGame sharedGame] isComputerPlayersTurn])
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameTypeComputerVsComputer == game.type)
+  {
+    // Start game in paused mode so that on application launch the board
+    // position last viewed can be restored.
+    [game pause];
+  }
+  else if ([game isComputerPlayersTurn])
   {
     ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
     [command submit];
