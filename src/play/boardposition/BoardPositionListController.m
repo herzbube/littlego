@@ -20,6 +20,7 @@
 #import "BoardPositionView.h"
 #import "BoardPositionViewMetrics.h"
 #import "../ScoringModel.h"
+#import "../../command/boardposition/SyncGTPEngineCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
@@ -441,16 +442,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
-{
-  BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  boardPosition.currentBoardPosition = boardPositionView.boardPosition;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief ItemScrollViewDataSource protocol method.
 // -----------------------------------------------------------------------------
 - (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index
@@ -461,6 +452,19 @@
   if (index == boardPosition.currentBoardPosition)
     view.currentBoardPosition = true;
   return view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ItemScrollViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
+{
+  BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  if (boardPosition.currentBoardPosition == boardPositionView.boardPosition)
+    return;
+  boardPosition.currentBoardPosition = boardPositionView.boardPosition;
+  [[[SyncGTPEngineCommand alloc] init] submit];
 }
 
 @end

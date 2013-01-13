@@ -22,13 +22,7 @@
 #import "../move/PlayMoveCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoMove.h"
 #import "../../go/GoMoveModel.h"
-#import "../../go/GoPlayer.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoVertex.h"
-#import "../../gtp/GtpCommand.h"
-#import "../../gtp/GtpResponse.h"
 
 
 // -----------------------------------------------------------------------------
@@ -56,10 +50,6 @@ enum PlayCommandType
 //@{
 - (bool) shouldDiscardMoves;
 - (bool) discardMoves;
-- (bool) syncGTPEngine;
-- (bool) syncGTPEngineClearBoard;
-- (bool) syncGTPEngineHandicap;
-- (bool) syncGTPEngineMoves;
 - (bool) playCommand;
 //@}
 /// @name Private properties
@@ -163,9 +153,6 @@ enum PlayCommandType
     bool success = [self discardMoves];
     if (! success)
       return false;
-    success = [self syncGTPEngine];
-    if (! success)
-      return false;
   }
   bool success = [self playCommand];
   return success;
@@ -200,89 +187,6 @@ enum PlayCommandType
   GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
   return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true on success, false on failure.
-// -----------------------------------------------------------------------------
-- (bool) syncGTPEngine
-{
-  if (! [self syncGTPEngineClearBoard])
-    return false;
-  // clear_board affects handicap (but not board size and komi)
-  if (! [self syncGTPEngineHandicap])
-    return false;
-  if (! [self syncGTPEngineMoves])
-    return false;
-  
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for syncGTPEngine(). Returns true on success, false
-/// on failure.
-// -----------------------------------------------------------------------------
-- (bool) syncGTPEngineClearBoard
-{
-  GtpCommand* commandClearBoard = [GtpCommand command:@"clear_board"];
-  commandClearBoard.waitUntilDone = true;
-  [commandClearBoard submit];
-  assert(commandClearBoard.response.status);
-  return commandClearBoard.response.status;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for syncGTPEngine(). Returns true on success, false
-/// on failure.
-// -----------------------------------------------------------------------------
-- (bool) syncGTPEngineHandicap
-{
-  GoGame* game = [GoGame sharedGame];
-  int handicap = game.handicapPoints.count;
-  if (0 == handicap)
-    return true;
-  GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", handicap]];
-  commandFixedHandicap.waitUntilDone = true;
-  [commandFixedHandicap submit];
-  assert(commandFixedHandicap.response.status);
-  return commandFixedHandicap.response.status;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for syncGTPEngine(). Returns true on success, false
-/// on failure.
-// -----------------------------------------------------------------------------
-- (bool) syncGTPEngineMoves
-{
-  GoMoveModel* moveModel = [GoGame sharedGame].moveModel;
-  if (0 == moveModel.numberOfMoves)
-    return true;
-  NSString* commandString = @"gogui-play_sequence";
-  GoMove* move = moveModel.firstMove;
-  while (move)
-  {
-    if (move.player.black)
-      commandString = [commandString stringByAppendingString:@" B "];
-    else
-      commandString = [commandString stringByAppendingString:@" W "];
-    switch (move.type)
-    {
-      case GoMoveTypePlay:
-        commandString = [commandString stringByAppendingString:move.point.vertex.string];
-        break;
-      case GoMoveTypePass:
-        commandString = [commandString stringByAppendingString:@" PASS"];
-        break;
-      default:
-        return false;
-    }
-    move = move.next;
-  }
-  GtpCommand* commandSetup = [GtpCommand command:commandString];
-  commandSetup.waitUntilDone = true;
-  [commandSetup submit];
-  assert(commandSetup.response.status);
-  return commandSetup.response.status;
 }
 
 // -----------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #import "../go/GoScore.h"
 #import "../command/InterruptComputerCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
+#import "../command/boardposition/SyncGTPEngineCommand.h"
 #import "../command/game/PauseGameCommand.h"
 
 
@@ -346,6 +347,7 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
   boardPosition.currentBoardPosition = currentBoardPosition - 1;
+  [[[SyncGTPEngineCommand alloc] init] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -358,6 +360,7 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
   boardPosition.currentBoardPosition = currentBoardPosition + 1;
+  [[[SyncGTPEngineCommand alloc] init] submit];
 }
 
 // -----------------------------------------------------------------------------
