@@ -49,9 +49,4 @@
 @property(nonatomic, assign) CGRect boardPositionViewFrame;
 //@}
 
-/// @name Board position list view properties
-//@{
-@property(nonatomic, assign) CGSize boardPositionListViewSize;
-//@}
-
 @end

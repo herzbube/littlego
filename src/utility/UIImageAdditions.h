@@ -15,21 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "CommandBase.h"
-
-
 // -----------------------------------------------------------------------------
-/// @brief The ChangeBoardPositionCommand class is responsible for changing the
-/// current board position to a new value.
+/// @brief The UIImageAdditions category enhances UIImage by adding convenience
+/// drawing functions that create new images.
+///
+/// @ingroup utility
 // -----------------------------------------------------------------------------
-@interface ChangeBoardPositionCommand : CommandBase
-{
-}
+@interface UIImage(UIImageAdditions)
 
-- (id) initWithBoardPosition:(int)boardPosition;
-- (id) initWithFirstBoardPosition;
-- (id) initWithLastBoardPosition;
-- (id) initWithOffset:(int)offset;
++ (UIImage*) imageByApplyingUIBarButtonItemStyling:(UIImage*)image;
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
++ (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
 
 @end

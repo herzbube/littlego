@@ -22,9 +22,12 @@
 #import "PlayView.h"
 #import "StatusLineController.h"
 #import "ToolbarController.h"
-#import "boardposition/BoardPositionListController.h"
+#import "boardposition/BoardPositionListViewController.h"
 #import "boardposition/BoardPositionModel.h"
+#import "boardposition/BoardPositionNavigationBarController.h"
+#import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
+#import "boardposition/CurrentBoardPositionViewController.h"
 #import "gesture/TapGestureController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
@@ -36,6 +39,7 @@
 // System includes
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import <math.h>
 
 
 // -----------------------------------------------------------------------------
@@ -65,6 +69,10 @@
 - (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
 - (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
 //@}
+/// @name CurrentBoardPositionViewControllerDelegate protocol
+//@{
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller;
+//@}
 /// @name UIAlertViewDelegate protocol
 //@{
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
@@ -82,16 +90,21 @@
 - (void) setupPlayView;
 - (void) setupActivityIndicatorView;
 - (void) setupStatusLineView;
+- (void) setupBoardPositionContainerView;
+- (void) setupBoardPositionNavigationView;
 - (void) setupBoardPositionListView;
+- (void) setupCurrentBoardPositionView;
 - (void) setupDebugView;
 - (CGRect) mainViewFrame;
 - (CGRect) subviewFrame;
 - (CGRect) toolbarFrame;
 - (CGRect) playViewFrame;
-- (CGPoint) boardPositionListViewPosition;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
+- (CGRect) boardPositionContainerViewFrame;
+- (CGRect) currentBoardPositionViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
+- (void) switchSubviewsOfBoardPositionContainerView;
 - (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
 - (void) alertCannotPlayOnComputersTurn;
 //@}
@@ -107,21 +120,38 @@
 @property(nonatomic, retain) PlayView* playView;
 /// @brief The toolbar that displays action buttons.
 @property(nonatomic, retain) UIToolbar* toolbar;
+/// @brief The container view for both boardPositionNavigationView and
+/// boardPositionListView. Animation is used to switch between the two subviews.
+@property(nonatomic, retain) UIView* boardPositionContainerView;
+/// @brief The view that contains buttons to navigate board positions.
+@property(nonatomic, retain) UIView* boardPositionNavigationView;
 /// @brief The view that displays the list of board positions in the current
 /// game.
 @property(nonatomic, retain) ItemScrollView* boardPositionListView;
+/// @brief The BoardPositionView that displays information about the current
+/// board position.
+@property(nonatomic, retain) BoardPositionView* currentBoardPositionView;
 /// @brief The status line that displays messages to the user.
 @property(nonatomic, retain) UILabel* statusLine;
 /// @brief The activity indicator that is animated for long running operations.
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 /// @brief The controller that manages the toolbar.
 @property(nonatomic, retain) ToolbarController* toolbarController;
-/// @brief The controller that manages the board position list.
-@property(nonatomic, retain) BoardPositionListController* boardPositionListController;
 /// @brief The controller that manages the status line.
 @property(nonatomic, retain) StatusLineController* statusLineController;
 /// @brief The controller that manages the activity indicator.
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
+/// @brief The object providing various size + drawing metrics for board
+/// position views.
+@property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
+/// @brief The controller that manages buttons used for navigating the current
+/// game's board positions.
+@property(nonatomic, retain) BoardPositionNavigationBarController* boardPositionNavigationBarController;
+/// @brief The controller that manages the board position list view.
+@property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
+/// @brief The controller that manages the board position view that displays
+/// information about the current board position.
+@property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
 /// @brief The controller that manages panning gestures.
 @property(nonatomic, retain) PanGestureController* panGestureController;
 /// @brief The controller that manages tapping gestures.
@@ -137,13 +167,19 @@
 @synthesize backSideView;
 @synthesize playView;
 @synthesize toolbar;
+@synthesize boardPositionContainerView;
+@synthesize boardPositionNavigationView;
 @synthesize boardPositionListView;
+@synthesize currentBoardPositionView;
 @synthesize statusLine;
 @synthesize activityIndicator;
 @synthesize toolbarController;
-@synthesize boardPositionListController;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
+@synthesize boardPositionViewMetrics;
+@synthesize boardPositionNavigationBarController;
+@synthesize boardPositionListViewController;
+@synthesize currentBoardPositionViewController;
 @synthesize panGestureController;
 @synthesize tapGestureController;
 
@@ -158,13 +194,19 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
+  self.boardPositionContainerView = nil;
+  self.boardPositionNavigationView = nil;
   self.boardPositionListView = nil;
+  self.currentBoardPositionView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
-  self.boardPositionListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.boardPositionViewMetrics = nil;
+  self.boardPositionNavigationBarController = nil;
+  self.boardPositionListViewController = nil;
+  self.currentBoardPositionViewController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
   [super dealloc];
@@ -384,30 +426,119 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (void) setupBoardPositionListView
-{
-  self.boardPositionListController = [[[BoardPositionListController alloc] init] autorelease];
-  self.boardPositionListView = self.boardPositionListController.boardPositionListView;
-  CGRect boardPositionListViewFrame = self.boardPositionListView.frame;
-  boardPositionListViewFrame.origin = [self boardPositionListViewPosition];
-  self.boardPositionListView.frame = boardPositionListViewFrame;
-  [self.frontSideView addSubview:self.boardPositionListView];
-  self.boardPositionListView.backgroundColor = [UIColor clearColor];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupBoardPositionListView().
-// -----------------------------------------------------------------------------
-- (CGPoint) boardPositionListViewPosition
+- (void) setupBoardPositionContainerView
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    // TODO xxx either let controller do this, or do it all here
+    self.boardPositionContainerView = [[[UIView alloc] initWithFrame:[self boardPositionContainerViewFrame]] autorelease];
+    [self.frontSideView addSubview:self.boardPositionContainerView];
+    self.boardPositionContainerView.backgroundColor = [UIColor clearColor];
+  }
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupBoardPositionContainerView().
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionContainerViewFrame
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
     CGRect activityIndicatorFrame = self.activityIndicator.frame;
-    int boardPositionListViewX = self.playView.boardFrame.origin.x;
-    int boardPositionListViewY = (activityIndicatorFrame.origin.y
-                                  + activityIndicatorFrame.size.height);
-    return CGPointMake(boardPositionListViewX, boardPositionListViewY);
+    int containerViewX = self.playView.boardFrame.origin.x;
+    int containerViewY = (activityIndicatorFrame.origin.y
+                          + activityIndicatorFrame.size.height);
+    int containerViewWidth = ([PlayView sharedView].boardFrame.size.width
+                              - [UiElementMetrics spacingHorizontal]
+                              - self.boardPositionViewMetrics.boardPositionViewWidth);
+    int containerViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+    return CGRectMake(containerViewX, containerViewY, containerViewWidth, containerViewHeight);
+  }
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionNavigationView
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.boardPositionNavigationView = [[[UIView alloc] initWithFrame:self.boardPositionContainerView.bounds] autorelease];
+    [self.boardPositionContainerView addSubview:self.boardPositionNavigationView];
+    self.boardPositionNavigationView.backgroundColor = [UIColor clearColor];
+  }
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionListView
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    enum ItemScrollViewOrientation boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
+    self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:self.boardPositionContainerView.bounds
+                                                           orientation:boardPositionListViewOrientation];
+    self.boardPositionListView.backgroundColor = [UIColor clearColor];
+  }
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupCurrentBoardPositionView
+{
+  self.currentBoardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
+                                                                        viewMetrics:self.boardPositionViewMetrics] autorelease];
+  self.currentBoardPositionView.frame = [self currentBoardPositionViewFrame];
+  [self.frontSideView addSubview:self.currentBoardPositionView];
+  self.currentBoardPositionView.currentBoardPosition = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by
+/// setupCurrentBoardPositionView().
+// -----------------------------------------------------------------------------
+- (CGRect) currentBoardPositionViewFrame
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    int boardPositionViewX = CGRectGetMaxX(self.boardPositionContainerView.frame) + [UiElementMetrics spacingHorizontal];
+    int boardPositionViewY = self.boardPositionContainerView.frame.origin.y;
+    int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
+    int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+    return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
   }
   else
   {
@@ -465,11 +596,16 @@
     assert(0);
   }
 
+  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+
   [self setupToolbar];
   [self setupPlayView];
   [self setupActivityIndicatorView];
   [self setupStatusLineView];
+  [self setupBoardPositionContainerView];
+  [self setupBoardPositionNavigationView];
   [self setupBoardPositionListView];
+  [self setupCurrentBoardPositionView];
   // Activate the following code to display controls that you can use to change
   // Play view drawing parameters that are normally immutable at runtime. This
   // is nice for debugging changes to the drawing system.
@@ -481,6 +617,11 @@
                                                   parentViewController:self] autorelease];
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.boardPositionNavigationBarController = [[[BoardPositionNavigationBarController alloc] initWithNavigationBarView:self.boardPositionNavigationView] autorelease];
+  self.boardPositionListViewController = [[[BoardPositionListViewController alloc] initWithBoardPositionListView:self.boardPositionListView
+                                                                                                     viewMetrics:self.boardPositionViewMetrics] autorelease];
+  self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
+  self.currentBoardPositionViewController.delegate = self;
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
 }
@@ -501,13 +642,19 @@
   self.backSideView = nil;
   self.playView = nil;
   self.toolbar = nil;
+  self.boardPositionViewMetrics = nil;
+  self.boardPositionContainerView = nil;
+  self.boardPositionNavigationView = nil;
   self.boardPositionListView = nil;
+  self.currentBoardPositionView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
   self.toolbarController = nil;
-  self.boardPositionListController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
+  self.boardPositionNavigationBarController = nil;
+  self.boardPositionListViewController = nil;
+  self.currentBoardPositionViewController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
 }
@@ -672,6 +819,50 @@
 - (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command
 {
   [self playOrAlertWithCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief CurrentBoardPositionViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
+{
+  [self switchSubviewsOfBoardPositionContainerView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) switchSubviewsOfBoardPositionContainerView
+{
+  NSTimeInterval animationDuration = 0.75;
+  if (self.boardPositionNavigationView.superview)
+  {
+    [UIView animateWithDuration:animationDuration animations:^{
+      CGRect frame = self.boardPositionContainerView.frame;
+      frame.size.height = 0;
+      self.boardPositionListView.frame = frame;
+      [self.boardPositionContainerView addSubview:self.boardPositionListView];
+      self.boardPositionListView.frame = self.boardPositionContainerView.bounds;
+      self.boardPositionNavigationView.frame = frame;
+    } completion:^(BOOL finished){
+      [self.boardPositionNavigationView removeFromSuperview];
+      self.boardPositionNavigationView.frame = self.boardPositionContainerView.bounds;
+    }];
+  }
+  else
+  {
+    [UIView animateWithDuration:animationDuration animations:^{
+      CGRect frame = self.boardPositionContainerView.frame;
+      frame.size.height = 0;
+      self.boardPositionNavigationView.frame = frame;
+      [self.boardPositionContainerView addSubview:self.boardPositionNavigationView];
+      self.boardPositionNavigationView.frame = self.boardPositionContainerView.bounds;
+      self.boardPositionListView.frame = frame;
+    } completion:^(BOOL finished){
+      [self.boardPositionListView removeFromSuperview];
+      self.boardPositionListView.frame = self.boardPositionContainerView.bounds;
+    }];
+  }
 }
 
 // -----------------------------------------------------------------------------

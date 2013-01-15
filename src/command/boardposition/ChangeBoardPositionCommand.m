@@ -45,6 +45,9 @@
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
 /// current board position to @a boardPosition.
 ///
+/// @a boardPosition must be a valid position, otherwise command execution will
+/// fail.
+///
 /// @note This is the designated initializer of ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
 - (id) initWithBoardPosition:(int)boardPosition
@@ -59,22 +62,44 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
-/// current board position to the next board position.
+/// current board position to the first board position.
 // -----------------------------------------------------------------------------
-- (id) initWithNextBoardPosition
+- (id) initWithFirstBoardPosition
 {
-  int boardPosition = [GoGame sharedGame].boardPosition.currentBoardPosition + 1;
+  return [self initWithBoardPosition:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a ChangeBoardPositionCommand object that will change the
+/// current board position to the last board position.
+// -----------------------------------------------------------------------------
+- (id) initWithLastBoardPosition;
+{
+  int boardPosition = [GoGame sharedGame].boardPosition.numberOfBoardPositions - 1;
   return [self initWithBoardPosition:boardPosition];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
-/// current board position to the next board position.
+/// current board position by adding @a offset to the current board position.
+///
+/// A negative/positive offset is used to go to a board position before/after
+/// the current board position.
+///
+/// If @a offset results in an invalid board position (i.e. a position before
+/// the first, or after the last position of the game), the offset is adjusted
+/// so that the result is a valid board position (i.e. either the first or the
+/// last board position of the game).
 // -----------------------------------------------------------------------------
-- (id) initWithPreviousBoardPosition
+- (id) initWithOffset:(int)offset
 {
-  int boardPosition = [GoGame sharedGame].boardPosition.currentBoardPosition - 1;
-  return [self initWithBoardPosition:boardPosition];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int boardPositionOffset = boardPosition.currentBoardPosition + offset;
+  if (boardPositionOffset < 0)
+    boardPositionOffset = 0;
+  else if (boardPositionOffset >= boardPosition.numberOfBoardPositions)
+    boardPositionOffset = boardPosition.numberOfBoardPositions - 1;
+  return [self initWithBoardPosition:boardPositionOffset];
 }
 
 // -----------------------------------------------------------------------------

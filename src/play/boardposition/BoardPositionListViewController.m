@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "BoardPositionListController.h"
+#import "BoardPositionListViewController.h"
 #import "BoardPositionView.h"
 #import "BoardPositionViewMetrics.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
@@ -25,9 +25,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BoardPositionListController.
+/// @brief Class extension with private methods for
+/// BoardPositionListViewController.
 // -----------------------------------------------------------------------------
-@interface BoardPositionListController()
+@interface BoardPositionListViewController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -68,7 +69,8 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
+@property(nonatomic, assign) ItemScrollView* boardPositionListView;
+@property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 @property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
@@ -76,17 +78,13 @@
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 //@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, assign, readwrite) ItemScrollView* boardPositionListView;
-//@}
 @end
 
 
-@implementation BoardPositionListController
+@implementation BoardPositionListViewController
 
-@synthesize boardPositionViewMetrics;
 @synthesize boardPositionListView;
+@synthesize boardPositionViewMetrics;
 @synthesize actionsInProgress;
 @synthesize allDataNeedsUpdate;
 @synthesize currentBoardPositionNeedsUpdate;
@@ -96,18 +94,21 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionListController object.
+/// @brief Initializes a BoardPositionListViewController object that manages
+/// the board position list view @a view and uses @a metrics to obtain sizes and
+/// other attributes that define the layout for new BoardPositionView objects.
 ///
-/// @note This is the designated initializer of BoardPositionListController.
+/// @note This is the designated initializer of BoardPositionListViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithBoardPositionListView:(ItemScrollView*)view viewMetrics:(BoardPositionViewMetrics*)metrics
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+  self.boardPositionListView = view;
+  self.boardPositionViewMetrics = metrics;
   self.actionsInProgress = 0;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
@@ -122,7 +123,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this BoardPositionListController
+/// @brief Deallocates memory allocated by this BoardPositionListViewController
 /// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -131,8 +132,8 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  self.boardPositionViewMetrics = nil;
   self.boardPositionListView = nil;
+  self.boardPositionViewMetrics = nil;
   [super dealloc];
 }
 
@@ -143,24 +144,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    CGRect boardPositionListViewFrame = CGRectZero;
-    boardPositionListViewFrame.size = self.boardPositionViewMetrics.boardPositionListViewSize;
-    enum ItemScrollViewOrientation boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
-    self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:boardPositionListViewFrame
-                                                           orientation:boardPositionListViewOrientation];
-    self.boardPositionListView.itemScrollViewDelegate = self;
-    self.boardPositionListView.itemScrollViewDataSource = self;
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
+  self.boardPositionListView.itemScrollViewDelegate = self;
+  self.boardPositionListView.itemScrollViewDataSource = self;
 }
 
 // -----------------------------------------------------------------------------

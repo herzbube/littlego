@@ -24,7 +24,6 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../command/InterruptComputerCommand.h"
-#import "../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
 #import "../command/game/PauseGameCommand.h"
 
@@ -41,8 +40,6 @@
 //@{
 - (void) pass:(id)sender;
 - (void) playForMe:(id)sender;
-- (void) previousBoardPosition:(id)sender;
-- (void) nextBoardPosition:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
@@ -79,8 +76,6 @@
 - (void) updateButtonStates;
 - (void) updatePlayForMeButtonState;
 - (void) updatePassButtonState;
-- (void) updatePreviousBoardPositionButtonState;
-- (void) updateNextBoardPositionButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
 - (void) updateInterruptButtonState;
@@ -117,12 +112,6 @@
 /// @brief The "Pass" button. Tapping this button generates a "Pass" move for
 /// the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* passButton;
-/// @brief Tapping this button selects the previous board position. The board is
-/// updated to display the new position.
-@property(nonatomic, retain) UIBarButtonItem* previousBoardPositionButton;
-/// @brief Tapping this button selects the next board position. The board is
-/// updated to display the new position.
-@property(nonatomic, retain) UIBarButtonItem* nextBoardPositionButton;
 /// @brief The "Pause" button. Tapping this button causes the game to pause if
 /// two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
@@ -160,8 +149,6 @@
 @synthesize buttonStatesNeedUpdate;
 @synthesize playForMeButton;
 @synthesize passButton;
-@synthesize previousBoardPositionButton;
-@synthesize nextBoardPositionButton;
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize interruptButton;
@@ -217,8 +204,6 @@
   self.gameInfoScore = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
-  self.previousBoardPositionButton = nil;
-  self.nextBoardPositionButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
@@ -242,14 +227,6 @@
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(pass:)] autorelease];
-  self.previousBoardPositionButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:backButtonIconResource]
-                                                                       style:UIBarButtonItemStyleBordered
-                                                                      target:self
-                                                                      action:@selector(previousBoardPosition:)] autorelease];
-  self.nextBoardPositionButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playButtonIconResource]
-                                                                   style:UIBarButtonItemStyleBordered
-                                                                  target:self
-                                                                  action:@selector(nextBoardPosition:)] autorelease];
   self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
                                                        style:UIBarButtonItemStyleBordered
                                                       target:self
@@ -336,26 +313,6 @@
   {
     [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "previous board position" button.
-/// Selects the board position before the current one. The board is updated to
-/// display the new position.
-// -----------------------------------------------------------------------------
-- (void) previousBoardPosition:(id)sender
-{
-  [[[ChangeBoardPositionCommand alloc] initWithPreviousBoardPosition] submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "next board position" button. Selects
-/// the board position before the current one. The board is updated to display
-/// the new position.
-// -----------------------------------------------------------------------------
-- (void) nextBoardPosition:(id)sender
-{
-  [[[ChangeBoardPositionCommand alloc] initWithNextBoardPosition] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -620,9 +577,6 @@
     if (GoGameStateGameHasEnded != game.state)
       [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     [toolbarItems addObject:self.flexibleSpaceButton];
-    [toolbarItems addObject:self.previousBoardPositionButton];
-    [toolbarItems addObject:self.nextBoardPositionButton];
-    [toolbarItems addObject:self.flexibleSpaceButton];
     [toolbarItems addObject:self.gameInfoButton];
     [toolbarItems addObject:self.gameActionsButton];
   }
@@ -637,12 +591,6 @@
           [toolbarItems addObject:self.pauseButton];
         if (game.isComputerThinking)
           [toolbarItems addObject:self.interruptButton];
-        if (GoGameStateGameIsPaused == game.state && ! game.isComputerThinking)
-        {
-          [toolbarItems addObject:self.flexibleSpaceButton];
-          [toolbarItems addObject:self.previousBoardPositionButton];
-          [toolbarItems addObject:self.nextBoardPositionButton];
-        }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
@@ -654,9 +602,6 @@
         {
           [toolbarItems addObject:self.playForMeButton];
           [toolbarItems addObject:self.passButton];
-          [toolbarItems addObject:self.flexibleSpaceButton];
-          [toolbarItems addObject:self.previousBoardPositionButton];
-          [toolbarItems addObject:self.nextBoardPositionButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
@@ -678,8 +623,6 @@
 
   [self updatePlayForMeButtonState];
   [self updatePassButtonState];
-  [self updatePreviousBoardPositionButtonState];
-  [self updateNextBoardPositionButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
   [self updateInterruptButtonState];
@@ -770,52 +713,6 @@
     }
   }
   self.passButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "previous board position" button.
-// -----------------------------------------------------------------------------
-- (void) updatePreviousBoardPositionButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (! self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  else
-  {
-    if (! [GoGame sharedGame].isComputerThinking)
-    {
-      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (! boardPosition.isFirstPosition)
-        enabled = YES;
-    }
-  }
-  self.previousBoardPositionButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "next board position" button.
-// -----------------------------------------------------------------------------
-- (void) updateNextBoardPositionButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (! self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  else
-  {
-    if (! [GoGame sharedGame].isComputerThinking)
-    {
-      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (! boardPosition.isLastPosition)
-        enabled = YES;
-    }
-  }
-  self.nextBoardPositionButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------

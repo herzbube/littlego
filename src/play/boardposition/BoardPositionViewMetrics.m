@@ -17,7 +17,6 @@
 
 // Project includes
 #import "BoardPositionViewMetrics.h"
-#import "../PlayView.h"
 #import "../../ui/UiUtilities.h"
 
 
@@ -32,7 +31,6 @@
 - (void) setupStoneImageSize;
 - (void) setupStoneImages;
 - (void) setupBoardPositionViewSize;
-- (void) setupBoardPositionListViewSize;
 - (UIImage*) stoneImageWithSize:(CGSize)size color:(UIColor*)color;
 //@}
 @end
@@ -54,7 +52,6 @@
 @synthesize boardPositionViewHorizontalPadding;
 @synthesize boardPositionViewHorizontalSpacing;
 @synthesize boardPositionViewFrame;
-@synthesize boardPositionListViewSize;
 
 
 // -----------------------------------------------------------------------------
@@ -84,7 +81,6 @@
   [self setupStoneImageSize];
   [self setupStoneImages];
   [self setupBoardPositionViewSize];
-  [self setupBoardPositionListViewSize];
 
   return self;
 }
@@ -212,30 +208,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the size of the board position list view.
-///
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionListViewSize
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    int boardPositionListViewWidth = [PlayView sharedView].boardFrame.size.width;
-    int boardPositionListViewHeight = self.boardPositionViewHeight;
-    self.boardPositionListViewSize = CGSizeMake(boardPositionListViewWidth,
-                                                boardPositionListViewHeight);
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief This is an internal helper for stoneImageViewForMove:().
 // -----------------------------------------------------------------------------
 - (UIImage*) stoneImageWithSize:(CGSize)size color:(UIColor*)color
@@ -256,6 +228,5 @@
   UIGraphicsEndImageContext();
   return stoneImage;
 }
-
 
 @end

@@ -74,7 +74,7 @@
 		CD0DFED814EB2163000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */; };
 		CD0DFED914EB2171000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */; };
 		CD0DFEDC14F01C21000FE1B5 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */; };
-		CD0FE902169A122400053671 /* BoardPositionListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListController.m */; };
+		CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */; };
 		CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE901169A122400053671 /* BoardPositionModel.m */; };
 		CD0FE906169A135400053671 /* BoardPositionView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE905169A134C00053671 /* BoardPositionView.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
@@ -96,6 +96,9 @@
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
+		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
+		CD252DA216A4969D00A088D5 /* BoardPositionNavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA116A4969D00A088D5 /* BoardPositionNavigationBarController.m */; };
+		CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA416A4B97800A088D5 /* UIImageAdditions.m */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD36593C1691C49F00D75466 /* 40-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593A1691C49F00D75466 /* 40-forward.png */; };
@@ -417,8 +420,8 @@
 		CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairStoneLayerDelegate.m; sourceTree = "<group>"; };
 		CD0DFEDA14F01C17000FE1B5 /* DebugPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugPlayViewController.h; sourceTree = "<group>"; };
 		CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugPlayViewController.m; sourceTree = "<group>"; };
-		CD0FE8FE169A122400053671 /* BoardPositionListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionListController.h; sourceTree = "<group>"; };
-		CD0FE8FF169A122400053671 /* BoardPositionListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListController.m; sourceTree = "<group>"; };
+		CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionListViewController.h; sourceTree = "<group>"; };
+		CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListViewController.m; sourceTree = "<group>"; };
 		CD0FE900169A122400053671 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
 		CD0FE901169A122400053671 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
 		CD0FE904169A134C00053671 /* BoardPositionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionView.h; sourceTree = "<group>"; };
@@ -458,6 +461,12 @@
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
 		CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeBoardPositionCommand.m; sourceTree = "<group>"; };
+		CD252D9D16A4968D00A088D5 /* CurrentBoardPositionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentBoardPositionViewController.h; sourceTree = "<group>"; };
+		CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrentBoardPositionViewController.m; sourceTree = "<group>"; };
+		CD252DA016A4969D00A088D5 /* BoardPositionNavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationBarController.h; sourceTree = "<group>"; };
+		CD252DA116A4969D00A088D5 /* BoardPositionNavigationBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionNavigationBarController.m; sourceTree = "<group>"; };
+		CD252DA316A4B97700A088D5 /* UIImageAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageAdditions.h; sourceTree = "<group>"; };
+		CD252DA416A4B97800A088D5 /* UIImageAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageAdditions.m; sourceTree = "<group>"; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
 		CD36593A1691C49F00D75466 /* 40-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward.png"; sourceTree = "<group>"; };
@@ -909,14 +918,18 @@
 		CD0FE8FD169A122400053671 /* boardposition */ = {
 			isa = PBXGroup;
 			children = (
-				CD0FE8FE169A122400053671 /* BoardPositionListController.h */,
-				CD0FE8FF169A122400053671 /* BoardPositionListController.m */,
+				CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */,
+				CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */,
 				CD0FE900169A122400053671 /* BoardPositionModel.h */,
 				CD0FE901169A122400053671 /* BoardPositionModel.m */,
+				CD252DA016A4969D00A088D5 /* BoardPositionNavigationBarController.h */,
+				CD252DA116A4969D00A088D5 /* BoardPositionNavigationBarController.m */,
 				CD0FE904169A134C00053671 /* BoardPositionView.h */,
 				CD0FE905169A134C00053671 /* BoardPositionView.m */,
 				CD4B2596169A536F0023DE40 /* BoardPositionViewMetrics.h */,
 				CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */,
+				CD252D9D16A4968D00A088D5 /* CurrentBoardPositionViewController.h */,
+				CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */,
 			);
 			path = boardposition;
 			sourceTree = "<group>";
@@ -1332,6 +1345,8 @@
 				CDEF3C76140A69A2002D9C1C /* UIDebugging.m */,
 				CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */,
 				CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */,
+				CD252DA316A4B97700A088D5 /* UIImageAdditions.h */,
+				CD252DA416A4B97800A088D5 /* UIImageAdditions.m */,
 				CDB457AA147DB2010043EDE4 /* UserDefaultsUpdater.h */,
 				CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */,
 			);
@@ -1839,12 +1854,15 @@
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD3A09A51693A50700ABDB5D /* ToolbarController.m in Sources */,
-				CD0FE902169A122400053671 /* BoardPositionListController.m in Sources */,
+				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
 				CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
+				CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */,
+				CD252DA216A4969D00A088D5 /* BoardPositionNavigationBarController.m in Sources */,
+				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

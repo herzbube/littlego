@@ -18,10 +18,13 @@
 // Project references
 #import "../../ui/ItemScrollView.h"
 
+// Forward declarations
+@class BoardPositionViewMetrics;
+
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionListController class is responsible for managing the
-/// "board position list view", i.e. the scroll view on the Play tab that
+/// @brief The BoardPositionListViewController class is responsible for managing
+/// the "board position list view", i.e. the scroll view on the Play tab that
 /// displays the board positions of the current game.
 ///
 /// The board position list view displays a series of small subviews, each of
@@ -55,14 +58,14 @@
 /// orientation:
 /// - Portrait orientation: The view is displayed below the Go board, the
 ///   subviews are arranged horizontally, and scrolling occurs in a horizontal
-///   direction. BoardPositionListController only determines the height of the
-///   frame of the board position list view, the other frame characteristics are
-///   set by the Play tab's main controller (who is responsible for the overall
-///   layout of views on the Play tab).
+///   direction. BoardPositionListViewController only determines the height of
+///   the frame of the board position list view, the other frame characteristics
+///   are set by the Play tab's main controller (who is responsible for the
+///   overall layout of views on the Play tab).
 /// - Landscape orientation: The view is displayed on the left of the Go board,
 ///   subviews are arranged vertically, scrolling occurs vertically, and
-///   BoardPositionListController determines the width of the frame of the board
-///   position list view.
+///   BoardPositionListViewController determines the width of the frame of the
+///   board position list view.
 ///
 ///
 /// @par Content and scroll position updates
@@ -72,10 +75,10 @@
 /// this does not result in an update of the scrolling position. There is,
 /// however, one exception: If the board position list view currently displays
 /// board positions that no longer exist. In this scenario,
-/// BoardPositionListController places the new scrolling position so that the
-/// next view update displays the last board position of the game (this simple
-/// solution is possible because only board positions towards the end of the
-/// game can be discarded).
+/// BoardPositionListViewController places the new scrolling position so that
+/// the next view update displays the last board position of the game (this
+/// simple solution is possible because only board positions towards the end of
+/// the game can be discarded).
 ///
 /// The scroll position of the move list view is updated in response to a change
 /// of the current board position in the game's GoBoardPosition instance. The
@@ -92,12 +95,12 @@
 ///
 /// @par Delayed updates
 ///
-/// BoardPositionListController utilizes the #longRunningActionStarts and
+/// BoardPositionListViewController utilizes the #longRunningActionStarts and
 /// #longRunningActionEnds notifications to delay view updates.
 ///
-/// Methods in BoardPositionListController that need to update something in the
-/// board position list view should not trigger the update themselves, instead
-/// they should do the following:
+/// Methods in BoardPositionListViewController that need to update something in
+/// the board position list view should not trigger the update themselves,
+/// instead they should do the following:
 /// - Set one of several "needs update" flags to indicate what needs to be
 ///   updated. For each type of update there is a corresponding private bool
 ///   property (e.g @e numberOfItemsNeedsUpdate).
@@ -110,13 +113,10 @@
 /// progress). An updater method will always check if its "needs update" flag
 /// has been set.
 // -----------------------------------------------------------------------------
-@interface BoardPositionListController : NSObject <ItemScrollViewDataSource, ItemScrollViewDelegate>
+@interface BoardPositionListViewController : NSObject <ItemScrollViewDataSource, ItemScrollViewDelegate>
 {
 }
 
-- (id) init;
-
-/// @brief The board position list view.
-@property(nonatomic, assign, readonly) ItemScrollView* boardPositionListView;
+- (id) initWithBoardPositionListView:(ItemScrollView*)view viewMetrics:(BoardPositionViewMetrics*)metrics;
 
 @end

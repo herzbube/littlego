@@ -15,21 +15,16 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "CommandBase.h"
-
 
 // -----------------------------------------------------------------------------
-/// @brief The ChangeBoardPositionCommand class is responsible for changing the
-/// current board position to a new value.
+/// @brief The BoardPositionNavigationBarController class is responsible for
+/// managing the bar-style view with buttons that allow to navigate the game's
+/// list of board positions.
 // -----------------------------------------------------------------------------
-@interface ChangeBoardPositionCommand : CommandBase
+@interface BoardPositionNavigationBarController : NSObject
 {
 }
 
-- (id) initWithBoardPosition:(int)boardPosition;
-- (id) initWithFirstBoardPosition;
-- (id) initWithLastBoardPosition;
-- (id) initWithOffset:(int)offset;
+- (id) initWithNavigationBarView:(UIView*)view;
 
 @end

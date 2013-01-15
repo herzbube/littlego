@@ -16,24 +16,30 @@
 
 
 // Forward declarations
-@class BoardPositionViewMetrics;
+@class CurrentBoardPositionViewController;
+@class BoardPositionView;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionView class is intended to be displayed as a subview
-/// of the scrollable board position list view on the Play tab. It represents a
-/// board position and shows information about that board position.
+/// @brief The CurrentBoardPositionViewControllerDelegate protocol must be
+/// implemented by the delegate of CurrentBoardPositionViewController.
 // -----------------------------------------------------------------------------
-@interface BoardPositionView : UIView
+@protocol CurrentBoardPositionViewControllerDelegate
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller;
+@end
+
+
+// -----------------------------------------------------------------------------
+/// @brief The CurrentBoardPositionViewController class is responsible for
+/// managing the BoardPositionView on the "Play" tab that displays information
+/// about the current board position.
+// -----------------------------------------------------------------------------
+@interface CurrentBoardPositionViewController : NSObject <UIGestureRecognizerDelegate>
 {
 }
 
-- (id) initWithBoardPosition:(int)boardPosition viewMetrics:(BoardPositionViewMetrics*)viewMetrics;
+- (id) initWithCurrentBoardPositionView:(BoardPositionView*)view;
 
-/// @brief The board position that this view represents. A value of -1 for this
-/// property causes the BoardPositionView to display nothing.
-@property(nonatomic, assign) int boardPosition;
-/// @brief True if this view represents the current board position.
-@property(nonatomic, assign, readwrite) bool currentBoardPosition;
+@property(nonatomic, assign) id<CurrentBoardPositionViewControllerDelegate> delegate;
 
 @end

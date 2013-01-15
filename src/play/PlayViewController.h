@@ -18,6 +18,7 @@
 // Project includes
 #import "ToolbarController.h"
 #import "gesture/PanGestureController.h"
+#import "boardposition/CurrentBoardPositionViewController.h"
 
 
 // -----------------------------------------------------------------------------
@@ -57,7 +58,10 @@
 /// rotates. This requires special code because PlayViewController's regular
 /// rotation code is not triggered by UIKit in this situation.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <PanGestureControllerDelegate, ToolbarControllerDelegate, UIAlertViewDelegate>
+@interface PlayViewController : UIViewController <PanGestureControllerDelegate,
+                                                  ToolbarControllerDelegate,
+                                                  CurrentBoardPositionViewControllerDelegate,
+                                                  UIAlertViewDelegate>
 {
 }
 

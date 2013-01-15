@@ -79,10 +79,9 @@
   if (! self)
     return nil;
 
-  self.boardPosition = aBoardPosition;
-  self.currentBoardPosition = false;
+  boardPosition = aBoardPosition;  // don't use self, we don't want to trigger the setter
+  currentBoardPosition = false;    // ditto
   self.viewMetrics = aViewMetrics;
-
   self.frame = self.viewMetrics.boardPositionViewFrame;
 
   return self;
@@ -104,6 +103,12 @@
 - (void) layoutSubviews
 {
   [super layoutSubviews];
+
+  for (UIView* subview in self.subviews)
+    [subview removeFromSuperview];
+  self.backgroundColor = [UIColor clearColor];
+  if (-1 == self.boardPosition)
+    return;
 
   GoMove* move = nil;
   if (0 == self.boardPosition)
@@ -162,7 +167,7 @@
   // Size-to-fit because for board position 0 the label text is wider than
   // labelFrame.size.width (but that's OK since for board position 0 the view
   // does not display a stone image)
-  if (self.boardPosition == 0)
+  if (0 == self.boardPosition)
     [label sizeToFit];
   return label;
 }
@@ -213,23 +218,23 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
+- (void) setBoardPosition:(int)newValue
+{
+  if (boardPosition == newValue)
+    return;
+  boardPosition = newValue;
+  [self setNeedsLayout];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setCurrentBoardPosition:(bool)newValue
 {
   if (currentBoardPosition == newValue)
     return;
   currentBoardPosition = newValue;
-
-  GoMove* move = nil;
-  if (0 == self.boardPosition)
-    ;
-  else
-  {
-    int moveIndex = self.boardPosition - 1;
-    move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
-  }
-  [self setupBackgroundColorForMove:move];
-//  [self setNeedsLayout];
-//  [self setNeedsDisplay];
+  [self setNeedsLayout];
 }
 
 @end
