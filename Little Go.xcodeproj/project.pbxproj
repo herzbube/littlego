@@ -237,6 +237,7 @@
 		CDD961011662A8E300B54E09 /* render-readme.rb in Resources */ = {isa = PBXBuildFile; fileRef = CDD961001662A8E300B54E09 /* render-readme.rb */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
+		CDDBA88616A885D1001AB7DA /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE901169A122400053671 /* BoardPositionModel.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
@@ -1947,6 +1948,7 @@
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
+				CDDBA88616A885D1001AB7DA /* BoardPositionModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
