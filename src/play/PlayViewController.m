@@ -24,7 +24,7 @@
 #import "ToolbarController.h"
 #import "boardposition/BoardPositionListViewController.h"
 #import "boardposition/BoardPositionModel.h"
-#import "boardposition/BoardPositionNavigationBarController.h"
+#import "boardposition/BoardPositionToolbarController.h"
 #import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
@@ -84,27 +84,28 @@
 /// @name Private helpers
 //@{
 - (void) makeControllerReadyForAction;
+- (void) setupSubcontrollers;
 - (void) setupMainView;
-- (void) setupSubviews;
-- (void) setupToolbar;
+- (void) setupSubviewsOfMainView;
+- (void) setupSubviewsOfFrontSideView;
+- (void) setupToolbarTop;
+- (void) setupToolbarBottom;
 - (void) setupPlayView;
 - (void) setupActivityIndicatorView;
 - (void) setupStatusLineView;
-- (void) setupBoardPositionContainerView;
-- (void) setupBoardPositionNavigationView;
 - (void) setupBoardPositionListView;
 - (void) setupCurrentBoardPositionView;
 - (void) setupDebugView;
 - (CGRect) mainViewFrame;
 - (CGRect) subviewFrame;
-- (CGRect) toolbarFrame;
+- (CGRect) toolbarTopFrame;
+- (CGRect) toolbarBottomFrame;
 - (CGRect) playViewFrame;
 - (CGRect) statusLineViewFrame;
 - (CGRect) activityIndicatorViewFrame;
-- (CGRect) boardPositionContainerViewFrame;
+- (CGRect) boardPositionListViewFrame;
 - (CGRect) currentBoardPositionViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
-- (void) switchSubviewsOfBoardPositionContainerView;
 - (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
 - (void) alertCannotPlayOnComputersTurn;
 //@}
@@ -118,13 +119,11 @@
 @property(nonatomic, retain) UIView* backSideView;
 /// @brief The view that PlayViewController is responsible for.
 @property(nonatomic, retain) PlayView* playView;
-/// @brief The toolbar that displays action buttons.
-@property(nonatomic, retain) UIToolbar* toolbar;
-/// @brief The container view for both boardPositionNavigationView and
-/// boardPositionListView. Animation is used to switch between the two subviews.
-@property(nonatomic, retain) UIView* boardPositionContainerView;
-/// @brief The view that contains buttons to navigate board positions.
-@property(nonatomic, retain) UIView* boardPositionNavigationView;
+/// @brief The toolbar that displays action buttons at the top of the screen.
+@property(nonatomic, retain) UIToolbar* toolbarTop;
+/// @brief The toolbar that displays navigation buttons at the bottom of the
+/// screen.
+@property(nonatomic, retain) UIToolbar* toolbarBottom;
 /// @brief The view that displays the list of board positions in the current
 /// game.
 @property(nonatomic, retain) ItemScrollView* boardPositionListView;
@@ -135,7 +134,7 @@
 @property(nonatomic, retain) UILabel* statusLine;
 /// @brief The activity indicator that is animated for long running operations.
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
-/// @brief The controller that manages the toolbar.
+/// @brief The controller that manages toolbarTop.
 @property(nonatomic, retain) ToolbarController* toolbarController;
 /// @brief The controller that manages the status line.
 @property(nonatomic, retain) StatusLineController* statusLineController;
@@ -144,9 +143,8 @@
 /// @brief The object providing various size + drawing metrics for board
 /// position views.
 @property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
-/// @brief The controller that manages buttons used for navigating the current
-/// game's board positions.
-@property(nonatomic, retain) BoardPositionNavigationBarController* boardPositionNavigationBarController;
+/// @brief The controller that manages toolbarBottom.
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 /// @brief The controller that manages the board position list view.
 @property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
 /// @brief The controller that manages the board position view that displays
@@ -166,9 +164,8 @@
 @synthesize frontSideView;
 @synthesize backSideView;
 @synthesize playView;
-@synthesize toolbar;
-@synthesize boardPositionContainerView;
-@synthesize boardPositionNavigationView;
+@synthesize toolbarTop;
+@synthesize toolbarBottom;
 @synthesize boardPositionListView;
 @synthesize currentBoardPositionView;
 @synthesize statusLine;
@@ -177,7 +174,7 @@
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
 @synthesize boardPositionViewMetrics;
-@synthesize boardPositionNavigationBarController;
+@synthesize boardPositionToolbarController;
 @synthesize boardPositionListViewController;
 @synthesize currentBoardPositionViewController;
 @synthesize panGestureController;
@@ -193,9 +190,8 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
-  self.toolbar = nil;
-  self.boardPositionContainerView = nil;
-  self.boardPositionNavigationView = nil;
+  self.toolbarTop = nil;
+  self.toolbarBottom = nil;
   self.boardPositionListView = nil;
   self.currentBoardPositionView = nil;
   self.statusLine = nil;
@@ -204,7 +200,7 @@
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.boardPositionViewMetrics = nil;
-  self.boardPositionNavigationBarController = nil;
+  self.boardPositionToolbarController = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
   self.panGestureController = nil;
@@ -229,7 +225,7 @@
   // fail. Because startup auto-rotation happens before
   // makeControllerReadyForAction is called, we must add the frontside view
   // to the main view here.
-  [self setupSubviews];
+  [self setupSubviewsOfMainView];
 
   // Setup of remaining views is delayed to makeControllerReadyForAction()
 }
@@ -261,7 +257,7 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by loadView().
 // -----------------------------------------------------------------------------
-- (void) setupSubviews
+- (void) setupSubviewsOfMainView
 {
   CGRect subViewFrame = [self subviewFrame];
   self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
@@ -274,7 +270,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupSubviews().
+/// @brief This is an internal helper invoked by setupSubviewsOfMainView().
 // -----------------------------------------------------------------------------
 - (CGRect) subviewFrame
 {
@@ -289,18 +285,37 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (void) setupToolbar
+- (void) setupSubviewsOfFrontSideView
 {
-  CGRect toolbarFrame = [self toolbarFrame];
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
-  [self.frontSideView addSubview:self.toolbar];
-  self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+  [self setupToolbarTop];
+  [self setupToolbarBottom];
+  [self setupPlayView];
+  [self setupActivityIndicatorView];
+  [self setupStatusLineView];
+  [self setupBoardPositionListView];
+  [self setupCurrentBoardPositionView];
+  // Activate the following code to display controls that you can use to change
+  // Play view drawing parameters that are normally immutable at runtime. This
+  // is nice for debugging changes to the drawing system.
+//  [self setupDebugView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupToolbar().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
-- (CGRect) toolbarFrame
+- (void) setupToolbarTop
+{
+  CGRect toolbarFrame = [self toolbarTopFrame];
+  self.toolbarTop = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  [self.frontSideView addSubview:self.toolbarTop];
+  self.toolbarTop.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupToolbarTop().
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarTopFrame
 {
   CGSize superViewSize = self.frontSideView.bounds.size;
   int toolbarViewX = 0;
@@ -311,7 +326,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
+// -----------------------------------------------------------------------------
+- (void) setupToolbarBottom
+{
+  CGRect toolbarFrame = [self toolbarBottomFrame];
+  self.toolbarBottom = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  [self.frontSideView addSubview:self.toolbarBottom];
+  self.toolbarBottom.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupToolbarBottom().
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarBottomFrame
+{
+  CGSize superViewSize = self.frontSideView.bounds.size;
+  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
+  int toolbarViewX = 0;
+  int toolbarViewY = superViewSize.height - toolbarViewHeight;
+  int toolbarViewWidth = superViewSize.width;
+  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupPlayView
 {
@@ -331,35 +370,18 @@
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
-  // Dimensions if all the available space were used. The result would be a
-  // rectangle.
   CGSize superViewSize = self.frontSideView.bounds.size;
-  int playViewFullWidth = superViewSize.width;
-  int playViewFullHeight = superViewSize.height - self.toolbar.frame.size.height;
-
-  // Now make the view square so that auto-rotation on orientation change does
-  // not cause the view to be squashed or stretched. This is possibly not
-  // necessary anymore, because now there is a custom animation going on during
-  // auto-rotation that resizes the view to its proper dimensions.
-  // Note: There's already a small bit of code in PlayView that lets it handle
-  // rectangular frames.
-  int playViewSideLength;
-  if (playViewFullHeight >= playViewFullWidth)
-    playViewSideLength = playViewFullWidth;
-  else
-    playViewSideLength = playViewFullHeight;
-
-  // Calculate the final values
-  int playViewX = floor((superViewSize.width - playViewSideLength) / 2);  // center horizontally
-  int playViewY = (self.toolbar.frame.origin.y
-                   + self.toolbar.frame.size.height);
-  int playViewWidth = playViewSideLength;
-  int playViewHeight = playViewSideLength;
+  int playViewX = 0;
+  int playViewY = CGRectGetMaxY(self.toolbarTop.frame);
+  int playViewWidth = superViewSize.width;
+  int playViewHeight = (superViewSize.height
+                        - self.toolbarTop.frame.size.height
+                        - self.toolbarBottom.frame.size.height);
   return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupActivityIndicatorView
 {
@@ -375,18 +397,15 @@
 // -----------------------------------------------------------------------------
 - (CGRect) activityIndicatorViewFrame
 {
-  CGRect boardFrame = self.playView.boardFrame;
-  int activityIndicatorViewX = (boardFrame.origin.x
-                                + boardFrame.size.width
-                                - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  int activityIndicatorViewY = boardFrame.origin.y + boardFrame.size.height;
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewX = CGRectGetMaxX(self.playView.boardFrame) - activityIndicatorViewWidth;
+  int activityIndicatorViewY = self.toolbarBottom.frame.origin.y - activityIndicatorViewHeight;
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupStatusLineView
 {
@@ -408,99 +427,33 @@
   CGRect boardFrame = self.playView.boardFrame;
   CGRect activityIndicatorFrame = self.activityIndicator.frame;
   int statusLineViewX = boardFrame.origin.x;
-  int statusLineViewWidth = (boardFrame.size.width
-                             - [UiElementMetrics spacingHorizontal]
-                             - activityIndicatorFrame.size.width);
+  int statusLineViewWidth = (activityIndicatorFrame.origin.x
+                             - statusLineViewX
+                             - [UiElementMetrics spacingHorizontal]);
   UIFont* statusLineViewFont = [UIFont systemFontOfSize:[BoardPositionViewMetrics boardPositionViewFontSize]];
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
                                constrainedToSize:constraintSize
                                    lineBreakMode:UILineBreakModeWordWrap];
   int statusLineViewHeight = statusLineTextSize.height;
-  int statusLineViewY = (boardFrame.origin.y
-                         + boardFrame.size.height
-                         + floor((activityIndicatorFrame.size.height - statusLineViewHeight) / 2));
+  // [UiElementMetrics spacingVertical] is too much, so we choose 2 points as
+  // an arbitrary spacing value
+  int statusLineSpacingVertical = 2;
+  int statusLineViewY = (self.toolbarBottom.frame.origin.y
+                         - statusLineViewHeight
+                         - statusLineSpacingVertical);
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionContainerView
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    self.boardPositionContainerView = [[[UIView alloc] initWithFrame:[self boardPositionContainerViewFrame]] autorelease];
-    [self.frontSideView addSubview:self.boardPositionContainerView];
-    self.boardPositionContainerView.backgroundColor = [UIColor clearColor];
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupBoardPositionContainerView().
-// -----------------------------------------------------------------------------
-- (CGRect) boardPositionContainerViewFrame
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    CGRect activityIndicatorFrame = self.activityIndicator.frame;
-    int containerViewX = self.playView.boardFrame.origin.x;
-    int containerViewY = (activityIndicatorFrame.origin.y
-                          + activityIndicatorFrame.size.height);
-    int containerViewWidth = ([PlayView sharedView].boardFrame.size.width
-                              - [UiElementMetrics spacingHorizontal]
-                              - self.boardPositionViewMetrics.boardPositionViewWidth);
-    int containerViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
-    return CGRectMake(containerViewX, containerViewY, containerViewWidth, containerViewHeight);
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionNavigationView
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    self.boardPositionNavigationView = [[[UIView alloc] initWithFrame:self.boardPositionContainerView.bounds] autorelease];
-    [self.boardPositionContainerView addSubview:self.boardPositionNavigationView];
-    self.boardPositionNavigationView.backgroundColor = [UIColor clearColor];
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     enum ItemScrollViewOrientation boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
-    self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:self.boardPositionContainerView.bounds
+    self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
                                                            orientation:boardPositionListViewOrientation];
     self.boardPositionListView.backgroundColor = [UIColor clearColor];
   }
@@ -515,14 +468,39 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupBoardPositionContainerView().
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionListViewFrame
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    int listViewX = 0;
+    int listViewY = 0;
+    int listViewWidth = (self.toolbarBottom.frame.size.width
+                         - (2 * [UiElementMetrics toolbarPaddingHorizontal])
+                         - self.boardPositionViewMetrics.boardPositionViewWidth
+                         - (2 * [UiElementMetrics toolbarSpacing]));
+    int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+    return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+  }
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupCurrentBoardPositionView
 {
   self.currentBoardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
                                                                         viewMetrics:self.boardPositionViewMetrics] autorelease];
   self.currentBoardPositionView.frame = [self currentBoardPositionViewFrame];
-  [self.frontSideView addSubview:self.currentBoardPositionView];
   self.currentBoardPositionView.currentBoardPosition = true;
 }
 
@@ -534,8 +512,8 @@
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    int boardPositionViewX = CGRectGetMaxX(self.boardPositionContainerView.frame) + [UiElementMetrics spacingHorizontal];
-    int boardPositionViewY = self.boardPositionContainerView.frame.origin.y;
+    int boardPositionViewX = 0;
+    int boardPositionViewY = 0;
     int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
     int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
     return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
@@ -551,14 +529,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by setupSubviewsOfFrontSideView().
 // -----------------------------------------------------------------------------
 - (void) setupDebugView
 {
   DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
   [self.frontSideView addSubview:debugPlayViewController.view];
   CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
-  debugPlayViewFrame.origin.y += self.toolbar.frame.size.height;
+  debugPlayViewFrame.origin.y += self.toolbarTop.frame.size.height;
   debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
@@ -589,6 +567,15 @@
 // -----------------------------------------------------------------------------
 - (void) makeControllerReadyForAction
 {
+  [self setupSubviewsOfFrontSideView];
+  [self setupSubcontrollers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupSubcontrollers
+{
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
   if (! scoringModel)
   {
@@ -596,28 +583,15 @@
     assert(0);
   }
 
-  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
-
-  [self setupToolbar];
-  [self setupPlayView];
-  [self setupActivityIndicatorView];
-  [self setupStatusLineView];
-  [self setupBoardPositionContainerView];
-  [self setupBoardPositionNavigationView];
-  [self setupBoardPositionListView];
-  [self setupCurrentBoardPositionView];
-  // Activate the following code to display controls that you can use to change
-  // Play view drawing parameters that are normally immutable at runtime. This
-  // is nice for debugging changes to the drawing system.
-//  [self setupDebugView];
-  
-  self.toolbarController = [[[ToolbarController alloc] initWithToolbar:self.toolbar
+  self.toolbarController = [[[ToolbarController alloc] initWithToolbar:self.toolbarTop
                                                           scoringModel:scoringModel
                                                               delegate:self
                                                   parentViewController:self] autorelease];
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
-  self.boardPositionNavigationBarController = [[[BoardPositionNavigationBarController alloc] initWithNavigationBarView:self.boardPositionNavigationView] autorelease];
+  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBottom
+                                                                           boardPositionListView:self.boardPositionListView
+                                                                        currentBoardPositionView:self.currentBoardPositionView] autorelease];
   self.boardPositionListViewController = [[[BoardPositionListViewController alloc] initWithBoardPositionListView:self.boardPositionListView
                                                                                                      viewMetrics:self.boardPositionViewMetrics] autorelease];
   self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
@@ -641,10 +615,9 @@
   self.frontSideView = nil;
   self.backSideView = nil;
   self.playView = nil;
-  self.toolbar = nil;
+  self.toolbarTop = nil;
+  self.toolbarBottom = nil;
   self.boardPositionViewMetrics = nil;
-  self.boardPositionContainerView = nil;
-  self.boardPositionNavigationView = nil;
   self.boardPositionListView = nil;
   self.currentBoardPositionView = nil;
   self.statusLine = nil;
@@ -652,7 +625,7 @@
   self.toolbarController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
-  self.boardPositionNavigationBarController = nil;
+  self.boardPositionToolbarController = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
   self.panGestureController = nil;
@@ -826,43 +799,7 @@
 // -----------------------------------------------------------------------------
 - (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
 {
-  [self switchSubviewsOfBoardPositionContainerView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
-// -----------------------------------------------------------------------------
-- (void) switchSubviewsOfBoardPositionContainerView
-{
-  NSTimeInterval animationDuration = 0.75;
-  if (self.boardPositionNavigationView.superview)
-  {
-    [UIView animateWithDuration:animationDuration animations:^{
-      CGRect frame = self.boardPositionContainerView.frame;
-      frame.size.height = 0;
-      self.boardPositionListView.frame = frame;
-      [self.boardPositionContainerView addSubview:self.boardPositionListView];
-      self.boardPositionListView.frame = self.boardPositionContainerView.bounds;
-      self.boardPositionNavigationView.frame = frame;
-    } completion:^(BOOL finished){
-      [self.boardPositionNavigationView removeFromSuperview];
-      self.boardPositionNavigationView.frame = self.boardPositionContainerView.bounds;
-    }];
-  }
-  else
-  {
-    [UIView animateWithDuration:animationDuration animations:^{
-      CGRect frame = self.boardPositionContainerView.frame;
-      frame.size.height = 0;
-      self.boardPositionNavigationView.frame = frame;
-      [self.boardPositionContainerView addSubview:self.boardPositionNavigationView];
-      self.boardPositionNavigationView.frame = self.boardPositionContainerView.bounds;
-      self.boardPositionListView.frame = frame;
-    } completion:^(BOOL finished){
-      [self.boardPositionListView removeFromSuperview];
-      self.boardPositionListView.frame = self.boardPositionContainerView.bounds;
-    }];
-  }
+  [self.boardPositionToolbarController toggleToolbarItems];
 }
 
 // -----------------------------------------------------------------------------
