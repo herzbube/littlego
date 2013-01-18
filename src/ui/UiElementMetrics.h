@@ -71,5 +71,9 @@
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
 + (int) englishKeyboardHeight;
++ (int) toolbarPaddingHorizontal;
++ (int) toolbarPaddingVertical;
++ (int) toolbarSpacing;
++ (int) toolbarCustomViewItemPaddingHorizontal;
 
 @end

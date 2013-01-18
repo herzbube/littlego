@@ -239,4 +239,67 @@ static UIViewController* m_interfaceOrientationSource;
   }
 }
 
+// How much space between toolbar left/right edge and the first/last toolbar
+// item (for simple items that display an image)
++ (int) toolbarPaddingHorizontal
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 6;
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// How much space between toolbar top/bottom edge and a toolbar item
++ (int) toolbarPaddingVertical
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 6;
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// How much space between toolbar items
++ (int) toolbarSpacing
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 10;
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// For toolbar items with a custom UIView, how much space is added to the
+// left/right edge of the custom view by UIBarButtonItem. This padding is
+// noticeable if the item is at the toolbar's left/right edge.
++ (int) toolbarCustomViewItemPaddingHorizontal
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return 5;
+  else
+  {
+    // TODO xxx implement for iPad; take orientation into account
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:@"Not implemented yet"
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
 @end
