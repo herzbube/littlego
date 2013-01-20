@@ -48,8 +48,8 @@ enum PlayCommandType
 //@}
 /// @name Private helpers
 //@{
-- (bool) shouldDiscardMoves;
-- (bool) discardMoves;
+- (bool) shouldDiscardBoardPositions;
+- (bool) discardBoardPositions;
 - (bool) playCommand;
 //@}
 /// @name Private properties
@@ -147,10 +147,10 @@ enum PlayCommandType
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  bool shouldDiscardMoves = [self shouldDiscardMoves];
-  if (shouldDiscardMoves)
+  bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
+  if (shouldDiscardBoardPositions)
   {
-    bool success = [self discardMoves];
+    bool success = [self discardBoardPositions];
     if (! success)
       return false;
   }
@@ -159,10 +159,10 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true if moves need to be
+/// @brief Private helper for doIt(). Returns true if board positions need to be
 /// discarded, false otherwise.
 // -----------------------------------------------------------------------------
-- (bool) shouldDiscardMoves
+- (bool) shouldDiscardBoardPositions
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
@@ -175,7 +175,7 @@ enum PlayCommandType
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) discardMoves
+- (bool) discardBoardPositions
 {
   GoGame* game = [GoGame sharedGame];
   enum GoGameState gameState = game.state;

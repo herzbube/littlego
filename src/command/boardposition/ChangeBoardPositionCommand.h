@@ -22,6 +22,21 @@
 // -----------------------------------------------------------------------------
 /// @brief The ChangeBoardPositionCommand class is responsible for changing the
 /// current board position to a new value.
+///
+/// initWithBoardPosition:() must be invoked with a valid board position,
+/// otherwise command execution will fail.
+///
+/// initWithOffset:() is more permissive and can be invoked with an offset that
+/// would result in an invalid board position (i.e. a position before the first,
+/// or after the last position of the game). Such an offset is adjusted so that
+/// the result is a valid board position (i.e. either the first or the last
+/// board position of the game).
+///
+/// After it has changed the board position, ChangeBoardPositionCommand performs
+/// the following additional operations:
+/// - Synchronizes the GTP engine with the new board position
+/// - Recalculates the score for the new board position if scoring mode is
+///   currently enabled
 // -----------------------------------------------------------------------------
 @interface ChangeBoardPositionCommand : CommandBase
 {

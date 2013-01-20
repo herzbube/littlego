@@ -45,9 +45,6 @@
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
 /// current board position to @a boardPosition.
 ///
-/// @a boardPosition must be a valid position, otherwise command execution will
-/// fail.
-///
 /// @note This is the designated initializer of ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
 - (id) initWithBoardPosition:(int)boardPosition
@@ -85,11 +82,6 @@
 ///
 /// A negative/positive offset is used to go to a board position before/after
 /// the current board position.
-///
-/// If @a offset results in an invalid board position (i.e. a position before
-/// the first, or after the last position of the game), the offset is adjusted
-/// so that the result is a valid board position (i.e. either the first or the
-/// last board position of the game).
 // -----------------------------------------------------------------------------
 - (id) initWithOffset:(int)offset
 {

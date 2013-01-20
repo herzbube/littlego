@@ -24,20 +24,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The DiscardAndPlayCommand class is responsible for first discarding
-/// all moves in the future of the board position currently displayed on the
-/// Play view, then playing a move.
+/// all board positions in the future of the board position currently displayed
+/// on the Play view, then playing a move.
 ///
-/// DiscardAndPlayCommand looks at the current board position in
-/// BoardPositionModel, then discards all moves in GoMoveModel that are in the
-/// future of that board position. No moves are discarded if BoardPositionModel
-/// is already at the last board position.
+/// No board positions are discarded if BoardPositionModel is already at the
+/// last board position.
 ///
-/// After moves are discarded, DiscardAndPlayCommand makes sure that the GTP
-/// engine is synchronized with the new board position.
-///
-/// Finally, DiscardAndPlayCommand executes one of several possible play
-/// commands. Which one is chosen depends on the initializer that was used to
-/// construct the DiscardAndPlayCommand object. The following options exist:
+/// After board positions are discarded, DiscardAndPlayCommand executes one of
+/// several possible play commands. Which one is chosen depends on the
+/// initializer that was used to construct the DiscardAndPlayCommand object.
+/// The following options exist:
 /// - initWithPoint:() results in a #GoMoveTypePlay move made by a human player
 /// - initPass:() results in a #GoMoveTypePass move made by a human player
 /// - initPlayForMe() results in a move made by the computer on behalf of the

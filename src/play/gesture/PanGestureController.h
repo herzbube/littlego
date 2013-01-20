@@ -16,8 +16,8 @@
 
 
 // Forward declarations
+@class CommandBase;
 @class PanGestureController;
-@class DiscardAndPlayCommand;
 @class PlayView;
 @class ScoringModel;
 
@@ -32,14 +32,10 @@
 ///
 /// The delegate may display an alert that this is not possible.
 - (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
-/// @brief This method is invoked when the user attempts to place a stone while
-/// she views an old board position and playing would result in all future moves
-/// being discarded.
-///
-/// The delegate may display an alert that warns the user of the fact. The user
-/// may accept or decline to place the stone. If she decides to play, @a command
-/// must be executed to place the stone.
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+/// @brief This method is invoked when the user attempts to place a stone. The
+/// delegate executes @a command, possibly displaying an alert first which the
+/// user must confirm.
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
 @end
 
 

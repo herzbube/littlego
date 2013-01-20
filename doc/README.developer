@@ -989,8 +989,8 @@ Icon files
 - Whenever you need to load an image just use the normal image name and iOS will
   check behind the scenes if there is a retina display image available when it
   could use one.
-- To create the actual images I use The Gimp. The raw .xcf files are currently
-  not part of the project.
+- To create the actual images I use either the Gimp or Inkscape. The .xcf and
+  .svg files are currently not part of the project.
 
 stone-black.png, stone-white.png, stone-crosshair.png
 - The original source for these files is the file stones.svg, which in turn

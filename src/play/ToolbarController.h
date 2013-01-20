@@ -20,9 +20,9 @@
 #import "PlayViewActionSheetController.h"
 
 // Forward declarations
-@class ToolbarController;
-@class DiscardAndPlayCommand;
+@class CommandBase;
 @class ScoringModel;
+@class ToolbarController;
 
 
 // -----------------------------------------------------------------------------
@@ -35,14 +35,14 @@
 ///
 /// The delegate may display an alert that this is not possible.
 - (void) toolbarControllerAlertCannotPlayOnComputersTurn:(ToolbarController*)controller;
-/// @brief This method is invoked when the user attempts to play a move while
-/// she views an old board position and playing would result in all future moves
-/// being discarded.
-///
-/// The delegate may display an alert that warns the user of the fact. The user
-/// may accept or decline to play the move. If she decides to play, @a command
-/// must be executed to play the move.
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+/// @brief This method is invoked when the user attempts to play a move. The
+/// delegate executes @a command, possibly displaying an alert first which the
+/// user must confirm.
+- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
+/// @brief This method is invoked when the user attempts to discard board
+/// positions. The delegate executes @a command, possibly displaying an alert
+/// first which the user must confirmed.
+- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
 /// @brief This method is invoked when the user calls up or dismisses the Game
 /// Info view. The delegate is responsible for making the view visible, or
 /// hiding the view (@a makeVisible indicates which).

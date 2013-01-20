@@ -33,6 +33,12 @@
 /// @brief The CurrentBoardPositionViewController class is responsible for
 /// managing the BoardPositionView on the "Play" tab that displays information
 /// about the current board position.
+///
+/// CurrentBoardPositionViewController has the following responsibilities:
+/// - Tell the current board position view to update itself when the current
+///   board position changes.
+/// - Detect a tap gesture on the current board position view. The actual
+///   handling is delegated.
 // -----------------------------------------------------------------------------
 @interface CurrentBoardPositionViewController : NSObject <UIGestureRecognizerDelegate>
 {
