@@ -32,7 +32,7 @@
 enum PlayCommandType
 {
   PlayCommandTypePlayMove,
-  PlayCommandTypePlayForMe,
+  PlayCommandTypeComputerPlayMove,
   PlayCommandTypeContinue
 };
 
@@ -98,9 +98,9 @@ enum PlayCommandType
 /// @brief Initializes a DiscardAndPlayCommand object that will delegate the
 /// move to the computer player.
 // -----------------------------------------------------------------------------
-- (id) initPlayForMe
+- (id) initComputerPlay
 {
-  return [self initWithCommandType:PlayCommandTypePlayForMe];
+  return [self initWithCommandType:PlayCommandTypeComputerPlayMove];
 }
 
 // -----------------------------------------------------------------------------
@@ -212,7 +212,7 @@ enum PlayCommandType
       }
       break;
     }
-    case PlayCommandTypePlayForMe:
+    case PlayCommandTypeComputerPlayMove:
     {
       command = [[ComputerPlayMoveCommand alloc] init];
       break;

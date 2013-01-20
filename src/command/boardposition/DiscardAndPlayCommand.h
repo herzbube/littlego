@@ -36,8 +36,8 @@
 /// The following options exist:
 /// - initWithPoint:() results in a #GoMoveTypePlay move made by a human player
 /// - initPass:() results in a #GoMoveTypePass move made by a human player
-/// - initPlayForMe() results in a move made by the computer on behalf of the
-///   human player
+/// - initComputerPlay() results in a move made by the computer either for
+///   itself, or on behalf of the human player whose turn it currently is
 /// - initContinue() results in a paused computer vs. computer game being
 ///   continued
 // -----------------------------------------------------------------------------
@@ -47,7 +47,7 @@
 
 - (id) initWithPoint:(GoPoint*)aPoint;
 - (id) initPass;
-- (id) initPlayForMe;
+- (id) initComputerPlay;
 - (id) initContinue;
 
 @end

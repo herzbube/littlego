@@ -40,7 +40,7 @@
 /// @name Action methods for toolbar items
 //@{
 - (void) pass:(id)sender;
-- (void) playForMe:(id)sender;
+- (void) computerPlay:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
@@ -75,7 +75,7 @@
 - (void) delayedUpdate;
 - (void) populateToolbar;
 - (void) updateButtonStates;
-- (void) updatePlayForMeButtonState;
+- (void) updateComputerPlayButtonState;
 - (void) updatePassButtonState;
 - (void) updatePauseButtonState;
 - (void) updateContinueButtonState;
@@ -104,7 +104,7 @@
 @property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
-@property(nonatomic, retain) UIBarButtonItem* playForMeButton;
+@property(nonatomic, retain) UIBarButtonItem* computerPlayButton;
 @property(nonatomic, retain) UIBarButtonItem* passButton;
 @property(nonatomic, retain) UIBarButtonItem* discardBoardPositionButton;
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
@@ -128,7 +128,7 @@
 @synthesize actionsInProgress;
 @synthesize toolbarNeedsPopulation;
 @synthesize buttonStatesNeedUpdate;
-@synthesize playForMeButton;
+@synthesize computerPlayButton;
 @synthesize passButton;
 @synthesize discardBoardPositionButton;
 @synthesize pauseButton;
@@ -184,7 +184,7 @@
   self.delegate = nil;
   self.parentViewController = nil;
   self.gameInfoScore = nil;
-  self.playForMeButton = nil;
+  self.computerPlayButton = nil;
   self.passButton = nil;
   self.discardBoardPositionButton = nil;
   self.pauseButton = nil;
@@ -202,10 +202,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupButtons
 {
-  self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
-                                                           style:UIBarButtonItemStyleBordered
-                                                          target:self
-                                                          action:@selector(playForMe:)] autorelease];
+  self.computerPlayButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:computerPlayButtonIconResource]
+                                                              style:UIBarButtonItemStyleBordered
+                                                             target:self
+                                                             action:@selector(computerPlay:)] autorelease];
   self.passButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:passButtonIconResource]
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
@@ -294,22 +294,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Play for me" button. Causes the
-/// computer player to generate a move for the human player whose turn it
-/// currently is.
+/// @brief Reacts to a tap gesture on the "Computer play" button. Causes the
+/// computer player to generate a move, either for itself or on behalf of the
+/// human player whose turn it currently is.
 // -----------------------------------------------------------------------------
-- (void) playForMe:(id)sender
+- (void) computerPlay:(id)sender
 {
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (boardPosition.isComputerPlayersTurn)
-  {
-    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
-  }
-  else
-  {
-    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPlayForMe];
-    [self.delegate toolbarController:self playOrAlertWithCommand:command];
-  }
+  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initComputerPlay];
+  [self.delegate toolbarController:self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -602,7 +594,7 @@
           [toolbarItems addObject:self.interruptButton];
         else
         {
-          [toolbarItems addObject:self.playForMeButton];
+          [toolbarItems addObject:self.computerPlayButton];
           [toolbarItems addObject:self.passButton];
           [toolbarItems addObject:self.discardBoardPositionButton];
         }
@@ -624,7 +616,7 @@
     return;
   self.buttonStatesNeedUpdate = false;
 
-  [self updatePlayForMeButtonState];
+  [self updateComputerPlayButtonState];
   [self updatePassButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
@@ -635,9 +627,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Play for me" button.
+/// @brief Updates the enabled state of the "Computer play" button.
 // -----------------------------------------------------------------------------
-- (void) updatePlayForMeButtonState
+- (void) updateComputerPlayButtonState
 {
   BOOL enabled = NO;
   if (! self.scoringModel.scoringMode)
@@ -673,7 +665,7 @@
       }
     }
   }
-  self.playForMeButton.enabled = enabled;
+  self.computerPlayButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
