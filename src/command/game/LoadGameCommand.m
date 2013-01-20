@@ -655,17 +655,21 @@
 - (void) triggerComputerPlayer
 {
   GoGame* game = [GoGame sharedGame];
-  if (GoGameTypeComputerVsComputer == game.type)
+  if ([game isComputerPlayersTurn])
   {
-    // Start game in paused mode so that on application launch the board
-    // position last viewed can be restored.
-    [game pause];
-  }
-  else if ([game isComputerPlayersTurn])
-  {
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
-    self.didTriggerComputerPlayer = true;
+    if (self.restoreMode)
+    {
+      // On application launch we want to be able to restore the board position
+      // last viewed by the user, so we never trigger the computer player.
+      if (GoGameTypeComputerVsComputer == game.type)
+        [game pause];
+    }
+    else
+    {
+      ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+      [command submit];
+      self.didTriggerComputerPlayer = true;
+    }
   }
 }
 
