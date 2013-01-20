@@ -22,6 +22,13 @@
 #import "../../go/GoGame.h"
 #import "../../ui/UIElementMetrics.h"
 
+// Enums
+enum NavigationDirection
+{
+  NavigationDirectionBackward,
+  NavigationDirectionForward
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for
@@ -34,8 +41,18 @@
 //@}
 /// @name Notification responders
 //@{
-- (void) computerPlayerThinkingStarts:(NSNotification*)notification;
-- (void) computerPlayerThinkingStops:(NSNotification*)notification;
+- (void) goGameWillCreate:(NSNotification*)notification;
+- (void) goGameDidCreate:(NSNotification*)notification;
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
+//@}
+/// @name Updaters
+//@{
+- (void) delayedUpdate;
+- (void) populateToolbar;
+- (void) updateButtonStates;
 //@}
 /// @name Action methods
 //@{
@@ -51,36 +68,44 @@
 - (void) setupSpacerItems;
 - (void) setupCustomViewItemsWithBoardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView;
 - (void) setupNavigationBarButtonItems;
-- (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector;
+- (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector navigationDirection:(enum NavigationDirection)direction;
 - (void) setupNotificationResponders;
-- (void) populateToolbar;
 //@}
 /// @name Privately declared properties
 //@{
+/// @brief Updates are delayed as long as this is above zero.
+@property(nonatomic, assign) int actionsInProgress;
+@property(nonatomic, assign) bool toolbarNeedsPopulation;
+@property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, assign) UIToolbar* toolbar;
 @property(nonatomic, retain) UIBarButtonItem* negativeSpacer;
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpacer;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItems;
+@property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsBackward;
+@property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsForward;
 @property(nonatomic, retain) UIBarButtonItem* boardPositionListViewItem;
 @property(nonatomic, retain) UIBarButtonItem* currentBoardPositionViewItem;
 @property(nonatomic, assign) bool boardPositionListViewIsVisible;
 @property(nonatomic, assign) int numberOfBoardPositionsOnPage;
-@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 //@}
 @end
 
 
 @implementation BoardPositionToolbarController
 
+@synthesize actionsInProgress;
+@synthesize toolbarNeedsPopulation;
+@synthesize buttonStatesNeedUpdate;
 @synthesize toolbar;
 @synthesize negativeSpacer;
 @synthesize flexibleSpacer;
 @synthesize navigationBarButtonItems;
+@synthesize navigationBarButtonItemsBackward;
+@synthesize navigationBarButtonItemsForward;
 @synthesize boardPositionListViewItem;
 @synthesize currentBoardPositionViewItem;
 @synthesize boardPositionListViewIsVisible;
 @synthesize numberOfBoardPositionsOnPage;
-@synthesize tappingEnabled;
 
 
 // -----------------------------------------------------------------------------
@@ -96,17 +121,22 @@
   if (! self)
     return nil;
 
+  self.actionsInProgress = 0;
   self.toolbar = aToolbar;
   self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
+  self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
+  self.navigationBarButtonItemsForward = [NSMutableArray arrayWithCapacity:0];
   self.numberOfBoardPositionsOnPage = 10;
   self.boardPositionListViewIsVisible = false;
-  self.tappingEnabled = true;
 
   [self setupSpacerItems];
   [self setupNavigationBarButtonItems];
   [self setupCustomViewItemsWithBoardPositionListView:listView currentBoardPositionView:currentView];
   [self setupNotificationResponders];
-  [self populateToolbar];
+
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 
   return self;
 }
@@ -118,10 +148,14 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.toolbar = nil;
   self.negativeSpacer = nil;
   self.flexibleSpacer = nil;
   self.navigationBarButtonItems = nil;
+  self.navigationBarButtonItemsBackward = nil;
+  self.navigationBarButtonItemsForward = nil;
   self.boardPositionListViewItem = nil;
   self.currentBoardPositionViewItem = nil;
   [super dealloc];
@@ -146,24 +180,30 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBarButtonItems
 {
-  [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:)];
-  [self addButtonWithImageNamed:rewindButtonIconResource withSelector:@selector(rewind:)];
-  [self addButtonWithImageNamed:backButtonIconResource withSelector:@selector(previousBoardPosition:)];
-  [self addButtonWithImageNamed:playButtonIconResource withSelector:@selector(nextBoardPosition:)];
-  [self addButtonWithImageNamed:fastForwardButtonIconResource withSelector:@selector(fastForward:)];
-  [self addButtonWithImageNamed:forwardToEndButtonIconResource withSelector:@selector(fastForwardToEnd:)];
+  enum NavigationDirection direction = NavigationDirectionBackward;
+  [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
+  [self addButtonWithImageNamed:rewindButtonIconResource withSelector:@selector(rewind:) navigationDirection:direction];
+  [self addButtonWithImageNamed:backButtonIconResource withSelector:@selector(previousBoardPosition:) navigationDirection:direction];
+  direction = NavigationDirectionForward;
+  [self addButtonWithImageNamed:playButtonIconResource withSelector:@selector(nextBoardPosition:) navigationDirection:direction];
+  [self addButtonWithImageNamed:fastForwardButtonIconResource withSelector:@selector(fastForward:) navigationDirection:direction];
+  [self addButtonWithImageNamed:forwardToEndButtonIconResource withSelector:@selector(fastForwardToEnd:) navigationDirection:direction];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupNavigationBarButtonItems().
 // -----------------------------------------------------------------------------
-- (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector
+- (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector navigationDirection:(enum NavigationDirection)direction
 {
   UIBarButtonItem* button = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageName]
                                                               style:UIBarButtonItemStyleBordered
                                                              target:self
                                                              action:selector] autorelease];
   [self.navigationBarButtonItems addObject:button];
+  if (NavigationDirectionBackward == direction)
+    [self.navigationBarButtonItemsBackward addObject:button];
+  else
+    [self.navigationBarButtonItemsForward addObject:button];
 }
 
 // -----------------------------------------------------------------------------
@@ -181,19 +221,101 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  // KVO observing
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Toggles the visible items in the toolbar between the board position
-/// list view and the navigation buttons. The current board position view is
-/// always visible.
+/// @brief Responds to the #goGameWillCreate notification.
 // -----------------------------------------------------------------------------
-- (void) toggleToolbarItems
+- (void) goGameWillCreate:(NSNotification*)notification
 {
-  self.boardPositionListViewIsVisible = ! self.boardPositionListViewIsVisible;
+  GoGame* oldGame = [notification object];
+  GoBoardPosition* boardPosition = oldGame.boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  GoGame* newGame = [notification object];
+  GoBoardPosition* boardPosition = newGame.boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts and
+/// #computerPlayerThinkingStops notifications.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+    [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  if (object == [GoGame sharedGame].boardPosition)
+  {
+    if ([keyPath isEqualToString:@"currentBoardPosition"])
+    {
+      // It's annoying to have buttons appear and disappear all the time, so
+      // we try to minimize this by keeping the same buttons in the toolbar
+      // while the user is browsing board positions.
+      self.buttonStatesNeedUpdate = true;
+    }
+    [self delayedUpdate];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if (self.actionsInProgress > 0)
+    return;
   [self populateToolbar];
+  [self updateButtonStates];
 }
 
 // -----------------------------------------------------------------------------
@@ -201,6 +323,10 @@
 // -----------------------------------------------------------------------------
 - (void) populateToolbar
 {
+  if (! self.toolbarNeedsPopulation)
+    return;
+  self.toolbarNeedsPopulation = false;
+
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   if (self.boardPositionListViewIsVisible)
   {
@@ -221,19 +347,41 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #computerPlayerThinkingStarts notification.
+/// @brief Updates the enabled state of all toolbar items.
 // -----------------------------------------------------------------------------
-- (void) computerPlayerThinkingStarts:(NSNotification*)notification
+- (void) updateButtonStates
 {
-  self.tappingEnabled = false;
+  if (! self.buttonStatesNeedUpdate)
+    return;
+  self.buttonStatesNeedUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  if (game.isComputerThinking)
+  {
+    for (UIBarButtonItem* item in self.navigationBarButtonItems)
+      item.enabled = NO;
+  }
+  else
+  {
+    bool isFirstBoardPosition = game.boardPosition.isFirstPosition;
+    for (UIBarButtonItem* item in self.navigationBarButtonItemsBackward)
+      item.enabled = (isFirstBoardPosition ? NO : YES);
+    bool isLastBoardPosition = game.boardPosition.isLastPosition;
+    for (UIBarButtonItem* item in self.navigationBarButtonItemsForward)
+      item.enabled = (isLastBoardPosition ? NO : YES);
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #computerPlayerThinkingStops notification.
+/// @brief Toggles the visible items in the toolbar between the board position
+/// list view and the navigation buttons. The current board position view is
+/// always visible.
 // -----------------------------------------------------------------------------
-- (void) computerPlayerThinkingStops:(NSNotification*)notification
+- (void) toggleToolbarItems
 {
-  self.tappingEnabled = true;
+  self.boardPositionListViewIsVisible = ! self.boardPositionListViewIsVisible;
+  self.toolbarNeedsPopulation = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -241,8 +389,7 @@
 // -----------------------------------------------------------------------------
 - (void) rewindToStart:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithFirstBoardPosition] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithFirstBoardPosition] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -250,8 +397,7 @@
 // -----------------------------------------------------------------------------
 - (void) rewind:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -259,8 +405,7 @@
 // -----------------------------------------------------------------------------
 - (void) previousBoardPosition:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -268,8 +413,7 @@
 // -----------------------------------------------------------------------------
 - (void) nextBoardPosition:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithOffset:1] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithOffset:1] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -277,8 +421,7 @@
 // -----------------------------------------------------------------------------
 - (void) fastForward:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -286,8 +429,7 @@
 // -----------------------------------------------------------------------------
 - (void) fastForwardToEnd:(id)sender
 {
-  if (self.isTappingEnabled)
-    [[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] submit];
+  [[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] submit];
 }
 
 @end
