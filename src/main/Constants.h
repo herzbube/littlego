@@ -183,7 +183,7 @@ enum AlertViewType
   AlertViewTypeDiagnosticsInformationFileGenerated,
   AlertViewTypeDiagnosticsInformationFileNotGenerated,
   AlertViewTypeCannotPlayOnComputersTurn,
-  AlertViewTypePlayingNowWillDiscardAllFutureMoves
+  AlertViewTypeActionWillDiscardAllFutureMoves
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in

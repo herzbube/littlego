@@ -289,6 +289,9 @@
 		CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
 		CDE302901360BDD3005235F2 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3028F1360BDD3005235F2 /* PlayViewModel.m */; };
 		CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
+		CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
+		CDE6A52B16AB03FE00932B05 /* delete-to-left.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE6A52916AB03FE00932B05 /* delete-to-left.png */; };
+		CDE6A52D16AB5D2A00932B05 /* delete-to-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE6A52A16AB03FE00932B05 /* delete-to-left@2x.png */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -681,6 +684,10 @@
 		CDE3F58F13117EFE00EC16CC /* build-env.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-env.sh"; sourceTree = "<group>"; };
 		CDE4057313EB081C0091E719 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		CDE4057413EB081C0091E719 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		CDE6A52416AA017500932B05 /* ChangeAndDiscardCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeAndDiscardCommand.h; sourceTree = "<group>"; };
+		CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeAndDiscardCommand.m; sourceTree = "<group>"; };
+		CDE6A52916AB03FE00932B05 /* delete-to-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete-to-left.png"; sourceTree = "<group>"; };
+		CDE6A52A16AB03FE00932B05 /* delete-to-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete-to-left@2x.png"; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
@@ -1252,6 +1259,8 @@
 				CDE1A14914C1CED200317ECA /* computer-play@2x.png */,
 				CD393F88166EA5EA009DF814 /* computer.png */,
 				CD393F8A166EB5AD009DF814 /* computer@2x.png */,
+				CDE6A52916AB03FE00932B05 /* delete-to-left.png */,
+				CDE6A52A16AB03FE00932B05 /* delete-to-left@2x.png */,
 				CD9FB5401687E1310042AA89 /* fastforward.png */,
 				CD9FB5411687E1310042AA89 /* fastforward@2x.png */,
 				CD9FB5421687E1310042AA89 /* forwardtoend.png */,
@@ -1470,6 +1479,8 @@
 			children = (
 				CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */,
 				CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */,
+				CDE6A52416AA017500932B05 /* ChangeAndDiscardCommand.h */,
+				CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */,
 				CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */,
 				CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */,
 				CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */,
@@ -1687,6 +1698,8 @@
 				CD36593C1691C49F00D75466 /* 40-forward.png in Resources */,
 				CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */,
 				CDE15950164F2D62001C8ADF /* book.dat in Resources */,
+				CDE6A52B16AB03FE00932B05 /* delete-to-left.png in Resources */,
+				CDE6A52D16AB5D2A00932B05 /* delete-to-left@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1864,6 +1877,7 @@
 				CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */,
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
+				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

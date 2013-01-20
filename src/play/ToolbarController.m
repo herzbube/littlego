@@ -24,6 +24,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../command/InterruptComputerCommand.h"
+#import "../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../command/boardposition/DiscardAndPlayCommand.h"
 #import "../command/game/PauseGameCommand.h"
 
@@ -90,11 +91,8 @@
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief The toolbar that displays action buttons.
 @property(nonatomic, retain) UIToolbar* toolbar;
-/// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
-/// @brief The delegate that is informed when the user attempts to make a move.
 @property(nonatomic, assign) id<ToolbarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
@@ -106,32 +104,15 @@
 @property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
-/// @brief The "Play for me" button. Tapping this button causes the computer
-/// player to generate a move for the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* playForMeButton;
-/// @brief The "Pass" button. Tapping this button generates a "Pass" move for
-/// the human player whose turn it currently is.
 @property(nonatomic, retain) UIBarButtonItem* passButton;
-/// @brief The "Pause" button. Tapping this button causes the game to pause if
-/// two computer players play against each other.
+@property(nonatomic, retain) UIBarButtonItem* discardBoardPositionButton;
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
-/// @brief The "Continue" button. Tapping this button causes the game to
-/// continue if it is paused while two computer players play against each other.
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
-/// @brief The "Interrupt" button. Tapping this button interrupts the computer
-/// player while it is thinking.
 @property(nonatomic, retain) UIBarButtonItem* interruptButton;
-/// @brief Dummy button that creates an expanding space between the "New"
-/// button and its predecessors.
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
-/// @brief The "Game Info" button. Tapping this button flips the game view to
-/// display an alternate view with information about the game in progress.
 @property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
-/// @brief The "Game Actions" button. Tapping this button displays an action
-/// sheet with actions that relate to Go games as a whole.
 @property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
-/// @brief The "Done" button. Tapping this button ends the currently active
-/// mode and returns to normal play mode.
 @property(nonatomic, retain) UIBarButtonItem* doneButton;
 //@}
 @end
@@ -149,6 +130,7 @@
 @synthesize buttonStatesNeedUpdate;
 @synthesize playForMeButton;
 @synthesize passButton;
+@synthesize discardBoardPositionButton;
 @synthesize pauseButton;
 @synthesize continueButton;
 @synthesize interruptButton;
@@ -204,6 +186,7 @@
   self.gameInfoScore = nil;
   self.playForMeButton = nil;
   self.passButton = nil;
+  self.discardBoardPositionButton = nil;
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
@@ -227,6 +210,10 @@
                                                       style:UIBarButtonItemStyleBordered
                                                      target:self
                                                      action:@selector(pass:)] autorelease];
+  self.discardBoardPositionButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete-to-left.png"]
+                                                      style:UIBarButtonItemStyleBordered
+                                                     target:self
+                                                     action:@selector(discardBoardPosition:)] autorelease];
   self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
                                                        style:UIBarButtonItemStyleBordered
                                                       target:self
@@ -285,15 +272,25 @@
 - (void) pass:(id)sender
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (boardPosition.isLastPosition || ! boardPosition.isComputerPlayersTurn)
+  if (boardPosition.isComputerPlayersTurn)
+  {
+    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
+  }
+  else
   {
     DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
     [self.delegate toolbarController:self playOrAlertWithCommand:command];
   }
-  else
-  {
-    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
-  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Delete" button. Discards the current
+/// board position and all positions that follow afterwards.
+// -----------------------------------------------------------------------------
+- (void) discardBoardPosition:(id)sender
+{
+  ChangeAndDiscardCommand* command = [[ChangeAndDiscardCommand alloc] init];
+  [self.delegate toolbarController:self discardOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -304,14 +301,14 @@
 - (void) playForMe:(id)sender
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (boardPosition.isLastPosition || ! boardPosition.isComputerPlayersTurn)
+  if (boardPosition.isComputerPlayersTurn)
   {
-    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPlayForMe];
-    [self.delegate toolbarController:self playOrAlertWithCommand:command];
+    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
   }
   else
   {
-    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
+    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPlayForMe];
+    [self.delegate toolbarController:self playOrAlertWithCommand:command];
   }
 }
 
@@ -575,7 +572,10 @@
   if (self.scoringModel.scoringMode)
   {
     if (GoGameStateGameHasEnded != game.state)
+    {
+      [toolbarItems addObject:self.discardBoardPositionButton];
       [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
+    }
     [toolbarItems addObject:self.flexibleSpaceButton];
     [toolbarItems addObject:self.gameInfoButton];
     [toolbarItems addObject:self.gameActionsButton];
@@ -591,6 +591,8 @@
           [toolbarItems addObject:self.pauseButton];
         if (game.isComputerThinking)
           [toolbarItems addObject:self.interruptButton];
+        else
+          [toolbarItems addObject:self.discardBoardPositionButton];
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
@@ -602,6 +604,7 @@
         {
           [toolbarItems addObject:self.playForMeButton];
           [toolbarItems addObject:self.passButton];
+          [toolbarItems addObject:self.discardBoardPositionButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];

@@ -32,7 +32,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
-#import "../command/boardposition/DiscardAndPlayCommand.h"
+#import "../command/CommandBase.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
@@ -40,6 +40,16 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <math.h>
+
+// Constants
+NSString* associatedCommandObjectKey = @"AssociatedCommandObject";
+
+// Enums
+enum ActionType
+{
+  ActionTypePlay,
+  ActionTypeDiscard
+};
 
 
 // -----------------------------------------------------------------------------
@@ -61,13 +71,14 @@
 /// @name ToolbarControllerDelegate protocol
 //@{
 - (void) toolbarControllerAlertCannotPlayOnComputersTurn:(ToolbarController*)controller;
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
+- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
 - (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoView:(UIView*)gameInfoView;
 //@}
 /// @name PanGestureControllerDelegate protocol
 //@{
 - (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
 //@}
 /// @name CurrentBoardPositionViewControllerDelegate protocol
 //@{
@@ -106,7 +117,7 @@
 - (CGRect) boardPositionListViewFrame;
 - (CGRect) currentBoardPositionViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
-- (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command;
+- (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
 - (void) alertCannotPlayOnComputersTurn;
 //@}
 /// @name Privately declared properties
@@ -730,9 +741,17 @@
 // -----------------------------------------------------------------------------
 /// @brief ToolbarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command
+- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command
 {
-  [self playOrAlertWithCommand:command];
+  [self alertOrAction:ActionTypePlay withCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ToolbarControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command
+{
+  [self alertOrAction:ActionTypeDiscard withCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -789,9 +808,9 @@
 // -----------------------------------------------------------------------------
 /// @brief PanGestureControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(DiscardAndPlayCommand*)command
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command
 {
-  [self playOrAlertWithCommand:command];
+  [self alertOrAction:ActionTypePlay withCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -808,20 +827,18 @@
 // -----------------------------------------------------------------------------
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-  if (AlertViewTypePlayingNowWillDiscardAllFutureMoves != alertView.tag)
-    return;
-  DiscardAndPlayCommand* discardAndPlayCommand = objc_getAssociatedObject(alertView, "discardAndPlayCommand");
-  objc_setAssociatedObject(alertView, "discardAndPlayCommand", nil, OBJC_ASSOCIATION_ASSIGN);
+  CommandBase* command = objc_getAssociatedObject(alertView, associatedCommandObjectKey);
+  objc_setAssociatedObject(alertView, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_ASSIGN);
   switch (buttonIndex)
   {
     case AlertViewButtonTypeNo:
     {
-      [discardAndPlayCommand release];
-      discardAndPlayCommand = nil;
+      [command release];
+      command = nil;
     }
     case AlertViewButtonTypeYes:
     {
-      [discardAndPlayCommand submit];  // deallocates the command
+      [command submit];  // deallocates the command
       break;
     }
     default:
@@ -847,24 +864,26 @@
 /// @brief Executes @a command, or displays an alert and delays execution until
 /// the alert is dismissed by the user.
 ///
-/// @a command is set up so that it knows what type of move it should generate.
-/// See the class documentation of DiscardAndPlayCommand for details about which
-/// types of moves are supported. @a command must have a retain count of 1 so
-/// that the command's submit() method can be invoked.
+/// @a actionType is used to tweak the alert message so that contains a useful
+/// description of what the user tries to do.
 ///
-/// If the Play view currently displays the board position after the most recent
-/// move, @a command is executed immediately.
+/// @a command must have a retain count of 1 so that the command's submit()
+/// method can be invoked.
 ///
-/// If a board position in the middle of the game is displayed, an alert is
-/// displayed that warns the user that playing now will discard all future
-/// moves. If the user confirms that this is OK, @a command is executed. If the
-/// user cancels the operation, @a command is not executed. Handling of the
-/// user's response happens in alertView:didDismissWithButtonIndex:().
+/// If the Play view currently displays the last board position of the game,
+/// @a command is executed immediately.
+///
+/// If the Play view displays a board position in the middle of the game, an
+/// alert is shown that warns the user that discarding now will discard all
+/// future board positions. If the user confirms that this is OK, @a command is
+/// executed. If the user cancels the operation, @a command is not executed.
+/// Handling of the user's response happens in
+/// alertView:didDismissWithButtonIndex:().
 ///
 /// The user can suppress the alert in the user preferences. In this case
 /// @a command is immediately executed.
 // -----------------------------------------------------------------------------
-- (void) playOrAlertWithCommand:(DiscardAndPlayCommand*)command
+- (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
@@ -875,20 +894,27 @@
   else
   {
     NSString* messageString;
-    NSString* formatString = @"You are looking at a board position in the middle of the game. %@, all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
-    if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
-      messageString = [NSString stringWithFormat:formatString, @"If you let the computer play now"];
+    NSString* formatString = @"You are looking at a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+    if (ActionTypePlay == actionType)
+    {
+      if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
+        messageString = [NSString stringWithFormat:formatString, @"If you let the computer play now,"];
+      else
+        messageString = [NSString stringWithFormat:formatString, @"If you play now,"];
+    }
     else
-      messageString = [NSString stringWithFormat:formatString, @"If you play now"];
+    {
+      messageString = [NSString stringWithFormat:formatString, @"If you proceed not only this move, but"];
+    }
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
                                                     message:messageString
                                                    delegate:self
                                           cancelButtonTitle:@"No"
                                           otherButtonTitles:@"Yes", nil];
-    alert.tag = AlertViewTypePlayingNowWillDiscardAllFutureMoves;
+    alert.tag = AlertViewTypeActionWillDiscardAllFutureMoves;
     [alert show];
     // Store command object for later use by the alert handler
-    objc_setAssociatedObject(alert, "discardAndPlayCommand", command, OBJC_ASSOCIATION_ASSIGN);
+    objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_ASSIGN);
   }
 }
 
@@ -904,7 +930,7 @@
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Cannot play during computer's turn"
                                                     message:@"You are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play.\n\nNote: You can disable this alert in the board position settings."
-                                                   delegate:self
+                                                   delegate:nil
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeCannotPlayOnComputersTurn;

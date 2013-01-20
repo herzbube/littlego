@@ -202,7 +202,7 @@
     case UIGestureRecognizerStateBegan:
     {
       GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (! boardPosition.isLastPosition && boardPosition.isComputerPlayersTurn)
+      if (boardPosition.isComputerPlayersTurn)
         [self.delegate panGestureControllerAlertCannotPlayOnComputersTurn:self];
       else
         [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
