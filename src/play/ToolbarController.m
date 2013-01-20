@@ -178,7 +178,9 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[ApplicationDelegate sharedDelegate].boardPositionModel removeObserver:self forKeyPath:@"playOnComputersTurnAlert"];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   self.toolbar = nil;
   self.scoringModel = nil;
   self.delegate = nil;
@@ -262,7 +264,9 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [[ApplicationDelegate sharedDelegate].boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
-  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -271,16 +275,8 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (boardPosition.isComputerPlayersTurn)
-  {
-    [self.delegate toolbarControllerAlertCannotPlayOnComputersTurn:self];
-  }
-  else
-  {
-    DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
-    [self.delegate toolbarController:self playOrAlertWithCommand:command];
-  }
+  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
+  [self.delegate toolbarController:self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -411,7 +407,9 @@
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
-  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* boardPosition = oldGame.boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   // Disable scoring mode while the old GoGame is still around
   self.scoringModel.scoringMode = false;
 }
@@ -422,7 +420,9 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  GoBoardPosition* boardPosition = newGame.boardPosition;
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.toolbarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -532,7 +532,17 @@
   }
   else if (object == [GoGame sharedGame].boardPosition)
   {
-    self.buttonStatesNeedUpdate = true;
+    if ([keyPath isEqualToString:@"currentBoardPosition"])
+    {
+      // It's annoying to have buttons appear and disappear all the time, so
+      // we try to minimize this by keeping the same buttons in the toolbar
+      // while the user is browsing board positions.
+      self.buttonStatesNeedUpdate = true;
+    }
+    else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
+    {
+      self.toolbarNeedsPopulation = true;
+    }
     [self delayedUpdate];
   }
 }
@@ -561,6 +571,7 @@
 
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
   if (self.scoringModel.scoringMode)
   {
     if (GoGameStateGameHasEnded != game.state)
@@ -577,6 +588,7 @@
     switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
+      {
         if (GoGameStateGameIsPaused == game.state)
           [toolbarItems addObject:self.continueButton];
         else
@@ -589,19 +601,23 @@
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
         break;
+      }
       default:
+      {
         if (game.isComputerThinking)
           [toolbarItems addObject:self.interruptButton];
         else
         {
           [toolbarItems addObject:self.computerPlayButton];
           [toolbarItems addObject:self.passButton];
-          [toolbarItems addObject:self.discardBoardPositionButton];
+          if (boardPosition.numberOfBoardPositions > 1)
+            [toolbarItems addObject:self.discardBoardPositionButton];
         }
         [toolbarItems addObject:self.flexibleSpaceButton];
         [toolbarItems addObject:self.gameInfoButton];
         [toolbarItems addObject:self.gameActionsButton];
         break;
+      }
     }
   }
   self.toolbar.items = toolbarItems;
@@ -647,15 +663,7 @@
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
-            GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-            if (boardPosition.isLastPosition)
-              enabled = YES;
-            else if (! boardPosition.isComputerPlayersTurn)
-              enabled = YES;
-            else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
-              enabled = YES;
-            else
-              enabled = NO;
+            enabled = YES;
             break;
           }
           default:
@@ -690,14 +698,10 @@
           case GoGameStateGameHasStarted:
           {
             GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-            if (boardPosition.isLastPosition)
-              enabled = YES;
-            else if (! boardPosition.isComputerPlayersTurn)
-              enabled = YES;
-            else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
-              enabled = YES;
-            else
+            if (boardPosition.isComputerPlayersTurn)
               enabled = NO;
+            else
+              enabled = YES;
             break;
           }
           default:

@@ -242,7 +242,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  return self.isPanningEnabled;
+  return (self.isPanningEnabled ? YES : NO);
 }
 
 // -----------------------------------------------------------------------------
@@ -348,14 +348,10 @@
       else
       {
         GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-        if (boardPosition.isLastPosition)
-          self.panningEnabled = true;
-        else if (! boardPosition.isComputerPlayersTurn)
-          self.panningEnabled = true;
-        else if ([ApplicationDelegate sharedDelegate].boardPositionModel.playOnComputersTurnAlert)
-          self.panningEnabled = true;
-        else
+        if (boardPosition.isComputerPlayersTurn)
           self.panningEnabled = false;
+        else
+          self.panningEnabled = true;
       }
       break;
     default:  // specifically GoGameStateGameHasEnded

@@ -19,6 +19,7 @@
 #import "PlayViewActionSheetController.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
 #import "../go/GoScore.h"
@@ -150,24 +151,27 @@ enum ActionSheetButton
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
 
   // Add buttons in the order that they appear in the ActionSheetButton enum
+  GoGame* game = [GoGame sharedGame];
   for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
   {
     NSString* title = nil;
     switch (iterButtonIndex)
     {
       case ScoreButton:
-        if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+        if (GoGameStateGameHasEnded == game.state)
           continue;
         if (scoringModel.scoringMode)
           continue;
         title = @"Score";
         break;
       case ResignButton:
-        if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
+        if (GoGameTypeComputerVsComputer == game.type)
           continue;
-        if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+        if (GoGameStateGameHasEnded == game.state)
           continue;
         if (scoringModel.scoringMode)
+          continue;
+        if (game.boardPosition.isComputerPlayersTurn)
           continue;
         title = @"Resign";
         break;

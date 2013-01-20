@@ -893,19 +893,32 @@ enum ActionType
   }
   else
   {
-    NSString* messageString;
-    NSString* formatString = @"You are looking at a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+    NSString* actionDescription;
     if (ActionTypePlay == actionType)
     {
       if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
-        messageString = [NSString stringWithFormat:formatString, @"If you let the computer play now,"];
+        actionDescription = @"If you let the computer play now,";
       else
-        messageString = [NSString stringWithFormat:formatString, @"If you play now,"];
+      {
+        // Use a generic expression because we don't know which user interaction
+        // triggered the alert (could be a pass move, a play move (via panning),
+        // or the "computer play" function).
+        actionDescription = @"If you play now,";
+      }
     }
     else
     {
-      messageString = [NSString stringWithFormat:formatString, @"If you proceed not only this move, but"];
+      if (boardPosition.isFirstPosition)
+        actionDescription = @"If you proceed,";
+      else
+        actionDescription = @"If you proceed not only this move, but";
     }
+    NSString* formatString;
+    if (boardPosition.isFirstPosition)
+      formatString = @"You are looking at the board position at the beginning of the game. %@ all moves of the entire game will be discarded.\n\nDo you want to continue?";
+    else
+      formatString = @"You are looking at a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+    NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
                                                     message:messageString
                                                    delegate:self
