@@ -17,7 +17,6 @@
 
 // Project includes
 #import "ToolbarController.h"
-#import "BoardPositionModel.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
@@ -177,7 +176,6 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[ApplicationDelegate sharedDelegate].boardPositionModel removeObserver:self forKeyPath:@"playOnComputersTurnAlert"];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
@@ -263,7 +261,6 @@
   [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
-  [[ApplicationDelegate sharedDelegate].boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
@@ -522,15 +519,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [ApplicationDelegate sharedDelegate].boardPositionModel)
-  {
-    if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
-    {
-      self.buttonStatesNeedUpdate = true;
-      [self delayedUpdate];
-    }
-  }
-  else if (object == [GoGame sharedGame].boardPosition)
+  if (object == [GoGame sharedGame].boardPosition)
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {

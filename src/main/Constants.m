@@ -60,7 +60,6 @@ NSString* longRunningActionEnds = @"LongRunningActionEnds";
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;
-const bool playOnComputersTurnAlertDefault = true;
 
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
@@ -242,7 +241,6 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 // Board position settings
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
-NSString* playOnComputersTurnAlertKey = @"PlayOnComputersTurnAlert";
 NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 
 // Constants for NSCoding

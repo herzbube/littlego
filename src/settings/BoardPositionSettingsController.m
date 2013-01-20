@@ -24,7 +24,6 @@
 
 // Constants
 NSString* discardFutureMovesAlertText = @"Discard future moves alert";
-NSString* playOnComputersTurnAlertText = @"Play on computer's turn alert";
 
 
 // -----------------------------------------------------------------------------
@@ -34,7 +33,6 @@ NSString* playOnComputersTurnAlertText = @"Play on computer's turn alert";
 enum MoveHistoryTableViewSection
 {
   DiscardFutureMovesAlertSection,
-  PlayOnComputersTurnAlertSection,
   MaxSection
 };
 
@@ -45,15 +43,6 @@ enum DiscardFutureMovesAlertSectionItem
 {
   DiscardFutureMovesAlertItem,
   MaxDiscardFutureMovesAlertSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the PlayOnComputersTurnAlertSection.
-// -----------------------------------------------------------------------------
-enum PlayOnComputersTurnAlertSectionItem
-{
-  PlayOnComputersTurnAlertItem,
-  MaxPlayOnComputersTurnAlertSectionItem
 };
 
 
@@ -87,7 +76,6 @@ enum PlayOnComputersTurnAlertSectionItem
 /// @name Action methods
 //@{
 - (void) toggleDiscardFutureMovesAlert:(id)sender;
-- (void) togglePlayOnComputersTurnAlert:(id)sender;
 //@}
 /// @name Privately declared properties
 //@{
@@ -175,8 +163,6 @@ enum PlayOnComputersTurnAlertSectionItem
   {
     case DiscardFutureMovesAlertSection:
       return MaxDiscardFutureMovesAlertSectionItem;
-    case PlayOnComputersTurnAlertSection:
-      return MaxPlayOnComputersTurnAlertSectionItem;
     default:
       assert(0);
       break;
@@ -193,8 +179,6 @@ enum PlayOnComputersTurnAlertSectionItem
   {
     case DiscardFutureMovesAlertSection:
       return @"If you make or discard a move while you are looking at a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
-    case PlayOnComputersTurnAlertSection:
-      return @"You cannot make a move if you are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play. If this option is turned off you will NOT be alerted to this fact.";
     default:
       assert(0);
       break;
@@ -220,15 +204,6 @@ enum PlayOnComputersTurnAlertSectionItem
       [accessoryView addTarget:self action:@selector(toggleDiscardFutureMovesAlert:) forControlEvents:UIControlEventValueChanged];
       break;
     }
-    case PlayOnComputersTurnAlertSection:
-    {
-      cell.textLabel.text = playOnComputersTurnAlertText;
-      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-      cell.textLabel.numberOfLines = 0;
-      accessoryView.on = self.boardPositionModel.playOnComputersTurnAlert;
-      [accessoryView addTarget:self action:@selector(togglePlayOnComputersTurnAlert:) forControlEvents:UIControlEventValueChanged];
-      break;
-    }
     default:
     {
       assert(0);
@@ -248,9 +223,6 @@ enum PlayOnComputersTurnAlertSectionItem
   {
     case DiscardFutureMovesAlertSection:
       cellText = discardFutureMovesAlertText;
-      break;
-    case PlayOnComputersTurnAlertSection:
-      cellText = playOnComputersTurnAlertText;
       break;
     default:
       return tableView.rowHeight;
@@ -277,16 +249,6 @@ enum PlayOnComputersTurnAlertSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardPositionModel.discardFutureMovesAlert = accessoryView.on;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Play on computer's turn alert"
-/// switch. Writes the new value to the appropriate model.
-// -----------------------------------------------------------------------------
-- (void) togglePlayOnComputersTurnAlert:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.boardPositionModel.playOnComputersTurnAlert = accessoryView.on;
 }
 
 @end

@@ -17,13 +17,11 @@
 
 // Project includes
 #import "PanGestureController.h"
-#import "../boardposition/BoardPositionModel.h"
 #import "../PlayView.h"
 #import "../ScoringModel.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -116,7 +114,6 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[ApplicationDelegate sharedDelegate].boardPositionModel removeObserver:self forKeyPath:@"playOnComputersTurnAlert"];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.playView = nil;
   self.scoringModel = nil;
@@ -153,7 +150,6 @@
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   // KVO observing
-  [[ApplicationDelegate sharedDelegate].boardPositionModel addObserver:self forKeyPath:@"playOnComputersTurnAlert" options:0 context:NULL];
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
 
@@ -201,11 +197,7 @@
   {
     case UIGestureRecognizerStateBegan:
     {
-      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (boardPosition.isComputerPlayersTurn)
-        [self.delegate panGestureControllerAlertCannotPlayOnComputersTurn:self];
-      else
-        [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
+      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
       break;
     }
     case UIGestureRecognizerStateChanged:
@@ -302,14 +294,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [ApplicationDelegate sharedDelegate].boardPositionModel)
-  {
-    if ([keyPath isEqualToString:@"playOnComputersTurnAlert"])
-    {
-      [self updatePanningEnabled];
-    }
-  }
-  else if (object == [GoGame sharedGame].boardPosition)
+  if (object == [GoGame sharedGame].boardPosition)
   {
     [self updatePanningEnabled];
   }

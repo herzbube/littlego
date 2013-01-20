@@ -30,11 +30,6 @@
 /// delegate of ToolbarController.
 // -----------------------------------------------------------------------------
 @protocol ToolbarControllerDelegate
-/// @brief This method is invoked when the user attempts a play a move while
-/// she views a board position where it is the computer's turn to play.
-///
-/// The delegate may display an alert that this is not possible.
-- (void) toolbarControllerAlertCannotPlayOnComputersTurn:(ToolbarController*)controller;
 /// @brief This method is invoked when the user attempts to play a move. The
 /// delegate executes @a command, possibly displaying an alert first which the
 /// user must confirm.

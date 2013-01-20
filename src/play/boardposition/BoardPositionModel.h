@@ -28,7 +28,6 @@
 - (void) writeUserDefaults;
 
 @property(nonatomic, assign) bool discardFutureMovesAlert;
-@property(nonatomic, assign) bool playOnComputersTurnAlert;
 /// @brief This property is used to store the board position last viewed by the
 /// user across application relaunches.
 ///

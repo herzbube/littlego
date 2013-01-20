@@ -35,7 +35,6 @@
 @implementation BoardPositionModel
 
 @synthesize discardFutureMovesAlert;
-@synthesize playOnComputersTurnAlert;
 @synthesize boardPositionLastViewed;
 
 
@@ -52,7 +51,6 @@
     return nil;
 
   self.discardFutureMovesAlert = discardFutureMovesAlertDefault;
-  self.playOnComputersTurnAlert = playOnComputersTurnAlertDefault;
   self.boardPositionLastViewed = 0;
 
   return self;
@@ -74,7 +72,6 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:boardPositionKey];
   self.discardFutureMovesAlert = [[dictionary valueForKey:discardFutureMovesAlertKey] boolValue];
-  self.playOnComputersTurnAlert = [[dictionary valueForKey:playOnComputersTurnAlertKey] boolValue];
   self.boardPositionLastViewed = [[dictionary valueForKey:boardPositionLastViewedKey] intValue];
 }
 
@@ -89,7 +86,6 @@
 
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:self.discardFutureMovesAlert] forKey:discardFutureMovesAlertKey];
-  [dictionary setValue:[NSNumber numberWithBool:self.playOnComputersTurnAlert] forKey:playOnComputersTurnAlertKey];
   [dictionary setValue:[NSNumber numberWithInt:self.boardPositionLastViewed] forKey:boardPositionLastViewedKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];

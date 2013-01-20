@@ -259,8 +259,6 @@
 	<dict>
 		<key>DiscardFutureMovesAlert</key>
 		<true/>
-		<key>PlayOnComputersTurnAlert</key>
-		<true/>
 	</dict>
 	<key>CrashReportActivated</key>
 	<true/>

@@ -27,11 +27,6 @@
 /// delegate of PanGestureController.
 // -----------------------------------------------------------------------------
 @protocol PanGestureControllerDelegate
-/// @brief This method is invoked when the user attempts a panning gesture while
-/// she views a board position where it is the computer's turn to play.
-///
-/// The delegate may display an alert that this is not possible.
-- (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
 /// @brief This method is invoked when the user attempts to place a stone. The
 /// delegate executes @a command, possibly displaying an alert first which the
 /// user must confirm.

@@ -182,7 +182,6 @@ enum AlertViewType
   AlertViewTypeCannotSendBugReport,
   AlertViewTypeDiagnosticsInformationFileGenerated,
   AlertViewTypeDiagnosticsInformationFileNotGenerated,
-  AlertViewTypeCannotPlayOnComputersTurn,
   AlertViewTypeActionWillDiscardAllFutureMoves
 };
 
@@ -392,7 +391,6 @@ extern NSString* longRunningActionEnds;
 // -----------------------------------------------------------------------------
 //@{
 extern const bool discardFutureMovesAlertDefault;
-extern const bool playOnComputersTurnAlertDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -621,7 +619,6 @@ extern NSString* contactEmailCrashDataKey;
 // Board position settings
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
-extern NSString* playOnComputersTurnAlertKey;
 extern NSString* boardPositionLastViewedKey;
 //@}
 

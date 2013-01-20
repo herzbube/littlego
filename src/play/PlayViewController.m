@@ -70,14 +70,12 @@ enum ActionType
 //@}
 /// @name ToolbarControllerDelegate protocol
 //@{
-- (void) toolbarControllerAlertCannotPlayOnComputersTurn:(ToolbarController*)controller;
 - (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
 - (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
 - (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoView:(UIView*)gameInfoView;
 //@}
 /// @name PanGestureControllerDelegate protocol
 //@{
-- (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller;
 - (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
 //@}
 /// @name CurrentBoardPositionViewControllerDelegate protocol
@@ -118,7 +116,6 @@ enum ActionType
 - (CGRect) currentBoardPositionViewFrame;
 - (void) flipToFrontSideView:(bool)flipToFrontSideView;
 - (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
-- (void) alertCannotPlayOnComputersTurn;
 //@}
 /// @name Privately declared properties
 //@{
@@ -733,14 +730,6 @@ enum ActionType
 // -----------------------------------------------------------------------------
 /// @brief ToolbarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarControllerAlertCannotPlayOnComputersTurn:(ToolbarController*)controller
-{
-  [self alertCannotPlayOnComputersTurn];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ToolbarControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
 - (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command
 {
   [self alertOrAction:ActionTypePlay withCommand:command];
@@ -795,14 +784,6 @@ enum ActionType
     [self.view addSubview:backSideView];
   }
   [UIView commitAnimations];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief PanGestureControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) panGestureControllerAlertCannotPlayOnComputersTurn:(PanGestureController*)controller
-{
-  [self alertCannotPlayOnComputersTurn];
 }
 
 // -----------------------------------------------------------------------------
@@ -928,28 +909,6 @@ enum ActionType
     [alert show];
     // Store command object for later use by the alert handler
     objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_ASSIGN);
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays the alert #AlertViewTypeCannotPlayOnComputersTurn.
-///
-/// The user can suppress the alert in the user preferences.
-// -----------------------------------------------------------------------------
-- (void) alertCannotPlayOnComputersTurn
-{
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPositionModel.playOnComputersTurnAlert)
-  {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Cannot play during computer's turn"
-                                                    message:@"You are looking at a board position where it is the computer's turn to play. To make a move you must first view a position where it is your turn to play.\n\nNote: You can disable this alert in the board position settings."
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeCannotPlayOnComputersTurn;
-    // Displaying an alert cancels this round of gesture recognizing (i.e.
-    // the gesture recognizer sends UIGestureRecognizerStateCancelled)
-    [alert show];
   }
 }
 
