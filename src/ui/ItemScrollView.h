@@ -136,6 +136,7 @@ enum ItemScrollViewOrientation
 - (id) initWithFrame:(CGRect)frame;
 - (id) initWithFrame:(CGRect)frame orientation:(enum ItemScrollViewOrientation)orientation;
 
+- (void) setItemScrollViewOrientation:(enum ItemScrollViewOrientation)orientation keepVisibleItems:(bool)keepVisibleItems;
 - (void) reloadData;
 - (void) updateNumberOfItems;
 - (bool) isVisibleItemViewAtIndex:(int)index;
@@ -157,10 +158,7 @@ enum ItemScrollViewOrientation
 @property(nonatomic, assign) id<ItemScrollViewDelegate> itemScrollViewDelegate;
 /// @brief The data source for the ItemScrollView.
 ///
-/// Setting this property reconfigures the view with a new content size and
-/// discards all item views that are currently visible. A new query cycle will
-/// begin to fill the visible area of ItemScrollView with item views as soon as
-/// UIKit begins updating ItemScrollView.
+/// Changing this property triggers reloadData().
 @property(nonatomic, assign) id<ItemScrollViewDataSource> itemScrollViewDataSource;
 /// @brief The view that is the superview of all item views.
 ///

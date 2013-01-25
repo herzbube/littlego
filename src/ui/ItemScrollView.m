@@ -239,7 +239,48 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reloads everything from scratch. The scroll position is also reset.
+/// @brief Changes the content size of the scroll view and removes all visible
+/// items. This causes a full new cycle of item view acquisition as soon as
+/// UIKit begins updating the scroll view.
+///
+/// If @a keepVisibleItems is false, the content offset is reset so that the
+/// item view acquisition begins at index position 0.
+///
+/// If @a keepVisibleItems is true, the content offset is set so that the item
+/// view acquisition begins with the index position that
+/// indexOfFirstVisibleItemView() returns.
+// -----------------------------------------------------------------------------
+- (void) setItemScrollViewOrientation:(enum ItemScrollViewOrientation)orientation keepVisibleItems:(bool)keepVisibleItems
+{
+  if (orientation == itemScrollViewOrientation)
+    return;
+  self.itemScrollViewOrientation = orientation;
+
+  int indexOfFirstVisibleItemView = [self indexOfFirstVisibleItemView];
+  [self removeAllVisibleItems];
+  [self updateContentSize];
+  if (keepVisibleItems)
+  {
+    if (-1 == indexOfFirstVisibleItemView)
+    {
+      [self resetScrollPosition];
+    }
+    else
+    {
+      CGPoint newContentOffset = [self contentOffsetOfItemViewAtMinimumEdgeWithIndex:indexOfFirstVisibleItemView];
+      [self setContentOffset:newContentOffset animated:NO];
+    }
+  }
+  else
+  {
+    [self resetScrollPosition];
+  }
+  [self setNeedsLayout];  // force layout update
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reloads everything from scratch. The content offset is also reset so
+/// that item view acquisition begins at index position 0.
 // -----------------------------------------------------------------------------
 - (void) reloadData
 {
