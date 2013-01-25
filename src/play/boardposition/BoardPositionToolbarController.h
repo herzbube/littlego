@@ -25,9 +25,10 @@
 ///   controls need to be laid out in the toolbar.
 /// - React to taps on self-created bar buttons
 ///
-/// Some of the controls that are displayed in the toolbar are custom views
-/// that are externally provided when BoardPositionToolbarController is
-/// initialized. BoardPositionToolbarController is @b NOT responsible for
+/// One of the initializers is used to supply custom views that also need to be
+/// displayed in the toolbar. The only thing BoardPositionToolbarController
+/// knows about these custom views is where to place them in the toolbar.
+/// BoardPositionToolbarController specifically is @b NOT responsible for
 /// managing user interaction with these custom views - there are separate
 /// controllers for that.
 ///
@@ -36,14 +37,15 @@
 /// also manages user interaction.
 ///
 /// BoardPositionToolbarController can be triggered to repopulate the toolbar.
-/// External forces need to invoke certain methods to indicate which controls
-/// are desired.
+/// This only has an effect if custom views are used.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController : NSObject
 {
 }
 
+- (id) initWithToolbar:(UIToolbar*)toolbar;
 - (id) initWithToolbar:(UIToolbar*)toolbar boardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView;
+
 - (void) toggleToolbarItems;
 
 @end

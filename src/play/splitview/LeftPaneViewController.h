@@ -15,25 +15,20 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class BoardPositionViewMetrics;
-
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionView class is intended to be displayed as a subview
-/// of the scrollable board position list view on the Play tab. It represents a
-/// board position and shows information about that board position.
+/// @brief The LeftPaneViewController class manages a simple container view
+/// intended to be displayed as the left pane of a split view (i.e. the view
+/// managed by UISplitViewController).
+///
+/// LeftPaneViewController's has the following responsibilities:
+/// - Create its view with a frame that is appropriate at the time of creation
+/// - Supply the view with an autoresizing mask that lets it resize in all
+///   directions
+/// - Enable rotation to all orientations
 // -----------------------------------------------------------------------------
-@interface BoardPositionView : UIView
+@interface LeftPaneViewController : UIViewController
 {
 }
-
-- (id) initWithBoardPosition:(int)boardPosition viewMetrics:(BoardPositionViewMetrics*)viewMetrics;
-
-/// @brief The board position that this view represents. A value of -1 for this
-/// property causes the BoardPositionView to display nothing.
-@property(nonatomic, assign) int boardPosition;
-/// @brief True if this view represents the current board position.
-@property(nonatomic, assign) bool currentBoardPosition;
 
 @end

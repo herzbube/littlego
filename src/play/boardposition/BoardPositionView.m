@@ -160,7 +160,7 @@
 - (UILabel*) labelWithText:(NSString*)labelText
 {
   UILabel* label = [[[UILabel alloc] initWithFrame:self.viewMetrics.labelFrame] autorelease];
-  label.font = [UIFont systemFontOfSize:[BoardPositionViewMetrics boardPositionViewFontSize]];
+  label.font = [UIFont systemFontOfSize:self.viewMetrics.boardPositionViewFontSize];
   [label setNumberOfLines:self.viewMetrics.labelNumberOfLines];
   label.backgroundColor = [UIColor clearColor];
   label.text = labelText;

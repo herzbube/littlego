@@ -371,18 +371,7 @@
 // -----------------------------------------------------------------------------
 - (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    return self.boardPositionViewMetrics.boardPositionViewWidth;
-  }
-  else
-  {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
-  }
+  return self.boardPositionViewMetrics.boardPositionViewWidth;
 }
 
 // -----------------------------------------------------------------------------
@@ -390,11 +379,7 @@
 // -----------------------------------------------------------------------------
 - (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView
 {
-  // TODO xxx implement for iPad; take orientation into account
-  NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                   reason:@"Not implemented yet"
-                                                 userInfo:nil];
-  @throw exception;
+  return self.boardPositionViewMetrics.boardPositionViewHeight;
 }
 
 // -----------------------------------------------------------------------------

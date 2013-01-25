@@ -110,6 +110,15 @@ enum NavigationDirection
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionToolbarController object that places its
+/// buttons into @a aToolbar.
+// -----------------------------------------------------------------------------
+- (id) initWithToolbar:(UIToolbar*)aToolbar
+{
+  return [self initWithToolbar:aToolbar boardPositionListView:nil currentBoardPositionView:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a BoardPositionToolbarController object that places its
 /// buttons, @a listView and @a currentView into @a aToolbar.
 ///
 /// @note This is the designated initializer of BoardPositionToolbarController.
@@ -211,8 +220,15 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupCustomViewItemsWithBoardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView
 {
-  self.boardPositionListViewItem = [[UIBarButtonItem alloc] initWithCustomView:listView];
-  self.currentBoardPositionViewItem = [[UIBarButtonItem alloc] initWithCustomView:currentView];
+  if (listView)
+    self.boardPositionListViewItem = [[UIBarButtonItem alloc] initWithCustomView:listView];
+  else
+    self.boardPositionListViewItem = nil;
+
+  if (currentView)
+    self.currentBoardPositionViewItem = [[UIBarButtonItem alloc] initWithCustomView:currentView];
+  else
+    self.currentBoardPositionViewItem = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -330,18 +346,27 @@ enum NavigationDirection
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   if (self.boardPositionListViewIsVisible)
   {
-    [toolbarItems addObject:self.negativeSpacer];
-    [toolbarItems addObject:self.boardPositionListViewItem];
-    [toolbarItems addObject:self.flexibleSpacer];
-    [toolbarItems addObject:self.currentBoardPositionViewItem];
-    [toolbarItems addObject:self.negativeSpacer];
+    if (self.boardPositionListViewItem)
+    {
+      [toolbarItems addObject:self.negativeSpacer];
+      [toolbarItems addObject:self.boardPositionListViewItem];
+    }
+    if (self.currentBoardPositionViewItem)
+    {
+      [toolbarItems addObject:self.flexibleSpacer];
+      [toolbarItems addObject:self.currentBoardPositionViewItem];
+      [toolbarItems addObject:self.negativeSpacer];
+    }
   }
   else
   {
     [toolbarItems addObjectsFromArray:self.navigationBarButtonItems];
-    [toolbarItems addObject:self.flexibleSpacer];
-    [toolbarItems addObject:self.currentBoardPositionViewItem];
-    [toolbarItems addObject:self.negativeSpacer];
+    if (self.currentBoardPositionViewItem)
+    {
+      [toolbarItems addObject:self.flexibleSpacer];
+      [toolbarItems addObject:self.currentBoardPositionViewItem];
+      [toolbarItems addObject:self.negativeSpacer];
+    }
   }
   [self.toolbar setItems:toolbarItems animated:YES];
 }

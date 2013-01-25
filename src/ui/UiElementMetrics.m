@@ -241,65 +241,128 @@ static UIViewController* m_interfaceOrientationSource;
 
 // How much space between toolbar left/right edge and the first/last toolbar
 // item (for simple items that display an image)
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
 + (int) toolbarPaddingHorizontal
 {
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return 6;
+  {
+    if (isPortraitOrientation)
+      return 6;
+    else
+      return 4;
+  }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
   }
 }
 
 // How much space between toolbar top/bottom edge and a toolbar item
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
 + (int) toolbarPaddingVertical
 {
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return 6;
+  {
+    if (isPortraitOrientation)
+      return 6;
+    else
+      return 3;
+  }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
   }
 }
 
 // How much space between toolbar items
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
 + (int) toolbarSpacing
 {
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
     return 10;
+  }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
+    if (isPortraitOrientation)
+      return 7;
+    else
+      return 7;
   }
 }
 
 // For toolbar items with a custom UIView, how much space is added to the
 // left/right edge of the custom view by UIBarButtonItem. This padding is
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
 // noticeable if the item is at the toolbar's left/right edge.
 + (int) toolbarCustomViewItemPaddingHorizontal
 {
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return 5;
+  {
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
+}
+
++ (int) splitViewLeftPaneWidth
+{
+  return 320;
+}
+
++ (int) splitViewRightPaneWidth
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
+                                                     reason:[NSString stringWithFormat:@"Split view not available on iPhone"]
                                                    userInfo:nil];
     @throw exception;
   }
+
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if (isPortraitOrientation)
+  {
+    return [UiElementMetrics screenWidth];
+  }
+  else
+  {
+    return ([UiElementMetrics screenWidth]
+            - [UiElementMetrics splitViewDividerWidth]
+            - [UiElementMetrics splitViewLeftPaneWidth]);
+  }
+}
+
++ (int) splitViewDividerWidth
+{
+  return 1;
+}
+
++ (int) splitViewHeight
+{
+  return [UiElementMetrics screenHeight];
 }
 
 @end

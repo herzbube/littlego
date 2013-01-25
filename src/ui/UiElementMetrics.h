@@ -75,5 +75,9 @@
 + (int) toolbarPaddingVertical;
 + (int) toolbarSpacing;
 + (int) toolbarCustomViewItemPaddingHorizontal;
++ (int) splitViewLeftPaneWidth;
++ (int) splitViewRightPaneWidth;
++ (int) splitViewDividerWidth;
++ (int) splitViewHeight;
 
 @end

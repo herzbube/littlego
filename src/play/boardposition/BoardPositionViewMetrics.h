@@ -19,15 +19,22 @@
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionViewMetrics class is responsible for providing pre-
 /// calculated sizes and other values to BoardPositionView.
+///
+/// BoardPositionViewMetrics performs all calculations once, and only once,
+/// when it is initialized. The current device is taken into account when values
+/// are calculated.
+///
+/// @note Although there is no explicit link to PlayViewController,
+/// BoardPositionViewMetrics has implicit knowledge of the way how
+/// PlayViewController sets up the view hierarchy.
 // -----------------------------------------------------------------------------
 @interface BoardPositionViewMetrics : NSObject
 {
 }
 
-+ (int) boardPositionViewFontSize;
-
 /// @name Board position view properties
 //@{
+@property(nonatomic, assign) int boardPositionViewFontSize;
 @property(nonatomic, assign) int labelWidth;
 @property(nonatomic, assign) int labelHeight;
 @property(nonatomic, assign) int labelNumberOfLines;

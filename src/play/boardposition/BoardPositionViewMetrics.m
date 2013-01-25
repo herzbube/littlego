@@ -17,6 +17,7 @@
 
 // Project includes
 #import "BoardPositionViewMetrics.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
 
@@ -38,6 +39,7 @@
 
 @implementation BoardPositionViewMetrics
 
+@synthesize boardPositionViewFontSize;
 @synthesize labelWidth;
 @synthesize labelHeight;
 @synthesize labelNumberOfLines;
@@ -53,15 +55,6 @@
 @synthesize boardPositionViewHorizontalSpacing;
 @synthesize boardPositionViewFrame;
 
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the size of the font used to render text in
-/// BoardPositionView.
-// -----------------------------------------------------------------------------
-+ (int) boardPositionViewFontSize
-{
-  return 11;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionViewMetrics object.
@@ -105,17 +98,19 @@
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
+    self.boardPositionViewFontSize = 11;
     self.labelNumberOfLines = 2;
     self.boardPositionViewHorizontalPadding = 2;
     self.boardPositionViewHorizontalSpacing = 2;
   }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
+    // For the moment the value we choose here doesn't matter much, we are on
+    // the iPad and can be wasteful :-)
+    self.boardPositionViewFontSize = 17;
+    self.labelNumberOfLines = 2;
+    self.boardPositionViewHorizontalPadding = 5;
+    self.boardPositionViewHorizontalSpacing = 5;
   }
 }
 
@@ -127,11 +122,11 @@
 - (void) setupLabelSize
 {
   // The text must include the word "Pass" because this is the longest string
-  // that can possibly appear in the label of a board position view. The text
-  // must also include a line break because the label of a board position view
-  // has 2 lines.
-  NSString* textToDetermineLabelSize = @"A\nPass";
-  UIFont* font = [UIFont systemFontOfSize:[BoardPositionViewMetrics boardPositionViewFontSize]];
+  // that can possibly appear in the label of a board position view
+  NSString* textToDetermineLabelSize = @"Pass";
+  for (int lineNumber = 1; lineNumber < self.labelNumberOfLines; ++lineNumber)
+    textToDetermineLabelSize = [textToDetermineLabelSize stringByAppendingString:@"\nA"];
+  UIFont* font = [UIFont systemFontOfSize:self.boardPositionViewFontSize];
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize labelSize = [textToDetermineLabelSize sizeWithFont:font
                                           constrainedToSize:constraintSize
@@ -199,11 +194,9 @@
   }
   else
   {
-    // TODO xxx implement for iPad; take orientation into account
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Not implemented yet"
-                                                   userInfo:nil];
-    @throw exception;
+    self.boardPositionViewWidth = [UiElementMetrics splitViewLeftPaneWidth];
+    self.boardPositionViewHeight = self.labelHeight;
+    self.boardPositionViewFrame = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
   }
 }
 

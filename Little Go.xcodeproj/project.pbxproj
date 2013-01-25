@@ -37,6 +37,8 @@
 		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
 		CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */ = {isa = PBXBuildFile; fileRef = CD04987C164C6AD5007E0721 /* README.mediawiki */; };
+		CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
+		CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
 		CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */; };
@@ -375,6 +377,10 @@
 		CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CD0286401640B4A800CF23A1 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
 		CD04987C164C6AD5007E0721 /* README.mediawiki */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mediawiki; sourceTree = "<group>"; };
+		CD05199316B1C09B002771F7 /* LeftPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftPaneViewController.h; sourceTree = "<group>"; };
+		CD05199416B1C09B002771F7 /* LeftPaneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftPaneViewController.m; sourceTree = "<group>"; };
+		CD05199716B1C29B002771F7 /* RightPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RightPaneViewController.h; sourceTree = "<group>"; };
+		CD05199816B1C29B002771F7 /* RightPaneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RightPaneViewController.m; sourceTree = "<group>"; };
 		CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayMoveCommand.h; sourceTree = "<group>"; };
 		CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayMoveCommand.m; sourceTree = "<group>"; };
 		CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerPlayMoveCommand.h; sourceTree = "<group>"; };
@@ -878,6 +884,18 @@
 			path = 3rdparty/install/quincykit;
 			sourceTree = "<group>";
 		};
+		CD05199216B1C09B002771F7 /* splitview */ = {
+			isa = PBXGroup;
+			children = (
+				CD05199316B1C09B002771F7 /* LeftPaneViewController.h */,
+				CD05199416B1C09B002771F7 /* LeftPaneViewController.m */,
+				CD05199716B1C29B002771F7 /* RightPaneViewController.h */,
+				CD05199816B1C29B002771F7 /* RightPaneViewController.m */,
+			);
+			name = splitview;
+			path = src/play/splitview;
+			sourceTree = SOURCE_ROOT;
+		};
 		CD05A8C91422803B00214BBE /* move */ = {
 			isa = PBXGroup;
 			children = (
@@ -1027,6 +1045,7 @@
 				CD0FE8FD169A122400053671 /* boardposition */,
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CDF8B76714D9E91F00940D3E /* layer */,
+				CD05199216B1C09B002771F7 /* splitview */,
 				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
 				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
 				CD0DFEDA14F01C17000FE1B5 /* DebugPlayViewController.h */,
@@ -1878,6 +1897,8 @@
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
+				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
+				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
