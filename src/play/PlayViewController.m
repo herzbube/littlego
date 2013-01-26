@@ -120,10 +120,8 @@ enum ActionType
 - (UIView*) activityIndicatorViewSuperview;
 - (void) setupBoardPositionListView;
 - (CGRect) boardPositionListViewFrame;
-- (UIView*) boardPositionListViewSuperview;
 - (void) setupCurrentBoardPositionView;
 - (CGRect) currentBoardPositionViewFrame;
-- (UIView*) currentBoardPositionViewSuperview;
 - (void) setupBoardPositionListContainerView;
 - (CGRect) boardPositionListContainerViewFrame;
 - (UIView*) boardPositionListContainerViewSuperview;
@@ -592,25 +590,9 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
-  enum ItemScrollViewOrientation boardPositionListViewOrientation;
-  UIViewAutoresizing autoresizingMask;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    boardPositionListViewOrientation = ItemScrollViewOrientationHorizontal;
-    autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  }
-  else
-  {
-    boardPositionListViewOrientation = ItemScrollViewOrientationVertical;
-    autoresizingMask = UIViewAutoresizingFlexibleHeight;
-  }
-
   self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
-                                                         orientation:boardPositionListViewOrientation];
-  UIView* superView = [self boardPositionListViewSuperview];
-  [superView addSubview:self.boardPositionListView];
-
-  self.boardPositionListView.autoresizingMask = autoresizingMask;
+                                                         orientation:ItemScrollViewOrientationHorizontal];
+  self.boardPositionListView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.boardPositionListView.backgroundColor = [UIColor clearColor];
 }
 
@@ -620,39 +602,14 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (CGRect) boardPositionListViewFrame
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    int listViewX = 0;
-    int listViewY = 0;
-    int listViewWidth = (self.toolbarBoardPositionNavigation.frame.size.width
-                         - (2 * [UiElementMetrics toolbarPaddingHorizontal])
-                         - self.boardPositionViewMetrics.boardPositionViewWidth
-                         - (2 * [UiElementMetrics toolbarSpacing]));
-    int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
-    return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
-  }
-  else
-  {
-    int listViewX = 0;
-    int listViewY = CGRectGetMaxY(self.toolbarBoardPositionNavigation.frame);
-    int listViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
-    int listViewHeight = (self.currentBoardPositionView.frame.origin.y
-                          - listViewY
-                          - [UiElementMetrics spacingVertical]);
-    return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
-// -----------------------------------------------------------------------------
-- (UIView*) boardPositionListViewSuperview
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.toolbarBoardPositionNavigation;
-  else
-    return self.leftPaneViewController.view;
+  int listViewX = 0;
+  int listViewY = 0;
+  int listViewWidth = (self.toolbarBoardPositionNavigation.frame.size.width
+                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
+                       - self.boardPositionViewMetrics.boardPositionViewWidth
+                       - (2 * [UiElementMetrics toolbarSpacing]));
+  int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -664,11 +621,6 @@ enum ActionType
   self.currentBoardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
                                                                         viewMetrics:self.boardPositionViewMetrics] autorelease];
   self.currentBoardPositionView.frame = [self currentBoardPositionViewFrame];
-  UIView* superView = [self currentBoardPositionViewSuperview];
-  [superView addSubview:self.currentBoardPositionView];
-
-  if (! [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    self.currentBoardPositionView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
   self.currentBoardPositionView.currentBoardPosition = true;
 }
 
@@ -679,17 +631,9 @@ enum ActionType
 - (CGRect) currentBoardPositionViewFrame
 {
   int boardPositionViewX = 0;
+  int boardPositionViewY = 0;
   int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
   int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
-  int boardPositionViewY;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    ;
-  else
-  {
-    UIView* superView = [self currentBoardPositionViewSuperview];
-    boardPositionViewY = (CGRectGetMaxY(superView.frame)
-                          - boardPositionViewHeight);
-  }
   return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
 }
 
@@ -697,14 +641,6 @@ enum ActionType
 /// @brief This is an internal helper invoked when the front side view
 /// hierarchy is created.
 // -----------------------------------------------------------------------------
-- (UIView*) currentBoardPositionViewSuperview
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.toolbarBoardPositionNavigation;
-  else
-    return self.leftPaneViewController.view;
-}
-
 - (void) setupBoardPositionListContainerView
 {
   CGRect boardPositionListContainerViewFrame = [self boardPositionListContainerViewFrame];
@@ -715,6 +651,10 @@ enum ActionType
   self.boardPositionListContainerView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the front side view
+/// hierarchy is created.
+// -----------------------------------------------------------------------------
 - (CGRect) boardPositionListContainerViewFrame
 {
   UIView* superView = [self boardPositionListContainerViewSuperview];
@@ -725,6 +665,10 @@ enum ActionType
   return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the front side view
+/// hierarchy is created.
+// -----------------------------------------------------------------------------
 - (UIView*) boardPositionListContainerViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
