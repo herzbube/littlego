@@ -15,18 +15,18 @@
 // -----------------------------------------------------------------------------
 
 
-// -----------------------------------------------------------------------------
-/// @brief The UIImageAdditions category enhances UIImage by adding convenience
-/// drawing functions that create new images.
-///
-/// @ingroup utility
-// -----------------------------------------------------------------------------
-@interface UIImage(UIImageAdditions)
 
-+ (UIImage*) imageByApplyingUIBarButtonItemStyling:(UIImage*)image;
-- (UIImage*) imageByResizingToSize:(CGSize)newSize;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
+// -----------------------------------------------------------------------------
+/// @brief The BoardPositionTableListViewController class is responsible for
+/// managing the table views that display the current board position and the
+/// list of all board positions on the Play tab.
+///
+/// BoardPositionTableListViewController is used only on the iPad.
+// -----------------------------------------------------------------------------
+@interface BoardPositionTableListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+{
+}
+
+- (id) initWithContainerView:(UIView*)containerView;
 
 @end

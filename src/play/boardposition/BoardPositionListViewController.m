@@ -138,8 +138,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and sets up the board position list view.
-///
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView

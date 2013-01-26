@@ -24,6 +24,7 @@
 #import "ToolbarController.h"
 #import "boardposition/BoardPositionListViewController.h"
 #import "boardposition/BoardPositionModel.h"
+#import "boardposition/BoardPositionTableListViewController.h"
 #import "boardposition/BoardPositionToolbarController.h"
 #import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
@@ -123,6 +124,9 @@ enum ActionType
 - (void) setupCurrentBoardPositionView;
 - (CGRect) currentBoardPositionViewFrame;
 - (UIView*) currentBoardPositionViewSuperview;
+- (void) setupBoardPositionListContainerView;
+- (CGRect) boardPositionListContainerViewFrame;
+- (UIView*) boardPositionListContainerViewSuperview;
 - (void) setupDebugView;
 //@}
 /// @name Private helpers
@@ -148,6 +152,7 @@ enum ActionType
 @property(nonatomic, retain) BoardPositionView* currentBoardPositionView;
 @property(nonatomic, retain) UILabel* statusLine;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
+@property(nonatomic, retain) UIView* boardPositionListContainerView;
 @property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
 @property(nonatomic, retain) UISplitViewController* splitViewController;
 @property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
@@ -158,6 +163,7 @@ enum ActionType
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
 @property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
+@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 @property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 //@}
@@ -176,6 +182,7 @@ enum ActionType
 @synthesize currentBoardPositionView;
 @synthesize statusLine;
 @synthesize activityIndicator;
+@synthesize boardPositionListContainerView;
 @synthesize boardPositionViewMetrics;
 @synthesize splitViewController;
 @synthesize leftPaneViewController;
@@ -186,6 +193,7 @@ enum ActionType
 @synthesize boardPositionToolbarController;
 @synthesize boardPositionListViewController;
 @synthesize currentBoardPositionViewController;
+@synthesize boardPositionTableListViewController;
 @synthesize panGestureController;
 @synthesize tapGestureController;
 
@@ -205,6 +213,7 @@ enum ActionType
   self.currentBoardPositionView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
+  self.boardPositionListContainerView = nil;
   self.boardPositionViewMetrics = nil;
   self.splitViewController = nil;
   self.leftPaneViewController = nil;
@@ -215,6 +224,7 @@ enum ActionType
   self.boardPositionToolbarController = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
+  self.boardPositionTableListViewController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
   [super dealloc];
@@ -657,6 +667,8 @@ enum ActionType
   UIView* superView = [self currentBoardPositionViewSuperview];
   [superView addSubview:self.currentBoardPositionView];
 
+  if (! [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.currentBoardPositionView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
   self.currentBoardPositionView.currentBoardPosition = true;
 }
 
@@ -689,6 +701,34 @@ enum ActionType
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     return self.toolbarBoardPositionNavigation;
+  else
+    return self.leftPaneViewController.view;
+}
+
+- (void) setupBoardPositionListContainerView
+{
+  CGRect boardPositionListContainerViewFrame = [self boardPositionListContainerViewFrame];
+  self.boardPositionListContainerView = [[[UIView alloc] initWithFrame:boardPositionListContainerViewFrame] autorelease];
+  UIView* superView = [self boardPositionListContainerViewSuperview];
+  [superView addSubview:self.boardPositionListContainerView];
+
+  self.boardPositionListContainerView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+- (CGRect) boardPositionListContainerViewFrame
+{
+  UIView* superView = [self boardPositionListContainerViewSuperview];
+  int listViewX = 0;
+  int listViewY = CGRectGetMaxY(self.toolbarBoardPositionNavigation.frame);
+  int listViewWidth = [UiElementMetrics splitViewLeftPaneWidth];
+  int listViewHeight = (superView.frame.size.height - listViewY);
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+}
+
+- (UIView*) boardPositionListContainerViewSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return nil;
   else
     return self.leftPaneViewController.view;
 }
@@ -761,8 +801,7 @@ enum ActionType
     [self setupPlayView];
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
-    [self setupCurrentBoardPositionView];
-    [self setupBoardPositionListView];
+    [self setupBoardPositionListContainerView];
   }
   // Activate the following code to display controls that you can use to change
   // Play view drawing parameters that are normally immutable at runtime. This
@@ -802,9 +841,15 @@ enum ActionType
 
   self.boardPositionListViewController = [[[BoardPositionListViewController alloc] initWithBoardPositionListView:self.boardPositionListView
                                                                                                      viewMetrics:self.boardPositionViewMetrics] autorelease];
-  self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
     self.currentBoardPositionViewController.delegate = self;
+  }
+  else
+  {
+    self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] initWithContainerView:self.boardPositionListContainerView] autorelease];
+  }
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
 }
@@ -831,6 +876,7 @@ enum ActionType
   self.currentBoardPositionView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
+  self.boardPositionListContainerView = nil;
   self.splitViewController = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
@@ -840,6 +886,7 @@ enum ActionType
   self.boardPositionToolbarController = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
+  self.boardPositionTableListViewController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
 }

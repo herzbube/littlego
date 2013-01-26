@@ -62,12 +62,25 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a new image by resizing the current image to @a newSize.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByResizingToSize:(CGSize)newSize
+{
+  UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+  CGRect resizedImageRect = CGRectMake(0, 0, newSize.width, newSize.height);
+  [self drawInRect:resizedImageRect];
+  UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return resizedImage;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image of size @a size with a linear gradient drawn along
 /// the axis that runs from the top-middle to the bottom-middle point.
 // -----------------------------------------------------------------------------
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor
 {
-  UIGraphicsBeginImageContext(size);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   CGRect rect = CGRectMake(0, 0, size.width, size.height);
@@ -85,7 +98,7 @@
 // -----------------------------------------------------------------------------
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor
 {
-  UIGraphicsBeginImageContext(size);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   int topHalfRectHeight = size.height / 2;
@@ -107,7 +120,7 @@
 // -----------------------------------------------------------------------------
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2
 {
-  UIGraphicsBeginImageContext(size);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   int topHalfRectHeight = size.height / 2;

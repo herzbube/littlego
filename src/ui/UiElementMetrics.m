@@ -142,6 +142,10 @@ static UIViewController* m_interfaceOrientationSource;
 // The vertical margin of a table view is the distance from the top or bottom
 // edge of the table view to the top or bottom edge of the top-most or
 // bottom-most table view element (e.g. a cell, or a header/footer).
+//
+// TODO: The current values are not always correct, the margin seems to vary
+// with the table view width.
+// Cf. http://stackoverflow.com/questions/4708085/how-to-determine-margin-of-a-grouped-uitableview-or-better-how-to-set-it
 + (int) tableViewMarginVertical
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
