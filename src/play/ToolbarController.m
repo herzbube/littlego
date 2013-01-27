@@ -328,8 +328,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Info" button. Flips the game view to
-/// display an alternate view with information about the game in progress.
+/// @brief Reacts to a tap gesture on the "Info" button. Displays the
+/// "Game Info" view with information about the game in progress.
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
 {
@@ -348,10 +348,9 @@
   }
   GameInfoViewController* gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
   [gameInfoController retain];
-
   [self.delegate toolbarController:self
                        makeVisible:true
-                      gameInfoView:gameInfoController.view];
+                      gameInfoViewController:gameInfoController];
 }
 
 // -----------------------------------------------------------------------------
@@ -361,7 +360,7 @@
 {
   [self.delegate toolbarController:self
                        makeVisible:false
-                      gameInfoView:controller.view];
+            gameInfoViewController:controller];
   [controller release];
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)

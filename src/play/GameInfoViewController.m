@@ -123,6 +123,10 @@ enum MoveStatisticsSectionItem
 - (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
+/// @name UINavigationBarDelegate protocol
+//@{
+- (BOOL) navigationBar:(UINavigationBar*)navigationBar shouldPopItem:(UINavigationItem*)item;
+//@}
 /// @name UITableViewDataSource protocol
 //@{
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
@@ -135,10 +139,6 @@ enum MoveStatisticsSectionItem
 - (NSInteger) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell;
 - (enum GridCellColumnStyle) gridCell:(TableViewGridCell*)gridCell styleInColumn:(NSInteger)column;
 - (NSString*) gridCell:(TableViewGridCell*)gridCell textForColumn:(NSInteger)column;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
 //@}
 /// @name Notification responders
 //@{
@@ -211,7 +211,10 @@ enum MoveStatisticsSectionItem
   tableView.delegate = self;
   tableView.dataSource = self;
 
+  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
+  [navigationBar pushNavigationItem:backItem animated:NO];
   [navigationBar pushNavigationItem:self.navigationItem animated:NO];
+  navigationBar.delegate = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -267,12 +270,7 @@ enum MoveStatisticsSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
   self.title = @"Game Info";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                         target:self
-                                                                                         action:@selector(done:)];
-
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
 }
@@ -297,6 +295,20 @@ enum MoveStatisticsSectionItem
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationBarDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (BOOL) navigationBar:(UINavigationBar*)navigationBar shouldPopItem:(UINavigationItem*)item
+{
+  // If we were overriding navigationBar:didPopItem:(), the item would already
+  // have been popped with an animation, and our own dismissal would be
+  // animated separately. This looks ugly. The solution is to override
+  // navigationBar:shouldPopItem:() and trigger our own dismissal now so that
+  // the two animations take place together.
+  [self.delegate gameInfoViewControllerDidFinish:self];
+  return YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -785,21 +797,13 @@ enum MoveStatisticsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting a board size.
-// -----------------------------------------------------------------------------
-- (void) done:(id)sender
-{
-  [self.delegate gameInfoViewControllerDidFinish:self];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   // Dismiss the Info view when a new game is started. This typically occurs
   // when a saved game is loaded from the archive.
-  [self done:nil];
+  [self navigationBar:nil shouldPopItem:nil];
 }
 
 @end

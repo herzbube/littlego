@@ -69,13 +69,12 @@ enum ActionType
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration;
 //@}
 /// @name ToolbarControllerDelegate protocol
 //@{
 - (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
 - (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoView:(UIView*)gameInfoView;
+- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 //@}
 /// @name PanGestureControllerDelegate protocol
 //@{
@@ -97,12 +96,12 @@ enum ActionType
 //@{
 - (void) setupMainView;
 - (CGRect) mainViewFrame;
-- (void) setupSubviewsOfMainView;
-- (CGRect) subviewFrame;
 //@}
-/// @name Front side view hierarchy setup
+/// @name View hierarchy setup
 //@{
 - (void) setupSplitView;
+- (CGRect) splitViewFrame;
+- (UIView*) splitViewSuperview;
 - (void) setupToolbarMain;
 - (CGRect) toolbarMainFrame;
 - (UIView*) toolbarMainSuperview;
@@ -130,19 +129,14 @@ enum ActionType
 /// @name Private helpers
 //@{
 - (void) makeControllerReadyForAction;
-- (void) setupSubviewsOfFrontSideView;
+- (void) setupSubviews;
 - (void) setupSubcontrollers;
-- (void) flipToFrontSideView:(bool)flipToFrontSideView;
 - (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
 //@}
 /// @name Privately declared properties
 //@{
 /// @brief True if this controller has been set up is now "ready for action".
 @property(nonatomic, assign) bool controllerReadyForAction;
-/// @brief The frontside view. A superview of @e playView.
-@property(nonatomic, retain) UIView* frontSideView;
-/// @brief The backside view with information about the current game.
-@property(nonatomic, retain) UIView* backSideView;
 @property(nonatomic, retain) PlayView* playView;
 @property(nonatomic, retain) UIToolbar* toolbarMain;
 @property(nonatomic, retain) UIToolbar* toolbarBoardPositionNavigation;
@@ -171,8 +165,6 @@ enum ActionType
 @implementation PlayViewController
 
 @synthesize controllerReadyForAction;
-@synthesize frontSideView;
-@synthesize backSideView;
 @synthesize playView;
 @synthesize toolbarMain;
 @synthesize toolbarBoardPositionNavigation;
@@ -202,8 +194,6 @@ enum ActionType
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.frontSideView = nil;
-  self.backSideView = nil;
   self.playView = nil;
   self.toolbarMain = nil;
   self.toolbarBoardPositionNavigation = nil;
@@ -233,19 +223,12 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  // Note: If the user is holding the device in landscape orientation while the
+  // application is starting up, iOS will first start up in portrait orientation
+  // and then initiate an auto-rotation to landscape orientation. Because the
+  // main view has an autoresizing mask, it will have the correct size at the
+  // time makeControllerReadyForAction() is invoked.
   [self setupMainView];
-
-  // Add frontside view to the main view already here, do not wait until
-  // makeControllerReadyForAction is invoked. Reason: If the user is holding the
-  // device in landscape orientation while the application is starting up, iOS
-  // will first start up in portrait orientation and then initiate an
-  // auto-rotation to landscape orientation. If the frontside view has not yet
-  // been added as a subview at this time, it will not be auto-resized, and all
-  // size calculations for the play view during auto-rotation will miserably
-  // fail. Because startup auto-rotation happens before
-  // makeControllerReadyForAction is called, we must add the frontside view
-  // to the main view here.
-  [self setupSubviewsOfMainView];
 
   // Setup of remaining views is delayed to makeControllerReadyForAction()
 }
@@ -258,6 +241,14 @@ enum ActionType
   CGRect mainViewFrame = [self mainViewFrame];
   self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  // Because we delay the setup of the remaining views, on the iPhone the
+  // default white background is visible for a short time. By overriding the
+  // default with our own background we prevent a nasty white "flash". Even
+  // though on the iPad the default background is not white, we still add our
+  // own background, just to be on the safe side in case something changes in
+  // future iOS versions. In addition to the above, having our own background
+  // is a safeguard in case some subviews unexpectedly have transparent areas.
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -275,36 +266,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by loadView().
-// -----------------------------------------------------------------------------
-- (void) setupSubviewsOfMainView
-{
-  CGRect subViewFrame = [self subviewFrame];
-  self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-  self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-  [self.view addSubview:self.frontSideView];
-  self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  // Set common background color for all elements on the frontside view
-  [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupSubviewsOfMainView().
-// -----------------------------------------------------------------------------
-- (CGRect) subviewFrame
-{
-  CGSize superViewSize = self.view.bounds.size;
-  int subViewX = 0;
-  int subViewY = 0;
-  int subViewWidth = superViewSize.width;
-  int subViewHeight = superViewSize.height;
-  return CGRectMake(subViewX, subViewY, subViewWidth, subViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupSplitView
 {
@@ -318,12 +281,15 @@ enum ActionType
   self.splitViewController.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
   // The following statement is essential so that the split view controller
   // properly receives rotation events in iOS 5. In iOS6 rotation seems to work
-  // even if the statement is missing. Behaviour of iOS 5 tested in simulator
-  // only.
+  // even if the statement is missing. Behaviour of iOS 5 was tested in
+  // simulator only.
   [self addChildViewController:self.splitViewController];
-  CGRect splitViewControllerViewFrame = self.frontSideView.bounds;
+
+  UIView* superView = [self splitViewSuperview];
+  CGRect splitViewControllerViewFrame = [self splitViewFrame];
   self.splitViewController.view.frame = splitViewControllerViewFrame;
-  [self.frontSideView addSubview:self.splitViewController.view];
+  [superView addSubview:self.splitViewController.view];
+
   // Set left/right panes to use the same height as the split view
   CGRect leftPaneViewFrame = self.leftPaneViewController.view.frame;
   leftPaneViewFrame.size.height = splitViewControllerViewFrame.size.height;
@@ -334,8 +300,26 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked by setupMainView().
+// -----------------------------------------------------------------------------
+- (CGRect) splitViewFrame
+{
+  UIView* superView = [self splitViewSuperview];
+  return superView.bounds;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) splitViewSuperview
+{
+  return self.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupToolbarMain
 {
@@ -348,8 +332,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) toolbarMainFrame
 {
@@ -362,20 +346,20 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) toolbarMainSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.frontSideView;
+    return self.view;
   else
     return self.rightPaneViewController.view;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupToolbarBoardPositionNavigation
 {
@@ -388,8 +372,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) toolbarBoardPositionNavigationFrame
 {
@@ -406,20 +390,20 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) toolbarBoardPositionNavigationSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.frontSideView;
+    return self.view;
   else
     return self.leftPaneViewController.view;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupPlayView
 {
@@ -433,8 +417,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
@@ -459,20 +443,20 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) playViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.frontSideView;
+    return self.view;
   else
     return self.rightPaneViewController.view;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupStatusLineView
 {
@@ -489,8 +473,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) statusLineViewFrame
 {
@@ -521,26 +505,27 @@ enum ActionType
   }
   else
   {
-      statusLineViewY = (self.frontSideView.frame.size.height - statusLineViewHeight);
+    UIView* superView = [self statusLineSuperview];
+    statusLineViewY = (superView.frame.size.height - statusLineViewHeight);
   }
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) statusLineSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.frontSideView;
+    return self.view;
   else
     return self.rightPaneViewController.view;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupActivityIndicatorView
 {
@@ -553,8 +538,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) activityIndicatorViewFrame
 {
@@ -566,20 +551,20 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) activityIndicatorViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.frontSideView;
+    return self.view;
   else
     return self.rightPaneViewController.view;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
@@ -590,8 +575,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) boardPositionListViewFrame
 {
@@ -606,8 +591,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupCurrentBoardPositionView
 {
@@ -618,8 +603,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) currentBoardPositionViewFrame
 {
@@ -631,8 +616,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListContainerView
 {
@@ -645,8 +630,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) boardPositionListContainerViewFrame
 {
@@ -659,8 +644,8 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (UIView*) boardPositionListContainerViewSuperview
 {
@@ -671,13 +656,13 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the front side view
-/// hierarchy is created.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (void) setupDebugView
 {
   DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
-  [self.frontSideView addSubview:debugPlayViewController.view];
+  [self.view addSubview:debugPlayViewController.view];
   CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
   debugPlayViewFrame.origin.y += self.toolbarMain.frame.size.height;
   debugPlayViewController.view.frame = debugPlayViewFrame;
@@ -710,14 +695,14 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) makeControllerReadyForAction
 {
-  [self setupSubviewsOfFrontSideView];
+  [self setupSubviews];
   [self setupSubcontrollers];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by makeControllerReadyForAction().
 // -----------------------------------------------------------------------------
-- (void) setupSubviewsOfFrontSideView
+- (void) setupSubviews
 {
   self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
@@ -803,8 +788,6 @@ enum ActionType
 {
   [super viewDidUnload];
 
-  self.frontSideView = nil;
-  self.backSideView = nil;
   self.playView = nil;
   self.toolbarMain = nil;
   self.toolbarBoardPositionNavigation = nil;
@@ -829,56 +812,12 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called by UIKit when the view is about to made visible.
-// -----------------------------------------------------------------------------
-- (void) viewWillAppear:(BOOL)animated
-{
-  // Default does nothing, we don't have to invoke [super viewWillAppear]
-
-  // If an interface orientation change occurred while the "Play" tab was not
-  // visible, this controller's roation handling in
-  // willAnimateRotationToInterfaceOrientation:duration:() was never executed.
-  // We therefore provide some additional handling here.
-
-  // Either the frontside or the backside view is currently not part of the
-  // view hierarchy, so we must update it manually. The other one who *IS* part
-  // of the view hierarchy has already been automatically updated by UIKit.
-  if (! self.frontSideView.superview)
-    self.frontSideView.frame = self.view.bounds;
-  else
-    self.backSideView.frame = self.view.bounds;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Called by UIKit at various times to determine whether this controller
 /// supports the given orientation @a interfaceOrientation.
 // -----------------------------------------------------------------------------
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called by UIKit from within an animation block, before performing a
-/// one-step user interface rotation.
-///
-/// By the time this method is invoked, the controller's interfaceOrientation
-/// property already has the new orientation.
-// -----------------------------------------------------------------------------
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
-{
-  if (self.frontSideView.superview)
-  {
-    // Manually update backside view because it is currently not part of the
-    // view hierarchy
-    self.backSideView.frame = self.view.bounds;
-  }
-  else
-  {
-    // Manually update frontside view because it is currently not part of the
-    // view hierarchy
-    self.frontSideView.frame = self.view.bounds;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -900,44 +839,12 @@ enum ActionType
 // -----------------------------------------------------------------------------
 /// @brief ToolbarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoView:(UIView*)gameInfoView
+- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController
 {
   if (makeVisible)
-  {
-    [self.backSideView addSubview:gameInfoView];
-    bool flipToFrontSideView = false;
-    [self flipToFrontSideView:flipToFrontSideView];
-  }
+    [self.navigationController pushViewController:gameInfoViewController animated:YES];
   else
-  {
-    [gameInfoView removeFromSuperview];
-    bool flipToFrontSideView = true;
-    [self flipToFrontSideView:flipToFrontSideView];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Flips the main play view (on the frontside) over to the game info
-/// view (on the backside), and vice versa.
-// -----------------------------------------------------------------------------
-- (void) flipToFrontSideView:(bool)flipToFrontSideView
-{
-  [UIView beginAnimations:nil context:nil];
-  [UIView setAnimationDuration:0.75];
-  
-  if (flipToFrontSideView)
-  {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
-    [backSideView removeFromSuperview];
-    [self.view addSubview:frontSideView];
-  }
-  else
-  {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
-    [frontSideView removeFromSuperview];
-    [self.view addSubview:backSideView];
-  }
-  [UIView commitAnimations];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------

@@ -30,33 +30,17 @@
 /// - Set up the view hierarchy on the "Play" tab
 /// - Create and configure sub-controllers
 /// - Manage the timing of these tasks during application launch
-/// - Rotate views on the "Play" tab when the device orientation changes
-/// - Manage the animation to and from the "backside" view which displays
-///   information about the current game. The transition is triggered by a
-///   sub-controller, but managed by PlayViewController because only
-///   PlayViewController knows the details of the view hierarchy
+/// - Manage the transition to and from the Game Info view. The transition is
+///   triggered by a sub-controller, but managed by PlayViewController because
+///   only PlayViewController knows the details of the view hierarchy
 /// - Display alerts that are used by more than one sub-controller
 ///
 ///
 /// @par Interface rotation
 ///
-/// Most of the "Play" view is automatically resized when an interface
-/// orientation occurs, due to autoresizeMask being properly set on most of the
-/// view's UI elements. There are, however, the following exceptions:
-/// - At any given time, either the "frontside" or the "backside" view are not
-///   part of the view hierarchy because they are not visible at that time.
-///   If the interface is rotated, the view that is currently not part of the
-///   view hierarchy is not automatically resized. PlayViewController makes
-///   sure that the resize happens nonetheless.
-/// - The autoresizeMask of PlayView does not allow the view to grow or shrink.
-///   PlayViewController makes sure that whenever the "frontside" view is
-///   resized, PlayView is also resized. If the "frontside" view is visible at
-///   that time, the resize is animated.
-///
-/// PlayViewController makes sure that all size updates described above are
-/// performed even if the "Play" view is not visible at the time the interface
-/// rotates. This requires special code because PlayViewController's regular
-/// rotation code is not triggered by UIKit in this situation.
+/// PlayViewController sets up all views on the "Play" tab with an appropriate
+/// autoresizing mask so that when the interface rotates UIKit automatically
+/// resizes and shifts the views.
 // -----------------------------------------------------------------------------
 @interface PlayViewController : UIViewController <PanGestureControllerDelegate,
                                                   ToolbarControllerDelegate,

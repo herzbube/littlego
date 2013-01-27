@@ -41,7 +41,7 @@
 /// @brief This method is invoked when the user calls up or dismisses the Game
 /// Info view. The delegate is responsible for making the view visible, or
 /// hiding the view (@a makeVisible indicates which).
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoView:(UIView*)gameInfoView;
+- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 @end
 
 
