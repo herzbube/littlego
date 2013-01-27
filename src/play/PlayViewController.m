@@ -429,14 +429,7 @@ enum ActionType
   [superView addSubview:self.playView];
 
   self.playView.backgroundColor = [UIColor clearColor];
-  // If the view is resized, the Go board needs to be redrawn (occurs during
-  // rotation animation)
-  self.playView.contentMode = UIViewContentModeRedraw;
-  // TODO: Find a way how we can allow the view to autoresize. Currently when
-  // the orientation changes, we need to manually change the frame and notify
-  // the view of the frame change (inside a custom animation) because the view
-  // does not autodetect a frame change triggered by autoresizing.
-//  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -854,23 +847,6 @@ enum ActionType
     self.frontSideView.frame = self.view.bounds;
   else
     self.backSideView.frame = self.view.bounds;
-  // Calculate the PlayView frame only after we can be sure that the superview's
-  // bounds are correct (either by the manual update above, or by an automatic
-  // update by UIKit).
-  CGRect currentPlayViewFrame = self.playView.frame;
-  CGRect newPlayViewFrame = [self playViewFrame];
-  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
-  {
-    // Apparently UIKit invokes viewWillAppear:() while an animation is running.
-    // This usage of CATransaction prevents the size change from being animated.
-    // If we don't do this, a shrinking animation will take place when an
-    // interface rotation to landscape occurred.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    self.playView.frame = newPlayViewFrame;
-    [self.playView frameChanged];
-    [CATransaction commit];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -896,32 +872,12 @@ enum ActionType
     // Manually update backside view because it is currently not part of the
     // view hierarchy
     self.backSideView.frame = self.view.bounds;
-    // The frontside view is part of the view hierarchy, so its bounds have
-    // been automatically changed and we can safely calculate the new PlayView
-    // frame
-    CGRect playViewFrame = [self playViewFrame];
-    // Because we don't allow the Play view to autoresize we need to perform its
-    // animation ourselves.
-    [UIView animateWithDuration:duration
-                          delay:0
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                       self.playView.frame = playViewFrame;
-                       [self.playView frameChanged];
-                     }
-                     completion:NULL];
   }
   else
   {
     // Manually update frontside view because it is currently not part of the
     // view hierarchy
     self.frontSideView.frame = self.view.bounds;
-    // Calculate the PlayView frame only after the manual change of its
-    // superview's bounds
-    CGRect playViewFrame = [self playViewFrame];
-    // The PlayView is not visible, so no need to animate the frame size change
-    self.playView.frame = playViewFrame;
-    [self.playView frameChanged];
   }
 }
 

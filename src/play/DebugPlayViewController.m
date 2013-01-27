@@ -200,7 +200,7 @@
   if (valueChanged)
   {
     PlayView* playView = [PlayView sharedView];
-    [playView frameChanged];  // dummy update to force a complete redraw
+    [playView setNeedsLayout];  // dummy update to force a complete redraw
   }
 
   return YES;

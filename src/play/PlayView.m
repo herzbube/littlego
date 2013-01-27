@@ -51,6 +51,10 @@
 - (id) initWithFrame:(CGRect)aRect;
 - (void) dealloc;
 //@}
+/// @name UIView methods
+//@{
+- (void) layoutSubviews;
+//@}
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
@@ -186,8 +190,6 @@ static PlayView* sharedPlayView = nil;
   {
     [self makeViewReadyForDrawing];
     self.viewReadyForDrawing = true;
-    [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
-    [self delayedUpdate];
   }
 
   return self;
@@ -236,7 +238,10 @@ static PlayView* sharedPlayView = nil;
 
   [self makeViewReadyForDrawing];
   self.viewReadyForDrawing = true;
-  [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+
+  // Now perform all drawing updates that have accumulated so far
+  // (at least layoutSubviews(), which has been invoked at least once after
+  // initialization)
   [self delayedUpdate];
 }
 
@@ -406,10 +411,18 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked by PlayViewController when the frame of this view changes.
+/// @brief UIView method.
+///
+/// Overriding this method is important so that we can react to frame size
+/// changes that occur when this view is autoresized, e.g. when the device
+/// orientation changes.
+///
+/// This is also invoked soon after initialization.
 // -----------------------------------------------------------------------------
-- (void) frameChanged
+- (void) layoutSubviews
 {
+  [super layoutSubviews];
+
   [self.playViewMetrics updateWithRect:self.bounds];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
   [self delayedUpdate];
