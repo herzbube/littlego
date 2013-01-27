@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #import "UiUtilities.h"
 #import "UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
+#import "../utility/UIImageAdditions.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -168,9 +169,9 @@
     // view backgroundView object, which at the time of writing is a
     // UIImageView object whose image has these dimensions.
     CGSize backgroundPatternSize = CGSizeMake(1, 64);
-    UIImage* backgroundPattern = [UiUtilities gradientImageWithSize:backgroundPatternSize
-                                                         startColor:[UIColor iPadGroupTableViewBackgroundGradientStartColor]
-                                                           endColor:[UIColor iPadGroupTableViewBackgroundGradientEndColor]];
+    UIImage* backgroundPattern = [UIImage gradientImageWithSize:backgroundPatternSize
+                                                     startColor:[UIColor iPadGroupTableViewBackgroundGradientStartColor]
+                                                       endColor:[UIColor iPadGroupTableViewBackgroundGradientEndColor]];
     // This is the only way I managed to get the image to properly resize on
     // auto-rotation. Alternatives that I tried, but that didn't work
     // - view.background = [UIColor colorWithPatternImage:backgroundPattern];
@@ -201,77 +202,17 @@
     colors = [UIColor redButtonTableViewCellSelectedBackgroundGradientColors];
   else
     colors = [UIColor redButtonTableViewCellBackgroundGradientColors];
-  UIImage* backgroundPattern = [UiUtilities gradientImageWithSize:backgroundPatternSize
-                                                      startColor1:[colors objectAtIndex:0]
-                                                        endColor1:[colors objectAtIndex:1]
-                                                      startColor2:[colors objectAtIndex:2]
-                                                        endColor2:[colors objectAtIndex:3]];
+  UIImage* backgroundPattern = [UIImage gradientImageWithSize:backgroundPatternSize
+                                                  startColor1:[colors objectAtIndex:0]
+                                                    endColor1:[colors objectAtIndex:1]
+                                                  startColor2:[colors objectAtIndex:2]
+                                                    endColor2:[colors objectAtIndex:3]];
   UIImageView* imageView = [[UIImageView alloc] initWithImage:backgroundPattern];
   [[imageView layer] setCornerRadius:8.0f];
   [[imageView layer] setMasksToBounds:YES];
   [[imageView layer] setBorderWidth:1.0f];
   [[imageView layer] setBorderColor: [[UIColor grayColor] CGColor]];
   return [imageView autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns an image of size @a size with a linear gradient drawn along
-/// the axis that runs from the top-middle to the bottom-middle point.
-// -----------------------------------------------------------------------------
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor
-{
-  UIGraphicsBeginImageContext(size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-
-  CGRect rect = CGRectMake(0, 0, size.width, size.height);
-  [UiUtilities drawLinearGradientWithContext:context rect:rect startColor:startColor.CGColor endColor:endColor.CGColor];
-
-  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return gradientImage;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns an image of size @a size with a 3-color-stop linear gradient
-/// drawn along the axis that runs from the top-middle to the bottom-middle
-/// point.
-// -----------------------------------------------------------------------------
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor
-{
-  UIGraphicsBeginImageContext(size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-
-  int topHalfRectHeight = size.height / 2;
-  CGRect topHalfRect = CGRectMake(0, 0, size.width, topHalfRectHeight);
-  [UiUtilities drawLinearGradientWithContext:context rect:topHalfRect startColor:startColor.CGColor endColor:middleColor.CGColor];
-  CGRect bottomHalfRect = CGRectMake(0, topHalfRectHeight - 1, size.width, size.height - topHalfRectHeight + 1);
-  [UiUtilities drawLinearGradientWithContext:context rect:bottomHalfRect startColor:middleColor.CGColor endColor:endColor.CGColor];
-
-  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return gradientImage;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns an image of size @a size with two linear gradients vertically
-/// arrayed, each gradient taking up half of the height of @a size. Both
-/// gradients are drawn along the axis that runs from the top-middle to the
-/// bottom-middle point of @a rect.
-// -----------------------------------------------------------------------------
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2
-{
-  UIGraphicsBeginImageContext(size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-
-  int topHalfRectHeight = size.height / 2;
-  CGRect topHalfRect = CGRectMake(0, 0, size.width, topHalfRectHeight);
-  [UiUtilities drawLinearGradientWithContext:context rect:topHalfRect startColor:startColor1.CGColor endColor:endColor1.CGColor];
-  CGRect bottomHalfRect = CGRectMake(0, topHalfRectHeight, size.width, size.height - topHalfRectHeight);
-  [UiUtilities drawLinearGradientWithContext:context rect:bottomHalfRect startColor:startColor2.CGColor endColor:endColor2.CGColor];
-
-  UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return gradientImage;
 }
 
 // -----------------------------------------------------------------------------
@@ -332,6 +273,102 @@
   UIImage* imageCapture = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return imageCapture;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a rectangle that fully fits into the box @a rect.
+///
+/// If @a fill is true the rectangle is filled, otherwise it is stroked using a
+/// solid line and line width 1.
+///
+/// @a color is used as fill or stroke color.
+///
+/// @note It is the responsibility of the caller to provide half-pixel
+/// translation to prevent anti-aliasing (should be necessary only if @a fill
+/// is false).
+// -----------------------------------------------------------------------------
++ (void) drawRectWithContext:(CGContextRef)context rect:(CGRect)rect fill:(bool)fill color:(UIColor*)color
+{
+  if (! fill)
+  {
+    // Adjust rectangle size so that all lines are drawn fully inside the
+    // rectangle. If this adjustment is not done, the stroke of the upper/right
+    // edge will be 1 pixel outside the rectangle's bounds. The reason is that
+    // CGContextAddRect() uses CGRectMaxX() and CGRectMaxY() to determine the
+    // upper/right edge, which will result in points being added to the path
+    // that are outside the rectangle's bounds.
+    rect.size.width -= 1;
+    rect.size.height -= 1;
+  }
+  else
+  {
+    // No adjustment necessary for filling, which IMHO is *really* confusing.
+    // Let's look at an example: A rectangle of (0,0,10,10) results in a path
+    // that contains the points (0,0), (0,11), (11,11) and (11,0). Filling this
+    // path results in an area of 10x10 pixels being filled, which is what we
+    // want, BUT...
+    // - The docs for CGContextFillPath() state that the area *WITHIN* the path
+    //   is filled
+    // - So why are the pixels at x/y coordinate 0 being filled, but the pixels
+    //   at x/y coordinate 11 are not?
+    // IMHO either the docs are wrong, or the implementation.
+  }
+
+  CGContextBeginPath(context);
+  CGContextAddRect(context, rect);
+
+  if (fill)
+  {
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    CGContextFillPath(context);
+  }
+  else
+  {
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
+    CGContextSetLineWidth(context, 1);
+    CGContextStrokePath(context);
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws an arc that is a full circle with its center at @a center and
+/// a radius @a radius.
+///
+/// If @a fill is true the circle is filled, otherwise it is stroked using a
+/// solid line and line width 1.
+///
+/// @a color is used as fill or stroke color.
+///
+/// The circle that is drawn fits into a rectangle whose width and height are
+/// equal to "2 * radius + 1" (the +1 is for the center pixel).
+///
+/// @note It is the responsibility of the caller to provide half-pixel
+/// translation to prevent anti-aliasing.
+// -----------------------------------------------------------------------------
++ (void) drawCircleWithContext:(CGContextRef)context center:(CGPoint)center radius:(CGFloat)radius fill:(bool)fill color:(UIColor*)color
+{
+  const int startRadius = [UiUtilities radians:0];
+  const int endRadius = [UiUtilities radians:360];
+  const int clockwise = 0;
+
+  CGContextAddArc(context,
+                  center.x,
+                  center.y,
+                  radius,
+                  startRadius,
+                  endRadius,
+                  clockwise);
+  if (fill)
+  {
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    CGContextFillPath(context);
+  }
+  else
+  {
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
+    CGContextSetLineWidth(context, 1);
+    CGContextStrokePath(context);
+  }
 }
 
 @end

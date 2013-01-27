@@ -39,8 +39,6 @@ NSString* gtpEngineIdleNotification = @"GtpEngineIdle";
 NSString* goGameWillCreate = @"GoGameWillCreate";
 NSString* goGameDidCreate = @"GoGameDidCreate";
 NSString* goGameStateChanged = @"GoGameStateChanged";
-NSString* goGameFirstMoveChanged = @"GoGameFirstMoveChanged";
-NSString* goGameLastMoveChanged = @"GoGameLastMoveChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
@@ -56,6 +54,12 @@ NSString* goScoreScoringModeEnabled = @"GoScoreScoringModeEnabled";
 NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
 NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
+// Other notifications
+NSString* longRunningActionStarts = @"LongRunningActionStarts";
+NSString* longRunningActionEnds = @"LongRunningActionEnds";
+
+// Board position settings default values
+const bool discardFutureMovesAlertDefault = true;
 
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
@@ -127,13 +131,19 @@ NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
-NSString* playForMeButtonIconResource = @"computer-play.png";
+NSString* computerPlayButtonIconResource = @"computer-play.png";
 NSString* passButtonIconResource = @"gopass.png";
 NSString* undoButtonIconResource = @"213-reply.png";
 NSString* pauseButtonIconResource = @"48-pause.png";
-NSString* continueButtonIconResource = @"49-play.png";
+NSString* continueButtonIconResource = @"40-forward.png";
 NSString* gameInfoButtonIconResource = @"tabular.png";
 NSString* interruptButtonIconResource = @"298-circlex.png";
+NSString* playButtonIconResource = @"49-play.png";
+NSString* fastForwardButtonIconResource = @"fastforward.png";
+NSString* forwardToEndButtonIconResource = @"forwardtoend.png";
+NSString* backButtonIconResource = @"back.png";
+NSString* rewindButtonIconResource = @"rewind.png";
+NSString* rewindToStartButtonIconResource = @"rewindtostart.png";
 NSString* humanIconResource = @"111-user.png";
 NSString* computerIconResource = @"computer.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
@@ -228,10 +238,14 @@ NSString* collectCrashDataKey = @"CrashReportActivated";
 NSString* automaticReportCrashDataKey = @"AutomaticallySendCrashReports";
 NSString* allowContactCrashDataKey = @"CrashDataContactAllowKey";
 NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
+// Board position settings
+NSString* boardPositionKey = @"BoardPosition";
+NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
+NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 1;
+const int nscodingVersion = 2;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // GoGame keys
 NSString* goGameTypeKey = @"Type";
@@ -240,12 +254,13 @@ NSString* goGameHandicapPointsKey = @"HandicapPoints";
 NSString* goGameKomiKey = @"Komi";
 NSString* goGamePlayerBlackKey = @"PlayerBlack";
 NSString* goGamePlayerWhiteKey = @"PlayerWhite";
-NSString* goGameFirstMoveKey = @"FirstMove";
-NSString* goGameLastMoveKey = @"LastMove";
+NSString* goGameMoveModelKey = @"MoveModel";
 NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameNextMoveIsComputerGeneratedKey = @"NextMoveIsComputerGenerated";
+NSString* goGameBoardPositionKey = @"BoardPosition";
+
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
@@ -257,6 +272,9 @@ NSString* goMovePreviousKey = @"Previous";
 NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveComputerGeneratedKey = @"ComputerGenerated";
+// GoMoveModel keys
+NSString* goMoveModelMoveListKey = @"MoveList";
+NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
 // GoBoard keys
 NSString* goBoardSizeKey = @"Size";
 NSString* goBoardVertexDictKey = @"VertexDict";

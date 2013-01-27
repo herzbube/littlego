@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SettingsViewController.h"
+#import "BoardPositionSettingsController.h"
 #import "PlayerProfileSettingsController.h"
 #import "PlayViewSettingsController.h"
 #import "ScoringSettingsController.h"
@@ -39,6 +40,7 @@ enum SettingsTableViewSection
 enum SettingsSectionItem
 {
   PlayViewSettingsItem,
+  BoardPositionSettingsItem,
   ScoringSettingsItem,
   PlayersProfilesSettingsItem,
   MaxSettingsSectionItem
@@ -171,6 +173,11 @@ enum SettingsSectionItem
           cell.textLabel.text = @"Play view";
           break;
         }
+        case BoardPositionSettingsItem:
+        {
+          cell.textLabel.text = @"Board position";
+          break;
+        }
         case ScoringSettingsItem:
         {
           cell.textLabel.text = @"Scoring";
@@ -215,6 +222,11 @@ enum SettingsSectionItem
         case PlayViewSettingsItem:
         {
           controller = [PlayViewSettingsController controller];
+          break;
+        }
+        case BoardPositionSettingsItem:
+        {
+          controller = [BoardPositionSettingsController controller];
           break;
         }
         case ScoringSettingsItem:

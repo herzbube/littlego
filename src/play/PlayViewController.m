@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,29 +17,42 @@
 
 // Project includes
 #import "PlayViewController.h"
-#import "PlayView.h"
-#import "DebugPlayViewController.h"
-#import "StatusLineController.h"
 #import "ActivityIndicatorController.h"
-#import "ScoringModel.h"
+#import "DebugPlayViewController.h"
+#import "PlayView.h"
+#import "StatusLineController.h"
+#import "ToolbarController.h"
+#import "boardposition/BoardPositionListViewController.h"
+#import "boardposition/BoardPositionModel.h"
+#import "boardposition/BoardPositionTableListViewController.h"
+#import "boardposition/BoardPositionToolbarController.h"
+#import "boardposition/BoardPositionView.h"
+#import "boardposition/BoardPositionViewMetrics.h"
+#import "boardposition/CurrentBoardPositionViewController.h"
+#import "gesture/TapGestureController.h"
+#import "splitview/LeftPaneViewController.h"
+#import "splitview/RightPaneViewController.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
-#import "../go/GoMove.h"
-#import "../go/GoPlayer.h"
-#import "../go/GoScore.h"
-#import "../go/GoPoint.h"
-#import "../player/Player.h"
-#import "../command/InterruptComputerCommand.h"
-#import "../command/move/ComputerPlayMoveCommand.h"
-#import "../command/move/PlayMoveCommand.h"
-#import "../command/move/UndoMoveCommand.h"
-#import "../command/game/ContinueGameCommand.h"
-#import "../command/game/PauseGameCommand.h"
+#import "../command/CommandBase.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
+#import <objc/runtime.h>
+#import <math.h>
+
+// Constants
+NSString* associatedCommandObjectKey = @"AssociatedCommandObject";
+
+// Enums
+enum ActionType
+{
+  ActionTypePlay,
+  ActionTypeDiscard
+};
 
 
 // -----------------------------------------------------------------------------
@@ -56,178 +69,121 @@
 - (void) viewDidLoad;
 - (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration;
 //@}
-/// @name Action methods for toolbar items
+/// @name ToolbarControllerDelegate protocol
 //@{
-- (void) pass:(id)sender;
-- (void) playForMe:(id)sender;
-- (void) undo:(id)sender;
-- (void) pause:(id)sender;
-- (void) continue:(id)sender;
-- (void) interrupt:(id)sender;
-- (void) gameInfo:(id)sender;
-- (void) gameActions:(id)sender;
-- (void) done:(id)sender;
+- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
+- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
+- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 //@}
-/// @name Handlers for recognized gestures
+/// @name PanGestureControllerDelegate protocol
 //@{
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
 //@}
-/// @name UIGestureRecognizerDelegate protocol
+/// @name CurrentBoardPositionViewControllerDelegate protocol
 //@{
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller;
 //@}
-/// @name GameInfoViewControllerDelegate protocol
+/// @name UIAlertViewDelegate protocol
 //@{
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller;
-//@}
-/// @name PlayViewActionSheetDelegate protocol
-//@{
-- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 //@}
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goGameStateChanged:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goGameLastMoveChanged:(NSNotification*)notification;
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) goScoreCalculationStarts:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
 //@}
-/// @name Updaters
+/// @name Main view hierarchy setup
 //@{
-- (void) populateToolbar;
-- (void) updateButtonStates;
-- (void) updatePlayForMeButtonState;
-- (void) updatePassButtonState;
-- (void) updateUndoButtonState;
-- (void) updatePauseButtonState;
-- (void) updateContinueButtonState;
-- (void) updateInterruptButtonState;
-- (void) updateGameInfoButtonState;
-- (void) updateGameActionsButtonState;
-- (void) updateDoneButtonState;
-- (void) updatePanningEnabled;
-- (void) updateTappingEnabled;
+- (void) setupMainView;
+- (CGRect) mainViewFrame;
+//@}
+/// @name View hierarchy setup
+//@{
+- (void) setupSplitView;
+- (CGRect) splitViewFrame;
+- (UIView*) splitViewSuperview;
+- (void) setupToolbarMain;
+- (CGRect) toolbarMainFrame;
+- (UIView*) toolbarMainSuperview;
+- (void) setupToolbarBoardPositionNavigation;
+- (CGRect) toolbarBoardPositionNavigationFrame;
+- (UIView*) toolbarBoardPositionNavigationSuperview;
+- (void) setupPlayView;
+- (CGRect) playViewFrame;
+- (UIView*) playViewSuperview;
+- (void) setupStatusLineView;
+- (CGRect) statusLineViewFrame;
+- (UIView*) statusLineSuperview;
+- (void) setupActivityIndicatorView;
+- (CGRect) activityIndicatorViewFrame;
+- (UIView*) activityIndicatorViewSuperview;
+- (void) setupBoardPositionListView;
+- (CGRect) boardPositionListViewFrame;
+- (void) setupCurrentBoardPositionView;
+- (CGRect) currentBoardPositionViewFrame;
+- (void) setupBoardPositionListContainerView;
+- (CGRect) boardPositionListContainerViewFrame;
+- (UIView*) boardPositionListContainerViewSuperview;
+- (void) setupDebugView;
 //@}
 /// @name Private helpers
 //@{
 - (void) releaseObjects;
-- (CGRect) mainViewFrame;
-- (CGRect) subViewFrame;
-- (CGRect) toolbarViewFrame;
-- (CGRect) playViewFrame;
-- (CGRect) statusLineViewFrame;
-- (CGRect) activityIndicatorViewFrame;
-- (int) statusLineNumberOfTextLines;
 - (void) makeControllerReadyForAction;
-- (void) flipToFrontSideView:(bool)flipToFrontSideView;
+- (void) setupSubviews;
+- (void) setupSubcontrollers;
+- (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief The model that manages scoring-related data.
-@property(nonatomic, assign) ScoringModel* scoringModel;
-/// @brief The gesture recognizer used to detect the long-press gesture.
-@property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
-/// @brief The gesture recognizer used to detect the tap gesture.
-@property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
-/// @brief True if a panning gesture is currently allowed, false if not (e.g.
-/// while a computer player is thinking).
-@property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
-/// @brief True if a tapping gesture is currently allowed, false if not (e.g.
-/// if scoring mode is not enabled).
-@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
-/// @brief GoScore object used while the game info view is displayed and scoring
-/// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
-/// obtained from elsewhere.
-@property(nonatomic, retain) GoScore* gameInfoScore;
-/// @brief The frontside view. A superview of @e playView.
-@property(nonatomic, retain) UIView* frontSideView;
-/// @brief The backside view with information about the current game.
-@property(nonatomic, retain) UIView* backSideView;
-/// @brief The view that PlayViewController is responsible for.
 @property(nonatomic, retain) PlayView* playView;
-/// @brief The toolbar that displays action buttons.
-@property(nonatomic, retain) UIToolbar* toolbar;
-/// @brief The status line that displays messages to the user.
+@property(nonatomic, retain) UIToolbar* toolbarMain;
+@property(nonatomic, retain) UIToolbar* toolbarBoardPositionNavigation;
+@property(nonatomic, retain) ItemScrollView* boardPositionListView;
+@property(nonatomic, retain) BoardPositionView* currentBoardPositionView;
 @property(nonatomic, retain) UILabel* statusLine;
-/// @brief The activity indicator that is animated for long running operations.
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
-/// @brief The controller that manages the status line.
+@property(nonatomic, retain) UIView* boardPositionListContainerView;
+@property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
+@property(nonatomic, retain) UISplitViewController* splitViewController;
+@property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
+@property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
+@property(nonatomic, retain) ToolbarController* toolbarController;
 @property(nonatomic, retain) StatusLineController* statusLineController;
-/// @brief The controller that manages the activity indicator.
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
-/// @brief The controller that manages the "Game Info" view. This property is
-/// nil if the "Game Info" view is currently not visible.
-@property(nonatomic, retain) GameInfoViewController* gameInfoController;
-/// @brief The "Play for me" button. Tapping this button causes the computer
-/// player to generate a move for the human player whose turn it currently is.
-@property(nonatomic, retain) UIBarButtonItem* playForMeButton;
-/// @brief The "Pass" button. Tapping this button generates a "Pass" move for
-/// the human player whose turn it currently is.
-@property(nonatomic, retain) UIBarButtonItem* passButton;
-/// @brief The "Undo" button. Tapping this button takes back the last move made
-/// by a human player, including any computer player moves that were made in
-/// response.
-@property(nonatomic, retain) UIBarButtonItem* undoButton;
-/// @brief The "Pause" button. Tapping this button causes the game to pause if
-/// two computer players play against each other.
-@property(nonatomic, retain) UIBarButtonItem* pauseButton;
-/// @brief The "Continue" button. Tapping this button causes the game to
-/// continue if it is paused while two computer players play against each other.
-@property(nonatomic, retain) UIBarButtonItem* continueButton;
-/// @brief The "Interrupt" button. Tapping this button interrupts the computer
-/// player while it is thinking.
-@property(nonatomic, retain) UIBarButtonItem* interruptButton;
-/// @brief Dummy button that creates an expanding space between the "New"
-/// button and its predecessors.
-@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
-/// @brief The "Game Info" button. Tapping this button flips the game view to
-/// display an alternate view with information about the game in progress.
-@property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
-/// @brief The "Game Actions" button. Tapping this button displays an action
-/// sheet with actions that relate to Go games as a whole.
-@property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
-/// @brief The "Done" button. Tapping this button ends the currently active
-/// mode and returns to normal play mode.
-@property(nonatomic, retain) UIBarButtonItem* doneButton;
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
+@property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
+@property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
+@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
+@property(nonatomic, retain) PanGestureController* panGestureController;
+@property(nonatomic, retain) TapGestureController* tapGestureController;
 //@}
 @end
 
 
 @implementation PlayViewController
 
-@synthesize frontSideView;
-@synthesize backSideView;
 @synthesize playView;
-@synthesize toolbar;
+@synthesize toolbarMain;
+@synthesize toolbarBoardPositionNavigation;
+@synthesize boardPositionListView;
+@synthesize currentBoardPositionView;
 @synthesize statusLine;
 @synthesize activityIndicator;
+@synthesize boardPositionListContainerView;
+@synthesize boardPositionViewMetrics;
+@synthesize splitViewController;
+@synthesize leftPaneViewController;
+@synthesize rightPaneViewController;
+@synthesize toolbarController;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
-@synthesize gameInfoController;
-@synthesize playForMeButton;
-@synthesize passButton;
-@synthesize undoButton;
-@synthesize pauseButton;
-@synthesize continueButton;
-@synthesize interruptButton;
-@synthesize flexibleSpaceButton;
-@synthesize gameInfoButton;
-@synthesize gameActionsButton;
-@synthesize doneButton;
-@synthesize scoringModel;
-@synthesize longPressRecognizer;
-@synthesize tapRecognizer;
-@synthesize panningEnabled;
-@synthesize tappingEnabled;
-@synthesize gameInfoScore;
+@synthesize boardPositionToolbarController;
+@synthesize boardPositionListViewController;
+@synthesize currentBoardPositionViewController;
+@synthesize boardPositionTableListViewController;
+@synthesize panGestureController;
+@synthesize tapGestureController;
 
 
 // -----------------------------------------------------------------------------
@@ -245,29 +201,27 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.frontSideView = nil;
-  self.backSideView = nil;
   self.playView = nil;
-  self.toolbar = nil;
+  self.toolbarMain = nil;
+  self.toolbarBoardPositionNavigation = nil;
+  self.boardPositionListView = nil;
+  self.currentBoardPositionView = nil;
   self.statusLine = nil;
   self.activityIndicator = nil;
+  self.boardPositionListContainerView = nil;
+  self.boardPositionViewMetrics = nil;
+  self.splitViewController = nil;
+  self.leftPaneViewController = nil;
+  self.rightPaneViewController = nil;
+  self.toolbarController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
-  self.gameInfoController = nil;
-  self.playForMeButton = nil;
-  self.passButton = nil;
-  self.undoButton = nil;
-  self.pauseButton = nil;
-  self.continueButton = nil;
-  self.interruptButton = nil;
-  self.flexibleSpaceButton = nil;
-  self.gameInfoButton = nil;
-  self.gameActionsButton = nil;
-  self.doneButton = nil;
-  self.scoringModel = nil;
-  self.longPressRecognizer = nil;
-  self.tapRecognizer = nil;
-  self.gameInfoScore = nil;
+  self.boardPositionToolbarController = nil;
+  self.boardPositionListViewController = nil;
+  self.currentBoardPositionViewController = nil;
+  self.boardPositionTableListViewController = nil;
+  self.panGestureController = nil;
+  self.tapGestureController = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -275,74 +229,36 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  // Create view hierarchy
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  CGRect subViewFrame = [self subViewFrame];
-  self.frontSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-  self.backSideView = [[[UIView alloc] initWithFrame:subViewFrame] autorelease];
-  // Add frontside view to the main view already here, do not wait until
-  // makeControllerReadyForAction is invoked. Reason: If the user is holding the
-  // device in landscape orientation while the application is starting up, iOS
-  // will first start up in portrait orientation and then initiate an
-  // auto-rotation to landscape orientation. If the frontside view has not yet
-  // been added as a subview at this time, it will not be auto-resized, and all
-  // size calculations for the play view during auto-rotation will miserably
-  // fail. Because startup auto-rotation happens before
-  // makeControllerReadyForAction is called, we must add the frontside view
-  // to the main view here.
-  [self.view addSubview:self.frontSideView];
-  CGRect toolbarFrame = [self toolbarViewFrame];
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
-  [self.frontSideView addSubview:self.toolbar];
-  CGRect playViewFrame = [self playViewFrame];
-  self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
-  [self.frontSideView addSubview:self.playView];
-  CGRect statusLineViewFrame = [self statusLineViewFrame];
-  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
-  [self.frontSideView addSubview:self.statusLine];
-  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
-  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  [self.frontSideView addSubview:self.activityIndicator];
+  // Note: If the user is holding the device in landscape orientation while the
+  // application is starting up, iOS will first start up in portrait orientation
+  // and then initiate an auto-rotation to landscape orientation. Because the
+  // main view has an autoresizing mask, it will have the correct size at the
+  // time makeControllerReadyForAction() is invoked.
+  [self setupMainView];
 
-  // Activate the following code to display controls that you can use to change
-  // Play view drawing parameters that are normally immutable at runtime. This
-  // is nice for debugging changes to the drawing system.
-//  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
-//  [self.frontSideView addSubview:debugPlayViewController.view];
-//  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
-//  debugPlayViewFrame.origin.y += toolbarFrame.size.height;
-//  debugPlayViewController.view.frame = debugPlayViewFrame;
-  
-  // Configure autoresizingMask properties for proper autorotation
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.frontSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.backSideView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
-                                    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
-  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
-  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
-
-  // Set common background color for all elements on the frontside view
-  [UiUtilities addGroupTableViewBackgroundToView:self.frontSideView];
-  self.playView.backgroundColor = [UIColor clearColor];
-  self.statusLine.backgroundColor = [UIColor clearColor];
-
-  // If the view is resized, the Go board needs to be redrawn (occurs during
-  // rotation animation)
-  self.playView.contentMode = UIViewContentModeRedraw;
-
-  // Other configuration
-  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
-  self.statusLine.numberOfLines = [self statusLineNumberOfTextLines];
-  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  // Setup of remaining views is delayed to makeControllerReadyForAction()
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of this controller's main view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief This is an internal helper invoked by loadView().
+// -----------------------------------------------------------------------------
+- (void) setupMainView
+{
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  // Because we delay the setup of the remaining views, on the iPhone the
+  // default white background is visible for a short time. By overriding the
+  // default with our own background we prevent a nasty white "flash". Even
+  // though on the iPad the default background is not white, we still add our
+  // own background, just to be on the safe side in case something changes in
+  // future iOS versions. In addition to the above, having our own background
+  // is a safeguard in case some subviews unexpectedly have transparent areas.
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by setupMainView().
 // -----------------------------------------------------------------------------
 - (CGRect) mainViewFrame
 {
@@ -356,112 +272,406 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the frontside and backside subviews, taking
-/// into account the current interface orientation. Assumes that super views
-/// have the correct bounds.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
-- (CGRect) subViewFrame
+- (void) setupSplitView
 {
-  CGSize superViewSize = self.view.bounds.size;
-  int subViewX = 0;
-  int subViewY = 0;
-  int subViewWidth = superViewSize.width;
-  int subViewHeight = superViewSize.height;
-  return CGRectMake(subViewX, subViewY, subViewWidth, subViewHeight);
+  self.splitViewController = [[[UISplitViewController alloc] init] autorelease];
+  self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
+  self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
+  // Assign view controllers before first use of self.splitViewController.view
+  // (if we do it the other way round, a message is printed in the debug area in
+  // Xcode that warns us about the mistake; we should heed this warning,
+  // although no bad things [tm] could actually be observed)
+  self.splitViewController.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+  // The following statement is essential so that the split view controller
+  // properly receives rotation events in iOS 5. In iOS6 rotation seems to work
+  // even if the statement is missing. Behaviour of iOS 5 was tested in
+  // simulator only.
+  [self addChildViewController:self.splitViewController];
+
+  UIView* superView = [self splitViewSuperview];
+  CGRect splitViewControllerViewFrame = [self splitViewFrame];
+  self.splitViewController.view.frame = splitViewControllerViewFrame;
+  [superView addSubview:self.splitViewController.view];
+
+  // Set left/right panes to use the same height as the split view
+  CGRect leftPaneViewFrame = self.leftPaneViewController.view.frame;
+  leftPaneViewFrame.size.height = splitViewControllerViewFrame.size.height;
+  self.leftPaneViewController.view.frame = leftPaneViewFrame;
+  CGRect rightPaneViewFrame = self.rightPaneViewController.view.frame;
+  rightPaneViewFrame.size.height = splitViewControllerViewFrame.size.height;
+  self.rightPaneViewController.view.frame = rightPaneViewFrame;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the toolbar view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief This is an internal helper invoked by setupMainView().
 // -----------------------------------------------------------------------------
-- (CGRect) toolbarViewFrame
+- (CGRect) splitViewFrame
 {
-  CGSize superViewSize = self.frontSideView.bounds.size;
+  UIView* superView = [self splitViewSuperview];
+  return superView.bounds;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) splitViewSuperview
+{
+  return self.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupToolbarMain
+{
+  CGRect toolbarFrame = [self toolbarMainFrame];
+  self.toolbarMain = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  UIView* superView = [self toolbarMainSuperview];
+  [superView addSubview:self.toolbarMain];
+  
+  self.toolbarMain.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarMainFrame
+{
+  UIView* superView = [self toolbarMainSuperview];
   int toolbarViewX = 0;
   int toolbarViewY = 0;
-  int toolbarViewWidth = superViewSize.width;
+  int toolbarViewWidth = superView.bounds.size.width;
   int toolbarViewHeight = [UiElementMetrics toolbarHeight];
   return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the play view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) toolbarMainSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return self.view;
+  else
+    return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupToolbarBoardPositionNavigation
+{
+  CGRect toolbarFrame = [self toolbarBoardPositionNavigationFrame];
+  self.toolbarBoardPositionNavigation = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
+  UIView* superView = [self toolbarBoardPositionNavigationSuperview];
+  [superView addSubview:self.toolbarBoardPositionNavigation];
+  
+  self.toolbarBoardPositionNavigation.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) toolbarBoardPositionNavigationFrame
+{
+  UIView* superView = [self toolbarBoardPositionNavigationSuperview];
+  int toolbarViewX = 0;
+  int toolbarViewWidth = superView.bounds.size.width;
+  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
+  int toolbarViewY;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    toolbarViewY = superView.bounds.size.height - toolbarViewHeight;
+  else
+    toolbarViewY = 0;
+  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) toolbarBoardPositionNavigationSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return self.view;
+  else
+    return self.leftPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupPlayView
+{
+  CGRect playViewFrame = [self playViewFrame];
+  self.playView = [[[PlayView alloc] initWithFrame:playViewFrame] autorelease];
+  UIView* superView = [self playViewSuperview];
+  [superView addSubview:self.playView];
+
+  self.playView.backgroundColor = [UIColor clearColor];
+  self.playView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
-  // Dimensions if all the available space were used. The result would be a
-  // rectangle.
-  CGSize superViewSize = self.frontSideView.bounds.size;
-  int playViewFullWidth = superViewSize.width;
-  int playViewFullHeight = (superViewSize.height
-                            - [UiElementMetrics toolbarHeight]
-                            - [UiElementMetrics spacingVertical]
-                            - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]));
-
-  // Now make the view square so that auto-rotation on orientation change does
-  // not cause the view to be squashed or stretched. This is possibly not
-  // necessary anymore, because now there is a custom animation going on during
-  // auto-rotation that resizes the view to its proper dimensions.
-  // Note: There's already a small bit of code in PlayView that lets it handle
-  // rectangular frames.
-  int playViewSideLength;
-  if (playViewFullHeight >= playViewFullWidth)
-    playViewSideLength = playViewFullWidth;
+  UIView* superView = [self playViewSuperview];
+  CGSize superViewSize = superView.bounds.size;
+  int playViewX = 0;
+  int playViewY = CGRectGetMaxY(self.toolbarMain.frame);
+  int playViewWidth = superViewSize.width;
+  int playViewHeight;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    playViewHeight = (superViewSize.height
+                      - self.toolbarMain.frame.size.height
+                      - self.toolbarBoardPositionNavigation.frame.size.height);
+  }
   else
-    playViewSideLength = playViewFullHeight;
-
-  // Calculate the final values
-  int playViewX = (superViewSize.width - playViewSideLength) / 2;  // center horizontally
-  int playViewY = [UiElementMetrics toolbarHeight];                // place just below the toolbar
-  int playViewWidth = playViewSideLength;
-  int playViewHeight = playViewSideLength;
+  {
+    playViewHeight = (superViewSize.height
+                      - self.toolbarMain.frame.size.height);
+  }
   return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the status line view, taking into account
-/// the current interface orientation. Assumes that super views have the
-/// correct bounds.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) playViewSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return self.view;
+  else
+    return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupStatusLineView
+{
+  CGRect statusLineViewFrame = [self statusLineViewFrame];
+  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
+  UIView* superView = [self statusLineSuperview];
+  [superView addSubview:self.statusLine];
+
+  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
+  self.statusLine.backgroundColor = [UIColor clearColor];
+  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLine.numberOfLines = 1;
+  self.statusLine.font = [UIFont systemFontOfSize:self.boardPositionViewMetrics.boardPositionViewFontSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) statusLineViewFrame
 {
-  CGSize superViewSize = self.frontSideView.bounds.size;
-  int statusLineViewX = 0;
-  int statusLineViewY = superViewSize.height - ([UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines]);
-  int statusLineViewWidth = (superViewSize.width
-                             - [UiElementMetrics spacingHorizontal]
-                             - [UiElementMetrics activityIndicatorWidthAndHeight]);
-  int statusLineViewHeight = [UiElementMetrics labelHeight] * [self statusLineNumberOfTextLines];
+  CGRect boardFrame = self.playView.boardFrame;
+  CGRect activityIndicatorFrame = self.activityIndicator.frame;
+  int statusLineViewX = boardFrame.origin.x;
+  int statusLineViewWidth = (activityIndicatorFrame.origin.x
+                             - statusLineViewX
+                             - [UiElementMetrics spacingHorizontal]);
+  UIFont* statusLineViewFont = [UIFont systemFontOfSize:self.boardPositionViewMetrics.boardPositionViewFontSize];
+  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
+  CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
+                               constrainedToSize:constraintSize
+                                   lineBreakMode:UILineBreakModeWordWrap];
+  int statusLineViewHeight = statusLineTextSize.height;
+
+  int statusLineViewY;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    // [UiElementMetrics spacingVertical] is too much, we are too constrained
+    // on the iPhone screen. Instead we choose 2 points as an arbitrary spacing
+    // value
+    int statusLineSpacingVertical = 2;
+    statusLineViewY = (self.toolbarBoardPositionNavigation.frame.origin.y
+                           - statusLineViewHeight
+                           - statusLineSpacingVertical);
+    return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
+  }
+  else
+  {
+    UIView* superView = [self statusLineSuperview];
+    statusLineViewY = (superView.frame.size.height - statusLineViewHeight);
+  }
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the activity indicator view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) statusLineSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return self.view;
+  else
+    return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupActivityIndicatorView
+{
+  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
+  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
+  UIView* superView = [self activityIndicatorViewSuperview];
+  [superView addSubview:self.activityIndicator];
+  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
+  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
 - (CGRect) activityIndicatorViewFrame
 {
-  CGSize superViewSize = self.frontSideView.bounds.size;
-  int activityIndicatorViewX = superViewSize.width - [UiElementMetrics activityIndicatorWidthAndHeight];
-  int activityIndicatorViewY = superViewSize.height - [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
   int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
+  int activityIndicatorViewX = CGRectGetMaxX(self.playView.boardFrame) - activityIndicatorViewWidth;
+  int activityIndicatorViewY = CGRectGetMaxY(self.playView.frame) - activityIndicatorViewHeight;
   return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns how many number of text lines the status line should display.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
-- (int) statusLineNumberOfTextLines
+- (UIView*) activityIndicatorViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return 2;
+    return self.view;
   else
-    return 1;
+    return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionListView
+{
+  self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
+                                                         orientation:ItemScrollViewOrientationHorizontal];
+  self.boardPositionListView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  self.boardPositionListView.backgroundColor = [UIColor clearColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionListViewFrame
+{
+  int listViewX = 0;
+  int listViewY = 0;
+  int listViewWidth = (self.toolbarBoardPositionNavigation.frame.size.width
+                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
+                       - self.boardPositionViewMetrics.boardPositionViewWidth
+                       - (2 * [UiElementMetrics toolbarSpacing]));
+  int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupCurrentBoardPositionView
+{
+  self.currentBoardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
+                                                                        viewMetrics:self.boardPositionViewMetrics] autorelease];
+  self.currentBoardPositionView.frame = [self currentBoardPositionViewFrame];
+  self.currentBoardPositionView.currentBoardPosition = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) currentBoardPositionViewFrame
+{
+  int boardPositionViewX = 0;
+  int boardPositionViewY = 0;
+  int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
+  int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionListContainerView
+{
+  CGRect boardPositionListContainerViewFrame = [self boardPositionListContainerViewFrame];
+  self.boardPositionListContainerView = [[[UIView alloc] initWithFrame:boardPositionListContainerViewFrame] autorelease];
+  UIView* superView = [self boardPositionListContainerViewSuperview];
+  [superView addSubview:self.boardPositionListContainerView];
+
+  self.boardPositionListContainerView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionListContainerViewFrame
+{
+  UIView* superView = [self boardPositionListContainerViewSuperview];
+  int listViewX = 0;
+  int listViewY = CGRectGetMaxY(self.toolbarBoardPositionNavigation.frame);
+  int listViewWidth = [UiElementMetrics splitViewLeftPaneWidth];
+  int listViewHeight = (superView.frame.size.height - listViewY);
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) boardPositionListContainerViewSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return nil;
+  else
+    return self.leftPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupDebugView
+{
+  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
+  [self.view addSubview:debugPlayViewController.view];
+  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
+  debugPlayViewFrame.origin.y += self.toolbarMain.frame.size.height;
+  debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
 // -----------------------------------------------------------------------------
@@ -493,92 +703,85 @@
 // -----------------------------------------------------------------------------
 - (void) makeControllerReadyForAction
 {
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.scoringModel = delegate.scoringModel;
-  if (! self.scoringModel)
+  [self setupSubviews];
+  [self setupSubcontrollers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupSubviews
+{
+  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    [self setupToolbarMain];
+    [self setupToolbarBoardPositionNavigation];
+    [self setupPlayView];
+    [self setupActivityIndicatorView];
+    [self setupStatusLineView];
+    [self setupBoardPositionListView];
+    [self setupCurrentBoardPositionView];
+  }
+  else
+  {
+    [self setupSplitView];
+    [self setupToolbarMain];
+    [self setupToolbarBoardPositionNavigation];
+    [self setupPlayView];
+    [self setupActivityIndicatorView];
+    [self setupStatusLineView];
+    [self setupBoardPositionListContainerView];
+  }
+  // Activate the following code to display controls that you can use to change
+  // Play view drawing parameters that are normally immutable at runtime. This
+  // is nice for debugging changes to the drawing system.
+  //  [self setupDebugView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+// -----------------------------------------------------------------------------
+- (void) setupSubcontrollers
+{
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  if (! scoringModel)
   {
     DDLogError(@"PlayViewController::makeControllerReadyForAction(): Unable to find the ScoringModel object");
     assert(0);
   }
 
-  self.panningEnabled = false;
-  self.tappingEnabled = false;
-
-  self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
-	[self.longPressRecognizer release];
-	[self.playView addGestureRecognizer:self.longPressRecognizer];
-  self.longPressRecognizer.delegate = self;
-  self.longPressRecognizer.minimumPressDuration = 0;  // place stone immediately
-  CGFloat infiniteMovement = CGFLOAT_MAX;
-  self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
-
-  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
-	[self.tapRecognizer release];
-	[self.playView addGestureRecognizer:self.tapRecognizer];
-  self.tapRecognizer.delegate = self;
-
+  self.toolbarController = [[[ToolbarController alloc] initWithToolbar:self.toolbarMain
+                                                          scoringModel:scoringModel
+                                                              delegate:self
+                                                  parentViewController:self] autorelease];
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
-  self.gameInfoController = nil;
 
-  self.playForMeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:playForMeButtonIconResource]
-                                                           style:UIBarButtonItemStyleBordered
-                                                          target:self
-                                                          action:@selector(playForMe:)] autorelease];
-  self.passButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:passButtonIconResource]
-                                                      style:UIBarButtonItemStyleBordered
-                                                     target:self
-                                                     action:@selector(pass:)] autorelease];
-  self.undoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:undoButtonIconResource]
-                                                      style:UIBarButtonItemStyleBordered
-                                                     target:self
-                                                     action:@selector(undo:)] autorelease];
-  self.pauseButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:pauseButtonIconResource]
-                                                       style:UIBarButtonItemStyleBordered
-                                                      target:self
-                                                      action:@selector(pause:)] autorelease];
-  self.continueButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:continueButtonIconResource]
-                                                          style:UIBarButtonItemStyleBordered
-                                                         target:self
-                                                         action:@selector(continue:)] autorelease];
-  self.interruptButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:interruptButtonIconResource]
-                                                           style:UIBarButtonItemStyleBordered
-                                                          target:self
-                                                          action:@selector(interrupt:)] autorelease];
-  self.gameInfoButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:gameInfoButtonIconResource]
-                                                          style:UIBarButtonItemStyleBordered
-                                                         target:self
-                                                         action:@selector(gameInfo:)] autorelease];
-  self.gameActionsButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                          target:self
-                                                                          action:@selector(gameActions:)] autorelease];
-  self.gameActionsButton.style = UIBarButtonItemStyleBordered;
-  self.doneButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                   target:self
-                                                                   action:@selector(done:)] autorelease];
-  self.doneButton.style = UIBarButtonItemStyleBordered;
-  self.flexibleSpaceButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                            target:nil
-                                                                            action:nil] autorelease];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBoardPositionNavigation
+                                                                             boardPositionListView:self.boardPositionListView
+                                                                          currentBoardPositionView:self.currentBoardPositionView] autorelease];
+  }
+  else
+  {
+    self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBoardPositionNavigation] autorelease];
+  }
 
-  self.gameInfoScore = nil;
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-
-  // We invoke this to set up initial state because we did not get
-  // get goGameDidCreate for the initial game (viewDidLoad gets called too
-  // late)
-  [self goGameDidCreate:nil];
+  self.boardPositionListViewController = [[[BoardPositionListViewController alloc] initWithBoardPositionListView:self.boardPositionListView
+                                                                                                     viewMetrics:self.boardPositionViewMetrics] autorelease];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
+    self.currentBoardPositionViewController.delegate = self;
+  }
+  else
+  {
+    self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] initWithContainerView:self.boardPositionListContainerView] autorelease];
+  }
+  self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
+  self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -603,44 +806,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called by UIKit when the view is about to made visible.
-// -----------------------------------------------------------------------------
-- (void) viewWillAppear:(BOOL)animated
-{
-  // Default does nothing, we don't have to invoke [super viewWillAppear]
-
-  // If an interface orientation change occurred while the "Play" tab was not
-  // visible, this controller's roation handling in
-  // willAnimateRotationToInterfaceOrientation:duration:() was never executed.
-  // We therefore provide some additional handling here.
-
-  // Either the frontside or the backside view is currently not part of the
-  // view hierarchy, so we must update it manually. The other one who *IS* part
-  // of the view hierarchy has already been automatically updated by UIKit.
-  if (! self.frontSideView.superview)
-    self.frontSideView.frame = self.view.bounds;
-  else
-    self.backSideView.frame = self.view.bounds;
-  // Calculate the PlayView frame only after we can be sure that the superview's
-  // bounds are correct (either by the manual update above, or by an automatic
-  // update by UIKit).
-  CGRect currentPlayViewFrame = self.playView.frame;
-  CGRect newPlayViewFrame = [self playViewFrame];
-  if (! CGRectEqualToRect(currentPlayViewFrame, newPlayViewFrame))
-  {
-    // Apparently UIKit invokes viewWillAppear:() while an animation is running.
-    // This usage of CATransaction prevents the size change from being animated.
-    // If we don't do this, a shrinking animation will take place when an
-    // interface rotation to landscape occurred.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    self.playView.frame = newPlayViewFrame;
-    [self.playView frameChanged];
-    [CATransaction commit];
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Called by UIKit at various times to determine whether this controller
 /// supports the given orientation @a interfaceOrientation.
 // -----------------------------------------------------------------------------
@@ -650,294 +815,72 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called by UIKit before performing a one-step user interface
-/// rotation.
+/// @brief ToolbarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
+- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command
 {
-  if (self.frontSideView.superview)
-  {
-    // Manually update backside view because it is currently not part of the
-    // view hierarchy
-    self.backSideView.frame = self.view.bounds;
-    // The frontside view is part of the view hierarchy, so its bounds have
-    // been automatically changed and we can safely calculate the new PlayView
-    // frame
-    CGRect playViewFrame = [self playViewFrame];
-    // Because we don't allow the Play view to autoresize we need to perform its
-    // animation ourselves.
-    [UIView animateWithDuration:duration
-                          delay:0
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                       self.playView.frame = playViewFrame;
-                       [self.playView frameChanged];
-                     }
-                     completion:NULL];
-  }
+  [self alertOrAction:ActionTypePlay withCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ToolbarControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command
+{
+  [self alertOrAction:ActionTypeDiscard withCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ToolbarControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController
+{
+  if (makeVisible)
+    [self.navigationController pushViewController:gameInfoViewController animated:YES];
   else
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief PanGestureControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command
+{
+  [self alertOrAction:ActionTypePlay withCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief CurrentBoardPositionViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
+{
+  [self.boardPositionToolbarController toggleToolbarItems];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIAlertViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  CommandBase* command = objc_getAssociatedObject(alertView, associatedCommandObjectKey);
+  objc_setAssociatedObject(alertView, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_ASSIGN);
+  switch (buttonIndex)
   {
-    // Manually update frontside view because it is currently not part of the
-    // view hierarchy
-    self.frontSideView.frame = self.view.bounds;
-    // Calculate the PlayView frame only after the manual change of its
-    // superview's bounds
-    CGRect playViewFrame = [self playViewFrame];
-    // The PlayView is not visible, so no need to animate the frame size change
-    self.playView.frame = playViewFrame;
-    [self.playView frameChanged];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Pass" button. Generates a "Pass"
-/// move for the human player whose turn it currently is.
-// -----------------------------------------------------------------------------
-- (void) pass:(id)sender
-{
-  PlayMoveCommand* command = [[PlayMoveCommand alloc] initPass];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Play for me" button. Causes the
-/// computer player to generate a move for the human player whose turn it
-/// currently is.
-// -----------------------------------------------------------------------------
-- (void) playForMe:(id)sender
-{
-  ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Undo" button. Takes back the last
-/// move made by a human player, including any computer player moves that were
-/// made in response.
-// -----------------------------------------------------------------------------
-- (void) undo:(id)sender
-{
-  UndoMoveCommand* command = [[UndoMoveCommand alloc] init];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Pause" button. Pauses the game if
-/// two computer players play against each other.
-// -----------------------------------------------------------------------------
-- (void) pause:(id)sender
-{
-  PauseGameCommand* command = [[PauseGameCommand alloc] init];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Undo" button. Continues the game if
-/// it is paused while two computer players play against each other.
-// -----------------------------------------------------------------------------
-- (void) continue:(id)sender
-{
-  ContinueGameCommand* command = [[ContinueGameCommand alloc] init];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Interrupt" button. Interrupts the
-/// computer while it is thinking.
-// -----------------------------------------------------------------------------
-- (void) interrupt:(id)sender
-{
-  InterruptComputerCommand* command = [[InterruptComputerCommand alloc] init];
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Info" button. Flips the game view to
-/// display an alternate view with information about the game in progress.
-// -----------------------------------------------------------------------------
-- (void) gameInfo:(id)sender
-{
-  GoScore* score;
-  if (self.scoringModel.scoringMode)
-    score = self.scoringModel.score;
-  else
-  {
-    assert(! self.gameInfoScore);
-    if (! self.gameInfoScore)
+    case AlertViewButtonTypeNo:
     {
-      self.gameInfoScore = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:false];
-      [self.gameInfoScore calculateWaitUntilDone:true];
+      [command release];
+      command = nil;
     }
-    score = self.gameInfoScore;
-  }
-  self.gameInfoController = [GameInfoViewController controllerWithDelegate:self score:score];
-  [self.backSideView addSubview:gameInfoController.view];
-
-  bool flipToFrontSideView = false;
-  [self flipToFrontSideView:flipToFrontSideView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief GameInfoViewControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
-{
-  bool flipToFrontSideView = true;
-  [self flipToFrontSideView:flipToFrontSideView];
-  [controller.view removeFromSuperview];
-  assert(self.gameInfoController == controller);
-  self.gameInfoController = nil;
-  // Get rid of temporary scoring object
-  if (! self.scoringModel.scoringMode)
-  {
-    assert(self.gameInfoScore);
-    self.gameInfoScore = nil;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief PlayViewActionSheetDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
-{
-  [controller release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Flips the main play view (on the frontside) over to the game info
-/// view (on the backside), and vice versa.
-// -----------------------------------------------------------------------------
-- (void) flipToFrontSideView:(bool)flipToFrontSideView
-{
-  [UIView beginAnimations:nil context:nil];
-  [UIView setAnimationDuration:0.75];
-
-  if (flipToFrontSideView)
-  {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
-    [backSideView removeFromSuperview];
-    [self.view addSubview:frontSideView];
-  }
-  else
-  {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
-    [frontSideView removeFromSuperview];
-    [self.view addSubview:backSideView];
-  }
-  [UIView commitAnimations];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Game Actions" button. Displays an
-/// action sheet with actions that related to Go games as a whole.
-// -----------------------------------------------------------------------------
-- (void) gameActions:(id)sender
-{
-  PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self delegate:self];
-  [controller showActionSheetFromView:self.playView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Done" button. Ends the currently
-/// active mode and returns to normal play mode.
-// -----------------------------------------------------------------------------
-- (void) done:(id)sender
-{
-  self.scoringModel.scoringMode = false;  // triggers notification to which this controller reacts
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a dragging, or panning, gesture in the view's Go board
-/// area.
-// -----------------------------------------------------------------------------
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
-{
-  // TODO move the following summary somewhere else where it is not buried in
-  // code and forgotten...
-  // 1. Touching the screen starts stone placement
-  // 2. Stone is placed when finger leaves the screen and the stone is placed
-  //    in a valid location
-  // 3. Stone placement can be cancelled by placing in an invalid location
-  // 4. Invalid locations are: Another stone is already placed on the point;
-  //    placing the stone would be suicide; the point is guarded by a Ko; the
-  //    point is outside the board
-  // 5. While panning/dragging, provide continuous feedback on the current
-  //    stone location
-  //    - Display a stone of the correct color at the current location
-  //    - Mark up the stone differently from already placed stones
-  //    - Mark up the stone differently if it is in a valid location, and if
-  //      it is in an invalid location
-  //    - Display in the status line the vertex of the current location
-  //    - If the location is invalid, display the reason in the status line
-  //    - If placing a stone would capture other stones, mark up those stones
-  //      and display in the status line how many stones would be captured
-  //    - If placing a stone would set a group (your own or an enemy group) to
-  //      atari, mark up that group
-  // 6. Place the stone with an offset to the fingertip position so that the
-  //    user can see the stone location
-
-  CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* crossHairPoint = [self.playView crossHairPointNear:panningLocation];
-
-  // TODO If the move is not legal, determine the reason (another stone is
-  // already placed on the point; suicide move; guarded by Ko rule)
-  bool isLegalMove = false;
-  if (crossHairPoint)
-    isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairPoint];
-
-  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
-  switch (recognizerState)
-  {
-    case UIGestureRecognizerStateBegan:
-      // fall-through intentional
-    case UIGestureRecognizerStateChanged:
-      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
+    case AlertViewButtonTypeYes:
+    {
+      [command submit];  // deallocates the command
       break;
-    case UIGestureRecognizerStateEnded:
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
-      if (isLegalMove)
-      {
-        PlayMoveCommand* command = [[PlayMoveCommand alloc] initWithPoint:crossHairPoint];
-        [command submit];
-      }
-      break;
-    case UIGestureRecognizerStateCancelled:
-      // TODO Phone call? How to test this?
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
-      break;
+    }
     default:
-      return;
+    {
+      break;
+    }
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tapping gesture in the view's Go board area.
-// -----------------------------------------------------------------------------
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
-{
-  UIGestureRecognizerState recognizerState = gestureRecognizer.state;
-  if (UIGestureRecognizerStateEnded != recognizerState)
-    return;
-  CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* deadStonePoint = [self.playView pointNear:tappingLocation];
-  if (! deadStonePoint || ! [deadStonePoint hasStone])
-    return;
-  [self.scoringModel.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
-  [self.scoringModel.score calculateWaitUntilDone:false];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIGestureRecognizerDelegate protocol method. Disables gesture
-/// recognition while interactionEnabled() is false.
-// -----------------------------------------------------------------------------
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-{
-  if (gestureRecognizer == self.longPressRecognizer)
-    return self.isPanningEnabled;
-  else if (gestureRecognizer == self.tapRecognizer)
-    return self.isTappingEnabled;
-  else
-    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -952,468 +895,74 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
+/// @brief Executes @a command, or displays an alert and delays execution until
+/// the alert is dismissed by the user.
+///
+/// @a actionType is used to tweak the alert message so that contains a useful
+/// description of what the user tries to do.
+///
+/// @a command must have a retain count of 1 so that the command's submit()
+/// method can be invoked.
+///
+/// If the Play view currently displays the last board position of the game,
+/// @a command is executed immediately.
+///
+/// If the Play view displays a board position in the middle of the game, an
+/// alert is shown that warns the user that discarding now will discard all
+/// future board positions. If the user confirms that this is OK, @a command is
+/// executed. If the user cancels the operation, @a command is not executed.
+/// Handling of the user's response happens in
+/// alertView:didDismissWithButtonIndex:().
+///
+/// The user can suppress the alert in the user preferences. In this case
+/// @a command is immediately executed.
 // -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
+- (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command
 {
-  // Disable scoring mode while the old GoGame is still around
-  self.scoringModel.scoringMode = false;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameDidCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameDidCreate:(NSNotification*)notification
-{
-  [self populateToolbar];
-  [self updateButtonStates];
-  [self updatePanningEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameStateChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameStateChanged:(NSNotification*)notification
-{
-  [self updateButtonStates];
-  [self updatePanningEnabled];
-  if (GoGameStateGameHasEnded == [GoGame sharedGame].state)
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPosition.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
   {
-    self.scoringModel.scoringMode = true;
-    [self.scoringModel.score calculateWaitUntilDone:false];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #computerPlayerThinkingStarts and
-/// #computerPlayerThinkingStops notifications.
-// -----------------------------------------------------------------------------
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification
-{
-  [self populateToolbar];
-  [self updateButtonStates];
-  [self updatePanningEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameLastMoveChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameLastMoveChanged:(NSNotification*)notification
-{
-  // Mainly here for updating the "undo" button
-  [self updateButtonStates];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
-{
-  [self populateToolbar];
-  [self updateButtonStates];
-  [self updatePanningEnabled];  // disable panning
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
-{
-  [self populateToolbar];
-  [self updateButtonStates];
-  [self updatePanningEnabled];  // enable panning
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationStarts notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreCalculationStarts:(NSNotification*)notification
-{
-  [self updateButtonStates];
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreCalculationEnds:(NSNotification*)notification
-{
-  [self updateButtonStates];
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Populates the toolbar with toolbar items that are appropriate for
-/// the #GoGameType currently in progress.
-// -----------------------------------------------------------------------------
-- (void) populateToolbar
-{
-  NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
-  if (self.scoringModel.scoringMode)
-  {
-    if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
-      [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
-    [toolbarItems addObject:self.flexibleSpaceButton];
-    [toolbarItems addObject:self.gameInfoButton];
-    [toolbarItems addObject:self.gameActionsButton];
+    [command submit];  // deallocates the command
   }
   else
   {
-    switch ([GoGame sharedGame].type)
+    NSString* actionDescription;
+    if (ActionTypePlay == actionType)
     {
-      case GoGameTypeComputerVsComputer:
-        [toolbarItems addObject:self.pauseButton];
-        [toolbarItems addObject:self.continueButton];
-        [toolbarItems addObject:self.interruptButton];
-        [toolbarItems addObject:self.flexibleSpaceButton];
-        [toolbarItems addObject:self.gameInfoButton];
-        [toolbarItems addObject:self.gameActionsButton];
-        break;
-      default:
-        if ([GoGame sharedGame].isComputerThinking)
-          [toolbarItems addObject:self.interruptButton];
-        else
-        {
-          [toolbarItems addObject:self.playForMeButton];
-          [toolbarItems addObject:self.passButton];
-          [toolbarItems addObject:self.undoButton];
-        }
-        [toolbarItems addObject:self.flexibleSpaceButton];
-        [toolbarItems addObject:self.gameInfoButton];
-        [toolbarItems addObject:self.gameActionsButton];
-        break;
-    }
-  }
-  self.toolbar.items = toolbarItems;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of all toolbar items.
-// -----------------------------------------------------------------------------
-- (void) updateButtonStates
-{
-  [self updatePlayForMeButtonState];
-  [self updatePassButtonState];
-  [self updateUndoButtonState];
-  [self updatePauseButtonState];
-  [self updateContinueButtonState];
-  [self updateInterruptButtonState];
-  [self updateGameInfoButtonState];
-  [self updateGameActionsButtonState];
-  [self updateDoneButtonState];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Play for me" button.
-// -----------------------------------------------------------------------------
-- (void) updatePlayForMeButtonState
-{
-  BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
-  {
-    switch ([GoGame sharedGame].type)
-    {
-      case GoGameTypeComputerVsComputer:
-        break;
-      default:
+      if (GoGameTypeComputerVsComputer == [GoGame sharedGame].type)
+        actionDescription = @"If you let the computer play now,";
+      else
       {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasNotYetStarted:
-          case GoGameStateGameHasStarted:
-            enabled = YES;
-            break;
-          default:
-            break;
-        }
-        break;
+        // Use a generic expression because we don't know which user interaction
+        // triggered the alert (could be a pass move, a play move (via panning),
+        // or the "computer play" function).
+        actionDescription = @"If you play now,";
       }
     }
-  }
-  self.playForMeButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Pass" button.
-// -----------------------------------------------------------------------------
-- (void) updatePassButtonState
-{
-  BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
-  {
-    switch ([GoGame sharedGame].type)
+    else
     {
-      case GoGameTypeComputerVsComputer:
-        break;
-      default:
-      {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasNotYetStarted:
-          case GoGameStateGameHasStarted:
-            enabled = YES;
-            break;
-          default:
-            break;
-        }
-        break;
-      }
+      if (boardPosition.isFirstPosition)
+        actionDescription = @"If you proceed,";
+      else
+        actionDescription = @"If you proceed not only this move, but";
     }
+    NSString* formatString;
+    if (boardPosition.isFirstPosition)
+      formatString = @"You are looking at the board position at the beginning of the game. %@ all moves of the entire game will be discarded.\n\nDo you want to continue?";
+    else
+      formatString = @"You are looking at a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+    NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
+                                                    message:messageString
+                                                   delegate:self
+                                          cancelButtonTitle:@"No"
+                                          otherButtonTitles:@"Yes", nil];
+    alert.tag = AlertViewTypeActionWillDiscardAllFutureMoves;
+    [alert show];
+    // Store command object for later use by the alert handler
+    objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_ASSIGN);
   }
-  self.passButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Undo" button.
-// -----------------------------------------------------------------------------
-- (void) updateUndoButtonState
-{
-  BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
-  {
-    switch ([GoGame sharedGame].type)
-    {
-      case GoGameTypeComputerVsComputer:
-        break;
-      default:
-      {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasStarted:
-          {
-            GoMove* lastMove = [GoGame sharedGame].lastMove;
-            if (lastMove == nil)
-              enabled = NO;                         // no move yet
-            else if (lastMove.player.player.human)
-              enabled = YES;                        // last move by human player
-            else if (lastMove.previous == nil)
-              enabled = NO;                         // last move by computer, but no other move before that
-            else
-              enabled = YES;                        // last move by computer, and another move before that
-            // -> assume it's by a human player because game type has been checked before
-            break;
-          }
-          default:
-            break;
-        }
-        break;
-      }
-    }
-  }
-  self.undoButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Pause" button.
-// -----------------------------------------------------------------------------
-- (void) updatePauseButtonState
-{
-  BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
-  {
-    switch ([GoGame sharedGame].type)
-    {
-      case GoGameTypeComputerVsComputer:
-      {
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasNotYetStarted:
-          case GoGameStateGameHasStarted:
-            enabled = YES;
-            break;
-          default:
-            break;
-        }
-        break;
-      }
-      default:
-        break;
-    }
-  }
-  self.pauseButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Continue" button.
-// -----------------------------------------------------------------------------
-- (void) updateContinueButtonState
-{
-  BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
-  {
-    switch ([GoGame sharedGame].type)
-    {
-      case GoGameTypeComputerVsComputer:
-      {
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameIsPaused:
-            enabled = YES;
-            break;
-          default:
-            break;
-        }
-        break;
-      }
-      default:
-        break;
-    }
-  }
-  self.continueButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Interrupt" button.
-// -----------------------------------------------------------------------------
-- (void) updateInterruptButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  else
-  {
-    if ([GoGame sharedGame].isComputerThinking)
-      enabled = YES;
-  }
-  self.interruptButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Info" button.
-// -----------------------------------------------------------------------------
-- (void) updateGameInfoButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (! self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  else
-  {
-    enabled = YES;
-  }
-  self.gameInfoButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Game Actions" button.
-// -----------------------------------------------------------------------------
-- (void) updateGameActionsButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (! self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  else
-  {
-    switch ([GoGame sharedGame].type)
-    {
-      case GoGameTypeComputerVsComputer:
-      {
-        switch ([GoGame sharedGame].state)
-        {
-          case GoGameStateGameHasNotYetStarted:
-          case GoGameStateGameHasEnded:
-            enabled = YES;
-          case GoGameStateGameIsPaused:
-            // Computer may still be thinking
-            enabled = ! [GoGame sharedGame].isComputerThinking;
-            break;
-          default:
-            break;
-        }
-        break;
-      }
-      default:
-      {
-        if ([GoGame sharedGame].isComputerThinking)
-          break;
-        switch ([GoGame sharedGame].state)
-        {
-          default:
-            enabled = YES;
-            break;
-        }
-        break;
-      }
-    }
-  }
-  self.gameActionsButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "Done" button.
-// -----------------------------------------------------------------------------
-- (void) updateDoneButtonState
-{
-  BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
-  {
-    if (! self.scoringModel.score.scoringInProgress)
-      enabled = YES;
-  }
-  self.doneButton.enabled = enabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether panning is enabled.
-// -----------------------------------------------------------------------------
-- (void) updatePanningEnabled
-{
-  if (self.scoringModel.scoringMode)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  GoGame* game = [GoGame sharedGame];
-  if (! game)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  if (GoGameTypeComputerVsComputer == game.type)
-  {
-    self.panningEnabled = false;
-    return;
-  }
-
-  switch (game.state)
-  {
-    case GoGameStateGameHasNotYetStarted:
-    case GoGameStateGameHasStarted:
-      self.panningEnabled = ! [game isComputerThinking];
-      break;
-    default:  // specifically GoGameStateGameHasEnded
-      self.panningEnabled = false;
-      break;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether tapping is enabled.
-// -----------------------------------------------------------------------------
-- (void) updateTappingEnabled
-{
-  if (self.scoringModel.scoringMode)
-    self.tappingEnabled = ! self.scoringModel.score.scoringInProgress;
-  else
-    self.tappingEnabled = false;
 }
 
 @end

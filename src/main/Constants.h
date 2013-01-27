@@ -183,7 +183,8 @@ enum AlertViewType
   AlertViewTypeDiagnosticsInformationFileGenerated,
   AlertViewTypeDiagnosticsInformationFileNotGenerated,
   AlertViewTypeComputerPlayedIllegalMove,
-  AlertViewTypeNewGameAfterComputerPlayedIllegalMove
+  AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
+  AlertViewTypeActionWillDiscardAllFutureMoves
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -265,30 +266,23 @@ extern NSString* gtpEngineIdleNotification;
 ///
 /// This notification is sent while the old GoGame object and its dependent
 /// objects (e.g. GoBoard) are still around and fully functional.
+///
+/// The old GoGame object is associated with the notification.
+///
+/// @note If this notification is sent during application startup, i.e. the
+/// first game is about to be created, the old GoGame object is nil.
 extern NSString* goGameWillCreate;
 /// @brief Is sent to indicate that a new GoGame object has been created. This
 /// notification is sent after the GoGame object and its dependent objects (e.g.
 /// GoBoard) have been fully configured.
 ///
-/// The GoGame object is associated with the notification.
+/// The new GoGame object is associated with the notification.
 extern NSString* goGameDidCreate;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
 /// i.e. the game has started or ended.
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* goGameStateChanged;
-/// @brief Is sent to indicate that the first move of the game has changed. May
-/// occur when the first move of the game is played, or when the first move is
-/// removed by an undo.
-///
-/// The GoGame object is associated with the notification.
-extern NSString* goGameFirstMoveChanged;
-/// @brief Is sent to indicate that the last move of the game has changed. May
-/// occur whenever a move is played, or when the most recent move of the game
-/// is removed by an undo.
-///
-/// The GoGame object is associated with the notification.
-extern NSString* goGameLastMoveChanged;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -359,6 +353,46 @@ extern NSString* goScoreCalculationStarts;
 ///
 /// The GoScore object is associated with the notification.
 extern NSString* goScoreCalculationEnds;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Other notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent when a long-running action starts that is known to trigger
+/// many UI updates on the Play tab.
+///
+/// Each instance of #longRunningActionStarts being sent will eventually be
+/// matched by a corresponding #longRunningActionEnds. However, a second
+/// #longRunningActionStarts may be sent before #longRunningActionEnds for the
+/// first action is sent.
+///
+/// When an observer receives the first #longRunningActionStarts, it may start
+/// to delay view updates (or other similar expensive actions) until it receives
+/// a corresponding number of #longRunningActionEnds.
+///
+/// The typical example for when this notification is sent is when a game is
+/// loaded from the archive. Views on the Play tab can protect themselves from
+/// an update for each move in the archived game being replayed.
+///
+/// @attention This notification is guaranteed to be delivered in the main
+/// thread.
+extern NSString* longRunningActionStarts;
+/// @brief Is sent when a long-running action ends that is known to trigger
+/// many UI updates on the Play tab.
+///
+/// See #longRunningActionStarts for details.
+///
+/// @attention This notification is guaranteed to be delivered in the main
+/// thread.
+extern NSString* longRunningActionEnds;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Board position settings default values
+// -----------------------------------------------------------------------------
+//@{
+extern const bool discardFutureMovesAlertDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -472,13 +506,19 @@ extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
-extern NSString* playForMeButtonIconResource;
+extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
+extern NSString* playButtonIconResource;
+extern NSString* fastForwardButtonIconResource;
+extern NSString* forwardToEndButtonIconResource;
+extern NSString* backButtonIconResource;
+extern NSString* rewindButtonIconResource;
+extern NSString* rewindToStartButtonIconResource;
 extern NSString* humanIconResource;
 extern NSString* computerIconResource;
 extern NSString* stoneBlackImageResource;
@@ -578,6 +618,10 @@ extern NSString* collectCrashDataKey;
 extern NSString* automaticReportCrashDataKey;
 extern NSString* allowContactCrashDataKey;
 extern NSString* contactEmailCrashDataKey;
+// Board position settings
+extern NSString* boardPositionKey;
+extern NSString* discardFutureMovesAlertKey;
+extern NSString* boardPositionLastViewedKey;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -594,12 +638,12 @@ extern NSString* goGameHandicapPointsKey;
 extern NSString* goGameKomiKey;
 extern NSString* goGamePlayerBlackKey;
 extern NSString* goGamePlayerWhiteKey;
-extern NSString* goGameFirstMoveKey;
-extern NSString* goGameLastMoveKey;
+extern NSString* goGameMoveModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
 extern NSString* goGameNextMoveIsComputerGeneratedKey;
+extern NSString* goGameBoardPositionKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
@@ -611,6 +655,9 @@ extern NSString* goMovePreviousKey;
 extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveComputerGeneratedKey;
+// GoMoveModel keys
+extern NSString* goMoveModelMoveListKey;
+extern NSString* goMoveModelNumberOfMovesKey;
 // GoBoard keys
 extern NSString* goBoardSizeKey;
 extern NSString* goBoardVertexDictKey;

@@ -36,13 +36,14 @@
 /// A GoScore instance operates on the GoGame object that was specified during
 /// construction. The GoGame object does not need to be in any particular state,
 /// e.g. it is not necessary for the game to be in state
-/// #GoGameStateGameHasEnded.
+/// #GoGameStateGameHasEnded. The score is calculated for the current board
+/// position.
 ///
 /// Most of the scoring information is collected by simply inspecting the state
 /// of GoGame and its associated objects:
 /// - Komi is collected from GoGame
 /// - The number of captured stones as well as move statistics are collected
-///   from GoMove objects
+///   from GoMove objects (up to the current board position)
 ///
 /// Territory scoring is more complicated and a potentially time-consuming
 /// operation. For this reason, when a client creates a new GoScore object the
@@ -157,6 +158,7 @@
 + (GoScore*) scoreForGame:(GoGame*)game withTerritoryScores:(bool)withTerritoryScores;
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup;
+- (void) reinitialize;
 - (NSString*) resultString;
 
 // -----------------------------------------------------------------------------

@@ -66,66 +66,29 @@
 - (void) testPoint
 {
   GoPlayer* expectedPlayer = m_game.playerWhite;
-  enum GoColor expectedStoneState = expectedPlayer.isBlack ? GoColorBlack : GoColorWhite;
-  NSUInteger expectedNumberOfRegions = 2;
 
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
   STAssertNil(move1.point, nil);
 
-  // Test 1: Play arbitrary stone
+  // Test 1: Set arbitrary point
   GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
-  GoBoardRegion* mainRegion = point1.region;
-  STAssertNotNil(mainRegion, nil);
-  STAssertEquals(GoColorNone, point1.stoneState, nil);
   move1.point = point1;
   STAssertEquals(point1, move1.point, nil);
-  STAssertEquals(expectedStoneState, point1.stoneState, nil);
-  STAssertTrue(point1.region != mainRegion, nil);
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
 
-  // Test 2: Play neighbouring stone
-  GoMove* move2 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
-  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
-  move2.point = point2;
-  STAssertEquals(point2, move2.point, nil);
-  STAssertEquals(expectedStoneState, point2.stoneState, nil);
-  STAssertTrue(point2.region != mainRegion, nil);
-  STAssertEquals(point1.region, point2.region, nil);
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  // Test 2: Set a different point
+  GoPoint* point2 = [m_game.board pointAtVertex:@"Q14"];
+  move1.point = point2;
+  STAssertEquals(point2, move1.point, nil);
 
-  // No more regular tests required, capturing is exercised in
-  // testCapturedStones()
+  // Test 3: Provide a nil argument
+  move1.point = nil;
+  STAssertNil(move1.point, nil);
 
-  // Test 3: Pass move cannot play a stone
-  GoMove* move3 = [GoMove move:GoMoveTypePass by:expectedPlayer after:nil];
-  GoPoint* point3 = [m_game.board pointAtVertex:@"C1"];
-  STAssertThrowsSpecificNamed(move3.point = point3,
+  // Test 4: Pass move cannot have a point
+  GoMove* move2 = [GoMove move:GoMoveTypePass by:expectedPlayer after:nil];
+  STAssertThrowsSpecificNamed(move2.point = point1,
                               NSException, NSInternalInconsistencyException, @"pass move");
-  STAssertNil(move3.point, nil);
-  STAssertEquals(GoColorNone, point3.stoneState, nil);
-
-  // Test 4: Provide a nil argument
-  GoMove* move4 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
-  STAssertThrowsSpecificNamed(move4.point = nil,
-                              NSException, NSInvalidArgumentException, @"point is nil");
-
-  // Test 5: Play on intersection that already has a stone
-  STAssertThrowsSpecificNamed(move4.point = point1,
-                              NSException, NSInvalidArgumentException, @"intersection already has stone");
-
-  // Test 6: GoMove object should be able to play on a legal intersection even
-  // after exception occurred and was caught
-  move4.point = point3;
-  STAssertEquals(point3, move4.point, nil);
-  STAssertEquals(expectedStoneState, point3.stoneState, nil);
-  STAssertTrue(point3.region != mainRegion, nil);
-  STAssertEquals(point1.region, point3.region, nil);
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
-
-  // Test 7: Play a stone using a GoMove object that has already played a stone
-  GoPoint* point4 = [m_game.board pointAtVertex:@"D1"];
-  STAssertThrowsSpecificNamed(move4.point = point4,
-                              NSException, NSInternalInconsistencyException, @"move already played a stone");
+  STAssertNil(move2.point, nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -139,6 +102,7 @@
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
   move1.point = point1;
+  [move1 doIt];
   STAssertNotNil(move1.capturedStones, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move1.capturedStones.count, nil);
   STAssertEquals(GoColorWhite, point1.stoneState, nil);
@@ -147,6 +111,7 @@
   GoMove* move2 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
   move2.point = point2;
+  [move2 doIt];
   STAssertNotNil(move2.capturedStones, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move2.capturedStones.count, nil);
 
@@ -155,6 +120,7 @@
   GoMove* move3 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   GoPoint* point3 = [m_game.board pointAtVertex:@"A2"];
   move3.point = point3;
+  [move3 doIt];
   STAssertNotNil(move3.capturedStones, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move3.capturedStones.count, nil);
   STAssertTrue([move3.capturedStones containsObject:point1], nil);
@@ -164,17 +130,21 @@
   GoMove* move4 = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   GoPoint* point4 = [m_game.board pointAtVertex:@"C1"];
   move4.point = point4;
+  [move4 doIt];
   GoMove* move5 = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   GoPoint* point5 = [m_game.board pointAtVertex:@"B2"];
   move5.point = point5;
+  [move5 doIt];
   GoMove* move6 = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   GoPoint* point6 = [m_game.board pointAtVertex:@"A3"];
   move6.point = point6;
+  [move6 doIt];
 
   // White plays capturing move, capturing two stones in different regions
   expectedNumberOfCapturedStones = 2;
   GoMove* move7 = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   move7.point = point1;
+  [move7 doIt];
   STAssertNotNil(move7.capturedStones, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move7.capturedStones.count, nil);
   STAssertTrue([move7.capturedStones containsObject:point2], nil);
@@ -184,6 +154,76 @@
 
   NSUInteger expectedNumberOfRegions = 7;
   STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the doIt() method.
+// -----------------------------------------------------------------------------
+- (void) testDoIt
+{
+  GoPlayer* expectedPlayer = m_game.playerWhite;
+  enum GoColor expectedStoneState = expectedPlayer.isBlack ? GoColorBlack : GoColorWhite;
+  NSUInteger expectedNumberOfRegions = 2;
+
+  GoMove* move1 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
+  STAssertNil(move1.point, nil);
+
+  // Test 1: Play arbitrary stone
+  GoPoint* point1 = [m_game.board pointAtVertex:@"A1"];
+  GoBoardRegion* mainRegion = point1.region;
+  STAssertNotNil(mainRegion, nil);
+  STAssertEquals(GoColorNone, point1.stoneState, nil);
+  move1.point = point1;
+  STAssertEquals(point1, move1.point, nil);
+  [move1 doIt];
+  STAssertEquals(expectedStoneState, point1.stoneState, nil);
+  STAssertTrue(point1.region != mainRegion, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
+  // Test 2: Play neighbouring stone
+  GoMove* move2 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  move2.point = point2;
+  STAssertEquals(point2, move2.point, nil);
+  [move2 doIt];
+  STAssertEquals(expectedStoneState, point2.stoneState, nil);
+  STAssertTrue(point2.region != mainRegion, nil);
+  STAssertEquals(point1.region, point2.region, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
+  // No more regular tests required, capturing is exercised in
+  // testCapturedStones()
+
+  // Test 3: Play without providing an intersection
+  GoMove* move3 = [GoMove move:GoMoveTypePlay by:expectedPlayer after:nil];
+  move3.point = nil;
+  STAssertThrowsSpecificNamed([move3 doIt],
+                              NSException, NSInternalInconsistencyException, @"point is nil");
+
+  // Test 4: Play on intersection that already has a stone
+  move3.point = point1;
+  STAssertThrowsSpecificNamed([move3 doIt],
+                              NSException, NSInternalInconsistencyException, @"intersection already has stone");
+
+  // Test 5: GoMove object should be able to play on a legal intersection even
+  // after exceptions occurred and were caught
+  GoPoint* point3 = [m_game.board pointAtVertex:@"C1"];
+  move3.point = point3;
+  STAssertEquals(point3, move3.point, nil);
+  [move3 doIt];
+  STAssertEquals(expectedStoneState, point3.stoneState, nil);
+  STAssertTrue(point3.region != mainRegion, nil);
+  STAssertEquals(point1.region, point3.region, nil);
+  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+
+  // Test 6: Make same move twice without an undo in between
+  STAssertThrowsSpecificNamed([move3 doIt],
+                              NSException, NSInternalInconsistencyException, @"make same move twice without undo in between");
+
+  // Test 7: Pass move (no post-condition to check, doIt() must simply run
+  // without exceptions)
+  GoMove* move4 = [GoMove move:GoMoveTypePass by:expectedPlayer after:nil];
+  [move4 doIt];
 }
 
 // -----------------------------------------------------------------------------
@@ -201,14 +241,17 @@
   GoBoardRegion* mainRegion = point1.region;
   STAssertNotNil(mainRegion, nil);
   move1.point = point1;
+  [move1 doIt];
   GoMove* move2 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:move1];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
   move2.point = point2;
+  [move2 doIt];
   GoMove* move3 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move2];
   // Black plays capturing move
   GoMove* move4 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:move3];
   GoPoint* point3 = [m_game.board pointAtVertex:@"A2"];
   move4.point = point3;
+  [move4 doIt];
 
   // First check whether everything has been set up correctly
   NSUInteger expectedNumberOfRegions = 4;
@@ -252,11 +295,11 @@
   STAssertEquals(mainRegion, point3.region, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move4.capturedStones.count, nil);
   STAssertNil(move4.next, nil);
-  STAssertNil(move4.previous, nil);
-  STAssertNil(move3.next, nil);
+  STAssertEquals(move3, move4.previous, nil);
+  STAssertEquals(move4, move3.next, nil);
   STAssertEquals(move2, move3.previous, nil);
-  STAssertNil(move4.player, nil);
-  STAssertNil(move4.point, nil);
+  STAssertEquals(m_game.playerBlack, move4.player, nil);
+  STAssertEquals(point3, move4.point, nil);
 
   // Undo move 3
   [move3 undo];
@@ -268,11 +311,11 @@
   STAssertTrue(point2.region != mainRegion, nil);
   STAssertEquals(mainRegion, point3.region, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move3.capturedStones.count, nil);
-  STAssertNil(move3.next, nil);
-  STAssertNil(move3.previous, nil);
-  STAssertNil(move2.next, nil);
+  STAssertEquals(move4, move3.next, nil);
+  STAssertEquals(move2, move3.previous, nil);
+  STAssertEquals(move3, move2.next, nil);
   STAssertEquals(move1, move2.previous, nil);
-  STAssertNil(move3.player, nil);
+  STAssertEquals(m_game.playerWhite, move3.player, nil);
   STAssertNil(move3.point, nil);
 
   // Undo move 2
@@ -286,12 +329,12 @@
   STAssertEquals(mainRegion, point2.region, nil);
   STAssertEquals(mainRegion, point3.region, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move2.capturedStones.count, nil);
-  STAssertNil(move2.next, nil);
-  STAssertNil(move2.previous, nil);
-  STAssertNil(move1.next, nil);
+  STAssertEquals(move3, move2.next, nil);
+  STAssertEquals(move1, move2.previous, nil);
+  STAssertEquals(move2, move1.next, nil);
   STAssertNil(move1.previous, nil);
-  STAssertNil(move2.player, nil);
-  STAssertNil(move2.point, nil);
+  STAssertEquals(m_game.playerBlack, move2.player, nil);
+  STAssertEquals(point2, move2.point, nil);
 
   // Undo move 1
   [move1 undo];
@@ -304,15 +347,31 @@
   STAssertEquals(mainRegion, point2.region, nil);
   STAssertEquals(mainRegion, point3.region, nil);
   STAssertEquals(expectedNumberOfCapturedStones, move1.capturedStones.count, nil);
-  STAssertNil(move1.next, nil);
+  STAssertEquals(move2, move1.next, nil);
   STAssertNil(move1.previous, nil);
-  STAssertNil(move1.player, nil);
-  STAssertNil(move1.point, nil);
+  STAssertEquals(m_game.playerWhite, move1.player, nil);
+  STAssertEquals(point1, move1.point, nil);
 
-  // Undo a play move with no associated GoPoint
+  // Undo twice in a row without invoking doIt() in between
+  STAssertThrowsSpecificNamed([move1 undo],
+                              NSException, NSInternalInconsistencyException, @"undo same move twice without doIt in between");
+
+  // Undo with intersection having the wrong color
+  [move1 doIt];
+  move1.point = point2;
+  STAssertThrowsSpecificNamed([move1 undo],
+                              NSException, NSInternalInconsistencyException, @"undo with wrong intersection color");
+
+  // Undo with no associated GoPoint
   GoMove* move5 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   STAssertThrowsSpecificNamed([move5 undo],
                               NSException, NSInternalInconsistencyException, @"no associated GoPoint");
+
+  // Undo a pass move (no post-condition to check, undo() must simply run
+  // without exceptions)
+  GoMove* move6 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
+  [move6 doIt];
+  [move6 undo];
 }
 
 @end

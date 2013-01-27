@@ -20,6 +20,7 @@
 #import "ScoringModel.h"
 #import "PlayView.h"
 #import "../main/ApplicationDelegate.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
@@ -38,25 +39,34 @@
 - (id) init;
 - (void) dealloc;
 //@}
-/// @name GUI updating
+/// @name Updaters
 //@{
+- (void) delayedUpdate;
 - (void) updateStatusLine;
 //@}
 /// @name Notification responders
 //@{
+- (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
-- (void) goGameLastMoveChanged:(NSNotification*)notification;
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationStarts:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
+//@}
+/// @name Private helpers
+//@{
+- (void) setupNotificationResponders;
 //@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) UILabel* statusLine;
 @property(nonatomic, assign) ScoringModel* scoringModel;
+@property(nonatomic, assign) int actionsInProgress;
+@property(nonatomic, assign) bool statusLineNeedsUpdate;
 //@}
 @end
 
@@ -65,6 +75,8 @@
 
 @synthesize statusLine;
 @synthesize scoringModel;
+@synthesize actionsInProgress;
+@synthesize statusLineNeedsUpdate;
 
 
 // -----------------------------------------------------------------------------
@@ -93,24 +105,11 @@
   self = [super init];
   if (! self)
     return nil;
-  
   self.statusLine = nil;
-  
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.scoringModel = delegate.scoringModel;
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  // KVO observing
-  [[PlayView sharedView] addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
-  
+  self.actionsInProgress = 0;
+  self.statusLineNeedsUpdate = false;
+  self.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  [self setupNotificationResponders];
   return self;
 }
 
@@ -121,9 +120,42 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[PlayView sharedView] removeObserver:self forKeyPath:@"crossHairPoint"];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.statusLine = nil;
   self.scoringModel = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  // KVO observing
+  [[PlayView sharedView] addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
+  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if (self.actionsInProgress > 0)
+    return;
+  [self updateStatusLine];
 }
 
 // -----------------------------------------------------------------------------
@@ -132,6 +164,10 @@
 // -----------------------------------------------------------------------------
 - (void) updateStatusLine
 {
+  if (! self.statusLineNeedsUpdate)
+    return;
+  self.statusLineNeedsUpdate = false;
+
   NSString* statusText = @"";
 
   PlayView* playView = [PlayView sharedView];
@@ -173,12 +209,12 @@
           case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
           case GoGameStateGameHasStarted:
           {
-            GoMove* lastMove = game.lastMove;
-            if (GoMoveTypePass == lastMove.type)
+            GoMove* move = game.boardPosition.currentMove;
+            if (GoMoveTypePass == move.type)
             {
               // TODO fix when GoColor class is added
               NSString* color;
-              if (lastMove.player.black)
+              if (move.player.black)
                 color = @"Black";
               else
                 color = @"White";
@@ -222,10 +258,21 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  GoGame* oldGame = [notification object];
+  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
+  GoGame* newGame = [notification object];
+  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   // In case a new game is started abruptly without cleaning up state in the
   // old game
   [self updateStatusLine];
@@ -236,16 +283,8 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  [self updateStatusLine];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameLastMoveChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameLastMoveChanged:(NSNotification*)notification
-{
-  // Need this to display "player has passed" message
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -254,7 +293,8 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -263,7 +303,8 @@
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification
 {
   // Need this to remove score summary message
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -271,7 +312,8 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -279,7 +321,31 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+    [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -287,8 +353,8 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  // React to cross-hair point changes
-  [self updateStatusLine];
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 @end

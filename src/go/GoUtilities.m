@@ -17,10 +17,11 @@
 
 // Project includes
 #import "GoUtilities.h"
-#import "GoBoardRegion.h"
-#import "GoPoint.h"
-#import "GoGame.h"
 #import "GoBoard.h"
+#import "GoBoardRegion.h"
+#import "GoGame.h"
+#import "GoMove.h"
+#import "GoPoint.h"
 #import "GoVertex.h"
 
 
@@ -268,6 +269,25 @@
     default:
       return 9;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the player whose turn it is after @a move was played. If
+/// @a move is nil the player who plays first in @a game is returned.
+// -----------------------------------------------------------------------------
++ (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game
+{
+  if (! move)
+  {
+    if (0 == game.handicapPoints.count)
+      return game.playerBlack;
+    else
+      return game.playerWhite;
+  }
+  else if (move.player == game.playerBlack)
+    return game.playerWhite;
+  else
+    return game.playerBlack;
 }
 
 @end

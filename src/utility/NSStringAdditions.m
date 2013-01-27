@@ -85,12 +85,18 @@
 /// The string that is returned generally has the same format as described in
 /// the method documentation of stringWithFractionValue:().
 ///
-/// A special case is the value 0.0 which is represented as "No komi".
+/// A special case is the value 0.0 which, if @a numericZeroValue is false, is
+/// represented as "No komi".
 // -----------------------------------------------------------------------------
-+ (NSString*) stringWithKomi:(double)komi
++ (NSString*) stringWithKomi:(double)komi numericZeroValue:(bool)numericZeroValue
 {
   if (0.0 == komi)
-    return @"No komi";
+  {
+    if (numericZeroValue)
+      return @"0";
+    else
+      return @"No komi";
+  }
   else
     return [NSString stringWithFractionValue:komi];
 }

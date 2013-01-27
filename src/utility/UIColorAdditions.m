@@ -199,6 +199,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are 0.8588, 0.9098, and
+/// 0.9922 and whose alpha value is 1.0.
+///
+/// This is a nice color to use for a table view with alternating row colors.
+// -----------------------------------------------------------------------------
++ (UIColor*) lightBlueColor
+{
+  return [UIColor colorWithRed:0.8588f green:0.9098f blue:0.9922f alpha:1.0f];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are randomly chosen and
 /// whose alpha value is 1.0.
 // -----------------------------------------------------------------------------

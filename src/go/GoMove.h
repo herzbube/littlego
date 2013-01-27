@@ -34,23 +34,35 @@
 /// GoPoint object which registers where the stone was placed. The GoPoint
 /// object is assigned (soon) after construction.
 ///
-/// @note Assignment of a GoPoint object is a non-trivial operation that
-/// triggers the mechanism for placing a stone.
-///
 /// GoMove objects are interlinked with their predecessor (previous()) and
 /// successor (next()) GoMove object. This represents the fact that a game
 /// can be seen as a series of moves.
 ///
-/// GoMove has undo support. Invoking undo() reverts the board to the state it
-/// had before the GoMove was played. Invoking undo() also removes references
-/// from/to the predecessor GoMove, which usually causes the GoMove to be
-/// deallocated.
+///
+/// @par Playing/undoing a move
+///
+/// For a GoMove object that is of type #GoMoveTypePlay, invoking the doIt()
+/// method triggers the mechanism for placing a stone. This is a comparatively
+/// expensive operation, as doIt() manipulates the entire board to reflect the
+/// position that exists after the stone has been placed.
+///
+/// For a GoMove object that is of type #GoMoveTypePass, invoking the doIt()
+/// method has no effect.
+///
+/// Invoking undo() reverts whatever operations were performed by doIt(). For
+/// GoMove objects of type #GoMoveTypePass this resolves to nothing. For GoMove
+/// objects of type #GoMoveTypePlay, the board is reverted to the state it had
+/// before the move's stone was placed.
+///
+/// @note doIt() and undo() must never be invoked twice in a row. They can be
+/// invoked in alternation any number of times.
 // -----------------------------------------------------------------------------
 @interface GoMove : NSObject <NSCoding>
 {
 }
 
 + (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move;
+- (void) doIt;
 - (void) undo;
 
 /// @brief The type of this GoMove object.
@@ -62,10 +74,10 @@
 @property(nonatomic, assign) GoPoint* point;
 /// @brief The predecessor to this GoMove object. nil if this is the first move
 /// of the game.
-@property(nonatomic, assign, readonly) GoMove* previous;  // do not retain, otherwise there would be a retain cycle
+@property(nonatomic, assign, readonly) GoMove* previous;
 /// @brief The successor to this GoMove object. nil if this is the last move
 /// of the game.
-@property(nonatomic, retain, readonly) GoMove* next;      // retain here, making us the parent, and next the child
+@property(nonatomic, assign, readonly) GoMove* next;
 /// @brief Keeps track of stones that were captured by this move.
 ///
 /// If not empty, the array contains an unordered list of GoPoint objects. Also,

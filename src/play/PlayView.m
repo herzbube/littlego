@@ -30,8 +30,9 @@
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
 #import "../main/ApplicationDelegate.h"
-#import "../go/GoGame.h"
 #import "../go/GoBoard.h"
+#import "../go/GoBoardPosition.h"
+#import "../go/GoGame.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
 #import "../utility/NSStringAdditions.h"
@@ -50,14 +51,20 @@
 - (id) initWithFrame:(CGRect)aRect;
 - (void) dealloc;
 //@}
+/// @name UIView methods
+//@{
+- (void) layoutSubviews;
+//@}
 /// @name Notification responders
 //@{
 - (void) applicationIsReadyForAction:(NSNotification*)notification;
+- (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goGameLastMoveChanged:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification;
 - (void) goScoreCalculationEnds:(NSNotification*)notification;
+- (void) longRunningActionStarts:(NSNotification*)notification;
+- (void) longRunningActionEnds:(NSNotification*)notification;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
 //@}
 /// @name Private helpers
@@ -166,6 +173,13 @@ static PlayView* sharedPlayView = nil;
   sharedPlayView = self;
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  self.playViewModel = delegate.playViewModel;
+  self.scoringModel = delegate.scoringModel;
+  // Cannot delay creation of the metrics object to makeViewReadyForDrawing()
+  // because external forces need access to the boardFrame property
+  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
+                                                          model:playViewModel] autorelease];
+
   if (! delegate.applicationReadyForAction)
   {
     self.viewReadyForDrawing = false;
@@ -176,8 +190,6 @@ static PlayView* sharedPlayView = nil;
   {
     [self makeViewReadyForDrawing];
     self.viewReadyForDrawing = true;
-    [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
-    [self delayedUpdate];
   }
 
   return self;
@@ -194,6 +206,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
   [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 
   self.playViewModel = nil;
   self.scoringModel = nil;
@@ -225,7 +238,10 @@ static PlayView* sharedPlayView = nil;
 
   [self makeViewReadyForDrawing];
   self.viewReadyForDrawing = true;
-  [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+
+  // Now perform all drawing updates that have accumulated so far
+  // (at least layoutSubviews(), which has been invoked at least once after
+  // initialization)
   [self delayedUpdate];
 }
 
@@ -234,10 +250,6 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) makeViewReadyForDrawing
 {
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.playViewModel = delegate.playViewModel;
-  self.scoringModel = delegate.scoringModel;
-
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointDistanceFromFinger = 0;
@@ -246,28 +258,27 @@ static PlayView* sharedPlayView = nil;
   self.updatesWereDelayed = false;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goGameLastMoveChanged:) name:goGameLastMoveChanged object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"placeStoneUnderFinger" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
-  
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+    [game.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
-  
-  // Calculate an initial set of metrics. Later, layer delegates observe
-  // PlayViewMetrics for rectangle and board size changes and update their
-  // layers automatically.
-  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
-                                                          model:playViewModel] autorelease];
+
   // If we already have a game, recalculate
-  GoGame* game = [GoGame sharedGame];
   if (game)
     [self.playViewMetrics updateWithBoardSize:game.board.size];
 
@@ -326,30 +337,6 @@ static PlayView* sharedPlayView = nil;
   NSMutableDictionary* newActions = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"contents", nil];
   subLayer.actions = newActions;
   [newActions release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) actionStarts
-{
-  self.actionsInProgress++;
-  DDLogVerbose(@"PlayView, actionStarts, new value for self.actionsInProgress = %d", self.actionsInProgress);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
-// -----------------------------------------------------------------------------
-- (void) actionEnds
-{
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-  {
-    if (self.updatesWereDelayed)
-      [self updateLayers];
-  }
-  DDLogVerbose(@"PlayView, actionEnds, new value for self.actionsInProgress = %d", self.actionsInProgress);
 }
 
 // -----------------------------------------------------------------------------
@@ -424,13 +411,30 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked when the frame of this view changes.
+/// @brief UIView method.
+///
+/// Overriding this method is important so that we can react to frame size
+/// changes that occur when this view is autoresized, e.g. when the device
+/// orientation changes.
+///
+/// This is also invoked soon after initialization.
 // -----------------------------------------------------------------------------
-- (void) frameChanged
+- (void) layoutSubviews
 {
+  [super layoutSubviews];
+
   [self.playViewMetrics updateWithRect:self.bounds];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  GoGame* oldGame = [notification object];
+  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 // -----------------------------------------------------------------------------
@@ -438,18 +442,11 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
+  GoGame* newGame = [notification object];
+  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameLastMoveChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameLastMoveChanged:(NSNotification*)notification
-{
-  [self notifyLayerDelegates:PVLDEventLastMoveChanged eventInfo:nil];
   [self delayedUpdate];
 }
 
@@ -478,6 +475,34 @@ static PlayView* sharedPlayView = nil;
 {
   [self notifyLayerDelegates:PVLDEventScoreCalculationEnds eventInfo:nil];
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionStarts notifications.
+///
+/// Increases @e actionsInProgress by 1.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionStarts:(NSNotification*)notification
+{
+  self.actionsInProgress++;
+  DDLogVerbose(@"PlayView, longRunningActionStarts, new value for self.actionsInProgress = %d", self.actionsInProgress);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notifications.
+///
+/// Decreases @e actionsInProgress by 1. Triggers a view update if
+/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  self.actionsInProgress--;
+  if (0 == self.actionsInProgress)
+  {
+    if (self.updatesWereDelayed)
+      [self updateLayers];
+  }
+  DDLogVerbose(@"PlayView, longRunningActionEnds, new value for self.actionsInProgress = %d", self.actionsInProgress);
 }
 
 // -----------------------------------------------------------------------------
@@ -515,6 +540,11 @@ static PlayView* sharedPlayView = nil;
     }
     else if ([keyPath isEqualToString:@"placeStoneUnderFinger"])
       [self updateCrossHairPointDistanceFromFinger];
+  }
+  else if (object == [GoGame sharedGame].boardPosition)
+  {
+    [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
+    [self delayedUpdate];
   }
 }
 
@@ -605,6 +635,17 @@ static PlayView* sharedPlayView = nil;
 - (GoPoint*) pointNear:(CGPoint)coordinates
 {
   return [playViewMetrics pointNear:coordinates];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (CGRect) boardFrame
+{
+  return CGRectMake(self.frame.origin.x + playViewMetrics.topLeftBoardCornerX,
+                    self.frame.origin.y + playViewMetrics.topLeftBoardCornerY,
+                    playViewMetrics.boardSideLength,
+                    playViewMetrics.boardSideLength);
 }
 
 @end

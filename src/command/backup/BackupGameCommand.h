@@ -21,7 +21,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BackupGameCommand class is responsible for saving the current
-/// game to an .sgf file that is not visible in the archive.
+/// game to an .sgf file that is not visible in the archive. It also saves the
+/// value for the current board position.
 ///
 /// BackupGameCommand writes an .sgf file to a fixed location in the
 /// application's library folder. Because the backup file is not in the shared

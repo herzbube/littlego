@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>4</integer>
+	<integer>5</integer>
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
@@ -254,6 +254,11 @@
 		<string>ff0000</string>
 		<key>InconsistentTerritoryFillColorAlpha</key>
 		<real>0.3</real>
+	</dict>
+	<key>BoardPosition</key>
+	<dict>
+		<key>DiscardFutureMovesAlert</key>
+		<true/>
 	</dict>
 	<key>CrashReportActivated</key>
 	<true/>

@@ -30,6 +30,7 @@
 - (void) testMoveByAfter;
 - (void) testPoint;
 - (void) testCapturedStones;
+- (void) testDoIt;
 - (void) testUndo;
 
 @end

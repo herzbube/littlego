@@ -16,17 +16,20 @@
 # | settings for a build system that is not based on Xcode, was borrowed from
 # | various sources on the web, notably
 # | - BoostOniPhone, by Pete Goodliffe
-# |   http://www.gitorious.com/BoostOnIphone
+# |   https://gitorious.org/boostoniphone
 # | - "Building autoconf-configured libraries for iPhone OS", by
 # |   Christopher Stawarz
 # |   http://pseudogreen.org/blog/build_autoconfed_libs_for_iphone.html
 # |
-# | Interface and requirements for software-specific build script:
-# | - Script must be located in the same directory as this main build script
-# | - Script may refer to variables defined in the general build environment
+# | This script provides the framework for the build process, but delegates most
+# | of the actual work to a software-specific build script (for those familiar
+# | with design patterns: something like the template method pattern). The
+# | interface and the requirements for a software-specific build script are:
+# | - The script must be located in the same directory as this main build script
+# | - The script may refer to variables defined in the general build environment
 # |   script build-env.sh (this main build script makes sure to source
 # |   build-env.sh before it sources the software-specific build script)
-# | - Script must define the following environment variables
+# | - The script must define the following environment variables
 # |   - ARCHIVE_URL: Full URL where a single archive file with the software's
 # |     source code may be downloaded. Handled file types are: .tar.gz, .tgz
 # |     .tar.bz2, .tbz, .zip. Script may use the environment variable
@@ -34,18 +37,21 @@
 # |   - ARCHIVE_FILE: Name that should be used to store the archive after it
 # |     was downloaded. Only a simple file name, not a path.
 # |   - ARCHIVE_CHECKSUM: SHA-256 checksum of the archive file.
-# | - Script may define the following functions to execute software-specific
-# |   commands during the respective build step. Unless specified otherwise,
-# |   a function will be invoked without arguments and must return 0 for
-# |   success, and 1 for failure.
+# | - The script may define the following functions to execute software-specific
+# |   commands during the respective build step. If a function is not present,
+# |   it is not invoked. Unless specified otherwise, a function will be invoked
+# |   without arguments and must return 0 for success, and 1 for failure.
 # |   - PRE_BUILD_STEPS_SOFTWARE
 # |   - BUILD_STEPS_SOFTWARE. Arguments are:
 # |     * 0|1 = Whether or not to clean the results of a previous build
 # |     * 0|1 = Whether or not the build should be quiet
 # |   - POST_BUILD_STEPS_SOFTWARE
 # |   - INSTALL_STEPS_SOFTWARE
-# | - Script must not change working directory (unless it cd's back to the
-# |   original directory before passing control back to caller)
+# | - The script must not change the working directory (unless it cd's back to
+# |   the original directory before passing control back to caller)
+# | - The script must build the software for only those platforms that have
+# |   been enabled in build-env.sh. The variables to look out for are named
+# |   <platform>_BUILD_ENABLED (e.g. IPHONEOS_BUILD_ENABLED).
 # |
 # | TODO
 # | - Allow to run this script for several software packages
@@ -460,9 +466,9 @@ PRE_BUILD_STEPS()
       $SOFTWARE_FUNCTION_NAME >>"$BUILDLOG_PATH" 2>&1
       EXIT_CODE=$?
     else
-      $SOFTWARE_FUNCTION_NAME 2>&1 | tee -a "$BUILDLOG_PATH"
-      EXIT_CODE=$?
-      # TODO exit code is always 0 here!!!
+      ($SOFTWARE_FUNCTION_NAME 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
+      EXIT_CODE=$(cat "$EXITCODE_FILE")
+      rm -f "$EXITCODE_FILE"
     fi
     if test $EXIT_CODE -ne 0; then
       return 1
@@ -504,9 +510,9 @@ BUILD_STEPS()
       $SOFTWARE_FUNCTION_NAME "$CLEAN_BUILD" >>"$BUILDLOG_PATH" 2>&1
       EXIT_CODE=$?
     else
-      $SOFTWARE_FUNCTION_NAME "$CLEAN_BUILD" 2>&1 | tee -a "$BUILDLOG_PATH"
-      EXIT_CODE=$?
-      # TODO exit code is always 0 here!!!
+      ($SOFTWARE_FUNCTION_NAME "$CLEAN_BUILD" 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
+      EXIT_CODE=$(cat "$EXITCODE_FILE")
+      rm -f "$EXITCODE_FILE"
     fi
     if test $EXIT_CODE -ne 0; then
       return 1
@@ -546,9 +552,9 @@ POST_BUILD_STEPS()
       $SOFTWARE_FUNCTION_NAME >>"$BUILDLOG_PATH" 2>&1
       EXIT_CODE=$?
     else
-      $SOFTWARE_FUNCTION_NAME 2>&1 | tee -a "$BUILDLOG_PATH"
-      EXIT_CODE=$?
-      # TODO exit code is always 0 here!!!
+      ($SOFTWARE_FUNCTION_NAME 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
+      EXIT_CODE=$(cat "$EXITCODE_FILE")
+      rm -f "$EXITCODE_FILE"
     fi
     if test $EXIT_CODE -ne 0; then
       return 1
@@ -588,9 +594,9 @@ INSTALL_STEPS()
       $SOFTWARE_FUNCTION_NAME >>"$BUILDLOG_PATH" 2>&1
       EXIT_CODE=$?
     else
-      $SOFTWARE_FUNCTION_NAME 2>&1 | tee -a "$BUILDLOG_PATH"
-      EXIT_CODE=$?
-      # TODO exit code is always 0 here!!!
+      ($SOFTWARE_FUNCTION_NAME 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
+      EXIT_CODE=$(cat "$EXITCODE_FILE")
+      rm -f "$EXITCODE_FILE"
     fi
     if test $EXIT_CODE -ne 0; then
       return 1
@@ -624,6 +630,7 @@ BUILD_BASEDIR="$SCRIPT_DIR/../3rdparty"
 ARCHIVE_BASEURL="http://www.herzbube.ch/software/3rdparty"
 BUILDENV_SCRIPT="$SCRIPT_DIR/build-env.sh"
 PATCH_BASEDIR="$SCRIPT_DIR/../patch"
+EXITCODE_FILE="/tmp/$SCRIPT_NAME.exitcode.$$"
 OPTSOK=hdbcq
 unset DOWNLOAD_ONLY BUILD_ONLY CLEAN_BUILD QUIET_BUILD
 

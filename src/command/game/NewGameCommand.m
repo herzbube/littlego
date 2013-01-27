@@ -107,7 +107,9 @@
 - (void) newGame
 {
   // Send this while the old GoGame object is still around and fully functional
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:nil];
+  // (the old game is nil if this happens during application startup)
+  GoGame* oldGame = [GoGame sharedGame];
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
   // Create the new GoGame object
   // TODO: Prevent starting a new game if the defaults are somehow invalid

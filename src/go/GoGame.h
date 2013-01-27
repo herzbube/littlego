@@ -17,8 +17,10 @@
 
 // Forward declarations
 @class GoBoard;
-@class GoPlayer;
+@class GoBoardPosition;
 @class GoMove;
+@class GoMoveModel;
+@class GoPlayer;
 @class GoPoint;
 
 
@@ -61,7 +63,6 @@
 - (void) play:(GoPoint*)point;
 - (void) pass;
 - (void) resign;
-- (void) undo;
 - (void) pause;
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point;
@@ -94,12 +95,20 @@
 /// convenient way to find out who brought about the end of the game. For
 /// instance, if the game was resigned this denotes the player who resigned.
 @property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
+/// @brief The model object that stores the moves of the game.
+@property(nonatomic, retain) GoMoveModel* moveModel;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// the game is still in state #GoGameStateGameHasNotYetStarted.
-@property(nonatomic, retain) GoMove* firstMove;
+///
+/// This is a convenience property that serves as a shortcut so that clients do
+/// not have to obtain the desired GoMove ojbect from @e moveModel.
+@property(nonatomic, assign, readonly) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
 /// the game is still in state #GoGameStateGameHasNotYetStarted.
-@property(nonatomic, retain) GoMove* lastMove;
+///
+/// This is a convenience property that serves as a shortcut so that clients do
+/// not have to obtain the desired GoMove ojbect from @e moveModel.
+@property(nonatomic, assign, readonly) GoMove* lastMove;
 /// @brief The state of the game.
 @property(nonatomic, assign) enum GoGameState state;
 /// @brief The reason why the game has reached the state #GoGameStateGameHasEnded.
@@ -111,10 +120,14 @@
 /// its @e computerGenerated flag set to true.
 ///
 /// TODO This is a nasty little hack to allow GoGame to set the GoMove object's
-/// flag before sending #goGameFirstMoveChanged or #goGameLastMoveChanged. This
+/// flag before triggering any notifications that a new move has been made. This
 /// timing hack allows observers to check the GoMove object's flag when they
 /// react to one of those notifications. To remove this hack we need to do some
 /// redesigning...
 @property(nonatomic, assign) bool nextMoveIsComputerGenerated;
+/// @brief The model object that defines defines which position of the Go board
+/// is currently described by the GoPoint and GoBoardRegion objects attached to
+/// this GoGame.
+@property(nonatomic, retain) GoBoardPosition* boardPosition;
 
 @end

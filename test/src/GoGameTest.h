@@ -41,12 +41,11 @@
 - (void) testPlay;
 - (void) testPass;
 - (void) testResign;
-- (void) testUndo;
 - (void) testPause;
 - (void) testContinue;
 - (void) testIsLegalMove;
 - (void) testIsComputerPlayersTurn;
-- (void) testUndoCausesRegionToFragment;
+- (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
 
 @end

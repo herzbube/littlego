@@ -130,10 +130,18 @@
   // the Go board's side length.
   self.portrait = newRect.size.height >= newRect.size.width;
   int boardSideLengthBase = 0;
+  int offsetForCenteringX = 0;
+  int offsetForCenteringY = 0;
   if (self.portrait)
+  {
     boardSideLengthBase = newRect.size.width;
+    offsetForCenteringY += floor((newRect.size.height - boardSideLengthBase) / 2);
+  }
   else
+  {
     boardSideLengthBase = newRect.size.height;
+    offsetForCenteringX += floor((newRect.size.width - boardSideLengthBase) / 2);
+  }
 
   // Outer margin and board side length are not yet final - any rounding errors
   // that occur in the following calculations will re-added to the outer margin,
@@ -145,8 +153,8 @@
   // Note: This is important because the board will NOT be redrawn when the
   // board size changes (see BoardLayerDelegate)!
   int boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
-  self.topLeftBoardCornerX = boardOuterMargin;
-  self.topLeftBoardCornerY = boardOuterMargin;
+  self.topLeftBoardCornerX = boardOuterMargin + offsetForCenteringX;
+  self.topLeftBoardCornerY = boardOuterMargin + offsetForCenteringY;
   self.boardSideLength = boardSideLengthBase - (boardOuterMargin * 2);
 
   if (GoBoardSizeUndefined == newBoardSize)

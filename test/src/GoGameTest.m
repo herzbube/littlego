@@ -23,6 +23,7 @@
 #import <go/GoBoardRegion.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
+#import <go/GoMoveModel.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
 #import <main/ApplicationDelegate.h>
@@ -33,7 +34,7 @@
 /// @brief Class extension with private methods for GoGameTest.
 // -----------------------------------------------------------------------------
 @interface GoGameTest()
-- (void) verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:(NSString*)failureDescription;
+- (void) verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:(NSString*)failureDescription;
 @end
 
 
@@ -167,9 +168,9 @@
   STAssertEquals(m_game.currentPlayer, m_game.playerWhite, nil);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertEquals(m_game.currentPlayer, m_game.playerWhite, nil);
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
 }
 
@@ -181,7 +182,7 @@
   STAssertNil(m_game.firstMove, nil);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   STAssertNotNil(m_game.firstMove, nil);
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertNil(m_game.firstMove, nil);
   // More detailed checks in testLastMove()
 }
@@ -209,11 +210,11 @@
   STAssertEquals(move1, move2.previous, nil);
   STAssertNil(move2.next, nil);
 
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertEquals(move1, m_game.firstMove, nil);
   STAssertEquals(move1, m_game.lastMove, nil);
 
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertNil(m_game.firstMove, nil);
   STAssertNil(m_game.lastMove, nil);
 }
@@ -228,7 +229,7 @@
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
@@ -349,33 +350,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the undo() method.
-// -----------------------------------------------------------------------------
-- (void) testUndo
-{
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
-
-  STAssertThrowsSpecificNamed([m_game undo],
-                              NSException, NSInternalInconsistencyException, @"undo before game start");
-
-  [m_game pass];
-  STAssertNotNil(m_game.firstMove, nil);
-  STAssertNotNil(m_game.lastMove, nil);
-  [m_game undo];
-  STAssertNil(m_game.firstMove, nil);
-  STAssertNil(m_game.lastMove, nil);
-
-  STAssertThrowsSpecificNamed([m_game undo],
-                              NSException, NSInternalInconsistencyException, @"no moves to undo");
-  
-  [m_game pass];
-  [m_game pass];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertThrowsSpecificNamed([m_game undo],
-                              NSException, NSInternalInconsistencyException, @"undo after game end");
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the pause() method.
 // -----------------------------------------------------------------------------
 - (void) testPause
@@ -427,7 +401,7 @@
   STAssertTrue([m_game isLegalMove:point1], nil);
 
   // Play it with black
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   [m_game play:point1];
 
   // Point occupied by black is not legal for either player
@@ -436,7 +410,7 @@
   STAssertFalse([m_game isLegalMove:point1], nil);
 
   // Play stone with white
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   GoPoint* point2 = [m_game.board pointAtVertex:@"S1"];
   [m_game play:point2];
 
@@ -456,7 +430,7 @@
   STAssertTrue([m_game isLegalMove:point1], nil);
 
   // Counter-attack by black to create Ko situation
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   GoPoint* point4 = [m_game.board pointAtVertex:@"R1"];
   [m_game play:point4];
   [m_game pass];
@@ -539,7 +513,7 @@
   STAssertFalse([m_game isComputerPlayersTurn], nil);
   [m_game pass];
   STAssertFalse([m_game isComputerPlayersTurn], nil);
-  [m_game undo];
+  [m_game.moveModel discardLastMove];
   STAssertFalse([m_game isComputerPlayersTurn], nil);
   [m_game pass];
   [m_game pass];
@@ -554,12 +528,12 @@
 ///
 /// Set up a position where 4 regions, each consisting of a single stone, are
 /// merged into a new single region, by placing a single connecting stone. The
-/// connecting stone is then removed by undoing the move, which must result
+/// connecting stone is then removed by discarding the move, which must result
 /// in the same 4 regions being re-created.
 /// - Single stone regions: A2, B1, B3, C2
 /// - Connecting stone: B2
 // -----------------------------------------------------------------------------
-- (void) testUndoCausesRegionToFragment
+- (void) testDiscardCausesRegionToFragment
 {
   GoPoint* point1 = [m_game.board pointAtVertex:@"A2"];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
@@ -577,7 +551,7 @@
   [m_game pass];
   [m_game play:point4];
   [m_game pass];
-  [self verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:@"initial setup"];
+  [self verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:@"initial setup"];
 
   // Play the connecting stone
   [m_game play:point5];
@@ -595,16 +569,17 @@
   STAssertEquals(expectedSizeOfRegionWhenMerged, [mergedRegion size], nil);
 
   // Remove the connecting stone
-  [m_game undo];
-  [self verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:@"after undo"];
+  GoMove* lastMove = m_game.lastMove;
+  [lastMove undo];
+  [self verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:@"after undoing"];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper method of testUndoCausesRegionToFragment(). Verifies
+/// @brief Private helper method of testDiscardCausesRegionToFragment(). Verifies
 /// the correctness of region fragmentation twice: Once before the connecting
-/// move is made, and and once after the connecting move has been undone.
+/// move is made, and and once after the connecting move has been discarded.
 // -----------------------------------------------------------------------------
-- (void) verifyFragmentedRegionsOfTestUndoCausesRegionToFragment:(NSString*)failureDescription
+- (void) verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:(NSString*)failureDescription
 {
   GoPoint* point1 = [m_game.board pointAtVertex:@"A2"];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];

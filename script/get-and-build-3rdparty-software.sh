@@ -28,5 +28,9 @@ if test ! -x "$BUILD_SCRIPT"; then
 fi
 
 for SOFTWARE_PACKAGE in $SOFTWARE_PACKAGES; do
-  $BUILD_SCRIPT -q $SOFTWARE_PACKAGE
+  $BUILD_SCRIPT -qc $SOFTWARE_PACKAGE
+  if test $? -ne 0; then
+    echo "Build failed for software package "$SOFTWARE_PACKAGE""
+    exit 1
+  fi
 done

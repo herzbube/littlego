@@ -151,6 +151,14 @@ Xcode build system configuration
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
 - IPHONEOS_DEPLOYMENT_TARGET = 4.3
+- ARCHS = armv7
+  - The original value is $(ARCHS_STANDARD_32_BIT)
+  - Xcode 4.5 resolves this to "armv7 armv7s", but the 3rd party software build
+    currently does not support armv7s
+  - armv7s therefore needs to be removed, otherwise a linker error occurs
+  - An interesting article with background information, and also with some
+    reassurance why we don't need armv7s at the moment, can be found here:
+    http://www.galloway.me.uk/2012/09/hacking-up-an-armv7s-library/
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack -ltouchzipkit -ObjC
@@ -280,7 +288,6 @@ TableViewCell
 
 Architecture and implementation notes
 -------------------------------------
-- Error handling: TODO
 - Memory management: Manual reference counting using retain/release, i.e. no
   ARC.
 - Communication with Fuego
@@ -356,32 +363,35 @@ Architecture and implementation notes
     re-enables audio/vibration if these features were disabled due to becoming
     inactive. A paused computer vs. computer game is not automatically resumed,
     though, it must be explicitly resumed by user interaction.
-- MVC design pattern considerations
-  - GoGame is the master model for PlayView and PlayViewController. These
-    classes implement the traditional MVC design pattern where the view
-    (PlayView) is a direct observer of the model (GoGame).
-  - I make a note of this because coming from Cocoa one might expect the Cocoa
-    variation of MVC where model and view are completely separate and all
-    communication goes through the controller. IMO this doesn't make sense here
-    because iOS does not support Cocoa bindings. In other words, the system
-    frameworks do not provide any pre-fabricated controllers, and I myself do
-    not want to spend the time required to implement the overhead necessary for
-    a complete separation of model and view. Re-usability is not a key design
-    of this project.
 - Preferences: The iOS Application Programming Guide says that "The Settings
   bundle is generally the preferred mechanism for displaying preferences", then
   goes into details about how to use such a Settings bundle. I don't like to
   separate the UI for application preferences from the application, though, and
   therefore chose to implement a dedicated Preferences view inside the
   application.
-- The "Play" view is the most complex view of the entire application. It has
-  a large number of UI elements that must somehow be fitted onto the small
-  screeen estate available on the iPhone. This "crowded" environment requires a
-  thoughtful UI design, which I try to outline here:
-  - The game view
-    - The game view has two main purposes: 1) To accurately represent the
-      current game state, and 2) to provide user interaction so that the user
-      can place a stone
+- The "Play" tab is the centerpiece of the entire application. It has a large
+  number of UI elements, many of them interacting with each other, and some of
+  them are not visible all the time. To reduce complexity and keep the "Play"
+  tab in its entirety in a maintainable state, it is paramount to have many
+  small model and controller classes with clearly assigned responsibilities.
+  PlayViewController and PlayView are the most generic classes and, as the past
+  has shown, have a certain "natural" tendency to attract wildly diverse code
+  and become bewildering hotpots. Even though refactoring is always an option
+  (and has indeed been used heavily to tame PlayView and PlayViewController),
+  it should not be relied upon because there are no automated GUI tests in this
+  project. It is therefore better to "get it right" already at the time when a
+  new feature is developed.
+- UI design: As noted, the "Play" tab has a large number of UI elements, and
+  these must somehow be fitted onto the small screeen estate available on the
+  iPhone. Here I try to outline the thoughts that went into the iPhone UI
+  design:
+  - The Go board view
+    - The Go board view has the following purposes: 1) Accurately represent
+      board positions (in a game that is actively being played, the current game
+      state is just a special board position). 2) Provide user interaction so
+      that the user can place a stone. 3) Display scoring information (territory
+      markup, dead stones, etc.). 4) Provide user interaction so that the user
+      can mark dead stones during scoring.
     - Because the Go board is square, but iOS device screens are oblong, the
       game view cannot take full advantage of all the available screen estate.
       The game view is responsible for making the most of the current situation,
@@ -389,30 +399,44 @@ Architecture and implementation notes
     - User preferences modify view appearance (e.g. display labels) and user
       interaction behaviour.
   - The toolbar
-    - Only the most important actions can be represented by items on the
-      toolbar. The user usually wants to play a game, so toolbar items should
-      represent actions that are related to game moves (e.g. "pass").
+    - Toolbar space is limited, therefore the only buttons that are displayed
+      are those that are actually enabled (e.g. while the computer is thinking
+      most actions are not allowed, so the only button that is displayed is the
+      one that interrupts the computer's thinking). The result is a "nervous"
+      UI, i.e. toolbar buttons are constantly being shown and hidden. I have not
+      yet come up with a UI design that is more "calm".
     - At the right-most position there is a "Game Actions" button which provides
-      access to an action sheet with additional actions that do not fit on the
-      toolbar. Only actions related to games as a whole are to be displayed on
+      access to an action sheet with additional actions that are not used very
+      often. Only actions related to games as a whole are to be displayed on
       this action sheet.
-    - When a computer vs. computer game starts, the usual game move actions
-      (e.g. "pass") do not make sense and are therefore hidden. The toolbar
-      instead displays buttons that can be used to control the automatic game
-      play of the computer players (e.g. the game can be paused).
+    - At the second-to-right-most position there is a "Game Info" button that
+      provides access to a screen with detailed information about the current
+      game.
+    - The "Game Actions" and "Game Info" buttons remain visible at all times to
+      mitigate the "nervous" UI effect described above.
     - Most toolbar items do not use the iOS provided icons available from
       UIBarButtonItem. The reason is that, although the icons' visual appearance
       might seem appropriate, their semantic meaning is not!
   - The status line
     - Currently a status line is situated below the game view, which is used
-      to display information about the current game state to the user
+      to display information about the current game state to the user.
+    - The status line uses a relatively small font to make room for the list of
+      board positions.
     - Somehow this seems to be rather clunky, I want to find a different way
-      how to represent the information in the UI
+      how to represent the information in the UI.
   - The activity indicator
     - An activity indicator is needed to let the user know when the Go engine
-      is busy so that he knows why some UI elements are disabled
-    - Currently the indicator is located in the toolbar, this might change in
-      a future version.
+      is busy so that he knows why some UI elements are disabled.
+    - Currently the indicator is located next to the status line. I am not happy
+      with this, especially because the activity indicator has a different
+      height than the status line, so this might change in the future.
+  - The list of board positions
+    - This view exists because the toolbar buttons to go back/forward one board
+      position make it hard to access board positions that are far away from
+      the current board position.
+    - A freely scrollable view is more sexy than one that uses paging.
+    - Due to size constraints, the additional navigation buttons displayed on
+      the iPad do not exist on the iPhone.
 - Exceptions: Exceptions should not be used in Cocoa or iOS applications in the
   same liberal way as someone coming from Java or C++ might expect (see [1]).
   In this project, exceptions are occasionally raised, in situations where
@@ -511,6 +535,10 @@ Notes about the "Unit test" target:
     between Fuego/Boost libraries and the unit test bundle. For some unknown
     reason, this build setting is correct by default in the main application
     target, but incorrect in the "Unit test" target.
+
+A final note about logging: The log file for unit tests run in the simulator
+environment is located in
+~/Library/Application Support/iPhone Simulator/Documents/Logs.
 
 [1] http://developer.apple.com/library/ios/#documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
 
@@ -638,8 +666,14 @@ archive file, is explained in [22].
 an object form, and how the clever use of predicates can make your code much
 more expressive.
 
-The base for all of the following references is the "iOS Developer Library",
-found under this URL: https://developer.apple.com/library/ios/navigation/.
+A handy feature of the Objective-C runtime is called "Associative references":
+It allows to attach an object reference to another object under a certain name,
+and to retrieve the referenced object at a later time, e.g. in a delegate
+method. The required C functions are documented in [26].
+
+Unless otherwise noted, the base for all of the following references is the
+"iOS Developer Library", found under this URL:
+https://developer.apple.com/library/ios/navigation/.
 
 [1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
 [2]  iOS Developer Library > Guides > Threading Programming Guide
@@ -664,6 +698,8 @@ found under this URL: https://developer.apple.com/library/ios/navigation/.
 [21] iOS Developer Library > Reference > Information Property List Key Reference
 [22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
 [23] iOS Developer Library > Guides > Predicate Programming Guide
+[24] iOS Developer Library > Guides > Predicate Programming Guide
+[25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
 
 
 Compilation command
@@ -961,8 +997,8 @@ Icon files
 - Whenever you need to load an image just use the normal image name and iOS will
   check behind the scenes if there is a retina display image available when it
   could use one.
-- To create the actual images I use The Gimp. The raw .xcf files are currently
-  not part of the project.
+- To create the actual images I use either the Gimp or Inkscape. The .xcf and
+  .svg files are currently not part of the project.
 
 stone-black.png, stone-white.png, stone-crosshair.png
 - The original source for these files is the file stones.svg, which in turn
@@ -1288,3 +1324,10 @@ occur at - almost - any time. It goes like this:
   preferences is a relatively well-tested process that is not likely to trigger
   a crash, so saving data can wait until the user switches tabs to do other,
   potentially more dangerous things.
+
+With the introduction of board positions in 0.10.0, it has become essential that
+the game in progress is backed up as outlined above. Whenever the board
+position changes, the state in Fuego is sync'ed with the new board position.
+If the user goes back in the move history, it is therefore vital that no
+"savesgf" GTP command is sent at this point because this would overwrite the
+actual game state with the older board position.

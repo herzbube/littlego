@@ -18,6 +18,7 @@
 // Project includes
 #import "GoScore.h"
 #import "GoBoard.h"
+#import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
 #import "GoMove.h"
@@ -55,6 +56,7 @@
 - (void) doCalculate;
 - (void) calculateEnds;
 - (bool) initializeBoard;
+- (void) uninitializeBoard;
 - (bool) updateTerritoryColor;
 - (void) updateScoringProperties;
 - (NSArray*) parseDeadStoneGtpResponse:(NSString*)gtpResponse;
@@ -63,6 +65,7 @@
 //@{
 @property(nonatomic, assign) GoGame* game;
 @property(nonatomic, retain) NSOperationQueue* operationQueue;
+/// @brief This flag is set only if @e territoryScoresAvailable is true.
 @property(nonatomic, assign) bool boardIsInitialized;
 @property(nonatomic, assign) bool lastCalculationHadError;
 /// @brief List with all GoBoardRegion objects that currently exist on the
@@ -71,8 +74,8 @@
 /// This property exists for optimization reasons only: It contains a
 /// pre-calculated list that can be reused by various methods so that they don't
 /// have to re-calculate the list repeatedly (re-calculation is
-/// not-quite-cheap). This approach works because during scoring mode no
-/// changes to the board are possible.
+/// not-quite-cheap). The list must be discarded when the board position
+/// changes.
 @property(nonatomic, retain) NSArray* allRegions;
 //@}
 @end
@@ -192,21 +195,8 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-
   if (territoryScoresAvailable)
-  {
-    if (game)
-    {
-      GoBoard* board = game.board;
-      GoPoint* point = [board pointAtVertex:@"A1"];
-      for (; point != nil; point = point.next)
-      {
-        GoBoardRegion* region = point.region;
-        region.scoringMode = false;  // forget cached values
-      }
-    }
-  }
-
+    [self uninitializeBoard];
   self.operationQueue = nil;
   self.allRegions = nil;
   [super dealloc];
@@ -318,20 +308,13 @@
     // safely abort, without half of the values already having been calculated.
     if (territoryScoresAvailable)
     {
-      // Initialize board only once
-      if (! boardIsInitialized)
+      bool success = [self initializeBoard];
+      if (! success)
       {
-        bool success = [self initializeBoard];
-        if (! success)
-        {
-          lastCalculationHadError = true;
-          return;
-        }
-        boardIsInitialized = true;
+        lastCalculationHadError = true;
+        return;
       }
-
-      // Calculate territory colors every time
-      bool success = [self updateTerritoryColor];
+      success = [self updateTerritoryColor];
       if (! success)
       {
         lastCalculationHadError = true;
@@ -415,22 +398,23 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes all GoPoint objects on the board in preparation of
-/// territory scoring.
+/// @brief Initializes all GoBoardRegion objects in preparation of territory
+/// scoring.
 ///
-/// The GoPoint objects are set to belong to no territory. An initial set of
-/// dead stones, discovered by the GTP engine, is also marked.
+/// The GoBoardRegion objects are set to belong to no territory. An initial set
+/// of dead stones, discovered by the GTP engine, is also marked.
 ///
 /// Returns true if initialization was successful, false if not.
 // -----------------------------------------------------------------------------
 - (bool) initializeBoard
 {
+  if (boardIsInitialized)
+    return true;
+  boardIsInitialized = true;
+
   // Initialize territory color
-  GoBoard* board = game.board;
-  GoPoint* point = [board pointAtVertex:@"A1"];
-  for (; point != nil; point = point.next)
+  for (GoBoardRegion* region in self.allRegions)
   {
-    GoBoardRegion* region = point.region;
     region.territoryColor = GoColorNone;
     region.territoryInconsistencyFound = false;
     region.deadStoneGroup = false;
@@ -448,7 +432,7 @@
       NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
       for (NSString* vertex in deadStoneVertexList)
       {
-        GoPoint* point = [board pointAtVertex:vertex];
+        GoPoint* point = [game.board pointAtVertex:vertex];
         if (! [point hasStone])
         {
           assert(0);
@@ -471,6 +455,19 @@
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Un-initializes all GoBoardRegion objects. When this method returns
+/// the GoBoardRegion objects are no longer prepared for territory scoring.
+// -----------------------------------------------------------------------------
+- (void) uninitializeBoard
+{
+  if (! boardIsInitialized)
+    return;
+  boardIsInitialized = false;
+  for (GoBoardRegion* region in self.allRegions)
+    region.scoringMode = false;  // forget cached values
 }
 
 // -----------------------------------------------------------------------------
@@ -773,7 +770,7 @@
 
   // Captured stones and move statistics
   numberOfMoves = 0;
-  GoMove* move = game.firstMove;
+  GoMove* move = self.game.boardPosition.currentMove;
   while (move != nil)
   {
     ++numberOfMoves;
@@ -805,7 +802,7 @@
       default:
         break;
     }
-    move = move.next;
+    move = move.previous;
   }
 
   // Territory & dead stones
@@ -889,6 +886,28 @@
   [encoder encodeBool:self.boardIsInitialized forKey:goScoreBoardIsInitializedKey];
   [encoder encodeBool:self.lastCalculationHadError forKey:goScoreLastCalculationHadErrorKey];
   [encoder encodeObject:self.allRegions forKey:goScoreAllRegionsKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reinitializes this GoScore object. When this method is invoked, this
+/// GoScore object will no longer provide any useful values.
+///
+/// The main purpose of this method is to return all GoBoardRegion objects to
+/// their normal, non-scoring state where they do not cache any values. This
+/// method is intended to be invoked before the current board position is
+/// changed (but may be used for other purposes as well).
+///
+/// A new round of calculation can be started by invoking
+/// calculateWaitUntilDone:(). The behaviour will be the same as if calculation
+/// had been started the first time after creating this GoScore object (e.g. an
+/// initial set of dead stones will be calculated by the GTP engine).
+// -----------------------------------------------------------------------------
+- (void) reinitialize
+{
+  [self resetValues];
+  if (territoryScoresAvailable)
+    [self uninitializeBoard];
+  self.allRegions = nil;
 }
 
 @end

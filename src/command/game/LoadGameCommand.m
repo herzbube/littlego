@@ -33,7 +33,6 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../play/PlayView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -67,6 +66,12 @@
 - (void) triggerComputerPlayer;
 - (void) showAlert:(NSString*)message;
 - (void) replayMoves:(NSArray*)moveList;
+- (void) performCallback;
+//@}
+/// @name Private properties
+//@{
+@property(nonatomic, retain) id callbackTarget;
+@property(nonatomic, assign) SEL callbackTargetSelector;
 //@}
 @end
 
@@ -79,6 +84,9 @@
 @synthesize gameName;
 @synthesize waitUntilDone;
 @synthesize restoreMode;
+@synthesize callbackTarget;
+@synthesize callbackTargetSelector;
+@synthesize didTriggerComputerPlayer;
 
 
 // -----------------------------------------------------------------------------
@@ -99,6 +107,9 @@
   self.gameName = aGameName;
   self.waitUntilDone = false;
   self.restoreMode = false;
+  self.callbackTarget = nil;
+  self.callbackTargetSelector = nil;
+  self.didTriggerComputerPlayer = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
   m_komi = nil;
@@ -113,20 +124,51 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // Invoke before the long-running action finishes, in case the object called
+  // back does something else that triggers many view updates. More docs about
+  // the callback can be found in whenFinishedPerformSelector:onObject:().
+  [self performCallback];
+
+  // Re-enable view updates on Play tab. We do this here because dealloc always
+  // runs, and it runs exactly once, regardless of which execution path is
+  // taken in the command (currently known paths are: command succeeds, failure
+  // before move replay starts, failure while moves are replayed)
+  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
+
   self.filePath = nil;
   self.blackPlayer = nil;
   self.whitePlayer = nil;
   self.gameName = nil;
+  self.callbackTarget = nil;
+  self.callbackTargetSelector = nil;
   [m_handicap release];
   [m_komi release];
   [m_moves release];
   [m_oldCurrentDirectory release];
-  // Re-enable play view updates. We do this here because dealloc always runs,
-  // and it runs exactly once, regardless of which execution path is taken in
-  // the command (currently known paths are: command succeeds, failure before
-  // move replay starts, failure while moves are replayed)
-  [[PlayView sharedView] actionEnds];
+
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets a selector @a selector that should be invoked on object
+/// @a object when this command finishes executing. @a object is retained.
+///
+/// When the callback occurs this LoadGameCommand object is passed as the
+/// argument to @a selector.
+///
+/// @note Whoever wants to get the callback must not retain the LoadGameCommand
+/// object, because the callback is made as part of the deallocation process of
+/// LoadGameCommand. Retaining LoadGameCommand will prevent it from being
+/// deallocated, hence the callback will never be made.
+///
+/// @note The callback is made at the very beginning of LoadGameCommand's
+/// deallocation process so that all properties of LoadGameCommand still have
+/// valid values.
+// -----------------------------------------------------------------------------
+- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object
+{
+  self.callbackTarget = object;
+  self.callbackTargetSelector = selector;
 }
 
 // -----------------------------------------------------------------------------
@@ -137,7 +179,9 @@
   if (! self.filePath || ! self.blackPlayer || ! self.whitePlayer)
     return false;
 
-  [[PlayView sharedView] actionStarts];  // disable play view updates
+  // Disable view updates on Play tab
+  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionStarts object:nil];
+
   [GtpUtilities stopPondering];
 
   // Need to work with temporary file whose name is known and guaranteed to not
@@ -630,10 +674,22 @@
 // -----------------------------------------------------------------------------
 - (void) triggerComputerPlayer
 {
-  if ([[GoGame sharedGame] isComputerPlayersTurn])
+  GoGame* game = [GoGame sharedGame];
+  if ([game isComputerPlayersTurn])
   {
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
+    if (self.restoreMode)
+    {
+      // On application launch we want to be able to restore the board position
+      // last viewed by the user, so we never trigger the computer player.
+      if (GoGameTypeComputerVsComputer == game.type)
+        [game pause];
+    }
+    else
+    {
+      ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
+      [command submit];
+      self.didTriggerComputerPlayer = true;
+    }
   }
 }
 
@@ -650,6 +706,18 @@
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeLoadGameFailed;
   [alert show];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs callback if an object and selector were set with
+/// whenFinishedPerformSelector:onObject:().
+// -----------------------------------------------------------------------------
+- (void) performCallback
+{
+  if (! self.callbackTarget)
+    return;
+  [self.callbackTarget performSelector:self.callbackTargetSelector
+                            withObject:self];
 }
 
 @end

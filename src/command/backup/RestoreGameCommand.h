@@ -29,9 +29,11 @@
 /// If RestoreGameCommand finds a backup .sgf file in the application's library
 /// folder, it assumes that the application crashed or was killed while
 /// suspended. It starts a new game with the content of the backup .sgf file
-/// and using the current user defaults for "new games". The net effect is that
-/// the application is restored as close as possible to the state it had when it
-/// was last seen alive by the user.
+/// and using the current user defaults for "new games". It also restores the
+/// board position last viewed by the user within that game.
+///
+/// The net effect is that the application is restored as close as possible to
+/// the state it had when it was last seen alive by the user.
 ///
 /// If RestoreGameCommand finds no backup .sgf file, it simply starts a new
 /// game.

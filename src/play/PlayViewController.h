@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,52 +16,36 @@
 
 
 // Project includes
-#import "GameInfoViewController.h"
-#import "PlayViewActionSheetController.h"
-
-// Forward declarations
-@class PlayView;
+#import "ToolbarController.h"
+#import "gesture/PanGestureController.h"
+#import "boardposition/CurrentBoardPositionViewController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewController class is responsible for managing user
-/// interaction on the "Play" view.
+/// @brief The PlayViewController class is the main controller on the "Play"
+/// tab. It does not manage user interaction on its own, instead it delegates
+/// this task to a variety of other sub-controllers.
 ///
-/// PlayViewController reacts to the following user input:
-/// - Dragging, or panning, gesture in the view's Go board area
-///   This is used to place a stone on the board.
-/// - Tapping gesture on buttons that trigger a Go move
-/// - Tapping gesture on the "Game Actions" button
-///
-/// In addition, PlayViewController manages the transition to and from the
-/// "backside" view which displays information about the current game (including
-/// scoring information). The transition is usually triggered by the user
-/// tapping on a dedicated button. When the user wants to dismiss the game info
-/// view, PlayViewController transitions back to the "frontside" view, which is
-/// the main play view.
+/// PlayViewController has the following responsibilities:
+/// - Set up the view hierarchy on the "Play" tab
+/// - Create and configure sub-controllers
+/// - Manage the timing of these tasks during application launch
+/// - Manage the transition to and from the Game Info view. The transition is
+///   triggered by a sub-controller, but managed by PlayViewController because
+///   only PlayViewController knows the details of the view hierarchy
+/// - Display alerts that are used by more than one sub-controller
 ///
 ///
 /// @par Interface rotation
 ///
-/// Most of the "Play" view is automatically resized when an interface
-/// orientation occurs, due to autoresizeMask being properly set on most of the
-/// view's UI elements. There are, however, the following exceptions:
-/// - At any given time, either the "frontside" or the "backside" view are not
-///   part of the view hierarchy because they are not visible at that time.
-///   If the interface is rotated, the view that is currently not part of the
-///   view hierarchy is not automatically resized. PlayViewController makes
-///   sure that the resize happens nonetheless.
-/// - The autoresizeMask of PlayView does not allow the view to grow or shrink.
-///   PlayViewController makes sure that whenever the "frontside" view is
-///   resized, PlayView is also resized. If the "frontside" view is visible at
-///   that time, the resize is animated.
-///
-/// PlayViewController makes sure that all size updates described above are
-/// performed even if the "Play" view is not visible at the time the interface
-/// rotates. This requires special code because PlayViewController's regular
-/// rotation code is not triggered by UIKit in this situation.
+/// PlayViewController sets up all views on the "Play" tab with an appropriate
+/// autoresizing mask so that when the interface rotates UIKit automatically
+/// resizes and shifts the views.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <UIGestureRecognizerDelegate, GameInfoViewControllerDelegate, PlayViewActionSheetDelegate>
+@interface PlayViewController : UIViewController <PanGestureControllerDelegate,
+                                                  ToolbarControllerDelegate,
+                                                  CurrentBoardPositionViewControllerDelegate,
+                                                  UIAlertViewDelegate>
 {
 }
 

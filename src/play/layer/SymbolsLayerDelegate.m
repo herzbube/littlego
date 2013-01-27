@@ -20,6 +20,7 @@
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
 #import "../ScoringModel.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoPlayer.h"
@@ -122,7 +123,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventLastMoveChanged:
+    case PVLDEventBoardPositionChanged:
     case PVLDEventMarkLastMoveChanged:
     case PVLDEventScoringModeEnabled:   // temporarily disable symbols
     case PVLDEventScoringModeDisabled:  // re-enable symbols
@@ -153,7 +154,7 @@
 
   if (self.playViewModel.markLastMove)
   {
-    GoMove* lastMove = [GoGame sharedGame].lastMove;
+    GoMove* lastMove = [GoGame sharedGame].boardPosition.currentMove;
     if (lastMove && GoMoveTypePlay == lastMove.type)
     {
       if (lastMove.player.isBlack)

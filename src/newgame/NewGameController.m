@@ -602,7 +602,7 @@ enum KomiSectionItem
       {
         case KomiItem:
           cell.textLabel.text = @"Komi";
-          cell.detailTextLabel.text = [NSString stringWithKomi:self.komi];
+          cell.detailTextLabel.text = [NSString stringWithKomi:self.komi numericZeroValue:false];
         default:
           assert(0);
           break;

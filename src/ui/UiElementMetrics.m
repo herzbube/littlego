@@ -142,6 +142,10 @@ static UIViewController* m_interfaceOrientationSource;
 // The vertical margin of a table view is the distance from the top or bottom
 // edge of the table view to the top or bottom edge of the top-most or
 // bottom-most table view element (e.g. a cell, or a header/footer).
+//
+// TODO: The current values are not always correct, the margin seems to vary
+// with the table view width.
+// Cf. http://stackoverflow.com/questions/4708085/how-to-determine-margin-of-a-grouped-uitableview-or-better-how-to-set-it
 + (int) tableViewMarginVertical
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
@@ -237,6 +241,132 @@ static UIViewController* m_interfaceOrientationSource;
     else
       return 352;
   }
+}
+
+// How much space between toolbar left/right edge and the first/last toolbar
+// item (for simple items that display an image)
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
++ (int) toolbarPaddingHorizontal
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    if (isPortraitOrientation)
+      return 6;
+    else
+      return 4;
+  }
+  else
+  {
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
+}
+
+// How much space between toolbar top/bottom edge and a toolbar item
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
++ (int) toolbarPaddingVertical
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    if (isPortraitOrientation)
+      return 6;
+    else
+      return 3;
+  }
+  else
+  {
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
+}
+
+// How much space between toolbar items
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
++ (int) toolbarSpacing
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    return 10;
+  }
+  else
+  {
+    if (isPortraitOrientation)
+      return 7;
+    else
+      return 7;
+  }
+}
+
+// For toolbar items with a custom UIView, how much space is added to the
+// left/right edge of the custom view by UIBarButtonItem. This padding is
+// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// iPhone landscape and iPad
+// noticeable if the item is at the toolbar's left/right edge.
++ (int) toolbarCustomViewItemPaddingHorizontal
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
+  else
+  {
+    if (isPortraitOrientation)
+      return 5;
+    else
+      return 5;
+  }
+}
+
++ (int) splitViewLeftPaneWidth
+{
+  return 320;
+}
+
++ (int) splitViewRightPaneWidth
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:[NSString stringWithFormat:@"Split view not available on iPhone"]
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  if (isPortraitOrientation)
+  {
+    return [UiElementMetrics screenWidth];
+  }
+  else
+  {
+    return ([UiElementMetrics screenWidth]
+            - [UiElementMetrics splitViewDividerWidth]
+            - [UiElementMetrics splitViewLeftPaneWidth]);
+  }
+}
+
++ (int) splitViewDividerWidth
+{
+  return 1;
+}
+
++ (int) splitViewHeight
+{
+  return [UiElementMetrics screenHeight];
 }
 
 @end

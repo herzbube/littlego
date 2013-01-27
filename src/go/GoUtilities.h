@@ -16,8 +16,10 @@
 
 
 // Forward declarations
-@class GoPoint;
 @class GoGame;
+@class GoMove;
+@class GoPlayer;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
@@ -37,5 +39,6 @@
 + (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize;
 + (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game;
 + (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize;
++ (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game;
 
 @end

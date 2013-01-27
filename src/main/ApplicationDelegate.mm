@@ -36,6 +36,7 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
+#import "../play/boardposition/BoardPositionModel.h"
 #import "../play/PlayViewModel.h"
 #import "../play/ScoringModel.h"
 #import "../play/SoundHandling.h"
@@ -120,6 +121,7 @@
 @synthesize gtpEngineProfileModel;
 @synthesize scoringModel;
 @synthesize playViewModel;
+@synthesize boardPositionModel;
 @synthesize soundHandling;
 @synthesize game;
 @synthesize archiveViewModel;
@@ -176,6 +178,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.playViewModel = nil;
+  self.boardPositionModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
   self.game = nil;
@@ -430,6 +433,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];
   self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
+  self.boardPositionModel = [[[BoardPositionModel alloc] init] autorelease];
   self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
@@ -439,6 +443,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
   [self.playViewModel readUserDefaults];
+  [self.boardPositionModel readUserDefaults];
   [self.scoringModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
   [self.gtpLogModel readUserDefaults];
@@ -455,6 +460,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.playerModel writeUserDefaults];
   [self.gtpEngineProfileModel writeUserDefaults];
   [self.playViewModel writeUserDefaults];
+  [self.boardPositionModel writeUserDefaults];
   [self.scoringModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];
   [self.gtpLogModel writeUserDefaults];
