@@ -317,9 +317,7 @@
   {
     // Triggers itemScrollView:itemViewAtIndex() where we will set up a new
     // view with the "currentBoardPosition" flag set correctly
-    // TODO xxx: animated should be false if this is the result of a new game
-    // being loaded
-    [self.boardPositionListView makeVisibleItemViewAtIndex:newBoardPosition animated:false];
+    [self.boardPositionListView makeVisibleItemViewAtIndex:newBoardPosition animated:true];
   }
 
   self.oldBoardPosition = -1;
