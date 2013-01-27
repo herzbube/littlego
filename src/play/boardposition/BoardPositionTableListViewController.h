@@ -21,7 +21,13 @@
 /// managing the table views that display the current board position and the
 /// list of all board positions on the Play tab.
 ///
-/// BoardPositionTableListViewController is used only on the iPad.
+/// BoardPositionTableListViewController is used only on the iPad. There it
+/// replaces the iPhone-only subcontrollers BoardPositionTableListViewController
+/// and CurrentBoarPositionViewController.
+///
+/// BoardPositionTableListViewController replicates a lot of the user
+/// interaction and update policies described in the class documentation of
+/// BoardPositionListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {

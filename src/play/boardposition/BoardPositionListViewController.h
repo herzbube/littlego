@@ -27,6 +27,8 @@
 /// the "board position list view", i.e. the scroll view on the Play tab that
 /// displays the board positions of the current game.
 ///
+/// BoardPositionListViewController is used only on the iPhone.
+///
 /// The board position list view displays a series of small subviews, each of
 /// which represents one of the board positions of the current game. A board
 /// position subview displays information about the move that caused the
@@ -50,22 +52,6 @@
 /// The user can select a board position by tapping the subview that represents
 /// it. This results in the Go board being updated to display the selected board
 /// position.
-///
-///
-/// @par Positioning and layout
-///
-/// Position and layout of the board position list view depends on the device
-/// orientation:
-/// - Portrait orientation: The view is displayed below the Go board, the
-///   subviews are arranged horizontally, and scrolling occurs in a horizontal
-///   direction. BoardPositionListViewController only determines the height of
-///   the frame of the board position list view, the other frame characteristics
-///   are set by the Play tab's main controller (who is responsible for the
-///   overall layout of views on the Play tab).
-/// - Landscape orientation: The view is displayed on the left of the Go board,
-///   subviews are arranged vertically, scrolling occurs vertically, and
-///   BoardPositionListViewController determines the width of the frame of the
-///   board position list view.
 ///
 ///
 /// @par Content and scroll position updates

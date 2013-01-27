@@ -32,6 +32,8 @@
 /// managing user interaction with these custom views - there are separate
 /// controllers for that.
 ///
+/// @note Custom views are used on the iPhone only.
+///
 /// The remaining controls are a set of buttons that are self-created by
 /// BoardPositionToolbarController. For these, BoardPositionToolbarController
 /// also manages user interaction.

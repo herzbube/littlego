@@ -34,6 +34,8 @@
 /// managing the BoardPositionView on the "Play" tab that displays information
 /// about the current board position.
 ///
+/// CurrentBoardPositionViewController is used only on the iPhone.
+///
 /// CurrentBoardPositionViewController has the following responsibilities:
 /// - Tell the current board position view to update itself when the current
 ///   board position changes.
