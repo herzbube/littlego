@@ -292,6 +292,7 @@
   self.boardPositionListTableView.dataSource = self;
 
   self.boardPositionListTableView.backgroundView = nil;
+  self.boardPositionListTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 }
 
 // -----------------------------------------------------------------------------
