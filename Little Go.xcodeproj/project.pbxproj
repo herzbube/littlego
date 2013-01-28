@@ -310,13 +310,16 @@
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
+		CDF6FCD216B59C6C009A2193 /* wooden-background@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */; };
+		CDF6FCD716B5AA17009A2193 /* wooden-background@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */; };
+		CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */; };
+		CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */; };
 		CDF82294164D450500F53C01 /* 298-circlex.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82292164D450500F53C01 /* 298-circlex.png */; };
 		CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82293164D450500F53C01 /* 298-circlex@2x.png */; };
 		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
 		CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
 		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */; };
-		CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */; };
 		CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
 		CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
 		CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */; };
@@ -327,7 +330,6 @@
 		CDF8B78814DC757C00940D3E /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */; };
 		CDF8B78914DDD72500940D3E /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
 		CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
-		CDF8B78B14DDD73100940D3E /* BoardLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */; };
 		CDF8B78C14DDD73500940D3E /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */; };
 		CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
 		CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
@@ -724,6 +726,10 @@
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
 		CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAndPlayCommand.h; sourceTree = "<group>"; };
 		CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAndPlayCommand.m; sourceTree = "<group>"; };
+		CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background@2x~ipad.png"; sourceTree = "<group>"; };
+		CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background@2x~iphone.png"; sourceTree = "<group>"; };
+		CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background~ipad.png"; sourceTree = "<group>"; };
+		CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background~iphone.png"; sourceTree = "<group>"; };
 		CDF82292164D450500F53C01 /* 298-circlex.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex.png"; sourceTree = "<group>"; };
 		CDF82293164D450500F53C01 /* 298-circlex@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex@2x.png"; sourceTree = "<group>"; };
 		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
@@ -734,8 +740,6 @@
 		CDF8B6FE14D722BA00940D3E /* StatusLineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusLineController.m; sourceTree = "<group>"; };
 		CDF8B76814D9E92000940D3E /* PlayViewLayerDelegateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegateBase.h; sourceTree = "<group>"; };
 		CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewLayerDelegateBase.m; sourceTree = "<group>"; };
-		CDF8B76B14D9ED7900940D3E /* BoardLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardLayerDelegate.m; sourceTree = "<group>"; };
 		CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
 		CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
 		CDF8B77114DB598000940D3E /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
@@ -1337,6 +1341,10 @@
 				CD393F731669210E009DF814 /* stone-crosshair.png */,
 				CD393F741669210E009DF814 /* stone-white.png */,
 				CD393F7816692C4D009DF814 /* stones.svg */,
+				CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */,
+				CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */,
+				CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */,
+				CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */,
 			);
 			path = image;
 			sourceTree = "<group>";
@@ -1521,8 +1529,6 @@
 		CDF8B76714D9E91F00940D3E /* layer */ = {
 			isa = PBXGroup;
 			children = (
-				CDF8B76B14D9ED7900940D3E /* BoardLayerDelegate.h */,
-				CDF8B76C14D9ED7A00940D3E /* BoardLayerDelegate.m */,
 				CDF8B78614DC757700940D3E /* CrossHairLinesLayerDelegate.h */,
 				CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */,
 				CD0DFED614EB2159000FE1B5 /* CrossHairStoneLayerDelegate.h */,
@@ -1729,6 +1735,10 @@
 				CDE15950164F2D62001C8ADF /* book.dat in Resources */,
 				CDE6A52B16AB03FE00932B05 /* delete-to-left.png in Resources */,
 				CDE6A52D16AB5D2A00932B05 /* delete-to-left@2x.png in Resources */,
+				CDF6FCD216B59C6C009A2193 /* wooden-background@2x~ipad.png in Resources */,
+				CDF6FCD716B5AA17009A2193 /* wooden-background@2x~iphone.png in Resources */,
+				CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */,
+				CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1863,7 +1873,6 @@
 				CDF8B6FC14D722B100940D3E /* ActivityIndicatorController.m in Sources */,
 				CDF8B70014D72EEB00940D3E /* StatusLineController.m in Sources */,
 				CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */,
-				CDF8B76D14D9ED7A00940D3E /* BoardLayerDelegate.m in Sources */,
 				CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */,
 				CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */,
 				CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */,
@@ -1972,7 +1981,6 @@
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 				CDF8B78914DDD72500940D3E /* PlayView.m in Sources */,
 				CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */,
-				CDF8B78B14DDD73100940D3E /* BoardLayerDelegate.m in Sources */,
 				CDF8B78C14DDD73500940D3E /* CrossHairLinesLayerDelegate.m in Sources */,
 				CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */,
 				CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */,

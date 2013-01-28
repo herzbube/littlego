@@ -418,7 +418,7 @@ enum ActionType
   UIView* superView = [self playViewSuperview];
   [superView addSubview:self.playView];
 
-  self.playView.backgroundColor = [UIColor clearColor];
+  self.playView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 }
 

@@ -20,7 +20,6 @@
 #import "PlayViewMetrics.h"
 #import "PlayViewModel.h"
 #import "ScoringModel.h"
-#import "layer/BoardLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/DeadStonesLayerDelegate.h"
@@ -94,7 +93,6 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> boardLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> gridLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> starPointsLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairLinesLayerDelegate;
@@ -121,7 +119,6 @@
 @synthesize updatesWereDelayed;
 
 @synthesize playViewMetrics;
-@synthesize boardLayerDelegate;
 @synthesize gridLayerDelegate;
 @synthesize starPointsLayerDelegate;
 @synthesize crossHairLinesLayerDelegate;
@@ -215,7 +212,6 @@ static PlayView* sharedPlayView = nil;
     sharedPlayView = nil;
 
   self.playViewMetrics = nil;
-  self.boardLayerDelegate = nil;
   self.gridLayerDelegate = nil;
   self.starPointsLayerDelegate = nil;
   self.crossHairLinesLayerDelegate = nil;
@@ -283,9 +279,6 @@ static PlayView* sharedPlayView = nil;
     [self.playViewMetrics updateWithBoardSize:game.board.size];
 
 
-  self.boardLayerDelegate = [[[BoardLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                               metrics:playViewMetrics
-                                                                 model:playViewModel] autorelease];
   self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithLayer:[CALayer layer]
                                                              metrics:playViewMetrics
                                                                model:playViewModel] autorelease];
@@ -314,7 +307,6 @@ static PlayView* sharedPlayView = nil;
                                                                    playViewModel:playViewModel
                                                                     scoringModel:scoringModel] autorelease];
 
-  [self setupSubLayer:boardLayerDelegate.layer];
   [self setupSubLayer:gridLayerDelegate.layer];
   [self setupSubLayer:starPointsLayerDelegate.layer];
   [self setupSubLayer:crossHairLinesLayerDelegate.layer];
@@ -379,7 +371,6 @@ static PlayView* sharedPlayView = nil;
     return;
   self.updatesWereDelayed = false;
 
-  [boardLayerDelegate drawLayer];
   [gridLayerDelegate drawLayer];
   [starPointsLayerDelegate drawLayer];
   [crossHairLinesLayerDelegate drawLayer];
@@ -399,7 +390,6 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
-  [boardLayerDelegate notify:event eventInfo:eventInfo];
   [gridLayerDelegate notify:event eventInfo:eventInfo];
   [starPointsLayerDelegate notify:event eventInfo:eventInfo];
   [crossHairLinesLayerDelegate notify:event eventInfo:eventInfo];

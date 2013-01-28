@@ -527,6 +527,7 @@ extern NSString* stoneCrosshairImageResource;
 extern NSString* computerVsComputerImageResource;
 extern NSString* humanVsComputerImageResource;
 extern NSString* humanVsHumanImageResource;
+extern NSString* woodenBackgroundImageResource;
 extern NSString* bugReportMessageTemplateResource;
 //@}
 
