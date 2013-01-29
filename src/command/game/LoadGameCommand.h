@@ -21,7 +21,6 @@
 
 // Forward declarations
 @class GtpCommand;
-@class Player;
 
 
 // -----------------------------------------------------------------------------
@@ -82,8 +81,6 @@
 
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;
-@property(nonatomic, retain) Player* blackPlayer;
-@property(nonatomic, retain) Player* whitePlayer;
 @property(nonatomic, retain) NSString* gameName;
 /// @brief True if command execution should be synchronous. The default is
 /// false.

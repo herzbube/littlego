@@ -158,22 +158,16 @@ enum KomiSectionItem
 - (Player*) playerForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (bool) shouldPickHumanPlayerForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) updateWithNewPlayer:(Player*)newPlayer forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) updateCell:(UITableViewCell*)cell withPlayer:(Player*)player;
+- (void) updateCell:(UITableViewCell*)cell withPlayer:(NSString*)playerUUID;
 - (bool) isSelectionValid;
 - (void) newGame;
-- (void) updatePropertiesToMatchNewGameType;
 + (int) segmentIndexForGameType:(enum GoGameType)gameType;
 + (enum GoGameType) gameTypeForSegmentIndex:(int)segmentIndex;
 //@}
 /// @name Private properties
 //@{
-@property(nonatomic, assign) enum GoGameType gameType;
-@property(nonatomic, retain) Player* humanPlayer;
-@property(nonatomic, retain) Player* computerPlayer;
-@property(nonatomic, assign) bool computerPlaysWhite;
-@property(nonatomic, retain) Player* humanPlayerBlack;
-@property(nonatomic, retain) Player* humanPlayerWhite;
-@property(nonatomic, retain) Player* computerPlayerSelfPlay;
+@property(nonatomic, assign) NewGameModel* theNewGameModel;
+@property(nonatomic, assign) PlayerModel* playerModel;
 //@}
 @end
 
@@ -181,19 +175,9 @@ enum KomiSectionItem
 @implementation NewGameController
 
 @synthesize delegate;
-@synthesize boardSize;
-@synthesize blackPlayer;
-@synthesize whitePlayer;
 @synthesize loadGame;
-@synthesize handicap;
-@synthesize komi;
-@synthesize gameType;
-@synthesize humanPlayer;
-@synthesize computerPlayer;
-@synthesize computerPlaysWhite;
-@synthesize humanPlayerBlack;
-@synthesize humanPlayerWhite;
-@synthesize computerPlayerSelfPlay;
+@synthesize theNewGameModel;
+@synthesize playerModel;
 
 
 // -----------------------------------------------------------------------------
@@ -214,76 +198,55 @@ enum KomiSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.loadGame = loadGame;
-    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+    NewGameModel* theNewGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+    controller.theNewGameModel = theNewGameModel;
     PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
-    controller.boardSize = newGameModel.boardSize;
-    controller.blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
-    controller.whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
-    controller.handicap = newGameModel.handicap;
-    controller.komi = newGameModel.komi;
+    controller.playerModel = playerModel;
 
-    // Determine game type
-    if (nil == controller.blackPlayer || nil == controller.whitePlayer)
-      controller.gameType = GoGameTypeComputerVsHuman;
-    // From now on we are sure that player objects are not nil
-    else if (controller.blackPlayer.human && controller.whitePlayer.human)
-      controller.gameType = GoGameTypeHumanVsHuman;
-    else if (! controller.blackPlayer.human && ! controller.whitePlayer.human)
-      controller.gameType = GoGameTypeComputerVsComputer;
-    else
-      controller.gameType = GoGameTypeComputerVsHuman;
-
-    // Fill player properties that match game type
-    // For human vs. computer games: Determine which color the computer plays
-    controller.humanPlayer = nil;
-    controller.computerPlayer = nil;
-    controller.computerPlaysWhite = true;
-    controller.humanPlayerBlack = nil;
-    controller.humanPlayerWhite = nil;
-    controller.computerPlayerSelfPlay = nil;
-    switch (controller.gameType)
+    // Try to find some sensible defaults if player objects could not be
+    // determined (e.g. because the UUIDs we remembered are no longer valid).
+    // The general approach here is to avoid guesses: A default is chosen only
+    // if there is no other logical choice.
+    NSArray* humanPlayerList = [playerModel playerListHuman:true];
+    NSArray* computerPlayerList = [playerModel playerListHuman:false];
+    if (! [playerModel playerWithUUID:theNewGameModel.humanPlayerUUID])
     {
-      case GoGameTypeComputerVsHuman:
+      if (1 == humanPlayerList.count)
       {
-        if (nil != controller.blackPlayer)
-        {
-          if (controller.blackPlayer.human)
-            controller.humanPlayer = controller.blackPlayer;
-          else
-          {
-            controller.computerPlayer = controller.blackPlayer;
-            controller.computerPlaysWhite = false;
-          }
-        }
-        if (nil != controller.whitePlayer)
-        {
-          if (controller.whitePlayer.human)
-          {
-            controller.humanPlayer = controller.whitePlayer;
-            controller.computerPlaysWhite = false;
-          }
-          else
-            controller.computerPlayer = controller.whitePlayer;
-        }
-        break;
+        Player* player = [humanPlayerList objectAtIndex:0];
+        theNewGameModel.humanPlayerUUID = player.uuid;
       }
-      case GoGameTypeHumanVsHuman:
+    }
+    if (! [playerModel playerWithUUID:theNewGameModel.computerPlayerUUID])
+    {
+      if (1 == computerPlayerList.count)
       {
-        controller.humanPlayerBlack = controller.blackPlayer;
-        controller.humanPlayerWhite = controller.whitePlayer;
-        break;
+        Player* player = [computerPlayerList objectAtIndex:0];
+        theNewGameModel.computerPlayerUUID = player.uuid;
       }
-      case GoGameTypeComputerVsComputer:
+    }
+    if (! [playerModel playerWithUUID:theNewGameModel.humanBlackPlayerUUID])
+    {
+      if (humanPlayerList.count >= 1 && humanPlayerList.count <= 2)
       {
-        controller.computerPlayerSelfPlay = controller.blackPlayer;
-        break;
+        Player* player = [humanPlayerList objectAtIndex:0];
+        theNewGameModel.humanBlackPlayerUUID = player.uuid;
       }
-      default:
+    }
+    if (! [playerModel playerWithUUID:theNewGameModel.humanWhitePlayerUUID])
+    {
+      if (2 == humanPlayerList.count)
       {
-        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                         reason:[NSString stringWithFormat:@"Invalid game type: %d", controller.gameType]
-                                                       userInfo:nil];
-        @throw exception;
+        Player* player = [humanPlayerList objectAtIndex:1];
+        theNewGameModel.humanWhitePlayerUUID = player.uuid;
+      }
+    }
+    if (! [playerModel playerWithUUID:theNewGameModel.computerPlayerSelfPlayUUID])
+    {
+      if (1 == computerPlayerList.count)
+      {
+        Player* player = [computerPlayerList objectAtIndex:0];
+        theNewGameModel.computerPlayerSelfPlayUUID = player.uuid;
       }
     }
   }
@@ -296,13 +259,8 @@ enum KomiSectionItem
 - (void) dealloc
 {
   self.delegate = nil;
-  self.blackPlayer = nil;
-  self.whitePlayer = nil;
-  self.humanPlayer = nil;
-  self.computerPlayer = nil;
-  self.humanPlayerBlack = nil;
-  self.humanPlayerWhite = nil;
-  self.computerPlayerSelfPlay = nil;
+  self.theNewGameModel = nil;
+  self.playerModel = nil;
   [super dealloc];
 }
 
@@ -412,7 +370,7 @@ enum KomiSectionItem
       return MaxGameTypeSectionItem;
     case PlayersSection:
     {
-      switch (self.gameType)
+      switch (theNewGameModel.gameTypeLastSelected)
       {
         case GoGameTypeComputerVsHuman:
           return MaxPlayersSectionItemHumanVsComputer;
@@ -423,7 +381,7 @@ enum KomiSectionItem
         default:
         {
           NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                           reason:[NSString stringWithFormat:@"Invalid game type: %d", self.gameType]
+                                                           reason:[NSString stringWithFormat:@"Invalid game type: %d", theNewGameModel.gameTypeLastSelected]
                                                          userInfo:nil];
           @throw exception;
         }
@@ -464,7 +422,7 @@ enum KomiSectionItem
   }
   else
   {
-    if (PlayersSection == indexPath.section && GoGameTypeComputerVsHuman == self.gameType && ComputerPlayerColorItem == indexPath.row)
+    if (PlayersSection == indexPath.section && GoGameTypeComputerVsHuman == theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
     {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
     }
@@ -497,13 +455,13 @@ enum KomiSectionItem
       [segmentedControl insertSegmentWithImage:[UIImage imageNamed:computerVsComputerImageResource]
                                        atIndex:[NewGameController segmentIndexForGameType:GoGameTypeComputerVsComputer]
                                       animated:NO];
-      segmentedControl.selectedSegmentIndex = [NewGameController segmentIndexForGameType:self.gameType];
+      segmentedControl.selectedSegmentIndex = [NewGameController segmentIndexForGameType:theNewGameModel.gameTypeLastSelected];
       [segmentedControl addTarget:self action:@selector(gameTypeChanged:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     case PlayersSection:
     {
-      switch (self.gameType)
+      switch (theNewGameModel.gameTypeLastSelected)
       {
         case GoGameTypeComputerVsHuman:
         {
@@ -511,16 +469,16 @@ enum KomiSectionItem
           {
             case HumanPlayerItem:
               cell.textLabel.text = @"Human";
-              [self updateCell:cell withPlayer:self.humanPlayer];
+              [self updateCell:cell withPlayer:theNewGameModel.humanPlayerUUID];
               break;
             case ComputerPlayerItem:
               cell.textLabel.text = @"Computer";
-              [self updateCell:cell withPlayer:self.computerPlayer];
+              [self updateCell:cell withPlayer:theNewGameModel.computerPlayerUUID];
               break;
             case ComputerPlayerColorItem:
               cell.textLabel.text = @"Computer plays white";
               UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-              accessoryView.on = self.computerPlaysWhite ? YES : NO;
+              accessoryView.on = theNewGameModel.computerPlaysWhite ? YES : NO;
               [accessoryView addTarget:self action:@selector(toggleComputerPlaysWhite:) forControlEvents:UIControlEventValueChanged];
               break;
             default:
@@ -535,11 +493,11 @@ enum KomiSectionItem
           {
             case BlackPlayerItem:
               cell.textLabel.text = @"Black";
-              [self updateCell:cell withPlayer:self.humanPlayerBlack];
+              [self updateCell:cell withPlayer:theNewGameModel.humanBlackPlayerUUID];
               break;
             case WhitePlayerItem:
               cell.textLabel.text = @"White";
-              [self updateCell:cell withPlayer:self.humanPlayerWhite];
+              [self updateCell:cell withPlayer:theNewGameModel.humanWhitePlayerUUID];
               break;
             default:
               assert(0);
@@ -553,7 +511,7 @@ enum KomiSectionItem
           {
             case SingleComputerPlayerItem:
               cell.textLabel.text = @"Computer";
-              [self updateCell:cell withPlayer:self.computerPlayerSelfPlay];
+              [self updateCell:cell withPlayer:theNewGameModel.computerPlayerSelfPlayUUID];
               break;
             default:
               assert(0);
@@ -575,7 +533,7 @@ enum KomiSectionItem
       {
         case BoardSizeItem:
           cell.textLabel.text = @"Board size";
-          cell.detailTextLabel.text = [GoBoard stringForSize:self.boardSize];
+          cell.detailTextLabel.text = [GoBoard stringForSize:theNewGameModel.boardSize];
           break;
         default:
           assert(0);
@@ -589,7 +547,7 @@ enum KomiSectionItem
       {
         case HandicapItem:
           cell.textLabel.text = @"Handicap";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.handicap];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", theNewGameModel.handicap];
         default:
           assert(0);
           break;
@@ -602,7 +560,7 @@ enum KomiSectionItem
       {
         case KomiItem:
           cell.textLabel.text = @"Komi";
-          cell.detailTextLabel.text = [NSString stringWithKomi:self.komi numericZeroValue:false];
+          cell.detailTextLabel.text = [NSString stringWithKomi:theNewGameModel.komi numericZeroValue:false];
         default:
           assert(0);
           break;
@@ -629,10 +587,9 @@ enum KomiSectionItem
   {
     case PlayersSection:
     {
-      PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
       Player* defaultPlayer = [self playerForRowAtIndexPath:indexPath];
       bool pickHumanPlayer = [self shouldPickHumanPlayerForRowAtIndexPath:indexPath];
-      NSArray* playerList = [model playerListHuman:pickHumanPlayer];
+      NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultPlayer = -1;
       for (int playerIndex = 0; playerIndex < playerList.count; ++playerIndex)
@@ -658,7 +615,7 @@ enum KomiSectionItem
         int naturalBoardSize = GoBoardSizeMin + (boardSizeIndex * 2);
         [itemList addObject:[NSString stringWithFormat:@"%d", naturalBoardSize]];
       }
-      int indexOfDefaultBoardSize = (self.boardSize - GoBoardSizeMin) / 2;
+      int indexOfDefaultBoardSize = (theNewGameModel.boardSize - GoBoardSizeMin) / 2;
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                           title:@"Board size"
                                                                              indexOfDefaultItem:indexOfDefaultBoardSize
@@ -669,16 +626,16 @@ enum KomiSectionItem
     }
     case HandicapSection:
     {
-      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.boardSize];
+      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:theNewGameModel.boardSize];
       modalController = [HandicapSelectionController controllerWithDelegate:self
-                                                            defaultHandicap:self.handicap
+                                                            defaultHandicap:theNewGameModel.handicap
                                                             maximumHandicap:maximumHandicap];
       break;
     }
     case KomiSection:
     {
       modalController = [KomiSelectionController controllerWithDelegate:self
-                                                            defaultKomi:self.komi];
+                                                            defaultKomi:theNewGameModel.komi];
       break;
     }
     default:
@@ -704,9 +661,8 @@ enum KomiSectionItem
     NSIndexPath* indexPathContext = controller.context;
     if (PlayersSection == indexPathContext.section)
     {
-      PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
       bool pickHumanPlayer = [self shouldPickHumanPlayerForRowAtIndexPath:indexPathContext];
-      NSArray* playerList = [model playerListHuman:pickHumanPlayer];
+      NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
       Player* newPlayer = [playerList objectAtIndex:controller.indexOfSelectedItem];
       [self updateWithNewPlayer:newPlayer forRowAtIndexPath:indexPathContext];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
@@ -715,15 +671,15 @@ enum KomiSectionItem
     }
     else if (BoardSizeSection == indexPathContext.section)
     {
-      self.boardSize = GoBoardSizeMin + (controller.indexOfSelectedItem * 2);
+      theNewGameModel.boardSize = GoBoardSizeMin + (controller.indexOfSelectedItem * 2);
       NSRange indexSetRange = NSMakeRange(BoardSizeSection, 1);
 
       // Adjust handicap if the current handicap exceeds the maximum allowed
       // handicap for the new board size
-      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.boardSize];
-      if (self.handicap > maximumHandicap)
+      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:theNewGameModel.boardSize];
+      if (theNewGameModel.handicap > maximumHandicap)
       {
-        self.handicap = maximumHandicap;
+        theNewGameModel.handicap = maximumHandicap;
         indexSetRange.length = HandicapSection - indexSetRange.location + 1;
       }
 
@@ -742,9 +698,9 @@ enum KomiSectionItem
 {
   if (didMakeSelection)
   {
-    if (self.handicap != controller.handicap)
+    if (theNewGameModel.handicap != controller.handicap)
     {
-      self.handicap = controller.handicap;
+      theNewGameModel.handicap = controller.handicap;
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
       NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
@@ -760,9 +716,9 @@ enum KomiSectionItem
 {
   if (didMakeSelection)
   {
-    if (self.komi != controller.komi)
+    if (theNewGameModel.komi != controller.komi)
     {
-      self.komi = controller.komi;
+      theNewGameModel.komi = controller.komi;
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
       NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:KomiSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
@@ -778,45 +734,47 @@ enum KomiSectionItem
 /// This is a private helper for methods that handle the picking of a new
 /// player.
 ///
-/// This method requires that self.gameType has the correct value.
+/// This method requires that theNewGameModel.gameTypeLastSelected has the
+/// correct value.
 ///
-/// Raises an @e NSInvalidArgumentException if self.gameType is not recognized.
+/// Raises an @e NSInvalidArgumentException if
+/// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
 - (Player*) playerForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  Player* player = nil;
-  switch (self.gameType)
+  NSString* playerUUID;
+  switch (theNewGameModel.gameTypeLastSelected)
   {
     case GoGameTypeComputerVsHuman:
     {
       if (HumanPlayerItem == indexPath.row)
-        player = self.humanPlayer;
+        playerUUID = theNewGameModel.humanPlayerUUID;
       else
-        player = self.computerPlayer;
+        playerUUID = theNewGameModel.computerPlayerUUID;
       break;
     }
     case GoGameTypeHumanVsHuman:
     {
       if (BlackPlayerItem == indexPath.row)
-        player = self.humanPlayerBlack;
+        playerUUID = theNewGameModel.humanBlackPlayerUUID;
       else
-        player = self.humanPlayerWhite;
+        playerUUID = theNewGameModel.humanWhitePlayerUUID;
       break;
     }
     case GoGameTypeComputerVsComputer:
     {
-      player = self.computerPlayerSelfPlay;
+      playerUUID = theNewGameModel.computerPlayerSelfPlayUUID;
       break;
     }
     default:
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", theNewGameModel.gameTypeLastSelected]
                                                      userInfo:nil];
       @throw exception;
     }
   }
-  return player;
+  return [self.playerModel playerWithUUID:playerUUID];
 }
 
 // -----------------------------------------------------------------------------
@@ -826,14 +784,16 @@ enum KomiSectionItem
 /// This is a private helper for methods that handle the picking of a new
 /// player.
 ///
-/// This method requires that self.gameType has the correct value.
+/// This method requires that theNewGameModel.gameTypeLastSelected has the
+/// correct value.
 ///
-/// Raises an @e NSInvalidArgumentException if self.gameType is not recognized.
+/// Raises an @e NSInvalidArgumentException if
+/// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
 - (bool) shouldPickHumanPlayerForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   bool pickHumanPlayer = true;
-  switch (self.gameType)
+  switch (theNewGameModel.gameTypeLastSelected)
   {
     case GoGameTypeComputerVsHuman:
     {
@@ -856,7 +816,7 @@ enum KomiSectionItem
     default:
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", theNewGameModel.gameTypeLastSelected]
                                                      userInfo:nil];
       @throw exception;
     }
@@ -865,67 +825,49 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates self.blackPlayer, self.whitePlayer, and those player
-/// properties that match the current game type (self.gameType).
+/// @brief Updates values in theNewGameModel that match the current game type
+/// (theNewGameModel.gameTypeLastSelected).
 ///
 /// This is a private helper for itemPickerController:didMakeSelection:(). It
 /// is invoked after the new player object @a newPlayer has been selected for
 /// the table view cell identified by @a indexPath.
 ///
-/// This method requires that self.gameType and self.computerPlaysWhite have
-/// correct values.
+/// This method requires that theNewGameModel.gameTypeLastSelected has the
+/// correct value.
 ///
-/// Raises an @e NSInvalidArgumentException if self.gameType is not recognized.
+/// Raises an @e NSInvalidArgumentException if
+/// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
 - (void) updateWithNewPlayer:(Player*)newPlayer forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  switch (self.gameType)
+  NSString* newPlayerUUID = newPlayer.uuid;
+  switch (theNewGameModel.gameTypeLastSelected)
   {
     case GoGameTypeComputerVsHuman:
     {
       if (HumanPlayerItem == indexPath.row)
-      {
-        self.humanPlayer = newPlayer;
-        if (self.computerPlaysWhite)
-          self.blackPlayer = newPlayer;
-        else
-          self.whitePlayer = newPlayer;
-      }
+        theNewGameModel.humanPlayerUUID = newPlayerUUID;
       else
-      {
-        self.computerPlayer = newPlayer;
-        if (self.computerPlaysWhite)
-          self.whitePlayer = newPlayer;
-        else
-          self.blackPlayer = newPlayer;
-      }
+        theNewGameModel.computerPlayerUUID = newPlayerUUID;
       break;
     }
     case GoGameTypeHumanVsHuman:
     {
       if (BlackPlayerItem == indexPath.row)
-      {
-        self.humanPlayerBlack = newPlayer;
-        self.blackPlayer = newPlayer;
-      }
+        theNewGameModel.humanBlackPlayerUUID = newPlayerUUID;
       else
-      {
-        self.humanPlayerWhite = newPlayer;
-        self.whitePlayer = newPlayer;
-      }
+        theNewGameModel.humanWhitePlayerUUID = newPlayerUUID;
       break;
     }
     case GoGameTypeComputerVsComputer:
     {
-      self.computerPlayerSelfPlay = newPlayer;
-      self.blackPlayer = newPlayer;
-      self.whitePlayer = newPlayer;
+      theNewGameModel.computerPlayerSelfPlayUUID = newPlayerUUID;
       break;
     }
     default:
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", theNewGameModel.gameTypeLastSelected]
                                                      userInfo:nil];
       @throw exception;
     }
@@ -933,11 +875,16 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates @a cell so that it represents @a player. Note that @a player
-/// may be @e nil.
+/// @brief Updates @a cell with information for the player identified by
+/// @a playerUUID.
+///
+/// If @a playerUUID is an empty string, or refers to a player that does not
+/// exist, @a cell is updated with a string that indicates that no player is
+/// selected.
 // -----------------------------------------------------------------------------
-- (void) updateCell:(UITableViewCell*)cell withPlayer:(Player*)player
+- (void) updateCell:(UITableViewCell*)cell withPlayer:(NSString*)playerUUID
 {
+  Player* player = [self.playerModel playerWithUUID:playerUUID];
   if (player)
   {
     cell.detailTextLabel.text = player.name;
@@ -954,33 +901,49 @@ enum KomiSectionItem
 /// @brief Returns true if the currently selected settings are valid so that a
 /// new game can be started.
 ///
-/// This method requires that self.gameType has the correct value.
+/// This method requires that theNewGameModel.gameTypeLastSelected has the
+/// correct value.
 ///
-/// Raises an @e NSInvalidArgumentException if self.gameType is not recognized.
+/// Raises an @e NSInvalidArgumentException if
+/// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
 - (bool) isSelectionValid
 {
   // Don't need to check player types, the controller logic allows only valid
   // player types
   bool isSelectionValid = true;
-  switch (self.gameType)
+  switch (theNewGameModel.gameTypeLastSelected)
   {
     case GoGameTypeComputerVsHuman:
-      if (nil == self.humanPlayer || nil == self.computerPlayer)
+    {
+      if (! [playerModel playerWithUUID:theNewGameModel.humanPlayerUUID] ||
+          ! [playerModel playerWithUUID:theNewGameModel.computerPlayerUUID])
+      {
         isSelectionValid = false;
+      }
       break;
+    }
     case GoGameTypeHumanVsHuman:
-      if (nil == self.humanPlayerBlack || nil == self.humanPlayerWhite)
+    {
+      if (! [playerModel playerWithUUID:theNewGameModel.humanBlackPlayerUUID] ||
+          ! [playerModel playerWithUUID:theNewGameModel.humanWhitePlayerUUID])
+      {
         isSelectionValid = false;
+      }
       break;
+    }
     case GoGameTypeComputerVsComputer:
-      if (nil == self.computerPlayerSelfPlay)
+    {
+      if (! [playerModel playerWithUUID:theNewGameModel.computerPlayerSelfPlayUUID])
+      {
         isSelectionValid = false;
+      }
       break;
+    }
     default:
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", theNewGameModel.gameTypeLastSelected]
                                                      userInfo:nil];
       @throw exception;
     }
@@ -1008,27 +971,16 @@ enum KomiSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user has finished selecting parameters for a new
-/// game. Makes the collected information persistent, then informs the delegate
-/// that a new game needs to be started.
+/// game. Informs the delegate that a new game needs to be started.
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  // Store the collected information in NewGameModel before informing the
-  // delegate
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
-  assert(model);
-  model.boardSize = self.boardSize;
-  model.blackPlayerUUID = self.blackPlayer.uuid;
-  model.whitePlayerUUID = self.whitePlayer.uuid;
-  // If an archived game is loaded, handicap and komi are taken from the
-  // archive; since the user did not make selections for those parameters, they
-  // cannot be persisted.
-  if (! self.loadGame)
-  {
-    model.handicap = self.handicap;
-    model.komi = self.komi;
-  }
-
+  // When the new game is started, the game type is taken from the gameType
+  // property, not from gameTypeLastSelected. We write the value for gameType
+  // only at the last possible moment when we are certain that the user's
+  // choices in the GUI are valid (only if they are valid is the "Done" button
+  // enabled).
+  theNewGameModel.gameType = theNewGameModel.gameTypeLastSelected;
   [self.delegate newGameController:self didStartNewGame:true];
 }
 
@@ -1039,9 +991,7 @@ enum KomiSectionItem
 - (void) gameTypeChanged:(id)sender
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
-  self.gameType = [NewGameController gameTypeForSegmentIndex:segmentedControl.selectedSegmentIndex];
-
-  [self updatePropertiesToMatchNewGameType];
+  theNewGameModel.gameTypeLastSelected = [NewGameController gameTypeForSegmentIndex:segmentedControl.selectedSegmentIndex];
 
   self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 
@@ -1050,67 +1000,12 @@ enum KomiSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates self.blackPlayer and self.whitePlayer to match the newly
-/// selected game type.
-///
-/// This is a private helper for gameTypeChanged:(). It is invoked after the
-/// game type has been changed. It requires that self.gameType already has the
-/// new updated value.
-///
-/// Raises an @e NSInvalidArgumentException if self.gameType is not recognized.
-// -----------------------------------------------------------------------------
-- (void) updatePropertiesToMatchNewGameType
-{
-  switch (self.gameType)
-  {
-    case GoGameTypeComputerVsHuman:
-    {
-      if (self.computerPlaysWhite)
-      {
-        self.blackPlayer = self.humanPlayer;
-        self.whitePlayer = self.computerPlayer;
-      }
-      else
-      {
-        self.blackPlayer = self.computerPlayer;
-        self.whitePlayer = self.humanPlayer;
-      }
-      break;
-    }
-    case GoGameTypeHumanVsHuman:
-    {
-      self.blackPlayer = self.humanPlayerBlack;
-      self.whitePlayer = self.humanPlayerWhite;
-      break;
-    }
-    case GoGameTypeComputerVsComputer:
-    {
-      self.blackPlayer = self.computerPlayerSelfPlay;
-      self.whitePlayer = self.computerPlayerSelfPlay;
-      break;
-    }
-    default:
-    {
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Computer plays white" switch. Updates
 /// internal data storage only, i.e. no GUI updates are necessary.
 // -----------------------------------------------------------------------------
 - (void) toggleComputerPlaysWhite:(id)sender
 {
-  self.computerPlaysWhite = (! self.computerPlaysWhite);
-  // Simply switch players, we don't even need to check the player types
-  Player* newBlackPlayer = self.whitePlayer;
-  Player* newWhitePlayer = self.blackPlayer;
-  self.blackPlayer = newBlackPlayer;
-  self.whitePlayer = newWhitePlayer;
+  theNewGameModel.computerPlaysWhite = (! theNewGameModel.computerPlaysWhite);
 }
 
 // -----------------------------------------------------------------------------

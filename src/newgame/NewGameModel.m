@@ -32,9 +32,15 @@
 
 @implementation NewGameModel
 
+@synthesize gameType;
+@synthesize gameTypeLastSelected;
+@synthesize humanPlayerUUID;
+@synthesize computerPlayerUUID;
+@synthesize computerPlaysWhite;
+@synthesize humanBlackPlayerUUID;
+@synthesize humanWhitePlayerUUID;
+@synthesize computerPlayerSelfPlayUUID;
 @synthesize boardSize;
-@synthesize blackPlayerUUID;
-@synthesize whitePlayerUUID;
 @synthesize handicap;
 @synthesize komi;
 
@@ -51,11 +57,17 @@
   if (! self)
     return nil;
 
-  self.boardSize = GoBoardSizeUndefined;
-  self.blackPlayerUUID = @"";
-  self.whitePlayerUUID = @"";
-  self.handicap = 0;
-  self.komi = 0;
+  self.gameType = gDefaultGameType;
+  self.gameTypeLastSelected = gDefaultGameType;
+  self.humanPlayerUUID = @"";
+  self.computerPlayerUUID = @"";
+  self.computerPlaysWhite = gDefaultComputerPlaysWhite;
+  self.humanBlackPlayerUUID = @"";
+  self.humanWhitePlayerUUID = @"";
+  self.computerPlayerSelfPlayUUID = @"";
+  self.boardSize = gDefaultBoardSize;
+  self.handicap = gDefaultHandicap;
+  self.komi = gDefaultKomi;
 
   return self;
 }
@@ -65,8 +77,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.blackPlayerUUID = nil;
-  self.whitePlayerUUID = nil;
+  self.humanPlayerUUID = nil;
+  self.computerPlayerUUID = nil;
+  self.humanBlackPlayerUUID = nil;
+  self.humanWhitePlayerUUID = nil;
+  self.computerPlayerSelfPlayUUID = nil;
   [super dealloc];
 }
 
@@ -77,9 +92,15 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:newGameKey];
+  self.gameType = [[dictionary valueForKey:gameTypeKey] intValue];
+  self.gameTypeLastSelected = [[dictionary valueForKey:gameTypeLastSelectedKey] intValue];
+  self.humanPlayerUUID = (NSString*)[dictionary valueForKey:humanPlayerKey];
+  self.computerPlayerUUID = (NSString*)[dictionary valueForKey:computerPlayerKey];
+  self.computerPlaysWhite = [[dictionary valueForKey:computerPlaysWhiteKey] boolValue];
+  self.humanBlackPlayerUUID = (NSString*)[dictionary valueForKey:humanBlackPlayerKey];
+  self.humanWhitePlayerUUID = (NSString*)[dictionary valueForKey:humanWhitePlayerKey];
+  self.computerPlayerSelfPlayUUID = (NSString*)[dictionary valueForKey:computerPlayerSelfPlayKey];
   self.boardSize = [[dictionary valueForKey:boardSizeKey] intValue];
-  self.blackPlayerUUID = (NSString*)[dictionary valueForKey:blackPlayerKey];
-  self.whitePlayerUUID = (NSString*)[dictionary valueForKey:whitePlayerKey];
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
   self.komi = [[dictionary valueForKey:komiKey] doubleValue];
 }
@@ -95,19 +116,87 @@
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
+  [dictionary setValue:[NSNumber numberWithInt:self.gameType] forKey:gameTypeKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.gameTypeLastSelected] forKey:gameTypeLastSelectedKey];
+  [dictionary setValue:self.humanPlayerUUID forKey:humanPlayerKey];
+  [dictionary setValue:self.computerPlayerUUID forKey:computerPlayerKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.computerPlaysWhite] forKey:computerPlaysWhiteKey];
+  [dictionary setValue:self.humanBlackPlayerUUID forKey:humanBlackPlayerKey];
+  [dictionary setValue:self.humanWhitePlayerUUID forKey:humanWhitePlayerKey];
+  [dictionary setValue:self.computerPlayerSelfPlayUUID forKey:computerPlayerSelfPlayKey];
   [dictionary setValue:[NSNumber numberWithInt:self.boardSize] forKey:boardSizeKey];
-  [dictionary setValue:self.blackPlayerUUID forKey:blackPlayerKey];
-  [dictionary setValue:self.whitePlayerUUID forKey:whitePlayerKey];
   [dictionary setValue:[NSNumber numberWithInt:self.handicap] forKey:handicapKey];
   [dictionary setValue:[NSNumber numberWithDouble:self.komi] forKey:komiKey];
-  // Note: NSUserDefaults takes care entirely by itself of writing only changed
-  // values.
-  // TODO: As far as I can tell, the assertion above is wrong, at least on the
-  // simulator. Verify whether the assertion might be true on the device proper.
-  // If it's not, implement my own layer that takes care of storing only values
-  // that differ from the registered defaults.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the UUID of the player who is to play black if a new game
+/// were started with this model's current data.
+///
+/// This is a convenience method that picks one of the many player UUID
+/// properties and returns its value. The property is determined by the current
+/// values of the properties @e gameType and @e computerPlaysWhite.
+///
+/// Raises an @e NSInvalidArgumentException if @e gameType is not recognized.
+// -----------------------------------------------------------------------------
+- (NSString*) blackPlayerUUID
+{
+  switch (self.gameType)
+  {
+    case GoGameTypeComputerVsHuman:
+    {
+      if (self.computerPlaysWhite)
+        return self.humanPlayerUUID;
+      else
+        return self.computerPlayerUUID;
+    }
+    case GoGameTypeHumanVsHuman:
+      return self.humanBlackPlayerUUID;
+    case GoGameTypeComputerVsComputer:
+      return self.computerPlayerSelfPlayUUID;
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.gameType]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the UUID of the player who is to play white if a new game
+/// were started with this model's current data.
+///
+/// @see blackPlayerUUID().
+///
+/// Raises an @e NSInvalidArgumentException if @e gameType is not recognized.
+// -----------------------------------------------------------------------------
+- (NSString*) whitePlayerUUID
+{
+  switch (self.gameType)
+  {
+    case GoGameTypeComputerVsHuman:
+    {
+      if (self.computerPlaysWhite)
+        return self.computerPlayerUUID;
+      else
+        return self.humanPlayerUUID;
+    }
+    case GoGameTypeHumanVsHuman:
+      return self.humanWhitePlayerUUID;
+    case GoGameTypeComputerVsComputer:
+      return self.computerPlayerSelfPlayUUID;
+    default:
+    {
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.gameType]
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

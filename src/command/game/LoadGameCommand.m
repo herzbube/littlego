@@ -26,7 +26,6 @@
 #import "../../gtp/GtpResponse.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../newgame/NewGameModel.h"
-#import "../../player/Player.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
@@ -79,8 +78,6 @@
 @implementation LoadGameCommand
 
 @synthesize filePath;
-@synthesize blackPlayer;
-@synthesize whitePlayer;
 @synthesize gameName;
 @synthesize waitUntilDone;
 @synthesize restoreMode;
@@ -102,8 +99,6 @@
     return nil;
 
   self.filePath = aFilePath;
-  self.blackPlayer = nil;
-  self.whitePlayer = nil;
   self.gameName = aGameName;
   self.waitUntilDone = false;
   self.restoreMode = false;
@@ -136,8 +131,6 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
 
   self.filePath = nil;
-  self.blackPlayer = nil;
-  self.whitePlayer = nil;
   self.gameName = nil;
   self.callbackTarget = nil;
   self.callbackTargetSelector = nil;
@@ -176,7 +169,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (! self.filePath || ! self.blackPlayer || ! self.whitePlayer)
+  if (! self.filePath)
     return false;
 
   // Disable view updates on Play tab
@@ -400,13 +393,11 @@
 // -----------------------------------------------------------------------------
 - (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize
 {
-  // Configure NewGameModel with information that is used when NewGameCommand
-  // creates a new GoGame object
+  // Temporarily re-configure NewGameModel with the new board size from the
+  // loaded game
   NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   enum GoBoardSize oldBoardSize = model.boardSize;
   model.boardSize = boardSize;
-  model.blackPlayerUUID = self.blackPlayer.uuid;
-  model.whitePlayerUUID = self.whitePlayer.uuid;
 
   if (self.restoreMode)
   {

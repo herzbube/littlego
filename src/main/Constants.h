@@ -159,10 +159,6 @@ enum GoBoardSize
   GoBoardSizeMax = GoBoardSize19,
   GoBoardSizeUndefined = 0
 };
-/// @brief Default board size that should be used if no sensible user default
-/// is available.
-extern const enum GoBoardSize gDefaultBoardSize;
-extern const int gNumberOfBoardSizes;
 
 /// @brief Enumerates the types of alert views used across the application.
 ///
@@ -212,6 +208,18 @@ enum ApplicationLaunchMode
   ApplicationLaunchModeDiagnostics  ///< @brief The application was launched to diagnose a bug report. This
                                     ///  mode is available only in the simulator.
 };
+
+// -----------------------------------------------------------------------------
+/// @name Go constants
+// -----------------------------------------------------------------------------
+//@{
+extern const enum GoGameType gDefaultGameType;
+extern const enum GoBoardSize gDefaultBoardSize;
+extern const int gNumberOfBoardSizes;
+extern const bool gDefaultComputerPlaysWhite;
+extern const int gDefaultHandicap;
+extern const double gDefaultKomi;
+//@}
 
 // -----------------------------------------------------------------------------
 /// @name Filesystem related constants
@@ -561,9 +569,15 @@ extern NSString* crossHairColorKey;
 extern NSString* placeStoneUnderFingerKey;
 // New game settings
 extern NSString* newGameKey;
+extern NSString* gameTypeKey;
+extern NSString* gameTypeLastSelectedKey;
+extern NSString* humanPlayerKey;
+extern NSString* computerPlayerKey;
+extern NSString* computerPlaysWhiteKey;
+extern NSString* humanBlackPlayerKey;
+extern NSString* humanWhitePlayerKey;
+extern NSString* computerPlayerSelfPlayKey;
 extern NSString* boardSizeKey;
-extern NSString* blackPlayerKey;
-extern NSString* whitePlayerKey;
 extern NSString* handicapKey;
 extern NSString* komiKey;
 // Players

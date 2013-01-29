@@ -27,10 +27,31 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
+- (NSString*) blackPlayerUUID;
+- (NSString*) whitePlayerUUID;
 
+/// @brief Type of game that was created most recently.
+///
+/// This value is used to create a new game when the application launches. It
+/// is very important that the UUIDs of the players associated with this
+/// game type are valid at this time, otherwise the application crashes.
+@property(nonatomic, assign) enum GoGameType gameType;
+/// @brief Type of game that was selected when the "New game" view was
+/// displayed the last time.
+@property(nonatomic, assign) enum GoGameType gameTypeLastSelected;
+/// @brief In a computer vs. human game.
+@property(nonatomic, retain) NSString* humanPlayerUUID;
+/// @brief In a computer vs. human game.
+@property(nonatomic, retain) NSString* computerPlayerUUID;
+/// @brief In a computer vs. human game.
+@property(nonatomic, assign) bool computerPlaysWhite;
+/// @brief In a human vs. human game.
+@property(nonatomic, retain) NSString* humanBlackPlayerUUID;
+/// @brief In a human vs. human game.
+@property(nonatomic, retain) NSString* humanWhitePlayerUUID;
+/// @brief In a computer vs. computer game.
+@property(nonatomic, retain) NSString* computerPlayerSelfPlayUUID;
 @property(nonatomic, assign) enum GoBoardSize boardSize;
-@property(nonatomic, retain) NSString* blackPlayerUUID;
-@property(nonatomic, retain) NSString* whitePlayerUUID;
 @property(nonatomic, assign) int handicap;
 @property(nonatomic, assign) double komi;
 

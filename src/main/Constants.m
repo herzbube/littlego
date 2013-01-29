@@ -21,8 +21,12 @@ const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 const float gDisabledViewAlpha = 0.439216f;
 
 // Go constants
+const enum GoGameType gDefaultGameType = GoGameTypeComputerVsHuman;
 const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
 const int gNumberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+const bool gDefaultComputerPlaysWhite = true;
+const int gDefaultHandicap = 0;
+const double gDefaultKomi = 6.5;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -182,9 +186,15 @@ NSString* crossHairColorKey = @"CrossHairColor";
 NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 // New game settings
 NSString* newGameKey = @"NewGame";
+NSString* gameTypeKey = @"GameType";
+NSString* gameTypeLastSelectedKey = @"GameTypeLastSelected";
+NSString* humanPlayerKey = @"HumanPlayer";
+NSString* computerPlayerKey = @"ComputerPlayer";
+NSString* computerPlaysWhiteKey = @"ComputerPlaysWhite";
+NSString* humanBlackPlayerKey = @"HumanBlackPlayer";
+NSString* humanWhitePlayerKey = @"HumanWhitePlayer";
+NSString* computerPlayerSelfPlayKey = @"ComputerPlayerSelfPlay";
 NSString* boardSizeKey = @"BoardSize";
-NSString* blackPlayerKey = @"BlackPlayer";
-NSString* whitePlayerKey = @"WhitePlayer";
 NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
 // Players

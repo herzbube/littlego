@@ -46,15 +46,11 @@
   STAssertNotNil(m_delegate.resourceBundle, @"Unable to determine unit test bundle in setUp()");
 
   [m_delegate setupRegistrationDomain];
-  // Tests are expecting a 19x19 board, so make sure that this board size is
-  // used regardless of what the values in the registration domain say
+  // Tests are expecting a human vs. human game and a 19x19 board
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
+  [newGameDictionary setValue:[NSNumber numberWithInt:GoGameTypeHumanVsHuman] forKey:gameTypeKey];
   [newGameDictionary setValue:[NSNumber numberWithInt:GoBoardSize19] forKey:boardSizeKey];
-  // Tests are expecting a human vs. human game. Assuming that the registration
-  // domain sets up the black player to be human, we make sure that the white
-  // player is also human.
-  [newGameDictionary setValue:[newGameDictionary valueForKey:blackPlayerKey] forKey:whitePlayerKey];
   [userDefaults setObject:newGameDictionary forKey:newGameKey];
   // Initialize models after we have fiddled with the user defaults data
   [m_delegate setupUserDefaults];

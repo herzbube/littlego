@@ -19,12 +19,12 @@
 #import "ViewGameController.h"
 #import "ArchiveGame.h"
 #import "ArchiveViewModel.h"
+#import "../go/GoGame.h"
+#import "../command/game/RenameGameCommand.h"
+#import "../command/game/LoadGameCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
-#import "../command/game/RenameGameCommand.h"
-#import "../command/game/LoadGameCommand.h"
-#import "../go/GoGame.h"
 
 
 // -----------------------------------------------------------------------------
@@ -391,8 +391,6 @@ enum GameAttributesSectionItem
   {
     NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
     LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath gameName:self.game.name];
-    command.blackPlayer = controller.blackPlayer;
-    command.whitePlayer = controller.whitePlayer;
     [command submit];
   }
   // Must dismiss modal view controller before navigation stack is changed

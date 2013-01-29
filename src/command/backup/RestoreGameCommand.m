@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../play/boardposition/BoardPositionModel.h"
-#import "../../player/PlayerModel.h"
-#import "../../player/Player.h"
-#import "../../newgame/NewGameModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -75,16 +72,9 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:sgfBackupFilePath])
   {
-    NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
-    PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
-    Player* blackPlayer = [playerModel playerWithUUID:newGameModel.blackPlayerUUID];
-    Player* whitePlayer = [playerModel playerWithUUID:newGameModel.whitePlayerUUID];
-
     LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
     loadCommand.restoreMode = true;
     loadCommand.waitUntilDone = true;
-    loadCommand.blackPlayer = blackPlayer;
-    loadCommand.whitePlayer = whitePlayer;
     [loadCommand whenFinishedPerformSelector:@selector(loadGameCommandFinished:)
                                     onObject:self];  // self is retained
     [loadCommand submit];  // not all parts of the command are executed synchronously

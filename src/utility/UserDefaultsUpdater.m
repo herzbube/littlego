@@ -28,6 +28,8 @@
 //@{
 NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
 NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
+NSString* blackPlayerKey = @"BlackPlayer";
+NSString* whitePlayerKey = @"WhitePlayer";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -326,6 +328,26 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
   [dictionary setValue:[NSNumber numberWithInt:0] forKey:boardPositionLastViewedKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
+
+  // Add new keys to / remove unused key from "new game" dictionary
+  id newGameDictionary = [userDefaults objectForKey:newGameKey];
+  if (newGameDictionary)  // is nil if the key is not present
+  {
+    NSString* defaultHumanPlayerUUID = @"F1017CAF-BCF5-406F-AC4C-5B4F794C006C";
+    NSString* defaultComputerPlayerUUID = @"766CDA23-0C58-480B-A8B5-1F34BDA41677";
+    NSMutableDictionary* newGameDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:newGameDictionary];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:gDefaultGameType] forKey:gameTypeKey];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:gDefaultGameType] forKey:gameTypeLastSelectedKey];
+    [newGameDictionaryUpgrade setValue:defaultHumanPlayerUUID forKey:humanPlayerKey];
+    [newGameDictionaryUpgrade setValue:defaultComputerPlayerUUID forKey:computerPlayerKey];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithBool:gDefaultComputerPlaysWhite] forKey:computerPlaysWhiteKey];
+    [newGameDictionaryUpgrade setValue:defaultHumanPlayerUUID forKey:humanBlackPlayerKey];
+    [newGameDictionaryUpgrade setValue:defaultHumanPlayerUUID forKey:humanWhitePlayerKey];
+    [newGameDictionaryUpgrade setValue:defaultComputerPlayerUUID forKey:computerPlayerSelfPlayKey];
+    [dictionary removeObjectForKey:blackPlayerKey];
+    [dictionary removeObjectForKey:whitePlayerKey];
+    [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

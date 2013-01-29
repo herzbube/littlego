@@ -127,14 +127,7 @@
   newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
   newGame.playerBlack = [GoPlayer newGameBlackPlayer];
   newGame.playerWhite = [GoPlayer newGameWhitePlayer];
-  bool blackPlayerIsHuman = newGame.playerBlack.player.human;
-  bool whitePlayerIsHuman = newGame.playerWhite.player.human;
-  if (blackPlayerIsHuman && whitePlayerIsHuman)
-    newGame.type = GoGameTypeHumanVsHuman;
-  else if (! blackPlayerIsHuman && ! whitePlayerIsHuman)
-    newGame.type = GoGameTypeComputerVsComputer;
-  else
-    newGame.type = GoGameTypeComputerVsHuman;
+  newGame.type = newGameModel.gameType;
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what

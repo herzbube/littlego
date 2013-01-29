@@ -47,12 +47,24 @@
 	</dict>
 	<key>NewGame</key>
 	<dict>
+		<key>GameType</key>
+		<integer>1</integer>
+		<key>GameTypeLastSelected</key>
+		<integer>1</integer>
+		<key>HumanPlayer</key>
+		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
+		<key>ComputerPlayer</key>
+		<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+		<key>ComputerPlaysWhite</key>
+		<true/>
+		<key>HumanBlackPlayer</key>
+		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
+		<key>HumanWhitePlayer</key>
+		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
+		<key>ComputerPlayerSelfPlay</key>
+		<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
 		<key>BoardSize</key>
 		<integer>9</integer>
-		<key>BlackPlayer</key>
-		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
-		<key>WhitePlayer</key>
-		<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
 		<key>Handicap</key>
 		<integer>0</integer>
 		<key>Komi</key>
