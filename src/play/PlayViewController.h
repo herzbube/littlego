@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "ToolbarController.h"
+#import "NavigationBarController.h"
 #import "gesture/PanGestureController.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
 
@@ -43,7 +43,7 @@
 /// resizes and shifts the views.
 // -----------------------------------------------------------------------------
 @interface PlayViewController : UIViewController <PanGestureControllerDelegate,
-                                                  ToolbarControllerDelegate,
+                                                  NavigationBarControllerDelegate,
                                                   CurrentBoardPositionViewControllerDelegate,
                                                   UIAlertViewDelegate>
 {

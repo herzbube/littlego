@@ -21,7 +21,6 @@
 #import "DebugPlayViewController.h"
 #import "PlayView.h"
 #import "StatusLineController.h"
-#import "ToolbarController.h"
 #import "boardposition/BoardPositionListViewController.h"
 #import "boardposition/BoardPositionModel.h"
 #import "boardposition/BoardPositionTableListViewController.h"
@@ -70,11 +69,11 @@ enum ActionType
 - (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
-/// @name ToolbarControllerDelegate protocol
+/// @name NavigationBarControllerDelegate protocol
 //@{
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
-- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
+- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command;
+- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
+- (void) navigationBarController:(NavigationBarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 //@}
 /// @name PanGestureControllerDelegate protocol
 //@{
@@ -102,9 +101,9 @@ enum ActionType
 - (void) setupSplitView;
 - (CGRect) splitViewFrame;
 - (UIView*) splitViewSuperview;
-- (void) setupToolbarMain;
-- (CGRect) toolbarMainFrame;
-- (UIView*) toolbarMainSuperview;
+- (void) setupNavigationBarMain;
+- (CGRect) navigationBarMainFrame;
+- (UIView*) navigationBarMainSuperview;
 - (void) setupToolbarBoardPositionNavigation;
 - (CGRect) toolbarBoardPositionNavigationFrame;
 - (UIView*) toolbarBoardPositionNavigationSuperview;
@@ -137,7 +136,7 @@ enum ActionType
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) PlayView* playView;
-@property(nonatomic, retain) UIToolbar* toolbarMain;
+@property(nonatomic, retain) UINavigationBar* navigationBarMain;
 @property(nonatomic, retain) UIToolbar* toolbarBoardPositionNavigation;
 @property(nonatomic, retain) ItemScrollView* boardPositionListView;
 @property(nonatomic, retain) BoardPositionView* currentBoardPositionView;
@@ -148,7 +147,7 @@ enum ActionType
 @property(nonatomic, retain) UISplitViewController* splitViewController;
 @property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
 @property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
-@property(nonatomic, retain) ToolbarController* toolbarController;
+@property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) StatusLineController* statusLineController;
 @property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
@@ -164,7 +163,7 @@ enum ActionType
 @implementation PlayViewController
 
 @synthesize playView;
-@synthesize toolbarMain;
+@synthesize navigationBarMain;
 @synthesize toolbarBoardPositionNavigation;
 @synthesize boardPositionListView;
 @synthesize currentBoardPositionView;
@@ -175,7 +174,7 @@ enum ActionType
 @synthesize splitViewController;
 @synthesize leftPaneViewController;
 @synthesize rightPaneViewController;
-@synthesize toolbarController;
+@synthesize navigationBarController;
 @synthesize statusLineController;
 @synthesize activityIndicatorController;
 @synthesize boardPositionToolbarController;
@@ -202,7 +201,7 @@ enum ActionType
 - (void) releaseObjects
 {
   self.playView = nil;
-  self.toolbarMain = nil;
+  self.navigationBarMain = nil;
   self.toolbarBoardPositionNavigation = nil;
   self.boardPositionListView = nil;
   self.currentBoardPositionView = nil;
@@ -213,7 +212,7 @@ enum ActionType
   self.splitViewController = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
-  self.toolbarController = nil;
+  self.navigationBarController = nil;
   self.statusLineController = nil;
   self.activityIndicatorController = nil;
   self.boardPositionToolbarController = nil;
@@ -327,35 +326,35 @@ enum ActionType
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (void) setupToolbarMain
+- (void) setupNavigationBarMain
 {
-  CGRect toolbarFrame = [self toolbarMainFrame];
-  self.toolbarMain = [[[UIToolbar alloc] initWithFrame:toolbarFrame] autorelease];
-  UIView* superView = [self toolbarMainSuperview];
-  [superView addSubview:self.toolbarMain];
-  
-  self.toolbarMain.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  CGRect viewFrame = [self navigationBarMainFrame];
+  self.navigationBarMain = [[[UINavigationBar alloc] initWithFrame:viewFrame] autorelease];
+  UIView* superView = [self navigationBarMainSuperview];
+  [superView addSubview:self.navigationBarMain];
+
+  self.navigationBarMain.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (CGRect) toolbarMainFrame
+- (CGRect) navigationBarMainFrame
 {
-  UIView* superView = [self toolbarMainSuperview];
-  int toolbarViewX = 0;
-  int toolbarViewY = 0;
-  int toolbarViewWidth = superView.bounds.size.width;
-  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
-  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
+  UIView* superView = [self navigationBarMainSuperview];
+  int viewX = 0;
+  int viewY = 0;
+  int viewWidth = superView.bounds.size.width;
+  int viewHeight = [UiElementMetrics navigationBarHeight];
+  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (UIView*) toolbarMainSuperview
+- (UIView*) navigationBarMainSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     return self.view;
@@ -431,19 +430,19 @@ enum ActionType
   UIView* superView = [self playViewSuperview];
   CGSize superViewSize = superView.bounds.size;
   int playViewX = 0;
-  int playViewY = CGRectGetMaxY(self.toolbarMain.frame);
+  int playViewY = CGRectGetMaxY(self.navigationBarMain.frame);
   int playViewWidth = superViewSize.width;
   int playViewHeight;
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     playViewHeight = (superViewSize.height
-                      - self.toolbarMain.frame.size.height
+                      - self.navigationBarMain.frame.size.height
                       - self.toolbarBoardPositionNavigation.frame.size.height);
   }
   else
   {
     playViewHeight = (superViewSize.height
-                      - self.toolbarMain.frame.size.height);
+                      - self.navigationBarMain.frame.size.height);
   }
   return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
 }
@@ -670,7 +669,7 @@ enum ActionType
   DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
   [self.view addSubview:debugPlayViewController.view];
   CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
-  debugPlayViewFrame.origin.y += self.toolbarMain.frame.size.height;
+  debugPlayViewFrame.origin.y += self.navigationBarMain.frame.size.height;
   debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
@@ -715,7 +714,7 @@ enum ActionType
   self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    [self setupToolbarMain];
+    [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
     [self setupPlayView];
     [self setupActivityIndicatorView];
@@ -726,7 +725,7 @@ enum ActionType
   else
   {
     [self setupSplitView];
-    [self setupToolbarMain];
+    [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
     [self setupPlayView];
     [self setupActivityIndicatorView];
@@ -751,10 +750,10 @@ enum ActionType
     assert(0);
   }
 
-  self.toolbarController = [[[ToolbarController alloc] initWithToolbar:self.toolbarMain
-                                                          scoringModel:scoringModel
-                                                              delegate:self
-                                                  parentViewController:self] autorelease];
+  self.navigationBarController = [[[NavigationBarController alloc] initWithNavigationBar:self.navigationBarMain
+                                                                            scoringModel:scoringModel
+                                                                                delegate:self
+                                                                    parentViewController:self] autorelease];
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
 
@@ -815,25 +814,25 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief ToolbarControllerDelegate protocol method.
+/// @brief NavigationBarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command
+- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command
 {
   [self alertOrAction:ActionTypePlay withCommand:command];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief ToolbarControllerDelegate protocol method.
+/// @brief NavigationBarControllerDelegateDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command
+- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command
 {
   [self alertOrAction:ActionTypeDiscard withCommand:command];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief ToolbarControllerDelegate protocol method.
+/// @brief NavigationBarControllerDelegateDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController
+- (void) navigationBarController:(NavigationBarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController
 {
   if (makeVisible)
     [self.navigationController pushViewController:gameInfoViewController animated:YES];

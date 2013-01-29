@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "ToolbarController.h"
+#import "NavigationBarController.h"
 #import "ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoardPosition.h"
@@ -29,9 +29,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ToolbarController.
+/// @brief Class extension with private methods for NavigationBarController.
 // -----------------------------------------------------------------------------
-@interface ToolbarController()
+@interface NavigationBarController()
 /// @name Initialization and deallocation
 //@{
 - (void) dealloc;
@@ -72,7 +72,9 @@
 /// @name Updaters
 //@{
 - (void) delayedUpdate;
-- (void) populateToolbar;
+- (void) populateNavigationBar;
+- (void) populateNavigationBarLeft;
+- (void) populateNavigationBarRight;
 - (void) updateButtonStates;
 - (void) updateComputerPlayButtonState;
 - (void) updatePassButtonState;
@@ -85,14 +87,15 @@
 //@}
 /// @name Private helpers
 //@{
+- (void) setupNavigationItem;
 - (void) setupButtons;
 - (void) setupNotificationResponders;
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) UIToolbar* toolbar;
+@property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, assign) ScoringModel* scoringModel;
-@property(nonatomic, assign) id<ToolbarControllerDelegate> delegate;
+@property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
@@ -102,8 +105,9 @@
 @property(nonatomic, retain) GoScore* gameInfoScore;
 /// @brief Updates are delayed as long as this is above zero.
 @property(nonatomic, assign) int actionsInProgress;
-@property(nonatomic, assign) bool toolbarNeedsPopulation;
+@property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
+@property(nonatomic, retain) UINavigationItem* navigationItem;
 @property(nonatomic, retain) UIBarButtonItem* computerPlayButton;
 @property(nonatomic, retain) UIBarButtonItem* passButton;
 @property(nonatomic, retain) UIBarButtonItem* discardBoardPositionButton;
@@ -118,17 +122,18 @@
 @end
 
 
-@implementation ToolbarController
+@implementation NavigationBarController
 
-@synthesize toolbar;
+@synthesize navigationBar;
 @synthesize scoringModel;
 @synthesize delegate;
 @synthesize parentViewController;
 @synthesize gameInfoViewController;
 @synthesize gameInfoScore;
 @synthesize actionsInProgress;
-@synthesize toolbarNeedsPopulation;
+@synthesize navigationBarNeedsPopulation;
 @synthesize buttonStatesNeedUpdate;
+@synthesize navigationItem;
 @synthesize computerPlayButton;
 @synthesize passButton;
 @synthesize discardBoardPositionButton;
@@ -142,13 +147,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a ToolbarController object.
+/// @brief Initializes a NavigationBarController object.
 ///
-/// @note This is the designated initializer of ToolbarController.
+/// @note This is the designated initializer of NavigationBarController.
 // -----------------------------------------------------------------------------
-- (id) initWithToolbar:(UIToolbar*)aToolbar
+- (id) initWithNavigationBar:(UINavigationBar*)aNavigationBar
           scoringModel:(ScoringModel*)aScoringModel
-              delegate:(id<ToolbarControllerDelegate>)aDelegate
+              delegate:(id<NavigationBarControllerDelegate>)aDelegate
   parentViewController:(UIViewController*)aParentViewController
 {
   // Call designated initializer of superclass (NSObject)
@@ -156,17 +161,18 @@
   if (! self)
     return nil;
 
-  self.toolbar = aToolbar;
+  self.navigationBar = aNavigationBar;
   self.scoringModel = aScoringModel;
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
   self.gameInfoScore = nil;
   self.actionsInProgress = 0;
+  [self setupNavigationItem];
   [self setupButtons];
   [self setupNotificationResponders];
 
-  self.toolbarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 
@@ -174,7 +180,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ToolbarController object.
+/// @brief Deallocates memory allocated by this NavigationBarController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -182,12 +188,13 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  self.toolbar = nil;
+  self.navigationBar = nil;
   self.scoringModel = nil;
   self.delegate = nil;
   self.parentViewController = nil;
   self.gameInfoViewController = nil;
   self.gameInfoScore = nil;
+  self.navigationItem = nil;
   self.computerPlayButton = nil;
   self.passButton = nil;
   self.discardBoardPositionButton = nil;
@@ -199,6 +206,15 @@
   self.gameActionsButton = nil;
   self.doneButton = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNavigationItem
+{
+  self.navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
+  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -277,7 +293,7 @@
 - (void) pass:(id)sender
 {
   DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
-  [self.delegate toolbarController:self playOrAlertWithCommand:command];
+  [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -287,7 +303,7 @@
 - (void) discardBoardPosition:(id)sender
 {
   ChangeAndDiscardCommand* command = [[ChangeAndDiscardCommand alloc] init];
-  [self.delegate toolbarController:self discardOrAlertWithCommand:command];
+  [self.delegate navigationBarController:self discardOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -298,7 +314,7 @@
 - (void) computerPlay:(id)sender
 {
   DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initComputerPlay];
-  [self.delegate toolbarController:self playOrAlertWithCommand:command];
+  [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -318,7 +334,7 @@
 - (void) continue:(id)sender
 {
   DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initContinue];
-  [self.delegate toolbarController:self playOrAlertWithCommand:command];
+  [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -351,9 +367,9 @@
     score = self.gameInfoScore;
   }
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self score:score];
-  [self.delegate toolbarController:self
-                       makeVisible:true
-                      gameInfoViewController:self.gameInfoViewController];
+  [self.delegate navigationBarController:self
+                             makeVisible:true
+                  gameInfoViewController:self.gameInfoViewController];
 }
 
 // -----------------------------------------------------------------------------
@@ -361,8 +377,8 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
 {
-  [self.delegate toolbarController:self
-                       makeVisible:false
+  [self.delegate navigationBarController:self
+                             makeVisible:false
             gameInfoViewController:controller];
   assert(self.gameInfoViewController == controller);
   self.gameInfoViewController = nil;
@@ -423,7 +439,7 @@
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  self.toolbarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -435,7 +451,7 @@
 {
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeComputerVsComputer == game.type)
-    self.toolbarNeedsPopulation = true;
+    self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
   if (GoGameStateGameHasEnded == game.state)
@@ -451,7 +467,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  self.toolbarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -461,7 +477,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification
 {
-  self.toolbarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -471,7 +487,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification
 {
-  self.toolbarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -527,13 +543,13 @@
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {
       // It's annoying to have buttons appear and disappear all the time, so
-      // we try to minimize this by keeping the same buttons in the toolbar
-      // while the user is browsing board positions.
+      // we try to minimize this by keeping the same buttons in the navigation
+      // bar while the user is browsing board positions.
       self.buttonStatesNeedUpdate = true;
     }
     else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
     {
-      self.toolbarNeedsPopulation = true;
+      self.navigationBarNeedsPopulation = true;
     }
     [self delayedUpdate];
   }
@@ -547,33 +563,39 @@
 {
   if (self.actionsInProgress > 0)
     return;
-  [self populateToolbar];
+  [self populateNavigationBar];
   [self updateButtonStates];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Populates the toolbar with toolbar items that are appropriate for
+/// @brief Populates the navigation bar with buttons that are appropriate for
 /// the #GoGameType currently in progress.
 // -----------------------------------------------------------------------------
-- (void) populateToolbar
+- (void) populateNavigationBar
 {
-  if (! self.toolbarNeedsPopulation)
+  if (! self.navigationBarNeedsPopulation)
     return;
-  self.toolbarNeedsPopulation = false;
+  self.navigationBarNeedsPopulation = false;
 
-  NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
+  [self populateNavigationBarLeft];
+  [self populateNavigationBarRight];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateNavigationBarLeft
+{
+  NSMutableArray* leftBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
   if (self.scoringModel.scoringMode)
   {
     if (GoGameStateGameHasEnded != game.state)
     {
-      [toolbarItems addObject:self.discardBoardPositionButton];
-      [toolbarItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
+      [leftBarButtonItems addObject:self.discardBoardPositionButton];
+      [leftBarButtonItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
     }
-    [toolbarItems addObject:self.flexibleSpaceButton];
-    [toolbarItems addObject:self.gameInfoButton];
-    [toolbarItems addObject:self.gameActionsButton];
   }
   else
   {
@@ -582,41 +604,46 @@
       case GoGameTypeComputerVsComputer:
       {
         if (GoGameStateGameIsPaused == game.state)
-          [toolbarItems addObject:self.continueButton];
+          [leftBarButtonItems addObject:self.continueButton];
         else
-          [toolbarItems addObject:self.pauseButton];
+          [leftBarButtonItems addObject:self.pauseButton];
         if (game.isComputerThinking)
-          [toolbarItems addObject:self.interruptButton];
+          [leftBarButtonItems addObject:self.interruptButton];
         else
-          [toolbarItems addObject:self.discardBoardPositionButton];
-        [toolbarItems addObject:self.flexibleSpaceButton];
-        [toolbarItems addObject:self.gameInfoButton];
-        [toolbarItems addObject:self.gameActionsButton];
+          [leftBarButtonItems addObject:self.discardBoardPositionButton];
         break;
       }
       default:
       {
         if (game.isComputerThinking)
-          [toolbarItems addObject:self.interruptButton];
+          [leftBarButtonItems addObject:self.interruptButton];
         else
         {
-          [toolbarItems addObject:self.computerPlayButton];
-          [toolbarItems addObject:self.passButton];
+          [leftBarButtonItems addObject:self.computerPlayButton];
+          [leftBarButtonItems addObject:self.passButton];
           if (boardPosition.numberOfBoardPositions > 1)
-            [toolbarItems addObject:self.discardBoardPositionButton];
+            [leftBarButtonItems addObject:self.discardBoardPositionButton];
         }
-        [toolbarItems addObject:self.flexibleSpaceButton];
-        [toolbarItems addObject:self.gameInfoButton];
-        [toolbarItems addObject:self.gameActionsButton];
         break;
       }
     }
   }
-  self.toolbar.items = toolbarItems;
+  self.navigationItem.leftBarButtonItems = leftBarButtonItems;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of all toolbar items.
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateNavigationBarRight
+{
+  NSMutableArray* rightBarButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [rightBarButtonItems addObject:self.gameActionsButton];
+  [rightBarButtonItems addObject:self.gameInfoButton];
+  self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of all buttons in the navigation bar.
 // -----------------------------------------------------------------------------
 - (void) updateButtonStates
 {

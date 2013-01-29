@@ -22,46 +22,46 @@
 // Forward declarations
 @class CommandBase;
 @class ScoringModel;
-@class ToolbarController;
+@class NavigationBarController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The ToolbarControllerDelegate protocol must be implemented by the
-/// delegate of ToolbarController.
+/// @brief The NavigationBarControllerDelegate protocol must be implemented by
+/// the delegate of NavigationBarController.
 // -----------------------------------------------------------------------------
-@protocol ToolbarControllerDelegate
+@protocol NavigationBarControllerDelegate
 /// @brief This method is invoked when the user attempts to play a move. The
 /// delegate executes @a command, possibly displaying an alert first which the
 /// user must confirm.
-- (void) toolbarController:(ToolbarController*)controller playOrAlertWithCommand:(CommandBase*)command;
+- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command;
 /// @brief This method is invoked when the user attempts to discard board
 /// positions. The delegate executes @a command, possibly displaying an alert
 /// first which the user must confirmed.
-- (void) toolbarController:(ToolbarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
+- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
 /// @brief This method is invoked when the user calls up or dismisses the Game
 /// Info view. The delegate is responsible for making the view visible, or
 /// hiding the view (@a makeVisible indicates which).
-- (void) toolbarController:(ToolbarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
+- (void) navigationBarController:(NavigationBarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The ToolbarController class is responsible for managing the toolbar
-/// on the Play tab.
+/// @brief The NavigationBarController class is responsible for managing the
+/// navigation bar above the Play view on the Play tab.
 ///
-/// The responsibilities of ToolbarController include:
-/// - Populate the toolbar with buttons that are appropriate for the current
-///   game state
-/// - Enable/disable buttons in the toolbar
-/// - Reacting to the user tapping on buttons in the toolbar
+/// The responsibilities of NavigationBarController include:
+/// - Populate the navigation bar with buttons that are appropriate for the
+///   current game state
+/// - Enable/disable buttons
+/// - Reacting to the user tapping on buttons
 // -----------------------------------------------------------------------------
-@interface ToolbarController : NSObject <GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
+@interface NavigationBarController : NSObject <GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
 {
 }
 
-- (id) initWithToolbar:(UIToolbar*)toolbar
+- (id) initWithNavigationBar:(UINavigationBar*)navigationBar
           scoringModel:(ScoringModel*)scoringModel
-              delegate:(id<ToolbarControllerDelegate>)delegate
+              delegate:(id<NavigationBarControllerDelegate>)delegate
   parentViewController:(UIViewController*)parentViewController;
 
 @end

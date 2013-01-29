@@ -980,8 +980,8 @@ Icon files
 - The canonical source for information about icons are Apple's Human Interface
   Guidelines (HIG) [1]. The following notes replicate much of the information
   found there.
-- A dark'ish foreground color of #444444 painted on transparent background works
-  well for images that are loaded into a UIBarButtonItem or a UITabBarItem. The
+- A pure white foreground color painted on transparent background works best
+  for images that are loaded into a UIBarButtonItem or a UITabBarItem. The
   reason for this is that according to the HIG, images used in toolbar,
   navigation bar and tab bar items are used as "template" images only, i.e. iOS
   uses them as a mask to create the actual icon displayed to the user.
