@@ -56,7 +56,7 @@ MACOSX_BASESDK_VERSION=10.8  # If you use 10.4u, set deployment target separatel
 # line.
 # Note: There is no deployment target for the simulator, it uses the one for
 # iPhoneOS
-export IPHONEOS_DEPLOYMENT_TARGET=4.3
+export IPHONEOS_DEPLOYMENT_TARGET=5.0
 export MACOSX_DEPLOYMENT_TARGET=$MACOSX_BASESDK_VERSION
 
 # These are converted to compiler flags later on via the MAKE_ARCH_CPPFLAGS

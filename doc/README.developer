@@ -150,7 +150,7 @@ Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
-- IPHONEOS_DEPLOYMENT_TARGET = 4.3
+- IPHONEOS_DEPLOYMENT_TARGET = 5.0
 - ARCHS = armv7
   - The original value is $(ARCHS_STANDARD_32_BIT)
   - Xcode 4.5 resolves this to "armv7 armv7s", but the 3rd party software build
@@ -216,8 +216,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
   moving target SDK. The latest release of the project was made with iOS 5.1.
-- The deployment target is set to 4.3 so that the application keeps running on
-  iOS 4 devices.
+- The deployment target is set to 5.0 so that the application keeps running on
+  iOS 5 devices.
 
 
 Upgrading the iOS SDK
@@ -352,7 +352,8 @@ Architecture and implementation notes
     execution at the appropriate time.
   - When the application is terminated (applicationWillTerminate:), it does
     nothing - the application is expected to always run on multitasking capable
-    devices. IPHONE_DEPLOYMENT_TARGET is set to 4.3 to ensure this.
+    devices. IPHONE_DEPLOYMENT_TARGET used to be set to 4.3 to ensure this,
+    nowadays the deployment target is even higher.
   - When the application resumes (applicationWillEnterForeground:) it clears
     the temporary .sgf file that was written on suspend.
   - When the application becomes inactive (applicationWillResignActive:), it
