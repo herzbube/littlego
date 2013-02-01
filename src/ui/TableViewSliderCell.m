@@ -57,15 +57,6 @@
 
 @implementation TableViewSliderCell
 
-@synthesize descriptionLabel;
-@synthesize valueLabel;
-@synthesize slider;
-@synthesize value;
-@synthesize delegate;
-@synthesize delegateActionValueDidChange;
-@synthesize delegateActionSliderValueDidChange;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TableViewSliderCell instance with
 /// reuse identifier @a reuseIdentifier.
@@ -94,13 +85,13 @@
 
   [self setupCell];
   [self setupContentView];
-  [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+  [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
 
   // TODO: instead of duplicating code from the setter, we should invoke the
   // setter (self.value = ...), but we need to be sure that it does not update
   // because of its old/new value check
   int newValue = self.slider.minimumValue;
-  value = newValue;
+  self.value = newValue;
   self.slider.value = newValue;
   [self updateValueLabel];
 
@@ -135,31 +126,31 @@
 - (void) setupContentView
 {
   CGRect descriptionLabelRect = [self descriptionLabelFrame];
-  descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
-  descriptionLabel.tag = SliderCellDescriptionLabelTag;
-  descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  descriptionLabel.textAlignment = UITextAlignmentLeft;
-  descriptionLabel.textColor = [UIColor blackColor];
-  descriptionLabel.backgroundColor = [UIColor clearColor];
-  descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
-  [self.contentView addSubview:descriptionLabel];
+  self.descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
+  self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
+  self.descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+  self.descriptionLabel.textAlignment = UITextAlignmentLeft;
+  self.descriptionLabel.textColor = [UIColor blackColor];
+  self.descriptionLabel.backgroundColor = [UIColor clearColor];
+  self.descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
+  [self.contentView addSubview:self.descriptionLabel];
 
   CGRect valueLabelRect = [self valueLabelFrame];
-  valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
-  valueLabel.tag = SliderCellValueLabelTag;
-  valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  valueLabel.textAlignment = UITextAlignmentRight;
-  valueLabel.textColor = [UIColor slateBlueColor];
-  valueLabel.backgroundColor = [UIColor clearColor];
-  valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
-  [self.contentView addSubview:valueLabel];
+  self.valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
+  self.valueLabel.tag = SliderCellValueLabelTag;
+  self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+  self.valueLabel.textAlignment = UITextAlignmentRight;
+  self.valueLabel.textColor = [UIColor slateBlueColor];
+  self.valueLabel.backgroundColor = [UIColor clearColor];
+  self.valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
+  [self.contentView addSubview:self.valueLabel];
 
   CGRect sliderRect = [self sliderFrame];
-  slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
-  slider.tag = SliderCellSliderTag;
-  slider.continuous = YES;
-  slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  [self.contentView addSubview:slider];
+  self.slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
+  self.slider.tag = SliderCellSliderTag;
+  self.slider.continuous = YES;
+  self.slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  [self.contentView addSubview:self.slider];
 }
 
 // -----------------------------------------------------------------------------
@@ -185,10 +176,10 @@
 - (CGRect) valueLabelFrame
 {
   CGSize superViewSize = self.contentView.bounds.size;
-  int valueLabelX = (descriptionLabel.frame.origin.x
-                     + descriptionLabel.frame.size.width
+  int valueLabelX = (self.descriptionLabel.frame.origin.x
+                     + self.descriptionLabel.frame.size.width
                      + [UiElementMetrics spacingHorizontal]);
-  int valueLabelY = descriptionLabel.frame.origin.y;
+  int valueLabelY = self.descriptionLabel.frame.origin.y;
   int valueLabelWidth = (superViewSize.width
                          - valueLabelX
                          - [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
@@ -202,12 +193,12 @@
 // -----------------------------------------------------------------------------
 - (CGRect) sliderFrame
 {
-  int sliderX = descriptionLabel.frame.origin.x;
-  int sliderY = (descriptionLabel.frame.origin.y
-                 + descriptionLabel.frame.size.height
+  int sliderX = self.descriptionLabel.frame.origin.x;
+  int sliderY = (self.descriptionLabel.frame.origin.y
+                 + self.descriptionLabel.frame.size.height
                  + [UiElementMetrics spacingVertical]);
-  int sliderWidth = (valueLabel.frame.origin.x
-                     + valueLabel.frame.size.width
+  int sliderWidth = (self.valueLabel.frame.origin.x
+                     + self.valueLabel.frame.size.width
                      - sliderX);
   int sliderHeight = [UiElementMetrics sliderHeight];
   return CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
@@ -238,9 +229,9 @@
 // -----------------------------------------------------------------------------
 - (void) setValue:(int)newValue
 {
-  if (value == newValue)
+  if (_value == newValue)
     return;
-  value = newValue;
+  _value = newValue;
   self.slider.value = newValue;
   [self updateValueLabel];
   if ([self.delegate respondsToSelector:self.delegateActionValueDidChange])
@@ -256,7 +247,7 @@
   // unnecessarily many times for fraction changes that we are not interested
   // in
   int newValue = sender.value;
-  if (value == newValue)
+  if (_value == newValue)
     return;
   self.value = newValue;
   if ([self.delegate respondsToSelector:self.delegateActionSliderValueDidChange])
@@ -269,7 +260,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateValueLabel
 {
-  int intValue = slider.value;
+  int intValue = self.slider.value;
   self.valueLabel.text = [NSString stringWithFormat:@"%d", intValue];
 }
 

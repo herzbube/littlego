@@ -38,9 +38,6 @@
 
 @implementation ChangeBoardPositionCommand
 
-@synthesize newBoardPosition;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
 /// current board position to @a boardPosition.

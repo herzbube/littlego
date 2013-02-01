@@ -33,10 +33,6 @@
 
 @implementation PlayerModel
 
-@synthesize playerCount;
-@synthesize playerList;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayerModel object with user defaults data.
 ///

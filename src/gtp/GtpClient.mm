@@ -61,10 +61,6 @@ static std::ifstream responseStream;
 
 @implementation GtpClient
 
-@synthesize thread;
-@synthesize shouldExit;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpClient instance which will use
 /// the two named pipes to communicate with its counterpart GtpEngine.

@@ -54,11 +54,6 @@
 
 @implementation GoBoardPosition
 
-@synthesize game;
-@synthesize currentBoardPosition;
-@synthesize numberOfBoardPositions;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoBoardPosition object that is associated with @a aGame
 /// and whose current board position is 0 (zero).
@@ -72,12 +67,12 @@
   if (! self)
     return nil;
 
-  game = aGame;
-  currentBoardPosition = 0;  // don't use self to avoid the setter
-  numberOfBoardPositions = game.moveModel.numberOfMoves + 1;
+  self.game = aGame;
+  _currentBoardPosition = 0;  // don't use self to avoid the setter
+  _numberOfBoardPositions = self.game.moveModel.numberOfMoves + 1;
 
   // KVO observing
-  [game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
+  [self.game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
 
   return self;
 }
@@ -87,7 +82,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [game.moveModel removeObserver:self forKeyPath:@"numberOfMoves"];
+  [self.game.moveModel removeObserver:self forKeyPath:@"numberOfMoves"];
+  self.game = nil;
   [super dealloc];
 }
 
@@ -96,7 +92,7 @@
 // -----------------------------------------------------------------------------
 - (void) setCurrentBoardPosition:(int)newBoardPosition
 {
-  if (newBoardPosition == currentBoardPosition)
+  if (newBoardPosition == _currentBoardPosition)
     return;
 
   int indexOfTargetMove = newBoardPosition - 1;
@@ -112,7 +108,7 @@
   }
 
   [self updateGoObjectsToNewPosition:newBoardPosition];
-  currentBoardPosition = newBoardPosition;
+  _currentBoardPosition = newBoardPosition;
 }
 
 // -----------------------------------------------------------------------------
@@ -122,8 +118,8 @@
 {
   GoMoveModel* moveModel = self.game.moveModel;
   int indexOfTargetMove = newBoardPosition - 1;
-  int indexOfCurrentMove = currentBoardPosition - 1;
-  if (newBoardPosition > currentBoardPosition)
+  int indexOfCurrentMove = self.currentBoardPosition - 1;
+  if (newBoardPosition > self.currentBoardPosition)
   {
     for (int indexOfMove = indexOfCurrentMove + 1; indexOfMove <= indexOfTargetMove; ++indexOfMove)
     {
@@ -228,12 +224,12 @@
   // important for observers that observer both properties.
   self.numberOfBoardPositions = numberOfMoves + 1;
 
-  if (currentBoardPosition > numberOfMoves)
+  if (self.currentBoardPosition > numberOfMoves)
   {
     // Unexpected scenario (see method docs)
-    DDLogWarn(@"Current board position %d is greater than the number of moves %d", currentBoardPosition, numberOfMoves);
+    DDLogWarn(@"Current board position %d is greater than the number of moves %d", self.currentBoardPosition, numberOfMoves);
   }
-  else if ((currentBoardPosition + 1) == numberOfMoves)
+  else if ((self.currentBoardPosition + 1) == numberOfMoves)
   {
     // Scenario "regular play" (see method docs)
   }
@@ -248,7 +244,7 @@
   // of Go objects. The drawback is that we have to generate KVO notifications
   // ourselves.
   [self willChangeValueForKey:@"currentBoardPosition"];
-  currentBoardPosition = numberOfMoves;
+  _currentBoardPosition = numberOfMoves;
   [self didChangeValueForKey:@"currentBoardPosition"];
 }
 

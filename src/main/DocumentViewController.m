@@ -55,13 +55,6 @@
 
 @implementation DocumentViewController
 
-@synthesize webView;
-@synthesize contextTabBarItem;
-@synthesize titleString;
-@synthesize htmlString;
-@synthesize resourceName;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a DocumentViewController instance
 /// that displays @a title in its navigation item and @a htmlString in its web
@@ -116,7 +109,7 @@
 - (void) loadView
 {
   self.webView = [[[UIWebView alloc] init] autorelease];
-  self.view = webView;
+  self.view = self.webView;
 }
 
 // -----------------------------------------------------------------------------
@@ -135,9 +128,9 @@
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (self.titleString)
   {
-    self.title = titleString;
+    self.title = self.titleString;
     if (self.htmlString)
-      [self.webView loadHTMLString:htmlString baseURL:nil];
+      [self.webView loadHTMLString:self.htmlString baseURL:nil];
     else
     {
       NSString* resourceContent = [appDelegate contentOfTextResource:self.resourceName];

@@ -46,10 +46,6 @@
 
 @implementation TableViewTextCell
 
-@synthesize label;
-@synthesize textField;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TableViewTextCell instance with
 /// reuse identifier @a reuseIdentifier.
@@ -108,26 +104,26 @@
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  label = [[UILabel alloc] initWithFrame:CGRectNull];
-  [self.contentView addSubview:label];
-  label.tag = TextCellLabelTag;
-  label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  label.textAlignment = UITextAlignmentLeft;
-  label.textColor = [UIColor blackColor];
-  label.backgroundColor = [UIColor clearColor];
-  label.hidden = YES;
+  self.label = [[UILabel alloc] initWithFrame:CGRectNull];
+  [self.contentView addSubview:self.label];
+  self.label.tag = TextCellLabelTag;
+  self.label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+  self.label.textAlignment = UITextAlignmentLeft;
+  self.label.textColor = [UIColor blackColor];
+  self.label.backgroundColor = [UIColor clearColor];
+  self.label.hidden = YES;
 
-  textField = [[UITextField alloc] initWithFrame:CGRectNull];
-  [self.contentView addSubview:textField];
-  textField.tag = TextCellTextFieldTag;
-  textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-  textField.textColor = [UIColor slateBlueColor];
-  textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+  self.textField = [[UITextField alloc] initWithFrame:CGRectNull];
+  [self.contentView addSubview:self.textField];
+  self.textField.tag = TextCellTextFieldTag;
+  self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+  self.textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+  self.textField.textColor = [UIColor slateBlueColor];
+  self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
   // Properties from the UITextInputTraits protocol
-  textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
-  textField.autocorrectionType = UITextAutocorrectionTypeNo;
-  textField.enablesReturnKeyAutomatically = YES;
+  self.textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+  self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+  self.textField.enablesReturnKeyAutomatically = YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -147,10 +143,10 @@
   textFieldFrame = CGRectInset(textFieldFrame,
                                [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal],
                                [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical]);
-  if (nil == label.text || 0 == label.text.length)
+  if (nil == self.label.text || 0 == self.label.text.length)
   {
-    label.hidden = YES;
-    textField.frame = textFieldFrame;
+    self.label.hidden = YES;
+    self.textField.frame = textFieldFrame;
   }
   else
   {
@@ -161,21 +157,21 @@
                                         - [UiElementMetrics spacingHorizontal]
                                         - textFieldMinimumWidth);
     CGSize constraintSize = CGSizeMake(maximumLabelWidth, MAXFLOAT);
-    CGSize labelTextSize = [label.text sizeWithFont:label.font
-                                             constrainedToSize:constraintSize
-                                                 lineBreakMode:UILineBreakModeWordWrap];
+    CGSize labelTextSize = [self.label.text sizeWithFont:self.label.font
+                                       constrainedToSize:constraintSize
+                                           lineBreakMode:UILineBreakModeWordWrap];
     int labelWidth = labelTextSize.width;
     if (labelWidth > maximumLabelWidth)
       labelWidth = maximumLabelWidth;
     CGRect labelFrame = textFieldFrame;
     labelFrame.size.width = labelWidth;
-    label.hidden = NO;
-    label.frame = labelFrame;
+    self.label.hidden = NO;
+    self.label.frame = labelFrame;
 
     int subtractFromTextFieldWidth = labelWidth + [UiElementMetrics spacingHorizontal];
     textFieldFrame.size.width -= subtractFromTextFieldWidth;
     textFieldFrame.origin.x += subtractFromTextFieldWidth;
-    textField.frame = textFieldFrame;
+    self.textField.frame = textFieldFrame;
   }
 }
 

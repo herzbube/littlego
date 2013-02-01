@@ -47,13 +47,6 @@
 
 @implementation Player
 
-@synthesize uuid;
-@synthesize name;
-@synthesize human;
-@synthesize gtpEngineProfileUUID;
-@synthesize statistics;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a Player object with user defaults data.
 // -----------------------------------------------------------------------------
@@ -173,10 +166,10 @@
 // -----------------------------------------------------------------------------
 - (void) setHuman:(bool)newValue
 {
-  if (human == newValue)
+  if (_human == newValue)
     return;
-  human = newValue;
-  if (human)
+  _human = newValue;
+  if (_human)
     self.gtpEngineProfileUUID = @"";
   else
   {

@@ -83,30 +83,6 @@
 
 @implementation GoScore
 
-@synthesize territoryScoresAvailable;
-@synthesize scoringInProgress;
-@synthesize komi;
-@synthesize capturedByBlack;
-@synthesize capturedByWhite;
-@synthesize deadBlack;
-@synthesize deadWhite;
-@synthesize territoryBlack;
-@synthesize territoryWhite;
-@synthesize totalScoreBlack;
-@synthesize totalScoreWhite;
-@synthesize result;
-@synthesize numberOfMoves;
-@synthesize stonesPlayedByBlack;
-@synthesize stonesPlayedByWhite;
-@synthesize passesPlayedByBlack;
-@synthesize passesPlayedByWhite;
-@synthesize game;
-@synthesize operationQueue;
-@synthesize boardIsInitialized;
-@synthesize lastCalculationHadError;
-@synthesize allRegions;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoScore instance that operates on
 /// @a game.
@@ -137,13 +113,13 @@
   if (! self)
     return nil;
 
-  territoryScoresAvailable = false;
-  scoringInProgress = false;
-  game = nil;
-  operationQueue = nil;
-  boardIsInitialized = false;
-  lastCalculationHadError = false;
-  allRegions = nil;
+  _territoryScoresAvailable = false;
+  _scoringInProgress = false;
+  _game = nil;
+  _operationQueue = nil;
+  _boardIsInitialized = false;
+  _lastCalculationHadError = false;
+  _allRegions = nil;
   [self resetValues];
 
   [self setupAfterUnarchiving];
@@ -195,7 +171,7 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (territoryScoresAvailable)
+  if (self.territoryScoresAvailable)
     [self uninitializeBoard];
   self.operationQueue = nil;
   self.allRegions = nil;
@@ -210,7 +186,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupAfterUnarchiving
 {
-  operationQueue = [[NSOperationQueue alloc] init];
+  self.operationQueue = [[[NSOperationQueue alloc] init] autorelease];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
@@ -226,7 +202,7 @@
   // the old GoGame object is still around, therefore we clear our reference
   // now so that our dealloc() does not access an object that no longer exists.
   // Note: No more calculations are possible after this.
-  game = nil;
+  self.game = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -235,21 +211,21 @@
 // -----------------------------------------------------------------------------
 - (void) resetValues
 {
-  komi = 0;
-  capturedByBlack = 0;
-  capturedByWhite = 0;
-  deadBlack = 0;
-  deadWhite = 0;
-  territoryBlack = 0;
-  territoryWhite = 0;
-  totalScoreBlack = 0;
-  totalScoreWhite = 0;
-  result = GoGameResultNone;
-  numberOfMoves = 0;
-  stonesPlayedByBlack = 0;
-  stonesPlayedByWhite = 0;
-  passesPlayedByBlack = 0;
-  passesPlayedByWhite = 0;
+  self.komi = 0;
+  self.capturedByBlack = 0;
+  self.capturedByWhite = 0;
+  self.deadBlack = 0;
+  self.deadWhite = 0;
+  self.territoryBlack = 0;
+  self.territoryWhite = 0;
+  self.totalScoreBlack = 0;
+  self.totalScoreWhite = 0;
+  self.result = GoGameResultNone;
+  self.numberOfMoves = 0;
+  self.stonesPlayedByBlack = 0;
+  self.stonesPlayedByWhite = 0;
+  self.passesPlayedByBlack = 0;
+  self.passesPlayedByWhite = 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -269,7 +245,7 @@
 {
   if (self.scoringInProgress)
     return;
-  if (! game)
+  if (! self.game)
     return;
   self.scoringInProgress = true;  // notify while we're still in the main thread context
 
@@ -297,7 +273,7 @@
 {
   @try
   {
-    lastCalculationHadError = false;
+    self.lastCalculationHadError = false;
     [self resetValues];
 
     // Pre-calculate region list exactly once
@@ -306,18 +282,18 @@
 
     // Do territory related stuff at the beginning - if any errors occur we can
     // safely abort, without half of the values already having been calculated.
-    if (territoryScoresAvailable)
+    if (self.territoryScoresAvailable)
     {
       bool success = [self initializeBoard];
       if (! success)
       {
-        lastCalculationHadError = true;
+        self.lastCalculationHadError = true;
         return;
       }
       success = [self updateTerritoryColor];
       if (! success)
       {
-        lastCalculationHadError = true;
+        self.lastCalculationHadError = true;
         return;
       }
     }
@@ -352,9 +328,9 @@
 // -----------------------------------------------------------------------------
 - (void) setScoringInProgress:(bool)newValue
 {
-  if (scoringInProgress == newValue)
+  if (_scoringInProgress == newValue)
     return;
-  scoringInProgress = newValue;
+  _scoringInProgress = newValue;
   NSString* notificationName;
   if (newValue)
     notificationName = goScoreCalculationStarts;
@@ -369,7 +345,7 @@
 // -----------------------------------------------------------------------------
 - (NSString*) resultString
 {
-  if (lastCalculationHadError)
+  if (self.lastCalculationHadError)
     return @"Error calculating score";
 
   switch (self.result)
@@ -408,9 +384,9 @@
 // -----------------------------------------------------------------------------
 - (bool) initializeBoard
 {
-  if (boardIsInitialized)
+  if (self.boardIsInitialized)
     return true;
-  boardIsInitialized = true;
+  self.boardIsInitialized = true;
 
   // Initialize territory color
   for (GoBoardRegion* region in self.allRegions)
@@ -432,7 +408,7 @@
       NSArray* deadStoneVertexList = [self parseDeadStoneGtpResponse:command.response.parsedResponse];
       for (NSString* vertex in deadStoneVertexList)
       {
-        GoPoint* point = [game.board pointAtVertex:vertex];
+        GoPoint* point = [self.game.board pointAtVertex:vertex];
         if (! [point hasStone])
         {
           assert(0);
@@ -463,9 +439,9 @@
 // -----------------------------------------------------------------------------
 - (void) uninitializeBoard
 {
-  if (! boardIsInitialized)
+  if (! self.boardIsInitialized)
     return;
-  boardIsInitialized = false;
+  self.boardIsInitialized = false;
   for (GoBoardRegion* region in self.allRegions)
     region.scoringMode = false;  // forget cached values
 }
@@ -516,11 +492,11 @@
 // -----------------------------------------------------------------------------
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup
 {
-  if (! territoryScoresAvailable)
+  if (! self.territoryScoresAvailable)
     return;
-  if (scoringInProgress)
+  if (self.scoringInProgress)
     return;
-  if (! game)
+  if (! self.game)
     return;
   if (! [stoneGroup isStoneGroup])
     return;
@@ -766,14 +742,14 @@
 - (void) updateScoringProperties
 {
   // Komi
-  komi = game.komi;
+  self.komi = self.game.komi;
 
   // Captured stones and move statistics
-  numberOfMoves = 0;
+  self.numberOfMoves = 0;
   GoMove* move = self.game.boardPosition.currentMove;
   while (move != nil)
   {
-    ++numberOfMoves;
+    self.numberOfMoves++;
     bool moveByBlack = move.player.black;
     switch (move.type)
     {
@@ -781,22 +757,22 @@
       {
         if (moveByBlack)
         {
-          capturedByBlack += move.capturedStones.count;
-          ++stonesPlayedByBlack;
+          self.capturedByBlack += move.capturedStones.count;
+          self.stonesPlayedByBlack++;
         }
         else
         {
-          capturedByWhite += move.capturedStones.count;
-          ++stonesPlayedByWhite;
+          self.capturedByWhite += move.capturedStones.count;
+          self.stonesPlayedByWhite++;
         }
         break;
       }
       case GoMoveTypePass:
       {
         if (moveByBlack)
-          ++passesPlayedByBlack;
+          self.passesPlayedByBlack++;
         else
-          ++passesPlayedByWhite;
+          self.passesPlayedByWhite++;
         break;
       }
       default:
@@ -806,7 +782,7 @@
   }
 
   // Territory & dead stones
-  if (territoryScoresAvailable)
+  if (self.territoryScoresAvailable)
   {
     for (GoBoardRegion* region in self.allRegions)
     {
@@ -817,10 +793,10 @@
         switch (region.territoryColor)
         {
           case GoColorBlack:
-            territoryBlack += regionSize;
+            self.territoryBlack += regionSize;
             break;
           case GoColorWhite:
-            territoryWhite += regionSize;
+            self.territoryWhite += regionSize;
             break;
           default:
             break;
@@ -833,10 +809,10 @@
         switch ([region color])
         {
           case GoColorBlack:
-            deadBlack += regionSize;
+            self.deadBlack += regionSize;
             break;
           case GoColorWhite:
-            deadWhite += regionSize;
+            self.deadWhite += regionSize;
             break;
           default:
             break;
@@ -846,16 +822,16 @@
   }
 
   // Total score
-  totalScoreBlack = capturedByBlack + deadWhite + territoryBlack;
-  totalScoreWhite = komi + capturedByWhite + deadBlack + territoryWhite;
+  self.totalScoreBlack = self.capturedByBlack + self.deadWhite + self.territoryBlack;
+  self.totalScoreWhite = self.komi + self.capturedByWhite + self.deadBlack + self.territoryWhite;
 
   // Final result
-  if (totalScoreBlack > totalScoreWhite)
-    result = GoGameResultBlackHasWon;
-  else if (totalScoreWhite > totalScoreBlack)
-    result = GoGameResultWhiteHasWon;
+  if (self.totalScoreBlack > self.totalScoreWhite)
+    self.result = GoGameResultBlackHasWon;
+  else if (self.totalScoreWhite > self.totalScoreBlack)
+    self.result = GoGameResultWhiteHasWon;
   else
-    result = GoGameResultTie;
+    self.result = GoGameResultTie;
 }
 
 
@@ -905,7 +881,7 @@
 - (void) reinitialize
 {
   [self resetValues];
-  if (territoryScoresAvailable)
+  if (self.territoryScoresAvailable)
     [self uninitializeBoard];
   self.allRegions = nil;
 }

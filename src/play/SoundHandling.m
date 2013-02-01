@@ -47,11 +47,6 @@
 
 @implementation SoundHandling
 
-@synthesize disabled;
-@synthesize model;
-@synthesize playStoneSystemSound;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SoundHandling object with user defaults data.
 ///
@@ -70,7 +65,7 @@
   // TODO: We should use ApplicationDelegate.resourceBundle here, but how can
   // we get from NSBundle to CFBundle? These are not toll-free bridged types...
   CFURLRef playStoneURLRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), (CFStringRef)playStoneSoundFileResource, NULL, NULL);
-  AudioServicesCreateSystemSoundID(playStoneURLRef, &playStoneSystemSound);
+  AudioServicesCreateSystemSoundID(playStoneURLRef, &_playStoneSystemSound);
   CFRelease(playStoneURLRef);
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];

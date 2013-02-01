@@ -34,24 +34,6 @@
 
 @implementation PlayViewModel
 
-@synthesize markLastMove;
-@synthesize displayCoordinates;
-@synthesize displayMoveNumbers;
-@synthesize playSound;
-@synthesize vibrate;
-@synthesize backgroundColor;
-@synthesize boardColor;
-@synthesize boardOuterMarginPercentage;
-@synthesize lineColor;
-@synthesize boundingLineWidth;
-@synthesize normalLineWidth;
-@synthesize starPointColor;
-@synthesize starPointRadius;
-@synthesize stoneRadiusPercentage;
-@synthesize crossHairColor;
-@synthesize placeStoneUnderFinger;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayViewModel object with user defaults data.
 ///

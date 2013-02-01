@@ -175,11 +175,6 @@ enum MaxGamesCategory
 
 @implementation EditGtpEngineProfileSettingsController
 
-@synthesize delegate;
-@synthesize profile;
-@synthesize reuseSubtreeSwitch;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an
 /// EditGtpEngineProfileSettingsController instance of grouped style that is

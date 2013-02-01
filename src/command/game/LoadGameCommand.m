@@ -77,15 +77,6 @@
 
 @implementation LoadGameCommand
 
-@synthesize filePath;
-@synthesize gameName;
-@synthesize waitUntilDone;
-@synthesize restoreMode;
-@synthesize callbackTarget;
-@synthesize callbackTargetSelector;
-@synthesize didTriggerComputerPlayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a LoadGameCommand object.
 ///

@@ -68,15 +68,6 @@
 
 @implementation ItemPickerController
 
-@synthesize context;
-@synthesize title;
-@synthesize footerTitle;
-@synthesize delegate;
-@synthesize indexOfDefaultItem;
-@synthesize indexOfSelectedItem;
-@synthesize itemList;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an ItemPickerController instance of
 /// grouped style that is used to pick an item from @a itemList.

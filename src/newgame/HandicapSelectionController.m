@@ -96,11 +96,6 @@ enum TwoAndMoreHandicapSectionItem
 
 @implementation HandicapSelectionController
 
-@synthesize delegate;
-@synthesize handicap;
-@synthesize maximumHandicap;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a HandicapSelectionController
 /// instance of grouped style.

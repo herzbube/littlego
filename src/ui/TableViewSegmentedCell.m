@@ -43,9 +43,6 @@
 
 @implementation TableViewSegmentedCell
 
-@synthesize segmentedControl;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TableViewSegmentedCell instance
 /// with reuse identifier @a reuseIdentifier.
@@ -104,11 +101,11 @@
 - (void) setupContentView
 {
   NSArray* segmentedItems = nil;
-  segmentedControl = [[UISegmentedControl alloc] initWithItems:segmentedItems];  // no autorelease, property is retained
-  segmentedControl.tag = SegmentedCellSegmentedControlTag;
-  segmentedControl.segmentedControlStyle = UISegmentedControlStylePlain;
-  segmentedControl.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  [self.contentView addSubview:segmentedControl];
+  self.segmentedControl = [[[UISegmentedControl alloc] initWithItems:segmentedItems] autorelease];
+  self.segmentedControl.tag = SegmentedCellSegmentedControlTag;
+  self.segmentedControl.segmentedControlStyle = UISegmentedControlStylePlain;
+  self.segmentedControl.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  [self.contentView addSubview:self.segmentedControl];
 }
 
 // -----------------------------------------------------------------------------
@@ -137,7 +134,7 @@
   // section bottom
   backgroundViewFrame.size.height++;
   self.contentView.frame = backgroundViewFrame;
-  segmentedControl.frame = self.contentView.bounds;
+  self.segmentedControl.frame = self.contentView.bounds;
 }
 
 @end

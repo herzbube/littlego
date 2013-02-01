@@ -83,16 +83,6 @@
 
 @implementation BoardPositionListViewController
 
-@synthesize boardPositionListView;
-@synthesize boardPositionViewMetrics;
-@synthesize actionsInProgress;
-@synthesize allDataNeedsUpdate;
-@synthesize currentBoardPositionNeedsUpdate;
-@synthesize oldBoardPosition;
-@synthesize numberOfItemsNeedsUpdate;
-@synthesize tappingEnabledNeedsUpdate;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionListViewController object that manages
 /// the board position list view @a view and uses @a metrics to obtain sizes and

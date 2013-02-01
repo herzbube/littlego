@@ -41,12 +41,6 @@
 
 @implementation CrossHairStoneLayerDelegate
 
-@synthesize crossHairPoint;
-@synthesize blackStoneLayer;
-@synthesize whiteStoneLayer;
-@synthesize crossHairStoneLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CrossHairStoneLayerDelegate object.
 ///

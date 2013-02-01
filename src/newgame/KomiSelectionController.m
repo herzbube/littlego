@@ -93,10 +93,6 @@ enum NoHandicapGameSectionItem
 
 @implementation KomiSelectionController
 
-@synthesize delegate;
-@synthesize komi;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a KomiSelectionController
 /// instance of grouped style.

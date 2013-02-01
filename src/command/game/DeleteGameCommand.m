@@ -35,9 +35,6 @@
 
 @implementation DeleteGameCommand
 
-@synthesize game;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a DeleteGameCommand object.
 ///
@@ -70,7 +67,7 @@
 - (bool) doIt
 {
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
+  NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:filePath error:nil];
   if (success)

@@ -167,29 +167,6 @@ enum ActionType
 
 @implementation PlayViewController
 
-@synthesize playView;
-@synthesize navigationBarMain;
-@synthesize toolbarBoardPositionNavigation;
-@synthesize boardPositionListView;
-@synthesize currentBoardPositionView;
-@synthesize statusLine;
-@synthesize activityIndicator;
-@synthesize boardPositionListContainerView;
-@synthesize boardPositionViewMetrics;
-@synthesize splitViewController;
-@synthesize leftPaneViewController;
-@synthesize rightPaneViewController;
-@synthesize navigationBarController;
-@synthesize statusLineController;
-@synthesize activityIndicatorController;
-@synthesize boardPositionToolbarController;
-@synthesize boardPositionListViewController;
-@synthesize currentBoardPositionViewController;
-@synthesize boardPositionTableListViewController;
-@synthesize panGestureController;
-@synthesize tapGestureController;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this PlayViewController object.
 // -----------------------------------------------------------------------------

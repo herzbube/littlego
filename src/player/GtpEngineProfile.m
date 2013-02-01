@@ -45,18 +45,6 @@
 
 @implementation GtpEngineProfile
 
-@synthesize uuid;
-@synthesize name;
-@synthesize profileDescription;
-@synthesize fuegoMaxMemory;
-@synthesize fuegoThreadCount;
-@synthesize fuegoPondering;
-@synthesize fuegoMaxPonderTime;
-@synthesize fuegoReuseSubtree;
-@synthesize fuegoMaxThinkingTime;
-@synthesize fuegoMaxGames;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpEngineProfile object with its attributes set to
 /// sensible default values.
@@ -134,7 +122,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GtpEngineProfile(%p): name = %@, uuid = %@", self, name, uuid];
+  return [NSString stringWithFormat:@"GtpEngineProfile(%p): name = %@, uuid = %@", self, _name, _uuid];
 }
 
 
@@ -198,7 +186,7 @@
 // -----------------------------------------------------------------------------
 - (bool) isDefaultProfile
 {
-  return [uuid isEqualToString:defaultGtpEngineProfileUUID];
+  return [self.uuid isEqualToString:defaultGtpEngineProfileUUID];
 }
 
 // -----------------------------------------------------------------------------

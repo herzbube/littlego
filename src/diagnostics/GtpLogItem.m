@@ -39,14 +39,6 @@
 
 @implementation GtpLogItem
 
-@synthesize commandString;
-@synthesize timeStamp;
-@synthesize hasResponse;
-@synthesize responseStatus;
-@synthesize parsedResponseString;
-@synthesize rawResponseString;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpLogItem object.
 ///
@@ -115,7 +107,7 @@
   static UIImage* successImage = 0;
   static UIImage* failureImage = 0;
 
-  if (! hasResponse)
+  if (! self.hasResponse)
   {
     if (! noStatusImage)
       noStatusImage = [[@"?" imageWithFont:nil drawShadow:true] retain];
@@ -123,7 +115,7 @@
   }
   else
   {
-    if (responseStatus)
+    if (self.responseStatus)
     {
       if (successImage)
         return successImage;
@@ -147,7 +139,7 @@
 	UIGraphicsPushContext(context);
 	// Draw the actual image
   UIColor* color;
-  if (responseStatus)
+  if (self.responseStatus)
     color = [UIColor greenColor];
   else
     color = [UIColor redColor];
@@ -165,7 +157,7 @@
 	// Clean up drawing environment
 	UIGraphicsEndImageContext();
 
-  if (responseStatus)
+  if (self.responseStatus)
     successImage = outputImage;
   else
     failureImage = outputImage;

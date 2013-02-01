@@ -74,14 +74,6 @@
 
 @implementation PanGestureController
 
-@synthesize playView;
-@synthesize scoringModel;
-@synthesize delegate;
-@synthesize parentViewController;
-@synthesize longPressRecognizer;
-@synthesize panningEnabled;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PanGestureController object that manages @a playView.
 ///

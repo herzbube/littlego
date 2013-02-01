@@ -118,10 +118,6 @@ enum GtpEngineProfilesSectionItem
 
 @implementation PlayerProfileSettingsController
 
-@synthesize playerModel;
-@synthesize gtpEngineProfileModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a PlayerProfileSettingsController
 /// instance of grouped style.

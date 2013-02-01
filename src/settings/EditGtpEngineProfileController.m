@@ -124,11 +124,6 @@ enum ProfileNotesSectionItem
 
 @implementation EditGtpEngineProfileController
 
-@synthesize delegate;
-@synthesize profile;
-@synthesize profileExists;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a EditGtpEngineProfileController
 /// instance of grouped style that is used to edit @a profile.
@@ -459,7 +454,7 @@ enum ProfileNotesSectionItem
       }
       case AdvancedConfigurationItem:
       {
-        EditGtpEngineProfileSettingsController* editProfileSettingsController = [[EditGtpEngineProfileSettingsController controllerForProfile:profile withDelegate:self] retain];
+        EditGtpEngineProfileSettingsController* editProfileSettingsController = [[EditGtpEngineProfileSettingsController controllerForProfile:self.profile withDelegate:self] retain];
         [self.navigationController pushViewController:editProfileSettingsController animated:YES];
         [editProfileSettingsController release];
         break;

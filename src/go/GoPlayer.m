@@ -52,10 +52,6 @@
 
 @implementation GoPlayer
 
-@synthesize player;
-@synthesize black;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color black and refers to the "New Game" default black player.
@@ -199,7 +195,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoPlayer(%p): isBlack = %d", self, black];
+  return [NSString stringWithFormat:@"GoPlayer(%p): isBlack = %d", self, _black];
 }
 
 // -----------------------------------------------------------------------------

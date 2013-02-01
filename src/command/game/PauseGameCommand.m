@@ -33,9 +33,6 @@
 
 @implementation PauseGameCommand
 
-@synthesize game;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PauseGameCommand object.
 ///

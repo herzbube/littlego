@@ -51,10 +51,6 @@
 
 @implementation RestoreBugReportApplicationState
 
-@synthesize unarchivedGame;
-@synthesize unarchivedScore;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RestoreBugReportApplicationState object.
 ///

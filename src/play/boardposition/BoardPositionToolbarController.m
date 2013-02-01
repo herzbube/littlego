@@ -93,21 +93,6 @@ enum NavigationDirection
 
 @implementation BoardPositionToolbarController
 
-@synthesize actionsInProgress;
-@synthesize toolbarNeedsPopulation;
-@synthesize buttonStatesNeedUpdate;
-@synthesize toolbar;
-@synthesize negativeSpacer;
-@synthesize flexibleSpacer;
-@synthesize navigationBarButtonItems;
-@synthesize navigationBarButtonItemsBackward;
-@synthesize navigationBarButtonItemsForward;
-@synthesize boardPositionListViewItem;
-@synthesize currentBoardPositionViewItem;
-@synthesize boardPositionListViewIsVisible;
-@synthesize numberOfBoardPositionsOnPage;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionToolbarController object that places its
 /// buttons into @a aToolbar.

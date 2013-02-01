@@ -63,11 +63,6 @@ enum PlayCommandType
 
 @implementation DiscardAndPlayCommand
 
-@synthesize playCommandType;
-@synthesize moveType;
-@synthesize point;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a DiscardAndPlayCommand object that will make a play
 /// move at @a point.

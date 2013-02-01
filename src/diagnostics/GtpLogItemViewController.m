@@ -102,9 +102,6 @@ enum ResponseStringSectionItem
 
 @implementation GtpLogItemViewController
 
-@synthesize logItem;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogItemViewController instance
 /// of grouped style that displays data from @a logItem.

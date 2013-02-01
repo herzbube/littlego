@@ -53,11 +53,6 @@
 
 @implementation SymbolsLayerDelegate
 
-@synthesize scoringModel;
-@synthesize blackLastMoveLayer;
-@synthesize whiteLastMoveLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SymbolsLayerDelegate object.
 ///

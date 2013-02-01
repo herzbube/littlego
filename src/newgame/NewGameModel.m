@@ -32,19 +32,6 @@
 
 @implementation NewGameModel
 
-@synthesize gameType;
-@synthesize gameTypeLastSelected;
-@synthesize humanPlayerUUID;
-@synthesize computerPlayerUUID;
-@synthesize computerPlaysWhite;
-@synthesize humanBlackPlayerUUID;
-@synthesize humanWhitePlayerUUID;
-@synthesize computerPlayerSelfPlayUUID;
-@synthesize boardSize;
-@synthesize handicap;
-@synthesize komi;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a NewGameModel object with user defaults data.
 ///

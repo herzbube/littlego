@@ -117,9 +117,6 @@ enum ContactSectionItem
 
 @implementation CrashReportingSettingsController
 
-@synthesize crashReportingModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a CrashReportingSettingsController
 /// instance of grouped style.

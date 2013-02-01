@@ -93,16 +93,6 @@
 
 @implementation ItemScrollView
 
-@synthesize itemScrollViewOrientation;
-@synthesize itemScrollViewDelegate;
-@synthesize itemScrollViewDataSource;
-@synthesize visibleItems;
-@synthesize tapRecognizer;
-@synthesize itemContainerView;
-@synthesize numberOfItemsInItemScrollView;
-@synthesize tappingEnabled;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes an ItemScrollView object with frame rectangle @a frame
 /// and items arranged horizontally.
@@ -129,12 +119,12 @@
   // Will be set to the correct size when the data source is configured
   self.contentSize = self.frame.size;
 
-  itemScrollViewOrientation = orientation;
-  itemScrollViewDelegate = nil;
-  itemScrollViewDataSource = nil;
-  visibleItems = [[NSMutableArray alloc] init];
-  tappingEnabled = true;
-  numberOfItemsInItemScrollView = 0;
+  self.itemScrollViewOrientation = orientation;
+  self.itemScrollViewDelegate = nil;
+  _itemScrollViewDataSource = nil;  // don't use self, don't want to trigger reloadData()
+  self.visibleItems = [[[NSMutableArray alloc] init] autorelease];
+  self.tappingEnabled = true;
+  self.numberOfItemsInItemScrollView = 0;
   [self setupItemContainerView];
   [self setupTapGestureRecognizer];
 
@@ -146,9 +136,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  itemScrollViewDelegate = nil;
-  itemScrollViewDataSource = nil;
-  // Using self triggers the setter which releases the object
+  self.itemScrollViewDelegate = nil;
+  _itemScrollViewDataSource = nil;  // don't use self, don't want to trigger reloadData()
   self.visibleItems = nil;
   self.tapRecognizer = nil;
   self.itemContainerView = nil;
@@ -163,11 +152,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupItemContainerView
 {
-  itemContainerView = [[UIView alloc] init];
-  itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
-  [self addSubview:itemContainerView];
+  self.itemContainerView = [[UIView alloc] init];
+  self.itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+  [self addSubview:self.itemContainerView];
   // Must be enabled so that hit-testing works in handleTapFrom:()
-  itemContainerView.userInteractionEnabled = YES;
+  self.itemContainerView.userInteractionEnabled = YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -187,9 +176,9 @@
 // -----------------------------------------------------------------------------
 - (void) setItemScrollViewDelegate:(id<ItemScrollViewDelegate>)delegate
 {
-  if (delegate == itemScrollViewDelegate)
+  if (delegate == _itemScrollViewDelegate)
     return;
-  itemScrollViewDelegate = delegate;
+  _itemScrollViewDelegate = delegate;
   [self updateTapRecognition];
 }
 
@@ -205,7 +194,7 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  itemScrollViewDataSource = dataSource;
+  _itemScrollViewDataSource = dataSource;
   [self reloadData];
 }
 
@@ -214,9 +203,9 @@
 // -----------------------------------------------------------------------------
 - (void) setTappingEnabled:(bool)newValue
 {
-  if (newValue == tappingEnabled)
+  if (newValue == _tappingEnabled)
     return;
-  tappingEnabled = newValue;
+  _tappingEnabled = newValue;
   [self updateTapRecognition];
 }
 
@@ -226,7 +215,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateTapRecognition
 {
-  if (tappingEnabled && itemScrollViewDelegate)
+  if (self.tappingEnabled && self.itemScrollViewDelegate)
   {
     [self addGestureRecognizer:self.tapRecognizer];
   }
@@ -252,7 +241,7 @@
 // -----------------------------------------------------------------------------
 - (void) setItemScrollViewOrientation:(enum ItemScrollViewOrientation)orientation keepVisibleItems:(bool)keepVisibleItems
 {
-  if (orientation == itemScrollViewOrientation)
+  if (orientation == self.itemScrollViewOrientation)
     return;
   self.itemScrollViewOrientation = orientation;
 
@@ -295,12 +284,12 @@
 // -----------------------------------------------------------------------------
 - (void) removeAllVisibleItems
 {
-  for (NSArray* itemArray in visibleItems)
+  for (NSArray* itemArray in _visibleItems)
   {
     UIView* itemView = [itemArray objectAtIndex:0];
     [itemView removeFromSuperview];
   }
-  [visibleItems removeAllObjects];
+  [_visibleItems removeAllObjects];
 }
 
 // -----------------------------------------------------------------------------
@@ -332,11 +321,11 @@
 // -----------------------------------------------------------------------------
 - (void) updateNumberOfItems
 {
-  int newNumberOfItemsInItemScrollView = [itemScrollViewDataSource numberOfItemsInItemScrollView:self];
-  if (newNumberOfItemsInItemScrollView == numberOfItemsInItemScrollView)
+  int newNumberOfItemsInItemScrollView = [self.itemScrollViewDataSource numberOfItemsInItemScrollView:self];
+  if (newNumberOfItemsInItemScrollView == self.numberOfItemsInItemScrollView)
     return;
   // Use self to trigger KVO
-  int oldNumberOfItemsInItemScrollView = numberOfItemsInItemScrollView;
+  int oldNumberOfItemsInItemScrollView = self.numberOfItemsInItemScrollView;
   self.numberOfItemsInItemScrollView = newNumberOfItemsInItemScrollView;
   [self updateContentSize];
   if (newNumberOfItemsInItemScrollView < oldNumberOfItemsInItemScrollView)
@@ -352,17 +341,17 @@
 - (void) updateContentSize
 {
   int itemExtent = [self itemViewExtent];
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
   {
-    CGFloat contentWidth = numberOfItemsInItemScrollView * itemExtent;
+    CGFloat contentWidth = self.numberOfItemsInItemScrollView * itemExtent;
     self.contentSize = CGSizeMake(contentWidth, self.frame.size.height);
   }
   else
   {
-    CGFloat contentHeight = numberOfItemsInItemScrollView * itemExtent;
+    CGFloat contentHeight = self.numberOfItemsInItemScrollView * itemExtent;
     self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
   }
-  itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
+  self.itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
 }
 
 // -----------------------------------------------------------------------------
@@ -370,7 +359,7 @@
 // -----------------------------------------------------------------------------
 - (void) cleanupExcessItemViews
 {
-  int indexOfLastItemView = numberOfItemsInItemScrollView - 1;
+  int indexOfLastItemView = self.numberOfItemsInItemScrollView - 1;
   int maximumEdgeOfLastItemView = [self maximumEdgeOfItemViewWithIndex:indexOfLastItemView];
   [self removeItemsAfterMaximumEdge:maximumEdgeOfLastItemView];
 }
@@ -383,15 +372,15 @@
   if ([self isContentOffsetValid])
     return;
   CGPoint newContentOffset;
-  if (0 == numberOfItemsInItemScrollView)
+  if (0 == self.numberOfItemsInItemScrollView)
   {
     newContentOffset = CGPointZero;
   }
   else
   {
-    int indexOfLastItemView = numberOfItemsInItemScrollView - 1;
+    int indexOfLastItemView = self.numberOfItemsInItemScrollView - 1;
     CGPoint newContentOffset = [self contentOffsetOfItemViewAtMaximumEdgeWithIndex:indexOfLastItemView];
-    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     {
       if (newContentOffset.x < 0)
         newContentOffset.x = 0;
@@ -411,7 +400,7 @@
 - (bool) isContentOffsetValid
 {
   bool contentOffsetIsValid = true;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
   {
     if (self.contentOffset.x + self.frame.size.width > self.contentSize.width)
       contentOffsetIsValid = false;
@@ -430,7 +419,7 @@
 // -----------------------------------------------------------------------------
 - (bool) isVisibleItemViewAtIndex:(int)index
 {
-  if (0 == visibleItems.count)
+  if (0 == _visibleItems.count)
     return false;
   else if ([self isBeforeFirstVisibleItemViewIndex:index])
     return false;
@@ -464,10 +453,10 @@
 - (void) makeVisibleItemViewAtIndex:(int)index animated:(bool)animated
 {
   CGPoint newContentOffset;
-  if (0 == visibleItems.count || [self isAfterLastVisibleItemViewIndex:index])
+  if (0 == _visibleItems.count || [self isAfterLastVisibleItemViewIndex:index])
   {
     newContentOffset = [self contentOffsetOfItemViewAtMaximumEdgeWithIndex:index];
-    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     {
       if (newContentOffset.x < 0)
         newContentOffset.x = 0;
@@ -505,7 +494,7 @@
   CGFloat contentOffsetX = 0;
   CGFloat contentOffsetY = 0;
   CGFloat minimumEdgeOfItemView = [self minimumEdgeOfItemViewWithIndex:index];
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     contentOffsetX = minimumEdgeOfItemView;
   else
     contentOffsetY = minimumEdgeOfItemView;
@@ -530,7 +519,7 @@
   CGFloat contentOffsetX = 0;
   CGFloat contentOffsetY = 0;
   CGFloat maximumEdgeOfItemView = [self maximumEdgeOfItemViewWithIndex:index];
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     contentOffsetX = maximumEdgeOfItemView - self.frame.size.width + 1;
   else
     contentOffsetY = maximumEdgeOfItemView - self.frame.size.height + 1;
@@ -546,13 +535,13 @@
   [super layoutSubviews];
 
   // Methods that are subsequently invoked no longer check this!
-  if (0 == numberOfItemsInItemScrollView)
+  if (0 == self.numberOfItemsInItemScrollView)
     return;
 
-  CGRect visibleBounds = [self convertRect:self.bounds toView:itemContainerView];
+  CGRect visibleBounds = [self convertRect:self.bounds toView:self.itemContainerView];
   CGFloat minimumVisible;
   CGFloat maximumVisible;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
   {
     minimumVisible = CGRectGetMinX(visibleBounds);
     maximumVisible = CGRectGetMaxX(visibleBounds);
@@ -593,7 +582,7 @@
 {
   // To make the implementation of subsequent steps simpler we need to make sure
   // that the array already contains at least one item view
-  if (visibleItems.count == 0)
+  if (_visibleItems.count == 0)
   {
     int indexOfInitialItemView = [self indexOfItemViewWithFrameContainingPosition:minimumEdge];
     UIView* initialItemView = [self itemViewWithIndex:indexOfInitialItemView];
@@ -617,11 +606,11 @@
 // -----------------------------------------------------------------------------
 - (UIView*) itemViewWithIndex:(int)index
 {
-  UIView* itemView = [itemScrollViewDataSource itemScrollView:self itemViewAtIndex:index];
-  [itemContainerView addSubview:itemView];
+  UIView* itemView = [self.itemScrollViewDataSource itemScrollView:self itemViewAtIndex:index];
+  [self.itemContainerView addSubview:itemView];
 
   NSArray* itemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:index], nil];
-  [visibleItems addObject:itemArray];
+  [_visibleItems addObject:itemArray];
 
   return itemView;
 }
@@ -633,7 +622,7 @@
 {
   UIView* lastItemView = [self lastVisibleItemView];
   CGFloat maximumEdge;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     maximumEdge = CGRectGetMaxX(lastItemView.frame);
   else
     maximumEdge = CGRectGetMaxY(lastItemView.frame);
@@ -652,14 +641,14 @@
 - (UIView*) nextItemView
 {
   int indexOfNewItem = [self indexOfLastVisibleItemView] + 1;
-  if (indexOfNewItem >= numberOfItemsInItemScrollView)  // check for bouncing
+  if (indexOfNewItem >= self.numberOfItemsInItemScrollView)  // check for bouncing
     return nil;
   
-  UIView* itemView = [itemScrollViewDataSource itemScrollView:self itemViewAtIndex:indexOfNewItem];
-  [itemContainerView addSubview:itemView];
+  UIView* itemView = [self.itemScrollViewDataSource itemScrollView:self itemViewAtIndex:indexOfNewItem];
+  [self.itemContainerView addSubview:itemView];
   
   NSArray* newLastItemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:indexOfNewItem], nil];
-  [visibleItems addObject:newLastItemArray];
+  [_visibleItems addObject:newLastItemArray];
 
   return itemView;
 }
@@ -671,7 +660,7 @@
 {
   CGRect newItemViewFrame = itemView.frame;
   CGFloat newMinimumEdge;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
   {
     newItemViewFrame.origin.x = position;
     newItemViewFrame.origin.y = 0;
@@ -685,10 +674,10 @@
   }
   itemView.frame = newItemViewFrame;
 
-  if (itemScrollViewDelegate)
+  if (self.itemScrollViewDelegate)
   {
-    if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
-      [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+    if ([self.itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
+      [self.itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
   }
 
   return newMinimumEdge;
@@ -701,7 +690,7 @@
 {
   UIView* firstItemView = [self firstVisibleItemView];
   CGFloat minimumEdge;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     minimumEdge = CGRectGetMinX(firstItemView.frame);
   else
     minimumEdge = CGRectGetMinY(firstItemView.frame);
@@ -723,11 +712,11 @@
   if (indexOfNewItem < 0)  // check for bouncing
     return nil;
 
-  UIView* itemView = [itemScrollViewDataSource itemScrollView:self itemViewAtIndex:indexOfNewItem];
-  [itemContainerView addSubview:itemView];
+  UIView* itemView = [self.itemScrollViewDataSource itemScrollView:self itemViewAtIndex:indexOfNewItem];
+  [self.itemContainerView addSubview:itemView];
 
   NSArray* newFirstItemArray = [NSArray arrayWithObjects:itemView, [NSNumber numberWithInt:indexOfNewItem], nil];
-  [visibleItems insertObject:newFirstItemArray atIndex:0];
+  [_visibleItems insertObject:newFirstItemArray atIndex:0];
 
   return itemView;
 }
@@ -739,7 +728,7 @@
 {
   CGRect newItemViewFrame = itemView.frame;
   CGFloat newMaximumEdge;
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
   {
     newItemViewFrame.origin.x = position - newItemViewFrame.size.width;
     newItemViewFrame.origin.y = 0;
@@ -753,10 +742,10 @@
   }
   itemView.frame = newItemViewFrame;
 
-  if (itemScrollViewDelegate)
+  if (self.itemScrollViewDelegate)
   {
-    if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
-      [itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
+    if ([self.itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:willDisplayItemView:)])
+      [self.itemScrollViewDelegate itemScrollView:self willDisplayItemView:itemView];
   }
 
   return newMaximumEdge;
@@ -770,7 +759,7 @@
   UIView* lastItemView = [self lastVisibleItemView];
   while (true)
   {
-    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     {
       if (lastItemView.frame.origin.x <= maximumVisible)
         break;
@@ -781,7 +770,7 @@
         break;
     }
     [lastItemView removeFromSuperview];
-    [visibleItems removeLastObject];
+    [_visibleItems removeLastObject];
     lastItemView = [self lastVisibleItemView];
   }
 }
@@ -794,7 +783,7 @@
   UIView* firstItemView = [self firstVisibleItemView];
   while (true)
   {
-    if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
+    if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
     {
       if (CGRectGetMaxX(firstItemView.frame) >= minimumVisible)
         break;
@@ -805,7 +794,7 @@
         break;
     }
     [firstItemView removeFromSuperview];
-    [visibleItems removeObjectAtIndex:0];
+    [_visibleItems removeObjectAtIndex:0];
     firstItemView = [self firstVisibleItemView];
   }
 }
@@ -820,8 +809,8 @@
     return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self];
   UIView* itemView = [self hitTest:tappingLocation withEvent:nil];
-  if ([itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
-    [itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
+  if ([self.itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
+    [self.itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
 }
 
 // -----------------------------------------------------------------------------
@@ -832,9 +821,9 @@
 // -----------------------------------------------------------------------------
 - (int) indexOfFirstVisibleItemView
 {
-  if (0 == visibleItems.count)
+  if (0 == _visibleItems.count)
     return -1;
-  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
+  NSArray* firstItemArray = [_visibleItems objectAtIndex:0];
   NSNumber* firstItemIndex = [firstItemArray lastObject];
   return [firstItemIndex intValue];
 }
@@ -847,7 +836,7 @@
 // -----------------------------------------------------------------------------
 - (int) indexOfLastVisibleItemView
 {
-  NSArray* lastItemArray = [visibleItems lastObject];
+  NSArray* lastItemArray = [_visibleItems lastObject];
   NSNumber* lastItemIndex = [lastItemArray lastObject];
   return [lastItemIndex intValue];
 }
@@ -858,7 +847,7 @@
 // -----------------------------------------------------------------------------
 - (int) indexOfVisibleItemView:(UIView*)view
 {
-  for (NSArray* array in visibleItems)
+  for (NSArray* array in _visibleItems)
   {
     if ([array objectAtIndex:0] == view)
     {
@@ -877,7 +866,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) firstVisibleItemView
 {
-  NSArray* firstItemArray = [visibleItems objectAtIndex:0];
+  NSArray* firstItemArray = [_visibleItems objectAtIndex:0];
   return [firstItemArray objectAtIndex:0];
 }
 
@@ -889,7 +878,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) lastVisibleItemView
 {
-  NSArray* lastItemArray = [visibleItems lastObject];
+  NSArray* lastItemArray = [_visibleItems lastObject];
   return [lastItemArray objectAtIndex:0];
 }
 
@@ -901,7 +890,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) visibleItemViewAtIndex:(int)index
 {
-  for (NSArray* array in visibleItems)
+  for (NSArray* array in _visibleItems)
   {
     NSNumber* visibleIndex = [array lastObject];
     if ([visibleIndex intValue] == index)
@@ -975,10 +964,10 @@
 // -----------------------------------------------------------------------------
 - (int) itemViewExtent
 {
-  if (ItemScrollViewOrientationHorizontal == itemScrollViewOrientation)
-    return [itemScrollViewDataSource itemWidthInItemScrollView:self];
+  if (ItemScrollViewOrientationHorizontal == self.itemScrollViewOrientation)
+    return [self.itemScrollViewDataSource itemWidthInItemScrollView:self];
   else
-    return [itemScrollViewDataSource itemHeightInItemScrollView:self];
+    return [self.itemScrollViewDataSource itemHeightInItemScrollView:self];
 }
 
 @end

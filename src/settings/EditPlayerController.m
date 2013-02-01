@@ -115,11 +115,6 @@ enum GtpEngineProfileSectionItem
 
 @implementation EditPlayerController
 
-@synthesize delegate;
-@synthesize player;
-@synthesize playerExists;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an EditPlayerController instance of
 /// grouped style that is used to edit the attributes of @a player.

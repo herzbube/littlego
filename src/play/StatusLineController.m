@@ -73,12 +73,6 @@
 
 @implementation StatusLineController
 
-@synthesize statusLine;
-@synthesize scoringModel;
-@synthesize actionsInProgress;
-@synthesize statusLineNeedsUpdate;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an StatusLineController instance
 /// that manages @a statusLine.

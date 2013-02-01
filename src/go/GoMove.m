@@ -54,15 +54,6 @@
 
 @implementation GoMove
 
-@synthesize type;
-@synthesize player;
-@synthesize point;
-@synthesize previous;
-@synthesize next;
-@synthesize capturedStones;
-@synthesize computerGenerated;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoMove instance of type @a type,
 /// which is associated with @a player, and whose predecessor is @a move.
@@ -124,7 +115,7 @@
 
   self.type = aType;
   self.player = aPlayer;
-  point = nil;  // don't use self, otherwise we trigger the setter!
+  _point = nil;  // don't use self, otherwise we trigger the setter!
   self.previous = nil;
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
@@ -146,7 +137,7 @@
     return nil;
   self.type = [decoder decodeIntForKey:goMoveTypeKey];
   self.player = [decoder decodeObjectForKey:goMovePlayerKey];
-  point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
+  _point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
   self.previous = [decoder decodeObjectForKey:goMovePreviousKey];
   self.next = [decoder decodeObjectForKey:goMoveNextKey];
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
@@ -161,7 +152,7 @@
 - (void) dealloc
 {
   self.player = nil;
-  point = nil;  // don't use self, otherwise we trigger the setter!
+  _point = nil;  // don't use self, otherwise we trigger the setter!
   if (self.previous)
   {
     self.previous.next = nil;  // remove reference to self
@@ -186,7 +177,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoMove(%p): type = %d", self, type];
+  return [NSString stringWithFormat:@"GoMove(%p): type = %d", self, _type];
 }
 
 // -----------------------------------------------------------------------------
@@ -208,7 +199,7 @@
     @throw exception;
   }
 
-  point = newValue;
+  _point = newValue;
 }
 
 // -----------------------------------------------------------------------------
@@ -279,7 +270,7 @@
       // same captured group, the neighbour will already have its state reset,
       // and we will skip it
       capture.stoneState = GoColorNone;
-      [(NSMutableArray*)capturedStones addObject:capture];
+      [(NSMutableArray*)_capturedStones addObject:capture];
     }
   }
 }
@@ -302,7 +293,7 @@
   if (GoMoveTypePass == self.type)
     return;
 
-  if (! point)
+  if (! _point)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:@"GoMove has no associated GoPoint"
@@ -335,7 +326,7 @@
   // further down does not join regions incorrectly.
   for (GoPoint* capture in self.capturedStones)
     capture.stoneState = capturedStoneColor;
-  [(NSMutableArray*)capturedStones removeAllObjects];
+  [(NSMutableArray*)_capturedStones removeAllObjects];
 
   // Update the point's stone state *BEFORE* moving it to a new region
   GoPoint* thePoint = self.point;

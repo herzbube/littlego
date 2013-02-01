@@ -69,11 +69,6 @@
 
 @implementation GenerateDiagnosticsInformationFileCommand
 
-@synthesize diagnosticsInformationFolderPath;
-@synthesize diagnosticsInformationFilePath;
-@synthesize registrationDomainDefaults;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GenerateDiagnosticsInformationFileCommand object.
 ///
@@ -320,7 +315,7 @@
 {
   DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Compressing folder");
 
-  ZKFileArchive* bugReportArchive = [ZKFileArchive archiveWithArchivePath:diagnosticsInformationFilePath];
+  ZKFileArchive* bugReportArchive = [ZKFileArchive archiveWithArchivePath:self.diagnosticsInformationFilePath];
   NSInteger result = [bugReportArchive deflateDirectory:self.diagnosticsInformationFolderPath
                                          relativeToPath:[self.diagnosticsInformationFolderPath stringByDeletingLastPathComponent]
                                       usingResourceFork:NO];

@@ -50,12 +50,6 @@
 
 @implementation NewGameCommand
 
-@synthesize shouldSetupGtpBoard;
-@synthesize shouldSetupGtpHandicapAndKomi;
-@synthesize shouldSetupComputerPlayer;
-@synthesize shouldTriggerComputerPlayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a NewGameCommand object.
 ///

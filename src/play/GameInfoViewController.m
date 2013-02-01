@@ -159,10 +159,6 @@ enum MoveStatisticsSectionItem
 
 @implementation GameInfoViewController
 
-@synthesize delegate;
-@synthesize score;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GameInfoViewController instance
 /// that loads its view from a .nib file.

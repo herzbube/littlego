@@ -34,9 +34,6 @@
 
 @implementation ContinueGameCommand
 
-@synthesize game;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ContinueGameCommand object.
 ///

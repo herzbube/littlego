@@ -69,9 +69,6 @@
 
 @implementation GtpCommandViewController
 
-@synthesize model;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpCommandViewController instance
 /// of plain style.
@@ -178,7 +175,7 @@
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  cell.textLabel.text = [model commandStringAtIndex:indexPath.row];
+  cell.textLabel.text = [self.model commandStringAtIndex:indexPath.row];
   cell.showsReorderControl = YES;
   return cell;
 }

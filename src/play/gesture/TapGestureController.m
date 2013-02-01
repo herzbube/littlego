@@ -71,12 +71,6 @@
 
 @implementation TapGestureController
 
-@synthesize playView;
-@synthesize scoringModel;
-@synthesize tapRecognizer;
-@synthesize tappingEnabled;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TapGestureController object that manages @a playView.
 ///

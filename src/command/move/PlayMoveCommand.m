@@ -46,11 +46,6 @@
 
 @implementation PlayMoveCommand
 
-@synthesize game;
-@synthesize moveType;
-@synthesize point;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayMoveCommand object that will make a play move at
 /// @a point.
@@ -136,7 +131,7 @@
   switch (self.moveType)
   {
     case GoMoveTypePlay:
-      [self.game play:point];
+      [self.game play:self.point];
       break;
     case GoMoveTypePass:
       [self.game pass];
@@ -152,7 +147,7 @@
   switch (self.moveType)
   {
     case GoMoveTypePlay:
-      commandString = [commandString stringByAppendingString:point.vertex.string];
+      commandString = [commandString stringByAppendingString:self.point.vertex.string];
       break;
     case GoMoveTypePass:
       commandString = [commandString stringByAppendingString:@"pass"];

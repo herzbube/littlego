@@ -72,10 +72,6 @@
 
 @implementation ArchiveViewController
 
-@synthesize archiveViewModel;
-@synthesize placeholderView;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this ArchiveViewController object.
 // -----------------------------------------------------------------------------

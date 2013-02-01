@@ -34,10 +34,6 @@
 
 @implementation BoardPositionModel
 
-@synthesize discardFutureMovesAlert;
-@synthesize boardPositionLastViewed;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ScoringModel object with user defaults data.
 ///

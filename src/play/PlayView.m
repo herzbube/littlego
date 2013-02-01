@@ -107,28 +107,6 @@
 
 @implementation PlayView
 
-@synthesize playViewModel;
-@synthesize scoringModel;
-@synthesize viewReadyForDrawing;
-
-@synthesize crossHairPoint;
-@synthesize crossHairPointIsLegalMove;
-@synthesize crossHairPointDistanceFromFinger;
-
-@synthesize actionsInProgress;
-@synthesize updatesWereDelayed;
-
-@synthesize playViewMetrics;
-@synthesize gridLayerDelegate;
-@synthesize starPointsLayerDelegate;
-@synthesize crossHairLinesLayerDelegate;
-@synthesize stonesLayerDelegate;
-@synthesize crossHairStoneLayerDelegate;
-@synthesize symbolsLayerDelegate;
-@synthesize territoryLayerDelegate;
-@synthesize deadStonesLayerDelegate;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Shared instance of PlayView.
 // -----------------------------------------------------------------------------
@@ -175,7 +153,7 @@ static PlayView* sharedPlayView = nil;
   // Cannot delay creation of the metrics object to makeViewReadyForDrawing()
   // because external forces need access to the boardFrame property
   self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
-                                                          model:playViewModel] autorelease];
+                                                          model:self.playViewModel] autorelease];
 
   if (! delegate.applicationReadyForAction)
   {
@@ -280,41 +258,41 @@ static PlayView* sharedPlayView = nil;
 
 
   self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                             metrics:playViewMetrics
-                                                               model:playViewModel] autorelease];
+                                                             metrics:self.playViewMetrics
+                                                               model:self.playViewModel] autorelease];
   self.starPointsLayerDelegate = [[[StarPointsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                         metrics:playViewMetrics
-                                                                           model:playViewModel] autorelease];
+                                                                         metrics:self.playViewMetrics
+                                                                           model:self.playViewModel] autorelease];
   self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                 metrics:playViewMetrics
-                                                                                   model:playViewModel] autorelease];
+                                                                                 metrics:self.playViewMetrics
+                                                                                   model:self.playViewModel] autorelease];
   self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                 metrics:playViewMetrics
-                                                                   model:playViewModel] autorelease];
+                                                                 metrics:self.playViewMetrics
+                                                                   model:self.playViewModel] autorelease];
   self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                 metrics:playViewMetrics
-                                                                                   model:playViewModel] autorelease];
+                                                                                 metrics:self.playViewMetrics
+                                                                                   model:self.playViewModel] autorelease];
   self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                   metrics:playViewMetrics
-                                                             playViewModel:playViewModel
-                                                              scoringModel:scoringModel] autorelease];
+                                                                   metrics:self.playViewMetrics
+                                                             playViewModel:self.playViewModel
+                                                              scoringModel:self.scoringModel] autorelease];
   self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                       metrics:playViewMetrics
-                                                                 playViewModel:playViewModel
-                                                                  scoringModel:scoringModel] autorelease];
+                                                                       metrics:self.playViewMetrics
+                                                                 playViewModel:self.playViewModel
+                                                                  scoringModel:self.scoringModel] autorelease];
   self.deadStonesLayerDelegate = [[[DeadStonesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                         metrics:playViewMetrics
-                                                                   playViewModel:playViewModel
-                                                                    scoringModel:scoringModel] autorelease];
+                                                                         metrics:self.playViewMetrics
+                                                                   playViewModel:self.playViewModel
+                                                                    scoringModel:self.scoringModel] autorelease];
 
-  [self setupSubLayer:gridLayerDelegate.layer];
-  [self setupSubLayer:starPointsLayerDelegate.layer];
-  [self setupSubLayer:crossHairLinesLayerDelegate.layer];
-  [self setupSubLayer:stonesLayerDelegate.layer];
-  [self setupSubLayer:crossHairStoneLayerDelegate.layer];
-  [self setupSubLayer:symbolsLayerDelegate.layer];
-  [self setupSubLayer:territoryLayerDelegate.layer];
-  [self setupSubLayer:deadStonesLayerDelegate.layer];
+  [self setupSubLayer:_gridLayerDelegate.layer];
+  [self setupSubLayer:_starPointsLayerDelegate.layer];
+  [self setupSubLayer:_crossHairLinesLayerDelegate.layer];
+  [self setupSubLayer:_stonesLayerDelegate.layer];
+  [self setupSubLayer:_crossHairStoneLayerDelegate.layer];
+  [self setupSubLayer:_symbolsLayerDelegate.layer];
+  [self setupSubLayer:_territoryLayerDelegate.layer];
+  [self setupSubLayer:_deadStonesLayerDelegate.layer];
 }
 
 // -----------------------------------------------------------------------------
@@ -371,14 +349,14 @@ static PlayView* sharedPlayView = nil;
     return;
   self.updatesWereDelayed = false;
 
-  [gridLayerDelegate drawLayer];
-  [starPointsLayerDelegate drawLayer];
-  [crossHairLinesLayerDelegate drawLayer];
-  [stonesLayerDelegate drawLayer];
-  [crossHairStoneLayerDelegate drawLayer];
-  [symbolsLayerDelegate drawLayer];
-  [territoryLayerDelegate drawLayer];
-  [deadStonesLayerDelegate drawLayer];
+  [_gridLayerDelegate drawLayer];
+  [_starPointsLayerDelegate drawLayer];
+  [_crossHairLinesLayerDelegate drawLayer];
+  [_stonesLayerDelegate drawLayer];
+  [_crossHairStoneLayerDelegate drawLayer];
+  [_symbolsLayerDelegate drawLayer];
+  [_territoryLayerDelegate drawLayer];
+  [_deadStonesLayerDelegate drawLayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -390,14 +368,14 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
-  [gridLayerDelegate notify:event eventInfo:eventInfo];
-  [starPointsLayerDelegate notify:event eventInfo:eventInfo];
-  [crossHairLinesLayerDelegate notify:event eventInfo:eventInfo];
-  [stonesLayerDelegate notify:event eventInfo:eventInfo];
-  [crossHairStoneLayerDelegate notify:event eventInfo:eventInfo];
-  [symbolsLayerDelegate notify:event eventInfo:eventInfo];
-  [territoryLayerDelegate notify:event eventInfo:eventInfo];
-  [deadStonesLayerDelegate notify:event eventInfo:eventInfo];
+  [_gridLayerDelegate notify:event eventInfo:eventInfo];
+  [_starPointsLayerDelegate notify:event eventInfo:eventInfo];
+  [_crossHairLinesLayerDelegate notify:event eventInfo:eventInfo];
+  [_stonesLayerDelegate notify:event eventInfo:eventInfo];
+  [_crossHairStoneLayerDelegate notify:event eventInfo:eventInfo];
+  [_symbolsLayerDelegate notify:event eventInfo:eventInfo];
+  [_territoryLayerDelegate notify:event eventInfo:eventInfo];
+  [_deadStonesLayerDelegate notify:event eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------
@@ -435,7 +413,7 @@ static PlayView* sharedPlayView = nil;
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [self updateCrossHairPointDistanceFromFinger];  // depends on board size
-  [playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
+  [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
   [self delayedUpdate];
 }
@@ -593,7 +571,7 @@ static PlayView* sharedPlayView = nil;
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
   coordinates.y -= self.crossHairPointDistanceFromFinger * self.playViewMetrics.pointDistance;
-  return [playViewMetrics pointNear:coordinates];
+  return [_playViewMetrics pointNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -602,13 +580,13 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
 {
-  if (crossHairPoint == point && crossHairPointIsLegalMove == isLegalMove)
+  if (_crossHairPoint == point && _crossHairPointIsLegalMove == isLegalMove)
     return;
 
   // Update *BEFORE* self.crossHairPoint so that KVO observers that monitor
   // self.crossHairPoint get both changes at once. Don't use self to update the
   // property because we don't want observers to monitor the property via KVO.
-  crossHairPointIsLegalMove = isLegalMove;
+  _crossHairPointIsLegalMove = isLegalMove;
   self.crossHairPoint = point;
 
   [self notifyLayerDelegates:PVLDEventCrossHairChanged eventInfo:point];
@@ -624,7 +602,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointNear:(CGPoint)coordinates
 {
-  return [playViewMetrics pointNear:coordinates];
+  return [_playViewMetrics pointNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -632,10 +610,10 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (CGRect) boardFrame
 {
-  return CGRectMake(self.frame.origin.x + playViewMetrics.topLeftBoardCornerX,
-                    self.frame.origin.y + playViewMetrics.topLeftBoardCornerY,
-                    playViewMetrics.boardSideLength,
-                    playViewMetrics.boardSideLength);
+  return CGRectMake(self.frame.origin.x + _playViewMetrics.topLeftBoardCornerX,
+                    self.frame.origin.y + _playViewMetrics.topLeftBoardCornerY,
+                    _playViewMetrics.boardSideLength,
+                    _playViewMetrics.boardSideLength);
 }
 
 @end

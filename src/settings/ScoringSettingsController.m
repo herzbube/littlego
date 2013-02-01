@@ -97,9 +97,6 @@ enum ScoringSectionItem
 
 @implementation ScoringSettingsController
 
-@synthesize scoringModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a ScoringSettingsController instance
 /// of grouped style.

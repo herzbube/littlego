@@ -32,12 +32,6 @@
 
 @implementation CrashReportingModel
 
-@synthesize collectCrashData;
-@synthesize automaticReport;
-@synthesize allowContact;
-@synthesize contactEmail;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CrashReportingModel object with user defaults data.
 ///

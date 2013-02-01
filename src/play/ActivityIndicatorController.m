@@ -53,10 +53,6 @@
 
 @implementation ActivityIndicatorController
 
-@synthesize activityIndicator;
-@synthesize scoringModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an ActivityIndicatorController
 /// instance that manages @a activityIndicator.

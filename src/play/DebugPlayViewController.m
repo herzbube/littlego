@@ -57,13 +57,6 @@
 
 @implementation DebugPlayViewController
 
-@synthesize boardOuterMarginPercentageTextField;
-@synthesize normalLineWidthTextField;
-@synthesize boundingLineWidthTextField;
-@synthesize starPointRadiusTextField;
-@synthesize stoneRadiusPercentageTextField;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes an DebugPlayViewController object.
 ///

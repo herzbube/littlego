@@ -65,9 +65,6 @@
 
 @implementation GoBoard
 
-@synthesize size;
-@synthesize starPoints;
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoard instance which uses the
 /// "New Game" default board size.
@@ -164,7 +161,7 @@
 
   self.size = boardSize;
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
-  starPoints = nil;
+  self.starPoints = nil;
 
   [self setupBoard];
 
@@ -201,7 +198,7 @@
   for (GoPoint* point in [m_vertexDict allValues])
     point.region = nil;
   [m_vertexDict release];
-  [starPoints release];
+  self.starPoints = nil;
   [super dealloc];
 }
 
@@ -270,7 +267,7 @@
   }
   // Make a copy that is immutable because we hand out references to the
   // array, and we don't want clients to be able to change the array
-  starPoints = [[NSArray arrayWithArray:starPointsLocal] retain];
+  self.starPoints = [NSArray arrayWithArray:starPointsLocal];
 }
 
 // -----------------------------------------------------------------------------
@@ -283,7 +280,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoBoard(%p): size = %d", self, size];
+  return [NSString stringWithFormat:@"GoBoard(%p): size = %d", self, _size];
 }
 
 // -----------------------------------------------------------------------------
@@ -343,12 +340,12 @@
       break;
     case GoBoardDirectionRight:
       numericVertex.x++;
-      if (numericVertex.x > size)
+      if (numericVertex.x > _size)
         return nil;
       break;
     case GoBoardDirectionUp:
       numericVertex.y++;
-      if (numericVertex.y > size)
+      if (numericVertex.y > _size)
         return nil;
       break;
     case GoBoardDirectionDown:
@@ -358,11 +355,11 @@
       break;
     case GoBoardDirectionNext:
       numericVertex.x++;
-      if (numericVertex.x > size)
+      if (numericVertex.x > _size)
       {
         numericVertex.x = 1;
         numericVertex.y++;
-        if (numericVertex.y > size)
+        if (numericVertex.y > _size)
           return nil;
       }
       break;
@@ -370,7 +367,7 @@
       numericVertex.x--;
       if (numericVertex.x < 1)
       {
-        numericVertex.x = size;
+        numericVertex.x = _size;
         numericVertex.y--;
         if (numericVertex.y < 1)
           return nil;
@@ -381,14 +378,6 @@
   }
   GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
   return [self pointAtVertex:vertex.string];
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (NSArray*) starPoints
-{
-  return [[starPoints retain] autorelease];
 }
 
 // -----------------------------------------------------------------------------

@@ -72,9 +72,6 @@ static NSString* gridLineColor = @"A9ABAD";
 
 @implementation TableViewGridCell
 
-@synthesize delegate;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TableViewGridCell instance
 /// with reuse identifier @a reuseIdentifier.
@@ -138,7 +135,7 @@ static NSString* gridLineColor = @"A9ABAD";
     [oldGridCellContentView removeFromSuperview];
   GridCellContentView* gridCellContentView = [self gridCellContentView];
 
-  int numberOfColumns = [delegate numberOfColumnsInGridCell:self];
+  int numberOfColumns = [self.delegate numberOfColumnsInGridCell:self];
   int numberOfGridLines = numberOfColumns - 1;
   const int gridLinePadding = 2 * [UiElementMetrics spacingHorizontal];  // padding on the left and on the right of a grid line
   int totalWidthAvailableForAllColumns = (gridCellContentView.bounds.size.width
@@ -155,7 +152,7 @@ static NSString* gridLineColor = @"A9ABAD";
     int labelWidth = columnWidth;
     CGRect labelRect = CGRectMake(labelX, labelY, labelWidth, [UiElementMetrics labelHeight]);
     UILabel* label = nil;
-    enum GridCellColumnStyle columnStyle = [delegate gridCell:self styleInColumn:column];
+    enum GridCellColumnStyle columnStyle = [self.delegate gridCell:self styleInColumn:column];
     switch (columnStyle)
     {
       case ValueGridCellColumnStyle:
@@ -192,7 +189,7 @@ static NSString* gridLineColor = @"A9ABAD";
       label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin);
     }
 
-    label.text = [delegate gridCell:self textForColumn:column];
+    label.text = [self.delegate gridCell:self textForColumn:column];
     [gridCellContentView addSubview:label];
   }
 }
@@ -245,9 +242,6 @@ static NSString* gridLineColor = @"A9ABAD";
 
 @implementation GridCellContentView
 
-@synthesize numberOfColumns;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TableViewGridCell object with reuse identifier
 /// @a reuseIdentifier.
@@ -286,7 +280,7 @@ static NSString* gridLineColor = @"A9ABAD";
   // frames have changed due to resizing, so it can't use the same fixed
   // width calculations as in TableViewGridCell::setupCellContent()
   CGFloat rightEdgeOfPreviousLabel = 0;
-  for (int column = 0; column < numberOfColumns; ++column)
+  for (int column = 0; column < self.numberOfColumns; ++column)
   {
     int labelTag = GridCellContentViewTag + column + 1;
     UIView* label = [self viewWithTag:labelTag];

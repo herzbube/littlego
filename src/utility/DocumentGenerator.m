@@ -50,13 +50,6 @@
 
 @implementation DocumentGenerator
 
-@synthesize numberOfGroups;
-@synthesize groupTitles;
-@synthesize sectionIndexPaths;
-@synthesize sectionTitles;
-@synthesize sectionContents;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a DocumentGenerator object with @a fileContent to parse
 /// according to the rules set out in the class documentation.

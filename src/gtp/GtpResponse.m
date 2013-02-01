@@ -42,9 +42,6 @@
 
 @implementation GtpResponse
 
-@synthesize rawResponse;
-@synthesize command;
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpResponse instance that wraps
 /// the response string @a response, and is a response to @a command.
@@ -100,7 +97,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, rawResponse];
+  return [NSString stringWithFormat:@"GtpResponse(%p): %@", self, _rawResponse];
 }
 
 // -----------------------------------------------------------------------------

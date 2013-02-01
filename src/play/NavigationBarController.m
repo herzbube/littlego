@@ -129,29 +129,6 @@
 
 @implementation NavigationBarController
 
-@synthesize navigationBar;
-@synthesize scoringModel;
-@synthesize delegate;
-@synthesize parentViewController;
-@synthesize gameInfoViewController;
-@synthesize gameInfoScore;
-@synthesize actionsInProgress;
-@synthesize navigationBarNeedsPopulation;
-@synthesize buttonStatesNeedUpdate;
-@synthesize navigationItem;
-@synthesize computerPlayButton;
-@synthesize passButton;
-@synthesize discardBoardPositionButton;
-@synthesize pauseButton;
-@synthesize continueButton;
-@synthesize interruptButton;
-@synthesize flexibleSpaceButton;
-@synthesize barButtonItemForShowingTheHiddenViewController;
-@synthesize gameInfoButton;
-@synthesize gameActionsButton;
-@synthesize doneButton;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a NavigationBarController object.
 ///
@@ -299,8 +276,8 @@
 // -----------------------------------------------------------------------------
 - (void) setNavigationBar:(UINavigationBar*)aNavigationBar
 {
-  navigationBar = aNavigationBar;
-  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
+  _navigationBar = aNavigationBar;
+  [_navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }
 
 // -----------------------------------------------------------------------------

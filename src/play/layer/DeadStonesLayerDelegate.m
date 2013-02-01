@@ -52,10 +52,6 @@
 
 @implementation DeadStonesLayerDelegate
 
-@synthesize scoringModel;
-@synthesize deadStoneSymbolLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a DeadStonesLayerDelegate object.
 ///

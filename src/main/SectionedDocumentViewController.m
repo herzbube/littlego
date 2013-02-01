@@ -63,10 +63,6 @@
 
 @implementation SectionedDocumentViewController
 
-@synthesize contextTabBarItem;
-@synthesize documentGenerator;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this SectionedDocumentViewController
 /// object.

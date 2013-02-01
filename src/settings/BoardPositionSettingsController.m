@@ -86,9 +86,6 @@ enum DiscardFutureMovesAlertSectionItem
 
 @implementation BoardPositionSettingsController
 
-@synthesize boardPositionModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a BoardPositionSettingsController
 /// instance of grouped style.

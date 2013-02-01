@@ -105,10 +105,6 @@ enum ResetCannedCommandsSectionItem
 
 @implementation GtpLogSettingsController
 
-@synthesize logModel;
-@synthesize commandModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogSettingsController instance
 /// of grouped style.

@@ -109,21 +109,6 @@
 
 @implementation BoardPositionTableListViewController
 
-@synthesize currentBoardPositionTitleLabel;
-@synthesize currentBoardPositionTableView;
-@synthesize boardPositionListTitleLabel;
-@synthesize boardPositionListTableView;
-@synthesize tappingEnabled;
-@synthesize actionsInProgress;
-@synthesize allDataNeedsUpdate;
-@synthesize currentBoardPositionNeedsUpdate;
-@synthesize oldCurrentBoardPosition;
-@synthesize numberOfItemsNeedsUpdate;
-@synthesize tappingEnabledNeedsUpdate;
-@synthesize blackStoneImage;
-@synthesize whiteStoneImage;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionTableListViewController object that places
 /// the table views it manages as subviews of @a containerView.

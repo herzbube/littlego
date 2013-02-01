@@ -74,13 +74,6 @@
 
 @implementation GtpLogModel
 
-@synthesize itemList;
-@synthesize gtpLogSize;
-@synthesize gtpLogViewFrontSideIsVisible;
-@synthesize itemQueueNoResponses;
-@synthesize dateFormatter;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpLogModel object.
 ///
@@ -108,11 +101,11 @@
   self.itemQueueNoResponses = [NSMutableArray arrayWithCapacity:0];
 
   self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-  [dateFormatter setLocale:[NSLocale currentLocale]];
+  [self.dateFormatter setLocale:[NSLocale currentLocale]];
   // Use medium format so that we can see seconds - this way we can better
   // gauge how long the engine takes for calculating its moves.
-  [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-  [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+  [self.dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+  [self.dateFormatter setDateStyle:NSDateFormatterShortStyle];
 
   return self;
 }
@@ -219,7 +212,7 @@
   // Check if the item was kicked out of the log while the response was still
   // outstanding. Stuff like clearing the log, or a massive amount of trimming,
   // might have happened.
-  if (! [itemList containsObject:logItem])
+  if (! [_itemList containsObject:logItem])
   {
     DDLogInfo(@"Discarding GTP response");
     return;
@@ -239,7 +232,7 @@
 // -----------------------------------------------------------------------------
 - (int) itemCount
 {
-  return itemList.count;
+  return _itemList.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -251,8 +244,8 @@
   if (newSize < 1)
     return;
 
-  int oldSize = gtpLogSize;
-  gtpLogSize = newSize;
+  int oldSize = _gtpLogSize;
+  _gtpLogSize = newSize;
 
   if (newSize < oldSize)
   {
@@ -268,7 +261,7 @@
 // -----------------------------------------------------------------------------
 - (GtpLogItem*) itemAtIndex:(int)index
 {
-  return [itemList objectAtIndex:index];
+  return [_itemList objectAtIndex:index];
 }
 
 // -----------------------------------------------------------------------------
@@ -277,7 +270,7 @@
 - (void) addItemToLog:(GtpCommand*)command
 {
   GtpLogItem* logItem = [[GtpLogItem alloc] init];
-  [(NSMutableArray*)itemList addObject:logItem];  // itemList has ownership
+  [(NSMutableArray*)_itemList addObject:logItem];  // _itemList has ownership
   [logItem release];
 
   [self enqueueItemWithNoResponse:logItem];
@@ -295,14 +288,14 @@
 // -----------------------------------------------------------------------------
 - (void) trimLog
 {
-  int numberOfItemsToDiscard = itemList.count - self.gtpLogSize;
+  int numberOfItemsToDiscard = _itemList.count - self.gtpLogSize;
   if (numberOfItemsToDiscard <= 0)
     return;
 
   NSRange rangeToRemove;
   rangeToRemove.location = 0;  // oldest items are at the front of the array
   rangeToRemove.length = numberOfItemsToDiscard;
-  [(NSMutableArray*)itemList removeObjectsInRange:rangeToRemove];
+  [(NSMutableArray*)_itemList removeObjectsInRange:rangeToRemove];
 }
 
 // -----------------------------------------------------------------------------
@@ -311,7 +304,7 @@
 // -----------------------------------------------------------------------------
 - (void) enqueueItemWithNoResponse:(GtpLogItem*)logItem
 {
-  [itemQueueNoResponses addObject:logItem];
+  [_itemQueueNoResponses addObject:logItem];
 }
 
 // -----------------------------------------------------------------------------
@@ -322,10 +315,10 @@
 // -----------------------------------------------------------------------------
 - (GtpLogItem*) dequeueItemWithNoResponse
 {
-  if (itemQueueNoResponses.count == 0)
+  if (_itemQueueNoResponses.count == 0)
     return nil;
-  GtpLogItem* logItem = [itemQueueNoResponses objectAtIndex:0];
-  [itemQueueNoResponses removeObjectAtIndex:0];
+  GtpLogItem* logItem = [_itemQueueNoResponses objectAtIndex:0];
+  [_itemQueueNoResponses removeObjectAtIndex:0];
   return logItem;
 }
 
@@ -335,7 +328,7 @@
 // -----------------------------------------------------------------------------
 - (void) clearItemQueueWithNoResponse
 {
-  [itemQueueNoResponses removeAllObjects];
+  [_itemQueueNoResponses removeAllObjects];
 }
 
 // -----------------------------------------------------------------------------
@@ -343,8 +336,8 @@
 // -----------------------------------------------------------------------------
 - (void) clearLog
 {
-  [(NSMutableArray*)itemList removeAllObjects];
-  // Note: itemQueueNoResponses is not modified by design! If we were removing
+  [(NSMutableArray*)_itemList removeAllObjects];
+  // Note: _itemQueueNoResponses is not modified by design! If we were removing
   // items from that queue, outstanding responses might become associated with
   // the wrong GtpLogItem objects when they come in.
 

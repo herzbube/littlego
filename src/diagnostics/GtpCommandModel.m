@@ -36,9 +36,6 @@
 
 @implementation GtpCommandModel
 
-@synthesize commandList;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpCommandModel object.
 ///
@@ -89,7 +86,7 @@
 // -----------------------------------------------------------------------------
 - (int) commandCount
 {
-  return commandList.count;
+  return _commandList.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -98,7 +95,7 @@
 // -----------------------------------------------------------------------------
 - (NSString*) commandStringAtIndex:(int)index
 {
-  return [commandList objectAtIndex:index];
+  return [_commandList objectAtIndex:index];
 }
 
 // -----------------------------------------------------------------------------
@@ -107,7 +104,7 @@
 // -----------------------------------------------------------------------------
 - (bool) hasCommand:(NSString*)commandString
 {
-  for (NSString* iterCommandString in commandList)
+  for (NSString* iterCommandString in _commandList)
   {
     if ([iterCommandString isEqualToString:commandString])
       return true;
@@ -121,7 +118,7 @@
 // -----------------------------------------------------------------------------
 - (void) addCommand:(NSString*)commandString
 {
-  [(NSMutableArray*)commandList addObject:commandString];
+  [(NSMutableArray*)_commandList addObject:commandString];
 }
 
 // -----------------------------------------------------------------------------
@@ -130,7 +127,7 @@
 // -----------------------------------------------------------------------------
 - (void) replaceCommandAtIndex:(int)index withCommand:(NSString*)commandString
 {
-  [(NSMutableArray*)commandList replaceObjectAtIndex:index withObject:commandString];
+  [(NSMutableArray*)_commandList replaceObjectAtIndex:index withObject:commandString];
 }
 
 // -----------------------------------------------------------------------------
@@ -139,7 +136,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeCommandAtIndex:(int)index
 {
-  [(NSMutableArray*)commandList removeObjectAtIndex:index];
+  [(NSMutableArray*)_commandList removeObjectAtIndex:index];
 }
 
 // -----------------------------------------------------------------------------
@@ -149,9 +146,9 @@
 - (void) moveCommandAtIndex:(int)fromIndex toIndex:(int)toIndex
 {
   // Retain because removing the object from the array sends a release message
-  NSString* commandToMove = [[commandList objectAtIndex:fromIndex] retain];
-  [(NSMutableArray*)commandList removeObjectAtIndex:fromIndex];
-  [(NSMutableArray*)commandList insertObject:commandToMove atIndex:toIndex];
+  NSString* commandToMove = [[_commandList objectAtIndex:fromIndex] retain];
+  [(NSMutableArray*)_commandList removeObjectAtIndex:fromIndex];
+  [(NSMutableArray*)_commandList insertObject:commandToMove atIndex:toIndex];
   [commandToMove release];
 }
 

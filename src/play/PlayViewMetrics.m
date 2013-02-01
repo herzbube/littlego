@@ -43,29 +43,6 @@
 
 @implementation PlayViewMetrics
 
-@synthesize playView;
-@synthesize playViewModel;
-@synthesize rect;
-@synthesize boardSize;
-@synthesize portrait;
-@synthesize boardSideLength;
-@synthesize topLeftBoardCornerX;
-@synthesize topLeftBoardCornerY;
-@synthesize topLeftPointX;
-@synthesize topLeftPointY;
-@synthesize bottomRightPointX;
-@synthesize bottomRightPointY;
-@synthesize numberOfCells;
-@synthesize cellWidth;
-@synthesize pointDistance;
-@synthesize lineLength;
-@synthesize stoneRadius;
-@synthesize pointCellSize;
-@synthesize stoneInnerSquareSize;
-@synthesize lineStartOffset;
-@synthesize boundingLineStrokeOffset;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayViewMetrics object.
 ///
@@ -81,8 +58,8 @@
   self.playView = view;
   self.playViewModel = model;
 
-  rect = CGRectNull;
-  boardSize = GoBoardSizeUndefined;
+  self.rect = CGRectNull;
+  self.boardSize = GoBoardSizeUndefined;
   // Remaining properties are initialized by updateWithRect:boardSize:()
   [self updateWithRect:self.playView.bounds boardSize:self.boardSize];
 
@@ -200,7 +177,7 @@
     self.stoneRadius = floor(self.cellWidth / 2 * self.playViewModel.stoneRadiusPercentage);
     int pointsUsedForGridLines = ((newBoardSize - 2) * self.playViewModel.normalLineWidth
                                   + 2 * self.playViewModel.boundingLineWidth);
-    self.lineLength = pointsUsedForGridLines + self.cellWidth * numberOfCells;
+    self.lineLength = pointsUsedForGridLines + self.cellWidth * self.numberOfCells;
 
     
     
@@ -209,7 +186,7 @@
     // point, which sits in the middle of a normal line. Because the centering
     // calculation divides by 2 we must subtract a full line width here, not
     // just half a line width.
-    int widthForCentering = self.cellWidth * numberOfCells + (newBoardSize - 1) * self.playViewModel.normalLineWidth;
+    int widthForCentering = self.cellWidth * self.numberOfCells + (newBoardSize - 1) * self.playViewModel.normalLineWidth;
     int topLeftPointMargin = floor((self.boardSideLength - widthForCentering) / 2);
     if (topLeftPointMargin < self.cellWidth / 2.0)
     {
@@ -472,7 +449,7 @@
       CGContextTranslateCTM(context, 0, self.boundingLineStrokeOffset);
     // Adjust horizontal line position so that it starts at the left edge of
     // the left bounding line
-    CGContextTranslateCTM(context, -lineStartOffset, 0);
+    CGContextTranslateCTM(context, -_lineStartOffset, 0);
   }
   else
   {
@@ -488,7 +465,7 @@
       CGContextTranslateCTM(context, -self.boundingLineStrokeOffset, 0);
     else if (isBoundingLineRightOrBottom)
       CGContextTranslateCTM(context, self.boundingLineStrokeOffset, 0);
-    CGContextTranslateCTM(context, 0, -lineStartOffset);
+    CGContextTranslateCTM(context, 0, -_lineStartOffset);
     // Shift all vertical lines 1 point to the right. This is what I call
     // "the mystery point" - I couldn't come up with a satisfactory explanation
     // why this is needed even after hours of geometric drawings and manual

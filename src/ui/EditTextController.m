@@ -72,17 +72,6 @@
 
 @implementation EditTextController
 
-@synthesize textField;
-@synthesize textView;
-@synthesize context;
-@synthesize editTextControllerStyle;
-@synthesize delegate;
-@synthesize text;
-@synthesize placeholder;
-@synthesize textHasChanged;
-@synthesize acceptEmptyText;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an EditTextController instance of
 /// grouped style that is used to edit @a text.
@@ -259,7 +248,7 @@
   [super viewWillAppear:animated];
 
   // Place the insertion point into the text field
-  [textField becomeFirstResponder];
+  [self.textField becomeFirstResponder];
 }
 
 // -----------------------------------------------------------------------------
@@ -329,7 +318,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) textFieldShouldReturn:(UITextField*)aTextField
 {
-  if (! [self isTextAcceptable:textField.text])
+  if (! [self isTextAcceptable:self.textField.text])
     return NO;
   [self done:nil];
   return YES;

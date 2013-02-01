@@ -58,14 +58,6 @@
 
 @implementation SendBugReportController
 
-@synthesize delegate;
-@synthesize bugReportDescription;
-@synthesize bugReportStepsToReproduce;
-@synthesize sendBugReportMode;
-@synthesize modalViewControllerParent;
-@synthesize diagnosticsInformationFilePath;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor.
 // -----------------------------------------------------------------------------

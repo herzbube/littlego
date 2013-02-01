@@ -104,9 +104,6 @@ enum ViewSectionItem
 
 @implementation PlayViewSettingsController
 
-@synthesize playViewModel;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a PlayViewSettingsController
 /// instance of grouped style.

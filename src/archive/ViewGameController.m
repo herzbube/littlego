@@ -105,10 +105,6 @@ enum GameAttributesSectionItem
 
 @implementation ViewGameController
 
-@synthesize game;
-@synthesize model;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a ViewGameController instance of
 /// grouped style that is used to view information associated with @a game.
@@ -389,7 +385,7 @@ enum GameAttributesSectionItem
 {
   if (didStartNewGame)
   {
-    NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
+    NSString* filePath = [self.model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
     LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath gameName:self.game.name];
     [command submit];
   }

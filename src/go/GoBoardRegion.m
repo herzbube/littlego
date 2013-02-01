@@ -65,19 +65,6 @@
 
 @implementation GoBoardRegion
 
-@synthesize points;
-@synthesize randomColor;
-@synthesize scoringMode;
-@synthesize territoryColor;
-@synthesize territoryInconsistencyFound;
-@synthesize deadStoneGroup;
-@synthesize cachedSize;
-@synthesize cachedIsStoneGroup;
-@synthesize cachedColor;
-@synthesize cachedLiberties;
-@synthesize cachedAdjacentRegions;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoBoardRegion instance that
 /// contains no GoPoint objects.
@@ -133,7 +120,7 @@
 
   self.points = [NSMutableArray arrayWithCapacity:0];
   self.randomColor = [UIColor randomColor];
-  scoringMode = false;  // don't use self, otherwise we trigger the setter!
+  _scoringMode = false;  // don't use self, otherwise we trigger the setter!
   self.territoryColor = GoColorNone;
   self.territoryInconsistencyFound = false;
   self.deadStoneGroup = false;
@@ -155,7 +142,7 @@
     return nil;
   self.points = [decoder decodeObjectForKey:goBoardRegionPointsKey];
   self.randomColor = [decoder decodeObjectForKey:goBoardRegionRandomColorKey];
-  scoringMode = [decoder decodeBoolForKey:goBoardRegionScoringModeKey];  // don't use self, otherwise we trigger the setter!
+  _scoringMode = [decoder decodeBoolForKey:goBoardRegionScoringModeKey];  // don't use self, otherwise we trigger the setter!
   self.territoryColor = [decoder decodeIntForKey:goBoardRegionTerritoryColorKey];
   self.territoryInconsistencyFound = [decoder decodeBoolForKey:goBoardRegionTerritoryInconsistencyFoundKey];
   self.deadStoneGroup = [decoder decodeBoolForKey:goBoardRegionDeadStoneGroupKey];
@@ -189,7 +176,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %d", self, points.count];
+  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %d", self, _points.count];
 }
 
 // -----------------------------------------------------------------------------
@@ -198,10 +185,9 @@
 // -----------------------------------------------------------------------------
 - (int) size
 {
-  if (scoringMode)
-    return cachedSize;
-
-  return [points count];
+  if (_scoringMode)
+    return _cachedSize;
+  return [_points count];
 }
 
 // -----------------------------------------------------------------------------
@@ -209,7 +195,7 @@
 // -----------------------------------------------------------------------------
 - (bool) hasPoint:(GoPoint*)point
 {
-  return [points containsObject:point];
+  return [_points containsObject:point];
 }
 
 // -----------------------------------------------------------------------------
@@ -245,9 +231,9 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (points.count > 0)
+  if (_points.count > 0)
   {
-    GoPoint* otherPoint = [points objectAtIndex:0];
+    GoPoint* otherPoint = [_points objectAtIndex:0];
     if (otherPoint.stoneState != point.stoneState)
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -259,7 +245,7 @@
 
   if (previousRegion)
     [previousRegion removePoint:point];  // side-effect: sets point.region to nil
-  [(NSMutableArray*)points addObject:point];
+  [(NSMutableArray*)_points addObject:point];
   point.region = self;
 }
 
@@ -287,10 +273,10 @@
     @throw exception;
   }
 
-  [(NSMutableArray*)points removeObject:point];
-  // Check points array NOW because the next statement might deallocate this
+  [(NSMutableArray*)_points removeObject:point];
+  // Check _points array NOW because the next statement might deallocate this
   // GoBoardRegion, including the array
-  bool lastPoint = (0 == points.count);
+  bool lastPoint = (0 == _points.count);
   // If point is the last point in this region, the next statement is going to
   // deallocate this GoBoardRegion
   point.region = nil;
@@ -349,12 +335,12 @@
 // -----------------------------------------------------------------------------
 - (bool) isStoneGroup
 {
-  if (scoringMode)
-    return cachedIsStoneGroup;
+  if (_scoringMode)
+    return _cachedIsStoneGroup;
 
-  if (0 == [points count])
+  if (0 == [_points count])
     return false;
-  GoPoint* point = [points objectAtIndex:0];
+  GoPoint* point = [_points objectAtIndex:0];
   return [point hasStone];
 }
 
@@ -364,12 +350,12 @@
 // -----------------------------------------------------------------------------
 - (enum GoColor) color
 {
-  if (scoringMode)
-    return cachedColor;
+  if (_scoringMode)
+    return _cachedColor;
 
-  if (0 == [points count])
+  if (0 == [_points count])
     return GoColorNone;
-  GoPoint* point = [points objectAtIndex:0];
+  GoPoint* point = [_points objectAtIndex:0];
   return point.stoneState;
 }
 
@@ -382,8 +368,8 @@
 // -----------------------------------------------------------------------------
 - (int) liberties
 {
-  if (scoringMode)
-    return cachedLiberties;
+  if (_scoringMode)
+    return _cachedLiberties;
 
   if (! [self isStoneGroup])
   {
@@ -394,7 +380,7 @@
   }
 
   NSMutableArray* libertyPoints = [NSMutableArray arrayWithCapacity:0];
-  for (GoPoint* point in points)
+  for (GoPoint* point in _points)
   {
     for (GoPoint* neighbour in point.neighbours)
     {
@@ -415,11 +401,11 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) adjacentRegions
 {
-  if (scoringMode)
-    return cachedAdjacentRegions;
+  if (_scoringMode)
+    return _cachedAdjacentRegions;
 
   NSMutableArray* adjacentRegions = [NSMutableArray arrayWithCapacity:0];
-  for (GoPoint* point in points)
+  for (GoPoint* point in _points)
   {
     for (GoPoint* neighbour in point.neighbours)
     {
@@ -453,7 +439,7 @@
 - (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint
 {
   // Split not possible if less than 2 points
-  if (points.count < 2)
+  if (_points.count < 2)
     return;
 
   // Because the point that has been removed is the splitting point, we iterate
@@ -487,7 +473,7 @@
     // If the new subregion has the same size as self (the main region),
     // then it effectively is the same thing as self. There won't be any more
     // splits, so we can skip processing the remaining neighbours.
-    if (points.count == newSubRegion.count)
+    if (_points.count == newSubRegion.count)
       break;
 
     // At this point we know that newSubRegion does not contain all the points
@@ -583,9 +569,9 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (points.count > 0)
+  if (_points.count > 0)
   {
-    GoPoint* otherPoint = [points objectAtIndex:0];
+    GoPoint* otherPoint = [_points objectAtIndex:0];
     if (otherPoint.stoneState != firstPointOfSubRegion.stoneState)
     {
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -600,7 +586,7 @@
   [mainRegion removeSubRegion:subRegion];
 
   // Bulk-add subRegion
-  [(NSMutableArray*)points addObjectsFromArray:subRegion];
+  [(NSMutableArray*)_points addObjectsFromArray:subRegion];
   for (GoPoint* point in subRegion)
     point.region = self;
 }
@@ -618,7 +604,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeSubRegion:(NSArray*)subRegion
 {
-  [(NSMutableArray*)points removeObjectsInArray:subRegion];
+  [(NSMutableArray*)_points removeObjectsInArray:subRegion];
   for (GoPoint* point in subRegion)
     point.region = nil;
 }
@@ -628,7 +614,7 @@
 // -----------------------------------------------------------------------------
 - (void) setScoringMode:(bool)newScoringMode
 {
-  if (scoringMode == newScoringMode)
+  if (_scoringMode == newScoringMode)
     return;
 
   // Fill the cache before updating scoringMode! This allows fillCache() to
@@ -643,7 +629,7 @@
   else
     [self invalidateCache];
 
-  scoringMode = newScoringMode;
+  _scoringMode = newScoringMode;
 }
 
 // -----------------------------------------------------------------------------
@@ -651,11 +637,11 @@
 // -----------------------------------------------------------------------------
 - (void) fillCache
 {
-  cachedSize = [self size];
-  cachedIsStoneGroup = [self isStoneGroup];
-  cachedColor = [self color];
+  _cachedSize = [self size];
+  _cachedIsStoneGroup = [self isStoneGroup];
+  _cachedColor = [self color];
   if ([self isStoneGroup])
-    cachedLiberties = [self liberties];
+    _cachedLiberties = [self liberties];
   self.cachedAdjacentRegions = [self adjacentRegions];  // use self to increase retain count
 }
 
@@ -664,10 +650,10 @@
 // -----------------------------------------------------------------------------
 - (void) invalidateCache
 {
-  cachedSize = -1;
-  cachedIsStoneGroup = false;
-  cachedColor = GoColorNone;
-  cachedLiberties = -1;
+  _cachedSize = -1;
+  _cachedIsStoneGroup = false;
+  _cachedColor = GoColorNone;
+  _cachedLiberties = -1;
   self.cachedAdjacentRegions = nil;  // use self to decrease the retain count
 }
 

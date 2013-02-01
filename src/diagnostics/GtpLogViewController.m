@@ -97,14 +97,6 @@
 
 @implementation GtpLogViewController
 
-@synthesize model;
-@synthesize frontSideView;
-@synthesize backSideView;
-@synthesize lastRowIsVisible;
-@synthesize updateScheduledByGtpLogItemChanged;
-@synthesize updateScheduledByGtpLogContentChanged;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogViewController instance
 /// that loads its frontside and backside view from a .nib file.
@@ -175,12 +167,12 @@
 
   if (self.model.gtpLogViewFrontSideIsVisible)
   {
-    [self.view addSubview:frontSideView];
+    [self.view addSubview:self.frontSideView];
     [self.frontSideView reloadData];
   }
   else
   {
-    [self.view addSubview:backSideView];
+    [self.view addSubview:self.backSideView];
     [self reloadBackSideView];
   }
 }
@@ -542,14 +534,14 @@
   if (flipToFrontSideView)
   {
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
-    [backSideView removeFromSuperview];
-    [self.view addSubview:frontSideView];
+    [self.backSideView removeFromSuperview];
+    [self.view addSubview:self.frontSideView];
   }
   else
   {
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
-    [frontSideView removeFromSuperview];
-    [self.view addSubview:backSideView];
+    [self.frontSideView removeFromSuperview];
+    [self.view addSubview:self.backSideView];
     // Content must be reloaded in
     [self reloadBackSideView];
   }

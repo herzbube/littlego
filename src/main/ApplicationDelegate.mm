@@ -111,24 +111,6 @@
 
 @synthesize window;
 @synthesize tabBarController;
-@synthesize applicationLaunchMode;
-@synthesize applicationReadyForAction;
-@synthesize resourceBundle;
-@synthesize gtpClient;
-@synthesize gtpEngine;
-@synthesize theNewGameModel;
-@synthesize playerModel;
-@synthesize gtpEngineProfileModel;
-@synthesize scoringModel;
-@synthesize playViewModel;
-@synthesize boardPositionModel;
-@synthesize soundHandling;
-@synthesize game;
-@synthesize archiveViewModel;
-@synthesize gtpLogModel;
-@synthesize gtpCommandModel;
-@synthesize crashReportingModel;
-@synthesize fileLogger;
 
 
 // -----------------------------------------------------------------------------
@@ -240,7 +222,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   DDLogInfo(@"applicationWillResignActive:() received");
 
-  if (GoGameTypeComputerVsComputer == game.type)
+  if (GoGameTypeComputerVsComputer == self.game.type)
   {
     PauseGameCommand* command = [[PauseGameCommand alloc] init];
     [command submit];

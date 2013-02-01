@@ -66,13 +66,6 @@ enum TerritoryLayerType
 
 @implementation TerritoryLayerDelegate
 
-@synthesize scoringModel;
-@synthesize blackTerritoryLayer;
-@synthesize whiteTerritoryLayer;
-@synthesize inconsistentFillColorTerritoryLayer;
-@synthesize inconsistentDotSymbolTerritoryLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TerritoryLayerDelegate object.
 ///

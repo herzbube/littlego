@@ -51,20 +51,6 @@
 
 @implementation GoGame
 
-@synthesize type;
-@synthesize board;
-@synthesize handicapPoints;
-@synthesize komi;
-@synthesize playerBlack;
-@synthesize playerWhite;
-@synthesize moveModel;
-@synthesize state;
-@synthesize reasonForGameHasEnded;
-@synthesize computerThinks;
-@synthesize nextMoveIsComputerGenerated;
-@synthesize boardPosition;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Returns the shared GoGame object that represents the current game.
 // -----------------------------------------------------------------------------
@@ -97,20 +83,20 @@
 
   // Don't use "self" because most properties have non-trivial setter methods
   // (e.g. notificatins are triggered, but also other stuff)
-  type = GoGameTypeUnknown;
-  board = nil;
-  handicapPoints = [[NSArray array] retain];
-  komi = 0;
-  playerBlack = nil;
-  playerWhite = nil;
-  moveModel = [[GoMoveModel alloc] init];
-  state = GoGameStateGameHasNotYetStarted;
-  reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
-  computerThinks = false;
-  nextMoveIsComputerGenerated = false;
+  _type = GoGameTypeUnknown;
+  _board = nil;
+  _handicapPoints = [[NSArray array] retain];
+  _komi = 0;
+  _playerBlack = nil;
+  _playerWhite = nil;
+  _moveModel = [[GoMoveModel alloc] init];
+  _state = GoGameStateGameHasNotYetStarted;
+  _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
+  _computerThinks = false;
+  _nextMoveIsComputerGenerated = false;
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
   // GoMoveModel to be already around
-  boardPosition = [[GoBoardPosition alloc] initWithGame:self];
+  _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
 
   return self;
 }
@@ -128,18 +114,18 @@
     return nil;
   // Don't use "self" because most properties have non-trivial setter methods
   // (e.g. notificatins are triggered, but also other stuff)
-  type = [decoder decodeIntForKey:goGameTypeKey];
-  board = [[decoder decodeObjectForKey:goGameBoardKey] retain];
-  handicapPoints = [[decoder decodeObjectForKey:goGameHandicapPointsKey] retain];
-  komi = [decoder decodeDoubleForKey:goGameKomiKey];
-  playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
-  playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
-  moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
-  state = [decoder decodeIntForKey:goGameStateKey];
-  reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
-  computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
-  nextMoveIsComputerGenerated = [decoder decodeBoolForKey:goGameNextMoveIsComputerGeneratedKey];
-  boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
+  _type = [decoder decodeIntForKey:goGameTypeKey];
+  _board = [[decoder decodeObjectForKey:goGameBoardKey] retain];
+  _handicapPoints = [[decoder decodeObjectForKey:goGameHandicapPointsKey] retain];
+  _komi = [decoder decodeDoubleForKey:goGameKomiKey];
+  _playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
+  _playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
+  _moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
+  _state = [decoder decodeIntForKey:goGameStateKey];
+  _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
+  _computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
+  _nextMoveIsComputerGenerated = [decoder decodeBoolForKey:goGameNextMoveIsComputerGeneratedKey];
+  _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
 
   return self;
 }
@@ -153,10 +139,10 @@
   // Don't use self.handicapPoints, because setHandicapPoints:() is not
   // intelligent enough to detect that it is called during deallocation and
   // will throw an exception if the game state is not what it expects
-  if (handicapPoints)
+  if (_handicapPoints)
   {
-    [handicapPoints release];
-    handicapPoints = nil;
+    [_handicapPoints release];
+    _handicapPoints = nil;
   }
   self.playerBlack = nil;
   self.playerWhite = nil;
@@ -188,9 +174,9 @@
 // -----------------------------------------------------------------------------
 - (void) setState:(enum GoGameState)newValue
 {
-  if (state == newValue)
+  if (_state == newValue)
     return;
-  state = newValue;
+  _state = newValue;
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameStateChanged object:self];
 }
 
@@ -502,9 +488,9 @@
 // -----------------------------------------------------------------------------
 - (void) setComputerThinks:(bool)newValue
 {
-  if (computerThinks == newValue)
+  if (_computerThinks == newValue)
     return;
-  computerThinks = newValue;
+  _computerThinks = newValue;
   NSString* notificationName;
   if (newValue)
     notificationName = computerPlayerThinkingStarts;
@@ -533,24 +519,24 @@
     @throw exception;
   }
 
-  if ([handicapPoints isEqualToArray:newValue])
+  if ([_handicapPoints isEqualToArray:newValue])
     return;
 
   // Reset previously set handicap points
-  if (handicapPoints)
+  if (_handicapPoints)
   {
-    [handicapPoints autorelease];
-    for (GoPoint* point in handicapPoints)
+    [_handicapPoints autorelease];
+    for (GoPoint* point in _handicapPoints)
     {
       point.stoneState = GoColorNone;
       [GoUtilities movePointToNewRegion:point];
     }
   }
 
-  handicapPoints = [newValue copy];
-  if (handicapPoints)
+  _handicapPoints = [newValue copy];
+  if (_handicapPoints)
   {
-    for (GoPoint* point in handicapPoints)
+    for (GoPoint* point in _handicapPoints)
     {
       point.stoneState = GoColorBlack;
       [GoUtilities movePointToNewRegion:point];

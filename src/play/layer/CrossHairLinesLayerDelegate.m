@@ -40,11 +40,6 @@
 
 @implementation CrossHairLinesLayerDelegate
 
-@synthesize crossHairPoint;
-@synthesize normalLineLayer;
-@synthesize boundingLineLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CrossHairLinesLayerDelegate object.
 ///

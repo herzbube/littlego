@@ -139,9 +139,6 @@ enum ApplicationLogSectionItem
 
 @implementation DiagnosticsViewController
 
-@synthesize bugReportSectionIsDisabled;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this DiagnosticsViewController
 /// object.

@@ -41,9 +41,6 @@
 
 @implementation SaveGameCommand
 
-@synthesize gameName;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SaveGameCommand object.
 ///
@@ -87,7 +84,7 @@
   // destination is in the archive folder
   NSString* temporaryDirectory = NSTemporaryDirectory();
   NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
-  NSString* fileName = [gameName stringByAppendingString:@".sgf"];
+  NSString* fileName = [self.gameName stringByAppendingString:@".sgf"];
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:fileName];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];

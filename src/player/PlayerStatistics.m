@@ -32,12 +32,6 @@
 
 @implementation PlayerStatistics
 
-@synthesize gamesPlayed;
-@synthesize gamesWon;
-@synthesize gamesLost;
-@synthesize gamesTied;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayerStatistics object with all attributes set to
 /// zero.

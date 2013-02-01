@@ -39,14 +39,6 @@
 
 @implementation GtpCommand
 
-@synthesize command;
-@synthesize submittingThread;
-@synthesize waitUntilDone;
-@synthesize response;
-@synthesize responseTarget;
-@synthesize responseTargetSelector;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpCommand instance that wraps
 /// the command string @a command.
@@ -125,7 +117,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, command];
+  return [NSString stringWithFormat:@"GtpCommand(%p): %@", self, _command];
 }
 
 // -----------------------------------------------------------------------------

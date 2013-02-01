@@ -53,24 +53,13 @@
 
 @implementation GoPoint
 
-@synthesize vertex;
-@synthesize board;
-@synthesize left;
-@synthesize right;
-@synthesize above;
-@synthesize below;
-@synthesize neighbours;
-@synthesize next;
-@synthesize previous;
-@synthesize starPoint;
-@synthesize stoneState;
-@synthesize region;
-@synthesize isLeftValid;
-@synthesize isRightValid;
-@synthesize isAboveValid;
-@synthesize isBelowValid;
-@synthesize isNextValid;
-@synthesize isPreviousValid;
+@synthesize left=_left;
+@synthesize right=_right;
+@synthesize above=_above;
+@synthesize below=_below;
+@synthesize neighbours=_neighbours;
+@synthesize next=_next;
+@synthesize previous=_previous;
 
 
 // -----------------------------------------------------------------------------
@@ -117,19 +106,19 @@
   self.board = aBoard;
   self.starPoint = false;
   self.stoneState = GoColorNone;
-  left = nil;
-  right = nil;
-  above = nil;
-  below = nil;
-  next = nil;
-  previous = nil;
-  neighbours = nil;
-  isLeftValid = false;
-  isRightValid = false;
-  isAboveValid = false;
-  isBelowValid = false;
-  isNextValid = false;
-  isPreviousValid = false;
+  _left = nil;
+  _right = nil;
+  _above = nil;
+  _below = nil;
+  _next = nil;
+  _previous = nil;
+  _neighbours = nil;
+  _isLeftValid = false;
+  _isRightValid = false;
+  _isAboveValid = false;
+  _isBelowValid = false;
+  _isNextValid = false;
+  _isPreviousValid = false;
 
   return self;
 }
@@ -147,13 +136,13 @@
     return nil;
   self.vertex = [decoder decodeObjectForKey:goPointVertexKey];
   self.board = [decoder decodeObjectForKey:goPointBoardKey];
-  left = [decoder decodeObjectForKey:goPointLeftKey];
-  right = [decoder decodeObjectForKey:goPointRightKey];
-  above = [decoder decodeObjectForKey:goPointAboveKey];
-  below = [decoder decodeObjectForKey:goPointBelowKey];
-  neighbours = [[decoder decodeObjectForKey:goPointNeighboursKey] retain];
-  next = [decoder decodeObjectForKey:goPointNextKey];
-  previous = [decoder decodeObjectForKey:goPointPreviousKey];
+  _left = [decoder decodeObjectForKey:goPointLeftKey];
+  _right = [decoder decodeObjectForKey:goPointRightKey];
+  _above = [decoder decodeObjectForKey:goPointAboveKey];
+  _below = [decoder decodeObjectForKey:goPointBelowKey];
+  _neighbours = [[decoder decodeObjectForKey:goPointNeighboursKey] retain];
+  _next = [decoder decodeObjectForKey:goPointNextKey];
+  _previous = [decoder decodeObjectForKey:goPointPreviousKey];
   self.starPoint = [decoder decodeBoolForKey:goPointIsStarPointKey];
   self.stoneState = [decoder decodeIntForKey:goPointStoneStateKey];
   self.region = [decoder decodeObjectForKey:goPointRegionKey];
@@ -174,7 +163,7 @@
 {
   self.vertex = nil;
   self.board = nil;
-  [neighbours release];
+  [_neighbours release];
   [super dealloc];
 }
 
@@ -188,7 +177,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoPoint(%p): vertex = %@, stone state = %d", self, vertex.string, stoneState];
+  return [NSString stringWithFormat:@"GoPoint(%p): vertex = %@, stone state = %d", self, _vertex.string, _stoneState];
 }
 
 // -----------------------------------------------------------------------------
@@ -198,12 +187,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) left
 {
-  if (! isLeftValid)
+  if (! _isLeftValid)
   {
-    isLeftValid = true;
-    left = [self.board neighbourOf:self inDirection:GoBoardDirectionLeft];
+    _isLeftValid = true;
+    _left = [self.board neighbourOf:self inDirection:GoBoardDirectionLeft];
   }
-  return left;
+  return _left;
 }
 
 // -----------------------------------------------------------------------------
@@ -213,12 +202,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) right
 {
-  if (! isRightValid)
+  if (! _isRightValid)
   {
-    right = [self.board neighbourOf:self inDirection:GoBoardDirectionRight];
-    isRightValid = true;
+    _right = [self.board neighbourOf:self inDirection:GoBoardDirectionRight];
+    _isRightValid = true;
   }
-  return right;
+  return _right;
 }
 
 // -----------------------------------------------------------------------------
@@ -228,12 +217,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) above
 {
-  if (! isAboveValid)
+  if (! _isAboveValid)
   {
-    above = [self.board neighbourOf:self inDirection:GoBoardDirectionUp];
-    isAboveValid = true;
+    _above = [self.board neighbourOf:self inDirection:GoBoardDirectionUp];
+    _isAboveValid = true;
   }
-  return above;
+  return _above;
 }
 
 // -----------------------------------------------------------------------------
@@ -243,12 +232,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) below
 {
-  if (! isBelowValid)
+  if (! _isBelowValid)
   {
-    below = [self.board neighbourOf:self inDirection:GoBoardDirectionDown];
-    isBelowValid = true;
+    _below = [self.board neighbourOf:self inDirection:GoBoardDirectionDown];
+    _isBelowValid = true;
   }
-  return below;
+  return _below;
 }
 
 // -----------------------------------------------------------------------------
@@ -259,19 +248,19 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) neighbours
 {
-  if (! neighbours)
+  if (! _neighbours)
   {
-    neighbours = [[NSMutableArray arrayWithCapacity:0] retain];
+    _neighbours = [[NSMutableArray arrayWithCapacity:0] retain];
     if (self.left)
-      [(NSMutableArray*)neighbours addObject:self.left];
+      [(NSMutableArray*)_neighbours addObject:self.left];
     if (self.right)
-      [(NSMutableArray*)neighbours addObject:self.right];
+      [(NSMutableArray*)_neighbours addObject:self.right];
     if (self.above)
-      [(NSMutableArray*)neighbours addObject:self.above];
+      [(NSMutableArray*)_neighbours addObject:self.above];
     if (self.below)
-      [(NSMutableArray*)neighbours addObject:self.below];
+      [(NSMutableArray*)_neighbours addObject:self.below];
   }
-  return [[neighbours retain] autorelease];
+  return [[_neighbours retain] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -281,12 +270,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) next
 {
-  if (! isNextValid)
+  if (! _isNextValid)
   {
-    next = [self.board neighbourOf:self inDirection:GoBoardDirectionNext];
-    isNextValid = true;
+    _next = [self.board neighbourOf:self inDirection:GoBoardDirectionNext];
+    _isNextValid = true;
   }
-  return next;
+  return _next;
 }
 
 // -----------------------------------------------------------------------------
@@ -296,12 +285,12 @@
 // -----------------------------------------------------------------------------
 - (GoPoint*) previous
 {
-  if (! isPreviousValid)
+  if (! _isPreviousValid)
   {
-    previous = [self.board neighbourOf:self inDirection:GoBoardDirectionPrevious];
-    isPreviousValid = true;
+    _previous = [self.board neighbourOf:self inDirection:GoBoardDirectionPrevious];
+    _isPreviousValid = true;
   }
-  return previous;
+  return _previous;
 }
 
 // -----------------------------------------------------------------------------

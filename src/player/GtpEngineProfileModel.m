@@ -33,10 +33,6 @@
 
 @implementation GtpEngineProfileModel
 
-@synthesize profileCount;
-@synthesize profileList;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GtpEngineProfileModel object with user defaults data.
 ///

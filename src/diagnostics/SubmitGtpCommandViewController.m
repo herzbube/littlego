@@ -80,10 +80,6 @@
 
 @implementation SubmitGtpCommandViewController
 
-@synthesize textField;
-@synthesize model;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a SubmitGtpCommandViewController
 /// instance that loads its view from a .nib file.
@@ -268,7 +264,7 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [model commandStringAtIndex:indexPath.row];
+  cell.textLabel.text = [self.model commandStringAtIndex:indexPath.row];
   return cell;
 }
 
@@ -278,7 +274,7 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  self.textField.text = [model commandStringAtIndex:indexPath.row];
+  self.textField.text = [self.model commandStringAtIndex:indexPath.row];
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
 }
 

@@ -46,10 +46,6 @@
 
 @implementation GoMoveModel
 
-@synthesize moveList;
-@synthesize numberOfMoves;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoMoveModel object.
 ///
@@ -101,8 +97,8 @@
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
-  [moveList addObject:move];
-  self.numberOfMoves = moveList.count;  // triggers KVO observers
+  [_moveList addObject:move];
+  self.numberOfMoves = _moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------
@@ -112,7 +108,7 @@
 // -----------------------------------------------------------------------------
 - (void) discardLastMove
 {
-  [self discardMovesFromIndex:(moveList.count - 1)];  // raises exception and posts notification for us
+  [self discardMovesFromIndex:(_moveList.count - 1)];  // raises exception and posts notification for us
 }
 
 // -----------------------------------------------------------------------------
@@ -131,22 +127,22 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (index >= moveList.count)
+  if (index >= _moveList.count)
   {
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:[NSString stringWithFormat:@"Index %d must not exceed number of moves %d", index, moveList.count]
+                                                     reason:[NSString stringWithFormat:@"Index %d must not exceed number of moves %d", index, _moveList.count]
                                                    userInfo:nil];
     @throw exception;
   }
 
-  int numberOfMovesToDiscard = moveList.count - index;
+  int numberOfMovesToDiscard = _moveList.count - index;
   while (numberOfMovesToDiscard > 0)
   {
-    [moveList removeLastObject];
+    [_moveList removeLastObject];
     --numberOfMovesToDiscard;
   }
 
-  self.numberOfMoves = moveList.count;  // triggers KVO observers
+  self.numberOfMoves = _moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------
@@ -167,7 +163,7 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) moveAtIndex:(int)index
 {
-  return [moveList objectAtIndex:index];
+  return [_moveList objectAtIndex:index];
 }
 
 // -----------------------------------------------------------------------------
@@ -175,9 +171,9 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) firstMove
 {
-  if (0 == moveList.count)
+  if (0 == _moveList.count)
     return nil;
-  return [moveList objectAtIndex:0];
+  return [_moveList objectAtIndex:0];
 }
           
 // -----------------------------------------------------------------------------
@@ -185,9 +181,9 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) lastMove
 {
-  if (0 == moveList.count)
+  if (0 == _moveList.count)
     return nil;
-  return [moveList lastObject];
+  return [_moveList lastObject];
 }
 
 // -----------------------------------------------------------------------------

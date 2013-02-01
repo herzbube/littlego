@@ -88,12 +88,6 @@ enum ActionSheetButton
 
 @implementation PlayViewActionSheetController
 
-@synthesize delegate;
-@synthesize modalMaster;
-@synthesize buttonIndexes;
-@synthesize saveGameName;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayViewActionSheetController object.
 ///

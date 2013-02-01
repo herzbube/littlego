@@ -39,10 +39,6 @@
 
 @implementation GridLayerDelegate
 
-@synthesize normalLineLayer;
-@synthesize boundingLineLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GridLayerDelegate object.
 ///

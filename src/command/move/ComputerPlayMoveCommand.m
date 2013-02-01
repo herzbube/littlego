@@ -68,10 +68,6 @@
 
 @implementation ComputerPlayMoveCommand
 
-@synthesize game;
-@synthesize illegalMove;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ComputerPlayMoveCommand.
 ///

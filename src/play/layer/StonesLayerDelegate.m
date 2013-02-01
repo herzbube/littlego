@@ -43,10 +43,6 @@
 
 @implementation StonesLayerDelegate
 
-@synthesize blackStoneLayer;
-@synthesize whiteStoneLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a StonesLayerDelegate object.
 ///

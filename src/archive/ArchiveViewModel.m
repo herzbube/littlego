@@ -51,12 +51,6 @@
 
 @implementation ArchiveViewModel
 
-@synthesize archiveFolder;
-@synthesize gameList;
-@synthesize sortCriteria;
-@synthesize sortAscending;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ArchiveViewModel object with user defaults data.
 ///
@@ -132,7 +126,7 @@
 // -----------------------------------------------------------------------------
 - (int) gameCount
 {
-  return gameList.count;
+  return self.gameList.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -141,7 +135,7 @@
 // -----------------------------------------------------------------------------
 - (ArchiveGame*) gameAtIndex:(int)index
 {
-  return [gameList objectAtIndex:index];
+  return [self.gameList objectAtIndex:index];
 }
 
 // -----------------------------------------------------------------------------
@@ -158,7 +152,7 @@
 // -----------------------------------------------------------------------------
 - (ArchiveGame*) gameWithFileName:(NSString*)fileName
 {
-  for (ArchiveGame* game in gameList)
+  for (ArchiveGame* game in self.gameList)
   {
     if ([game.fileName isEqualToString:fileName])
       return game;

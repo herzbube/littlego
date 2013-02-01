@@ -48,9 +48,6 @@
 
 @implementation GoVertex
 
-@synthesize string;
-@synthesize numeric;
-
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoVertex instance from the numeric
 /// compounds in @a numericValue.
@@ -209,7 +206,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoVertex(%p): %@", self, string];
+  return [NSString stringWithFormat:@"GoVertex(%p): %@", self, _string];
 }
 
 // -----------------------------------------------------------------------------

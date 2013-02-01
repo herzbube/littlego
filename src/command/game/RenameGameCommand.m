@@ -35,10 +35,6 @@
 
 @implementation RenameGameCommand
 
-@synthesize game;
-@synthesize theNewName;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RenameGameCommand object.
 ///
@@ -77,7 +73,7 @@
     return true;
 
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:game.fileName];
+  NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
   NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:newFileName];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];

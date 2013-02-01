@@ -36,11 +36,6 @@
 
 @implementation ArchiveGame
 
-@synthesize fileName;
-@synthesize fileDate;
-@synthesize fileSize;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ArchiveGame object. The properties that describe the
 /// object have empty string values.
@@ -130,7 +125,7 @@
 // -----------------------------------------------------------------------------
 - (NSString*) name
 {
-  return [fileName stringByReplacingOccurrencesOfString:@".sgf" withString:@""];
+  return [self.fileName stringByReplacingOccurrencesOfString:@".sgf" withString:@""];
 }
 
 @end

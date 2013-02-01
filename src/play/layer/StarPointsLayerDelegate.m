@@ -51,9 +51,6 @@
 
 @implementation StarPointsLayerDelegate
 
-@synthesize starPointLayer;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a StarPointsLayerDelegate object.
 ///

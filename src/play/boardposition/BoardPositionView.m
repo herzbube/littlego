@@ -60,11 +60,6 @@
 
 @implementation BoardPositionView
 
-@synthesize boardPosition;
-@synthesize currentBoardPosition;
-@synthesize viewMetrics;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionView object that represents the board
 /// position identified by @a aBoardPosition and uses @a aViewMetrics to obtain
@@ -79,8 +74,8 @@
   if (! self)
     return nil;
 
-  boardPosition = aBoardPosition;  // don't use self, we don't want to trigger the setter
-  currentBoardPosition = false;    // ditto
+  _boardPosition = aBoardPosition;  // don't use self, we don't want to trigger the setter
+  _currentBoardPosition = false;    // ditto
   self.viewMetrics = aViewMetrics;
   self.frame = self.viewMetrics.boardPositionViewFrame;
 
@@ -220,9 +215,9 @@
 // -----------------------------------------------------------------------------
 - (void) setBoardPosition:(int)newValue
 {
-  if (boardPosition == newValue)
+  if (_boardPosition == newValue)
     return;
-  boardPosition = newValue;
+  _boardPosition = newValue;
   [self setNeedsLayout];
 }
 
@@ -231,9 +226,9 @@
 // -----------------------------------------------------------------------------
 - (void) setCurrentBoardPosition:(bool)newValue
 {
-  if (currentBoardPosition == newValue)
+  if (_currentBoardPosition == newValue)
     return;
-  currentBoardPosition = newValue;
+  _currentBoardPosition = newValue;
   [self setNeedsLayout];
 }
 

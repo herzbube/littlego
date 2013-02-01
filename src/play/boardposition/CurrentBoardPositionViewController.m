@@ -75,16 +75,6 @@
 
 @implementation CurrentBoardPositionViewController
 
-@synthesize boardPositionView;
-@synthesize delegate;
-@synthesize tapRecognizer;
-@synthesize actionsInProgress;
-@synthesize allDataNeedsUpdate;
-@synthesize boardPositionViewNeedsUpdate;
-@synthesize tappingEnabledNeedsUpdate;
-@synthesize tappingEnabled;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CurrentBoardPositionViewController object that manages
 /// board position view @a view.

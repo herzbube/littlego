@@ -39,21 +39,6 @@
 
 @implementation ScoringModel
 
-@synthesize askGtpEngineForDeadStones;
-@synthesize markDeadStonesIntelligently;
-@synthesize alphaTerritoryColorBlack;
-@synthesize alphaTerritoryColorWhite;
-@synthesize deadStoneSymbolColor;
-@synthesize deadStoneSymbolPercentage;
-@synthesize inconsistentTerritoryMarkupType;
-@synthesize inconsistentTerritoryDotSymbolColor;
-@synthesize inconsistentTerritoryDotSymbolPercentage;
-@synthesize inconsistentTerritoryFillColor;
-@synthesize inconsistentTerritoryFillColorAlpha;
-@synthesize scoringMode;
-@synthesize score;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ScoringModel object with user defaults data.
 ///
@@ -78,7 +63,7 @@
   self.inconsistentTerritoryFillColor = [UIColor redColor];
   self.inconsistentTerritoryFillColorAlpha = 0.3;
   self.score = nil;
-  scoringMode = false;  // don't use self to avoid triggering a notification
+  _scoringMode = false;  // don't use self to avoid triggering a notification
 
   return self;
 }
@@ -144,9 +129,9 @@
 // -----------------------------------------------------------------------------
 - (void) setScoringMode:(bool)newMode
 {
-  if (scoringMode == newMode)
+  if (_scoringMode == newMode)
     return;
-  scoringMode = newMode;
+  _scoringMode = newMode;
   NSString* notificationName;
   if (newMode)
   {
@@ -170,7 +155,7 @@
 // -----------------------------------------------------------------------------
 - (void) enableScoringModeWithScoreObject:(GoScore*)scoreObject
 {
-  scoringMode = true;        // don't use self because we don't want to trigger the setter
+  _scoringMode = true;       // don't use self because we don't want to trigger the setter
   self.score = scoreObject;  // use self to retain the score object
   [[NSNotificationCenter defaultCenter] postNotificationName:goScoreScoringModeEnabled object:nil];
 }

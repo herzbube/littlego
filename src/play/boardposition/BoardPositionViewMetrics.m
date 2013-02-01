@@ -39,23 +39,6 @@
 
 @implementation BoardPositionViewMetrics
 
-@synthesize boardPositionViewFontSize;
-@synthesize labelWidth;
-@synthesize labelHeight;
-@synthesize labelNumberOfLines;
-@synthesize labelOneLineHeight;
-@synthesize labelFrame;
-@synthesize stoneImageWidthAndHeight;
-@synthesize blackStoneImage;
-@synthesize whiteStoneImage;
-@synthesize stoneImageViewFrame;
-@synthesize boardPositionViewWidth;
-@synthesize boardPositionViewHeight;
-@synthesize boardPositionViewHorizontalPadding;
-@synthesize boardPositionViewHorizontalSpacing;
-@synthesize boardPositionViewFrame;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionViewMetrics object.
 ///
