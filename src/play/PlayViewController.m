@@ -125,6 +125,11 @@ enum ActionType
 - (UIView*) boardPositionListContainerViewSuperview;
 - (void) setupDebugView;
 //@}
+/// @name View controller setup
+//@{
+- (void) setupNavigationBarController;
+- (void) setupSplitViewController;
+//@}
 /// @name Private helpers
 //@{
 - (void) releaseObjects;
@@ -235,6 +240,24 @@ enum ActionType
   // time makeControllerReadyForAction() is invoked.
   [self setupMainView];
 
+  // Prerequisite for setupSplitViewController(). For the iPhone we could
+  // invoke this in makeControllerReadyForAction().
+  [self setupNavigationBarController];
+
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  {
+    // Cannot delay creation of UISplitViewControlller until
+    // makeControllerReadyForAction() is invoked, otherwise swipe gestures
+    // are initially not recognized when the app is launched in portrait mode.
+    // UISplitViewControlller starts to recgonize swipe gesture if the device
+    // is rotated to landscape and back to portrait, but not before. The reason
+    // for this behaviour of UISplitViewControlller is unknown, but the only
+    // way I have found to fix the problem is to not delay creation of the
+    // controller.
+    [self setupSplitViewController];
+    [self setupSplitView];
+  }
+
   // Setup of remaining views is delayed to makeControllerReadyForAction()
 }
 
@@ -276,20 +299,6 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupSplitView
 {
-  self.splitViewController = [[[UISplitViewController alloc] init] autorelease];
-  self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
-  self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
-  // Assign view controllers before first use of self.splitViewController.view
-  // (if we do it the other way round, a message is printed in the debug area in
-  // Xcode that warns us about the mistake; we should heed this warning,
-  // although no bad things [tm] could actually be observed)
-  self.splitViewController.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
-  // The following statement is essential so that the split view controller
-  // properly receives rotation events in iOS 5. In iOS6 rotation seems to work
-  // even if the statement is missing. Behaviour of iOS 5 was tested in
-  // simulator only.
-  [self addChildViewController:self.splitViewController];
-
   UIView* superView = [self splitViewSuperview];
   CGRect splitViewControllerViewFrame = [self splitViewFrame];
   self.splitViewController.view.frame = splitViewControllerViewFrame;
@@ -724,7 +733,6 @@ enum ActionType
   }
   else
   {
-    [self setupSplitView];
     [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
     [self setupPlayView];
@@ -750,10 +758,7 @@ enum ActionType
     assert(0);
   }
 
-  self.navigationBarController = [[[NavigationBarController alloc] initWithNavigationBar:self.navigationBarMain
-                                                                            scoringModel:scoringModel
-                                                                                delegate:self
-                                                                    parentViewController:self] autorelease];
+  self.navigationBarController.navigationBar = self.navigationBarMain;
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
 
@@ -779,8 +784,48 @@ enum ActionType
   {
     self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] initWithContainerView:self.boardPositionListContainerView] autorelease];
   }
-  self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel delegate:self] autorelease];
+  self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView
+                                                                 scoringModel:scoringModel
+                                                                     delegate:self
+                                                         parentViewController:self] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked at the appropriate time to setup
+/// the controller that manages the main navigation bar.
+// -----------------------------------------------------------------------------
+- (void) setupNavigationBarController
+{
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  self.navigationBarController = [[[NavigationBarController alloc] initWithScoringModel:scoringModel
+                                                                               delegate:self
+                                                                   parentViewController:self] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked at the appropriate time to setup
+/// the split view controller used by the iPad layout.
+// -----------------------------------------------------------------------------
+- (void) setupSplitViewController
+{
+  self.splitViewController = [[[UISplitViewController alloc] init] autorelease];
+  self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
+  self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
+  // Assign view controllers before first use of self.splitViewController.view
+  // (if we do it the other way round, a message is printed in the debug area in
+  // Xcode that warns us about the mistake; we should heed this warning,
+  // although no bad things [tm] could actually be observed)
+  self.splitViewController.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+  // The following statement is essential so that the split view controller
+  // properly receives rotation events in iOS 5. In iOS6 rotation seems to work
+  // even if the statement is missing. Behaviour of iOS 5 was tested in
+  // simulator only.
+  [self addChildViewController:self.splitViewController];
+  // Must assign a delegate, otherwise UISplitViewController will not react to
+  // swipe gestures (tested in 5.1 and 6.0 simulator; 5.0 does not support the
+  // swipe anyway). Reported to Apple with problem ID 13133575.
+  self.splitViewController.delegate = self.navigationBarController;
 }
 
 // -----------------------------------------------------------------------------

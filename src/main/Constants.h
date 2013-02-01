@@ -34,6 +34,10 @@ extern const int crossHairPointDistanceFromFingerOnSmallestBoard;
 /// This is based on
 /// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
 extern const float gDisabledViewAlpha;
+/// @brief On the iPad and in portrait orientation, the gesture recognizer on
+/// the PlayView must use a small delay so as not to interfere with the swipe
+/// gesture of the main UISplitViewController.
+extern const CFTimeInterval gPlayViewPanningDelayIPadPortrait;
 //@}
 
 // -----------------------------------------------------------------------------

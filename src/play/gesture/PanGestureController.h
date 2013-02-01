@@ -37,11 +37,23 @@
 // -----------------------------------------------------------------------------
 /// @brief The PanGestureController class is responsible for managing the pan
 /// gesture on the "Play" view. Panning is used to place a stone on the board.
+///
+/// Despite its name, PanGestureController does not use UIPanGestureRecognizer
+/// for gesture recognition, because UIPanGestureRecognizer requires a
+/// fingertip to travel a certain distance before the gesture is recognized as
+/// a pan.
+///
+/// PanGestureController uses UILongPressGestureRecognizer so that a stone can
+/// be displayed immediately when a fingertip touches the board (or after only
+/// a very short delay).
 // -----------------------------------------------------------------------------
 @interface PanGestureController : NSObject <UIGestureRecognizerDelegate>
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel delegate:(id<PanGestureControllerDelegate>)delegate;
+- (id) initWithPlayView:(PlayView*)playView
+           scoringModel:(ScoringModel*)scoringModel
+               delegate:(id<PanGestureControllerDelegate>)delegate
+   parentViewController:(UIViewController*)parentViewController;
 
 @end

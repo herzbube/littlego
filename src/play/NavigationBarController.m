@@ -55,6 +55,11 @@
 //@{
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
 //@}
+/// @name UISplitViewControllerDelegate protocol
+//@{
+- (void) splitViewController:(UISplitViewController*)svc willHideViewController:(UIViewController*)aViewController withBarButtonItem:(UIBarButtonItem*)barButtonItem forPopoverController:(UIPopoverController*)pc;
+- (void) splitViewController:(UISplitViewController*)svc willShowViewController:(UIViewController*)aViewController invalidatingBarButtonItem:(UIBarButtonItem*)button;
+//@}
 /// @name Notification responders
 //@{
 - (void) goGameWillCreate:(NSNotification*)notification;
@@ -93,7 +98,6 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
@@ -115,6 +119,7 @@
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
 @property(nonatomic, retain) UIBarButtonItem* interruptButton;
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
+@property(nonatomic, assign) UIBarButtonItem* barButtonItemForShowingTheHiddenViewController;
 @property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
 @property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
 @property(nonatomic, retain) UIBarButtonItem* doneButton;
@@ -141,6 +146,7 @@
 @synthesize continueButton;
 @synthesize interruptButton;
 @synthesize flexibleSpaceButton;
+@synthesize barButtonItemForShowingTheHiddenViewController;
 @synthesize gameInfoButton;
 @synthesize gameActionsButton;
 @synthesize doneButton;
@@ -151,8 +157,7 @@
 ///
 /// @note This is the designated initializer of NavigationBarController.
 // -----------------------------------------------------------------------------
-- (id) initWithNavigationBar:(UINavigationBar*)aNavigationBar
-          scoringModel:(ScoringModel*)aScoringModel
+- (id) initWithScoringModel:(ScoringModel*)aScoringModel
               delegate:(id<NavigationBarControllerDelegate>)aDelegate
   parentViewController:(UIViewController*)aParentViewController
 {
@@ -161,13 +166,14 @@
   if (! self)
     return nil;
 
-  self.navigationBar = aNavigationBar;
+  self.navigationBar = nil;
   self.scoringModel = aScoringModel;
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
   self.gameInfoScore = nil;
   self.actionsInProgress = 0;
+  self.barButtonItemForShowingTheHiddenViewController = nil;
   [self setupNavigationItem];
   [self setupButtons];
   [self setupNotificationResponders];
@@ -202,6 +208,7 @@
   self.continueButton = nil;
   self.interruptButton = nil;
   self.flexibleSpaceButton = nil;
+  self.barButtonItemForShowingTheHiddenViewController = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
   self.doneButton = nil;
@@ -214,7 +221,6 @@
 - (void) setupNavigationItem
 {
   self.navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
-  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -284,6 +290,17 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Setting of navigation bar occurs delayed (i.e. not during
+/// initialization of the controller object) due to timing needs of the parent
+/// view controller.
+// -----------------------------------------------------------------------------
+- (void) setNavigationBar:(UINavigationBar*)aNavigationBar
+{
+  navigationBar = aNavigationBar;
+  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -406,6 +423,27 @@
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
 {
   [controller release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UISplitViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) splitViewController:(UISplitViewController*)svc willHideViewController:(UIViewController*)aViewController withBarButtonItem:(UIBarButtonItem*)barButtonItem forPopoverController:(UIPopoverController*)pc
+{
+  self.barButtonItemForShowingTheHiddenViewController = barButtonItem;
+  barButtonItem.title = @"Moves";
+  self.navigationBarNeedsPopulation = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UISplitViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) splitViewController:(UISplitViewController*)svc willShowViewController:(UIViewController*)aViewController invalidatingBarButtonItem:(UIBarButtonItem*)button
+{
+  self.barButtonItemForShowingTheHiddenViewController = nil;
+  self.navigationBarNeedsPopulation = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -639,6 +677,8 @@
   NSMutableArray* rightBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   [rightBarButtonItems addObject:self.gameActionsButton];
   [rightBarButtonItems addObject:self.gameInfoButton];
+  if (self.barButtonItemForShowingTheHiddenViewController)
+    [rightBarButtonItems addObject:self.barButtonItemForShowingTheHiddenViewController];
   self.navigationItem.rightBarButtonItems = rightBarButtonItems;
 }
 

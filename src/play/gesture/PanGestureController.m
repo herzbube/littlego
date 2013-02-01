@@ -42,6 +42,7 @@
 //@}
 /// @name Notification responders
 //@{
+- (void) deviceOrientationDidChange:(NSNotification*)notification;
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
@@ -53,6 +54,7 @@
 /// @name Updaters
 //@{
 - (void) updatePanningEnabled;
+- (void) updateMinimumPressDuration;
 //@}
 /// @name Private helpers
 //@{
@@ -61,17 +63,11 @@
 //@}
 /// @name Privately declared properties
 //@{
-/// @brief The view that PanGestureController manages gestures for.
 @property(nonatomic, assign) PlayView* playView;
-/// @brief The model that manages scoring-related data.
 @property(nonatomic, assign) ScoringModel* scoringModel;
-/// @brief The delegate that is informed when the user attempts to place a
-/// stone via panning.
 @property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
-/// @brief The gesture recognizer used to detect the long-press gesture.
+@property(nonatomic, assign) UIViewController* parentViewController;
 @property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
-/// @brief True if a panning gesture is currently allowed, false if not (e.g.
-/// while a computer player is thinking).
 @property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
 @end
 
@@ -81,6 +77,7 @@
 @synthesize playView;
 @synthesize scoringModel;
 @synthesize delegate;
+@synthesize parentViewController;
 @synthesize longPressRecognizer;
 @synthesize panningEnabled;
 
@@ -90,7 +87,10 @@
 ///
 /// @note This is the designated initializer of PanGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)aPlayView scoringModel:(ScoringModel*)aScoringModel delegate:(id<PanGestureControllerDelegate>)aDelegate
+- (id) initWithPlayView:(PlayView*)aPlayView
+           scoringModel:(ScoringModel*)aScoringModel
+               delegate:(id<PanGestureControllerDelegate>)aDelegate
+   parentViewController:(UIViewController*)aParentViewController
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -100,10 +100,12 @@
   self.playView = aPlayView;
   self.scoringModel = aScoringModel;
   self.delegate = aDelegate;
+  self.parentViewController = aParentViewController;
 
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
+  [self updateMinimumPressDuration];
 
   return self;
 }
@@ -131,7 +133,6 @@
 	[self.longPressRecognizer release];
 	[self.playView addGestureRecognizer:self.longPressRecognizer];
   self.longPressRecognizer.delegate = self;
-  self.longPressRecognizer.minimumPressDuration = 0;  // place stone immediately
   CGFloat infiniteMovement = CGFLOAT_MAX;
   self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
 }
@@ -142,6 +143,7 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
@@ -235,6 +237,15 @@
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
   return (self.isPanningEnabled ? YES : NO);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the UIDeviceOrientationDidChangeNotification
+/// notification.
+// -----------------------------------------------------------------------------
+- (void) deviceOrientationDidChange:(NSNotification*)notification
+{
+  [self updateMinimumPressDuration];
 }
 
 // -----------------------------------------------------------------------------
@@ -343,6 +354,23 @@
       self.panningEnabled = false;
       break;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the delay after which the panning gesture is recognized.
+// -----------------------------------------------------------------------------
+- (void) updateMinimumPressDuration
+{
+  CFTimeInterval minimumPressDuration = 0;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  {
+    // Can't use the UIDevice object's orientation property, at application
+    // launch this returns UIDeviceOrientationUnknown :-(
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.parentViewController.interfaceOrientation);
+    if (isPortraitOrientation)
+      minimumPressDuration = gPlayViewPanningDelayIPadPortrait;
+  }
+  self.longPressRecognizer.minimumPressDuration = minimumPressDuration;
 }
 
 @end

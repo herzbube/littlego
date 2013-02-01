@@ -55,13 +55,17 @@
 /// - Enable/disable buttons
 /// - Reacting to the user tapping on buttons
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : NSObject <GameInfoViewControllerDelegate, PlayViewActionSheetDelegate, UIAlertViewDelegate>
+@interface NavigationBarController : NSObject <GameInfoViewControllerDelegate,
+                                               PlayViewActionSheetDelegate,
+                                               UIAlertViewDelegate,
+                                               UISplitViewControllerDelegate>
 {
 }
 
-- (id) initWithNavigationBar:(UINavigationBar*)navigationBar
-          scoringModel:(ScoringModel*)scoringModel
+- (id) initWithScoringModel:(ScoringModel*)scoringModel
               delegate:(id<NavigationBarControllerDelegate>)delegate
   parentViewController:(UIViewController*)parentViewController;
+
+@property(nonatomic, retain) UINavigationBar* navigationBar;
 
 @end

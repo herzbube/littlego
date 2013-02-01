@@ -19,6 +19,7 @@
 const float gHalfPixel = 0.5;
 const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
 const float gDisabledViewAlpha = 0.439216f;
+const CFTimeInterval gPlayViewPanningDelayIPadPortrait = 0.1;
 
 // Go constants
 const enum GoGameType gDefaultGameType = GoGameTypeComputerVsHuman;
