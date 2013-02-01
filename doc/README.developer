@@ -789,6 +789,9 @@ Fuego build/installation issues
 Build
 - The build script needs to specify the configure flag --with-boost-libdir,
   otherwise configure aborts with a linker error.
+- The configure.ac script does not work with newer versions of Autoconf/Automake
+  (this is relevant because autoreconf is run by the Fuego build script).
+  Patch 6 fixes these problems.
 
 Installation
 - "make install" only copies the executables (fuego, fuego_test), but not the
