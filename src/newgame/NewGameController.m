@@ -641,7 +641,7 @@ enum KomiSectionItem
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
+  [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
 }
 

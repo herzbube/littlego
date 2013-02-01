@@ -206,7 +206,7 @@
   NSString* mimeType = bugReportDiagnosticsInformationFileMimeType;
   [mailComposeViewController addAttachmentData:data mimeType:mimeType fileName:bugReportDiagnosticsInformationFileName];
 
-  [self.modalViewControllerParent presentModalViewController:mailComposeViewController animated:YES];
+  [self.modalViewControllerParent presentViewController:mailComposeViewController animated:YES completion:nil];
   [mailComposeViewController release];
   [self retain];  // must survive until the delegate method is invoked
 }

@@ -278,7 +278,7 @@ enum ActionSheetButton
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self.modalMaster presentModalViewController:navigationController animated:YES];
+  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
 }
@@ -300,7 +300,7 @@ enum ActionSheetButton
                                                   initWithRootViewController:newGameController];
   // Present the navigation controller, not the "new game" controller.
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self.modalMaster presentModalViewController:navigationController animated:YES];
+  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
   // Cleanup
   [navigationController release];
   [newGameController release];

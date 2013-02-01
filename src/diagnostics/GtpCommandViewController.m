@@ -230,7 +230,7 @@
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
+  [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
 }
@@ -250,7 +250,7 @@
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  [self presentModalViewController:navigationController animated:YES];
+  [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
 }
