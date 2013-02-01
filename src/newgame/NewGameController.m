@@ -682,7 +682,7 @@ enum KomiSectionItem
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -700,7 +700,7 @@ enum KomiSectionItem
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -718,7 +718,7 @@ enum KomiSectionItem
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------

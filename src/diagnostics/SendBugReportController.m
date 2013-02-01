@@ -237,7 +237,7 @@
 // -----------------------------------------------------------------------------
 - (void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
 {
-  [self.modalViewControllerParent dismissModalViewControllerAnimated:YES];
+  [self.modalViewControllerParent dismissViewControllerAnimated:YES completion:nil];
   switch (result)
   {
     case MFMailComposeResultSent:

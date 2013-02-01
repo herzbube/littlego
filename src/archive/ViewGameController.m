@@ -360,7 +360,7 @@ enum GameAttributesSectionItem
 
     [self.tableView reloadData];
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -391,7 +391,7 @@ enum GameAttributesSectionItem
   }
   // Must dismiss modal view controller before navigation stack is changed
   // -> if it's done later the modal view controller is *NOT* dismissed
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
   if (didStartNewGame)
   {
     [[ApplicationDelegate sharedDelegate] activateTab:TabTypePlay];

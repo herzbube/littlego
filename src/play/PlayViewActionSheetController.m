@@ -346,7 +346,7 @@ enum ActionSheetButton
     [[[CleanBackupCommand alloc] init] submit];
     [[[NewGameCommand alloc] init] submit];
   }
-  [self.modalMaster dismissModalViewControllerAnimated:YES];
+  [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -417,7 +417,7 @@ enum ActionSheetButton
       [self doSaveGame:editTextController.text];
     }
   }
-  [self.modalMaster dismissModalViewControllerAnimated:YES];
+  [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
   if (playViewActionSheetControllerDidFinish)
     [self.delegate playViewActionSheetControllerDidFinish:self];
 }

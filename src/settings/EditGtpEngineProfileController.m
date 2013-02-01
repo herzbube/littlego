@@ -506,7 +506,7 @@ enum ProfileNotesSectionItem
                             withRowAnimation:UITableViewRowAnimationNone];
     }
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -571,7 +571,7 @@ enum ProfileNotesSectionItem
                             withRowAnimation:UITableViewRowAnimationNone];
     }
   }
-  [self dismissModalViewControllerAnimated:YES];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
