@@ -222,7 +222,13 @@ enum ActionType
   // invoke this in makeControllerReadyForAction().
   [self setupNavigationBarController];
 
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.splitViewController = nil;
+    self.leftPaneViewController = nil;
+    self.rightPaneViewController = nil;
+  }
+  else
   {
     // Cannot delay creation of UISplitViewControlller until
     // makeControllerReadyForAction() is invoked, otherwise swipe gestures
@@ -708,6 +714,7 @@ enum ActionType
     [self setupStatusLineView];
     [self setupBoardPositionListView];
     [self setupCurrentBoardPositionView];
+    self.boardPositionListContainerView = nil;
   }
   else
   {
@@ -717,6 +724,8 @@ enum ActionType
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
     [self setupBoardPositionListContainerView];
+    self.boardPositionListView = nil;
+    self.currentBoardPositionView = nil;
   }
   // Activate the following code to display controls that you can use to change
   // Play view drawing parameters that are normally immutable at runtime. This
@@ -757,10 +766,12 @@ enum ActionType
   {
     self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] initWithCurrentBoardPositionView:self.currentBoardPositionView] autorelease];
     self.currentBoardPositionViewController.delegate = self;
+    self.boardPositionTableListViewController = nil;
   }
   else
   {
     self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] initWithContainerView:self.boardPositionListContainerView] autorelease];
+    self.currentBoardPositionViewController = nil;
   }
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView
                                                                  scoringModel:scoringModel
