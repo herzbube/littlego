@@ -108,6 +108,7 @@
 		CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593B1691C49F00D75466 /* 40-forward@2x.png */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD3659421693533600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
+		CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD393F751669210E009DF814 /* stone-black.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F721669210E009DF814 /* stone-black.png */; };
 		CD393F761669210E009DF814 /* stone-crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F731669210E009DF814 /* stone-crosshair.png */; };
 		CD393F771669210E009DF814 /* stone-white.png in Resources */ = {isa = PBXBuildFile; fileRef = CD393F741669210E009DF814 /* stone-white.png */; };
@@ -492,6 +493,8 @@
 		CD36593B1691C49F00D75466 /* 40-forward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward@2x.png"; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
 		CD36594016931F8500D75466 /* GoBoardPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPosition.m; sourceTree = "<group>"; };
+		CD377F0616BD154A00972F04 /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
+		CD377F0716BD154A00972F04 /* MainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
 		CD393F721669210E009DF814 /* stone-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-black.png"; sourceTree = "<group>"; };
 		CD393F731669210E009DF814 /* stone-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-crosshair.png"; sourceTree = "<group>"; };
 		CD393F741669210E009DF814 /* stone-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white.png"; sourceTree = "<group>"; };
@@ -873,6 +876,8 @@
 				CD00A35C148C2C26004E1A0C /* DocumentViewController.m */,
 				CD00A35D148C2C26004E1A0C /* LicensesViewController.h */,
 				CD00A35E148C2C26004E1A0C /* LicensesViewController.m */,
+				CD377F0616BD154A00972F04 /* MainTabBarController.h */,
+				CD377F0716BD154A00972F04 /* MainTabBarController.m */,
 				CD00A35F148C2C26004E1A0C /* main.m */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
@@ -1919,6 +1924,7 @@
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
+				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
