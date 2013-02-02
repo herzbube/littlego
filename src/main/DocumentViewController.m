@@ -184,8 +184,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called by UIKit at various times to determine whether this controller
-/// supports the given orientation @a interfaceOrientation.
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
