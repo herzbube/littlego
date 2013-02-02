@@ -215,7 +215,7 @@ Platform notes
 - The Xcode project is prepared to build Little Go both for iOS and for the
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
-  moving target SDK. The latest release of the project was made with iOS 5.1.
+  moving target SDK.
 - The deployment target is set to 5.0 so that the application keeps running on
   iOS 5 devices.
 
@@ -1127,15 +1127,9 @@ Store validation process forces me to add this key to Info.plist.
 
 Application icons
 -----------------
-Application icons are specified using various keys in the bundle's Info.plist
-file. Some notes about the keys:
-- The app does not support iOS versions prior to 4.3, so there is no need to
-  add the key "CFBundleIconFile", nor to use fixed icon filenames
-  (e.g. "Icon.png")
-- The app supports iOS versions prior to 5.0, so the key "CFBundleIconFiles"
-  must be included
-- For iOS 5.0 and later the key "CFBundleIcons" is included (takes precedence
-  over "CFBundleIconFiles")
+Application icons are specified using the CFBundleIcons key in the bundle's
+Info.plist file. Other icon-related keys are not necessary because the app no
+longer supports iOS versions prior to 5.0.
 
 I tried (but failed!) to add the app icons by manually editing Info.plist and
 adding just the base icon name without the .png file extension. Two motivations

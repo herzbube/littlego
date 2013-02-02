@@ -8,19 +8,6 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>appicon-iphone.png</string>
-		<string>appicon-iphone@2x.png</string>
-		<string>appicon-ipad.png</string>
-		<string>appicon-ipad@2x.png</string>
-		<string>spotlighticon-iphone.png</string>
-		<string>spotlighticon-iphone@2x.png</string>
-		<string>spotlighticon-ipad.png</string>
-		<string>spotlighticon-ipad@2x.png</string>
-	</array>
 	<key>CFBundleIcons</key>
 	<dict>
 		<key>CFBundlePrimaryIcon</key>
