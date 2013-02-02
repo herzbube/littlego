@@ -100,14 +100,16 @@
   self.boardPositionListView = view;
   self.boardPositionViewMetrics = metrics;
   self.actionsInProgress = 0;
-  self.allDataNeedsUpdate = false;
-  self.currentBoardPositionNeedsUpdate = false;
+  self.allDataNeedsUpdate = true;
+  self.currentBoardPositionNeedsUpdate = true;
   self.oldBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = false;
+  self.tappingEnabledNeedsUpdate = true;
 
   [self setupBoardPositionListView];
   [self setupNotificationResponders];
+
+  [self delayedUpdate];
 
   return self;
 }
@@ -287,7 +289,10 @@
     return;
   self.currentBoardPositionNeedsUpdate = false;
 
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return;
+  GoBoardPosition* boardPosition = game.boardPosition;
   int newBoardPosition = boardPosition.currentBoardPosition;
 
   if ([self.boardPositionListView isVisibleItemViewAtIndex:self.oldBoardPosition])
@@ -338,7 +343,10 @@
   if (! self.tappingEnabledNeedsUpdate)
     return;
   self.tappingEnabledNeedsUpdate = false;
-  if ([GoGame sharedGame].isComputerThinking)
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+    self.boardPositionListView.tappingEnabled = false;
+  else if (game.isComputerThinking)
     self.boardPositionListView.tappingEnabled = false;
   else
     self.boardPositionListView.tappingEnabled = true;

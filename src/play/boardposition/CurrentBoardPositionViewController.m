@@ -92,13 +92,15 @@
   self.boardPositionView = view;
   self.delegate = nil;
   self.actionsInProgress = 0;
-  self.allDataNeedsUpdate = false;
+  self.allDataNeedsUpdate = true;
   self.boardPositionViewNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = false;
+  self.tappingEnabledNeedsUpdate = true;
   self.tappingEnabled = true;
 
   [self setupTapGestureRecognizer];
   [self setupNotificationResponders];
+
+  [self delayedUpdate];
 
   return self;
 }
@@ -184,6 +186,7 @@
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   self.allDataNeedsUpdate = true;
+  self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -265,14 +268,22 @@
   if (! self.allDataNeedsUpdate)
     return;
   self.allDataNeedsUpdate = false;
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
-  // BoardPositionView only updates its layout only if a new board position is
-  // set. In this updater, however, we have to force the layout update, to cover
-  // the following scenario: Old board position is 0, new game is started with
-  // a different komi or handicap, new board position is again 0. The
-  // BoardPositionView must display the new komi/handicap values.
-  [self.boardPositionView setNeedsLayout];
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+  {
+    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
+    // BoardPositionView only updates its layout if a new board position is
+    // set. In this updater, however, we have to force the layout update, to cover
+    // the following scenario: Old board position is 0, new game is started with
+    // a different komi or handicap, new board position is again 0. The
+    // BoardPositionView must display the new komi/handicap values.
+    [self.boardPositionView setNeedsLayout];
+  }
+  else
+  {
+    self.boardPositionView.boardPosition = -1;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -283,8 +294,16 @@
   if (! self.boardPositionViewNeedsUpdate)
     return;
   self.boardPositionViewNeedsUpdate = false;
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+  {
+    GoBoardPosition* boardPosition = game.boardPosition;
+    self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
+  }
+  else
+  {
+    self.boardPositionView.boardPosition = -1;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -295,7 +314,10 @@
   if (! self.tappingEnabledNeedsUpdate)
     return;
   self.tappingEnabledNeedsUpdate = false;
-  if ([GoGame sharedGame].isComputerThinking)
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+    self.tappingEnabled = false;
+  else if (game.isComputerThinking)
     self.tappingEnabled = false;
   else
     self.tappingEnabled = true;
