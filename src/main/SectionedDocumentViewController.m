@@ -35,8 +35,6 @@
 //@}
 /// @name UIViewController methods
 //@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
@@ -74,13 +72,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief Property accessor with lazy initialization.
 // -----------------------------------------------------------------------------
-- (void) viewDidLoad
+- (DocumentGenerator*) documentGenerator
 {
-  [super viewDidLoad];
-
+  if (_documentGenerator)
+    return _documentGenerator;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   NSInteger tabType = self.contextTabBarItem.tag;
   NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
@@ -93,21 +90,16 @@
     default:
       assert(0);
       self.documentGenerator = nil;
-      return;
   }
+  return _documentGenerator;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
-- (void) viewDidUnload
+- (void) didReceiveMemoryWarning
 {
-  [super viewDidUnload];
+  [super didReceiveMemoryWarning];
   self.documentGenerator = nil;
 }
 

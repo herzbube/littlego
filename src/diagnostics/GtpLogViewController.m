@@ -178,12 +178,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {

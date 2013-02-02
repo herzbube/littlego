@@ -61,8 +61,6 @@ enum LicensesSectionItem
 //@}
 /// @name UIViewController methods
 //@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
@@ -94,28 +92,6 @@ enum LicensesSectionItem
 - (void) dealloc
 {
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-// -----------------------------------------------------------------------------
-- (void) viewDidLoad
-{
-  [super viewDidLoad];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
 }
 
 // -----------------------------------------------------------------------------

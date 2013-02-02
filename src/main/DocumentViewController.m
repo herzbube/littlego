@@ -155,17 +155,32 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------
 - (void) viewDidUnload
 {
   [super viewDidUnload];
   self.webView = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) didReceiveMemoryWarning
+{
+  [super didReceiveMemoryWarning];
+  // In iOS 5, the system purges the view and self.isViewLoaded becomes false
+  // before didReceiveMemoryWarning() is invoked. In iOS 6 the system does not
+  // purge the view and self.isViewLoaded is still true when we get here. The
+  // view's window property then becomes important: It is nil if the main tab
+  // bar controller displays a different tab than the one where the view is
+  // visible.
+  if (self.isViewLoaded && ! self.view.window)
+  {
+    self.webView = nil;
+    self.view = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------

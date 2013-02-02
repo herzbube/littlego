@@ -76,7 +76,6 @@ enum ResetCannedCommandsSectionItem
 /// @name UIViewController methods
 //@{
 - (void) viewDidLoad;
-- (void) viewDidUnload;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
 /// @name UITableViewDataSource protocol
@@ -137,19 +136,6 @@ enum ResetCannedCommandsSectionItem
   self.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
   self.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
   self.navigationItem.title = @"GTP Settings";
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
 }
 
 // -----------------------------------------------------------------------------

@@ -39,7 +39,6 @@
 //@{
 - (void) loadView;
 - (void) viewDidLoad;
-- (void) viewDidUnload;
 - (void) viewWillAppear:(BOOL)animated;
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 //@}
@@ -225,19 +224,6 @@
                                                                                          action:@selector(done:)];
 
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.text];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called when the controller’s view is released from memory, e.g.
-/// during low-memory conditions.
-///
-/// Releases additional objects (e.g. by resetting references to retained
-/// objects) that can be easily recreated when viewDidLoad() is invoked again
-/// later.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
 }
 
 // -----------------------------------------------------------------------------
