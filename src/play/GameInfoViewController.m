@@ -17,8 +17,8 @@
 
 // Project includes
 #import "GameInfoViewController.h"
-#import "../ui/TableViewCellFactory.h"
 #import "../go/GoBoard.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoMove.h"
 #import "../go/GoPlayer.h"
@@ -29,31 +29,35 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
+#import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewSegmentedCell.h"
 #import "../ui/UiUtilities.h"
 #import "../ui/UiElementMetrics.h"
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates the types of information that the "Game Info" view can
+/// display.
+// -----------------------------------------------------------------------------
+enum InfoType
+{
+  ScoreInfoType,
+  GameInfoType,
+  BoardInfoType
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "Game Info" table view.
 // -----------------------------------------------------------------------------
 enum GameInfoTableViewSection
 {
-  GameStateSection,
-  ScoreSection,
+  ScoreSection = 0,
+  MaxSectionScoreInfoType,
+  GameStateSection = 0,
   GameInfoSection,
   MoveStatisticsSection,
-  MaxSection
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GameStateSection.
-// -----------------------------------------------------------------------------
-enum GameStateSectionItem
-{
-  GameStateItem,
-  LastMoveItem,
-  NextMoveItem,
-  MaxGameStateSectionItem
+  MaxSectionGameInfoType,
+  BoardPositionSection = 0,
+  MaxSectionBoardInfoType
 };
 
 // -----------------------------------------------------------------------------
@@ -83,6 +87,17 @@ enum ScoreSectionColumn
 };
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates items in the GameStateSection.
+// -----------------------------------------------------------------------------
+enum GameStateSectionItem
+{
+  GameStateItem,
+  LastMoveItem,
+  NextMoveItem,
+  MaxGameStateSectionItem
+};
+
+// -----------------------------------------------------------------------------
 /// @brief Enumerates items in the GameInfoSection.
 // -----------------------------------------------------------------------------
 enum GameInfoSectionItem
@@ -108,51 +123,30 @@ enum MoveStatisticsSectionItem
   MaxMoveStatisticsSectionItem
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the BoardPositionSection.
+// -----------------------------------------------------------------------------
+enum BoardPositionSectionItem
+{
+  CurrentBoardPositionItem,
+  CurrentBoardPositionMoveItem,
+  MovesAfterCurrentBoardPositionItem,
+  MaxBoardPositionSectionItem
+};
+
+
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GameInfoViewController.
+/// @brief Class extension with private methods and properties for
+/// GameInfoViewController.
 // -----------------------------------------------------------------------------
 @interface GameInfoViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UINavigationBarDelegate protocol
-//@{
-- (BOOL) navigationBar:(UINavigationBar*)navigationBar shouldPopItem:(UINavigationItem*)item;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name TableViewGridCellDelegate protocol
-//@{
-- (NSInteger) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell;
-- (enum GridCellColumnStyle) gridCell:(TableViewGridCell*)gridCell styleInColumn:(NSInteger)column;
-- (NSString*) gridCell:(TableViewGridCell*)gridCell textForColumn:(NSInteger)column;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameDidCreate:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (CGRect) mainViewFrame;
-- (CGRect) navigationBarViewFrame;
-- (CGRect) tableViewFrame;
-//@}
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) GoScore* score;
+@property(nonatomic, assign) UINavigationBar* navigationBar;
+@property(nonatomic, assign) UITableView* tableView;
+@property(nonatomic, assign) enum InfoType infoType;
 //@}
 @end
 
@@ -171,6 +165,7 @@ enum MoveStatisticsSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.score = score;
+    controller.infoType = ScoreInfoType;
   }
   return controller;
 }
@@ -183,6 +178,8 @@ enum MoveStatisticsSectionItem
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.delegate = nil;
   self.score = nil;
+  self.navigationBar = nil;
+  self.tableView = nil;
   [super dealloc];
 }
 
@@ -191,32 +188,23 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  CGRect navigationBarViewFrame = [self navigationBarViewFrame];
-  UINavigationBar* navigationBar = [[[UINavigationBar alloc] initWithFrame:navigationBarViewFrame] autorelease];
-  [self.view addSubview:navigationBar];
-  CGRect tableViewFrame = [self tableViewFrame];
-  UITableView* tableView = [[[UITableView alloc] initWithFrame:tableViewFrame style:UITableViewStyleGrouped] autorelease];
-  [self.view addSubview:tableView];
-
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  navigationBar.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
-  tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-
-  tableView.delegate = self;
-  tableView.dataSource = self;
-
-  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
-  [navigationBar pushNavigationItem:backItem animated:NO];
-  [navigationBar pushNavigationItem:self.navigationItem animated:NO];
-  navigationBar.delegate = self;
+  [self setupMainView];
+  [self setupNavigationBar];
+  [self setupTableView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of this controller's main view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupMainView
+{
+  CGRect mainViewFrame = [self mainViewFrame];
+  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
 - (CGRect) mainViewFrame
 {
@@ -230,11 +218,31 @@ enum MoveStatisticsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the toolbar view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (CGRect) navigationBarViewFrame
+- (void) setupNavigationBar
+{
+  CGRect navigationBarFrame = [self navigationBarFrame];
+  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:navigationBarFrame] autorelease];
+  [self.view addSubview:self.navigationBar];
+  self.navigationBar.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
+  self.navigationBar.delegate = self;
+
+  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
+  [self.navigationBar pushNavigationItem:backItem animated:NO];
+
+  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
+  segmentedControl.selectedSegmentIndex = self.infoType;
+  [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
+  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+  self.navigationItem.titleView = segmentedControl;
+  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (CGRect) navigationBarFrame
 {
   CGSize superViewSize = self.view.bounds.size;
   int navigationBarViewX = 0;
@@ -242,6 +250,20 @@ enum MoveStatisticsSectionItem
   int navigationBarViewWidth = superViewSize.width;
   int navigationBarViewHeight = [UiElementMetrics navigationBarHeight];
   return CGRectMake(navigationBarViewX, navigationBarViewY, navigationBarViewWidth, navigationBarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupTableView
+{
+  CGRect tableViewFrame = [self tableViewFrame];
+  self.tableView = [[[UITableView alloc] initWithFrame:tableViewFrame
+                                                 style:UITableViewStyleGrouped] autorelease];
+  [self.view addSubview:self.tableView];
+  self.tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.tableView.delegate = self;
+  self.tableView.dataSource = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -253,7 +275,7 @@ enum MoveStatisticsSectionItem
 {
   CGSize superViewSize = self.view.bounds.size;
   int tableViewX = 0;
-  int tableViewY = [UiElementMetrics navigationBarHeight];
+  int tableViewY = CGRectGetMaxY(self.navigationBar.frame);
   int tableViewWidth = superViewSize.width;
   int tableViewHeight = superViewSize.height - tableViewY;
   return CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
@@ -282,6 +304,8 @@ enum MoveStatisticsSectionItem
   // Super's viewDidUnload does not release self.view/self.tableView for us,
   // possibly because we override loadView and create the view ourselves
   self.view = nil;
+  self.navigationBar = nil;
+  self.tableView = nil;
 
   // Undo all of the stuff that is happening in viewDidLoad
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -315,7 +339,18 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  switch (self.infoType)
+  {
+    case ScoreInfoType:
+      return MaxSectionScoreInfoType;
+    case GameInfoType:
+      return MaxSectionGameInfoType;
+    case BoardInfoType:
+      return MaxSectionBoardInfoType;
+    default:
+      break;
+  }
+  return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -323,22 +358,45 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
+  switch (self.infoType)
   {
-    case GameStateSection:
-      if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
-        return MaxGameStateSectionItem;
-      else
-        return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
-    case ScoreSection:
+    case ScoreInfoType:
+    {
       return MaxScoreSectionItem;
-    case GameInfoSection:
-      return MaxGameInfoSectionItem;
-    case MoveStatisticsSection:
-      return MaxMoveStatisticsSectionItem;
-    default:
-      assert(0);
+    }
+    case GameInfoType:
+    {
+      switch (section)
+      {
+        case GameStateSection:
+          if (GoGameStateGameHasEnded != [GoGame sharedGame].state)
+            return MaxGameStateSectionItem;
+          else
+            return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
+        case GameInfoSection:
+          return MaxGameInfoSectionItem;
+        case MoveStatisticsSection:
+          return MaxMoveStatisticsSectionItem;
+        default:
+          break;
+      }
       break;
+    }
+    case BoardInfoType:
+    {
+      switch (section)
+      {
+        case BoardPositionSection:
+          return MaxBoardPositionSectionItem;
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+    {
+      break;
+    }
   }
   return 0;
 }
@@ -348,16 +406,63 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
 {
-  switch (section)
+  switch (self.infoType)
   {
-    case GameStateSection:
-      return @"Game state";
-    case ScoreSection:
-      return @"Scoring";
-    case GameInfoSection:
-      return @"Game information";
-    case MoveStatisticsSection:
-      return @"Move statistics";
+    case GameInfoType:
+    {
+      switch (section)
+      {
+        case GameStateSection:
+          return @"Game state";
+        case GameInfoSection:
+          return @"Game information";
+        case MoveStatisticsSection:
+          return @"Move statistics";
+        default:
+          break;
+      }
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  switch (self.infoType)
+  {
+    case ScoreInfoType:
+    {
+      NSString* titlePartOne = nil;
+      if (! [GoGame sharedGame].boardPosition.isLastPosition)
+        titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
+      NSString* titlePartTwo = nil;
+      if (! self.score.territoryScoresAvailable)
+        titlePartTwo = @"Dead stones and territory scores are not available because you are not in scoring mode.";
+      if (titlePartOne && titlePartTwo)
+        return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
+      else if (titlePartOne)
+        return titlePartOne;
+      else
+        return titlePartTwo;
+    }
+    case BoardInfoType:
+    {
+      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+      if (boardPosition.isFirstPosition)
+        return @"You are viewing the board position at the beginning of the game, i.e. before the first move was played.";
+      else if (boardPosition.isLastPosition)
+        return @"You are viewing the board position after the most recent move of the game has been played.";
+      else
+        return @"You are viewing a board position in the middle of the game.";
+    }
     default:
       break;
   }
@@ -369,8 +474,59 @@ enum MoveStatisticsSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
+  switch (self.infoType)
+  {
+    case ScoreInfoType:
+      return [self tableView:tableView scoreInfoTypeCellForRowAtIndexPath:indexPath];
+    case GameInfoType:
+      return [self tableView:tableView gameInfoTypeCellForRowAtIndexPath:indexPath];
+    case BoardInfoType:
+      return [self tableView:tableView boardInfoTypeCellForRowAtIndexPath:indexPath];
+    default:
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (UITableViewCell*) tableView:(UITableView*)tableView scoreInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  UITableViewCell* cell;
+  switch (indexPath.row)
+  {
+    case ResultItem:
+    {
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      // TODO include whether a player has resigned
+      cell.textLabel.text = [self.score resultString];
+      cell.textLabel.textAlignment = UITextAlignmentCenter;
+      break;
+    }
+    default:
+    {
+      cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
+      TableViewGridCell* gridCell = (TableViewGridCell*)cell;
+      // Remember which row this is so that the delegate methods know what to do
+      gridCell.tag = indexPath.row;
+      gridCell.delegate = self;
+      // Triggers delegate methods
+      [gridCell setupCellContent];
+      break;
+    }
+  }
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (UITableViewCell*) tableView:(UITableView*)tableView gameInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  UITableViewCell* cell;
   GoGame* game = [GoGame sharedGame];
-  UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
     case GameStateSection:
@@ -414,18 +570,6 @@ enum MoveStatisticsSectionItem
         case LastMoveItem:
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-          NSString* colorOfCurrentPlayer;
-          NSString* colorOfOtherPlayer;
-          if (game.currentPlayer.isBlack)
-          {
-            colorOfCurrentPlayer = @"Black";
-            colorOfOtherPlayer = @"White";
-          }
-          else
-          {
-            colorOfCurrentPlayer = @"White";
-            colorOfOtherPlayer = @"Black";
-          }
           if (GoGameStateGameHasEnded == game.state)
           {
             cell.textLabel.text = @"Reason";
@@ -438,6 +582,11 @@ enum MoveStatisticsSectionItem
               }
               case GoGameHasEndedReasonResigned:
               {
+                NSString* colorOfCurrentPlayer;
+                if (game.currentPlayer.isBlack)
+                  colorOfCurrentPlayer = @"Black";
+                else
+                  colorOfCurrentPlayer = @"White";
                 cell.detailTextLabel.text = [colorOfCurrentPlayer stringByAppendingString:@" resigned"];
                 break;
               }
@@ -464,33 +613,9 @@ enum MoveStatisticsSectionItem
               {
                 GoMove* lastMove = game.lastMove;
                 if (! lastMove)
-                {
                   cell.detailTextLabel.text = @"None";
-                }
                 else
-                {
-                  switch (lastMove.type)
-                  {
-                    case GoMoveTypePlay:
-                    {
-                      cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ played at %@",
-                                                   colorOfOtherPlayer,
-                                                   lastMove.point.vertex.string];
-                      break;
-                    }
-                    case GoMoveTypePass:
-                    {
-                      cell.detailTextLabel.text = [colorOfOtherPlayer stringByAppendingString:@" passed"];
-                      break;
-                    }
-                    default:
-                    {
-                      cell.detailTextLabel.text = @"n/a";
-                      assert(0);
-                      break;
-                    }
-                  }
-                }
+                  cell.detailTextLabel.text = [self descriptionOfMove:lastMove];
                 break;
               }
               default:
@@ -516,32 +641,6 @@ enum MoveStatisticsSectionItem
         default:
         {
           assert(0);
-          break;
-        }
-      }
-      break;
-    }
-    case ScoreSection:
-    {
-      switch (indexPath.row)
-      {
-        case ResultItem:
-        {
-          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-          // TODO include whether a player has resigned
-          cell.textLabel.text = [self.score resultString];
-          cell.textLabel.textAlignment = UITextAlignmentCenter;
-          break;
-        }
-        default:
-        {
-          cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
-          TableViewGridCell* gridCell = (TableViewGridCell*)cell;
-          // Remember which row this is so that the delegate methods know what to do
-          gridCell.tag = indexPath.row;
-          gridCell.delegate = self;
-          // Triggers delegate methods
-          [gridCell setupCellContent];
           break;
         }
       }
@@ -645,6 +744,52 @@ enum MoveStatisticsSectionItem
     default:
       assert(0);
       break;
+  }
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (UITableViewCell*) tableView:(UITableView*)tableView boardInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+  switch (indexPath.row)
+  {
+    case CurrentBoardPositionItem:
+    {
+      cell.textLabel.text = @"You are viewing";
+      if (boardPosition.isFirstPosition)
+        cell.detailTextLabel.text = @"Start of game";
+      else
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"Move %d", boardPosition.currentBoardPosition];
+      break;
+    }
+    case CurrentBoardPositionMoveItem:
+    {
+      cell.textLabel.text = @"Move info";
+      if (boardPosition.isFirstPosition)
+        cell.detailTextLabel.text = @"n/a";
+      else
+        cell.detailTextLabel.text = [self descriptionOfMove:boardPosition.currentMove];
+      break;
+    }
+    case MovesAfterCurrentBoardPositionItem:
+    {
+      int indexOfLastBoardPosition = boardPosition.numberOfBoardPositions - 1;
+      int numberOfMovesAfterCurrentBoardPosition =  indexOfLastBoardPosition - boardPosition.currentBoardPosition;
+      cell.textLabel.text = @"Moves after current position";
+      cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", numberOfMovesAfterCurrentBoardPosition];
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   return cell;
@@ -803,6 +948,48 @@ enum MoveStatisticsSectionItem
   // Dismiss the Info view when a new game is started. This typically occurs
   // when a saved game is loaded from the archive.
   [self navigationBar:nil shouldPopItem:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (NSString*) descriptionOfMove:(GoMove*)move
+{
+  NSString* playerColorString;
+  GoPlayer* player = move.player;
+  if (player.isBlack)
+    playerColorString = @"Black";
+  else
+    playerColorString = @"White";
+  switch (move.type)
+  {
+    case GoMoveTypePlay:
+    {
+      return [NSString stringWithFormat:@"%@ played at %@",
+              playerColorString,
+              move.point.vertex.string];
+    }
+    case GoMoveTypePass:
+    {
+      return [playerColorString stringByAppendingString:@" passed"];
+    }
+    default:
+    {
+      return @"n/a";
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Info Type" segmented control. Updates
+/// the main table view to display information for the selected type.
+// -----------------------------------------------------------------------------
+- (void) infoTypeChanged:(id)sender
+{
+  UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
+  self.infoType = segmentedControl.selectedSegmentIndex;
+  // TODO xxx save last selected type
+  [self.tableView reloadData];
 }
 
 @end

@@ -37,7 +37,7 @@
 /// construction. The GoGame object does not need to be in any particular state,
 /// e.g. it is not necessary for the game to be in state
 /// #GoGameStateGameHasEnded. The score is calculated for the current board
-/// position.
+/// position, while the move statistics are calculated for the entire game.
 ///
 /// Most of the scoring information is collected by simply inspecting the state
 /// of GoGame and its associated objects:
@@ -169,7 +169,7 @@
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 //@}
 // -----------------------------------------------------------------------------
-/// @name Scoring properties
+/// @name Scoring properties (for the current board position)
 // -----------------------------------------------------------------------------
 //@{
 @property(nonatomic, assign) double komi;
@@ -184,7 +184,7 @@
 @property(nonatomic, assign) enum GoGameResult result;  ///< @brief The overall result of comparing @e totalScoreBlack and @e totalScoreWhite
 //@}
 // -----------------------------------------------------------------------------
-/// @name Move statistics
+/// @name Move statistics (for the entire game)
 // -----------------------------------------------------------------------------
 //@{
 @property(nonatomic, assign) int numberOfMoves;

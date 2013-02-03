@@ -744,11 +744,20 @@
   // Komi
   self.komi = self.game.komi;
 
-  // Captured stones and move statistics
+  // Captured stones (up to the current board position) and move statistics (for
+  // the entire game)
   self.numberOfMoves = 0;
-  GoMove* move = self.game.boardPosition.currentMove;
+  GoMove* currentBoardPositionMove = self.game.boardPosition.currentMove;
+  bool loopHasPassedCurrentBoardPosition = false;
+  GoMove* move = self.game.lastMove;
   while (move != nil)
   {
+    if (! loopHasPassedCurrentBoardPosition)
+    {
+      if (move == currentBoardPositionMove)
+        loopHasPassedCurrentBoardPosition = true;
+    }
+
     self.numberOfMoves++;
     bool moveByBlack = move.player.black;
     switch (move.type)
@@ -757,12 +766,14 @@
       {
         if (moveByBlack)
         {
-          self.capturedByBlack += move.capturedStones.count;
+          if (loopHasPassedCurrentBoardPosition)
+            self.capturedByBlack += move.capturedStones.count;
           self.stonesPlayedByBlack++;
         }
         else
         {
-          self.capturedByWhite += move.capturedStones.count;
+          if (loopHasPassedCurrentBoardPosition)
+            self.capturedByWhite += move.capturedStones.count;
           self.stonesPlayedByWhite++;
         }
         break;
@@ -781,7 +792,7 @@
     move = move.previous;
   }
 
-  // Territory & dead stones
+  // Territory & dead stones (for current board position)
   if (self.territoryScoresAvailable)
   {
     for (GoBoardRegion* region in self.allRegions)
