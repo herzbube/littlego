@@ -185,6 +185,7 @@ NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
 NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
+NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 // New game settings
 NSString* newGameKey = @"NewGame";
 NSString* gameTypeKey = @"GameType";

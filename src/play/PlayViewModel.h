@@ -43,5 +43,8 @@
 @property(nonatomic, assign) float stoneRadiusPercentage;
 @property(nonatomic, retain) UIColor* crossHairColor;
 @property(nonatomic, assign) bool placeStoneUnderFinger;
+/// @brief Type of information that was selected when the Info view was
+/// displayed the last time.
+@property(nonatomic, assign) enum InfoType infoTypeLastSelected;
 
 @end

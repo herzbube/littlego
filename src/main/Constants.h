@@ -213,6 +213,14 @@ enum ApplicationLaunchMode
                                     ///  mode is available only in the simulator.
 };
 
+/// @brief Enumerates the types of information that the Info view can display.
+enum InfoType
+{
+  ScoreInfoType,
+  GameInfoType,
+  BoardInfoType
+};
+
 // -----------------------------------------------------------------------------
 /// @name Go constants
 // -----------------------------------------------------------------------------
@@ -571,6 +579,7 @@ extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* crossHairColorKey;
 extern NSString* placeStoneUnderFingerKey;
+extern NSString* infoTypeLastSelectedKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* gameTypeKey;

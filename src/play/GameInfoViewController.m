@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameInfoViewController.h"
+#import "PlayViewModel.h"
 #import "../go/GoBoard.h"
 #import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
@@ -26,6 +27,7 @@
 #import "../go/GoScore.h"
 #import "../go/GoVertex.h"
 #import "../gtp/GtpUtilities.h"
+#import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
 #import "../utility/NSStringAdditions.h"
@@ -34,16 +36,6 @@
 #import "../ui/UiUtilities.h"
 #import "../ui/UiElementMetrics.h"
 
-// -----------------------------------------------------------------------------
-/// @brief Enumerates the types of information that the "Game Info" view can
-/// display.
-// -----------------------------------------------------------------------------
-enum InfoType
-{
-  ScoreInfoType,
-  GameInfoType,
-  BoardInfoType
-};
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "Game Info" table view.
@@ -146,7 +138,7 @@ enum BoardPositionSectionItem
 @property(nonatomic, retain) GoScore* score;
 @property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
-@property(nonatomic, assign) enum InfoType infoType;
+@property(nonatomic, assign) PlayViewModel* playViewModel;
 //@}
 @end
 
@@ -165,7 +157,7 @@ enum BoardPositionSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.score = score;
-    controller.infoType = ScoreInfoType;
+    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   }
   return controller;
 }
@@ -178,6 +170,7 @@ enum BoardPositionSectionItem
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.delegate = nil;
   self.score = nil;
+  self.playViewModel = nil;
   self.navigationBar = nil;
   self.tableView = nil;
   [super dealloc];
@@ -232,7 +225,7 @@ enum BoardPositionSectionItem
   [self.navigationBar pushNavigationItem:backItem animated:NO];
 
   UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
-  segmentedControl.selectedSegmentIndex = self.infoType;
+  segmentedControl.selectedSegmentIndex = self.playViewModel.infoTypeLastSelected;
   [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
   segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   self.navigationItem.titleView = segmentedControl;
@@ -339,7 +332,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  switch (self.infoType)
+  switch (self.playViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
       return MaxSectionScoreInfoType;
@@ -358,7 +351,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (self.infoType)
+  switch (self.playViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
     {
@@ -406,7 +399,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
 {
-  switch (self.infoType)
+  switch (self.playViewModel.infoTypeLastSelected)
   {
     case GameInfoType:
     {
@@ -436,7 +429,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  switch (self.infoType)
+  switch (self.playViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
     {
@@ -474,7 +467,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  switch (self.infoType)
+  switch (self.playViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
       return [self tableView:tableView scoreInfoTypeCellForRowAtIndexPath:indexPath];
@@ -987,7 +980,7 @@ enum BoardPositionSectionItem
 - (void) infoTypeChanged:(id)sender
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
-  self.infoType = segmentedControl.selectedSegmentIndex;
+  self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
   // TODO xxx save last selected type
   [self.tableView reloadData];
 }

@@ -62,6 +62,7 @@
   self.stoneRadiusPercentage = 1.0;
   self.crossHairColor = [UIColor greenColor];
   self.placeStoneUnderFinger = false;
+  self.infoTypeLastSelected = ScoreInfoType;
 
   return self;
 }
@@ -102,6 +103,7 @@
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
   self.placeStoneUnderFinger = [[dictionary valueForKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]] boolValue];
+  self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -135,6 +137,7 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
   [dictionary setValue:[NSNumber numberWithBool:self.placeStoneUnderFinger] forKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]];
+  [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   [userDefaults setObject:dictionary forKey:playViewKey];

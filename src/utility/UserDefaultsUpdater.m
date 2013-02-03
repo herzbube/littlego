@@ -329,6 +329,15 @@ NSString* whitePlayerKey = @"WhitePlayer";
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 
+  // Add new key to "play view" dictionary
+  id playViewDictionary = [userDefaults objectForKey:playViewKey];
+  if (playViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithInt:ScoreInfoType] forKey:infoTypeLastSelectedKey];
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+
   // Add new keys to / remove unused key from "new game" dictionary
   id newGameDictionary = [userDefaults objectForKey:newGameKey];
   if (newGameDictionary)  // is nil if the key is not present
