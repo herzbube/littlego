@@ -62,10 +62,9 @@
 {
 }
 
-- (id) initWithScoringModel:(ScoringModel*)scoringModel
-              delegate:(id<NavigationBarControllerDelegate>)delegate
-  parentViewController:(UIViewController*)parentViewController;
+- (id) initWithDelegate:(id<NavigationBarControllerDelegate>)delegate parentViewController:(UIViewController*)parentViewController;
 
+@property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) UINavigationBar* navigationBar;
 
 @end

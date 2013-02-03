@@ -98,7 +98,6 @@
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
@@ -134,17 +133,15 @@
 ///
 /// @note This is the designated initializer of NavigationBarController.
 // -----------------------------------------------------------------------------
-- (id) initWithScoringModel:(ScoringModel*)aScoringModel
-              delegate:(id<NavigationBarControllerDelegate>)aDelegate
-  parentViewController:(UIViewController*)aParentViewController
+- (id) initWithDelegate:(id<NavigationBarControllerDelegate>)aDelegate parentViewController:(UIViewController*)aParentViewController
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.navigationBar = nil;
-  self.scoringModel = aScoringModel;
+  _navigationBar = nil;  // don't use self to avoid invoking the setter
+  _scoringModel = nil;   // ditto
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
@@ -278,6 +275,19 @@
 {
   _navigationBar = aNavigationBar;
   [_navigationBar pushNavigationItem:self.navigationItem animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Setting of navigation bar occurs delayed (i.e. not during
+/// initialization of the controller object) due to timing needs of the parent
+/// view controller.
+// -----------------------------------------------------------------------------
+- (void) setScoringModel:(ScoringModel*)scoringModel
+{
+  _scoringModel = scoringModel;
+  self.navigationBarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -608,8 +618,8 @@
   {
     if (GoGameStateGameHasEnded != game.state)
     {
-      [leftBarButtonItems addObject:self.discardBoardPositionButton];
       [leftBarButtonItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
+      [leftBarButtonItems addObject:self.discardBoardPositionButton];
     }
   }
   else

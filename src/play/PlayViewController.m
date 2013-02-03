@@ -739,12 +739,8 @@ enum ActionType
 - (void) setupSubcontrollers
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  if (! scoringModel)
-  {
-    DDLogError(@"PlayViewController::makeControllerReadyForAction(): Unable to find the ScoringModel object");
-    assert(0);
-  }
 
+  self.navigationBarController.scoringModel = scoringModel;
   self.navigationBarController.navigationBar = self.navigationBarMain;
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
@@ -786,10 +782,8 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBarController
 {
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  self.navigationBarController = [[[NavigationBarController alloc] initWithScoringModel:scoringModel
-                                                                               delegate:self
-                                                                   parentViewController:self] autorelease];
+  self.navigationBarController = [[[NavigationBarController alloc] initWithDelegate:self
+                                                               parentViewController:self] autorelease];
 }
 
 // -----------------------------------------------------------------------------
