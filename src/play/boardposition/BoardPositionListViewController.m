@@ -177,6 +177,7 @@
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.allDataNeedsUpdate = true;
+  self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
