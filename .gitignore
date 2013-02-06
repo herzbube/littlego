@@ -10,5 +10,6 @@ Little Go.xcodeproj/xcuserdata
 doxygen/html
 dist/
 crash/
+bugreport/
 .DS_Store
 
