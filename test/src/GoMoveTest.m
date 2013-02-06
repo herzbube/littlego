@@ -285,7 +285,7 @@
   // Undo move 4
   [move4 undo];
   expectedNumberOfRegions = 3;
-  expectedNumberOfCapturedStones = 0;
+  expectedNumberOfCapturedStones = 1;
   STAssertEquals(GoColorWhite, point1.stoneState, nil);
   STAssertEquals(GoColorBlack, point2.stoneState, nil);
   STAssertEquals(GoColorNone, point3.stoneState, nil);
@@ -303,6 +303,7 @@
 
   // Undo move 3
   [move3 undo];
+  expectedNumberOfCapturedStones = 0;
   STAssertEquals(GoColorWhite, point1.stoneState, nil);
   STAssertEquals(GoColorBlack, point2.stoneState, nil);
   STAssertEquals(GoColorNone, point3.stoneState, nil);

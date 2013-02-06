@@ -254,6 +254,11 @@
     self.point.stoneState = GoColorWhite;
   [GoUtilities movePointToNewRegion:self.point];
 
+  // If the captured stones array already contains entries we assume that this
+  // invocation of doIt() is actually a "redo", i.e. undo() has previously been
+  // invoked for this GoMove
+  bool redo = (_capturedStones.count > 0);
+
   // Check neighbours for captures
   for (GoPoint* neighbour in self.point.neighbours)
   {
@@ -270,7 +275,22 @@
       // same captured group, the neighbour will already have its state reset,
       // and we will skip it
       capture.stoneState = GoColorNone;
-      [(NSMutableArray*)_capturedStones addObject:capture];
+      if (redo)
+      {
+        if (! [_capturedStones containsObject:capture])
+        {
+          NSString* message = [NSString stringWithFormat:@"Redo of %@: Captured stone on point %@ is not in array", self, capture];
+          DDLogError(message);
+          NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                           reason:message
+                                                         userInfo:nil];
+          @throw exception;
+        }
+      }
+      else
+      {
+        [(NSMutableArray*)_capturedStones addObject:capture];
+      }
     }
   }
 }
@@ -326,7 +346,6 @@
   // further down does not join regions incorrectly.
   for (GoPoint* capture in self.capturedStones)
     capture.stoneState = capturedStoneColor;
-  [(NSMutableArray*)_capturedStones removeAllObjects];
 
   // Update the point's stone state *BEFORE* moving it to a new region
   GoPoint* thePoint = self.point;
