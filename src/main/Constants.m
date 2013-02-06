@@ -17,7 +17,7 @@
 
 // GUI constants
 const float gHalfPixel = 0.5;
-const int crossHairPointDistanceFromFingerOnSmallestBoard = 2;
+const int crossHairPointDistanceFromFingerOnSmallestBoard = 1.5;
 const float gDisabledViewAlpha = 0.439216f;
 const CFTimeInterval gPlayViewPanningDelayIPadPortrait = 0.1;
 

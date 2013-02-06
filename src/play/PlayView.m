@@ -544,7 +544,7 @@ static PlayView* sharedPlayView = nil;
       // Straight scaling results in a scale factor that is too large for big
       // boards, so we tune down the scale a little bit. The factor of 0.75 has
       // been determined experimentally.
-      scaleFactor *= 0.75;
+      scaleFactor *= 0.6;
       // The final scale factor must not drop below 1 because we don't want to
       // get lower than crossHairPointDistanceFromFingerOnSmallestBoard.
       if (scaleFactor < 1.0)
