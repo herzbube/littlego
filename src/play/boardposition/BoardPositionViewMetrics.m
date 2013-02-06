@@ -31,6 +31,7 @@
 - (void) setupLabelSize;
 - (void) setupStoneImageSize;
 - (void) setupStoneImages;
+- (void) setupCapturedStonesLabelFrame;
 - (void) setupBoardPositionViewSize;
 - (UIImage*) stoneImageWithSize:(CGSize)size color:(UIColor*)color;
 //@}
@@ -56,6 +57,7 @@
   [self setupLabelSize];
   [self setupStoneImageSize];
   [self setupStoneImages];
+  [self setupCapturedStonesLabelFrame];
   [self setupBoardPositionViewSize];
 
   return self;
@@ -160,6 +162,27 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Calculates the size of the label used to display the number of
+/// captured stones.
+///
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupCapturedStonesLabelFrame
+{
+  NSString* textToDetermineLabelSize = @"99";
+  UIFont* font = [UIFont systemFontOfSize:self.boardPositionViewFontSize];
+  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
+  CGSize size = [textToDetermineLabelSize sizeWithFont:font
+                                     constrainedToSize:constraintSize
+                                         lineBreakMode:UILineBreakModeWordWrap];
+  CGFloat x = self.stoneImageViewFrame.origin.x;
+  CGFloat width = size.width;
+  CGFloat height = size.height;
+  CGFloat y = self.labelHeight - height;
+  self.capturedStonesLabelFrame = CGRectMake(x, y, width, height);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Calculates the size of a board position view.
 ///
 /// This is an internal helper invoked during initialization.
@@ -171,7 +194,7 @@
     self.boardPositionViewWidth = ((2 * self.boardPositionViewHorizontalPadding)
                                    + self.labelWidth
                                    + self.boardPositionViewHorizontalSpacing
-                                   + self.stoneImageWidthAndHeight);
+                                   + MAX(self.stoneImageWidthAndHeight, self.capturedStonesLabelFrame.size.width));
     self.boardPositionViewHeight = self.labelHeight;
     self.boardPositionViewFrame = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
   }

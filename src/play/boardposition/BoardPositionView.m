@@ -121,6 +121,12 @@
     UIImageView* stoneImageView = [self stoneImageViewForMove:move];
     [self addSubview:label];
     [self addSubview:stoneImageView];
+    NSString* capturedStonesLabelText = [self capturedStonesLabelTextForMove:move];
+    if (capturedStonesLabelText)
+    {
+      UILabel* capturedStonesLabel = [self capturedStonesLabelWithText:capturedStonesLabelText];
+      [self addSubview:capturedStonesLabel];
+    }
   }
   [self setupBackgroundColorForMove:move];
 }
@@ -180,6 +186,34 @@
   UIImageView* stoneImageView = [[[UIImageView alloc] initWithImage:stoneImage] autorelease];
   stoneImageView.frame = self.viewMetrics.stoneImageViewFrame;
   return stoneImageView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper for layoutSubviews().
+// -----------------------------------------------------------------------------
+- (NSString*) capturedStonesLabelTextForMove:(GoMove*)move
+{
+  if (GoMoveTypePass == move.type)
+    return nil;
+  int numberOfCapturedStones = move.capturedStones.count;
+  if (0 == numberOfCapturedStones)
+    return nil;
+  return [NSString stringWithFormat:@"%d", numberOfCapturedStones];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper for layoutSubviews().
+// -----------------------------------------------------------------------------
+- (UILabel*) capturedStonesLabelWithText:(NSString*)labelText
+{
+  UILabel* label = [[[UILabel alloc] initWithFrame:self.viewMetrics.capturedStonesLabelFrame] autorelease];
+  label.font = [UIFont systemFontOfSize:self.viewMetrics.boardPositionViewFontSize];
+  [label setNumberOfLines:1];
+  label.backgroundColor = [UIColor clearColor];
+  label.text = labelText;
+  label.textAlignment = NSTextAlignmentRight;
+  label.textColor = [UIColor redColor];
+  return label;
 }
 
 // -----------------------------------------------------------------------------

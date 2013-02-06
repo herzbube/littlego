@@ -83,8 +83,6 @@
 - (UILabel*) titleLabelWithText:(NSString*)labelText;
 - (void) setupNotificationResponders;
 - (void) setupStoneImages;
-- (NSString*) labelTextForMove:(GoMove*)move;
-- (NSString*) detailLabelTextForBoardPosition:(int)boardPosition;
 - (UIImage*) stoneImageForMove:(GoMove*)move;
 - (UIColor*) backgroundColorForMove:(GoMove*)move;
 //@}
@@ -637,7 +635,7 @@
     }
   }
   cell.textLabel.text = [self labelTextForMove:move];
-  cell.detailTextLabel.text = [self detailLabelTextForBoardPosition:boardPositionOfCell];
+  cell.detailTextLabel.text = [self detailLabelTextForBoardPosition:boardPositionOfCell move:move];
   cell.imageView.image = [self stoneImageForMove:move];
   return cell;
 }
@@ -658,7 +656,7 @@
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper for tableView:cellForRowAtIndexPath:().
 // -----------------------------------------------------------------------------
-- (NSString*) detailLabelTextForBoardPosition:(int)boardPosition
+- (NSString*) detailLabelTextForBoardPosition:(int)boardPosition move:(GoMove*)move
 {
   if (0 == boardPosition)
   {
@@ -669,7 +667,15 @@
   else
   {
     int moveNumber = boardPosition + 1;
-    return [NSString stringWithFormat:@"Move %d", moveNumber];
+    NSString* labelText = [NSString stringWithFormat:@"Move %d", moveNumber];
+    int numberOfCapturedStones = move.capturedStones.count;
+    if (numberOfCapturedStones > 0)
+    {
+      labelText = [NSString stringWithFormat:@"%@, captures %d stone", labelText, numberOfCapturedStones];
+      if (numberOfCapturedStones > 1)
+        labelText = [labelText stringByAppendingString:@"s"];  // plural
+    }
+    return labelText;
   }
 }
 

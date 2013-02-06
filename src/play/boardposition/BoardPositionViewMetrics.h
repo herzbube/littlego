@@ -44,6 +44,7 @@
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
 @property(nonatomic, assign) CGRect stoneImageViewFrame;
+@property(nonatomic, assign) CGRect capturedStonesLabelFrame;
 @property(nonatomic, assign) int boardPositionViewWidth;
 @property(nonatomic, assign) int boardPositionViewHeight;
 /// @brief Number of pixels to use for internal padding of a board position view
