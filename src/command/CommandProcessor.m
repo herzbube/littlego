@@ -95,7 +95,7 @@ static CommandProcessor* sharedProcessor = nil;
   @catch (NSException* exception)
   {
     result = false;
-    DDLogError(@"Exception raised while executing command, exception reason: %@", exception);
+    DDLogError(@"Exception raised while executing command, exception reason: %@, exception stack trace %@", exception, [exception callStackSymbols]);
     @throw;
   }
   @finally
