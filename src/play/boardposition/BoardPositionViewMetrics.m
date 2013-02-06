@@ -104,9 +104,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupLabelSize
 {
-  // The text must include the word "Pass" because this is the longest string
-  // that can possibly appear in the label of a board position view
-  NSString* textToDetermineLabelSize = @"Pass";
+  // This must be the longest string that can possibly appear in the label of a
+  // board position view
+  NSString* textToDetermineLabelSize = @"K: 6½";
   for (int lineNumber = 1; lineNumber < self.labelNumberOfLines; ++lineNumber)
     textToDetermineLabelSize = [textToDetermineLabelSize stringByAppendingString:@"\nA"];
   UIFont* font = [UIFont systemFontOfSize:self.boardPositionViewFontSize];
