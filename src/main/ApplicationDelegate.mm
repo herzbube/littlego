@@ -144,6 +144,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   sharedDelegate = [[[ApplicationDelegate alloc] init] autorelease];
   sharedDelegate.applicationLaunchMode = ApplicationLaunchModeNormal;
   sharedDelegate.applicationReadyForAction = false;
+  sharedDelegate.writeUserDefaultsEnabled = false;
   return sharedDelegate;
 }
 
@@ -190,6 +191,9 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Clients need to see that we are not yet ready. Flag will become true when
   // secondary thread has finished setup.
   self.applicationReadyForAction = false;
+
+  // Enable in normal (i.e. not unit testing) environment
+  self.writeUserDefaultsEnabled = true;
 
   // For QuincyKit to work properly, this method must be invoked in the context
   // of the main thread, i.e. it cannot be invoked by launchWithProgressHUD:()
@@ -435,9 +439,20 @@ static ApplicationDelegate* sharedDelegate = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Writes the current user preferences to the user defaults system.
+///
+/// This method does nothing if self.writeUserDefaultsEnabled is false, i.e. in
+/// a unit testing environment. During unit tests no user defaults should be
+/// written because on a developer machine (the only place where unit tests are
+/// executed) we want to be able to switch back and forth between different
+/// branches and versions. If we switch from a newer to an older version, then
+/// the user defaults file on disk would contain user defaults that the older
+/// version would not be able to understand.
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  if (! self.writeUserDefaultsEnabled)
+    return;
+
   [self.theNewGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.gtpEngineProfileModel writeUserDefaults];

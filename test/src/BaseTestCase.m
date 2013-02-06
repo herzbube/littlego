@@ -42,24 +42,36 @@
   // located in ~/Library/Application Support/iPhone Simulator/Documents/Logs
   [m_delegate setupLogging];
 
-  m_delegate.resourceBundle = [NSBundle bundleForClass:[self class]];
-  STAssertNotNil(m_delegate.resourceBundle, @"Unable to determine unit test bundle in setUp()");
+  @try
+  {
+    m_delegate.resourceBundle = [NSBundle bundleForClass:[self class]];
+    STAssertNotNil(m_delegate.resourceBundle, @"Unable to determine unit test bundle in setUp()");
 
-  [m_delegate setupRegistrationDomain];
-  // Tests are expecting a human vs. human game and a 19x19 board
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
-  [newGameDictionary setValue:[NSNumber numberWithInt:GoGameTypeHumanVsHuman] forKey:gameTypeKey];
-  [newGameDictionary setValue:[NSNumber numberWithInt:GoBoardSize19] forKey:boardSizeKey];
-  [userDefaults setObject:newGameDictionary forKey:newGameKey];
-  // Initialize models after we have fiddled with the user defaults data
-  [m_delegate setupUserDefaults];
+    [m_delegate setupRegistrationDomain];
+    // Tests are expecting a human vs. human game and a 19x19 board
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary* newGameDictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:newGameKey]];
+    [newGameDictionary setValue:[NSNumber numberWithInt:GoGameTypeHumanVsHuman] forKey:gameTypeKey];
+    [newGameDictionary setValue:[NSNumber numberWithInt:GoBoardSize19] forKey:boardSizeKey];
+    [userDefaults setObject:newGameDictionary forKey:newGameKey];
+    // Initialize models after we have fiddled with the user defaults data.
+    [m_delegate setupUserDefaults];
+    // If user defaults were written to disk during unit tests, they would go
+    // into the file
+    ///   ~/Library/Application Support/iPhone Simulator/Library/Preferences/otest.plist
+    STAssertFalse(m_delegate.writeUserDefaultsEnabled, @"User defaults must not be written in unit testing environment");
 
-  [[[NewGameCommand alloc] init] submit];
-  m_game = m_delegate.game;
-  STAssertNotNil(m_game, @"Unable to create GoGame object in setUp()");
+    [[[NewGameCommand alloc] init] submit];
+    m_game = m_delegate.game;
+    STAssertNotNil(m_game, @"Unable to create GoGame object in setUp()");
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"Exception caught in BaseTestCase::setup(). Exception reason = %@, exception stack trace = %@", exception, [NSThread callStackSymbols]);
+    @throw;
+  }
 
-  [pool drain];
+  [pool drain];  // draining the pool also deallocates it
 }
 
 // -----------------------------------------------------------------------------
@@ -69,7 +81,7 @@
 {
   NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
   [m_delegate release];
-  [pool drain];
+  [pool drain];  // draining the pool also deallocates it
   STAssertNil([ApplicationDelegate sharedDelegate], @"ApplicationDelegate object not released in tearDown()");
   STAssertNil([GoGame sharedGame], @"GoGame object not released in tearDown()");
 }

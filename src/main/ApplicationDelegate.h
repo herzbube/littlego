@@ -107,6 +107,12 @@
 /// up. Just after this flag becomes true, the notification
 /// #applicationIsReadyForAction is posted to the global notification center.
 @property(nonatomic, assign) bool applicationReadyForAction;
+/// @brief Flag is true if user defaults should be written to the user defaults
+/// system at the appropriate times. Flag is false if user defaults should never
+/// be written to the user defaults system.
+///
+/// This property exists for the purpose of unit testing.
+@property(nonatomic, assign) bool writeUserDefaultsEnabled;
 /// @brief The bundle that contains the application's resources. This property
 /// exists to make the application more testable.
 @property(nonatomic, assign) NSBundle* resourceBundle;

@@ -19,6 +19,7 @@
 #import "UserDefaultsUpdater.h"
 #import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
+#import "../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -138,7 +139,8 @@ NSString* whitePlayerKey = @"WhitePlayer";
       }
     }
   }
-  [userDefaults synchronize];
+  if ([ApplicationDelegate sharedDelegate].writeUserDefaultsEnabled)
+    [userDefaults synchronize];
 
   // Perform final check if the cumulative effect of all upgrades had the
   // desired effect.
