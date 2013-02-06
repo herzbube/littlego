@@ -327,7 +327,7 @@ NSString* whitePlayerKey = @"WhitePlayer";
   // right here where it belongs to the correct format version.
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:discardFutureMovesAlertDefault] forKey:discardFutureMovesAlertKey];
-  [dictionary setValue:[NSNumber numberWithInt:0] forKey:boardPositionLastViewedKey];
+  [dictionary setValue:[NSNumber numberWithInt:-1] forKey:boardPositionLastViewedKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 

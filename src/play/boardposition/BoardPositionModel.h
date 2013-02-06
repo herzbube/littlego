@@ -46,6 +46,10 @@
 /// board position, an application crash may leave a stale value in the user
 /// defaults on disk. A small amount of error handling is therefore necessary
 /// when the board position is restored on application launch.
+///
+/// @note The value -1 has the special meaning "last board position of the
+/// game". This value is used only once: When user defaults are upgraded from
+/// an earlier version of the application.
 @property(nonatomic, assign) int boardPositionLastViewed;
 
 @end

@@ -98,7 +98,11 @@
   // crash)
   if (boardPositionModel.boardPositionLastViewed > boardPosition.currentBoardPosition)
     return;
-  boardPosition.currentBoardPosition = boardPositionModel.boardPositionLastViewed;
+  // Special value -1 means "last board position of the game"
+  if (-1 == boardPositionModel.boardPositionLastViewed)
+    boardPositionModel.boardPositionLastViewed = boardPosition.currentBoardPosition;
+  else
+    boardPosition.currentBoardPosition = boardPositionModel.boardPositionLastViewed;
 }
 
 @end
