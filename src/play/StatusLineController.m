@@ -273,9 +273,11 @@
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  // In case a new game is started abruptly without cleaning up state in the
-  // old game
-  [self updateStatusLine];
+  // We don't get a goGameStateChanged because the old game is deallocated
+  // without a state change, and the new game already starts with its correct
+  // initial state
+  self.statusLineNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
