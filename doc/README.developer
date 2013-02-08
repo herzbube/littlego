@@ -10,15 +10,11 @@ Quick-start guide on how to build and run Little Go
 ---------------------------------------------------
 1. Unpack the source tar ball or clone the Git repository (since you are
    reading this document you probably have done this already)
-2. Install Xcode 4 if you haven't done so already. With Xcode 4 the build should
-   work out of the box, earlier or later Xcode versions probably require some
-   tinkering.
+2. Install the latest version of Xcode if you haven't done so already
 3. Edit script/build-env.sh to match your development environment. Most
    important are the "Base SDK" variables which must refer to an iOS SDK that
    you have installed on your development machine. Usually, the version of Xcode
-   that you have installed also determines which iOS SDK version is installed,
-   so refer to the Xcode release notes or have a look at the contents of the
-   folder /Developer/Platforms/iPhoneOS.platform/Developer/SDKs.
+   that you have installed also determines which iOS SDK version is installed.
 4. Launch Terminal.app and execute these commands:
      cd /path/to/littlego
      ./script/get-and-build-3rdparty-software.sh
@@ -33,7 +29,8 @@ Quick-start guide on how to build and run Little Go
    If it isn't (e.g. the reference appears in red color), fix the reference.
    The usual cause is that the reference points to a path that includes an SDK
    version that is different from the SDK version you used to build the 3rdparty
-   software packages.
+   software packages. The simplest way how to fix this is to use a text editor
+   to manually edit the file "Little Go.xcodeproj/project.pbxproj".
 9. Make sure that you have a scheme that configures the target "Little Go" to
    use the build configuration "Debug". See "Xcode schemes" further down if you
    need more information.
