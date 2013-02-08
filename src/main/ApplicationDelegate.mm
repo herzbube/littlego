@@ -595,7 +595,13 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   UIViewController* tabController = [self tabController:tabID];
   if (tabController)
+  {
     tabBarController.selectedViewController = tabController;
+    // The delegate method tabBarController:didSelectViewController:() is not
+    // invoked when the selectedViewController property is changed
+    // programmatically
+    [self writeUserDefaults];
+  }
 }
 
 // -----------------------------------------------------------------------------
