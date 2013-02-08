@@ -206,12 +206,12 @@ enum NavigationDirection
 - (void) setupCustomViewItemsWithBoardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView
 {
   if (listView)
-    self.boardPositionListViewItem = [[UIBarButtonItem alloc] initWithCustomView:listView];
+    self.boardPositionListViewItem = [[[UIBarButtonItem alloc] initWithCustomView:listView] autorelease];
   else
     self.boardPositionListViewItem = nil;
 
   if (currentView)
-    self.currentBoardPositionViewItem = [[UIBarButtonItem alloc] initWithCustomView:currentView];
+    self.currentBoardPositionViewItem = [[[UIBarButtonItem alloc] initWithCustomView:currentView] autorelease];
   else
     self.currentBoardPositionViewItem = nil;
 }
