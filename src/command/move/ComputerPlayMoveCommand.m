@@ -117,7 +117,6 @@
                                    selector:@selector(gtpResponseReceived:)];
   [command submit];
 
-  self.game.nextMoveIsComputerGenerated = true;
   // Thinking state must change after any of the other things; this order is
   // important for observer notifications
   self.game.computerThinks = true;

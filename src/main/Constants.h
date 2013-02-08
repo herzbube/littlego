@@ -670,7 +670,6 @@ extern NSString* goGameMoveModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
-extern NSString* goGameNextMoveIsComputerGeneratedKey;
 extern NSString* goGameBoardPositionKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
@@ -682,7 +681,6 @@ extern NSString* goMovePointKey;
 extern NSString* goMovePreviousKey;
 extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
-extern NSString* goMoveComputerGeneratedKey;
 // GoMoveModel keys
 extern NSString* goMoveModelMoveListKey;
 extern NSString* goMoveModelNumberOfMovesKey;

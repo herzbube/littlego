@@ -271,7 +271,6 @@ NSString* goGameMoveModelKey = @"MoveModel";
 NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
-NSString* goGameNextMoveIsComputerGeneratedKey = @"NextMoveIsComputerGenerated";
 NSString* goGameBoardPositionKey = @"BoardPosition";
 
 // GoPlayer keys
@@ -284,7 +283,6 @@ NSString* goMovePointKey = @"Point";
 NSString* goMovePreviousKey = @"Previous";
 NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
-NSString* goMoveComputerGeneratedKey = @"ComputerGenerated";
 // GoMoveModel keys
 NSString* goMoveModelMoveListKey = @"MoveList";
 NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";

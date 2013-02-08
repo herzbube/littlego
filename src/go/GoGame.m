@@ -93,7 +93,6 @@
   _state = GoGameStateGameHasNotYetStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   _computerThinks = false;
-  _nextMoveIsComputerGenerated = false;
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
   // GoMoveModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
@@ -124,7 +123,6 @@
   _state = [decoder decodeIntForKey:goGameStateKey];
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   _computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
-  _nextMoveIsComputerGenerated = [decoder decodeBoolForKey:goGameNextMoveIsComputerGeneratedKey];
   _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
 
   return self;
@@ -234,7 +232,6 @@
                                                       userInfo:nil];
     @throw newException;
   }
-  move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   [move doIt];
   [self.moveModel appendMove:move];
@@ -266,7 +263,6 @@
   }
 
   GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
-  move.computerGenerated = self.nextMoveIsComputerGenerated;
 
   [move doIt];
   [self.moveModel appendMove:move];
@@ -565,7 +561,6 @@
   [encoder encodeInt:self.state forKey:goGameStateKey];
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
-  [encoder encodeBool:self.nextMoveIsComputerGenerated forKey:goGameNextMoveIsComputerGeneratedKey];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
 }
 

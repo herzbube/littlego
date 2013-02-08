@@ -119,7 +119,6 @@
   self.previous = nil;
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
-  self.computerGenerated = false;
 
   return self;
 }
@@ -141,7 +140,6 @@
   self.previous = [decoder decodeObjectForKey:goMovePreviousKey];
   self.next = [decoder decodeObjectForKey:goMoveNextKey];
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
-  self.computerGenerated = [decoder decodeBoolForKey:goMoveComputerGeneratedKey];
 
   return self;
 }
@@ -365,7 +363,6 @@
   [encoder encodeObject:self.previous forKey:goMovePreviousKey];
   [encoder encodeObject:self.next forKey:goMoveNextKey];
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
-  [encoder encodeBool:self.computerGenerated forKey:goMoveComputerGeneratedKey];
 }
 
 @end

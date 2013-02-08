@@ -67,7 +67,6 @@
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, @"game state test failed");
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   STAssertFalse(m_game.isComputerThinking, nil);
-  STAssertFalse(m_game.nextMoveIsComputerGenerated, nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -91,7 +90,6 @@
   STAssertEquals(GoGameStateGameHasNotYetStarted, newGame.state, nil);
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, newGame.reasonForGameHasEnded, nil);
   STAssertFalse(newGame.isComputerThinking, nil);
-  STAssertFalse(newGame.nextMoveIsComputerGenerated, nil);
 }
 
 // -----------------------------------------------------------------------------
