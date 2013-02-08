@@ -63,6 +63,7 @@
 }
 
 - (id) initWithDelegate:(id<NavigationBarControllerDelegate>)delegate parentViewController:(UIViewController*)parentViewController;
+- (void) dismissGameInfoViewController;
 
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) UINavigationBar* navigationBar;

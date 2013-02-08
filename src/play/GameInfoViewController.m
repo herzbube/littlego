@@ -944,6 +944,14 @@ enum BoardPositionSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Can be invoked to programmatically dismiss the view.
+// -----------------------------------------------------------------------------
+- (void) dismiss
+{
+  [self navigationBar:nil shouldPopItem:nil];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:cellForRowAtIndexPath:().
 // -----------------------------------------------------------------------------
 - (NSString*) descriptionOfMove:(GoMove*)move

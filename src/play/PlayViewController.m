@@ -819,6 +819,8 @@ enum ActionType
 {
   [super viewDidUnload];
 
+  // Dismiss the controller before releasing/deallocating objects
+  [self.navigationBarController dismissGameInfoViewController];
   // Here we need to undo all of the stuff that is happening in
   // makeControllerReadyForAction(), because makeControllerReadyForAction()
   // will be invoked again later by viewDidLoad(). Notes:
@@ -842,8 +844,20 @@ enum ActionType
   // visible.
   if (self.isViewLoaded && ! self.view.window)
   {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self releaseObjects];
+    // Do not release anything in iOS 6 and later (as opposed to iOS 5 where we
+    // are forced to release stuff in viewDidUnload). A run through Instruments
+    // shows that releasing objects here frees between 100-300 KB. Since the
+    // user is expected to switch back to the Play tab anyway, this gain is
+    // only temporary.
+    //
+    // Furthermore: If we want to release objects here, we need to first
+    // resolve this issue: When the memory warning occurs while the game info
+    // view controller is at the top of the navigation stack, it seems to be
+    // impossible to pop the controller without the application crashing. In
+    // iOS 5 / viewDidUnload(), popping the controller seems to work with
+    //   [self.navigationBarController dismissGameInfoViewController];
+    // (tested only in the simulator), but invoking the same method here
+    // causes a crash.
   }
 }
 

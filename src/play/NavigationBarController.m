@@ -395,6 +395,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Can be invoked to programmatically dismiss the view.
+// -----------------------------------------------------------------------------
+- (void) dismissGameInfoViewController
+{
+  if (self.gameInfoViewController)
+    [self.gameInfoViewController dismiss];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Game Actions" button. Displays an
 /// action sheet with actions that related to Go games as a whole.
 // -----------------------------------------------------------------------------
