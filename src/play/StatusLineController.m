@@ -181,8 +181,14 @@
         case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
         case GoGameStateGameHasStarted:
         case GoGameStateGameIsPaused:          // although game is paused, computer may still be thinking
-          statusText = [game.currentPlayer.player.name stringByAppendingString:@" is thinking..."];
+        {
+          NSString* playerName = game.currentPlayer.player.name;
+          if (game.isComputerPlayersTurn)
+            statusText = [playerName stringByAppendingString:@" is thinking..."];
+          else
+            statusText = [@"Computer is playing for " stringByAppendingString:playerName];
           break;
+        }
         default:
           break;
       }
