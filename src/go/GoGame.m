@@ -373,8 +373,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if playing a stone on the intersection represented by
-/// @a point would be legal for the current player. This includes checking for
-/// suicide moves and Ko situations.
+/// @a point would be legal for the current player in the current board
+/// position. This includes checking for suicide moves and Ko situations.
 ///
 /// Raises @e NSInvalidArgumentException if @a aPoint is nil.
 // -----------------------------------------------------------------------------
@@ -401,7 +401,7 @@
     return true;
   else
   {
-    bool nextMoveIsBlack = self.currentPlayer.isBlack;
+    bool nextMoveIsBlack = self.boardPosition.currentPlayer.isBlack;
     bool isKoStillPossible = true;
 
     // Pass 1: Examine friendly colored neighbours
