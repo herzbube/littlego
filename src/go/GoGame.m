@@ -250,15 +250,17 @@
 /// response to one of the players making a #GoMoveTypePass.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
-/// or #GoGameStateGameHasStarted.
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
+/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
-  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  if (GoGameStateGameHasNotYetStarted != self.state &&
+      GoGameStateGameHasStarted != self.state &&
+      GoGameStateGameIsPaused != self.state)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                     reason:@"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
                                                    userInfo:nil];
     @throw exception;
   }
@@ -288,15 +290,17 @@
 /// response to one of the players resigning the game.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
-/// or #GoGameStateGameHasStarted.
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
+/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  if (GoGameStateGameHasNotYetStarted != self.state &&
+      GoGameStateGameHasStarted != self.state &&
+      GoGameStateGameIsPaused != self.state)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                     reason:@"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
                                                    userInfo:nil];
     @throw exception;
   }
@@ -318,15 +322,16 @@
 /// its thinking.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
-/// this GoGame object is not of type #GoGameTypeComputerVsComputer.
+/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
+/// or #GoGameStateGameHasStarted, or if this GoGame object is not of type
+/// #GoGameTypeComputerVsComputer.
 // -----------------------------------------------------------------------------
 - (void) pause
 {
-  if (GoGameStateGameHasStarted != self.state)
+  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
   {
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Pause is possible only while GoGame object is in state GoGameStateGameHasStarted"
+                                                     reason:@"Pause is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
                                                    userInfo:nil];
     @throw exception;
   }

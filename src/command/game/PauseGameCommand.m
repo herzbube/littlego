@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,63 +20,17 @@
 #import "../../go/GoGame.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PauseGameCommand.
-// -----------------------------------------------------------------------------
-@interface PauseGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation PauseGameCommand
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a PauseGameCommand object.
-///
-/// @note This is the designated initializer of PauseGameCommand.
-// -----------------------------------------------------------------------------
-- (id) init
-{
-  // Call designated initializer of superclass (CommandBase)
-  self = [super init];
-  if (! self)
-    return nil;
-
-  GoGame* sharedGame = [GoGame sharedGame];
-  assert(sharedGame);
-  if (! sharedGame)
-    return nil;
-  enum GoGameState gameState = sharedGame.state;
-  assert(GoGameStateGameHasStarted == gameState);
-  if (GoGameStateGameHasStarted != gameState)
-    return nil;
-
-  self.game = sharedGame;
-
-  return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PauseGameCommand object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  self.game = nil;
-  [super dealloc];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (GoGameTypeComputerVsComputer != self.game.type)
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameTypeComputerVsComputer != game.type)
     return false;
-
-  [self.game pause];
+  [game pause];
   return true;
 }
 

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,6 @@
 // Project includes
 #import "../CommandBase.h"
 
-// Forward declarations
-@class GoGame;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The PauseGameCommand class is responsible for pausing a game with
@@ -38,9 +35,5 @@
 @interface PauseGameCommand : CommandBase
 {
 }
-
-- (id) init;
-
-@property(nonatomic, retain) GoGame* game;
 
 @end

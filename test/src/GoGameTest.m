@@ -354,9 +354,6 @@
 // -----------------------------------------------------------------------------
 - (void) testPause
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
-  STAssertThrowsSpecificNamed([m_game pause],
-                              NSException, NSInternalInconsistencyException, @"pause before game start");
   [m_game pass];
   STAssertThrowsSpecificNamed([m_game pause],
                               NSException, NSInternalInconsistencyException, @"no computer vs. computer game");
