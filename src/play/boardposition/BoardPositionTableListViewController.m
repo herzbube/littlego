@@ -514,14 +514,12 @@
     NSIndexPath* indexPathForOldCurrentBoardPosition = [NSIndexPath indexPathForRow:self.oldCurrentBoardPosition inSection:0];
     [indexPaths addObject:indexPathForOldCurrentBoardPosition];
   }
-  self.oldCurrentBoardPosition = -1;
-
   NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
-  if (newCurrentBoardPosition < numberOfRowsInTableView)
+  if (newCurrentBoardPosition < numberOfRowsInTableView && newCurrentBoardPosition != self.oldCurrentBoardPosition)
     [indexPaths addObject:indexPathForNewCurrentBoardPosition];
-
   [self.boardPositionListTableView reloadRowsAtIndexPaths:indexPaths
                                          withRowAnimation:UITableViewRowAnimationNone];
+  self.oldCurrentBoardPosition = -1;
 
   UITableViewCell* cellForNewCurrentBoardPosition = [self.boardPositionListTableView cellForRowAtIndexPath:indexPathForNewCurrentBoardPosition];
   if (! cellForNewCurrentBoardPosition)
