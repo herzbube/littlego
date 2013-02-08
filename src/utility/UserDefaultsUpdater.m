@@ -331,12 +331,18 @@ NSString* whitePlayerKey = @"WhitePlayer";
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 
-  // Add new key to "play view" dictionary
+  // Add new keys to "play view" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
     NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    // This key is new
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithInt:ScoreInfoType] forKey:infoTypeLastSelectedKey];
+    // This key now has device-specific values
+    [UserDefaultsUpdater upgradeDictionary:playViewDictionaryUpgrade
+                                    forKey:boardOuterMarginPercentageKey
+                       upgradeDeviceSuffix:nil
+                registrationDomainDefaults:[registrationDomainDefaults objectForKey:playViewKey]];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 

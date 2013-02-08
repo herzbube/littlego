@@ -92,7 +92,7 @@
   {
     // For the moment the value we choose here doesn't matter much, we are on
     // the iPad and can be wasteful :-)
-    self.boardPositionViewFontSize = 17;
+    self.boardPositionViewFontSize = 13;
     self.labelNumberOfLines = 2;
     self.boardPositionViewHorizontalPadding = 5;
     self.boardPositionViewHorizontalSpacing = 5;

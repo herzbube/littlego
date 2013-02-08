@@ -489,22 +489,24 @@ enum ActionType
                                    lineBreakMode:UILineBreakModeWordWrap];
   int statusLineViewHeight = statusLineTextSize.height;
 
+  // [UiElementMetrics spacingVertical] is too much, we are too constrained
+  // on the iPhone screen, and too greedy on the iPad. Instead we choose 2
+  // points as an arbitrary spacing value to set the statusline bottom slightly
+  // apart from its vertical neighbour
+  int statusLineSpacingVertical = 2;
   int statusLineViewY;
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    // [UiElementMetrics spacingVertical] is too much, we are too constrained
-    // on the iPhone screen. Instead we choose 2 points as an arbitrary spacing
-    // value
-    int statusLineSpacingVertical = 2;
     statusLineViewY = (self.toolbarBoardPositionNavigation.frame.origin.y
                            - statusLineViewHeight
                            - statusLineSpacingVertical);
-    return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
   }
   else
   {
     UIView* superView = [self statusLineSuperview];
-    statusLineViewY = (superView.frame.size.height - statusLineViewHeight);
+    statusLineViewY = (superView.frame.size.height
+                       - statusLineViewHeight
+                       - statusLineSpacingVertical);
   }
   return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
 }
