@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "AsynchronousCommand.h"
+#import "../ui/MBProgressHUD.h"
 
 // Forward declarations
 @protocol Command;
@@ -26,8 +29,10 @@
 /// Command Processor design pattern.
 ///
 /// Clients invoke submitCommand:() to pass a command object to the command
-/// processor. The command processor then synchronously executes the command
-/// by invoking the object's doI() method.
+/// processor. The command processor then executes the command by invoking the
+/// object's doI() method. Execution occurs synchronously or asynchronously
+/// depending on whether the command object conforms to the AsynchronousCommand
+/// protocol.
 ///
 /// The command processor remembers commands that are undoable in a command
 /// history. The history has no size limit. When a client invokes undoCommand(),
@@ -45,8 +50,21 @@
 /// leaves the command history by any means. Clients should never submit the
 /// same command object twice, nor should they continue to use the object after
 /// it was submitted.
+///
+///
+/// @par Asynchronous command execution
+///
+/// If a command object conforms to the AsynchronousCommand protocol, the
+/// command's doIt() or undo() methods are invoked in the context of a secondary
+/// thread. Control returns immediately to the caller who invoked
+/// submitCommand:() or undoCommand(). CommandProcessor displays an
+/// MBProgressHUD while it executes the command, and feeds progress updates from
+/// the command into the HUD. Progress updates are delivered via the
+/// AsynchronousCommandDelegate protocol.
+///
+/// @see submitCommand:()
 // -----------------------------------------------------------------------------
-@interface CommandProcessor : NSObject
+@interface CommandProcessor : NSObject <AsynchronousCommandDelegate, MBProgressHUDDelegate>
 {
 }
 
@@ -54,5 +72,9 @@
 - (bool) submitCommand:(id<Command>)command;
 // TODO implement undo functionality discussed in the class documentation
 // - (void) undoCommand;
+
+/// @brief Set this property to true to trigger termination of the secondary
+/// thread used for asynchronous command execution.
+@property(assign, getter=shouldExit, setter=exit:) bool shouldExit;
 
 @end

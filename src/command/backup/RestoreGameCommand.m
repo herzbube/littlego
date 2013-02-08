@@ -36,6 +36,8 @@
 
 @implementation RestoreGameCommand
 
+@synthesize asynchronousCommandDelegate;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RestoreGameCommand object.
@@ -74,7 +76,6 @@
   {
     LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
     loadCommand.restoreMode = true;
-    loadCommand.waitUntilDone = true;
     [loadCommand whenFinishedPerformSelector:@selector(loadGameCommandFinished:)
                                     onObject:self];  // self is retained
     [loadCommand submit];  // not all parts of the command are executed synchronously
@@ -92,6 +93,9 @@
 // -----------------------------------------------------------------------------
 - (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand
 {
+  [self.asynchronousCommandDelegate asynchronousCommand:self
+                                            didProgress:0.0
+                                        nextStepMessage:@"Restoring board position..."];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   // Integrity check in case the model has a stale value (e.g. due to an app
@@ -103,6 +107,9 @@
     boardPositionModel.boardPositionLastViewed = boardPosition.currentBoardPosition;
   else
     boardPosition.currentBoardPosition = boardPositionModel.boardPositionLastViewed;
+  [self.asynchronousCommandDelegate asynchronousCommand:self
+                                            didProgress:1.0
+                                        nextStepMessage:nil];
 }
 
 @end

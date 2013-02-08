@@ -34,6 +34,8 @@
 #import "../../go/GoVertex.h"
 
 
+static const int maxStepsForReplayMoves = 10;
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private methods for LoadGameCommand.
 // -----------------------------------------------------------------------------
@@ -49,10 +51,6 @@
 - (void) getkomiCommandResponseReceived:(GtpResponse*)response;
 - (void) listhandicapCommandResponseReceived:(GtpResponse*)response;
 - (void) listmovesCommandResponseReceived:(GtpResponse*)response;
-//@}
-/// @name MBProgressHUDDelegate protocol
-//@{
-- (void) hudWasHidden:(MBProgressHUD*)progressHUD;
 //@}
 /// @name Helpers
 //@{
@@ -71,11 +69,17 @@
 //@{
 @property(nonatomic, retain) id callbackTarget;
 @property(nonatomic, assign) SEL callbackTargetSelector;
+@property(nonatomic, assign) int totalSteps;
+@property(nonatomic, assign) float stepIncrease;
+@property(nonatomic, assign) float progress;
 //@}
 @end
 
 
 @implementation LoadGameCommand
+
+@synthesize asynchronousCommandDelegate;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a LoadGameCommand object.
@@ -91,7 +95,6 @@
 
   self.filePath = aFilePath;
   self.gameName = aGameName;
-  self.waitUntilDone = false;
   self.restoreMode = false;
   self.callbackTarget = nil;
   self.callbackTargetSelector = nil;
@@ -101,6 +104,9 @@
   m_komi = nil;
   m_moves = nil;
   m_oldCurrentDirectory = nil;
+  self.totalSteps = (6 + maxStepsForReplayMoves);  // 6 fixed steps for GTP commands
+  self.stepIncrease = 1.0 / self.totalSteps;
+  self.progress = 0.0;
 
   return self;
 }
@@ -118,7 +124,7 @@
   // Re-enable view updates on Play tab. We do this here because dealloc always
   // runs, and it runs exactly once, regardless of which execution path is
   // taken in the command (currently known paths are: command succeeds, failure
-  // before move replay starts, failure while moves are replayed)
+  // before handleCommandSucceeded() is invoked.
   [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
 
   self.filePath = nil;
@@ -163,6 +169,15 @@
   if (! self.filePath)
     return false;
 
+  NSString* message;
+  if (self.restoreMode)
+    message = @"Restoring game...";
+  else
+    message = @"Loading game...";
+  [self.asynchronousCommandDelegate asynchronousCommand:self
+                                            didProgress:0.0
+                                        nextStepMessage:message];
+
   // Disable view updates on Play tab
   [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionStarts object:nil];
 
@@ -205,7 +220,7 @@
   [GtpUtilities submitCommand:commandString
                        target:self
                      selector:@selector(loadsgfCommandResponseReceived:)
-                waitUntilDone:self.waitUntilDone];
+                waitUntilDone:true];
 
   return true;
 }
@@ -216,6 +231,8 @@
 // -----------------------------------------------------------------------------
 - (void) loadsgfCommandResponseReceived:(GtpResponse*)response
 {
+  [self increaseProgressAndNotifyDelegate];
+
   // Get rid of the temporary file
   NSError* error;
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -242,7 +259,7 @@
   [GtpUtilities submitCommand:commandString
                        target:self
                      selector:@selector(gopointnumbersCommandResponseReceived:)
-                waitUntilDone:self.waitUntilDone];
+                waitUntilDone:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -251,6 +268,8 @@
 // -----------------------------------------------------------------------------
 - (void) gopointnumbersCommandResponseReceived:(GtpResponse*)response
 {
+  [self increaseProgressAndNotifyDelegate];
+
   // Was GTP command successful?
   if (! response.status)
   {
@@ -278,7 +297,7 @@
   [GtpUtilities submitCommand:commandString
                        target:self
                      selector:@selector(getkomiCommandResponseReceived:)
-                waitUntilDone:self.waitUntilDone];
+                waitUntilDone:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -287,6 +306,8 @@
 // -----------------------------------------------------------------------------
 - (void) getkomiCommandResponseReceived:(GtpResponse*)response
 {
+  [self increaseProgressAndNotifyDelegate];
+
   // Was GTP command successful?
   if (! response.status)
   {
@@ -302,7 +323,7 @@
   [GtpUtilities submitCommand:commandString
                        target:self
                      selector:@selector(listhandicapCommandResponseReceived:)
-                waitUntilDone:self.waitUntilDone];
+                waitUntilDone:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -311,6 +332,8 @@
 // -----------------------------------------------------------------------------
 - (void) listhandicapCommandResponseReceived:(GtpResponse*)response
 {
+  [self increaseProgressAndNotifyDelegate];
+
   // Was GTP command successful?
   if (! response.status)
   {
@@ -326,7 +349,7 @@
   [GtpUtilities submitCommand:commandString
                        target:self
                      selector:@selector(listmovesCommandResponseReceived:)
-                waitUntilDone:self.waitUntilDone];
+                waitUntilDone:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -335,6 +358,8 @@
 // -----------------------------------------------------------------------------
 - (void) listmovesCommandResponseReceived:(GtpResponse*)response
 {
+  [self increaseProgressAndNotifyDelegate];
+
   // Was GTP command successful?
   if (! response.status)
   {
@@ -353,10 +378,17 @@
 // -----------------------------------------------------------------------------
 - (void) handleCommandSucceeded
 {
+  [self increaseProgressAndNotifyDelegate];
   [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
   [self setupHandicap:m_handicap];
   [self setupKomi:m_komi];
   [self setupMoves:m_moves];
+  if (self.restoreMode)
+    ;  // no need to create a backup, we already have the one we are restoring from
+  else
+    [[[BackupGameCommand alloc] init] submit];
+  [GtpUtilities setupComputerPlayer];
+  [self triggerComputerPlayer];
   [[NSNotificationCenter defaultCenter] postNotificationName:gameLoadedFromArchive object:self.gameName];
 }
 
@@ -484,6 +516,9 @@
 ///   "color vertex, color vertex, color vertex[...]"
 ///
 /// @a movesFromGtp may be empty to indicate that there are no moves.
+///
+/// @note If an error occurs while this method runs, handleCommandFailed:() is
+/// invoked with an appropriate error message.
 // -----------------------------------------------------------------------------
 - (void) setupMoves:(NSString*)movesFromGtp
 {
@@ -492,22 +527,7 @@
     moveList = [NSArray array];
   else
     moveList = [movesFromGtp componentsSeparatedByString:@", "];
-
-  UIView* theSuperView = [ApplicationDelegate sharedDelegate].window;
-	m_progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
-	[theSuperView addSubview:m_progressHUD];
-	// Set determinate mode
-	m_progressHUD.mode = MBProgressHUDModeDeterminate;
-	m_progressHUD.determinateStyle = MBDeterminateStyleBar;
-	m_progressHUD.dimBackground = YES;
-	m_progressHUD.delegate = self;
-  if (self.restoreMode)
-    m_progressHUD.labelText = @"Restoring game...";
-  else
-    m_progressHUD.labelText = @"Loading game...";
-	[m_progressHUD showWhileExecuting:@selector(replayMoves:) onTarget:self withObject:moveList animated:YES];
-
-  [self retain];
+  [self replayMoves:moveList];
 }
 
 // -----------------------------------------------------------------------------
@@ -516,36 +536,38 @@
 /// @a moveList is expected to contain NSString objects, each having the format
 /// "color vertex" (e.g. "W C13").
 ///
-/// The progress view in @e m_progressHUD is updated continuously as the moves
-/// are replayed. In an ideal world we would have a fine-grained progress view
-/// with as many steps as there are views. However, when there are many moves
-/// to be replayed this would waste a lot of precious CPU cycles for GUI
-/// updates, effectively slowing down the process of loading a game. In the
-/// real world, we therefore limit the number of progress view updates to a
-/// fixed number. At the moment the number is hard-coded to 10.
+/// The asynchronous command delegate is updated continuously with progress
+/// information as the moves are replayed. In an ideal world we would have
+/// fine-grained progress updates with as many steps as there are moves.
+/// However, when there are many moves to be replayed this wastes a lot of
+/// precious CPU cycles for GUI updates, considerably slowing down the process
+/// of loading a game - on older devices to an intolerable level. In the real
+/// world, we therefore limit the number of progress updates to a fixed,
+/// hard-coded number.
 ///
-/// @note This method runs in a secondary thread.
+/// @note If an error occurs while this method runs, handleCommandFailed:() is
+/// invoked with an appropriate error message.
 // -----------------------------------------------------------------------------
 - (void) replayMoves:(NSArray*)moveList
 {
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
 
-  static const int maxSteps = 10;
-  int totalSteps;
   float movesPerStep;
-  if (moveList.count <= maxSteps)
+  int remainingNumberOfSteps;
+  if (moveList.count <= maxStepsForReplayMoves)
   {
-    totalSteps = moveList.count;
     movesPerStep = 1;
+    remainingNumberOfSteps = moveList.count;
   }
   else
   {
-    totalSteps = maxSteps;
-    movesPerStep = moveList.count / totalSteps;
+    movesPerStep = moveList.count / maxStepsForReplayMoves;
+    remainingNumberOfSteps = maxStepsForReplayMoves;
   }
-  float stepIncrease = 1.0 / totalSteps;
-  float progress = 0.0;
+  float remainingProgress = 1.0 - self.progress;
+  // Adjust for increaseProgressAndNotifyDelegate()
+  self.stepIncrease = remainingProgress / remainingNumberOfSteps;
 
   @try
   {
@@ -621,8 +643,7 @@
       if (movesReplayed >= nextProgressUpdate)
       {
         nextProgressUpdate += movesPerStep;
-        progress += stepIncrease;
-        m_progressHUD.progress = progress;
+        [self increaseProgressAndNotifyDelegate];
       }
     }
   }
@@ -633,22 +654,6 @@
     [self handleCommandFailed:errorMessage];
     return;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief MBProgressHUDDelegate method
-// -----------------------------------------------------------------------------
-- (void) hudWasHidden:(MBProgressHUD*)progressHUD
-{
-  [progressHUD removeFromSuperview];
-  [progressHUD release];
-  [self autorelease];
-  if (self.restoreMode)
-    ;  // no need to create a backup, we already have the one we are restoring from
-  else
-    [[[BackupGameCommand alloc] init] submit];
-  [GtpUtilities setupComputerPlayer];
-  [self triggerComputerPlayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -700,6 +705,15 @@
     return;
   [self.callbackTarget performSelector:self.callbackTargetSelector
                             withObject:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for various methods.
+// -----------------------------------------------------------------------------
+- (void) increaseProgressAndNotifyDelegate
+{
+  self.progress += self.stepIncrease;
+  [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
 }
 
 @end

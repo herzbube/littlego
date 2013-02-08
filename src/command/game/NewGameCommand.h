@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "CommandBase.h"
+#import "../CommandBase.h"
 
 
 // -----------------------------------------------------------------------------

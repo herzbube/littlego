@@ -15,9 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../ui/MBProgressHUD.h"
-
 // 3rdparty library includes (uses "" instead of <> syntax because QuincyKit
 // is compiled into the project, not linked against as an external library)
 #import "../../3rdparty/install/quincykit/BWQuincyManager.h"
@@ -53,7 +50,6 @@
 @interface ApplicationDelegate : NSObject <UIApplicationDelegate,
                                            UITabBarControllerDelegate,
                                            UINavigationControllerDelegate,
-                                           MBProgressHUDDelegate,
                                            BWQuincyManagerDelegate>
 {
 @private

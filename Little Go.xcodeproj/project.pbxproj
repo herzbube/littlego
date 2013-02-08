@@ -234,6 +234,8 @@
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
 		CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
+		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
+		CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC4E979167B996C00AFDB51 /* ItemScrollView.m */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -620,6 +622,8 @@
 		CDBF976913EC66FE00476748 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
 		CDBF976A13EC66FE00476748 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
 		CDBF979E13EC750C00476748 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
+		CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupApplicationCommand.m; sourceTree = "<group>"; };
 		CDC4E978167B996C00AFDB51 /* ItemScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemScrollView.h; sourceTree = "<group>"; };
 		CDC4E979167B996C00AFDB51 /* ItemScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemScrollView.m; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
@@ -759,6 +763,7 @@
 		CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDF8B78614DC757700940D3E /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
 		CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
+		CDF9740316C4082200D01D24 /* AsynchronousCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynchronousCommand.h; sourceTree = "<group>"; };
 		CDFA329015990C8400439B4E /* build-zipkit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-zipkit.sh"; sourceTree = "<group>"; };
 		CDFA329A159FA0F400439B4E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Lumberjack-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1232,6 +1237,7 @@
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
 				CD05A8C91422803B00214BBE /* move */,
+				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
 				CDD48FA71413E00E00188B6A /* Command.h */,
 				CDD48FAE1413E95500188B6A /* CommandBase.h */,
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
@@ -1241,6 +1247,8 @@
 				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
 				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
+				CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */,
+				CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */,
 			);
 			path = command;
 			sourceTree = "<group>";
@@ -1925,6 +1933,7 @@
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
+				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2012,6 +2021,7 @@
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDDBA88616A885D1001AB7DA /* BoardPositionModel.m in Sources */,
+				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

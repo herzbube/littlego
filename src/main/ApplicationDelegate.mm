@@ -46,9 +46,7 @@
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
-#import "../command/LoadOpeningBookCommand.h"
-#import "../command/backup/RestoreGameCommand.h"
-#import "../command/diagnostics/RestoreBugReportApplicationState.h"
+#import "../command/SetupApplicationCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
@@ -90,15 +88,6 @@
 /// @name UINavigationControllerDelegate protocol
 //@{
 - (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated;
-//@}
-/// @name MBProgressHUDDelegate protocol
-//@{
-- (void) hudWasHidden:(MBProgressHUD*)progressHUD;
-//@}
-/// @name Private helpers
-//@{
-- (void) launchAsynchronously;
-- (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD;
 //@}
 /// @name Privately declared properties
 //@{
@@ -196,15 +185,22 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.writeUserDefaultsEnabled = true;
 
   // For QuincyKit to work properly, this method must be invoked in the context
-  // of the main thread, i.e. it cannot be invoked by launchWithProgressHUD:()
+  // of the main thread, i.e. it cannot be invoked by SetupApplicationCommand
   // which runs in a secondary thread. If this method is invoked in a secondary
   // thread context, QuincyKit will not query the user whether she wants to
   // send a crash report. In fact, QuincyKit will not do anything at all.
   [self setupCrashReporting];
 
-  // Delegate setup to secondary thread so that the application launches as
-  // quickly as possible
-  [self launchAsynchronously];
+  // Causes MainWindow.xib to be loaded. Shortly after this method returns the
+  // launch image will go away and the main window will come to the front. The
+  // SetupApplicationCommand instance further down will cover this with a
+  // progress HUD.
+  [self setupGUI];
+
+  // Further setup steps are executed in a secondary thread so that 1) we can
+  // display a progress HUD, and 2) the application launches as quickly as
+  // possible.
+  [[[SetupApplicationCommand alloc] init] submit];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -664,120 +660,6 @@ static ApplicationDelegate* sharedDelegate = nil;
       break;
   }
   return resourceName;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Spins off a secondary thread which will perform the application
-/// setup, then returns immediately.
-// -----------------------------------------------------------------------------
-- (void) launchAsynchronously
-{
-  // Must be invoked so that MainWindow.xib is loaded. Shortly after this method
-  // returns the launch image will go away and the main window will come to the
-  // front. If setupGui() were performed inside the secondary thread, the main
-  // window would not be ready when the launch image goes away and the user
-  // would see a white screen.
-  [self setupGUI];
-
-  UIView* theSuperView = self.window;
-  MBProgressHUD* progressHUD = [[MBProgressHUD alloc] initWithView:theSuperView];
-  [theSuperView addSubview:progressHUD];
-  progressHUD.mode = MBProgressHUDModeDeterminate;
-  progressHUD.determinateStyle = MBDeterminateStyleBar;
-  progressHUD.dimBackground = YES;
-  progressHUD.delegate = self;
-  progressHUD.labelText = @"Just a moment, please...";
-  [progressHUD showWhileExecuting:@selector(launchWithProgressHUD:) onTarget:self withObject:progressHUD animated:YES];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Performs the entire application setup.
-///
-/// @note This method runs in a secondary thread. For every setup operation
-/// that is performed, the progress view in @e progressHUD is updated by one
-/// step.
-// -----------------------------------------------------------------------------
-- (void) launchWithProgressHUD:(MBProgressHUD*)progressHUD
-{
-  const int totalSteps = 11;
-  const float stepIncrease = 1.0 / totalSteps;
-  float progress = 0.0;
-
-  [self setupLogging];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupApplicationLaunchMode];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupFolders];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupResourceBundle];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupRegistrationDomain];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupUserDefaults];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupSound];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupFuego];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [self setupTabBarController];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-  
-  self.applicationReadyForAction = true;
-  [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-
-  [[[LoadOpeningBookCommand alloc] init] submit];
-  progress += stepIncrease;
-  progressHUD.progress = progress;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief MBProgressHUDDelegate method
-///
-/// This method runs in the main thread.
-// -----------------------------------------------------------------------------
-- (void) hudWasHidden:(MBProgressHUD*)progressHUD
-{
-  [progressHUD removeFromSuperview];
-  [progressHUD release];
-
-  if (ApplicationLaunchModeDiagnostics == self.applicationLaunchMode)
-  {
-    RestoreBugReportApplicationState* command = [[RestoreBugReportApplicationState alloc] init];
-    bool success = [command submit];
-    if (! success)
-    {
-      NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                       reason:[NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"]
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-  else
-  {
-    // Important: We must execute this command in the context of a thread that
-    // survives the entire command execution - see the class documentation of
-    // RestoreGameCommand for the reason why.
-    [[[RestoreGameCommand alloc] init] submit];
-  }
 }
 
 @end

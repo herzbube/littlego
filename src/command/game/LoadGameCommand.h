@@ -17,7 +17,7 @@
 
 // Project includes
 #import "../CommandBase.h"
-#import "../../ui/MBProgressHUD.h"
+#import "../AsynchronousCommand.h"
 
 // Forward declarations
 @class GtpCommand;
@@ -26,6 +26,9 @@
 // -----------------------------------------------------------------------------
 /// @brief The LoadGameCommand class is responsible for loading a game from an
 /// .sgf file and starting a new game using the information in that file.
+///
+/// LoadGameCommand is executed asynchronously (unless the executor is another
+/// asynchronous command).
 ///
 /// The sequence of operations performed by LoadGameCommand is this:
 /// - Submit the "loadsgf" GTP command to the GTP engine
@@ -41,14 +44,10 @@
 /// - Trigger the computer player, if it is his turn to move, by executing a
 ///   ComputerPlayMoveCommand instance
 ///
-/// If the @e waitUntilDone property is set to true (by default it's false), all
-/// operations up to, but excluding, "setup the game" will be executed
-/// synchronously. Control is returned to the caller as soon as "setup the game"
-/// reaches the point where it displays the progress HUD.
-///
-/// @attention The calling thread therefore must survive long enough for
-/// ComputerPlayMoveCommand to complete, otherwise the GTP client will be unable
-/// to deliver the GTP response and the application will hang forever.
+/// @attention If the computer player is triggered, the calling thread must
+/// survive long enough for ComputerPlayMoveCommand to complete, otherwise
+/// the GTP client will be unable to deliver the GTP response and the
+/// application will hang forever.
 ///
 ///
 /// @par Files with illegal content
@@ -65,7 +64,7 @@
 /// is caught and handled. The result is the same as if one of the sanitary
 /// checks had failed.
 // -----------------------------------------------------------------------------
-@interface LoadGameCommand : CommandBase <MBProgressHUDDelegate>
+@interface LoadGameCommand : CommandBase <AsynchronousCommand>
 {
 @private
   enum GoBoardSize m_boardSize;
@@ -73,7 +72,6 @@
   NSString* m_komi;
   NSString* m_moves;
   NSString* m_oldCurrentDirectory;
-  MBProgressHUD* m_progressHUD;
 }
 
 - (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName;
@@ -82,9 +80,6 @@
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;
 @property(nonatomic, retain) NSString* gameName;
-/// @brief True if command execution should be synchronous. The default is
-/// false.
-@property(nonatomic, assign) bool waitUntilDone;
 /// @brief True if the command is executed to restore a backup game. False
 /// (the default) if the command is executed to load a game from the archive.
 @property(nonatomic, assign) bool restoreMode;

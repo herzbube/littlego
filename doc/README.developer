@@ -304,10 +304,16 @@ Architecture and implementation notes
   - Fuego had to be patched to make this happen. For details, read the section
     "Changes to the Fuego source code".
 - Thread architecture
-  - Main thread: Reacts to user input; submits commands to the GTP client;
-    is notified asynchronously by the GTP client after a command has been
-    processed; updates the GUI with information obtained from the response to
-    the command.
+  - Main thread: Reacts to user input; submits commands to the command executor
+    and the GTP client; is notified asynchronously by the GTP client after a
+    command has been processed; updates the GUI with information obtained from
+    the response to the command.
+  - Command executor secondary thread: Executes instances of Command (see that
+    protocol's documentation for details) and optionally feeds progress updates
+    it receives from the Command into an MBProgressHUD. This secondary thread is
+    implemented by the class CommandProcessor. The thread is created when the
+    first asynchronous command is submitted, and remains alive until the
+    application shuts down.
   - GTP client secondary thread: Reacts to commands submitted by the main
     thread; sends the commands to the GTP engine via file stream which is
     attached to a named pipe NP1; wakes up when it receives the response from
