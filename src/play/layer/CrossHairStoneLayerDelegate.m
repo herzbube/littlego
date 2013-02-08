@@ -19,6 +19,7 @@
 #import "CrossHairStoneLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../PlayViewModel.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -145,7 +146,8 @@
     stoneLayer = self.crossHairStoneLayer;
   else
   {
-    if ([GoGame sharedGame].currentPlayer.isBlack)
+    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    if (boardPosition.currentPlayer.isBlack)
       stoneLayer = self.blackStoneLayer;
     else
       stoneLayer = self.whiteStoneLayer;
