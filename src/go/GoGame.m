@@ -564,4 +564,38 @@
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reverts the game from state #GoGameStateGameHasEnded to an
+/// "in progress" state that is appropriate for the current game type.
+///
+/// If the game is a computer vs. computer game, the game state is reverted to
+/// #GoGameStateGameIsPaused. All other game types are reverted to
+/// #GoGameStateGameHasStarted.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasEnded.
+///
+/// @note This method should only be invoked if the state of other objects
+/// associated with this GoGame is also adjusted to bring the game into a state
+/// that conforms to the Go rules. For instance, if two pass moves caused the
+/// game to end, then the most recent pass move should also be discarded after
+/// control returns to the caller.
+// -----------------------------------------------------------------------------
+- (void) revertStateFromEndedToInProgress
+{
+  if (GoGameStateGameHasEnded != self.state)
+  {
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:[NSString stringWithFormat:@"Game state can only be reverted from GoGameStateGameHasEnded. Current game state = %d", self.state]
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  self.reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
+  if (GoGameTypeComputerVsComputer == self.type)
+    self.state = GoGameStateGameIsPaused;
+  else
+    self.state = GoGameStateGameHasStarted;
+}
+
 @end

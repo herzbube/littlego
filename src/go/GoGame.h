@@ -67,6 +67,7 @@
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point;
 - (bool) isComputerPlayersTurn;
+- (void) revertStateFromEndedToInProgress;
 
 /// @brief The type of this GoGame object.
 @property(nonatomic, assign) enum GoGameType type;

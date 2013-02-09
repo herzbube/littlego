@@ -45,6 +45,7 @@
 - (void) testContinue;
 - (void) testIsLegalMove;
 - (void) testIsComputerPlayersTurn;
+- (void) testRevertStateFromEndedToInProgress;
 - (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
 

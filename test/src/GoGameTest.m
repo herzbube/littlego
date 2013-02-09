@@ -519,6 +519,35 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the revertStateFromEndedToInProgress() method.
+// -----------------------------------------------------------------------------
+- (void) testRevertStateFromEndedToInProgress
+{
+  STAssertEquals(GoGameTypeHumanVsHuman, m_game.type, nil);
+  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  [m_game pass];
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  [m_game pass];
+  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  [m_game revertStateFromEndedToInProgress];
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+
+  [[[NewGameCommand alloc] init] submit];
+  m_game = m_delegate.game;
+  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  [m_game resign];
+  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  [m_game revertStateFromEndedToInProgress];
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+
+  STAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress],
+                              NSException, NSInternalInconsistencyException, @"game already reverted");
+
+  // Currently no more tests possible because we can't simulate
+  // computer vs. computer games
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Regression test for bug 137.
 ///
 /// Set up a position where 4 regions, each consisting of a single stone, are

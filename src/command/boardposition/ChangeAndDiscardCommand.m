@@ -52,6 +52,9 @@
   bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
   if (! success)
     return false;
+  success = [self revertGameStateIfNecessary];
+  if (! success)
+    return false;
   success = [self discardMoves];
   if (! success)
     return false;
@@ -73,6 +76,17 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) revertGameStateIfNecessary
+{
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameStateGameHasEnded == game.state)
+    [game revertStateFromEndedToInProgress];
+  return true;
 }
 
 // -----------------------------------------------------------------------------

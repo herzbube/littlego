@@ -625,11 +625,8 @@
   GoBoardPosition* boardPosition = game.boardPosition;
   if (self.scoringModel.scoringMode)
   {
-    if (GoGameStateGameHasEnded != game.state)
-    {
-      [leftBarButtonItems addObject:self.doneButton];  // cannot get out of scoring mode if game has ended
-      [leftBarButtonItems addObject:self.discardBoardPositionButton];
-    }
+    [leftBarButtonItems addObject:self.doneButton];
+    [leftBarButtonItems addObject:self.discardBoardPositionButton];
   }
   else
   {
@@ -640,11 +637,17 @@
         if (GoGameStateGameIsPaused == game.state)
           [leftBarButtonItems addObject:self.continueButton];
         else
-          [leftBarButtonItems addObject:self.pauseButton];
+        {
+          if (GoGameStateGameHasEnded != game.state)
+            [leftBarButtonItems addObject:self.pauseButton];
+        }
         if (game.isComputerThinking)
           [leftBarButtonItems addObject:self.interruptButton];
         else
-          [leftBarButtonItems addObject:self.discardBoardPositionButton];
+        {
+          if (boardPosition.numberOfBoardPositions > 1)
+            [leftBarButtonItems addObject:self.discardBoardPositionButton];
+        }
         break;
       }
       default:
@@ -653,8 +656,11 @@
           [leftBarButtonItems addObject:self.interruptButton];
         else
         {
-          [leftBarButtonItems addObject:self.computerPlayButton];
-          [leftBarButtonItems addObject:self.passButton];
+          if (GoGameStateGameHasEnded != game.state)
+          {
+            [leftBarButtonItems addObject:self.computerPlayButton];
+            [leftBarButtonItems addObject:self.passButton];
+          }
           if (boardPosition.numberOfBoardPositions > 1)
             [leftBarButtonItems addObject:self.discardBoardPositionButton];
         }
@@ -689,6 +695,7 @@
 
   [self updateComputerPlayButtonState];
   [self updatePassButtonState];
+  [self updateDiscardBoardPositionButtonState];
   [self updatePauseButtonState];
   [self updateContinueButtonState];
   [self updateInterruptButtonState];
@@ -767,6 +774,26 @@
     }
   }
   self.passButton.enabled = enabled;
+}
+
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of the "Discard board position" button.
+// -----------------------------------------------------------------------------
+- (void) updateDiscardBoardPositionButtonState
+{
+  BOOL enabled = NO;
+  if (self.scoringModel.scoringMode)
+  {
+    if (! self.scoringModel.score.scoringInProgress)
+      enabled = YES;
+  }
+  else
+  {
+    if (! [GoGame sharedGame].isComputerThinking)
+      enabled = YES;
+  }
+  self.discardBoardPositionButton.enabled = enabled;
 }
 
 // -----------------------------------------------------------------------------
@@ -884,9 +911,9 @@
       {
         switch ([GoGame sharedGame].state)
         {
-          case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasEnded:
             enabled = YES;
+            break;
           case GoGameStateGameIsPaused:
             // Computer may still be thinking
             enabled = ! [GoGame sharedGame].isComputerThinking;

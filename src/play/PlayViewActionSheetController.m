@@ -40,6 +40,7 @@ enum ActionSheetButton
 {
   ScoreButton,
   ResignButton,
+  UndoResignButton,
   SaveGameButton,
   NewGameButton,
   MaxButton     ///< @brief Pseudo enum value, used to iterate over the other enum values
@@ -150,8 +151,6 @@ enum ActionSheetButton
     switch (iterButtonIndex)
     {
       case ScoreButton:
-        if (GoGameStateGameHasEnded == game.state)
-          continue;
         if (scoringModel.scoringMode)
           continue;
         title = @"Score";
@@ -166,6 +165,13 @@ enum ActionSheetButton
         if (game.boardPosition.isComputerPlayersTurn)
           continue;
         title = @"Resign";
+        break;
+      case UndoResignButton:
+        if (GoGameStateGameHasEnded != game.state)
+          continue;
+        if (GoGameHasEndedReasonResigned != game.reasonForGameHasEnded)
+          continue;
+        title = @"Undo resign";
         break;
       case SaveGameButton:
         title = @"Save game";
@@ -223,6 +229,9 @@ enum ActionSheetButton
     case ResignButton:
       [self resign];
       break;
+    case UndoResignButton:
+      [self undoResign];
+      break;
     case SaveGameButton:
       [self saveGame];
       break;
@@ -254,11 +263,24 @@ enum ActionSheetButton
 - (void) resign
 {
   // TODO ask user for confirmation because this action cannot be undone
-  
-  // TODO Tell Fuego about the resignation (but there is no GTP command for
-  // this)
 
+  // Fuego does not have support for resignation, so we don't have to tell it
+  // about this event.
   [[GoGame sharedGame] resign];
+  [[[BackupGameCommand alloc] init] submit];
+  [self.delegate playViewActionSheetControllerDidFinish:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Undo resign" action sheet button.
+/// Causes the state of the game to revert from "has ended" to one of the
+/// various "in progress" states.
+// -----------------------------------------------------------------------------
+- (void) undoResign
+{
+  // Fuego does not have support for resignation, so we don't have to tell it
+  // about this event.
+  [[GoGame sharedGame] revertStateFromEndedToInProgress];
   [[[BackupGameCommand alloc] init] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
