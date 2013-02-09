@@ -144,6 +144,7 @@ enum NavigationDirection
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   self.toolbar = nil;
   self.negativeSpacer = nil;
   self.flexibleSpacer = nil;
@@ -231,6 +232,7 @@ enum NavigationDirection
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -241,6 +243,7 @@ enum NavigationDirection
   GoGame* oldGame = [notification object];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------
@@ -251,6 +254,7 @@ enum NavigationDirection
   GoGame* newGame = [notification object];
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.toolbarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -297,12 +301,9 @@ enum NavigationDirection
   if (object == [GoGame sharedGame].boardPosition)
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
-    {
-      // It's annoying to have buttons appear and disappear all the time, so
-      // we try to minimize this by keeping the same buttons in the toolbar
-      // while the user is browsing board positions.
       self.buttonStatesNeedUpdate = true;
-    }
+    else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
+      self.buttonStatesNeedUpdate = true;
     [self delayedUpdate];
   }
 }
