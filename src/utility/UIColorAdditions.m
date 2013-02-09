@@ -210,6 +210,18 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose RGB values are 0.6941, 0.7804, and
+/// 0.9137 and whose alpha value is 1.0.
+///
+/// This is a nice color to use as a background color that alternates with
+/// white.
+// -----------------------------------------------------------------------------
++ (UIColor*) lightBlueGrayColor
+{
+  return [UIColor colorWithRed:0.6941f green:0.7804f blue:0.9137f alpha:1.0f];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are randomly chosen and
 /// whose alpha value is 1.0.
 // -----------------------------------------------------------------------------

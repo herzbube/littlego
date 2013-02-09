@@ -231,7 +231,7 @@
   else if (0 == self.boardPosition)
   {
     if (0 == [GoGame sharedGame].handicapPoints.count)
-      self.backgroundColor = [UIColor lightGrayColor];
+      self.backgroundColor = [UIColor lightBlueGrayColor];
     else
       self.backgroundColor = [UIColor whiteColor];
   }
@@ -240,7 +240,7 @@
     if (move.player.black)
       self.backgroundColor = [UIColor whiteColor];
     else
-      self.backgroundColor = [UIColor lightGrayColor];
+      self.backgroundColor = [UIColor lightBlueGrayColor];
   }
 }
 

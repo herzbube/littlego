@@ -599,7 +599,6 @@ enum ActionType
   self.currentBoardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
                                                                         viewMetrics:self.boardPositionViewMetrics] autorelease];
   self.currentBoardPositionView.frame = [self currentBoardPositionViewFrame];
-  self.currentBoardPositionView.currentBoardPosition = true;
 }
 
 // -----------------------------------------------------------------------------
