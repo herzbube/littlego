@@ -83,9 +83,9 @@
   if (! self)
     return nil;
 
+  self.valueLabelHidden = false;
   [self setupCell];
   [self setupContentView];
-  [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
 
   // TODO: instead of duplicating code from the setter, we should invoke the
   // setter (self.value = ...), but we need to be sure that it does not update
@@ -135,15 +135,18 @@
   self.descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
   [self.contentView addSubview:self.descriptionLabel];
 
-  CGRect valueLabelRect = [self valueLabelFrame];
-  self.valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
-  self.valueLabel.tag = SliderCellValueLabelTag;
-  self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  self.valueLabel.textAlignment = UITextAlignmentRight;
-  self.valueLabel.textColor = [UIColor slateBlueColor];
-  self.valueLabel.backgroundColor = [UIColor clearColor];
-  self.valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
-  [self.contentView addSubview:self.valueLabel];
+  if (! self.valueLabelHidden)
+  {
+    CGRect valueLabelRect = [self valueLabelFrame];
+    self.valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
+    self.valueLabel.tag = SliderCellValueLabelTag;
+    self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+    self.valueLabel.textAlignment = UITextAlignmentRight;
+    self.valueLabel.textColor = [UIColor slateBlueColor];
+    self.valueLabel.backgroundColor = [UIColor clearColor];
+    self.valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
+    [self.contentView addSubview:self.valueLabel];
+  }
 
   CGRect sliderRect = [self sliderFrame];
   self.slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
@@ -151,6 +154,7 @@
   self.slider.continuous = YES;
   self.slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   [self.contentView addSubview:self.slider];
+  [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
 }
 
 // -----------------------------------------------------------------------------
@@ -162,8 +166,17 @@
 {
   int descriptionLabelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
   int descriptionLabelY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
-  // Arbitrary value that hopefully leaves enough space for the value label
-  static const int descriptionLabelWidth = 230;
+  int descriptionLabelWidth;
+  if (self.valueLabelHidden)
+  {
+    descriptionLabelWidth = (self.contentView.bounds.size.width
+                             - 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
+  }
+  else
+  {
+    // Arbitrary value that hopefully leaves enough space for the value label
+    descriptionLabelWidth = 230;
+  }
   int descriptionLabelHeight = [UiElementMetrics labelHeight];
   return CGRectMake(descriptionLabelX, descriptionLabelY, descriptionLabelWidth, descriptionLabelHeight);
 }
@@ -176,9 +189,7 @@
 - (CGRect) valueLabelFrame
 {
   CGSize superViewSize = self.contentView.bounds.size;
-  int valueLabelX = (self.descriptionLabel.frame.origin.x
-                     + self.descriptionLabel.frame.size.width
-                     + [UiElementMetrics spacingHorizontal]);
+  int valueLabelX = CGRectGetMaxX(self.descriptionLabel.frame) + [UiElementMetrics spacingHorizontal];
   int valueLabelY = self.descriptionLabel.frame.origin.y;
   int valueLabelWidth = (superViewSize.width
                          - valueLabelX
@@ -194,14 +205,30 @@
 - (CGRect) sliderFrame
 {
   int sliderX = self.descriptionLabel.frame.origin.x;
-  int sliderY = (self.descriptionLabel.frame.origin.y
-                 + self.descriptionLabel.frame.size.height
-                 + [UiElementMetrics spacingVertical]);
-  int sliderWidth = (self.valueLabel.frame.origin.x
-                     + self.valueLabel.frame.size.width
-                     - sliderX);
+  int sliderY = CGRectGetMaxY(self.descriptionLabel.frame) + [UiElementMetrics spacingVertical];
+  int sliderWidth;
+  if (self.valueLabelHidden)
+    sliderWidth = CGRectGetMaxX(self.descriptionLabel.frame) - sliderX;
+  else
+    sliderWidth = CGRectGetMaxX(self.valueLabel.frame) - sliderX;
   int sliderHeight = [UiElementMetrics sliderHeight];
   return CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates / deallocates the value label.
+// -----------------------------------------------------------------------------
+- (void) setValueLabelHidden:(bool)newValue
+{
+  if (newValue == _valueLabelHidden)
+    return;
+  _valueLabelHidden = newValue;
+  [self.descriptionLabel removeFromSuperview];
+  [self.valueLabel removeFromSuperview];
+  [self.slider removeFromSuperview];
+  [self setupContentView];
+  if (! _valueLabelHidden)
+    [self updateValueLabel];
 }
 
 // -----------------------------------------------------------------------------

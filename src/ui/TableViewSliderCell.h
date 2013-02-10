@@ -69,6 +69,7 @@ enum SliderCellSubViewTag
 @property(nonatomic, retain, readonly) UILabel* valueLabel;
 @property(nonatomic, retain, readonly) UISlider* slider;
 @property(nonatomic, assign) int value;
+@property(nonatomic, assign) bool valueLabelHidden;
 /// @brief Delegate object that will be informed when the cell's integer
 /// value changes.
 @property(nonatomic, retain, readonly) id delegate;
