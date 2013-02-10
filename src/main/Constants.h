@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,10 +24,6 @@
 /// @brief The value of this constant should be added to all drawing operations'
 /// parameters to prevent anti-aliasing. See README.developer for details.
 extern const float gHalfPixel;
-/// @brief On the smallest board size, how far from the fingertip should the
-/// cross-hair point be displayed when placing stones on the Play view. The unit
-/// used by this constant is "distances between two adjacent intersections".
-extern const int crossHairPointDistanceFromFingerOnSmallestBoard;
 /// @brief An alpha value that can be used to make a view (e.g. the label of a
 /// table view cell) appear disabled.
 ///
@@ -413,6 +409,14 @@ extern NSString* boardPositionChangeProgress;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Play view settings default values
+// -----------------------------------------------------------------------------
+//@{
+extern const float stoneDistanceFromFingertipDefault;
+extern const float stoneDistanceFromFingertipMaximum;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Board position settings default values
 // -----------------------------------------------------------------------------
 //@{
@@ -582,7 +586,7 @@ extern NSString* starPointColorKey;
 extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* crossHairColorKey;
-extern NSString* placeStoneUnderFingerKey;
+extern NSString* stoneDistanceFromFingertipKey;
 extern NSString* infoTypeLastSelectedKey;
 // New game settings
 extern NSString* newGameKey;

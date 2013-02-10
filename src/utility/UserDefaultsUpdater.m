@@ -20,6 +20,7 @@
 #import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,6 +32,7 @@ NSString* boardInnerMarginPercentageKey = @"BoardInnerMarginPercentage";
 NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFinger";
 NSString* blackPlayerKey = @"BlackPlayer";
 NSString* whitePlayerKey = @"WhitePlayer";
+NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -343,6 +345,17 @@ NSString* whitePlayerKey = @"WhitePlayer";
                                     forKey:boardOuterMarginPercentageKey
                        upgradeDeviceSuffix:nil
                 registrationDomainDefaults:[registrationDomainDefaults objectForKey:playViewKey]];
+    // placeStoneUnderFingerKey is replaced by stoneDistanceFromFingertip. The
+    // original boolean value is converted into a corresponding float value.
+    float stoneDistanceFromFingertip;
+    bool placeStoneUnderFinger = [[playViewDictionary valueForKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]] boolValue];
+    if (placeStoneUnderFinger)
+      stoneDistanceFromFingertip = 0;
+    else
+      stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
+    [playViewDictionaryUpgrade removeObjectForKey:[placeStoneUnderFingerKey stringByAppendingDeviceSuffix]];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:stoneDistanceFromFingertip] forKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]];
+
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
@@ -361,8 +374,8 @@ NSString* whitePlayerKey = @"WhitePlayer";
     [newGameDictionaryUpgrade setValue:defaultHumanPlayerUUID forKey:humanBlackPlayerKey];
     [newGameDictionaryUpgrade setValue:defaultHumanPlayerUUID forKey:humanWhitePlayerKey];
     [newGameDictionaryUpgrade setValue:defaultComputerPlayerUUID forKey:computerPlayerSelfPlayKey];
-    [dictionary removeObjectForKey:blackPlayerKey];
-    [dictionary removeObjectForKey:whitePlayerKey];
+    [newGameDictionaryUpgrade removeObjectForKey:blackPlayerKey];
+    [newGameDictionaryUpgrade removeObjectForKey:whitePlayerKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
 }

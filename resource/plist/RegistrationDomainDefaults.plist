@@ -42,10 +42,10 @@
 		<real>0.9</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
-		<key>PlaceStoneUnderFinger~iphone</key>
-		<false/>
-		<key>PlaceStoneUnderFinger~ipad</key>
-		<true/>
+		<key>StoneDistanceFromFingertip~iphone</key>
+		<real>2</real>
+		<key>StoneDistanceFromFingertip~ipad</key>
+		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>

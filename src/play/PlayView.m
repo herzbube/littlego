@@ -179,7 +179,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayMoveNumbers"];
-  [self.playViewModel removeObserver:self forKeyPath:@"placeStoneUnderFinger"];
+  [self.playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 
@@ -243,7 +243,7 @@ static PlayView* sharedPlayView = nil;
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayMoveNumbers" options:0 context:NULL];
-  [self.playViewModel addObserver:self forKeyPath:@"placeStoneUnderFinger" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -506,7 +506,7 @@ static PlayView* sharedPlayView = nil;
       [self notifyLayerDelegates:PVLDEventDisplayMoveNumbersChanged eventInfo:nil];
       [self delayedUpdate];
     }
-    else if ([keyPath isEqualToString:@"placeStoneUnderFinger"])
+    else if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])
       [self updateCrossHairPointDistanceFromFinger];
   }
   else if (object == [GoGame sharedGame].boardPosition)
@@ -521,37 +521,30 @@ static PlayView* sharedPlayView = nil;
 ///
 /// The calculation performed by this method depends on the following input
 /// parameters:
-/// - The value of the "place stone under fingertip" user preference
+/// - The value of the "stone distance from fingertip" user preference
 /// - The current board size
 // -----------------------------------------------------------------------------
 - (void) updateCrossHairPointDistanceFromFinger
 {
-  if (self.playViewModel.placeStoneUnderFinger)
-  {
-    self.crossHairPointDistanceFromFinger = 0;
-  }
+  GoGame* game = [GoGame sharedGame];
+  float scaleFactor;
+  if (! game)
+    scaleFactor = 1.0;
   else
   {
-    GoGame* game = [GoGame sharedGame];
-    float scaleFactor;
-    if (! game)
+    // Distance from fingertip should scale with board size. The base for
+    // calculating the scale factor is the minimum board size.
+    scaleFactor = 1.0 * game.board.size / GoBoardSizeMin;
+    // Straight scaling results in a scale factor that is too large for big
+    // boards, so we tune down the scale a little bit. The following
+    // hard-coded factor has been determined experimentally.
+    scaleFactor *= 0.6;
+    // The final scale factor must not drop below 1 because we don't want to
+    // get below stoneDistanceFromFingertip.
+    if (scaleFactor < 1.0)
       scaleFactor = 1.0;
-    else
-    {
-      // Distance from fingertip should scale with board size. The base for
-      // calculating the scale factor is the minimum board size.
-      scaleFactor = 1.0 * game.board.size / GoBoardSizeMin;
-      // Straight scaling results in a scale factor that is too large for big
-      // boards, so we tune down the scale a little bit. The factor of 0.75 has
-      // been determined experimentally.
-      scaleFactor *= 0.6;
-      // The final scale factor must not drop below 1 because we don't want to
-      // get lower than crossHairPointDistanceFromFingerOnSmallestBoard.
-      if (scaleFactor < 1.0)
-        scaleFactor = 1.0;
-    }
-    self.crossHairPointDistanceFromFinger = crossHairPointDistanceFromFingerOnSmallestBoard * scaleFactor;
   }
+  self.crossHairPointDistanceFromFinger = self.playViewModel.stoneDistanceFromFingertip * scaleFactor;
 }
 
 // -----------------------------------------------------------------------------

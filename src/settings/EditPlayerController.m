@@ -23,7 +23,6 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/TableViewSliderCell.h"
 #import "../ui/TableViewTextCell.h"
 #import "../ui/UiUtilities.h"
 

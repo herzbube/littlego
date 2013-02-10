@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 // GUI constants
 const float gHalfPixel = 0.5;
-const int crossHairPointDistanceFromFingerOnSmallestBoard = 1.5;
 const float gDisabledViewAlpha = 0.439216f;
 const CFTimeInterval gPlayViewPanningDelayIPadPortrait = 0.1;
 
@@ -63,6 +62,10 @@ NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
+
+// Play view settings default values
+const float stoneDistanceFromFingertipDefault = 2.0;
+const float stoneDistanceFromFingertipMaximum = 4.0;
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;
@@ -185,7 +188,7 @@ NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
-NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
+NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 // New game settings
 NSString* newGameKey = @"NewGame";

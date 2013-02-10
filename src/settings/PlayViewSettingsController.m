@@ -20,10 +20,11 @@
 #import "../main/ApplicationDelegate.h"
 #import "../play/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewSliderCell.h"
 #import "../ui/UiUtilities.h"
 
 // Constants
-NSString* placeStoneUnderFingerText = @"Place stone under finger";
+static const float sliderValueFactorForStoneDistanceFromFingertip = 5.0;
 
 
 // -----------------------------------------------------------------------------
@@ -55,7 +56,7 @@ enum ViewSectionItem
   MarkLastMoveItem,
 //  DisplayCoordinatesItem,
 //  DisplayMoveNumbersItem,
-  PlaceStoneUnderFingerItem,
+  StoneDistanceFromFingertipItem,
   MaxViewSectionItem
 };
 
@@ -82,7 +83,6 @@ enum ViewSectionItem
 //@}
 /// @name UITableViewDelegate protocol
 //@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
 //@}
 /// @name Action methods
@@ -92,7 +92,6 @@ enum ViewSectionItem
 - (void) toggleMarkLastMove:(id)sender;
 - (void) toggleDisplayCoordinates:(id)sender;
 - (void) toggleDisplayMoveNumbers:(id)sender;
-- (void) togglePlaceStoneUnderFinger:(id)sender;
 //@}
 /// @name Privately declared properties
 //@{
@@ -195,6 +194,21 @@ enum ViewSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  switch (section)
+  {
+    case ViewSection:
+      return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
+    default:
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = nil;
@@ -224,12 +238,12 @@ enum ViewSectionItem
     }
     case ViewSection:
     {
-      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       switch (indexPath.row)
       {
         case MarkLastMoveItem:
         {
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Mark last move";
           accessoryView.on = self.playViewModel.markLastMove;
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
@@ -245,17 +259,18 @@ enum ViewSectionItem
 //            accessoryView.on = self.playViewModel.displayMoveNumbers;
 //            [accessoryView addTarget:self action:@selector(toggleDisplayMoveNumbers:) forControlEvents:UIControlEventValueChanged];
 //            break;
-//          case CrossHairPointDistanceFromFingerItem:
-//            cell.textLabel.text = @"Cross-hair distance";
-//            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.playViewModel.crossHairPointDistanceFromFinger];
-//            break;
-        case PlaceStoneUnderFingerItem:
+        case StoneDistanceFromFingertipItem:
         {
-          cell.textLabel.text = placeStoneUnderFingerText;
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-          cell.textLabel.numberOfLines = 0;
-          accessoryView.on = self.playViewModel.placeStoneUnderFinger;
-          [accessoryView addTarget:self action:@selector(togglePlaceStoneUnderFinger:) forControlEvents:UIControlEventValueChanged];
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.valueLabelHidden = true;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(stoneDistanceFromFingertipDidChange:)];
+          sliderCell.descriptionLabel.text = @"Stone distance from fingertip";
+          sliderCell.slider.minimumValue = 0;
+          sliderCell.slider.maximumValue = (stoneDistanceFromFingertipMaximum
+                                            * sliderValueFactorForStoneDistanceFromFingertip);
+          sliderCell.value = (self.playViewModel.stoneDistanceFromFingertip
+                              * sliderValueFactorForStoneDistanceFromFingertip);
           break;
         }
         default:
@@ -281,14 +296,10 @@ enum ViewSectionItem
 // -----------------------------------------------------------------------------
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (ViewSection != indexPath.section || PlaceStoneUnderFingerItem != indexPath.row)
-    return tableView.rowHeight;
-
-  // Use the same string as in tableView:cellForRowAtIndexPath:()
-  return [UiUtilities tableView:tableView
-            heightForCellOfType:SwitchCellType
-                       withText:placeStoneUnderFingerText
-         hasDisclosureIndicator:false];
+  CGFloat height = tableView.rowHeight;
+  if (ViewSection == indexPath.section && StoneDistanceFromFingertipItem == indexPath.row)
+    height = [TableViewSliderCell rowHeightInTableView:tableView];
+  return height;
 }
 
 // -----------------------------------------------------------------------------
@@ -350,13 +361,13 @@ enum ViewSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Place stone under finger" switch.
-/// Writes the new value to the appropriate model.
+/// @brief Reacts to the user changing the "stone distance from fingertip"
+/// setting.
 // -----------------------------------------------------------------------------
-- (void) togglePlaceStoneUnderFinger:(id)sender
+- (void) stoneDistanceFromFingertipDidChange:(id)sender
 {
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.placeStoneUnderFinger = accessoryView.on;
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.playViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
 }
 
 @end

@@ -42,7 +42,10 @@
 @property(nonatomic, assign) int starPointRadius;
 @property(nonatomic, assign) float stoneRadiusPercentage;
 @property(nonatomic, retain) UIColor* crossHairColor;
-@property(nonatomic, assign) bool placeStoneUnderFinger;
+/// @brief How far from the fingertip should the cross-hair point be displayed
+/// when placing stones on the Play tab. The unit used by this constant is
+/// "distances between two adjacent intersections".
+@property(nonatomic, assign) float stoneDistanceFromFingertip;
 /// @brief Type of information that was selected when the Info view was
 /// displayed the last time.
 @property(nonatomic, assign) enum InfoType infoTypeLastSelected;
