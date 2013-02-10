@@ -406,6 +406,10 @@ extern NSString* longRunningActionStarts;
 /// @attention This notification is guaranteed to be delivered in the main
 /// thread.
 extern NSString* longRunningActionEnds;
+/// @brief Is sent (B-A) times while the current board position in
+/// GoBoardPosition changes from A to B. Observers can use this notification to
+/// power a progress meter.
+extern NSString* boardPositionChangeProgress;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -17,7 +17,6 @@
 
 // Project includes
 #import "../CommandBase.h"
-#import "../AsynchronousCommand.h"
 
 // Forward declarations
 @class GoGame;
@@ -26,9 +25,6 @@
 // -----------------------------------------------------------------------------
 /// @brief The RestoreGameCommand class is responsible for restoring a backed
 /// up game during application startup.
-///
-/// RestoreGameCommand is executed asynchronously (unless the executor is
-/// another asynchronous command).
 ///
 /// If RestoreGameCommand finds a backup .sgf file in the application's library
 /// folder, it assumes that the application crashed or was killed while
@@ -44,7 +40,7 @@
 ///
 /// @see BackupGameCommand.
 // -----------------------------------------------------------------------------
-@interface RestoreGameCommand : CommandBase <AsynchronousCommand>
+@interface RestoreGameCommand : CommandBase
 {
 }
 

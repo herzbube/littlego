@@ -23,6 +23,14 @@
 /// @brief The ChangeBoardPositionCommand class is responsible for changing the
 /// current board position to a new value.
 ///
+/// ChangeBoardPositionCommand is executed synchronously if the new board
+/// position is 10 or less positions away from the current board position.
+/// ChangeBoardPositionCommand is executed asynchronously (unless the executor
+/// is another asynchronous command) if the new board position is more than 10
+/// positions away from the current board position. To achieve this effect,
+/// the various initializers will sometimes return an object that is an instance
+/// of a private subclass of ChangeBoardPositionCommand.
+///
 /// initWithBoardPosition:() must be invoked with a valid board position,
 /// otherwise command execution will fail.
 ///

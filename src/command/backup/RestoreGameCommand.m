@@ -37,9 +37,6 @@
 
 @implementation RestoreGameCommand
 
-@synthesize asynchronousCommandDelegate;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RestoreGameCommand object.
 ///
@@ -94,9 +91,6 @@
 // -----------------------------------------------------------------------------
 - (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand
 {
-  [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:0.0
-                                        nextStepMessage:@"Restoring board position..."];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   // Integrity check in case the model has a stale value (e.g. due to an app
@@ -107,10 +101,13 @@
   if (-1 == boardPositionModel.boardPositionLastViewed)
     boardPositionModel.boardPositionLastViewed = boardPosition.currentBoardPosition;
   else
+  {
+    // We don't care whether ChangeBoardPositionCommand presents itself as a
+    // synchronous or asynchronous command - because this RestoreGamecommand
+    // class already is asynchronous, ChangeBoardPositionCommand will always
+    // be executed synchronously.
     [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] submit];
-  [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:1.0
-                                        nextStepMessage:nil];
+  }
 }
 
 @end

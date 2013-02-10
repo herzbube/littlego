@@ -74,6 +74,14 @@
 /// changes. In case both properties change their value in response to the same
 /// event, the notification for @e numberOfBoardPositions is sent before the
 /// notification for @e currentBoardPosition.
+///
+/// Because changing the current board position can be a lengthy operation,
+/// the client that triggers the change may wish to display a progress meter to
+/// indicate to the user that the operation is still running. The client in this
+/// case can observe the default notification center for the notification
+/// #boardPositionChangeProgress. The notification is sent (B-A) times for a
+/// board position change from A to B. Note that KVO observers of
+/// @e currentBoardPosition will still be notified just once.
 // -----------------------------------------------------------------------------
 @interface GoBoardPosition : NSObject
 {

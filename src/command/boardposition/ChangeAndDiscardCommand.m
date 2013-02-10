@@ -48,7 +48,8 @@
   if (! shouldDiscardBoardPositions)
     return true;
   // Before we discard, first change to a board position that will be valid
-  // even after the discard
+  // even after the discard. Note that because we step back only one board
+  // position, ChangeBoardPositionCommand is executed synchronously.
   bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
   if (! success)
     return false;

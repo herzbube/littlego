@@ -62,6 +62,7 @@ NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
+NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;

@@ -116,6 +116,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateGoObjectsToNewPosition:(int)newBoardPosition
 {
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   GoMoveModel* moveModel = self.game.moveModel;
   int indexOfTargetMove = newBoardPosition - 1;
   int indexOfCurrentMove = self.currentBoardPosition - 1;
@@ -125,6 +126,7 @@
     {
       GoMove* move = [moveModel moveAtIndex:indexOfMove];
       [move doIt];
+      [center postNotificationName:boardPositionChangeProgress object:nil];
     }
   }
   else
@@ -133,6 +135,7 @@
     {
       GoMove* move = [moveModel moveAtIndex:indexOfMove];
       [move undo];
+      [center postNotificationName:boardPositionChangeProgress object:nil];
     }
   }
 }

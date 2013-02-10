@@ -18,6 +18,7 @@
 // Project includes
 #import "ChangeBoardPositionCommand.h"
 #import "SyncGTPEngineCommand.h"
+#import "../AsynchronousCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -29,28 +30,67 @@
 /// @brief Class extension with private methods for ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
 @interface ChangeBoardPositionCommand()
-/// @name Private properties
-//@{
 @property(nonatomic, assign) int newBoardPosition;
-//@}
 @end
+
+
+// -----------------------------------------------------------------------------
+/// @brief Private subclass that supports asynchronous execution.
+// -----------------------------------------------------------------------------
+@interface AsynchronousChangeBoardPositionCommand : ChangeBoardPositionCommand <AsynchronousCommand>
+{
+}
+
+- (id) initWithBoardPosition:(int)boardPosition;
+
+@property(nonatomic, assign) float stepIncrease;
+@property(nonatomic, assign) float progress;
+@property(nonatomic, assign) float boardPositionChangesPerStep;
+@property(nonatomic, assign) float nextProgressUpdate;
+@property(nonatomic, assign) int numberOfBoardPositionChanges;
+
+@end
+
 
 
 @implementation ChangeBoardPositionCommand
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
-/// current board position to @a boardPosition.
+/// current board position to @a aBoardPosition.
+///
+/// @a asynchronous is ignored. The argument exists only to distinguish the
+/// selector of this initializer from the basic initWithBoardPosition:().
 ///
 /// @note This is the designated initializer of ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithBoardPosition:(int)boardPosition
+- (id) initWithBoardPosition:(int)aBoardPosition isAsynchronous:(bool)asynchronous
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
-  self.newBoardPosition = boardPosition;
+  self.newBoardPosition = aBoardPosition;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a ChangeBoardPositionCommand object that will change the
+/// current board position to @a aBoardPosition.
+// -----------------------------------------------------------------------------
+- (id) initWithBoardPosition:(int)aBoardPosition
+{
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int numberOfBoardPositions = abs(aBoardPosition - boardPosition.currentBoardPosition);
+  if (numberOfBoardPositions <= 10)
+  {
+    self = [self initWithBoardPosition:aBoardPosition isAsynchronous:false];
+  }
+  else
+  {
+    [self release];
+    self = [[AsynchronousChangeBoardPositionCommand alloc] initWithBoardPosition:aBoardPosition];
+  }
   return self;
 }
 
@@ -115,6 +155,85 @@
     [scoringModel.score calculateWaitUntilDone:false];
 
   return true;
+}
+
+@end
+
+
+@implementation AsynchronousChangeBoardPositionCommand
+
+@synthesize asynchronousCommandDelegate;
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes an AsynchronousChangeBoardPositionCommand object that
+/// will change the current board position to @a aBoardPosition.
+///
+/// @note This is the designated initializer of
+/// AsynchronousChangeBoardPositionCommand.
+// -----------------------------------------------------------------------------
+- (id) initWithBoardPosition:(int)aBoardPosition
+{
+  // Call designated initializer of superclass (ChangeBoardPositionCommand)
+  self = [super initWithBoardPosition:aBoardPosition isAsynchronous:true];
+  if (! self)
+    return nil;
+  self.stepIncrease = 0.0;
+  self.progress = 0.0;
+  self.boardPositionChangesPerStep = 0.0;
+  self.nextProgressUpdate = 0.0;
+  self.numberOfBoardPositionChanges = 0;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Executes this command. See the class documentation for details.
+// -----------------------------------------------------------------------------
+- (bool) doIt
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center postNotificationName:longRunningActionStarts object:nil];
+  [self.asynchronousCommandDelegate asynchronousCommand:self
+                                            didProgress:0.0
+                                        nextStepMessage:@"Changing board position..."];
+  [self setupProgressParameters];
+  [center addObserver:self selector:@selector(boardPositionChangeProgress:) name:boardPositionChangeProgress object:nil];
+  bool result = [super doIt];
+  [center removeObserver:self];
+  [center postNotificationName:longRunningActionEnds object:nil];
+  return result;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) setupProgressParameters
+{
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  int numberOfBoardPositions = abs(self.newBoardPosition - boardPosition.currentBoardPosition);
+  static const int maximumNumberOfSteps = 5;
+  int numberOfSteps;
+  if (numberOfBoardPositions <= maximumNumberOfSteps)
+    numberOfSteps = numberOfBoardPositions;
+  else
+    numberOfSteps = maximumNumberOfSteps;
+  self.stepIncrease = 1.0 / numberOfSteps;
+  self.boardPositionChangesPerStep = numberOfBoardPositions / numberOfSteps;
+  self.nextProgressUpdate = self.boardPositionChangesPerStep;
+  self.numberOfBoardPositionChanges = 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardPositionChangeProgress notification.
+// -----------------------------------------------------------------------------
+- (void) boardPositionChangeProgress:(NSNotification*)notification
+{
+  self.numberOfBoardPositionChanges++;
+  if (self.numberOfBoardPositionChanges >= self.nextProgressUpdate)
+  {
+    self.nextProgressUpdate += self.boardPositionChangesPerStep;
+    self.progress += self.stepIncrease;
+    [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
+  }
 }
 
 @end
