@@ -17,6 +17,7 @@
 
 // Project includes
 #import "RestoreGameCommand.h"
+#import "../boardposition/ChangeBoardPositionCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -106,7 +107,7 @@
   if (-1 == boardPositionModel.boardPositionLastViewed)
     boardPositionModel.boardPositionLastViewed = boardPosition.currentBoardPosition;
   else
-    boardPosition.currentBoardPosition = boardPositionModel.boardPositionLastViewed;
+    [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] submit];
   [self.asynchronousCommandDelegate asynchronousCommand:self
                                             didProgress:1.0
                                         nextStepMessage:nil];
