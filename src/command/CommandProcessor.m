@@ -95,11 +95,12 @@ static CommandProcessor* sharedProcessor = nil;
 {
   if (! _progressHUD)
   {
-    _progressHUD = [[MBProgressHUD alloc] initWithView:[ApplicationDelegate sharedDelegate].window];
+    UIView* superview = [ApplicationDelegate sharedDelegate].window;
+    _progressHUD = [[MBProgressHUD alloc] initWithView:superview];
+    [superview addSubview:_progressHUD];
     _progressHUD.mode = MBProgressHUDModeDeterminate;
     _progressHUD.determinateStyle = MBDeterminateStyleBar;
     _progressHUD.dimBackground = YES;
-    _progressHUD.delegate = self;
   }
   return _progressHUD;
 }
@@ -171,7 +172,6 @@ static CommandProcessor* sharedProcessor = nil;
 // -----------------------------------------------------------------------------
 - (void) submitAsynchronousCommand:(id<Command>)command
 {
-  [[ApplicationDelegate sharedDelegate].window addSubview:self.progressHUD];
   BOOL animated = YES;
   [self.progressHUD show:animated];
 
@@ -196,7 +196,8 @@ static CommandProcessor* sharedProcessor = nil;
   // submitAsynchronousCommand:()
   [command autorelease];
   [self executeCommand:command];
-  [self hudWasHidden:self.progressHUD];
+  [self.progressHUD removeFromSuperview];
+  self.progressHUD = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -278,14 +279,6 @@ static CommandProcessor* sharedProcessor = nil;
   self.progressHUD.progress = progress;
   if (message)
     self.progressHUD.labelText = message;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief MBProgressHUDDelegate method
-// -----------------------------------------------------------------------------
-- (void) hudWasHidden:(MBProgressHUD*)progressHUD
-{
-  [progressHUD removeFromSuperview];
 }
 
 @end
