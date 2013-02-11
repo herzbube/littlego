@@ -483,15 +483,17 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  GoGame* game = [GoGame sharedGame];
-  if (GoGameTypeComputerVsComputer == game.type)
-    self.navigationBarNeedsPopulation = true;
+  self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
+  GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded == game.state)
   {
-    self.scoringModel.scoringMode = true;
-    [self.scoringModel.score calculateWaitUntilDone:false];
+    if (self.scoringModel.scoreWhenGameEnds)
+    {
+      self.scoringModel.scoringMode = true;
+      [self.scoringModel.score calculateWaitUntilDone:false];
+    }
   }
 }
 

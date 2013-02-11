@@ -239,6 +239,7 @@ NSString* gtpLogViewFrontSideIsVisibleKey = @"GtpLogViewFrontSideIsVisible";
 NSString* gtpCannedCommandsKey = @"GtpCannedCommands";
 // Scoring settings
 NSString* scoringKey = @"Scoring";
+NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
 NSString* askGtpEngineForDeadStonesKey = @"AskGtpEngineForDeadStones";
 NSString* markDeadStonesIntelligentlyKey = @"MarkDeadStonesIntelligently";
 NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";

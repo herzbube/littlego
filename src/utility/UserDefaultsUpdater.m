@@ -378,6 +378,15 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
     [newGameDictionaryUpgrade removeObjectForKey:whitePlayerKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
+
+  // Add new key to "scoring" dictionary
+  id scoringDictionary = [userDefaults objectForKey:scoringKey];
+  if (scoringDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* scoringDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:scoringDictionary];
+    [scoringDictionaryUpgrade setValue:[NSNumber numberWithBool:true] forKey:scoreWhenGameEndsKey];
+    [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

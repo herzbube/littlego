@@ -36,6 +36,7 @@
 /// @name User defaults properties
 // -----------------------------------------------------------------------------
 //@{
+@property(nonatomic, assign) bool scoreWhenGameEnds;
 @property(nonatomic, assign) bool askGtpEngineForDeadStones;
 @property(nonatomic, assign) bool markDeadStonesIntelligently;
 @property(nonatomic, assign) float alphaTerritoryColorBlack;

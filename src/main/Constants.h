@@ -637,6 +637,7 @@ extern NSString* gtpLogViewFrontSideIsVisibleKey;
 extern NSString* gtpCannedCommandsKey;
 // Scoring settings
 extern NSString* scoringKey;
+extern NSString* scoreWhenGameEndsKey;
 extern NSString* askGtpEngineForDeadStonesKey;
 extern NSString* markDeadStonesIntelligentlyKey;
 extern NSString* alphaTerritoryColorBlackKey;

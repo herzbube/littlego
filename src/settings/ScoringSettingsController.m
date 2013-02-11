@@ -32,8 +32,18 @@ NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
 // -----------------------------------------------------------------------------
 enum ScoringTableViewSection
 {
+  ScoreWhenGameEndsSection,
   ScoringSection,
   MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ScoreWhenGameEndsSection.
+// -----------------------------------------------------------------------------
+enum ScoreWhenGameEndsSectionItem
+{
+  ScoreWhenGameEndsItem,
+  MaxScoreWhenGameEndsSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -156,6 +166,8 @@ enum ScoringSectionItem
 {
   switch (section)
   {
+    case ScoreWhenGameEndsSection:
+      return MaxScoreWhenGameEndsSectionItem;
     case ScoringSection:
       return MaxScoringSectionItem;
     default:
@@ -170,7 +182,9 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  if (ScoringSection == section)
+  if (ScoreWhenGameEndsSection == section)
+    return @"Turn this on to automatically activate scoring mode when the game ends.";
+  else if (ScoringSection == section)
     return @"The style to mark inconsistent territory. This is territory where something about the dead or alive state of neighbouring stones is inconsistent, thus making it impossible to determine whether the territory is black, white or neutral. For instance, the territory has neighbouring stones of both colors, but both colors are marked dead.";
   else
     return nil;
@@ -184,6 +198,16 @@ enum ScoringSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
+    case ScoreWhenGameEndsSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.enabled = YES;
+      cell.textLabel.text = @"Score when game ends";;
+      accessoryView.on = self.scoringModel.scoreWhenGameEnds;
+      [accessoryView addTarget:self action:@selector(toggleScoreWhenGameEnds:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case ScoringSection:
     {
       switch (indexPath.row)
@@ -240,13 +264,18 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (ScoringSection != indexPath.section || MarkDeadStonesIntelligentlyItem != indexPath.row)
-    return tableView.rowHeight;
-
-  // Use the same string as in tableView:cellForRowAtIndexPath:()
+  NSString* cellText;
+  switch (indexPath.row)
+  {
+    case MarkDeadStonesIntelligentlyItem:
+      cellText = markDeadStonesIntelligentlyText;
+      break;
+    default:
+      return tableView.rowHeight;
+  }
   return [UiUtilities tableView:tableView
             heightForCellOfType:SwitchCellType
-                       withText:markDeadStonesIntelligentlyText
+                       withText:cellText
          hasDisclosureIndicator:false];
 }
 
@@ -270,6 +299,16 @@ enum ScoringSectionItem
       break;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Score when game ends" switch. Writes
+/// the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleScoreWhenGameEnds:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.scoringModel.scoreWhenGameEnds = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

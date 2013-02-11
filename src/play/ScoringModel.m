@@ -51,6 +51,7 @@
   if (! self)
     return nil;
 
+  self.scoreWhenGameEnds = true;
   self.askGtpEngineForDeadStones = false;
   self.markDeadStonesIntelligently = false;
   self.alphaTerritoryColorBlack = 0.3;
@@ -85,6 +86,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:scoringKey];
+  self.scoreWhenGameEnds = [[dictionary valueForKey:scoreWhenGameEndsKey] boolValue];
   self.askGtpEngineForDeadStones = [[dictionary valueForKey:askGtpEngineForDeadStonesKey] boolValue];
   self.markDeadStonesIntelligently = [[dictionary valueForKey:markDeadStonesIntelligentlyKey] boolValue];
   self.alphaTerritoryColorBlack = [[dictionary valueForKey:alphaTerritoryColorBlackKey] floatValue];
@@ -109,6 +111,7 @@
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
+  [dictionary setValue:[NSNumber numberWithBool:self.scoreWhenGameEnds] forKey:scoreWhenGameEndsKey];
   [dictionary setValue:[NSNumber numberWithBool:self.askGtpEngineForDeadStones] forKey:askGtpEngineForDeadStonesKey];
   [dictionary setValue:[NSNumber numberWithBool:self.markDeadStonesIntelligently] forKey:markDeadStonesIntelligentlyKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorBlack] forKey:alphaTerritoryColorBlackKey];
