@@ -133,6 +133,7 @@
     [self saveCurrentGameAsSgf];
     [self saveBoardScreenshot];
     [self saveBoardAsSeenByGtpEngine];
+    [self zipLogFiles];
 
     [self zipDiagnosticsInformationFolder];
   }
@@ -305,6 +306,42 @@
   NSString* boardAsSeenByGtpEngine = [self boardAsSeenByGtpEngine];
   [self writeBoardAsSeenByGtpEngine:boardAsSeenByGtpEngine
                              toFile:[self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportBoardAsSeenByGtpEngineFileName]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a .zip archive in the diagnostics information folder that
+/// contains the application log files. The .zip archive is not created if no
+/// log files exist.
+// -----------------------------------------------------------------------------
+- (void) zipLogFiles
+{
+  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Zipping log files");
+  NSString* logFolder = [[ApplicationDelegate sharedDelegate] logFolder];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if (! [fileManager fileExistsAtPath:logFolder])
+  {
+    DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Log folder not found");
+    return;
+  }
+  NSArray* fileList = [fileManager contentsOfDirectoryAtPath:logFolder error:nil];
+  if (0 == fileList.count)
+  {
+    DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Log folder found but contains no files");
+    return;
+  }
+
+  NSString* bugReportLogsArchiveFilePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportLogsArchiveFileName];
+  ZKFileArchive* bugReportArchive = [ZKFileArchive archiveWithArchivePath:bugReportLogsArchiveFilePath];
+  NSInteger result = [bugReportArchive deflateDirectory:logFolder
+                                         relativeToPath:[logFolder stringByDeletingLastPathComponent]
+                                      usingResourceFork:NO];
+  if (result != zkSucceeded)
+  {
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:[NSString stringWithFormat:@"Failed to create logs archive file from folder %@, error code is %d", logFolder, result]
+                                                   userInfo:nil];
+    @throw exception;
+  }
 }
 
 // -----------------------------------------------------------------------------

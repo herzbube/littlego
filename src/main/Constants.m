@@ -118,6 +118,7 @@ NSString* bugReportUserDefaultsFileName = @ "userdefaults.plist";
 NSString* bugReportCurrentGameFileName = @ "currentgame.sgf";
 NSString* bugReportScreenshotFileName = @ "screenshot.png";
 NSString* bugReportBoardAsSeenByGtpEngineFileName = @ "showboard.txt";
+NSString* bugReportLogsArchiveFileName = @ "logs.zip";
 NSString* bugReportEmailRecipient = @"herzbube@herzbube.ch";
 NSString* bugReportEmailSubject = @"Little Go Bug Report";
 

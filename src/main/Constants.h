@@ -494,6 +494,9 @@ extern NSString* bugReportScreenshotFileName;
 /// @brief Name of the bug report file that stores a depiction of the board as
 /// it is seen by the GTP engine.
 extern NSString* bugReportBoardAsSeenByGtpEngineFileName;
+/// @brief Name of the .zip archive file that is used to collect the application
+/// log files.
+extern NSString* bugReportLogsArchiveFileName;
 /// @brief Email address of the bug report email recipient.
 extern NSString* bugReportEmailRecipient;
 /// @brief Subject for the bug report email.

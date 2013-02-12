@@ -312,20 +312,20 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupLogging
 {
+  if (! self.fileLogger)
+    self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
   bool loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
   if (loggingEnabled)
   {
-    self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
     [DDLog addLogger:self.fileLogger];
     // Enable this if you want logging to also go to the Debug console
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    DDLogInfo(@"Logging enabled. Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
+    DDLogInfo(@"Logging enabled. Log folder is %@", [self logFolder]);
   }
   else
   {
     DDLogInfo(@"Logging disabled");
     [DDLog removeAllLoggers];
-    self.fileLogger = nil;
   }
 }
 
@@ -677,6 +677,15 @@ static ApplicationDelegate* sharedDelegate = nil;
       break;
   }
   return resourceName;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the full path of the folder that contains the application
+/// log files.
+// -----------------------------------------------------------------------------
+- (NSString*) logFolder
+{
+  return [self.fileLogger.logFileManager logsDirectory];
 }
 
 @end

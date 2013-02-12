@@ -81,6 +81,7 @@
 - (void) activateTab:(enum TabType)tabID;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
 - (NSString*) resourceNameForTabType:(enum TabType)tabType;
+- (NSString*) logFolder;
 
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;
