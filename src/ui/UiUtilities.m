@@ -152,34 +152,18 @@
 /// @brief Adds the same background to @a view that is used by the default
 /// group UITableView.
 ///
-/// This method takes into account the device that the application is running
-/// on:
-/// - On the iPhone the background is [UIColor groupTableViewBackgroundColor]
-/// - On the iPad the background is a linear gradient image between
-///   experimentally determined start and end colors (see UIColorAdditions);
-///   the UIImage is set as the content of the @a view's CALayer object.
+/// Since iOS 6 the recommended way how to do this is to add an empty
+/// UITableView behind the view's content. This is exactly what this method
+/// does (adds an empty table view as subview to @a view and sends the table
+/// view to the back). The nice thing is that this works equally well for all
+/// devices, and also for older versions of iOS.
 // -----------------------------------------------------------------------------
 + (void) addGroupTableViewBackgroundToView:(UIView*)view
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-  else
-  {
-    // Dimensions determined experimentally by examining an iPad's group table
-    // view backgroundView object, which at the time of writing is a
-    // UIImageView object whose image has these dimensions.
-    CGSize backgroundPatternSize = CGSizeMake(1, 64);
-    UIImage* backgroundPattern = [UIImage gradientImageWithSize:backgroundPatternSize
-                                                     startColor:[UIColor iPadGroupTableViewBackgroundGradientStartColor]
-                                                       endColor:[UIColor iPadGroupTableViewBackgroundGradientEndColor]];
-    // This is the only way I managed to get the image to properly resize on
-    // auto-rotation. Alternatives that I tried, but that didn't work
-    // - view.background = [UIColor colorWithPatternImage:backgroundPattern];
-    // - [UIImageView initWithImage:backgroundPattern], followed by setting
-    //   the image view's frame to the proper dimensions, and also setting the
-    //   view's autoresizingMask
-    view.layer.contents = (id)backgroundPattern.CGImage;
-  }
+  UIView* backgroundView = [[UITableView alloc] initWithFrame:view.bounds style:UITableViewStyleGrouped];
+  backgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+ [view addSubview:backgroundView];
+  [view sendSubviewToBack:backgroundView];
 }
 
 // -----------------------------------------------------------------------------
