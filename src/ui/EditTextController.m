@@ -96,7 +96,7 @@
 - (id) init
 {
   // Call designated initializer of superclass (UIViewController)
-  self = [super init];
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
 
@@ -132,17 +132,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  int mainViewX = 0;
-  int mainViewY = 0;
-  int mainViewWidth = [UiElementMetrics screenWidth];
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics navigationBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  CGRect mainViewFrame = CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-
-
+  [super loadView];
   [UiUtilities addGroupTableViewBackgroundToView:self.view];
   switch (self.editTextControllerStyle)
   {

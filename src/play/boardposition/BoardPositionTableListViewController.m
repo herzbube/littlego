@@ -116,8 +116,8 @@
 // -----------------------------------------------------------------------------
 - (id) initWithContainerView:(UIView*)containerView
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
 

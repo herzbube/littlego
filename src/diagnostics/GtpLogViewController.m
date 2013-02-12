@@ -103,7 +103,7 @@
 // -----------------------------------------------------------------------------
 + (GtpLogViewController*) controller
 {
-  GtpLogViewController* controller = [[GtpLogViewController alloc] init];
+  GtpLogViewController* controller = [[GtpLogViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
     [controller autorelease];
   return controller;

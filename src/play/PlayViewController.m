@@ -253,13 +253,9 @@ enum ActionType
   CGRect mainViewFrame = [self mainViewFrame];
   self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  // Because we delay the setup of the remaining views, on the iPhone the
-  // default white background is visible for a short time. By overriding the
-  // default with our own background we prevent a nasty white "flash". Even
-  // though on the iPad the default background is not white, we still add our
-  // own background, just to be on the safe side in case something changes in
-  // future iOS versions. In addition to the above, having our own background
-  // is a safeguard in case some subviews unexpectedly have transparent areas.
+  // Because we delay the setup of the remaining views, the default white
+  /// background is visible for a short time. By overriding the default with our
+  // own background we prevent a nasty white "flash".
   [UiUtilities addGroupTableViewBackgroundToView:self.view];
 }
 
@@ -793,9 +789,9 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupSplitViewController
 {
-  self.splitViewController = [[[UISplitViewController alloc] init] autorelease];
-  self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
-  self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
+  self.splitViewController = [[[UISplitViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+  self.leftPaneViewController = [[[LeftPaneViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+  self.rightPaneViewController = [[[RightPaneViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   // Assign view controllers before first use of self.splitViewController.view
   // (if we do it the other way round, a message is printed in the debug area in
   // Xcode that warns us about the mistake; we should heed this warning,

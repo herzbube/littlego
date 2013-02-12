@@ -65,7 +65,7 @@
 - (id) init
 {
   // Call designated initializer of superclass (UIViewController)
-  self = [super init];
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
   self.boardOuterMarginPercentageTextField = nil;

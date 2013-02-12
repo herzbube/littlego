@@ -85,7 +85,7 @@
 // -----------------------------------------------------------------------------
 + (SubmitGtpCommandViewController*) controller
 {
-  SubmitGtpCommandViewController* controller = [[SubmitGtpCommandViewController alloc] init];
+  SubmitGtpCommandViewController* controller = [[SubmitGtpCommandViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
     [controller autorelease];
   return controller;

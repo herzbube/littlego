@@ -151,7 +151,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 + (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score
 {
-  GameInfoViewController* controller = [[GameInfoViewController alloc] init];
+  GameInfoViewController* controller = [[GameInfoViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
   {
     [controller autorelease];
