@@ -38,19 +38,14 @@ extern const CFTimeInterval gPlayViewPanningDelayIPadPortrait;
 
 // -----------------------------------------------------------------------------
 /// @name Logging constants
-///
-/// @brief These constants need to be declared static instead of extern, so that
-/// they can be initialized with values. This is required so that the compiler
-/// can see the values when it encounters DDLog statements, which will enable it
-/// to optimize away unneeded DDLog statements which are above the log level
-/// threshold.
 // -----------------------------------------------------------------------------
 //@{
-#ifdef LITTLEGO_NDEBUG
-static const int ddLogLevel = LOG_LEVEL_OFF;
-#else
-static const int ddLogLevel = LOG_LEVEL_VERBOSE;
-#endif
+/// @brief The log level used by the application. This is always set to the
+/// highest possible value. Whether or not logging is actually enabled is a user
+/// preference that can be changed at runtime from within the application. If
+/// logging is enabled the log output goes to a DDFileLogger with default
+/// values.
+extern const int ddLogLevel;
 //@}
 
 /// @brief Enumerates possible types of GoMove objects.
@@ -659,6 +654,8 @@ extern NSString* contactEmailCrashDataKey;
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
 extern NSString* boardPositionLastViewedKey;
+// Logging settings
+extern NSString* loggingEnabledKey;
 //@}
 
 // -----------------------------------------------------------------------------

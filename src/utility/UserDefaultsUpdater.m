@@ -318,6 +318,10 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 // -----------------------------------------------------------------------------
 + (void) upgradeToVersion5:(NSDictionary*)registrationDomainDefaults
 {
+  // New top-level key
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setValue:[NSNumber numberWithBool:NO] forKey:loggingEnabledKey];
+
   // Add new dictionary with board position settings.
   //
   // Note: Although it would be much easier to do nothing in this upgrade and
@@ -330,7 +334,6 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:discardFutureMovesAlertDefault] forKey:discardFutureMovesAlertKey];
   [dictionary setValue:[NSNumber numberWithInt:-1] forKey:boardPositionLastViewedKey];
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 
   // Add new keys to "play view" dictionary

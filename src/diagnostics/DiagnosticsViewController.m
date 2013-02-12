@@ -37,8 +37,8 @@ enum DiagnosticsTableViewSection
 {
   GtpSection,
   CrashReportSection,
+  LoggingSection,
   BugReportSection,
-//  ApplicationLogSection,
   MaxSection
 };
 
@@ -63,6 +63,15 @@ enum CrashReportSectionItem
 };
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates items in the LoggingSection.
+// -----------------------------------------------------------------------------
+enum LoggingSectionItem
+{
+  LoggingEnabledItem,
+  MaxLoggingSectionItem
+};
+
+// -----------------------------------------------------------------------------
 /// @brief Enumerates items in the BugReportSection.
 // -----------------------------------------------------------------------------
 enum BugReportSectionItem
@@ -70,16 +79,6 @@ enum BugReportSectionItem
   SendBugReportItem,
   GenerateDiagnosticsInformationFileItem,
   MaxBugReportSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ApplicationLogSection.
-// -----------------------------------------------------------------------------
-enum ApplicationLogSectionItem
-{
-  ApplicationLogItem,
-  ApplicationLogSettingsItem,
-  MaxApplicationLogSectionItem
 };
 
 
@@ -226,6 +225,8 @@ enum ApplicationLogSectionItem
       return MaxGtpSectionItem;
     case CrashReportSection:
       return MaxCrashReportSectionItem;
+    case LoggingSection:
+      return MaxLoggingSectionItem;
     case BugReportSection:
       if (self.bugReportSectionIsDisabled)
         return 1;
@@ -249,6 +250,8 @@ enum ApplicationLogSectionItem
       return @"GTP (Go Text Protocol)";
     case CrashReportSection:
       return @"Crash Report";
+    case LoggingSection:
+      return @"Application log";
     case BugReportSection:
       return @"Bug Report";
     default:
@@ -264,6 +267,8 @@ enum ApplicationLogSectionItem
 {
   if (GtpSection == section)
     return @"Observe the flow of communication between Little Go (GTP client) and Fuego (GTP engine), or inject your own GTP commands (dangerous!).";
+  else if (LoggingSection == section)
+    return @"If you plan to send a bug report (see below) you should enable logging BEFORE you reproduce the error. The data collected in the log file will be sent along with the bug report and maximize the chance that the developer can fix the problem.";
   else if (BugReportSection == section)
   {
     if (self.bugReportSectionIsDisabled)
@@ -323,6 +328,15 @@ enum ApplicationLogSectionItem
       }
       break;
     }
+    case LoggingSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Collect logging data";
+      accessoryView.on = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
+      [accessoryView addTarget:self action:@selector(toggleLoggingEnabled:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case BugReportSection:
     {
       if (self.bugReportSectionIsDisabled)
@@ -352,8 +366,10 @@ enum ApplicationLogSectionItem
       break;
     }
     default:
+    {
       assert(0);
       break;
+    }
   }
   return cell;
 }
@@ -578,6 +594,17 @@ enum ApplicationLogSectionItem
       return true;
   }
   return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Enable logging" switch. Writes the
+/// new value to the user defaults and immediately enables/disables logging.
+// -----------------------------------------------------------------------------
+- (void) toggleLoggingEnabled:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:accessoryView.on] forKey:loggingEnabledKey];
+  [[ApplicationDelegate sharedDelegate] setupLogging];
 }
 
 @end

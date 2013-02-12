@@ -312,10 +312,21 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupLogging
 {
-  [DDLog addLogger:[DDTTYLogger sharedInstance]];
-  self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
-  [DDLog addLogger:self.fileLogger];
-  DDLogInfo(@"Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
+  bool loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
+  if (loggingEnabled)
+  {
+    self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
+    [DDLog addLogger:self.fileLogger];
+    // Enable this if you want logging to also go to the Debug console
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    DDLogInfo(@"Logging enabled. Log directory is %@", [self.fileLogger.logFileManager logsDirectory]);
+  }
+  else
+  {
+    DDLogInfo(@"Logging disabled");
+    [DDLog removeAllLoggers];
+    self.fileLogger = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------

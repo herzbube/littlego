@@ -20,6 +20,9 @@ const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
 const CFTimeInterval gPlayViewPanningDelayIPadPortrait = 0.1;
 
+// Logging constants
+const int ddLogLevel = LOG_LEVEL_VERBOSE;
+
 // Go constants
 const enum GoGameType gDefaultGameType = GoGameTypeComputerVsHuman;
 const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
@@ -260,6 +263,8 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
+// Logging settings
+NSString* loggingEnabledKey = @"LoggingEnabled";
 
 // Constants for NSCoding
 // General constants

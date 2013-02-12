@@ -4,6 +4,8 @@
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
 	<integer>5</integer>
+	<key>LoggingEnabled</key>
+	<false/>
 	<key>PlayView</key>
 	<dict>
 		<key>MarkLastMove</key>
