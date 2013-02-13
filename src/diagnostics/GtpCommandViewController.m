@@ -117,23 +117,15 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
 {
-  // 105.0 determined experimentally in IB
-  // 44.01 taken from examples on the Internet; this values seems to shift the
-  // toolbar up 1px for some reason
-  UIToolbar* toolbar = [[UIToolbar alloc]
-                        initWithFrame:CGRectMake(0.0f, 0.0f, 105.0f, 44.01f)];
-  NSMutableArray* buttons = [[NSMutableArray alloc] initWithCapacity:2];
-  [buttons addObject:self.editButtonItem];
-
-  UIBarButtonItem* addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                           target:self
-                                                                           action:@selector(addCommand:)];
+  UIBarButtonItem* addButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                              target:self
+                                                                              action:@selector(addCommand:)] autorelease];
   addButton.style = UIBarButtonItemStyleBordered;
+
+  NSMutableArray* buttons = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
+  [buttons addObject:self.editButtonItem];
   [buttons addObject:addButton];
-  [addButton release];
-  [toolbar setItems:buttons animated:NO];
-  [buttons release];
-  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:toolbar] autorelease];
+  self.navigationItem.rightBarButtonItems = buttons;
 
   self.navigationItem.title = @"Commands";
 }

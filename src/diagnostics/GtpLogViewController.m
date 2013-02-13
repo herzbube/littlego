@@ -240,27 +240,18 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
 {
-  // 105.0 determined experimentally in IB
-  // 44.01 taken from examples on the Internet; this values seems to shift the
-  // toolbar up 1px for some reason
-  UIToolbar* toolbar = [[UIToolbar alloc]
-                        initWithFrame:CGRectMake(0.0f, 0.0f, 105.0f, 44.01f)];
-  NSMutableArray* buttons = [[NSMutableArray alloc] initWithCapacity:2];
-  UIBarButtonItem* compose = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                           target:self
-                                                                           action:@selector(composeCommand:)];
-  compose.style = UIBarButtonItemStyleBordered;
-  [buttons addObject:compose];
-  [compose release];
-  UIBarButtonItem* flip = [[UIBarButtonItem alloc] initWithTitle:@"Flip"
-                                                           style:UIBarButtonItemStyleBordered
-                                                          target:self
-                                                          action:@selector(flipView:)];
-  [buttons addObject:flip];
-  [flip release];
-  [toolbar setItems:buttons animated:NO];
-  [buttons release];
-  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:toolbar] autorelease];
+  UIBarButtonItem* composeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                                  target:self
+                                                                                  action:@selector(composeCommand:)] autorelease];
+  composeButton.style = UIBarButtonItemStyleBordered;
+  UIBarButtonItem* flipButton = [[[UIBarButtonItem alloc] initWithTitle:@"Flip"
+                                                                  style:UIBarButtonItemStyleBordered
+                                                                 target:self
+                                                                 action:@selector(flipView:)] autorelease];
+  NSMutableArray* buttons = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
+  [buttons addObject:composeButton];
+  [buttons addObject:flipButton];
+  self.navigationItem.rightBarButtonItems = buttons;
 
   self.navigationItem.title = @"GTP Log";
 }
