@@ -199,6 +199,7 @@
 		CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC7A1425470B00214BBE /* SaveGameCommand.m */; };
 		CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
+		CD96A47D16CC3568000C2792 /* LaunchImage-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -572,6 +573,7 @@
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD92EE941469EB83001EA980 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
 		CD92EE951469EB83001EA980 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
+		CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage-568h@2x.png"; sourceTree = "<group>"; };
 		CD99EC6114B10746007B3B67 /* GoPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPointTest.h; sourceTree = "<group>"; };
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
@@ -1346,6 +1348,7 @@
 				CD393F91166EC836009DF814 /* human-vs-computer@2x.png */,
 				CD393F92166EC836009DF814 /* human-vs-human.png */,
 				CD393F93166EC836009DF814 /* human-vs-human@2x.png */,
+				CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */,
 				CDE1A15314C1CED200317ECA /* LaunchImage.png */,
 				CDE1A15414C1CED200317ECA /* LaunchImage@2x.png */,
 				CD7E92CF1532333D00DCD671 /* LaunchImageiPad-Landscape.png */,
@@ -1754,6 +1757,7 @@
 				CDF6FCD716B5AA17009A2193 /* wooden-background@2x~iphone.png in Resources */,
 				CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */,
 				CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */,
+				CD96A47D16CC3568000C2792 /* LaunchImage-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
