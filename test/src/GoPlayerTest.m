@@ -27,7 +27,7 @@
 @implementation GoPlayerTest
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the initial state of a GoPoint object after a new GoGame has
+/// @brief Checks the initial state of GoPlayer objects after a new GoGame has
 /// been created.
 // -----------------------------------------------------------------------------
 - (void) testInitialState

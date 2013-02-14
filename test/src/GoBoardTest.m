@@ -27,7 +27,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoBoard.
+/// @brief Class extension with private methods for GoBoardTest.
 // -----------------------------------------------------------------------------
 @interface GoBoardTest()
 - (void) checkBoardState:(GoBoard*)board expectedBoardSize:(enum GoBoardSize)expectedBoardSize;

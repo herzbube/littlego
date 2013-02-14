@@ -200,6 +200,7 @@
 		CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD96A47D16CC3568000C2792 /* LaunchImage-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */; };
+		CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -574,6 +575,8 @@
 		CD92EE941469EB83001EA980 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
 		CD92EE951469EB83001EA980 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
 		CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage-568h@2x.png"; sourceTree = "<group>"; };
+		CD96A47E16CD6FD4000C2792 /* GoBoardPositionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPositionTest.h; sourceTree = "<group>"; };
+		CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPositionTest.m; sourceTree = "<group>"; };
 		CD99EC6114B10746007B3B67 /* GoPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPointTest.h; sourceTree = "<group>"; };
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
@@ -1183,6 +1186,8 @@
 			children = (
 				CDF43D9B1402E970007F44A4 /* BaseTestCase.h */,
 				CDF43D9C1402E970007F44A4 /* BaseTestCase.m */,
+				CD96A47E16CD6FD4000C2792 /* GoBoardPositionTest.h */,
+				CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */,
 				CDF43DAD1402EC83007F44A4 /* GoBoardTest.h */,
 				CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */,
 				CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */,
@@ -2030,6 +2035,7 @@
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
+				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

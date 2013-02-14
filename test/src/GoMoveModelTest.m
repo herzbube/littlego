@@ -30,8 +30,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the initial state of a GoGame object after it has been
-/// created.
+/// @brief Checks the initial state of the GoMoveModel object after a new
+/// GoGame has been created.
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
