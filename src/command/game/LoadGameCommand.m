@@ -125,7 +125,10 @@ static const int maxStepsForReplayMoves = 10;
   // runs, and it runs exactly once, regardless of which execution path is
   // taken in the command (currently known paths are: command succeeds, failure
   // before handleCommandSucceeded() is invoked.
-  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionEnds object:nil];
+  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:longRunningActionEnds
+          waitUntilDone:YES];
 
   self.filePath = nil;
   self.gameName = nil;
@@ -179,7 +182,10 @@ static const int maxStepsForReplayMoves = 10;
                                         nextStepMessage:message];
 
   // Disable view updates on Play tab
-  [[NSNotificationCenter defaultCenter] postNotificationName:longRunningActionStarts object:nil];
+  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:longRunningActionStarts
+          waitUntilDone:YES];
 
   [GtpUtilities stopPondering];
 
@@ -714,6 +720,14 @@ static const int maxStepsForReplayMoves = 10;
 {
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

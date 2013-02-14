@@ -190,16 +190,22 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center postNotificationName:longRunningActionStarts object:nil];
+  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:longRunningActionStarts
+          waitUntilDone:YES];
   [self.asynchronousCommandDelegate asynchronousCommand:self
                                             didProgress:0.0
                                         nextStepMessage:@"Changing board position..."];
   [self setupProgressParameters];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(boardPositionChangeProgress:) name:boardPositionChangeProgress object:nil];
   bool result = [super doIt];
   [center removeObserver:self];
-  [center postNotificationName:longRunningActionEnds object:nil];
+  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:longRunningActionEnds
+          waitUntilDone:YES];
   return result;
 }
 
@@ -234,6 +240,14 @@
     self.progress += self.stepIncrease;
     [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end
