@@ -75,7 +75,6 @@
 }
 
 - (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName;
-- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object;
 
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;

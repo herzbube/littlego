@@ -63,12 +63,9 @@ static const int maxStepsForReplayMoves = 10;
 - (void) triggerComputerPlayer;
 - (void) showAlert:(NSString*)message;
 - (void) replayMoves:(NSArray*)moveList;
-- (void) performCallback;
 //@}
 /// @name Private properties
 //@{
-@property(nonatomic, retain) id callbackTarget;
-@property(nonatomic, assign) SEL callbackTargetSelector;
 @property(nonatomic, assign) int totalSteps;
 @property(nonatomic, assign) float stepIncrease;
 @property(nonatomic, assign) float progress;
@@ -96,8 +93,6 @@ static const int maxStepsForReplayMoves = 10;
   self.filePath = aFilePath;
   self.gameName = aGameName;
   self.restoreMode = false;
-  self.callbackTarget = nil;
-  self.callbackTargetSelector = nil;
   self.didTriggerComputerPlayer = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
@@ -118,8 +113,6 @@ static const int maxStepsForReplayMoves = 10;
 {
   self.filePath = nil;
   self.gameName = nil;
-  self.callbackTarget = nil;
-  self.callbackTargetSelector = nil;
   [m_handicap release];
   [m_komi release];
   [m_moves release];
@@ -192,10 +185,6 @@ static const int maxStepsForReplayMoves = 10;
                          target:self
                        selector:@selector(loadsgfCommandResponseReceived:)
                   waitUntilDone:true];
-
-    // TODO This is probably no longer necessary since this command now runs
-    // fully synchronously with RestoreGameCommand
-    [self performCallback];
 
     return true;
   }
@@ -679,37 +668,12 @@ static const int maxStepsForReplayMoves = 10;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Performs callback if an object and selector were set with
-/// whenFinishedPerformSelector:onObject:().
-// -----------------------------------------------------------------------------
-- (void) performCallback
-{
-  if (! self.callbackTarget)
-    return;
-  [self.callbackTarget performSelector:self.callbackTargetSelector
-                            withObject:self];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Private helper for various methods.
 // -----------------------------------------------------------------------------
 - (void) increaseProgressAndNotifyDelegate
 {
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets a selector @a selector that should be invoked on object
-/// @a object when this command finishes executing. @a object is retained.
-///
-/// When the callback occurs this LoadGameCommand object is passed as the
-/// argument to @a selector.
-// -----------------------------------------------------------------------------
-- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object
-{
-  self.callbackTarget = object;
-  self.callbackTargetSelector = selector;
 }
 
 // -----------------------------------------------------------------------------

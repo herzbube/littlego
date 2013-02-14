@@ -26,70 +26,52 @@
 #import "../../play/boardposition/BoardPositionModel.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RestoreGameCommand.
-// -----------------------------------------------------------------------------
-@interface RestoreGameCommand()
-- (void) dealloc;
-- (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand;
-@end
-
-
 @implementation RestoreGameCommand
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a RestoreGameCommand object.
-///
-/// @note This is the designated initializer of RestoreGameCommand.
-// -----------------------------------------------------------------------------
-- (id) init
-{
-  // Call designated initializer of superclass (CommandBase)
-  self = [super init];
-  if (! self)
-    return nil;
-  return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this RestoreGameCommand object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [super dealloc];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  NSString* sgfBackupFilePath = [appSupportDirectory stringByAppendingPathComponent:sgfBackupFileName];
-
+  NSString* sgfBackupFilePath = [self sgfBackupFilePath];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:sgfBackupFilePath])
   {
-    LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
-    loadCommand.restoreMode = true;
-    [loadCommand whenFinishedPerformSelector:@selector(loadGameCommandFinished:)
-                                    onObject:self];  // self is retained
-    [loadCommand submit];  // not all parts of the command are executed synchronously
+    [self restoreGame:sgfBackupFilePath];
+    [self restoreBoardPosition];
   }
   else
   {
     [[[NewGameCommand alloc] init] submit];
   }
-
   return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Is invoked when LoadGameCommand finishes executing.
+/// @brief Private helper for doIt().
 // -----------------------------------------------------------------------------
-- (void) loadGameCommandFinished:(LoadGameCommand*)loadGameCommand
+- (NSString*) sgfBackupFilePath
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
+  NSString* appSupportDirectory = [paths objectAtIndex:0];
+  return [appSupportDirectory stringByAppendingPathComponent:sgfBackupFileName];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) restoreGame:(NSString*)sgfBackupFilePath
+{
+  LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
+  loadCommand.restoreMode = true;
+  [loadCommand submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) restoreBoardPosition
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
