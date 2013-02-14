@@ -143,18 +143,41 @@
   if (self.newBoardPosition == boardPosition.currentBoardPosition)
     return true;
 
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  if (scoringModel.scoringMode)
-    [scoringModel.score reinitialize];  // disable GoBoardRegion caching
+  @try
+  {
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionStarts
+            waitUntilDone:YES];
 
-  boardPosition.currentBoardPosition = self.newBoardPosition;
+    ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+    if (scoringModel.scoringMode)
+      [scoringModel.score reinitialize];  // disable GoBoardRegion caching
 
-  [[[SyncGTPEngineCommand alloc] init] submit];
+    boardPosition.currentBoardPosition = self.newBoardPosition;
 
-  if (scoringModel.scoringMode)
-    [scoringModel.score calculateWaitUntilDone:false];
+    [[[SyncGTPEngineCommand alloc] init] submit];
 
-  return true;
+    if (scoringModel.scoringMode)
+      [scoringModel.score calculateWaitUntilDone:false];
+
+    return true;
+  }
+  @finally
+  {
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionEnds
+            waitUntilDone:YES];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end
@@ -190,10 +213,6 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:longRunningActionStarts
-          waitUntilDone:YES];
   [self.asynchronousCommandDelegate asynchronousCommand:self
                                             didProgress:0.0
                                         nextStepMessage:@"Changing board position..."];
@@ -202,10 +221,6 @@
   [center addObserver:self selector:@selector(boardPositionChangeProgress:) name:boardPositionChangeProgress object:nil];
   bool result = [super doIt];
   [center removeObserver:self];
-  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:longRunningActionEnds
-          waitUntilDone:YES];
   return result;
 }
 
@@ -240,14 +255,6 @@
     self.progress += self.stepIncrease;
     [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

@@ -142,15 +142,29 @@ enum PlayCommandType
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
-  if (shouldDiscardBoardPositions)
+  @try
   {
-    bool success = [self discardBoardPositions];
-    if (! success)
-      return false;
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionStarts
+            waitUntilDone:YES];
+    bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
+    if (shouldDiscardBoardPositions)
+    {
+      bool success = [self discardBoardPositions];
+      if (! success)
+        return false;
+    }
+    bool success = [self playCommand];
+    return success;
   }
-  bool success = [self playCommand];
-  return success;
+  @finally
+  {
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionEnds
+            waitUntilDone:YES];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -232,6 +246,14 @@ enum PlayCommandType
   {
     return false;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

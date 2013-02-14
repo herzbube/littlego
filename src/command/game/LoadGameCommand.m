@@ -116,20 +116,6 @@ static const int maxStepsForReplayMoves = 10;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  // Invoke before the long-running action finishes, in case the object called
-  // back does something else that triggers many view updates. More docs about
-  // the callback can be found in whenFinishedPerformSelector:onObject:().
-  [self performCallback];
-
-  // Re-enable view updates on Play tab. We do this here because dealloc always
-  // runs, and it runs exactly once, regardless of which execution path is
-  // taken in the command (currently known paths are: command succeeds, failure
-  // before handleCommandSucceeded() is invoked.
-  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:longRunningActionEnds
-          waitUntilDone:YES];
-
   self.filePath = nil;
   self.gameName = nil;
   self.callbackTarget = nil;
@@ -143,28 +129,6 @@ static const int maxStepsForReplayMoves = 10;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets a selector @a selector that should be invoked on object
-/// @a object when this command finishes executing. @a object is retained.
-///
-/// When the callback occurs this LoadGameCommand object is passed as the
-/// argument to @a selector.
-///
-/// @note Whoever wants to get the callback must not retain the LoadGameCommand
-/// object, because the callback is made as part of the deallocation process of
-/// LoadGameCommand. Retaining LoadGameCommand will prevent it from being
-/// deallocated, hence the callback will never be made.
-///
-/// @note The callback is made at the very beginning of LoadGameCommand's
-/// deallocation process so that all properties of LoadGameCommand still have
-/// valid values.
-// -----------------------------------------------------------------------------
-- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object
-{
-  self.callbackTarget = object;
-  self.callbackTargetSelector = selector;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
@@ -172,63 +136,76 @@ static const int maxStepsForReplayMoves = 10;
   if (! self.filePath)
     return false;
 
-  NSString* message;
-  if (self.restoreMode)
-    message = @"Restoring game...";
-  else
-    message = @"Loading game...";
-  [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:0.0
-                                        nextStepMessage:message];
-
-  // Disable view updates on Play tab
-  [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:longRunningActionStarts
-          waitUntilDone:YES];
-
-  [GtpUtilities stopPondering];
-
-  // Need to work with temporary file whose name is known and guaranteed to not
-  // contain any characters that are prohibited by GTP
-  NSString* temporaryDirectory = NSTemporaryDirectory();
-  NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if (! [fileManager fileExistsAtPath:self.filePath])
+  @try
   {
-    [self handleCommandFailed:@"Internal error: Archived .sgf file not found"];
-    return false;
-  }
-  // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()
-  // further down will abort the copy attempt. A temporary file possibly exists
-  // if a previous file operation failed to properly clean up.
-  NSError* error;
-  if ([fileManager fileExistsAtPath:sgfTemporaryFilePath])
-  {
-    BOOL success = [fileManager removeItemAtPath:sgfTemporaryFilePath error:&error];
-    if (! success)
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionStarts
+            waitUntilDone:YES];
+
+    NSString* message;
+    if (self.restoreMode)
+      message = @"Restoring game...";
+    else
+      message = @"Loading game...";
+    [self.asynchronousCommandDelegate asynchronousCommand:self
+                                              didProgress:0.0
+                                          nextStepMessage:message];
+
+    [GtpUtilities stopPondering];
+
+    // Need to work with temporary file whose name is known and guaranteed to not
+    // contain any characters that are prohibited by GTP
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if (! [fileManager fileExistsAtPath:self.filePath])
     {
-      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file before load, reason: %@", [error localizedDescription]]];
+      [self handleCommandFailed:@"Internal error: Archived .sgf file not found"];
       return false;
     }
+    // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()
+    // further down will abort the copy attempt. A temporary file possibly exists
+    // if a previous file operation failed to properly clean up.
+    NSError* error;
+    if ([fileManager fileExistsAtPath:sgfTemporaryFilePath])
+    {
+      BOOL success = [fileManager removeItemAtPath:sgfTemporaryFilePath error:&error];
+      if (! success)
+      {
+        [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file before load, reason: %@", [error localizedDescription]]];
+        return false;
+      }
+    }
+    BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:&error];
+    if (! success)
+    {
+      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy archived .sgf file, reason: %@", [error localizedDescription]]];
+      return false;
+    }
+
+    m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
+    [fileManager changeCurrentDirectoryPath:temporaryDirectory];
+    // Use the file *NAME* without the path
+    NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
+    [GtpUtilities submitCommand:commandString
+                         target:self
+                       selector:@selector(loadsgfCommandResponseReceived:)
+                  waitUntilDone:true];
+
+    // TODO This is probably no longer necessary since this command now runs
+    // fully synchronously with RestoreGameCommand
+    [self performCallback];
+
+    return true;
   }
-  BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:&error];
-  if (! success)
+  @finally
   {
-    [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy archived .sgf file, reason: %@", [error localizedDescription]]];
-    return false;
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionEnds
+            waitUntilDone:YES];
   }
-
-  m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
-  [fileManager changeCurrentDirectoryPath:temporaryDirectory];
-  // Use the file *NAME* without the path
-  NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
-  [GtpUtilities submitCommand:commandString
-                       target:self
-                     selector:@selector(loadsgfCommandResponseReceived:)
-                waitUntilDone:true];
-
-  return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -720,6 +697,19 @@ static const int maxStepsForReplayMoves = 10;
 {
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets a selector @a selector that should be invoked on object
+/// @a object when this command finishes executing. @a object is retained.
+///
+/// When the callback occurs this LoadGameCommand object is passed as the
+/// argument to @a selector.
+// -----------------------------------------------------------------------------
+- (void) whenFinishedPerformSelector:(SEL)selector onObject:(id)object
+{
+  self.callbackTarget = object;
+  self.callbackTargetSelector = selector;
 }
 
 // -----------------------------------------------------------------------------

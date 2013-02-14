@@ -47,22 +47,37 @@
   bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
   if (! shouldDiscardBoardPositions)
     return true;
-  // Before we discard, first change to a board position that will be valid
-  // even after the discard. Note that because we step back only one board
-  // position, ChangeBoardPositionCommand is executed synchronously.
-  bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
-  if (! success)
-    return false;
-  success = [self revertGameStateIfNecessary];
-  if (! success)
-    return false;
-  success = [self discardMoves];
-  if (! success)
-    return false;
-  success = [[[BackupGameCommand alloc] init] submit];
-  if (! success)
-    return false;
-  return success;
+
+  @try
+  {
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionStarts
+            waitUntilDone:YES];
+    // Before we discard, first change to a board position that will be valid
+    // even after the discard. Note that because we step back only one board
+    // position, ChangeBoardPositionCommand is executed synchronously.
+    bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
+    if (! success)
+      return false;
+    success = [self revertGameStateIfNecessary];
+    if (! success)
+      return false;
+    success = [self discardMoves];
+    if (! success)
+      return false;
+    success = [[[BackupGameCommand alloc] init] submit];
+    if (! success)
+      return false;
+    return success;
+  }
+  @finally
+  {
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionEnds
+            waitUntilDone:YES];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -105,6 +120,14 @@
   GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end
