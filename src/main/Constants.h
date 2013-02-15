@@ -693,6 +693,10 @@ extern NSString* goMoveCapturedStonesKey;
 // GoMoveModel keys
 extern NSString* goMoveModelMoveListKey;
 extern NSString* goMoveModelNumberOfMovesKey;
+// GoBoardPosition keys
+extern NSString* goBoardPositionGameKey;
+extern NSString* goBoardPositionCurrentBoardPositionKey;
+extern NSString* goBoardPositionNumberOfBoardPositionsKey;
 // GoBoard keys
 extern NSString* goBoardSizeKey;
 extern NSString* goBoardVertexDictKey;

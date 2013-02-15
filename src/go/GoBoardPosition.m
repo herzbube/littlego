@@ -78,6 +78,25 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+  self.game = [[decoder decodeObjectForKey:goBoardPositionGameKey] retain];
+  // Don't use self, otherwise we trigger the setter!
+  _currentBoardPosition = [decoder decodeIntForKey:goBoardPositionCurrentBoardPositionKey];
+  self.numberOfBoardPositions = [decoder decodeIntForKey:goBoardPositionNumberOfBoardPositionsKey];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this GoBoardPosition object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -249,6 +268,17 @@
   [self willChangeValueForKey:@"currentBoardPosition"];
   _currentBoardPosition = numberOfMoves;
   [self didChangeValueForKey:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.game forKey:goBoardPositionGameKey];
+  [encoder encodeInt:self.currentBoardPosition forKey:goBoardPositionCurrentBoardPositionKey];
+  [encoder encodeInt:self.numberOfBoardPositions forKey:goBoardPositionNumberOfBoardPositionsKey];
 }
 
 @end

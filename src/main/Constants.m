@@ -283,7 +283,6 @@ NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameBoardPositionKey = @"BoardPosition";
-
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
@@ -297,6 +296,10 @@ NSString* goMoveCapturedStonesKey = @"CapturedStones";
 // GoMoveModel keys
 NSString* goMoveModelMoveListKey = @"MoveList";
 NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
+// GoBoardPosition keys
+NSString* goBoardPositionGameKey = @"Game";
+NSString* goBoardPositionCurrentBoardPositionKey = @"CurrentBoardPosition";
+NSString* goBoardPositionNumberOfBoardPositionsKey = @"NumberOfBoardPositions";
 // GoBoard keys
 NSString* goBoardSizeKey = @"Size";
 NSString* goBoardVertexDictKey = @"VertexDict";
