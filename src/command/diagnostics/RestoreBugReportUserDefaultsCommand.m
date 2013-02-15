@@ -108,7 +108,7 @@
   if (! [fileManager fileExistsAtPath:[BugReportUtilities diagnosticsInformationFolderPath]])
   {
     NSString* logMessage = [NSString stringWithFormat:@"RestoreBugReportUserDefaultsCommand: Diagnostics information file did not expand to expected folder %@", diagnosticsInformationFolderPath];
-    DDLogError(logMessage);
+    DDLogError(@"%@", logMessage);
     return false;
   }
   return true;

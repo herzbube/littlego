@@ -376,7 +376,7 @@
 - (void) setup
 {
   NSString* logMessage = [NSString stringWithFormat:@"GenerateDiagnosticsInformationFileCommand: Creating folder %@", self.diagnosticsInformationFolderPath];
-  DDLogInfo(logMessage);
+  DDLogInfo(@"%@", logMessage);
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFilePath];
   [PathUtilities createFolder:self.diagnosticsInformationFolderPath removeIfExists:true];

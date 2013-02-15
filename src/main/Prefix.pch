@@ -20,7 +20,7 @@
   #import <UIKit/UIKit.h>
 
   // Library includes
-  #include <cocoalumberjack/DDLog.h>
+  #include <lumberjack/DDLog.h>
 
   // Project includes
   #import "Constants.h"

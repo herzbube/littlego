@@ -260,14 +260,14 @@
       NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report failed. Error code = %d, error description = %@",
                               [error code],
                               [error localizedDescription]];
-      DDLogError(logMessage);
+      DDLogError(@"%@", logMessage);
       break;
     }
     default:
     {
       NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report finished with unknown result: %d",
                               result];
-      DDLogInfo(logMessage);
+      DDLogInfo(@"%@", logMessage);
       break;
     }
   }

@@ -2065,7 +2065,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2098,7 +2098,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2194,7 +2194,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2249,7 +2249,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2294,7 +2294,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2339,7 +2339,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2385,7 +2385,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);
@@ -2433,7 +2433,7 @@
 					"-lboost_thread",
 					"-lboost_filesystem",
 					"-lboost_program_options",
-					"-lCocoaLumberjack",
+					"-lLumberjack",
 					"-ltouchzipkit",
 					"-ObjC",
 				);

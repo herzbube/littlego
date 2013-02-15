@@ -14,29 +14,29 @@
 
 # Variables describing the build
 LUMBERJACK_BUILD_CONFIGURATION="Release"
-LUMBERJACK_BUILDRESULT_FILENAME="libCocoaLumberjack.a"
+LUMBERJACK_BUILDRESULT_FILENAME="libLumberjack.a"
 
 # These paths are relative to the root directory of the extracted source archive
 LUMBERJACK_HEADER_SRCDIR="Lumberjack"
-LUMBERJACK_XCODEPROJ_BASEDIR="Xcode/CocoaLumberjack"
-LUMBERJACK_XCODEPROJ_FILENAME="$LUMBERJACK_XCODEPROJ_BASEDIR/CocoaLumberjack.xcodeproj"
+LUMBERJACK_XCODEPROJ_BASEDIR="Xcode/LumberjackFramework/Mobile"
+LUMBERJACK_XCODEPROJ_FILENAME="$LUMBERJACK_XCODEPROJ_BASEDIR/Lumberjack.xcodeproj"
 LUMBERJACK_XCODEPROJ_BUILDDIR="$LUMBERJACK_XCODEPROJ_BASEDIR/build"
 LUMBERJACK_XCODEPROJ_IPHONEOS_BUILDDIR="$LUMBERJACK_XCODEPROJ_BUILDDIR/$LUMBERJACK_BUILD_CONFIGURATION-$IPHONEOS_XCODEBUILD_SDKPREFIX"
 LUMBERJACK_XCODEPROJ_IPHONE_SIMULATOR_BUILDDIR="$LUMBERJACK_XCODEPROJ_BUILDDIR/$LUMBERJACK_BUILD_CONFIGURATION-$IPHONE_SIMULATOR_XCODEBUILD_SDKPREFIX"
 LUMBERJACK_XCODEPROJ_MACOSX_BUILDDIR="$LUMBERJACK_XCODEPROJ_BUILDDIR/$LUMBERJACK_BUILD_CONFIGURATION"
 
 # These paths are relative to the destination PREFIXDIR
-LUMBERJACK_HEADER_DESTDIR="include/cocoalumberjack"
+LUMBERJACK_HEADER_DESTDIR="include/lumberjack"
 LUMBERJACK_LIB_DESTDIR="lib"
 
 # Variables for downloading/extracting the source archive
-LUMBERJACK_VERSION="1.2.1"
-ARCHIVE_FILE="robbiehanson-CocoaLumberjack-1.2.1-0-g0d3c95b.tar.gz"
+LUMBERJACK_VERSION="1.6"
+ARCHIVE_FILE="CocoaLumberjack-1.6.tar.gz"
 ARCHIVE_URL="$ARCHIVE_BASEURL/$ARCHIVE_FILE"
-ARCHIVE_CHECKSUM="952f565b6aa5f1faf7046c411ed361d7023567b738431dc94393f28899317e45"
+ARCHIVE_CHECKSUM="a5d63b6d647d0e19b24bb613d77885e9db985088bb00b02b4b887de6e477cacb"
 
 # xcodebuild flags
-LUMBERJACK_COMMON_XCODEBUILDFLAGS="-configuration $LUMBERJACK_BUILD_CONFIGURATION -target CocoaLumberjack"
+LUMBERJACK_COMMON_XCODEBUILDFLAGS="-configuration $LUMBERJACK_BUILD_CONFIGURATION -target Lumberjack"
 LUMBERJACK_IPHONEOS_XCODEBUILDFLAGS="-sdk $IPHONEOS_XCODEBUILD_SDKNAME"
 LUMBERJACK_IPHONE_SIMULATOR_XCODEBUILDFLAGS="-sdk $IPHONE_SIMULATOR_XCODEBUILD_SDKNAME"
 LUMBERJACK_MACOSX_XCODEBUILDFLAGS="-sdk $MACOSX_XCODEBUILD_SDKNAME"
@@ -57,31 +57,7 @@ LUMBERJACK_MACOSX_XCODEBUILDFLAGS="-sdk $MACOSX_XCODEBUILD_SDKNAME"
 # +------------------------------------------------------------------------
 PRE_BUILD_STEPS_SOFTWARE()
 {
-  PATCH_GUARD_FILE="$SOFTWARE_NAME.has.already.been.patched"
-  if test -f "$PATCH_GUARD_FILE"; then
-    echo "It appears that patches have already been applied; skipping pre-build patch step"
-    return 0
-  fi
-
-  if test ! -d "$PATCH_BASEDIR/$SOFTWARE_NAME"; then
-    return 1
-  fi
-
-  for PATCH_FILE in $PATCH_BASEDIR/$SOFTWARE_NAME/*.patch; do
-    echo "Applying patch file $PATCH_FILE..."
-    # Try to prevent any accidents here that render the source code unusable
-    # --forward ignores patches that seem to be already applied
-    # --fuzz=0 causes a patch to fail if the context doesn't match 100% (i.e.
-    # fuzz factor is 0)
-    patch --forward -p1 <"$PATCH_FILE"
-    if test $? -ne 0; then
-      echo "Error applying patch file $PATCH_FILE"
-      return 1
-    fi
-  done
-  echo "Successfully applied all patches"
-
-  touch "$PATCH_GUARD_FILE"
+  : # nothing to do
 }
 
 # +------------------------------------------------------------------------

@@ -380,7 +380,7 @@ static const int maxStepsForReplayMoves = 10;
   // Alert must be shown on main thread, otherwise there is the possibility of
   // a crash (it's real, I've seen the crash reports!)
   [self performSelectorOnMainThread:@selector(showAlert:) withObject:message waitUntilDone:YES];
-  DDLogError(message);
+  DDLogError(@"%@", message);
 }
 
 // -----------------------------------------------------------------------------

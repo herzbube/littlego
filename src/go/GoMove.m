@@ -278,7 +278,7 @@
         if (! [_capturedStones containsObject:capture])
         {
           NSString* message = [NSString stringWithFormat:@"Redo of %@: Captured stone on point %@ is not in array", self, capture];
-          DDLogError(message);
+          DDLogError(@"%@", message);
           NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                            reason:message
                                                          userInfo:nil];

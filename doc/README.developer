@@ -158,7 +158,7 @@ Important configuration settings in Xcode (both for the "Little Go" and the
     http://www.galloway.me.uk/2012/09/hacking-up-an-armv7s-library/
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
-- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lCocoaLumberjack -ltouchzipkit -ObjC
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lLumberjack -ltouchzipkit -ObjC
   - Note 1: The option "-ObjC" is required by ZipKit and QuincyKit (actually
     QuincyKit specifies -all_load, but -ObjC is sufficient). Without this option
     ZipKit crashes the app when a ZKFileArchive object is created due to an
@@ -822,7 +822,18 @@ Installation
 
 CocoaLumberjack build/installation issues
 -----------------------------------------
-No issues, build works out of the box.
+Building CocoaLumberjack's premade Xcode project with Xcode 4.6 results in
+otool complaining with the following warning:
+
+  -dynamic not specified the following flags are invalid: -ObjC
+
+The warning can be ignored because -ObjC is irrelevant for the static library
+build of CocoaLumberjack (otool itself already says it: -ObjC is only for
+dynamic, or shared library builds). The article at [1] has a good explanation
+of the issue. I assume that the CocoaLumberjack author eventually will fix the
+premade Xcode project in a future release.
+
+[1] http://www.cocoanetics.com/2013/02/xcode-4-6-libtool-issues/
 
 
 ZipKit build/installation issues
@@ -894,13 +905,6 @@ Patches are created like this:
 Patches are applied like this:
   cd fuego-1.0
   patch -p1 <fuego.patch
-
-
-CocoaLumberjack Patches
------------------------
-The only patch currently needed is the one that adds a static library Xcode
-project. This project is then used by the build to actually produce the
-libCocoaLumberjack.a file that Little Go links against.
 
 
 GTP engine profiles

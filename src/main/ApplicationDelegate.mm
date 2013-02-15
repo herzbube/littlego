@@ -54,8 +54,8 @@
 #import "../ui/UiElementMetrics.h"
 
 // Library includes
-#include <cocoalumberjack/DDTTYLogger.h>
-#include <cocoalumberjack/DDFileLogger.h>
+#include <lumberjack/DDTTYLogger.h>
+#include <lumberjack/DDFileLogger.h>
 
 // System includes
 #include <string>
