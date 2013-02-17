@@ -534,7 +534,6 @@ extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
 extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
-extern NSString* undoButtonIconResource;
 extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;

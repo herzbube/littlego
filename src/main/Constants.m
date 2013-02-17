@@ -146,7 +146,6 @@ NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plis
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
 NSString* computerPlayButtonIconResource = @"computer-play.png";
 NSString* passButtonIconResource = @"gopass.png";
-NSString* undoButtonIconResource = @"213-reply.png";
 NSString* pauseButtonIconResource = @"48-pause.png";
 NSString* continueButtonIconResource = @"40-forward.png";
 NSString* gameInfoButtonIconResource = @"tabular.png";
