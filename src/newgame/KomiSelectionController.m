@@ -131,13 +131,13 @@ enum NoHandicapGameSectionItem
   // Configure the navigation item representing this controller. This item will
   // be displayed by the navigation controller that wraps this controller in
   // its navigation bar.
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                        target:self
-                                                                                        action:@selector(cancel:)];
-  self.navigationItem.title = @"Komi";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+  self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                          target:self
-                                                                                         action:@selector(done:)];
+                                                                                         action:@selector(cancel:)] autorelease];
+  self.navigationItem.title = @"Komi";
+  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                          target:self
+                                                                                          action:@selector(done:)] autorelease];
 }
 
 // -----------------------------------------------------------------------------

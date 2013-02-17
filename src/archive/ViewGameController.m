@@ -143,10 +143,10 @@ enum GameAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Load"
-                                                                            style:UIBarButtonItemStylePlain
-                                                                           target:self
-                                                                           action:@selector(loadGame)];
+  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
+                                                                             style:UIBarButtonItemStylePlain
+                                                                            target:self
+                                                                            action:@selector(loadGame)] autorelease];
   [self updateLoadButtonState];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];

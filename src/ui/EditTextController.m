@@ -204,12 +204,12 @@
 {
   [super viewDidLoad];
 
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                        target:self
-                                                                                        action:@selector(cancel:)];
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+  self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                          target:self
-                                                                                         action:@selector(done:)];
+                                                                                         action:@selector(cancel:)] autorelease];
+  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                          target:self
+                                                                                          action:@selector(done:)] autorelease];
 
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.text];
 }

@@ -176,10 +176,10 @@ enum GtpEngineProfileSectionItem
   else
   {
     self.navigationItem.title = @"New Player";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
-                                                                              style:UIBarButtonItemStyleDone
-                                                                             target:self
-                                                                             action:@selector(create:)];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Create"
+                                                                               style:UIBarButtonItemStyleDone
+                                                                              target:self
+                                                                              action:@selector(create:)] autorelease];
     self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
   }
 }

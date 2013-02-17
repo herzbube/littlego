@@ -270,16 +270,16 @@ enum KomiSectionItem
   // Configure the navigation item representing this controller. This item will
   // be displayed by the navigation controller that wraps this controller in
   // its navigation bar.
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                        target:self
-                                                                                        action:@selector(cancel:)];
+  self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                         target:self
+                                                                                         action:@selector(cancel:)] autorelease];
   if (! self.loadGame)
     self.navigationItem.title = @"New Game";
   else
     self.navigationItem.title = @"Load Game";
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                         target:self
-                                                                                         action:@selector(done:)];
+  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                          target:self
+                                                                                          action:@selector(done:)] autorelease];
   self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
 

@@ -186,10 +186,10 @@ enum ProfileNotesSectionItem
   else
   {
     self.navigationItem.title = @"New Profile";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Create"
-                                                                              style:UIBarButtonItemStyleDone
-                                                                             target:self
-                                                                             action:@selector(create:)];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Create"
+                                                                               style:UIBarButtonItemStyleDone
+                                                                              target:self
+                                                                              action:@selector(create:)] autorelease];
     self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
   }
 }

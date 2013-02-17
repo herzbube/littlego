@@ -140,9 +140,9 @@ enum ResponseStringSectionItem
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   if (! [delegate.gtpCommandModel hasCommand:self.logItem.commandString])
   {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                           target:self
-                                                                                           action:@selector(addToCannedCommands:)];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                                            target:self
+                                                                                            action:@selector(addToCannedCommands:)] autorelease];
   }
 
   [[NSNotificationCenter defaultCenter] addObserver:self

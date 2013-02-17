@@ -215,12 +215,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
 {
-  UIBarButtonItem* submitButton = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
-                                                                   style:UIBarButtonItemStyleBordered
-                                                                  target:self
-                                                                  action:@selector(submitCommand:)];
+  UIBarButtonItem* submitButton = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
+                                                                    style:UIBarButtonItemStyleBordered
+                                                                   target:self
+                                                                   action:@selector(submitCommand:)] autorelease];
   self.navigationItem.rightBarButtonItem = submitButton;
-  [submitButton release];
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
 
   self.navigationItem.title = @"New command";

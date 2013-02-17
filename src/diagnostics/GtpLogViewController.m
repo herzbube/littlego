@@ -192,7 +192,7 @@
   // Undo all of the stuff that is happening in viewDidLoad
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.model = nil;
-  self.navigationItem.rightBarButtonItem = nil;
+  self.navigationItem.rightBarButtonItems = nil;
 }
 
 // -----------------------------------------------------------------------------

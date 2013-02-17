@@ -104,7 +104,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  self.label = [[UILabel alloc] initWithFrame:CGRectNull];
+  self.label = [[[UILabel alloc] initWithFrame:CGRectNull] autorelease];
   [self.contentView addSubview:self.label];
   self.label.tag = TextCellLabelTag;
   self.label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
@@ -113,7 +113,7 @@
   self.label.backgroundColor = [UIColor clearColor];
   self.label.hidden = YES;
 
-  self.textField = [[UITextField alloc] initWithFrame:CGRectNull];
+  self.textField = [[[UITextField alloc] initWithFrame:CGRectNull] autorelease];
   [self.contentView addSubview:self.textField];
   self.textField.tag = TextCellTextFieldTag;
   self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
