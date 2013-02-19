@@ -71,7 +71,10 @@ enum PlayCommandType
 {
   assert(aPoint);
   if (! aPoint)
+  {
+    DDLogError(@"%@: GoPoint object is nil", [self shortDescription]);
     return nil;
+  }
   self = [self initWithCommandType:PlayCommandTypePlayMove];
   self.moveType = GoMoveTypePlay;
   self.point = aPoint;
@@ -153,10 +156,18 @@ enum PlayCommandType
     {
       bool success = [self discardBoardPositions];
       if (! success)
+      {
+        DDLogError(@"%@: Aborting because discardBoardPositions failed", [self shortDescription]);
         return false;
+      }
     }
     bool success = [self playCommand];
-    return success;
+    if (! success)
+    {
+      DDLogError(@"%@: Aborting because playCommand failed", [self shortDescription]);
+      return false;
+    }
+    return true;
   }
   @finally
   {
@@ -190,7 +201,10 @@ enum PlayCommandType
   enum GoGameState gameState = game.state;
   assert(GoGameStateGameHasEnded != gameState);
   if (GoGameStateGameHasEnded == gameState)
+  {
+    DDLogError(@"%@: Unexpected game state: GoGameStateGameHasEnded", [self shortDescription]);
     return false;
+  }
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
   GoMoveModel* moveModel = game.moveModel;
@@ -217,6 +231,8 @@ enum PlayCommandType
           command = [[PlayMoveCommand alloc] initPass];
           break;
         default:
+          DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
+          assert(0);
           break;
       }
       break;
@@ -233,6 +249,8 @@ enum PlayCommandType
     }
     default:
     {
+      DDLogError(@"%@: Unexpected command type %d", [self shortDescription], self.playCommandType);
+      assert(0);
       break;
     }
   }

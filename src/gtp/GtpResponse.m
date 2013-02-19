@@ -54,7 +54,7 @@
     resp.rawResponse = response;
     resp.command = command;
     [resp autorelease];
-    DDLogInfo(@"Received %@", resp);
+    DDLogInfo(@"Received %@ (to %@)", resp, command);
   }
   return resp;
 }

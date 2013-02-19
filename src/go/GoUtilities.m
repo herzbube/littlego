@@ -131,8 +131,10 @@
   int boardSizeArrayIndex = (boardSize - GoBoardSizeMin) / 2;
   if (handicap < 2 || handicap > maxHandicaps[boardSizeArrayIndex])
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Specified handicap %d is out of range for GoBoardSize %d", handicap, boardSize];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:[NSString stringWithFormat:@"Specified handicap %d is out of range for GoBoardSize %d", handicap, boardSize]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -219,6 +221,7 @@
       }
       default:
       {
+        DDLogError(@"%@: Unsupported handicap %d", [self class], handicapIter);
         assert(0);
         break;
       }
@@ -241,8 +244,10 @@
   GoBoard* board = game.board;
   if (! board)
   {
+    NSString* errorMessage = @"No GoBoard object associated with specified GoGame";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"No GoBoard object associated with specified GoGame"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

@@ -81,6 +81,7 @@
     }
     default:
     {
+      DDLogError(@"%@: Unexpected cell type %d", self, type);
       assert(0);
       return tableView.rowHeight;
     }

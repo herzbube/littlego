@@ -77,12 +77,25 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a short description for this Command object that consists
+/// only of the class name and the object's address in memory.
+///
+/// This method is useful for logging a short but unique reference to the
+/// object.
+// -----------------------------------------------------------------------------
+- (NSString*) shortDescription
+{
+  return [NSString stringWithFormat:@"%@(%p)", NSStringFromClass([self class]), self];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief This default implementation exists only to prevent an "incomplete
 /// implementation" compiler warning. It always throws an exception and must be
 /// overridden by subclasses.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  DDLogError(@"%@: No override for doIt()", [self shortDescription]);
   [self doesNotRecognizeSelector:_cmd];
   return false;
 }

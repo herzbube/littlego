@@ -50,12 +50,21 @@
 - (bool) doIt
 {
   if (! [self syncGTPEngineClearBoard])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineClearBoard failed", [self shortDescription]);
     return false;
+  }
   // clear_board affects handicap (but not board size and komi)
   if (! [self syncGTPEngineHandicap])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed", [self shortDescription]);
     return false;
+  }
   if (! [self syncGTPEngineMoves])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineMoves failed", [self shortDescription]);
     return false;
+  }
   return true;
 }
 
@@ -114,6 +123,8 @@
         commandString = [commandString stringByAppendingString:@" PASS"];
         break;
       default:
+        DDLogError(@"%@: Unexpected move type %d", [self shortDescription], move.type);
+        assert(0);
         return false;
     }
     if (move == moveForCurrentBoardPosition)

@@ -35,7 +35,9 @@
 {
   NSString* sgfBackupFilePath = [self sgfBackupFilePath];
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:sgfBackupFilePath])
+  BOOL fileExists = [fileManager fileExistsAtPath:sgfBackupFilePath];
+  DDLogVerbose(@"%@: Checking file %@, file exists = %d", [self shortDescription], sgfBackupFilePath, fileExists);
+  if (fileExists)
   {
     [self restoreGame:sgfBackupFilePath];
     [self restoreBoardPosition];

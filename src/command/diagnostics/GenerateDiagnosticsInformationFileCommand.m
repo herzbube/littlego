@@ -139,7 +139,7 @@
   }
   @catch (NSException* exception)
   {
-    DDLogError(@"GenerateDiagnosticsInformationFileCommand failed with exception %@", exception);
+    DDLogError(@"%@ failed with exception %@", [self shortDescription], exception);
     success = false;
   }
   @finally
@@ -169,8 +169,10 @@
   BOOL success = [bugReportInfoDictionary writeToFile:bugReportInfoFilePath atomically:YES];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write bug report info to file %@", bugReportInfoFilePath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write bug report info to file %@", bugReportInfoFilePath]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -181,7 +183,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveInMemoryObjects
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Writing in-memory objects to file");
+  DDLogVerbose(@"%@: Writing in-memory objects to file", [self shortDescription]);
 
   NSMutableData* data = [NSMutableData data];
   NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
@@ -202,8 +204,10 @@
 
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write in-memory objects to file %@", archivePath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write in-memory objects to file %@", archivePath]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -214,7 +218,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveUserDefaults
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Writing user defaults to file");
+  DDLogVerbose(@"%@: Writing user defaults to file", [self shortDescription]);
 
   NSBundle* resourceBundle = [ApplicationDelegate sharedDelegate].resourceBundle;
   NSString* registrationDomainDefaultsPath = [resourceBundle pathForResource:registrationDomainDefaultsResource ofType:nil];
@@ -236,8 +240,10 @@
   BOOL success = [exportDictionary writeToFile:exportDictionaryPath atomically:YES];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write user defaults to file %@", exportDictionaryPath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write user defaults to file %@", exportDictionaryPath]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -249,7 +255,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveCurrentGameAsSgf
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Saving current game to .sgf file");
+  DDLogVerbose(@"%@: Saving current game to .sgf file", [self shortDescription]);
 
   // Temporarily change working directory so that the .sgf file goes into our
   // folder
@@ -267,8 +273,10 @@
 
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write current game to .sgf file %@, error while executing 'savesgf' GTP command", bugReportCurrentGameFileName];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write current game to .sgf file %@, error while executing 'savesgf' GTP command", bugReportCurrentGameFileName]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -280,7 +288,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveBoardScreenshot
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Making screen shot of Play view");
+  DDLogVerbose(@"%@: Making screen shot of Play view", [self shortDescription]);
 
   UIImage* image = [UiUtilities captureView:[[ApplicationDelegate sharedDelegate] tabView:TabTypePlay]];
   NSData* data = UIImagePNGRepresentation(image);
@@ -288,8 +296,10 @@
   BOOL success = [data writeToFile:screenshotPath atomically:YES];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to save screenshot to file %@", screenshotPath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to save screenshot to file %@", screenshotPath]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -301,7 +311,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveBoardAsSeenByGtpEngine
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Writing result of 'showboard' GTP command to file");
+  DDLogVerbose(@"%@: Writing result of 'showboard' GTP command to file", [self shortDescription]);
 
   NSString* boardAsSeenByGtpEngine = [self boardAsSeenByGtpEngine];
   [self writeBoardAsSeenByGtpEngine:boardAsSeenByGtpEngine
@@ -315,18 +325,18 @@
 // -----------------------------------------------------------------------------
 - (void) zipLogFiles
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Zipping log files");
+  DDLogVerbose(@"%@: Zipping log files", [self shortDescription]);
   NSString* logFolder = [[ApplicationDelegate sharedDelegate] logFolder];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:logFolder])
   {
-    DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Log folder not found");
+    DDLogInfo(@"%@: Log folder not found", [self shortDescription]);
     return;
   }
   NSArray* fileList = [fileManager contentsOfDirectoryAtPath:logFolder error:nil];
   if (0 == fileList.count)
   {
-    DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Log folder found but contains no files");
+    DDLogInfo(@"%@: Log folder found but contains no files", [self shortDescription]);
     return;
   }
 
@@ -337,8 +347,10 @@
                                       usingResourceFork:NO];
   if (result != zkSucceeded)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create logs archive file from folder %@, error code is %d", logFolder, result];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to create logs archive file from folder %@, error code is %d", logFolder, result]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -350,7 +362,7 @@
 // -----------------------------------------------------------------------------
 - (void) zipDiagnosticsInformationFolder
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Compressing folder");
+  DDLogVerbose(@"%@: Compressing folder", [self shortDescription]);
 
   ZKFileArchive* bugReportArchive = [ZKFileArchive archiveWithArchivePath:self.diagnosticsInformationFilePath];
   NSInteger result = [bugReportArchive deflateDirectory:self.diagnosticsInformationFolderPath
@@ -358,8 +370,10 @@
                                       usingResourceFork:NO];
   if (result != zkSucceeded)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create diagnostics information file from folder %@, error code is %d", self.diagnosticsInformationFolderPath, result];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to create diagnostics information file from folder %@, error code is %d", self.diagnosticsInformationFolderPath, result]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -375,8 +389,8 @@
 // -----------------------------------------------------------------------------
 - (void) setup
 {
-  NSString* logMessage = [NSString stringWithFormat:@"GenerateDiagnosticsInformationFileCommand: Creating folder %@", self.diagnosticsInformationFolderPath];
-  DDLogInfo(@"%@", logMessage);
+  NSString* logMessage = [NSString stringWithFormat:@"%@: Creating folder %@", [self shortDescription], self.diagnosticsInformationFolderPath];
+  DDLogVerbose(@"%@", logMessage);
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFilePath];
   [PathUtilities createFolder:self.diagnosticsInformationFolderPath removeIfExists:true];
@@ -391,7 +405,7 @@
 // -----------------------------------------------------------------------------
 - (void) cleanup
 {
-  DDLogInfo(@"GenerateDiagnosticsInformationFileCommand: Cleaning up");
+  DDLogVerbose(@"%@: Cleaning up", [self shortDescription]);
 
   [PathUtilities deleteItemIfExists:self.diagnosticsInformationFolderPath];
 }
@@ -407,8 +421,10 @@
   bool success = gtpCommand.response.status;
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to execute 'showboard' GTP command, response is %@", [gtpCommand.response parsedResponse]];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to execute 'showboard' GTP command, response is %@", [gtpCommand.response parsedResponse]]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -426,8 +442,10 @@
                                            error:nil];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write result of 'showboard' GTP command to file %@", filePath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Failed to write result of 'showboard' GTP command to file %@", filePath]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

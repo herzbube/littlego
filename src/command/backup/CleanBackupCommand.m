@@ -40,7 +40,10 @@
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:sgfBackupFilePath])
-    [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
+  {
+    BOOL result = [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
+    DDLogVerbose(@"%@: Removed file %@, result = %d", [self shortDescription], sgfBackupFilePath, result);
+  }
 
   return true;
 }

@@ -80,6 +80,7 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
   [fileManager changeCurrentDirectoryPath:appSupportDirectory];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], appSupportDirectory);
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
   GtpCommand* command = [GtpCommand command:commandString];
@@ -88,6 +89,7 @@
 
   // Switch back to the original directory
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
 }
 
 // -----------------------------------------------------------------------------

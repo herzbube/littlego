@@ -640,8 +640,10 @@ enum MaxGamesCategory
       return @"Unlimited";
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -685,8 +687,10 @@ enum MaxGamesCategory
       return fuegoMaxGamesMaximum;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

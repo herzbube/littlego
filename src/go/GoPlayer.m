@@ -84,8 +84,10 @@
 {
   if (! player)
   {
+    NSString* errorMessage = @"Player argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Player argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -109,8 +111,10 @@
 {
   if (! player)
   {
+    NSString* errorMessage = @"Player argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Player argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -167,8 +171,10 @@
 
   if (! self.player)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Player object not found for player UUID %@", uuid];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:[NSString stringWithFormat:@"Player object not found for player UUID %@", uuid]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

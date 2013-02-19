@@ -73,8 +73,10 @@
 {
   if (! vertex || ! board)
   {
+    NSString* errorMessage = @"GoVertex or GoBoard argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"GoVertex or GoBoard argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -344,7 +346,10 @@
 - (bool) isEqualToPoint:(GoPoint*)point
 {
   if (! point)
+  {
+    DDLogWarn(@"%@: GoPoint object is nil for isEqualToPoint", self);
     return false;
+  }
   // Don't rely on instance identity, it's better to compare the vertex
   return [self.vertex isEqualToVertex:point.vertex];
 }

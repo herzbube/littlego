@@ -96,6 +96,8 @@
     self.fuegoMaxGames = [[dictionary valueForKey:fuegoMaxGamesKey] unsignedLongLongValue];
   }
   assert([self.uuid length] > 0);
+  if ([self.uuid length] <= 0)
+    DDLogError(@"%@: UUID length <= 0", self);
 
   return self;
 }
@@ -285,8 +287,10 @@
       break;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Playing strength %d is invalid", playingStrength];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Playing strength %d is invalid", playingStrength]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

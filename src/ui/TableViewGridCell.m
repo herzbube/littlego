@@ -167,6 +167,7 @@ static NSString* gridLineColor = @"A9ABAD";
       }
       default:
       {
+        DDLogError(@"%@: Unexpected column style %d", self, columnStyle);
         assert(0);
         continue;
       }

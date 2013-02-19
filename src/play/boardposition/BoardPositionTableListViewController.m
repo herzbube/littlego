@@ -768,6 +768,7 @@
 {
   if (tableView == self.currentBoardPositionTableView)
   {
+    DDLogError(@"%@: Unexpected table view %@", self, tableView);
     assert(0);
     return;
   }

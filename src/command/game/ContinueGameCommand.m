@@ -49,11 +49,17 @@
   GoGame* sharedGame = [GoGame sharedGame];
   assert(sharedGame);
   if (! sharedGame)
+  {
+    DDLogError(@"%@: GoGame object is nil", [self shortDescription]);
     return nil;
+  }
   enum GoGameState gameState = sharedGame.state;
   assert(GoGameStateGameIsPaused == gameState);
   if (GoGameStateGameIsPaused != gameState)
+  {
+    DDLogError(@"%@: Unexpected game state %d", [self shortDescription], gameState);
     return nil;
+  }
 
   self.game = sharedGame;
 
@@ -75,7 +81,10 @@
 - (bool) doIt
 {
   if (GoGameTypeComputerVsComputer != self.game.type)
+  {
+    DDLogError(@"%@: Unexpected game type %d", [self shortDescription], self.game.type);
     return false;
+  }
 
   [self.game continue];
 

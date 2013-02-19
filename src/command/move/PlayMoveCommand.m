@@ -54,7 +54,10 @@
 {
   assert(aPoint);
   if (! aPoint)
+  {
+    DDLogError(@"%@: GoPoint object is nil", [self shortDescription]);
     return nil;
+  }
   self = [self initWithMoveType:GoMoveTypePlay];
   self.point = aPoint;
   return self;
@@ -84,11 +87,17 @@
   GoGame* sharedGame = [GoGame sharedGame];
   assert(sharedGame);
   if (! sharedGame)
+  {
+    DDLogError(@"%@: GoGame object is nil", [self shortDescription]);
     return nil;
+  }
   enum GoGameState gameState = sharedGame.state;
   assert(GoGameStateGameHasEnded != gameState);
   if (GoGameStateGameHasEnded == gameState)
+  {
+    DDLogError(@"%@: Unexpected game state %d", [self shortDescription], gameState);
     return nil;
+  }
 
   self.game = sharedGame;
   self.moveType = aMoveType;
@@ -137,6 +146,7 @@
       [self.game pass];
       break;
     default:
+      DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
       assert(0);
       return false;
   }
@@ -153,6 +163,7 @@
       commandString = [commandString stringByAppendingString:@"pass"];
       break;
     default:
+      DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
       assert(0);
       return false;
   }

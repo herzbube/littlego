@@ -109,10 +109,12 @@
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
   GoGame* newGame = [GoGame newGame];
+  DDLogVerbose(@"%@: Created new game %@", [self shortDescription], newGame);
 
   // Replace the delegate's reference; an old GoGame object is now deallocated
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   appDelegate.game = newGame;
+  DDLogVerbose(@"%@: Assigned game object to app delegate", [self shortDescription]);
 
   // Configure the new GoGame object
   NewGameModel* newGameModel = appDelegate.theNewGameModel;
@@ -122,6 +124,14 @@
   newGame.playerBlack = [GoPlayer newGameBlackPlayer];
   newGame.playerWhite = [GoPlayer newGameWhitePlayer];
   newGame.type = newGameModel.gameType;
+  DDLogVerbose(@"%@: Configured game object: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@, playerWhite = %@, type = %d",
+               [self shortDescription],
+               newGame.board,
+               newGame.komi,
+               newGame.handicapPoints,
+               newGame.playerBlack,
+               newGame.playerWhite,
+               newGame.type);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what

@@ -83,11 +83,17 @@
   GoGame* sharedGame = [GoGame sharedGame];
   assert(sharedGame);
   if (! sharedGame)
+  {
+    DDLogError(@"%@: GoGame object is nil", [self shortDescription]);
     return nil;
+  }
   enum GoGameState gameState = sharedGame.state;
   assert(GoGameStateGameHasEnded != gameState);
   if (GoGameStateGameHasEnded == gameState)
+  {
+    DDLogError(@"%@: Unexpected game state %d", [self shortDescription], gameState);
     return nil;
+  }
 
   self.game = sharedGame;
   self.illegalMove = nil;
@@ -161,7 +167,9 @@
     }
     else
     {
-      ;  // TODO vertex was invalid; do something...
+      DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
+      assert(0);
+      return;
     }
   }
 

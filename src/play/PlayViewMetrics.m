@@ -158,6 +158,8 @@
     // width is added to the *OUTSIDE* of the board (see GridLayerDelegate).
     int numberOfPointsAvailableForCells = self.boardSideLength - newBoardSize * self.playViewModel.normalLineWidth;
     assert(numberOfPointsAvailableForCells >= 0);
+    if (numberOfPointsAvailableForCells < 0)
+      DDLogError(@"%@: Negative value %d for numberOfPointsAvailableForCells", self, numberOfPointsAvailableForCells);
     // +1 to self.numberOfCells because we need one-half of a cell on both sides
     // of the board (top/bottom or left/right) to draw, for instance, a stone
     self.cellWidth = floor(numberOfPointsAvailableForCells / (self.numberOfCells + 1));
@@ -190,8 +192,10 @@
     int topLeftPointMargin = floor((self.boardSideLength - widthForCentering) / 2);
     if (topLeftPointMargin < self.cellWidth / 2.0)
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Insufficient space to draw stones: topLeftPointMargin %d is below half-cell width", topLeftPointMargin];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:[NSString stringWithFormat:@"Insufficient space to draw stones: topLeftPointMargin %d is below half-cell width", topLeftPointMargin]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

@@ -368,6 +368,10 @@
       self.gameInfoScore = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:false];
       [self.gameInfoScore calculateWaitUntilDone:true];
     }
+    else
+    {
+      DDLogError(@"%@: GoScore object not nil: %@", self, self.gameInfoScore);
+    }
     score = self.gameInfoScore;
   }
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self score:score];
@@ -384,12 +388,13 @@
   [self.delegate navigationBarController:self
                              makeVisible:false
             gameInfoViewController:controller];
-  assert(self.gameInfoViewController == controller);
   self.gameInfoViewController = nil;
   // Get rid of temporary scoring object
   if (! self.scoringModel.scoringMode)
   {
     assert(self.gameInfoScore);
+    if (! self.gameInfoScore)
+      DDLogError(@"%@: GoScore object is nil", self);
     self.gameInfoScore = nil;
   }
 }

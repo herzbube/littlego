@@ -208,6 +208,8 @@
 
   GtpLogItem* logItem = [self dequeueItemWithNoResponse];
   assert(logItem != nil);
+  if (! logItem)
+    DDLogError(@"%@: GtpLogItem object is nil", self);
 
   // Check if the item was kicked out of the log while the response was still
   // outstanding. Stuff like clearing the log, or a massive amount of trimming,
@@ -242,7 +244,10 @@
 {
   assert(newSize >= 1);
   if (newSize < 1)
+  {
+    DDLogError(@"%@: Attempting to set illegal log size %d", self, newSize);
     return;
+  }
 
   int oldSize = _gtpLogSize;
   _gtpLogSize = newSize;

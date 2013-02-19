@@ -243,6 +243,11 @@
 // -----------------------------------------------------------------------------
 - (void) calculateWaitUntilDone:(bool)waitUntilDone
 {
+  DDLogVerbose(@"%@: calculateWaitUntilDone invoked; waitUntilDone = %d, scoringInProgress = %d, game = %@",
+               self,
+               waitUntilDone,
+               self.scoringInProgress,
+               self.game);
   if (self.scoringInProgress)
     return;
   if (! self.game)
@@ -285,12 +290,14 @@
     if (self.territoryScoresAvailable)
     {
       bool success = [self initializeBoard];
+      DDLogVerbose(@"%@: initializeBoard returned with result = %d", self, success);
       if (! success)
       {
         self.lastCalculationHadError = true;
         return;
       }
       success = [self updateTerritoryColor];
+      DDLogVerbose(@"%@: updateTerritoryColor returned with result = %d", self, success);
       if (! success)
       {
         self.lastCalculationHadError = true;
@@ -366,6 +373,7 @@
       return @"Game is a tie";
     default:
     {
+      DDLogError(@"%@: Unexpected GoGameResult value %d", self, self.result);
       assert(0);
       break;
     }
@@ -387,6 +395,7 @@
   if (self.boardIsInitialized)
     return true;
   self.boardIsInitialized = true;
+  DDLogVerbose(@"%@: initializing the board, number of regions = %d", self, self.allRegions.count);
 
   // Initialize territory color
   for (GoBoardRegion* region in self.allRegions)
@@ -411,6 +420,7 @@
         GoPoint* point = [self.game.board pointAtVertex:vertex];
         if (! [point hasStone])
         {
+          DDLogError(@"%@: GTP engine reports vertex %@ is dead stone, but point %@ has no stone", self, vertex, point);
           assert(0);
           return false;
         }
@@ -441,6 +451,7 @@
 {
   if (! self.boardIsInitialized)
     return;
+  DDLogVerbose(@"%@: uninitializing the board, number of regions = %d", self, self.allRegions.count);
   self.boardIsInitialized = false;
   for (GoBoardRegion* region in self.allRegions)
     region.scoringMode = false;  // forget cached values
@@ -550,7 +561,10 @@
             continue;
           [regionsAlreadyProcessed addObject:adjacentRegionTwiceRemoved];
           if ([adjacentRegionTwiceRemoved color] == GoColorNone)
-            assert(0);  // inconsistency! regions adjacent to an empty region cannot be empty, too
+          {
+            DDLogError(@"%@: Inconsistency - regions adjacent to an empty region cannot be empty, too, adjacent empty region = %@", self, adjacentRegionTwiceRemoved);
+            assert(0);
+          }
           else
             [adjacentStoneGroupsToExamine addObject:adjacentRegionTwiceRemoved];
         }
@@ -569,7 +583,8 @@
     {
       if (! [adjacentStoneGroupToExamine isStoneGroup])
       {
-        assert(0);  // error in loop above, we should have collected only stone groups
+        DDLogError(@"%@: Error in previous loop, we should have collected only stone groups, adjacent empty region = %@", self, adjacentStoneGroupToExamine);
+        assert(0);
         continue;
       }
       enum GoColor colorOfAdjacentStoneGroupToExamine = [adjacentStoneGroupToExamine color];
@@ -631,7 +646,8 @@
             region.territoryColor = GoColorBlack;
             break;
           default:
-            return false;  // error! stone groups must be either black or white
+            DDLogError(@"%@: Stone groups must be either black or white, region %@ has color %d", self, region, [region color]);
+            return false;
         }
       }
     }
@@ -650,7 +666,10 @@
     for (GoBoardRegion* adjacentRegion in [emptyRegion adjacentRegions])
     {
       if (! [adjacentRegion isStoneGroup])
-        return false;  // error! regions adjacent to an empty region can only be stone groups
+      {
+        DDLogError(@"%@: Regions adjacent to an empty region can only be stone groups, adjacent region = %@", self, adjacentRegion);
+        return false;
+      }
       if (adjacentRegion.deadStoneGroup)
       {
         deadSeen = true;
@@ -663,6 +682,7 @@
             whiteDeadSeen = true;
             break;
           default:
+            DDLogError(@"%@: Stone groups must be either black or white, adjacent dead stone group region %@ has color %d", self, adjacentRegion, [adjacentRegion color]);
             return false;  // error! stone group must be either black or white
         }
       }
@@ -678,7 +698,8 @@
             whiteAliveSeen = true;
             break;
           default:
-            return false;  // error! stone group must be either black or white
+            DDLogError(@"%@: Stone groups must be either black or white, adjacent alive stone group region %@ has color %d", self, adjacentRegion, [adjacentRegion color]);
+            return false;
         }
       }
     }
@@ -891,6 +912,7 @@
 // -----------------------------------------------------------------------------
 - (void) reinitialize
 {
+  DDLogVerbose(@"%@: reinitialize invoked; territoryScoresAvailable = %d", self, self.territoryScoresAvailable);
   [self resetValues];
   if (self.territoryScoresAvailable)
     [self uninitializeBoard];

@@ -98,8 +98,10 @@
     case GoBoardSizeUndefined:
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Board size %d is invalid", size];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -139,8 +141,10 @@
     }
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Board size %d is invalid", size];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Board size %d is invalid", size]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

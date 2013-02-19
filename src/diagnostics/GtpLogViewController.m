@@ -385,6 +385,8 @@
   {
     self.updateScheduledByGtpLogItemChanged = false;
     assert(! self.updateScheduledByGtpLogContentChanged);
+    if (self.updateScheduledByGtpLogContentChanged)
+      DDLogError(@"%@: self.updateScheduledByGtpLogContentChanged is true", self);
   }
   else
   {

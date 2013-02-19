@@ -88,6 +88,7 @@
       self.documentGenerator = [[[DocumentGenerator alloc] initWithFileContent:resourceContent] autorelease];
       break;
     default:
+      DDLogError(@"%@: Unexpected tab type %d", self, tabType);
       assert(0);
       self.documentGenerator = nil;
   }

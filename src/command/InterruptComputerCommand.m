@@ -51,10 +51,16 @@
   GoGame* sharedGame = [GoGame sharedGame];
   assert(sharedGame);
   if (! sharedGame)
+  {
+    DDLogError(@"%@: GoGame object is nil", [self shortDescription]);
     return nil;
+  }
   assert(sharedGame.isComputerThinking);
   if (! sharedGame.isComputerThinking)
+  {
+    DDLogError(@"%@: Computer is not thinking", [self shortDescription]);
     return nil;
+  }
 
   return self;
 }

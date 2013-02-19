@@ -360,8 +360,10 @@ enum KomiSectionItem
           return MaxPlayersSectionItemComputerVsComputer;
         default:
         {
+          NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+          DDLogError(@"%@: %@", self, errorMessage);
           NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                           reason:[NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected]
+                                                           reason:errorMessage
                                                          userInfo:nil];
           @throw exception;
         }
@@ -748,8 +750,10 @@ enum KomiSectionItem
     }
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -795,8 +799,10 @@ enum KomiSectionItem
     }
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -846,8 +852,10 @@ enum KomiSectionItem
     }
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -922,8 +930,10 @@ enum KomiSectionItem
     }
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -1006,8 +1016,10 @@ enum KomiSectionItem
       return 2;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", gameType];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", gameType]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -1033,8 +1045,10 @@ enum KomiSectionItem
       return GoGameTypeComputerVsComputer;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %d", segmentIndex];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Invalid segment index: %d", segmentIndex]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

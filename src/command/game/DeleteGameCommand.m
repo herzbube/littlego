@@ -70,6 +70,7 @@
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:filePath error:nil];
+  DDLogVerbose(@"%@: Removed game file %@, result = %d", [self shortDescription], filePath, success);
   if (success)
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return success;

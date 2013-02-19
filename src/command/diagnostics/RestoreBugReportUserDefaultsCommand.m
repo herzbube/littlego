@@ -78,10 +78,16 @@
 {
   bool success = [self unzipDiagnosticsInformationFile];
   if (! success)
+  {
+    DDLogError(@"%@: Aborting because unzipDiagnosticsInformationFile failed", [self shortDescription]);
     return false;
+  }
   success = [self restoreUserDefaults];
   if (! success)
+  {
+    DDLogError(@"%@: Aborting because restoreUserDefaults failed", [self shortDescription]);
     return false;
+  }
   return true;
 }
 
@@ -100,14 +106,14 @@
   NSInteger result = [diagnosticsInformationArchive inflateToDiskUsingResourceFork:NO];
   if (zkSucceeded != result)
   {
-    DDLogError(@"RestoreBugReportUserDefaultsCommand: Failed to extract content of diagnostics information file");
+    DDLogError(@"%@: Failed to extract content of diagnostics information file", [self shortDescription]);
     return false;
   }
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:[BugReportUtilities diagnosticsInformationFolderPath]])
   {
-    NSString* logMessage = [NSString stringWithFormat:@"RestoreBugReportUserDefaultsCommand: Diagnostics information file did not expand to expected folder %@", diagnosticsInformationFolderPath];
+    NSString* logMessage = [NSString stringWithFormat:@"%@: Diagnostics information file did not expand to expected folder %@", [self shortDescription], diagnosticsInformationFolderPath];
     DDLogError(@"%@", logMessage);
     return false;
   }
@@ -124,7 +130,7 @@
   NSDictionary* bugReportUserDefaults = [NSDictionary dictionaryWithContentsOfFile:bugReportUserDefaultsFilePath];
   if (! bugReportUserDefaults)
   {
-    DDLogError(@"RestoreBugReportUserDefaultsCommand: Failed to load user defaults from diagnostics information packge");
+    DDLogError(@"%@: Failed to load user defaults from diagnostics information packge", [self shortDescription]);
     return false;
   }
 

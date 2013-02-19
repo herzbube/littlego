@@ -72,12 +72,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (! self.gameName)
-    return false;
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  if (! model)
-    return false;
-
   NSError* error;
 
   // The GTP engine saves its file into the temporary directory, but the final
@@ -90,6 +85,7 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
   [fileManager changeCurrentDirectoryPath:temporaryDirectory];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], temporaryDirectory);
   // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfTemporaryFileName];
   GtpCommand* command = [GtpCommand command:commandString];
@@ -99,12 +95,14 @@
   // Switch back as soon as possible; from now on operations use the full path
   // to the temporary file
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
 
   if (! command.response.status)
   {
     [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
     assert(0);
     NSString* errorMessage = [NSString stringWithFormat:@"Internal error: GTP engine failed to process 'savesgf' command, reason: %@", [command.response parsedResponse]];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     [self showAlertWithMessage:errorMessage];
     return false;
   }
@@ -114,6 +112,7 @@
   if ([fileManager fileExistsAtPath:filePath])
   {
     BOOL success = [fileManager removeItemAtPath:filePath error:&error];
+    DDLogVerbose(@"%@: Removed file %@, result = %d", [self shortDescription], filePath, success);
     if (! success)
     {
       [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
@@ -124,6 +123,7 @@
   }
 
   BOOL success = [fileManager moveItemAtPath:sgfTemporaryFilePath toPath:filePath error:&error];
+  DDLogVerbose(@"%@: Moved file %@ to %@, result = %d", [self shortDescription], sgfTemporaryFilePath, filePath, success);
   if (! success)
   {
     [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];

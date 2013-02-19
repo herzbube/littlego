@@ -137,6 +137,12 @@
 - (bool) doIt
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  DDLogVerbose(@"%@: newBoardPosition = %d, currentBoardPosition = %d, numberOfBoardPositions = %d",
+               [self shortDescription],
+               self.newBoardPosition,
+               boardPosition.currentBoardPosition,
+               boardPosition.numberOfBoardPositions);
+
   if (self.newBoardPosition < 0 || self.newBoardPosition >= boardPosition.numberOfBoardPositions)
     return false;
 

@@ -127,7 +127,10 @@ static const int maxStepsForReplayMoves = 10;
 - (bool) doIt
 {
   if (! self.filePath)
+  {
+    DDLogError(@"%@: No file provided", [self shortDescription]);
     return false;
+  }
 
   @try
   {
@@ -550,8 +553,7 @@ static const int maxStepsForReplayMoves = 10;
     {
       if (hasResigned)
       {
-        // If a resign move came in, it should have been the last move.
-        // Our reaction to this is to simply discard any follow-up moves.
+        DDLogError(@"%@: One or more moves after resign, discarding this and any follow-up moves", [self shortDescription]);
         assert(0);
         break;
       }

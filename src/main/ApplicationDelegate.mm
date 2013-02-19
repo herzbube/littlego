@@ -117,6 +117,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 + (ApplicationDelegate*) sharedDelegate
 {
   assert(sharedDelegate != nil);
+  if (! sharedDelegate)
+    DDLogError(@"Shared ApplicationDelegate instance is nil");
   return sharedDelegate;
 }
 
@@ -415,8 +417,10 @@ static ApplicationDelegate* sharedDelegate = nil;
     bool success = [command submit];
     if (! success)
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to restore user defaults while launching in mode ApplicationLaunchModeDiagnostics"];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                       reason:[NSString stringWithFormat:@"Failed to restore user defaults while launching in mode ApplicationLaunchModeDiagnostics"]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

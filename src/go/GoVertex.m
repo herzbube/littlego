@@ -59,8 +59,10 @@
 {
   if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
   {
+    NSString* errorMessage = @"Numeric vertex is invalid";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:@"Numeric vertex is invalid"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -93,8 +95,10 @@
 {
   if (! stringValue || [stringValue length] < 2 || [stringValue length] > 3)
   {
+    NSString* errorMessage = @"String vertex is nil or otherwise malformed";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"String vertex is nil or otherwise malformed"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -109,8 +113,10 @@
 
   if (charVertexX == charI)
   {
+    NSString* errorMessage = @"Letter 'I' may not be used";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:@"Letter 'I' may not be used"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -123,8 +129,10 @@
 
   if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
   {
+    NSString* errorMessage = @"String vertex is invalid";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:@"String vertex is invalid"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

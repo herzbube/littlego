@@ -88,7 +88,10 @@
 {
   [self unarchiveInMemoryObjects];
   if (! self.unarchivedGame)
+  {
+    DDLogError(@"%@: Aborting because self.unarchivedGame is nil", [self shortDescription]);
     return false;
+  }
   [self fixObjectReferences];
   [self loadCurrentGameFromSgf];
   return true;
@@ -99,7 +102,7 @@
 // -----------------------------------------------------------------------------
 - (void) unarchiveInMemoryObjects
 {
-  DDLogInfo(@"RestoreBugReportApplicationState: Unarchiving in-memory objects");
+  DDLogVerbose(@"%@: Unarchiving in-memory objects", [self shortDescription]);
 
   NSString* archiveFilePath = [[BugReportUtilities diagnosticsInformationFolderPath] stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];
   NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
@@ -115,7 +118,7 @@
 // -----------------------------------------------------------------------------
 - (void) fixObjectReferences
 {
-  DDLogInfo(@"RestoreBugReportApplicationState: Fixing object references");
+  DDLogVerbose(@"%@: Fixing object references", [self shortDescription]);
 
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   applicationDelegate.game = self.unarchivedGame;
@@ -140,7 +143,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadCurrentGameFromSgf
 {
-  DDLogInfo(@"RestoreBugReportApplicationState: Loading current game from .sgf file");
+  DDLogVerbose(@"%@: Loading current game from .sgf file", [self shortDescription]);
 
   // Temporarily change working directory so that Fuego finds the .sgf file
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -157,8 +160,10 @@
 
   if (! success)
   {
+    NSString* errorMessage = @"Failed to load current game from .sgf file";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:@"Failed to load current game from .sgf file"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

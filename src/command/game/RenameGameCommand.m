@@ -78,6 +78,7 @@
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
+  DDLogVerbose(@"%@: Moved file %@ to %@, result = %d", [self shortDescription], oldPath, newPath, success);
   if (success)
   {
     // Must update the ArchiveGame before posting the notification. Reason: The

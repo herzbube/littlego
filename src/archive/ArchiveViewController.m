@@ -179,7 +179,10 @@
 {
   assert(editingStyle == UITableViewCellEditingStyleDelete);
   if (editingStyle != UITableViewCellEditingStyleDelete)
+  {
+    DDLogError(@"%@: Unexpected editingStyle %d", self, editingStyle);
     return;
+  }
 
   ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
   DeleteGameCommand* command = [[DeleteGameCommand alloc] initWithGame:game];

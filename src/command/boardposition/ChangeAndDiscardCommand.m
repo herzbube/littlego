@@ -59,16 +59,28 @@
     // position, ChangeBoardPositionCommand is executed synchronously.
     bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
     if (! success)
+    {
+      DDLogError(@"%@: Aborting because ChangeBoardPositionCommand execution failed", [self shortDescription]);
       return false;
+    }
     success = [self revertGameStateIfNecessary];
     if (! success)
+    {
+      DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
       return false;
+    }
     success = [self discardMoves];
     if (! success)
+    {
+      DDLogError(@"%@: Aborting because discardMoves failed", [self shortDescription]);
       return false;
+    }
     success = [[[BackupGameCommand alloc] init] submit];
     if (! success)
+    {
+      DDLogError(@"%@: Aborting because BackupGameCommand execution failed", [self shortDescription]);
       return false;
+    }
     return success;
   }
   @finally
@@ -114,7 +126,10 @@
   enum GoGameState gameState = game.state;
   assert(GoGameStateGameHasEnded != gameState);
   if (GoGameStateGameHasEnded == gameState)
+  {
+    DDLogError(@"%@: Unexpected game state: GoGameStateGameHasEnded", [self shortDescription]);
     return false;
+  }
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
   GoMoveModel* moveModel = game.moveModel;

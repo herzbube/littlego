@@ -145,8 +145,10 @@
       return self.computerPlayerSelfPlayUUID;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.gameType];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.gameType]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -178,8 +180,10 @@
       return self.computerPlayerSelfPlayUUID;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.gameType];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:[NSString stringWithFormat:@"Invalid game type: %d", self.gameType]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

@@ -29,7 +29,10 @@
 {
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeComputerVsComputer != game.type)
+  {
+    DDLogError(@"%@: Unexpected game type %d", [self shortDescription], game.type);
     return false;
+  }
   [game pause];
   return true;
 }

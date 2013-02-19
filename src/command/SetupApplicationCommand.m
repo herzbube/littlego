@@ -118,8 +118,10 @@
     bool success = [command submit];
     if (! success)
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"];
+      DDLogError(@"%@: %@", [self shortDescription], errorMessage);
       NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                       reason:[NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

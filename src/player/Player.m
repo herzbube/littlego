@@ -101,6 +101,8 @@
     self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
   }
   assert([self.uuid length] > 0);
+  if ([self.uuid length] <= 0)
+    DDLogError(@"%@: UUID length <= 0", self);
 
   return self;
 }

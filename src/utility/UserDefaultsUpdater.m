@@ -95,8 +95,10 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
     id registrationDomainVersionInUserDefaults = [userDefaults objectForKey:userDefaultsVersionRegistrationDomainKey];
     if (registrationDomainVersionInUserDefaults)
     {
+      NSString* errorMessage = @"UserDefaultsUpdater: Aborting upgrade, registration domain defaults are already registered";
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:@"UserDefaultsUpdater: Aborting upgrade, registration domain defaults are already registered"
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

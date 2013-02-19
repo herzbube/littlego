@@ -200,22 +200,28 @@
       GoGameStateGameHasStarted != self.state &&
       GoGameStateGameIsPaused != self.state)
   {
+    NSString* errorMessage = @"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (! aPoint)
   {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (! [self isLegalMove:aPoint])
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal move: %@", aPoint.vertex];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:[NSString stringWithFormat:@"Point argument is not a legal move: %@", aPoint.vertex]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -227,8 +233,10 @@
   }
   @catch (NSException* exception)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex, exception];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
-                                                        reason:[NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex, exception]
+                                                        reason:errorMessage
                                                       userInfo:nil];
     @throw newException;
   }
@@ -256,8 +264,10 @@
       GoGameStateGameHasStarted != self.state &&
       GoGameStateGameIsPaused != self.state)
   {
+    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -295,8 +305,10 @@
       GoGameStateGameHasStarted != self.state &&
       GoGameStateGameIsPaused != self.state)
   {
+    NSString* errorMessage = @"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -326,15 +338,19 @@
 {
   if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
   {
+    NSString* errorMessage = @"Pause is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Pause is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (GoGameTypeComputerVsComputer != self.type)
   {
+    NSString* errorMessage = @"Pause is possible only in a computer vs. computer game";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Pause is possible only in a computer vs. computer game"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -356,15 +372,19 @@
 {
   if (GoGameStateGameIsPaused != self.state)
   {
+    NSString* errorMessage = @"Continue is possible only while GoGame object is in state GoGameStateGameIsPaused";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Continue is possible only while GoGame object is in state GoGameStateGameIsPaused"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (GoGameTypeComputerVsComputer != self.type)
   {
+    NSString* errorMessage = @"Continue is possible only in a computer vs. computer game";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Continue is possible only in a computer vs. computer game"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -383,8 +403,10 @@
 {
   if (! point)
   {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -507,15 +529,19 @@
 {
   if (GoGameStateGameHasNotYetStarted != self.state)
   {
+    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasNotYetStarted";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"Handicap can only be set while GoGame object is in state GoGameStateGameHasNotYetStarted"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (! newValue)
   {
+    NSString* errorMessage = @"Point list argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point list argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -585,8 +611,10 @@
 {
   if (GoGameStateGameHasEnded != self.state)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Game state can only be reverted from GoGameStateGameHasEnded. Current game state = %d", self.state];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:[NSString stringWithFormat:@"Game state can only be reverted from GoGameStateGameHasEnded. Current game state = %d", self.state]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

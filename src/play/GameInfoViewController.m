@@ -554,6 +554,7 @@ enum BoardPositionSectionItem
             }
             default:
             {
+              DDLogError(@"%@: Unexpected game state %d", self, game.state);
               assert(0);
               break;
             }
@@ -586,6 +587,7 @@ enum BoardPositionSectionItem
               default:
               {
                 cell.detailTextLabel.text = @"Unknown";
+                DDLogError(@"%@: Unexpected reasonForGameHasEnded %d", self, game.reasonForGameHasEnded);
                 assert(0);
                 break;
               }
@@ -614,6 +616,7 @@ enum BoardPositionSectionItem
               default:
               {
                 cell.detailTextLabel.text = @"n/a";
+                DDLogError(@"%@: Unexpected game state %d", self, game.state);
                 assert(0);
                 break;
               }
@@ -680,7 +683,10 @@ enum BoardPositionSectionItem
           if (profile)
             cell.detailTextLabel.text = profile.name;
           else
+          {
+            DDLogError(@"%@: Active GtpEngineProfile is nil", self);
             cell.detailTextLabel.text = @"n/a";
+          }
           break;
         }
         default:

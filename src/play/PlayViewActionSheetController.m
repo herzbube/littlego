@@ -180,6 +180,7 @@ enum ActionSheetButton
         title = @"New game";
         break;
       default:
+        DDLogError(@"%@: Showing action sheet with unexpected button type %d", self, iterButtonIndex);
         assert(0);
         break;
     }
@@ -219,7 +220,6 @@ enum ActionSheetButton
     return;
   }
   id object = [self.buttonIndexes objectForKey:[NSNumber numberWithInt:buttonIndex]];
-  assert(object != nil);
   enum ActionSheetButton button = [object intValue];
   switch (button)
   {
@@ -239,6 +239,7 @@ enum ActionSheetButton
       [self newGame];
       break;
     default:
+      DDLogError(@"%@: Dismissing action sheet with unexpected button type %d", self, button);
       assert(0);
       break;
   }
@@ -347,6 +348,7 @@ enum ActionSheetButton
           self.saveGameName = nil;
           break;
         default:
+          DDLogError(@"%@: Dismissing alert view with unexpected button type %d", self, buttonIndex);
           assert(0);
           break;
       }

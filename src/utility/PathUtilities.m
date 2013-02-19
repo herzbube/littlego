@@ -47,8 +47,10 @@
                                               error:nil];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to create folder %@", path];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Unable to create folder %@", path]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -68,8 +70,10 @@
   BOOL success = [fileManager removeItemAtPath:path error:nil];
   if (! success)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to remove file or folder %@", path];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Unable to remove file or folder %@", path]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

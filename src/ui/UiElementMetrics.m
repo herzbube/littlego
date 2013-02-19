@@ -340,8 +340,10 @@ static UIViewController* m_interfaceOrientationSource;
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Split view not available on iPhone"];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:[NSString stringWithFormat:@"Split view not available on iPhone"]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

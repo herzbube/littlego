@@ -122,15 +122,19 @@
 {
   if (index < 0)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not be <0", index];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:[NSString stringWithFormat:@"Index %d must not be <0", index]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (index >= _moveList.count)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not exceed number of moves %d", index, _moveList.count];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:[NSString stringWithFormat:@"Index %d must not exceed number of moves %d", index, _moveList.count]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

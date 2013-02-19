@@ -120,8 +120,10 @@
   int indexOfLastMove = numberOfMoves - 1;
   if (newBoardPosition < 0 || indexOfTargetMove > indexOfLastMove)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Illegal board position %d is either <0 or exceeds number of moves (%d) in current game", newBoardPosition, numberOfMoves];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
-                                                     reason:[NSString stringWithFormat:@"Illegal board position %d is either <0 or exceeds number of moves (%d) in current game", newBoardPosition, numberOfMoves]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

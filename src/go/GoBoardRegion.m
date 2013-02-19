@@ -91,8 +91,10 @@
 {
   if (! point)
   {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -218,16 +220,20 @@
   // explicit and catch this right at the beginning
   if (! point)
   {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   GoBoardRegion* previousRegion = point.region;
   if (self == previousRegion)
   {
+    NSString* errorMessage = @"Point is already associated with this GoBoardRegion";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point is already associated with this GoBoardRegion"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -236,8 +242,10 @@
     GoPoint* otherPoint = [_points objectAtIndex:0];
     if (otherPoint.stoneState != point.stoneState)
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Point argument's stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", point.stoneState, otherPoint.stoneState];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Point argument's stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", point.stoneState, otherPoint.stoneState]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -267,8 +275,10 @@
   GoBoardRegion* previousRegion = point.region;
   if (self != previousRegion)
   {
+    NSString* errorMessage = @"Point is not associated with this GoBoardRegion";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Point is not associated with this GoBoardRegion"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -303,15 +313,19 @@
 {
   if (! region)
   {
+    NSString* errorMessage = @"Region argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Region argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (self == region)
   {
+    NSString* errorMessage = @"Region argument is the same as this GoBoardRegion object";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Region argument is the same as this GoBoardRegion object"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -373,8 +387,10 @@
 
   if (! [self isStoneGroup])
   {
+    NSString* errorMessage = @"GoBoardRegion does not represent a stone group";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"GoBoardRegion does not represent a stone group"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -541,15 +557,19 @@
 {
   if (! subRegion)
   {
+    NSString* errorMessage = @"subRegion argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"subRegion argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (! mainRegion)
   {
+    NSString* errorMessage = @"mainRegion argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"mainRegion argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -564,8 +584,10 @@
   GoBoardRegion* previousRegion = firstPointOfSubRegion.region;
   if (mainRegion != previousRegion)
   {
+    NSString* errorMessage = @"Points of subregion do not reference specified main region";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Points of subregion do not reference specified main region"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -574,8 +596,10 @@
     GoPoint* otherPoint = [_points objectAtIndex:0];
     if (otherPoint.stoneState != firstPointOfSubRegion.stoneState)
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Subregion points' stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", firstPointOfSubRegion.stoneState, otherPoint.stoneState];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Subregion points' stoneState (%d) does not match stoneState of points already in this GoBoardRegion (%d)", firstPointOfSubRegion.stoneState, otherPoint.stoneState]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }

@@ -74,8 +74,10 @@
       break;
     default:
     {
+      NSString* errorMessage = [NSString stringWithFormat:@"Type argument %d is invalid", type];
+      DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:[NSString stringWithFormat:@"Type argument %d is invalid", type]
+                                                       reason:errorMessage
                                                      userInfo:nil];
       @throw exception;
     }
@@ -83,8 +85,10 @@
 
   if (! player)
   {
+    NSString* errorMessage = @"Player argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Player argument is nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -191,8 +195,10 @@
 {
   if (GoMoveTypePlay != self.type)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"GoMove is not of type GoMoveTypePlay (actual type is %d)", self.type];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:[NSString stringWithFormat:@"GoMove is not of type GoMoveTypePlay (actual type is %d)", self.type]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -232,15 +238,19 @@
 
   if (! self.point)
   {
+    NSString* errorMessage = @"GoMove has no associated GoPoint";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"GoMove has no associated GoPoint"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
   if (GoColorNone != self.point.stoneState)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Color of GoPoint %@ is not GoColorNone (actual color is %d)", self.point, self.point.stoneState];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:[NSString stringWithFormat:@"Color of GoPoint %@ is not GoColorNone (actual color is %d)", self.point, self.point.stoneState]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -313,8 +323,10 @@
 
   if (! _point)
   {
+    NSString* errorMessage = @"GoMove has no associated GoPoint";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:@"GoMove has no associated GoPoint"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
@@ -333,8 +345,10 @@
   }
   if (playedStoneColor != self.point.stoneState)
   {
+    NSString* errorMessage = [NSString stringWithFormat:@"Color of GoPoint %@ does not match player color %d (actual color is %d)", self.point, playedStoneColor, self.point.stoneState];
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:[NSString stringWithFormat:@"Color of GoPoint %@ does not match player color %d (actual color is %d)", self.point, playedStoneColor, self.point.stoneState]
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }

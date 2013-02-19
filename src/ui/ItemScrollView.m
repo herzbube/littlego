@@ -189,8 +189,10 @@
 {
   if (nil == dataSource)
   {
+    NSString* errorMessage = @"Data source must not be nil";
+    DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:@"Data source must not be nil"
+                                                     reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
