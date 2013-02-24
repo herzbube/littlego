@@ -553,11 +553,11 @@ There is a "doxygen" target that can be used to transform the source code
 documentation into a set of HTML files. The target uses a shell script that
 assumes that Doxygen is installed in
 
-  /sw/bin
+  /opt/local/bin
 
-This is the standard path for the "fink" project. If you have doxygen installed
-somewhere else (e.g. /usr/local/bin) you need to change the target's shell
-script.
+This is the standard path for the MacPorts project. If you have doxygen
+installed somewhere else (e.g. /sw/bin, /usr/local/bin) you need to change the
+target's shell script.
 
 The Doxygen configuration file is located in
 
@@ -569,8 +569,8 @@ Notes about the configuration:
 - Private methods declared in class extensions or categories in the .m files
   are not included in the documentation process. Change this by setting
   EXTRACT_LOCAL_METHODS = YES inside Doxyfile.
-- It is assumed that the command line tool "dot" is available and installed in
-    /sw/bin
+- Doxyfile is configured to look for the command line tool "dot" in
+    /opt/local/bin
   dot is part of the Graphviz package and is used to generate a couple of
   diagram types (e.g. class diagrams, collaboration diagrams).
 
