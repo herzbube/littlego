@@ -518,7 +518,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView gameInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell;
+  UITableViewCell* cell = nil;
   GoGame* game = [GoGame sharedGame];
   switch (indexPath.section)
   {

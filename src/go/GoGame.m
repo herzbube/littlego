@@ -60,16 +60,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a new GoGame object and returns that object. From now on,
-/// sharedGame() also returns the same object.
-// -----------------------------------------------------------------------------
-+ (GoGame*) newGame
-{
-  GoGame* newGame = [[[GoGame alloc] init] autorelease];
-  return newGame;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Initializes a GoGame object.
 ///
 /// @note This is the designated initializer of GoGame.

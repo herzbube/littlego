@@ -70,29 +70,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the newGame() convenience constructor.
-// -----------------------------------------------------------------------------
-- (void) testNewGame
-{
-  GoGame* newGame = [GoGame newGame];
-  STAssertTrue(newGame != m_game, nil);
-
-  STAssertEquals(GoGameTypeUnknown, newGame.type, nil);
-  STAssertNil(newGame.board, nil);
-  NSUInteger handicapCount = 0;
-  STAssertEquals(newGame.handicapPoints.count, handicapCount, nil);
-  STAssertEquals(newGame.komi, 0.0, nil);
-  STAssertNil(newGame.playerBlack, nil);
-  STAssertNil(newGame.playerWhite, nil);
-  STAssertNil(newGame.currentPlayer, nil);
-  STAssertNil(newGame.firstMove, nil);
-  STAssertNil(newGame.lastMove, nil);
-  STAssertEquals(GoGameStateGameHasNotYetStarted, newGame.state, nil);
-  STAssertEquals(GoGameHasEndedReasonNotYetEnded, newGame.reasonForGameHasEnded, nil);
-  STAssertFalse(newGame.isComputerThinking, nil);
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the @e type property.
 // -----------------------------------------------------------------------------
 - (void) testType

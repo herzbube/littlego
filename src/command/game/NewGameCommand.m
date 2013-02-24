@@ -108,7 +108,7 @@
   // Create the new GoGame object
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
-  GoGame* newGame = [GoGame newGame];
+  GoGame* newGame = [[[GoGame alloc] init] autorelease];
   DDLogVerbose(@"%@: Created new game %@", [self shortDescription], newGame);
 
   // Replace the delegate's reference; an old GoGame object is now deallocated
@@ -118,11 +118,11 @@
 
   // Configure the new GoGame object
   NewGameModel* newGameModel = appDelegate.theNewGameModel;
-  newGame.board = [GoBoard newGameBoard];
+  newGame.board = [GoBoard boardWithDefaultSize];
   newGame.komi = newGameModel.komi;
   newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
-  newGame.playerBlack = [GoPlayer newGameBlackPlayer];
-  newGame.playerWhite = [GoPlayer newGameWhitePlayer];
+  newGame.playerBlack = [GoPlayer defaultBlackPlayer];
+  newGame.playerWhite = [GoPlayer defaultWhitePlayer];
   newGame.type = newGameModel.gameType;
   DDLogVerbose(@"%@: Configured game object: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@, playerWhite = %@, type = %d",
                [self shortDescription],

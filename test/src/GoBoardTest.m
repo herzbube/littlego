@@ -47,15 +47,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the newGameBoard() convenience constructor.
+/// @brief Exercises the boardWithDefaultSize() convenience constructor.
 // -----------------------------------------------------------------------------
-- (void) testNewGameBoard
+- (void) testBoardWithDefaultSize
 {
   enum GoBoardSize expectedBoardSize = GoBoardSize13;
 
   NewGameModel* newGameModel = m_delegate.theNewGameModel;
   newGameModel.boardSize = expectedBoardSize;
-  GoBoard* board = [GoBoard newGameBoard];
+  GoBoard* board = [GoBoard boardWithDefaultSize];
 
   [self checkBoardState:board expectedBoardSize:expectedBoardSize];
 }

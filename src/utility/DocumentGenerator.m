@@ -467,8 +467,6 @@
   }
   if (listHasStarted)
   {
-    listHasStarted = false;
-    listItemHasStarted = false;
     sectionContent = [sectionContent stringByAppendingString:@"</li>"];
     if (listIsUnnumbered)
       sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
@@ -477,7 +475,6 @@
   }
   else if (paragraphHasStarted)
   {
-    paragraphHasStarted = false;
     sectionContent = [sectionContent stringByAppendingString:@"</p>"];
   }
 

@@ -43,24 +43,24 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the newGameBlackPlayer() and newGameWhitePlayer()
+/// @brief Exercises the defaultBlackPlayer() and defaultWhitePlayer()
 /// convenience constructors.
 // -----------------------------------------------------------------------------
-- (void) testNewGamePlayer
+- (void) testDefaultBlackWhitePlayer
 {
-  GoPlayer* newGameBlackPlayer = [GoPlayer newGameBlackPlayer];
-  STAssertNotNil(newGameBlackPlayer, nil);
-  STAssertTrue(m_game.playerBlack != newGameBlackPlayer, nil);
-  STAssertEquals(m_game.playerBlack.player, newGameBlackPlayer.player, nil);
-  STAssertTrue(newGameBlackPlayer.isBlack, nil);
-  STAssertTrue([newGameBlackPlayer.colorString isEqualToString:@"B"], nil);
+  GoPlayer* defaultBlackPlayer = [GoPlayer defaultBlackPlayer];
+  STAssertNotNil(defaultBlackPlayer, nil);
+  STAssertTrue(m_game.playerBlack != defaultBlackPlayer, nil);
+  STAssertEquals(m_game.playerBlack.player, defaultBlackPlayer.player, nil);
+  STAssertTrue(defaultBlackPlayer.isBlack, nil);
+  STAssertTrue([defaultBlackPlayer.colorString isEqualToString:@"B"], nil);
 
-  GoPlayer* newGameWhitePlayer = [GoPlayer newGameWhitePlayer];
-  STAssertNotNil(newGameWhitePlayer, nil);
-  STAssertTrue(m_game.playerWhite != newGameWhitePlayer, nil);
-  STAssertEquals(m_game.playerWhite.player, newGameWhitePlayer.player, nil);
-  STAssertFalse(newGameWhitePlayer.isBlack, nil);
-  STAssertTrue([newGameWhitePlayer.colorString isEqualToString:@"W"], nil);
+  GoPlayer* defaultWhitePlayer = [GoPlayer defaultWhitePlayer];
+  STAssertNotNil(defaultWhitePlayer, nil);
+  STAssertTrue(m_game.playerWhite != defaultWhitePlayer, nil);
+  STAssertEquals(m_game.playerWhite.player, defaultWhitePlayer.player, nil);
+  STAssertFalse(defaultWhitePlayer.isBlack, nil);
+  STAssertTrue([defaultWhitePlayer.colorString isEqualToString:@"W"], nil);
 }
 
 // -----------------------------------------------------------------------------

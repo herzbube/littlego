@@ -59,7 +59,6 @@
 }
 
 + (GoGame*) sharedGame;
-+ (GoGame*) newGame;
 - (void) play:(GoPoint*)point;
 - (void) pass;
 - (void) resign;

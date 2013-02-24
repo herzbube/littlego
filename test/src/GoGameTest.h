@@ -29,7 +29,6 @@
 
 - (void) testSharedGame;
 - (void) testInitialState;
-- (void) testNewGame;
 - (void) testType;
 - (void) testBoard;
 - (void) testHandicapPoints;

@@ -277,7 +277,7 @@ enum MaxGamesCategory
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell;
+  UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
     case MaxMemorySection:

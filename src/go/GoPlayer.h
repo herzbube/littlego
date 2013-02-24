@@ -31,8 +31,8 @@
 {
 }
 
-+ (GoPlayer*) newGameBlackPlayer;
-+ (GoPlayer*) newGameWhitePlayer;
++ (GoPlayer*) defaultBlackPlayer;
++ (GoPlayer*) defaultWhitePlayer;
 + (GoPlayer*) blackPlayer:(Player*)player;
 + (GoPlayer*) whitePlayer:(Player*)player;
 

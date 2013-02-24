@@ -82,8 +82,7 @@
     self.name = @"";
     self.human = true;
     self.gtpEngineProfileUUID = @"";
-    self.statistics = [[PlayerStatistics alloc] init];
-    [self.statistics release];
+    self.statistics = [[[PlayerStatistics alloc] init] autorelease];
   }
   else
   {

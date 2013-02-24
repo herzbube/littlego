@@ -41,7 +41,7 @@
   NSMutableDictionary* m_vertexDict;
 }
 
-+ (GoBoard*) newGameBoard;
++ (GoBoard*) boardWithDefaultSize;
 + (GoBoard*) boardWithSize:(enum GoBoardSize)size;
 + (NSString*) stringForSize:(enum GoBoardSize)size;
 - (NSEnumerator*) pointEnumerator;

@@ -28,7 +28,7 @@
 }
 
 - (void) testInitialState;
-- (void) testNewGamePlayer;
+- (void) testDefaultBlackWhitePlayer;
 - (void) testBlackWhitePlayer;
 
 @end

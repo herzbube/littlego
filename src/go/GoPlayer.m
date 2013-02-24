@@ -56,7 +56,7 @@
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color black and refers to the "New Game" default black player.
 // -----------------------------------------------------------------------------
-+ (GoPlayer*) newGameBlackPlayer
++ (GoPlayer*) defaultBlackPlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel blackPlayerUUID]];
@@ -67,7 +67,7 @@
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color white and refers to the "New Game" default white player.
 // -----------------------------------------------------------------------------
-+ (GoPlayer*) newGameWhitePlayer
++ (GoPlayer*) defaultWhitePlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel whitePlayerUUID]];

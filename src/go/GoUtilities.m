@@ -83,7 +83,7 @@
 
   // Step 3: Still no region? The point forms its own new region!
   if (! newRegion)
-    newRegion = [GoBoardRegion regionWithPoint:thePoint];
+    [GoBoardRegion regionWithPoint:thePoint];
 }
 
 // -----------------------------------------------------------------------------

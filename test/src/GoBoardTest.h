@@ -28,7 +28,7 @@
 }
 
 - (void) testInitialState;
-- (void) testNewGameBoard;
+- (void) testBoardWithDefaultSize;
 - (void) testBoardWithSize;
 - (void) testStringForSize;
 - (void) testPointEnumerator;

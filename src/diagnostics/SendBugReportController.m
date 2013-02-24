@@ -170,7 +170,7 @@
 {
   GenerateDiagnosticsInformationFileCommand* command = [[GenerateDiagnosticsInformationFileCommand alloc] init];
   // The command object must survive execution so that we can get at the path
-  // where the diagnosics information file was stored
+  // where the diagnostics information file was stored
   [command retain];
   bool success = [command submit];
   self.diagnosticsInformationFilePath = command.diagnosticsInformationFilePath;

@@ -121,8 +121,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupLongPressGestureRecognizer
 {
-  self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)];
-	[self.longPressRecognizer release];
+  self.longPressRecognizer = [[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)] autorelease];
 	[self.playView addGestureRecognizer:self.longPressRecognizer];
   self.longPressRecognizer.delegate = self;
   CGFloat infiniteMovement = CGFLOAT_MAX;

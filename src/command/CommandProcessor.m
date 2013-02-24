@@ -49,6 +49,18 @@ static CommandProcessor* sharedProcessor = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Releases the shared command processor object.
+// -----------------------------------------------------------------------------
++ (void) releaseSharedProcessor
+{
+  if (sharedProcessor)
+  {
+    [sharedProcessor release];
+    sharedProcessor = nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a CommandProcessor object.
 ///
 /// @note This is the designated initializer of CommandProcessor.

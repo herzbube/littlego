@@ -167,8 +167,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupTapGestureRecognizer
 {
-  self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
-	[self.tapRecognizer release];
+  self.tapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
 }
 
 // -----------------------------------------------------------------------------

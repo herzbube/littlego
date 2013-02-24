@@ -161,7 +161,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpCommandModel = nil;
   self.crashReportingModel = nil;
   self.fileLogger = nil;
-  [[CommandProcessor sharedProcessor] release];
+  [CommandProcessor releaseSharedProcessor];
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];

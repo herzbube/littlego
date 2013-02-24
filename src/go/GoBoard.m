@@ -69,7 +69,7 @@
 /// @brief Convenience constructor. Creates a GoBoard instance which uses the
 /// "New Game" default board size.
 // -----------------------------------------------------------------------------
-+ (GoBoard*) newGameBoard
++ (GoBoard*) boardWithDefaultSize
 {
   NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   return [GoBoard boardWithSize:model.boardSize];
