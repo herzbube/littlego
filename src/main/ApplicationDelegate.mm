@@ -202,7 +202,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Further setup steps are executed in a secondary thread so that 1) we can
   // display a progress HUD, and 2) the application launches as quickly as
   // possible.
-  [[[SetupApplicationCommand alloc] init] submit];
+  [[[[SetupApplicationCommand alloc] init] autorelease] submit];
 
   // We don't handle any URL resources in launchOptions
   // -> always return success
@@ -225,10 +225,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   DDLogInfo(@"applicationWillResignActive:() received");
 
   if (GoGameTypeComputerVsComputer == self.game.type)
-  {
-    PauseGameCommand* command = [[PauseGameCommand alloc] init];
-    [command submit];
-  }
+    [[[[PauseGameCommand alloc] init] autorelease] submit];
   self.soundHandling.disabled = true;
 }
 
@@ -424,7 +421,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   if (ApplicationLaunchModeDiagnostics == self.applicationLaunchMode)
   {
-    RestoreBugReportUserDefaultsCommand* command = [[RestoreBugReportUserDefaultsCommand alloc] init];
+    RestoreBugReportUserDefaultsCommand* command = [[[RestoreBugReportUserDefaultsCommand alloc] init] autorelease];
     bool success = [command submit];
     if (! success)
     {
@@ -494,7 +491,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupSound
 {
-  self.soundHandling = [[SoundHandling alloc] init];
+  self.soundHandling = [[[SoundHandling alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------

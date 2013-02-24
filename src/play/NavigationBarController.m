@@ -296,7 +296,7 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
-  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initPass];
+  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
@@ -306,7 +306,7 @@
 // -----------------------------------------------------------------------------
 - (void) discardBoardPosition:(id)sender
 {
-  ChangeAndDiscardCommand* command = [[ChangeAndDiscardCommand alloc] init];
+  ChangeAndDiscardCommand* command = [[[ChangeAndDiscardCommand alloc] init] autorelease];
   [self.delegate navigationBarController:self discardOrAlertWithCommand:command];
 }
 
@@ -317,7 +317,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlay:(id)sender
 {
-  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initComputerPlay];
+  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
@@ -327,8 +327,7 @@
 // -----------------------------------------------------------------------------
 - (void) pause:(id)sender
 {
-  PauseGameCommand* command = [[PauseGameCommand alloc] init];
-  [command submit];
+  [[[[PauseGameCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -337,7 +336,7 @@
 // -----------------------------------------------------------------------------
 - (void) continue:(id)sender
 {
-  DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initContinue];
+  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initContinue] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
 
@@ -347,8 +346,7 @@
 // -----------------------------------------------------------------------------
 - (void) interrupt:(id)sender
 {
-  InterruptComputerCommand* command = [[InterruptComputerCommand alloc] init];
-  [command submit];
+  [[[[InterruptComputerCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

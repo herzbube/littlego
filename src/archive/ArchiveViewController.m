@@ -185,7 +185,7 @@
   }
 
   ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  DeleteGameCommand* command = [[DeleteGameCommand alloc] initWithGame:game];
+  DeleteGameCommand* command = [[[DeleteGameCommand alloc] initWithGame:game] autorelease];
   // Temporarily disable KVO observer mechanism so that no table view update
   // is triggered during command execution. Purpose: In a minute, we are going
   // to manipulate the table view ourselves so that a nice animation is shown.

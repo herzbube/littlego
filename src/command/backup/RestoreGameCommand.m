@@ -44,7 +44,7 @@
   }
   else
   {
-    [[[NewGameCommand alloc] init] submit];
+    [[[[NewGameCommand alloc] init] autorelease] submit];
   }
   return true;
 }
@@ -65,7 +65,7 @@
 // -----------------------------------------------------------------------------
 - (void) restoreGame:(NSString*)sgfBackupFilePath
 {
-  LoadGameCommand* loadCommand = [[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"];
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"] autorelease];
   loadCommand.restoreMode = true;
   [loadCommand submit];
 }
@@ -90,7 +90,7 @@
     // synchronous or asynchronous command - because this RestoreGamecommand
     // class already is asynchronous, ChangeBoardPositionCommand will always
     // be executed synchronously.
-    [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] submit];
+    [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] autorelease] submit];
   }
 }
 

@@ -225,10 +225,10 @@ enum PlayCommandType
       switch (self.moveType)
       {
         case GoMoveTypePlay:
-          command = [[PlayMoveCommand alloc] initWithPoint:self.point];
+          command = [[[PlayMoveCommand alloc] initWithPoint:self.point] autorelease];
           break;
         case GoMoveTypePass:
-          command = [[PlayMoveCommand alloc] initPass];
+          command = [[[PlayMoveCommand alloc] initPass] autorelease];
           break;
         default:
           DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
@@ -239,12 +239,12 @@ enum PlayCommandType
     }
     case PlayCommandTypeComputerPlayMove:
     {
-      command = [[ComputerPlayMoveCommand alloc] init];
+      command = [[[ComputerPlayMoveCommand alloc] init] autorelease];
       break;
     }
     case PlayCommandTypeContinue:
     {
-      command = [[ContinueGameCommand alloc] init];
+      command = [[[ContinueGameCommand alloc] init] autorelease];
       break;
     }
     default:

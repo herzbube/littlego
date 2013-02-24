@@ -108,9 +108,6 @@
 /// CommandProcessor, or how to obtain an instance of CommandProcessor.
 ///
 /// Exceptions raised while executing the command are passed back to the caller.
-///
-/// @note Invoking this method deallocates this command. The client must retain
-/// this command to prevent this.
 // -----------------------------------------------------------------------------
 - (bool) submit
 {
@@ -121,7 +118,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Invokes submit() after @a delay seconds.
 // -----------------------------------------------------------------------------
-- (void) submitAfterDelay:(NSTimeInterval)delay
+- (void) submitAfterDelayXXX:(NSTimeInterval)delay
 {
   DDLogVerbose(@"CommandBase::submitAfterDelay() invoked with delay %f (%@)", delay, self);
   [self performSelector:@selector(submit) withObject:nil afterDelay:delay];

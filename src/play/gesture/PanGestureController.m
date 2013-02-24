@@ -203,7 +203,7 @@
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       if (isLegalMove)
       {
-        DiscardAndPlayCommand* command = [[DiscardAndPlayCommand alloc] initWithPoint:crossHairPoint];
+        DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairPoint] autorelease];
         [self.delegate panGestureController:self playOrAlertWithCommand:command];
       }
       break;

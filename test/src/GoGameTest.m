@@ -223,7 +223,7 @@
 
   // Cannot undo a "resign", and we don't want to fiddle with game state, so
   // we must create a new game
-  [[[NewGameCommand alloc] init] submit];
+  [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   [m_game pass];
@@ -509,7 +509,7 @@
   [m_game revertStateFromEndedToInProgress];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
 
-  [[[NewGameCommand alloc] init] submit];
+  [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
   [m_game resign];

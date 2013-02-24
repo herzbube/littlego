@@ -105,7 +105,7 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
   [self increaseProgressAndNotifyDelegate];
 
-  [[[LoadOpeningBookCommand alloc] init] submit];
+  [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
   [self increaseProgressAndNotifyDelegate];
 
   // At this point the progress in self.asynchronousCommandDelegate is at 100%.
@@ -114,7 +114,7 @@
 
   if (ApplicationLaunchModeDiagnostics == delegate.applicationLaunchMode)
   {
-    RestoreBugReportApplicationState* command = [[RestoreBugReportApplicationState alloc] init];
+    RestoreBugReportApplicationState* command = [[[RestoreBugReportApplicationState alloc] init] autorelease];
     bool success = [command submit];
     if (! success)
     {
@@ -131,7 +131,7 @@
     // Important: We must execute this command in the context of a thread that
     // survives the entire command execution - see the class documentation of
     // RestoreGameCommand for the reason why.
-    [[[RestoreGameCommand alloc] init] submit];
+    [[[[RestoreGameCommand alloc] init] autorelease] submit];
   }
 
   return true;

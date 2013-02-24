@@ -61,7 +61,7 @@
     ///   ~/Library/Application Support/iPhone Simulator/Library/Preferences/otest.plist
     STAssertFalse(m_delegate.writeUserDefaultsEnabled, @"User defaults must not be written in unit testing environment");
 
-    [[[NewGameCommand alloc] init] submit];
+    [[[[NewGameCommand alloc] init] autorelease] submit];
     m_game = m_delegate.game;
     STAssertNotNil(m_game, @"Unable to create GoGame object in setUp()");
   }

@@ -44,7 +44,7 @@
 
 - (id) init;
 - (bool) submit;
-- (void) submitAfterDelay:(NSTimeInterval)delay;
+- (void) submitAfterDelayXXX:(NSTimeInterval)delay;
 - (NSString*) shortDescription;
 
 @end

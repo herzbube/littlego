@@ -42,16 +42,6 @@
 /// will undo the next command in the history.
 ///
 ///
-/// @par Command ownership
-///
-/// CommandProcessor takes ownership of command objects submitted to it.
-/// CommandProcessor destroys a command object either immediately after the
-/// command has been executed (if it's not undoable), or after the command
-/// leaves the command history by any means. Clients should never submit the
-/// same command object twice, nor should they continue to use the object after
-/// it was submitted.
-///
-///
 /// @par Asynchronous command execution
 ///
 /// If a command object conforms to the AsynchronousCommand protocol, the

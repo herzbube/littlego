@@ -175,7 +175,7 @@
     }
   }
 
-  [[[BackupGameCommand alloc] init] submit];
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
 
   bool computerGoesOnPlaying = false;
   switch (self.game.state)
@@ -191,8 +191,7 @@
 
   if (computerGoesOnPlaying)
   {
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
   }
   else
   {
@@ -236,7 +235,7 @@
 {
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   NSString* defaultGameName = [model defaultGameName:[GoGame sharedGame]];
-  [[[SaveGameCommand alloc] initWithSaveGame:defaultGameName] submit];
+  [[[[SaveGameCommand alloc] initWithSaveGame:defaultGameName] autorelease] submit];
 
   NSString* messageFormat = @"Until this bug is fixed, Little Go unfortunately cannot continue with the game in progress. The game has been saved to the archive under the name\n\n%@\n\nA new game is being started now to bring the app back into a good state.";
   NSString* message = [NSString stringWithFormat:messageFormat, defaultGameName];
@@ -327,8 +326,8 @@
 // -----------------------------------------------------------------------------
 - (void) startNewGame
 {
-  [[[CleanBackupCommand alloc] init] submit];
-  [[[NewGameCommand alloc] init] submit];
+  [[[[CleanBackupCommand alloc] init] autorelease] submit];
+  [[[[NewGameCommand alloc] init] autorelease] submit];
 }
 
 @end

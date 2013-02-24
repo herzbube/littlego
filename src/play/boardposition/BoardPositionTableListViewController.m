@@ -773,7 +773,7 @@
     return;
   }
   int newBoardPosition = indexPath.row;
-  [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
 }
 
 @end

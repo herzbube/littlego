@@ -98,8 +98,7 @@
     // Restart automatic game play. If computer has stopped thinking, the game
     // apparently has been paused long enough for the last computer player move
     // to have been played.
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
   }
 
   return true;

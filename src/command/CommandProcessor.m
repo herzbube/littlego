@@ -151,11 +151,6 @@ static CommandProcessor* sharedProcessor = nil;
 /// was successful or not. Exceptions raised while executing the command are
 /// handled by the command execution secondary thread. Handling consists of
 /// logging the exception, then rethrowing it and thus crashing the application.
-///
-/// Regardless of whether a command is executed synchronously or asynchronously,
-/// the command object is released after execution is complete, with the intent
-/// of disposing it. A client that wants to continue using the object (not
-/// recommended!) must retain it.
 // -----------------------------------------------------------------------------
 - (bool) submitCommand:(id<Command>)command
 {
@@ -242,7 +237,6 @@ static CommandProcessor* sharedProcessor = nil;
       DDLogVerbose(@"Command execution succeeded (%@)", command);
     else
       DDLogError(@"Command execution failed (%@)", command);
-    [command release];
   }
   return result;
 }

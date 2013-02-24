@@ -350,8 +350,8 @@ enum GameAttributesSectionItem
 {
   if (! didCancel)
   {
-    RenameGameCommand* command = [[RenameGameCommand alloc] initWithGame:self.game
-                                                                 newName:editTextController.text];
+    RenameGameCommand* command = [[[RenameGameCommand alloc] initWithGame:self.game
+                                                                  newName:editTextController.text] autorelease];
     [command submit];
 
     [self.tableView reloadData];
@@ -382,7 +382,7 @@ enum GameAttributesSectionItem
   if (didStartNewGame)
   {
     NSString* filePath = [self.model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
-    LoadGameCommand* command = [[LoadGameCommand alloc] initWithFilePath:filePath gameName:self.game.name];
+    LoadGameCommand* command = [[[LoadGameCommand alloc] initWithFilePath:filePath gameName:self.game.name] autorelease];
     [command submit];
   }
   // Must dismiss modal view controller before navigation stack is changed

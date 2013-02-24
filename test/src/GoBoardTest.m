@@ -238,7 +238,7 @@
   newGameModel.boardSize = GoBoardSize9;
   newGameModel.handicap = 5;
   expectedNumberOfRegions = 1 + newGameModel.handicap;
-  [[[NewGameCommand alloc] init] submit];
+  [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
 }

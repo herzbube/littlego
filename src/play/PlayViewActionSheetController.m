@@ -268,7 +268,7 @@ enum ActionSheetButton
   // Fuego does not have support for resignation, so we don't have to tell it
   // about this event.
   [[GoGame sharedGame] resign];
-  [[[BackupGameCommand alloc] init] submit];
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -282,7 +282,7 @@ enum ActionSheetButton
   // Fuego does not have support for resignation, so we don't have to tell it
   // about this event.
   [[GoGame sharedGame] revertStateFromEndedToInProgress];
-  [[[BackupGameCommand alloc] init] submit];
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -367,8 +367,8 @@ enum ActionSheetButton
 {
   if (didStartNewGame)
   {
-    [[[CleanBackupCommand alloc] init] submit];
-    [[[NewGameCommand alloc] init] submit];
+    [[[[CleanBackupCommand alloc] init] autorelease] submit];
+    [[[[NewGameCommand alloc] init] autorelease] submit];
   }
   [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
   [self.delegate playViewActionSheetControllerDidFinish:self];
@@ -452,7 +452,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) doSaveGame:(NSString*)gameName
 {
-  [[[SaveGameCommand alloc] initWithSaveGame:gameName] submit];
+  [[[[SaveGameCommand alloc] initWithSaveGame:gameName] autorelease] submit];
 }
 
 @end

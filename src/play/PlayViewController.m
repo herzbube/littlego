@@ -918,17 +918,15 @@ enum ActionType
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
   CommandBase* command = objc_getAssociatedObject(alertView, associatedCommandObjectKey);
-  objc_setAssociatedObject(alertView, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_ASSIGN);
+  // objc_setAssociatedObject() will invoke release, so we must make sure that
+  // the command survives until it is submitted
+  [[command retain] autorelease];
+  objc_setAssociatedObject(alertView, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
   switch (buttonIndex)
   {
-    case AlertViewButtonTypeNo:
-    {
-      [command release];
-      command = nil;
-    }
     case AlertViewButtonTypeYes:
     {
-      [command submit];  // deallocates the command
+      [command submit];
       break;
     }
     default:
@@ -978,7 +976,7 @@ enum ActionType
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   if (boardPosition.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
   {
-    [command submit];  // deallocates the command
+    [command submit];
   }
   else
   {
@@ -1016,7 +1014,7 @@ enum ActionType
     alert.tag = AlertViewTypeActionWillDiscardAllFutureMoves;
     [alert show];
     // Store command object for later use by the alert handler
-    objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_ASSIGN);
+    objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);
   }
 }
 

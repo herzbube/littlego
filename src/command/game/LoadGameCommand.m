@@ -361,7 +361,7 @@ static const int maxStepsForReplayMoves = 10;
   if (self.restoreMode)
     ;  // no need to create a backup, we already have the one we are restoring from
   else
-    [[[BackupGameCommand alloc] init] submit];
+    [[[[BackupGameCommand alloc] init] autorelease] submit];
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
   [[NSNotificationCenter defaultCenter] postNotificationName:gameLoadedFromArchive object:self.gameName];
@@ -405,9 +405,9 @@ static const int maxStepsForReplayMoves = 10;
   {
     // Delete the current backup, a new backup with the moves from the archive
     // we are currently loading will be made later on
-    [[[CleanBackupCommand alloc] init] submit];
+    [[[[CleanBackupCommand alloc] init] autorelease] submit];
   }
-  NewGameCommand* command = [[NewGameCommand alloc] init];
+  NewGameCommand* command = [[[NewGameCommand alloc] init] autorelease];
   // If command was successful, the board was already set up by the "loadsgf"
   // GTP command. We must not setup the board again, or we will lose all moves
   // that were just loaded.
@@ -647,8 +647,7 @@ static const int maxStepsForReplayMoves = 10;
     }
     else
     {
-      ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-      [command submit];
+      [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
       self.didTriggerComputerPlayer = true;
     }
   }

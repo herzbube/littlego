@@ -168,13 +168,9 @@
 // -----------------------------------------------------------------------------
 - (bool) generateDiagnosticsInformationFileInternal
 {
-  GenerateDiagnosticsInformationFileCommand* command = [[GenerateDiagnosticsInformationFileCommand alloc] init];
-  // The command object must survive execution so that we can get at the path
-  // where the diagnostics information file was stored
-  [command retain];
+  GenerateDiagnosticsInformationFileCommand* command = [[[GenerateDiagnosticsInformationFileCommand alloc] init] autorelease];
   bool success = [command submit];
   self.diagnosticsInformationFilePath = command.diagnosticsInformationFilePath;
-  [command release];
   if (! success)
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"

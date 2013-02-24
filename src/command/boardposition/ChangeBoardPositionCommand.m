@@ -162,7 +162,7 @@
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
-    [[[SyncGTPEngineCommand alloc] init] submit];
+    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
     if (scoringModel.scoringMode)
       [scoringModel.score calculateWaitUntilDone:false];

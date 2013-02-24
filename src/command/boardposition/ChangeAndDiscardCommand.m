@@ -57,7 +57,7 @@
     // Before we discard, first change to a board position that will be valid
     // even after the discard. Note that because we step back only one board
     // position, ChangeBoardPositionCommand is executed synchronously.
-    bool success = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
+    bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
     if (! success)
     {
       DDLogError(@"%@: Aborting because ChangeBoardPositionCommand execution failed", [self shortDescription]);
@@ -75,7 +75,7 @@
       DDLogError(@"%@: Aborting because discardMoves failed", [self shortDescription]);
       return false;
     }
-    success = [[[BackupGameCommand alloc] init] submit];
+    success = [[[[BackupGameCommand alloc] init] autorelease] submit];
     if (! success)
     {
       DDLogError(@"%@: Aborting because BackupGameCommand execution failed", [self shortDescription]);

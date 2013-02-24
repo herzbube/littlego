@@ -184,10 +184,7 @@
 - (void) triggerComputerPlayer
 {
   if ([[GoGame sharedGame] isComputerPlayersTurn])
-  {
-    ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-    [command submit];
-  }
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
 }
 
 @end

@@ -186,21 +186,23 @@
     return;
   }
 
-  [[[BackupGameCommand alloc] init] submit];
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn
   switch (self.game.state)
   {
-    case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. 2x pass)
+    case GoGameStateGameHasEnded:
+    {
+      // Game has ended as a result of the last move (e.g. 2x pass)
       break;
+    }
     default:
+    {
       if ([self.game isComputerPlayersTurn])
-      {
-        ComputerPlayMoveCommand* command = [[ComputerPlayMoveCommand alloc] init];
-        [command submit];
-      }
+        [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
       break;
+    }
   }
 }
 

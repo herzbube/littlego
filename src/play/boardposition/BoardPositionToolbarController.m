@@ -400,7 +400,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) rewindToStart:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithFirstBoardPosition] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithFirstBoardPosition] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -408,7 +408,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) rewind:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -416,7 +416,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) previousBoardPosition:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -424,7 +424,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) nextBoardPosition:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithOffset:1] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithOffset:1] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -432,7 +432,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) fastForward:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -440,7 +440,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) fastForwardToEnd:(id)sender
 {
-  [[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] submit];
+  [[[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] autorelease] submit];
 }
 
 @end
