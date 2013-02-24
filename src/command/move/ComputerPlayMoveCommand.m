@@ -85,6 +85,7 @@
   if (! sharedGame)
   {
     DDLogError(@"%@: GoGame object is nil", [self shortDescription]);
+    [self release];
     return nil;
   }
   enum GoGameState gameState = sharedGame.state;
@@ -92,6 +93,7 @@
   if (GoGameStateGameHasEnded == gameState)
   {
     DDLogError(@"%@: Unexpected game state %d", [self shortDescription], gameState);
+    [self release];
     return nil;
   }
 

@@ -161,6 +161,7 @@ enum ActionType
 @property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 @property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
+@property(nonatomic, retain) DebugPlayViewController* debugPlayViewController;
 //@}
 @end
 
@@ -204,6 +205,7 @@ enum ActionType
   self.boardPositionTableListViewController = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
+  self.debugPlayViewController = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -564,8 +566,8 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
-  self.boardPositionListView = [[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
-                                                         orientation:ItemScrollViewOrientationHorizontal];
+  self.boardPositionListView = [[[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
+                                                          orientation:ItemScrollViewOrientationHorizontal] autorelease];
   self.boardPositionListView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.boardPositionListView.backgroundColor = [UIColor clearColor];
 }
@@ -656,11 +658,11 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupDebugView
 {
-  DebugPlayViewController* debugPlayViewController = [[DebugPlayViewController alloc] init];
-  [self.view addSubview:debugPlayViewController.view];
-  CGRect debugPlayViewFrame = debugPlayViewController.view.frame;
+  self.debugPlayViewController = [[[DebugPlayViewController alloc] init] autorelease];
+  [self.view addSubview:self.debugPlayViewController.view];
+  CGRect debugPlayViewFrame = self.debugPlayViewController.view.frame;
   debugPlayViewFrame.origin.y += self.navigationBarMain.frame.size.height;
-  debugPlayViewController.view.frame = debugPlayViewFrame;
+  self.debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
 // -----------------------------------------------------------------------------

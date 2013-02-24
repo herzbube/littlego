@@ -69,7 +69,7 @@ static std::ifstream responseStream;
 {
   // Create copies so that the objects can be safely used by the thread when
   // it starts
-  NSArray* pipes = [NSArray arrayWithObjects:[inputPipe copy], [outputPipe copy], nil];
+  NSArray* pipes = [NSArray arrayWithObjects:[[inputPipe copy] autorelease], [[outputPipe copy] autorelease], nil];
   return [[[GtpClient alloc] initWithPipes:pipes] autorelease];
 }
 

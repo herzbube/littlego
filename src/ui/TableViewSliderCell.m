@@ -126,7 +126,7 @@
 - (void) setupContentView
 {
   CGRect descriptionLabelRect = [self descriptionLabelFrame];
-  self.descriptionLabel = [[UILabel alloc] initWithFrame:descriptionLabelRect];  // no autorelease, property is retained
+  self.descriptionLabel = [[[UILabel alloc] initWithFrame:descriptionLabelRect] autorelease];
   self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
   self.descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
   self.descriptionLabel.textAlignment = UITextAlignmentLeft;
@@ -138,7 +138,7 @@
   if (! self.valueLabelHidden)
   {
     CGRect valueLabelRect = [self valueLabelFrame];
-    self.valueLabel = [[UILabel alloc] initWithFrame:valueLabelRect];  // no autorelease, property is retained
+    self.valueLabel = [[[UILabel alloc] initWithFrame:valueLabelRect] autorelease];
     self.valueLabel.tag = SliderCellValueLabelTag;
     self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
     self.valueLabel.textAlignment = UITextAlignmentRight;
@@ -149,7 +149,7 @@
   }
 
   CGRect sliderRect = [self sliderFrame];
-  self.slider = [[UISlider alloc] initWithFrame:sliderRect];  // no autorelease, property is retained
+  self.slider = [[[UISlider alloc] initWithFrame:sliderRect] autorelease];
   self.slider.tag = SliderCellSliderTag;
   self.slider.continuous = YES;
   self.slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;

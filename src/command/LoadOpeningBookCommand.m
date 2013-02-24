@@ -39,7 +39,7 @@
   NSString* bookFileName = [bookFilePath lastPathComponent];
   NSString* bookFileFolder = [bookFilePath stringByDeletingLastPathComponent];
 
-  NSString* oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
+  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
   [fileManager changeCurrentDirectoryPath:bookFileFolder];
   DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], bookFileFolder);
 

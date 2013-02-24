@@ -88,7 +88,7 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  self.game = [[decoder decodeObjectForKey:goBoardPositionGameKey] retain];
+  self.game = [decoder decodeObjectForKey:goBoardPositionGameKey];
   // Don't use self, otherwise we trigger the setter!
   _currentBoardPosition = [decoder decodeIntForKey:goBoardPositionCurrentBoardPositionKey];
   self.numberOfBoardPositions = [decoder decodeIntForKey:goBoardPositionNumberOfBoardPositionsKey];

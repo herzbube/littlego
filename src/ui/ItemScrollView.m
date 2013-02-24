@@ -152,7 +152,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupItemContainerView
 {
-  self.itemContainerView = [[UIView alloc] init];
+  self.itemContainerView = [[[UIView alloc] init] autorelease];
   self.itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
   [self addSubview:self.itemContainerView];
   // Must be enabled so that hit-testing works in handleTapFrom:()
@@ -373,7 +373,7 @@
 {
   if ([self isContentOffsetValid])
     return;
-  CGPoint newContentOffset;
+  CGPoint newContentOffset = CGPointZero;
   if (0 == self.numberOfItemsInItemScrollView)
   {
     newContentOffset = CGPointZero;

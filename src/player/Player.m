@@ -98,7 +98,7 @@
     else
       self.gtpEngineProfileUUID = (NSString*)[dictionary valueForKey:gtpEngineProfileReferenceKey];
     NSDictionary* statisticsDictionary = (NSDictionary*)[dictionary valueForKey:statisticsKey];
-    self.statistics = [[PlayerStatistics alloc] initWithDictionary:statisticsDictionary];
+    self.statistics = [[[PlayerStatistics alloc] initWithDictionary:statisticsDictionary] autorelease];
   }
   assert([self.uuid length] > 0);
   if ([self.uuid length] <= 0)

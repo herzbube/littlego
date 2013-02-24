@@ -161,9 +161,9 @@
 // -----------------------------------------------------------------------------
 + (void) addGroupTableViewBackgroundToView:(UIView*)view
 {
-  UIView* backgroundView = [[UITableView alloc] initWithFrame:view.bounds style:UITableViewStyleGrouped];
+  UIView* backgroundView = [[[UITableView alloc] initWithFrame:view.bounds style:UITableViewStyleGrouped] autorelease];
   backgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
- [view addSubview:backgroundView];
+  [view addSubview:backgroundView];
   [view sendSubviewToBack:backgroundView];
 }
 
