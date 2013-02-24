@@ -9,12 +9,15 @@ A3  Troubleshooting
 B   The Manual
 B1  Introduction
 B2  How to play
-B3  Players & Profiles
-B4  Scoring
-B5  Preferences
-B6  The archive
-B7  GTP engine
-B8  Go rules
+B3  Viewing previous board positions
+B4  Players & Profiles
+B5  Scoring
+B6  Preferences
+B7  The archive
+B8  GTP engine
+B9  Go rules
+B10 Sending crash reports
+B11 Reporting bugs
 
 Note to editors: This file is parsed and displayed in game under the "Help" tab.
 For this to work, the content of this file must follow certain guidelines that
@@ -33,9 +36,10 @@ quickly as possible. Not every feature of the app is explained here, and in
 particular you will not find anything about the game rules here. For the latter,
 please consult the "Go rules" section in the main manual.
 
-When you launch the app for the first time, you will see the "Play" view with
-the game board. A new game on a 9x9 board has already been set up for you: You
-play black, the computer plays white. The game has komi 6½ and no handicap.
+When you launch the app for the first time, you will find yourself on the "Play"
+tab where the game board is displayed. A new game on a 9x9 board has already
+been set up for you: You play black, the computer plays white. The game has
+komi 6½ and no handicap.
 
 To place a stone, simply tap somewhere in the middle of the board. Keep your
 fingertip on the screen to move the stone, it will be placed only after you
@@ -46,33 +50,43 @@ fingertip. The reason for this is that on the small screen of the iPhone your
 fingertip partially obscures one or more intersection, making it hard to
 accurately place a stone. Making the stone appear slightly above your fingertip
 tries to work around this problem. If you don't like this behaviour, you can
-turn it off: On the "Settings" tab, select the "Play view" entry and enable the
-switch "Place stone under finger".
+turn it off: On the "Settings" tab, select the "Play view" entry and move the
+slider "Stone distance from fingertip" to the lowest setting.
 
 To conclude this "Quick start" guide, the following list gives you an idea of
 what each one of the buttons in the toolbar at the top of the screen does. The
 buttons are explained from left to right.
 
-- "Play for me" button: Tap this if you don't know where to play, or are just
+- "Computer play" button: Tap this if you don't know where to play, or are just
   lazy ☺. The computer will then make a move on your behalf.
 - "Pass" button: Tap this if you want to pass instead of placing a stone.
-- "Undo" button: Tap this if you want to undo the computer's and your last move.
-- "Game info" button: Tap this to call up the "Game info" view where you can see
-  all sorts of interesting things about the game in progress (e.g. the score).
-- "Action" button: Tapping this displays a menu with these additional functions:
-  Switch to scoring mode (to get territory scores), resign the game, save the
-  game, and start a new game.
+- "Discard" button: This button is visible only if you have made at least one
+  move. Tapping this button discards the last move made by you or the computer
+  player. If you discard the computer player's move, it will <em>not</em>
+  automatically replay its move. This way you have the opportunity to tap the
+  button again and thus discard your own move. If, however, you want to let the
+  computer replay its move you can do so by tapping the "Computer play" button.
 - "Interrupt" button: This button is visible only while the computer is
   thinking. You can tap the button to interrupt and force the computer to play
   its best move <em>right now</em>. If the computer was playing on your behalf,
   it will immediately start thinking about its own move, so you may have to
   interrupt again (e.g. if you want to access the menu behind the "Action"
   button).
+- "Game info" button: Tap this to call up the "Game info" view where you can see
+  all sorts of interesting things about the game in progress (e.g. the score).
+- "Action" button: Tapping this displays a menu with these additional functions:
+  Switch to scoring mode (to get territory scores), resign the game (or undo
+  the decision to resign), save the game, and start a new game.
 
 
 --------------------------------------------------------------------------------
 FAQ
 --------------------------------------------------------------------------------
+
+======================
+How do I report a bug?
+======================
+Please read the manual section "Reporting bugs".
 
 =============================
 Why is touch calibration off?
@@ -82,8 +96,9 @@ from your finger is simply a feature intended to help with placing the stone on
 devices with small screens, especially when playing on large boards and your
 fingertip covers more than one intersection.
 
-If you feel irritated by this cool feature ☺, you can turn it off by toggling
-the switch under "Settings > Play view > Place stone under finger".
+If you feel irritated by this cool feature ☺, you can turn it off: On the
+"Settings" tab, select the "Play view" entry and move the slider
+"Stone distance from fingertip" to the lowest setting.
 
 ===============================
 How do I change the board size?
@@ -106,8 +121,9 @@ section for the full story.
 =====================================================
 The computer is too strong / too weak, what can I do?
 =====================================================
-1. Tap the "Game info" button to find out which profile is active (scroll down
-   to the section titled "Game Information" to find this information).
+1. Tap the "Game info" button to find out which profile is active (select the
+   "Game" segment then scroll down to the section titled "Game Information" to
+   find this information).
 1. Go to the Settings tab, select "Players & Profiles", then select the
    appropriate profile.
 1. Tap on "Playing strength", select a new value, then tap "Done".
@@ -135,12 +151,16 @@ you will be asked to submit a bug report (please do!), the game in progress is
 automatically saved to the archive and a new game is started to bring the app
 back into a stable state.
 
+If you frequently experience this problem, please enable the collecting of
+logging data so that when next time you send the bug report, the log file that
+is included with the report will contain useful information about the steps
+that led up to the problem.
+
 =====================================================
 I can/can't do X - isn't this against the game rules?
 =====================================================
-You may have found a bug. Please email me with a description of the problem and,
-if possible, how to reproduce it. Check out the "Diagnostics" tab where you can
-generate a bug report with useful diagnostics information attached.
+You may have found a bug. Don't hesitate to email me with a bug report - the
+manual section "Reporting bugs" has all the details how to go about this.
 
 Meanwhile, if you are stuck in an impossible situation (e.g. you cannot capture
 a stone), you can try to work around the problem by saving the game that is
@@ -167,7 +187,7 @@ I cannot load a game, the "load" button is disabled
 ===================================================
 When you view the details of a saved game on the "Archive" tab, the "load"
 button is disabled as long as the computer is busy thinking (either for itself,
-or on behalf of a human player who has triggered the "play for me" function).
+or on behalf of a human player who has tapped the "Computer play" button).
 If a computer vs. computer game is currently in progress, you have to pause the
 game for the button to become enabled. This limitation should be removed in one
 of the next releases of Little Go.
@@ -221,11 +241,11 @@ The Manual
 --------------------------------------------------------------------------------
 Introduction
 --------------------------------------------------------------------------------
-Little Go is an iOS application that lets you play the game of Go on the iPhone
-or iPad. If you don't know the rules of Go you can find an extremely short
-introduction in the last section in this help (titled "Go rules"). For a more
-thorough approach I recommend visiting one of the many websites dedicated to the
-game; my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
+Little Go lets you play the game of Go on the iPhone or iPad. If you don't know
+the rules of Go you can find an extremely short, text-only introduction in one
+of the last section in this help (titled "Go rules"). For a more thorough
+approach I recommend visiting one of the many websites dedicated to the game;
+my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
 
 You can play the game against another human (in "hot-seat" mode on the same
 device), or against the computer. The "How to play" section in this help will
@@ -238,11 +258,10 @@ library Fuego (http://fuego.sourceforge.net/), which is a pretty nasty
 opponent ☺ if you tune up its number-crunching power. The "Players & Profiles"
 help section tells you more about how to make Fuego stronger or weaker.
 
-When a game is over you will usually want to know who has won. Unfortunately,
-Little Go is not very smart about calculating the score - it relies quite
-heavily on your help with evaluating which stones on the board are alive and
-which ones are dead. The "Scoring" section has details about how all this
-stuff is supposed to work.
+When a game is over you will usually want to know who has won. Little Go is not
+very smart about calculating the score - it relies quite heavily on your help
+with evaluating which stones on the board are alive and which ones are dead.
+The "Scoring" section has details about how all this stuff is supposed to work.
 
 When you save a game it will appear in the archive from where you can load it
 again at a later time, delete it, or transfer it via iTunes to your computer.
@@ -265,7 +284,7 @@ by first-time users.
 ===================
 Starting a new game
 ===================
-When you launch the app it displays the "Play" view with the game board. It also
+When you launch the app it displays the "Play" tab with the game board. It also
 automatically starts a new game, using the settings that you gave it the last
 time you yourself started a new game. If this is the very first time that you
 run Little Go, it will start with a few default settings: A 9x9 board, no
@@ -279,14 +298,16 @@ that appears.
 Placing a stone
 ===============
 Start placing a stone by pressing your fingertip near the intersection where you
-want the stone to end up. The stone immediately appears a short distance away
-from your fingertip, but is not yet placed. Drag your finger around the screen
-until you are satisfied with the stone's location, then place the stone by
-taking away your finger from the screen. Voilà.
+want the stone to end up. The stone immediately appears, either a short distance
+away from your fingertip (on the iPhone) or directly under your fingertip (on
+the iPad), but is not yet placed. Drag your finger around the screen until you
+are satisfied with the stone's location, then place the stone by taking away
+your finger from the screen. Voilà.
 
 If you feel irritated because the stone does not appear directly under your
 fingertip (default behaviour on the iPhone only), you can turn this feature off
-in the preferences under "Settings > Play view > Place stone under finger".
+in the preferences my moving the slider under
+"Settings > Play view > Stone distance from fingertip" to the lowest setting.
 You probably won't see the stone anymore because your fingertip covers it, but
 if you watch the status line below the game board you will see the coordinates
 of the intersection where the stone would be placed should you release it now.
@@ -334,29 +355,160 @@ occurs. Also note that audio/vibration feedback preferences are ignored in a
 computer vs. computer game because you are merely a spectator and not actively
 participating in the game.
 
-=============
-Other actions
-=============
+=============================
+Let the computer play for you
+=============================
 If you don't know where to play, or are just lazy ☺, you can let the computer
-play for you by tapping the "Play for me" toolbar button. Even though the
+play for you by tapping the "Computer play" toolbar button. Even though the
 computer is now playing on your behalf, you can interrupt it by tapping the
 "Interrupt" toolbar button. If your opponent is a computer player, that player
-will immediately take over, just as if you had made your own move. You may have
-to interrupt again, e.g. if you want to access the menu behind the "Action"
-button.
+will immediately take over, just as if you had made your own move.
 
+==============================
+Making a move for the computer
+==============================
+You can never play on behalf of the computer! Whenever there is a situation
+where it is the computer player's turn and it does not automatically make its
+move, you will find that the "Computer play" button is enabled. Tapping the
+button will tell the computer to make its move.
+
+================
+Discarding moves
+================
 If you are not happy with a move you or your opponent made, you can tap the
-"Undo" toolbar button. Note that to be able to undo your move, the computer
-player's move must be taken back as well. If the game is a human vs. human game,
-undo will take back only one move.
+"discard" toolbar button (visible only if at least one move was made). This will
+throw away the move that was just made. Whoever made that move can now play
+again, either somewhere else on the board or at the same intersection. You can
+also continue to discard more moves.
 
+When you discard a computer player's move and it is now the computer's turn to
+play, it does not automatically make its move. You can tell it do so by tapping
+the "Computer play" button (as mentioned a little bit further up in the "Making
+a move for the computer" section).
+
+==============================
+Resuming a game that has ended
+==============================
+If the game has ended by two consecutive pass moves you can simply discard the
+last move (i.e. the second pass move) to resume the game and continue playing.
+Of course, you cannot force your opponent to not play a pass move again.
+
+If the game has ended because a player resigned, you can undo the decision to
+resign from the menu that pops up when you tap the "Action" button. The decision
+to resign is also undone automatically when you discard the last move.
+
+================
+Game information
+================
 Tapping the toolbar button with the "rows & columns" symbol will take you to the
-Game info view. This view tells you all sorts of interesting things about the
+"Game info" view. This view tells you all sorts of interesting things about the
 game that is currently in progress. For instance you can see which player's
-turn it is, but probably the most interesting part is the "Scoring" table which
-tells you who would win if the game would end right now. Note that you need to
-activate "Scoring" mode or the table will not display any territory scores. See
-the "Scoring" help section for more information.
+turn it is (on the "Game" segment), but probably the most interesting part is
+the "Score" segment which has a table that tells you who would win if the game
+would end right now. Note that you need to activate "Scoring" mode if you want
+the table to display territory scores. See the "Scoring" help section for more
+information.
+
+--------------------------------------------------------------------------------
+Board positions
+--------------------------------------------------------------------------------
+
+======================
+The navigation toolbar
+======================
+Besides the main toolbar which contains the buttons for playing the game, there
+is a second toolbar with a set of navigation buttons that allow you to jump back
+and forth in the game's move history.
+
+On the iPhone the navigation toolbar is at the bottom of the screen, just below
+the game board. On the iPad the navigation toolbar is at the top of the
+left-hand side of the screen when you hold the device in landscape orientation.
+When you hold the iPad in portrait orientation, the navigation toolbar is not
+visible by default, but you can touch the screen and swipe from left to right
+to slide in a pane that has the navigation toolbar at the top. In portrait
+orientation the main toolbar also has a button labelled "Moves": Tapping this
+button has the same effect as a left-to-right swiping gesture.
+
+======================
+The navigation buttons
+======================
+These are the buttons in the navigation toolbar, and their function:
+
+- The "<" and "> buttons go back and forward one move.
+- The "<<" and ">>" buttons go back and forward 10 moves.
+- The "|<" button goes back to the beginning of the game, before the first move
+  was made.
+- The ">|" button goes forward to the last move of the game.
+
+Whenever you tap one of these buttons, the board displays the <em>board
+position</em> after the respective move was made.
+
+============================================
+"Current board position" information display
+============================================
+On the iPhone there is a small area on the right-hand side of the navigation
+toolbar which displays information about the board position you are currently
+viewing. On the iPad this area is located just below the navigation toolbar on
+the left-hand side of the screen.
+
+The information display usually shows the following details:
+
+- The number of the move that created the board position you are currently
+  viewing
+- The color of the player who made the move
+- The intersection where the stone was placed, or "Pass" if the move was a pass
+  move
+- The number of stones captured by the move (if any). On the iPhone this number
+  is displayed in red.
+
+As a special case, when you are viewing the board position at the beginning of
+the game (i.e. before the first move was made) the information display shows the
+values for handicap and komi.
+
+=======================
+List of board positions
+=======================
+On the iPhone you can tap the area that shows the "current board position"
+information display. This will hide the navigation buttons and instead show a
+scrollable list of board positions. Tap the area again to switch back to the
+navigation buttons. On the iPad the list of board positions is always visible
+just below the "current board position" area.
+
+When you tap a list entry, the board displays the corresponding board position,
+just as if you had navigated to it using one of the navigation buttons.
+
+===========================================
+Playing while viewing an old board position
+===========================================
+When you view an old board position and it is your turn to play, you can make
+a move just as you would during regular game play. Making that move, however,
+will discard all future moves after the board position you are looking at. You
+will see an alert when this happens, giving you the opportunity to abort and
+keep keep those future moves. The alert can be disabled in the user preferences
+under "Settings > Board position".
+
+When you view an old board position and it is the computer's turn to play, you
+can tap the "Computer play" button to let the computer make a move. Unless you
+have disabled it, the same alert about future moves being discarded will be
+displayed.
+
+==============================================
+Discarding while viewing an old board position
+==============================================
+When you view an old board position and you tap the "Discard" button, the move
+that created the board position you are viewing will be discarded, along with
+all future moves. As with playing (see above), you will be alerted when this is
+happening, and you can disable the alert in the user preferences.
+
+===========================================
+Scoring while viewing an old board position
+===========================================
+When you look at the score in the "Game info" view, it will be based on the
+board position you are currently viewing. When you are in scoring mode and
+you navigate to a different board position, the scoring information is updated
+automatically to reflect the new board position.
+
+See the "Scoring" help section if you need more information about scoring.
 
 
 --------------------------------------------------------------------------------
@@ -395,13 +547,13 @@ rename the profile, it retains its special status as the default profile.
 
 The reason is slightly technical: When a new game with two human players is
 started, and one of them requests Little Go to calculate a move for him or her
-by tapping the "play for me" button, Little Go requires a profile with settings
-that the computer player can use for calculating the move. Little Go in this
+by tapping the "Computer play" button, Little Go requires a profile with
+settings that the computer can use for calculating the move. Little Go in this
 situation chooses the specially tagged default profile.
 
 You can also think of this from a different angle: Changing the settings of the
 default profile will have an influence on the quality of the moves generated by
-tapping the "play for me" button in human vs. human games.
+tapping the "Computer play" button in human vs. human games.
 
 
 ==============================================
@@ -573,31 +725,29 @@ Scoring
 Game info view
 ==============
 When the Go board is visible, the toolbar at the top of the screen contains a
-button with a "rows & columns" symbol. Tapping this button will "flip" the board
-and instead display some information about the game that is currently in
-progress. Probably the most interesting thing is the "Scoring" table which
-tells you who would win if the game would end right now.
+button with a "rows & columns" symbol. Tapping this button will display some
+information about the game that is currently in progress. Probably the most
+interesting thing is the "Score" segment which has a table that tells you who
+would win if the game would end right now.
 
-You will note that the final score is not really meaningful since the rows
+You will notice that the final score is not really meaningful since the rows
 labelled "Dead" and "Territory" do not contain any numbers. To count dead stones
-and territory you have to activate Scoring mode
+and territory you have to activate "Scoring" mode.
 
-============================
-How to activate Scoring mode
-============================
-To activate Scoring mode, flip back to the normal board view, tap the "Action"
-toolbar button, then select the "Scoring" item from the menu that pops up.
+==============================
+How to activate "Scoring" mode
+==============================
+To activate "Scoring" mode, go back to the normal board view, tap the "Action"
+toolbar button, then select the "Score" item from the menu that pops up.
 
-Scoring mode can be activated at any time during normal game play, and it will
+"Scoring" mode can be activated at any time during normal game play, and it will
 activate automatically when the game ends for any reason (e.g. two pass moves
 in a sequence).
 
 While Scoring mode is active you cannot play moves or perform any other actions
 that influence the game state (exceptions are loading a game from the archive,
 or starting a new game). To leave Scoring mode and return to normal game play
-you can tap the toolbar button labelled "Done". If the game has already ended,
-though, you cannot leave Scoring mode until you start a new game or load a game
-from the archive.
+you can tap the toolbar button labelled "Done".
 
 ================
 Territory markup
@@ -625,7 +775,7 @@ them back to alive status.
 
 Whenever you change the dead/alive state of one or more stones, the updated
 total score is displayed in the status line below the game board. To view the
-updated detail score you can flip the board over to the game info view.
+updated detail score you can display the game info view.
 
 ===================================
 Assistance with marking dead stones
@@ -751,7 +901,6 @@ client and engine. You can even interfere with it by injecting your own GTP
 commands. Be careful, though, not to disrupt normal operations: As the title
 suggests, the "Diagnostics" tab options should only be used if something goes
 wrong during normal game play and you need GTP to investigate the problem.
-
 
 =======
 GTP log
@@ -1009,7 +1158,6 @@ Reporting bugs
 =================
 General procedure
 =================
-
 To report a bug, please send an email to mailto:herzbube@herzbube.ch that
 contains a description of the problem and, if possible, step-by-step
 instructions on how to reproduce it. I especially love the "how to reproduce"
@@ -1019,7 +1167,6 @@ a problem.
 ===============================
 The "Send a bug report" feature
 ===============================
-
 For your convenience, on the "Diagnostics" tab you will find a button labelled
 "Send a bug report". Tapping the button displays a pre-filled email view that
 you only need to supplement with your problem description before you can send
@@ -1031,13 +1178,14 @@ you more about this file.
 ============================
 Diagnostics information file
 ============================
-
 The file attached to the bug report email contains diagnostics information about
 the current state of Little Go and the game in progress. This information helps
-me to better diagnose problems that are hard to describe or reproduce. If you
-ever find that Little Go behaves badly from time to time, but not <em>all</em>
-the time, it will be most useful if you send a bug report (and thus generate a
-diagnostics information file) right then and there when you notice the problem.
+the developer to better diagnose problems that are hard to describe or
+reproduce. If you ever find that Little Go behaves badly from time to time, but
+not <em>all</em> the time, it will be most useful if you send a bug report (and
+thus generate a diagnostics information file) right then and there when you
+notice the problem. See the next section why you should also enable the
+collecting of logging data before you send the bug report.
 
 The "Diagnostics" tab also has a button that lets you just generate the
 diagnostics information file, without sending an email. This can be useful if
@@ -1048,10 +1196,37 @@ to transfer the file to your computer, and send the bug report from there. Read
 "The archive" section of this manual for a quick overview of how iTunes file
 sharing works.
 
+==========================
+Collecting logging data
+==========================
+On the "Diagnostics" tab, just above the bug reporting buttons, there is an
+option that lets you enable the collecting of logging data. While this is
+enabled, a log file is written in the background that captures technical details
+about what you do with the app, which functions you execute, and what steps in
+detail the app performs in response to your requests.
+
+Sending a bug report without logging enabled is useful, but the diagnostics
+information file that is attached to the report contains only a snapshot of the
+state the application is in at the moment the report is generated. If you enable
+logging, however, the diagnostic information file (which now includes the log
+file) will document how the application came into its erroneous state. This is
+a great help for reproducing a problem, especially when you yourself in your
+bug report cannot describe exactly the steps to reproduce the problem.
+
+<em><strong>For the log file to be useful, you must have logging enabled for
+some time before you actually send the bug report.</strong></em> Ideally,
+logging would be turned on from the moment when the application is launched, up
+to the moment where you experience the bug and send the report.
+
+Although it is such a useful thing, logging is disabled by default, mainly
+because you may have privacy concerns. The secondary reason for disabling
+logging by default is because it uses a few of your device's resources: The log
+file may grow to a maximum size of 10 MB, and writing the file requires a few
+write cycles of the solid state drive in your device.
+
 ================================================
 What is inside the diagnostics information file?
 ================================================
-
 The file is a .zip archive that contains the following pieces of information:
 - A version number that identifies the format of the information inside the
   attachment
@@ -1065,11 +1240,11 @@ The file is a .zip archive that contains the following pieces of information:
 - A screenshot of the "Play" tab (excluding the status bar, i.e. the name of
   your carrier is not in the screenshot)
 - The output of the "showboard" GTP command
+- The log file (if logging was previously enabled)
 
 =============================================================
 What is <em>not</em> inside the diagnostics information file?
 =============================================================
-
 The file does <em>not</em> contain any information that identifies you or your
 device, nor any other information that comes from outside the Little Go app.
 
@@ -1081,13 +1256,17 @@ via iTunes file sharing and inspect the file there.
 Finally, since Little Go is open source you can also study the program code that
 produces the file. Let me know and I will point you in the right direction.
 
-=========================
-File size and persistence
-=========================
+=================================================
+Diagnostics information file size and persistence
+=================================================
+The diagnostics information file's size varies with the current game's board
+size, the number of moves made so far, your device's screen resolution, and
+whether a log file is included or not. By far the largest part is the log file:
+This can grow up to 10 MB, but since the diagnostics information file is .zip
+compressed the end result is much smaller.
 
-The file's size varies with the current game's board size, the number of moves
-made so far, and with your device's screen resolution. The smallest files are
-between 50-90 KB (on a regular iPhone without Retina display), while the
+Without including the log file, the smallest diagnostics information file sizes
+are between 50-90 KB (on a regular iPhone without Retina display), while the
 largest files should not take up more than 200-300 KB (on an iPad with Retina
 display).
 
@@ -1098,6 +1277,3 @@ even Little Go will not use the copy after the bug report has been sent. If you
 generate another bug report, the lingering file from the previous bug report is
 overwritten. If you want to get rid of the file you can do so via iTunes file
 sharing.
-
-In no way is there any danger that your device will fill up with unwanted and
-useless information.
