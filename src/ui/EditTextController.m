@@ -104,6 +104,7 @@
   self.textView = nil;
   self.context = nil;
   self.editTextControllerStyle = EditTextControllerStyleTextField;
+  self.keyboardType = UIKeyboardTypeDefault;
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
@@ -159,6 +160,7 @@
       self.textField.delegate = self;
       self.textField.text = self.text;
       self.textField.placeholder = self.placeholder;
+      self.textField.keyboardType = self.keyboardType;
       break;
     }
     case EditTextControllerStyleTextView:
@@ -187,6 +189,7 @@
       
       self.textView.delegate = self;
       self.textView.text = self.text;
+      self.textView.keyboardType = self.keyboardType;
       break;
     }
     default:

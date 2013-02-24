@@ -89,6 +89,8 @@ enum EditTextControllerStyle
 /// @brief The style that EditTextController adopts for presenting the editable
 /// text.
 @property(nonatomic, assign) enum EditTextControllerStyle editTextControllerStyle;
+/// @brief The keyboard type that EditTextController uses for editing text.
+@property(nonatomic, assign) UIKeyboardType keyboardType;
 /// @brief This is the delegate that will be informed when the user has
 /// finished editing the text.
 @property(nonatomic, assign) id<EditTextDelegate> delegate;
