@@ -213,6 +213,17 @@ find a fix for this. In the meantime, a simple workaround is to temporarily
 lock the device. After the device is unlocked again, the archive view will
 update itself.
 
+===============================================================
+Resigned state of a game is lost when a game is saved or loaded
+===============================================================
+When a player resigns and the game is saved, the information about the player
+resigning is lost, i.e. is not part of the resulting .sgf file. Conversely, if
+an .sgf file is loaded that contains a game where one of the players resigned,
+that information is not picked up by Little Go.
+
+For details see GitHub issue #97
+(https://github.com/herzbube/littlego/issues/97).
+
 ================================================================
 I'm on iPhone 3G and I lose my game when I press the Home button
 ================================================================
