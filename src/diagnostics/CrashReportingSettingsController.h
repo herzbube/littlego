@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../ui/EditTextController.h"
+
+
 // -----------------------------------------------------------------------------
 /// @brief The CrashReportingSettingsController class is responsible for
 /// managing user interaction on the "Crash Report" user preferences view.
 // -----------------------------------------------------------------------------
-@interface CrashReportingSettingsController : UITableViewController <UITextFieldDelegate>
+@interface CrashReportingSettingsController : UITableViewController <EditTextDelegate>
 {
 }
 

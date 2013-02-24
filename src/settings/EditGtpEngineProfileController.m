@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -95,11 +95,6 @@ enum ProfileNotesSectionItem
 //@{
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITextFieldDelegate protocol
-//@{
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
 //@}
 /// @name EditTextDelegate protocol
 //@{
@@ -284,13 +279,8 @@ enum ProfileNotesSectionItem
       {
         case ProfileNameItem:
         {
-          enum TableViewCellType cellType = TextFieldCellType;
-          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          TableViewTextCell* textCell = (TableViewTextCell*)cell;
-          UITextField* textField = textCell.textField;
-          textField.delegate = self;
-          textField.text = self.profile.name;
-          textField.placeholder = @"Profile name";
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.name placeHolder:@"Profile name"];
           break;
         }
         default:
@@ -337,23 +327,8 @@ enum ProfileNotesSectionItem
       {
         case ProfileNotesItem:
         {
-          enum TableViewCellType cellType = DefaultCellType;
-          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          if (self.profile.profileDescription.length > 0)
-          {
-            cell.textLabel.text = self.profile.profileDescription;
-            cell.textLabel.textColor = [UIColor slateBlueColor];
-          }
-          else
-          {
-            // Fake placeholder of UITextField
-            cell.textLabel.text = @"Profile notes";
-            cell.textLabel.textColor = [UIColor lightGrayColor];
-          }
-          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-          cell.textLabel.numberOfLines = 0;
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.profileDescription placeHolder:@"Profile notes"];
           break;
         }
         default:
@@ -384,14 +359,9 @@ enum ProfileNotesSectionItem
   {
     case ProfileNotesSection:
     {
-      NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
-      if (ProfileNameSection == indexPath.section)
-        cellText = self.profile.name;
-      else
-        cellText = self.profile.profileDescription;
       height = [UiUtilities tableView:tableView
                   heightForCellOfType:DefaultCellType
-                             withText:cellText
+                             withText:self.profile.profileDescription
                hasDisclosureIndicator:true];
       break;
     }
@@ -410,7 +380,22 @@ enum ProfileNotesSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-  if (PlayingStrengthSection == indexPath.section)
+  if (ProfileNameSection == indexPath.section)
+  {
+    EditTextController* editTextController = [[EditTextController controllerWithText:self.profile.name
+                                                                               style:EditTextControllerStyleTextField
+                                                                            delegate:self] retain];
+    editTextController.title = @"Edit name";
+    editTextController.acceptEmptyText = false;
+    editTextController.context = [NSNumber numberWithInt:indexPath.section];
+    UINavigationController* navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:editTextController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentViewController:navigationController animated:YES completion:nil];
+    [navigationController release];
+    [editTextController release];
+  }
+  else if (PlayingStrengthSection == indexPath.section)
   {
     switch (indexPath.row)
     {
@@ -459,6 +444,7 @@ enum ProfileNotesSectionItem
                                                                             delegate:self] retain];
     editTextController.title = @"Edit notes";
     editTextController.acceptEmptyText = true;
+    editTextController.context = [NSNumber numberWithInt:indexPath.section];
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:editTextController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -485,57 +471,43 @@ enum ProfileNotesSectionItem
   {
     if (editTextController.textHasChanged)
     {
-      self.profile.profileDescription = editTextController.text;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ProfileNotesItem inSection:ProfileNotesSection];
-      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
-      [self.tableView reloadRowsAtIndexPaths:indexPaths
-                            withRowAnimation:UITableViewRowAnimationNone];
+      NSNumber* context = editTextController.context;
+      int sectionFromContext = [context intValue];
+      NSIndexPath* indexPathToReload = nil;
+      switch (sectionFromContext)
+      {
+        case ProfileNameSection:
+        {
+          self.profile.name = editTextController.text;
+          indexPathToReload = [NSIndexPath indexPathForRow:ProfileNameItem inSection:sectionFromContext];
+          if (self.profileExists)
+            [self.delegate didChangeProfile:self];
+          else
+            self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
+          break;
+        }
+        case ProfileNotesSection:
+        {
+          self.profile.profileDescription = editTextController.text;
+          indexPathToReload = [NSIndexPath indexPathForRow:ProfileNotesItem inSection:sectionFromContext];
+          break;
+        }
+        default:
+        {
+          DDLogError(@"%@: Unexpected section %d", self, sectionFromContext);
+          assert(0);
+          break;
+        }
+      }
+      if (indexPathToReload)
+      {
+        NSArray* indexPaths = [NSArray arrayWithObject:indexPathToReload];
+        [self.tableView reloadRowsAtIndexPaths:indexPaths
+                              withRowAnimation:UITableViewRowAnimationNone];
+      }
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-///
-/// An alternative to using the delegate protocol is to listen for notifications
-/// sent by the text field.
-// -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
-{
-  // Compose the string as it would look like if the proposed change had already
-  // been made
-  NSString* newText = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
-  self.profile.name = newText;
-  if (self.profileExists)
-  {
-    // Make sure that the editing view cannot be left, unless the profile
-    // is valid
-    [self.navigationItem setHidesBackButton:! [self isProfileValid] animated:YES];
-    // Notify delegate that something about the profile object has changed
-    [self.delegate didChangeProfile:self];
-  }
-  else
-  {
-    // Make sure that the new profile cannot be added, unless it is valid
-    self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
-  }
-  // Accept all changes, even those that make the profile name invalid
-  // -> the user must simply continue editing until the profile name becomes
-  //    valid
-  return YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField
-{
-  if (self.profileExists)
-    [self.navigationItem setHidesBackButton:YES animated:YES];
-  else
-    self.navigationItem.rightBarButtonItem.enabled = NO;
-  return YES;
 }
 
 // -----------------------------------------------------------------------------

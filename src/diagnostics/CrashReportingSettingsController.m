@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,12 +89,6 @@ enum ContactSectionItem
 /// @name UITableViewDelegate protocol
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITextFieldDelegate protocol method.
-//@{
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)textField;
-- (BOOL) textFieldShouldReturn:(UITextField*)textField;
 //@}
 /// @name Action methods
 //@{
@@ -254,12 +248,8 @@ enum ContactSectionItem
         }
         case EmailAddressItem:
         {
-          cell = [TableViewCellFactory cellWithType:TextFieldCellType tableView:tableView];
-          TableViewTextCell* textCell = (TableViewTextCell*)cell;
-          textCell.textField.delegate = self;
-          textCell.textField.text = self.crashReportingModel.contactEmail;
-          textCell.textField.placeholder = @"Your email address";
-          textCell.textField.keyboardType = UIKeyboardTypeEmailAddress;
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.crashReportingModel.contactEmail placeHolder:@"Your email address"];
           break;
         }
         default:
@@ -286,6 +276,21 @@ enum ContactSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  if (ContactSection == indexPath.section && EmailAddressItem == indexPath.row)
+  {
+    EditTextController* editTextController = [[EditTextController controllerWithText:self.crashReportingModel.contactEmail
+                                                                               style:EditTextControllerStyleTextField
+                                                                            delegate:self] retain];
+    editTextController.title = @"Edit email";
+    editTextController.acceptEmptyText = false;
+    editTextController.keyboardType = UIKeyboardTypeEmailAddress;
+    UINavigationController* navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:editTextController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentViewController:navigationController animated:YES completion:nil];
+    [navigationController release];
+    [editTextController release];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -323,52 +328,31 @@ enum ContactSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-///
-/// An alternative to using the delegate protocol is to listen for notifications
-/// sent by the text field.
+/// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
-  // Compose the string as it would look like if the proposed change had already
-  // been made
-  NSString* newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
-  self.crashReportingModel.contactEmail = newText;
-
-  [self updateBackButtonVisibleState];
-
-  // Accept all changes, even those that make the email address invalid
-  // -> the user must simply continue editing until the email address becomes
-  //    valid
-  return YES;
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-///
-/// An alternative to using the delegate protocol is to listen for notifications
-/// sent by the text field.
+/// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldClear:(UITextField*)textField
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 {
-  self.crashReportingModel.contactEmail = @"";
-  [self updateBackButtonVisibleState];
-  // Accept all changes, even those that make the email address invalid
-  // -> the user must simply continue editing until the email address becomes
-  //    valid
-  return YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-///
-/// An alternative to using the delegate protocol is to listen for notifications
-/// sent by the text field.
-// -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldReturn:(UITextField*)textField
-{
-  [textField resignFirstResponder];  // dismiss keyboard
-  return YES;
+  if (! didCancel)
+  {
+    if (editTextController.textHasChanged)
+    {
+      self.crashReportingModel.contactEmail = editTextController.text;
+      [self updateBackButtonVisibleState];
+      NSIndexPath* indexPathToReload = [NSIndexPath indexPathForRow:EmailAddressItem inSection:ContactSection];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPathToReload];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------

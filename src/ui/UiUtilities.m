@@ -168,6 +168,35 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Setup @a cell, which must be of type #DefaultCellType, to look like
+/// a UITextField.
+///
+/// If @a text is not empty, it is used in the cell's text label. The text label
+/// uses the system font for UILabel's, but with bold'ness removed. The text
+/// is displayed using the "slate blue" color.
+///
+/// If @a text is empty, the @a placeholder is used instead to fake the look of
+/// a UITextField's placeholder (i.e. non-bold font, light gray text color).
+// -----------------------------------------------------------------------------
++ (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder
+{
+  if (text.length > 0)
+  {
+    cell.textLabel.text = text;
+    cell.textLabel.textColor = [UIColor slateBlueColor];
+  }
+  else
+  {
+    cell.textLabel.text = placeholder;
+    cell.textLabel.textColor = [UIColor lightGrayColor];
+  }
+  cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
+  cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+  cell.textLabel.numberOfLines = 0;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image view that, if applied as the background to a table
 /// view cell, makes the cell look like the red delete button in Apple's
 /// address book.

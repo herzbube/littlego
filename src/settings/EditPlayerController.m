@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,11 +94,6 @@ enum GtpEngineProfileSectionItem
 /// @name UITableViewDelegate protocol
 //@{
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITextFieldDelegate protocol method.
-//@{
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
 //@}
 /// @name ItemPickerDelegate protocol
 //@{
@@ -283,16 +278,8 @@ enum GtpEngineProfileSectionItem
       {
         case PlayerNameItem:
         {
-          enum TableViewCellType cellType = TextFieldCellType;
-          cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
-          TableViewTextCell* textCell = (TableViewTextCell*)cell;
-          UITextField* textField = textCell.textField;
-          textField.delegate = self;
-          textField.text = self.player.name;
-          textField.placeholder = @"Player name";
-          // Place the insertion point into this field; might be better to
-          // do this in viewWillAppear:
-          [textField becomeFirstResponder];
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.player.name placeHolder:@"Player name"];
           break;
         }
         default:
@@ -346,6 +333,21 @@ enum GtpEngineProfileSectionItem
 
   switch (indexPath.section)
   {
+    case PlayerNameSection:
+    {
+      EditTextController* editTextController = [[EditTextController controllerWithText:self.player.name
+                                                                                 style:EditTextControllerStyleTextField
+                                                                              delegate:self] retain];
+      editTextController.title = @"Edit name";
+      editTextController.acceptEmptyText = false;
+      UINavigationController* navigationController = [[UINavigationController alloc]
+                                                      initWithRootViewController:editTextController];
+      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      [self presentViewController:navigationController animated:YES completion:nil];
+      [navigationController release];
+      [editTextController release];
+      break;
+    }
     case GtpEngineProfileSection:
     {
       GtpEngineProfile* defaultProfile = [self.player gtpEngineProfile];
@@ -378,45 +380,34 @@ enum GtpEngineProfileSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
-///
-/// An alternative to using the delegate protocol is to listen for notifications
-/// sent by the text field.
+/// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
-  // Compose the string as it would look like if the proposed change had already
-  // been made
-  self.player.name = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
-  if (self.playerExists)
-  {
-    // Make sure that the editing view cannot be left, unless the player is
-    // valid
-    [self.navigationItem setHidesBackButton:! [self isPlayerValid] animated:YES];
-    // Notify delegate that something about the player object has changed
-    [self.delegate didChangePlayer:self];
-  }
-  else
-  {
-    // Make sure that the new player cannot be added, unless it is valid
-    self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
-  }
-  // Accept all changes, even those that make the player name invalid
-  // -> the user must simply continue editing until the player name becomes
-  //    valid
-  return YES;
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITextFieldDelegate protocol method.
+/// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 {
-  if (self.playerExists)
-    [self.navigationItem setHidesBackButton:YES animated:YES];
-  else
-    self.navigationItem.rightBarButtonItem.enabled = NO;
-  return YES;
+  if (! didCancel)
+  {
+    if (editTextController.textHasChanged)
+    {
+      self.player.name = editTextController.text;
+      if (self.playerExists)
+        [self.delegate didChangePlayer:self];
+      else
+        self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+      NSIndexPath* indexPathToReload = [NSIndexPath indexPathForRow:PlayerNameItem inSection:PlayerNameSection];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPathToReload];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------

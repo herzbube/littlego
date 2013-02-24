@@ -35,6 +35,7 @@
 + (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 + (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController;
 + (void) addGroupTableViewBackgroundToView:(UIView*)view;
++ (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder;
 + (UIImageView*) redButtonTableViewCellBackground:(bool)selected;
 + (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
 + (UIImage*) captureView:(UIView*)view;
