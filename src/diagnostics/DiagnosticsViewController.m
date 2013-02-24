@@ -578,11 +578,6 @@ enum BugReportSectionItem
     {
       if (game.isComputerThinking)
         return true;
-      // Prevent flickering between turns, after the computer has generated a
-      // move in response to "computer play", but before it starts thinking for
-      // itself
-      else if ([game isComputerPlayersTurn])
-        return true;
       else
         break;
     }
