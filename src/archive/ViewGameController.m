@@ -340,6 +340,7 @@ enum GameAttributesSectionItem
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeRenameGame;
   [alert show];
+  [alert release];
   return false;
 }
 

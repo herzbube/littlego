@@ -395,6 +395,7 @@ enum ActionSheetButton
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeSaveGame;
     [alert show];
+    [alert release];
     return false;
   }
   NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:@"SELF MATCHES '^(.|..)$'"];
@@ -407,6 +408,7 @@ enum ActionSheetButton
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeSaveGame;
     [alert show];
+    [alert release];
     return false;
   }
   return true;
@@ -430,6 +432,7 @@ enum ActionSheetButton
                                             otherButtonTitles:@"Yes", nil];
       alert.tag = AlertViewTypeSaveGame;
       [alert show];
+      [alert release];
       // Remember game name for later use (should the user confirm the
       // overwrite).
       self.saveGameName = editTextController.text;

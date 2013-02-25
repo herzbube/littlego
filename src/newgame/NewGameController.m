@@ -310,6 +310,7 @@ enum KomiSectionItem
                                             otherButtonTitles:@"Yes", nil];
       alert.tag = AlertViewTypeNewGame;
       [alert show];
+      [alert release];
       break;
     }
     default:

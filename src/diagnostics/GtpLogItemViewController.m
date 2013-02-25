@@ -361,6 +361,7 @@ enum ResponseStringSectionItem
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeAddToCannedCommands;
   [alert show];
+  [alert release];
 
   // Make sure that command cannot be added a second time
   self.navigationItem.rightBarButtonItem = nil;

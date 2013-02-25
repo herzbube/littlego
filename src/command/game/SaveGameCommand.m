@@ -160,6 +160,7 @@
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeSaveGameFailed;
   [alert show];
+  [alert release];
 }
 
 @end

@@ -666,6 +666,7 @@ static const int maxStepsForReplayMoves = 10;
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeLoadGameFailed;
   [alert show];
+  [alert release];
 }
 
 // -----------------------------------------------------------------------------

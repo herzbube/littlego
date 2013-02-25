@@ -1013,6 +1013,7 @@ enum ActionType
                                           otherButtonTitles:@"Yes", nil];
     alert.tag = AlertViewTypeActionWillDiscardAllFutureMoves;
     [alert show];
+    [alert release];
     // Store command object for later use by the alert handler
     objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);
   }

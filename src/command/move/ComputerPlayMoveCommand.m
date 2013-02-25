@@ -219,6 +219,7 @@
                                         otherButtonTitles:@"Yes", nil];
   alert.tag = AlertViewTypeComputerPlayedIllegalMove;
   [alert show];
+  [alert release];
 
   [self retain];  // must survive until the delegate method is invoked
 }
@@ -246,6 +247,7 @@
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeNewGameAfterComputerPlayedIllegalMove;
   [alert show];
+  [alert release];
 
   [self retain];  // must survive until the delegate method is invoked
 }

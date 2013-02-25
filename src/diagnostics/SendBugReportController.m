@@ -137,6 +137,7 @@
                                         otherButtonTitles:@"Ok", nil];
   alert.tag = AlertViewTypeDiagnosticsInformationFileGenerated;
   [alert show];
+  [alert release];
   [self retain];  // must survive until the delegate method is invoked
 }
 
@@ -156,6 +157,7 @@
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeCannotSendBugReport;
     [alert show];
+    [alert release];
     [self retain];  // must survive until the delegate method is invoked
   }
   return canSendMail;
@@ -180,6 +182,7 @@
                                           otherButtonTitles:@"Very funny!", nil];
     alert.tag = AlertViewTypeDiagnosticsInformationFileNotGenerated;
     [alert show];
+    [alert release];
     [self retain];  // must survive until the delegate method is invoked
   }
   return success;
