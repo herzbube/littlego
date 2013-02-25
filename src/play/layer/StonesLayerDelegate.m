@@ -54,8 +54,8 @@
   self = [super initWithLayer:aLayer metrics:metrics model:model];
   if (! self)
     return nil;
-  self.blackStoneLayer = NULL;
-  self.whiteStoneLayer = NULL;
+  _blackStoneLayer = NULL;
+  _whiteStoneLayer = NULL;
   return self;
 }
 
@@ -74,15 +74,15 @@
 // -----------------------------------------------------------------------------
 - (void) releaseLayers
 {
-  if (self.blackStoneLayer)
+  if (_blackStoneLayer)
   {
-    CGLayerRelease(self.blackStoneLayer);
-    self.blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_blackStoneLayer);
+    _blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.whiteStoneLayer)
+  if (_whiteStoneLayer)
   {
-    CGLayerRelease(self.whiteStoneLayer);
-    self.whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_whiteStoneLayer);
+    _whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -123,10 +123,10 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! self.blackStoneLayer)
-    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneBlackImageResource];
-  if (! self.whiteStoneLayer)
-    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneWhiteImageResource];
+  if (! _blackStoneLayer)
+    _blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+  if (! _whiteStoneLayer)
+    _whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
 
   GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
@@ -136,9 +136,9 @@
     if (point.hasStone)
     {
       if (point.blackStone)
-        [self.playViewMetrics drawLayer:self.blackStoneLayer withContext:context centeredAtPoint:point];
+        [self.playViewMetrics drawLayer:_blackStoneLayer withContext:context centeredAtPoint:point];
       else
-        [self.playViewMetrics drawLayer:self.whiteStoneLayer withContext:context centeredAtPoint:point];
+        [self.playViewMetrics drawLayer:_whiteStoneLayer withContext:context centeredAtPoint:point];
     }
     else
     {

@@ -39,7 +39,6 @@
 //@}
 /// @name Private helpers
 //@{
-- (CGLayerRef) deadStoneSymbolLayerWithContext:(CGContextRef)context;
 - (void) releaseLayer;
 //@}
 /// @name Privately declared properties
@@ -64,7 +63,7 @@
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
-  self.deadStoneSymbolLayer = NULL;
+  _deadStoneSymbolLayer = NULL;
   return self;
 }
 
@@ -84,10 +83,10 @@
 // -----------------------------------------------------------------------------
 - (void) releaseLayer
 {
-  if (self.deadStoneSymbolLayer)
+  if (_deadStoneSymbolLayer)
   {
-    CGLayerRelease(self.deadStoneSymbolLayer);
-    self.deadStoneSymbolLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_deadStoneSymbolLayer);
+    _deadStoneSymbolLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -132,15 +131,15 @@
   if (! self.scoringModel.scoringMode)
     return;
 
-  if (! self.deadStoneSymbolLayer)
-    self.deadStoneSymbolLayer = [self deadStoneSymbolLayerWithContext:context];
+  if (! _deadStoneSymbolLayer)
+    _deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self);
 
   NSEnumerator* enumerator = [[GoGame sharedGame].board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
     if (point.region.deadStoneGroup)
-      [self.playViewMetrics drawLayer:self.deadStoneSymbolLayer withContext:context centeredAtPoint:point];
+      [self.playViewMetrics drawLayer:_deadStoneSymbolLayer withContext:context centeredAtPoint:point];
   }
 }
 
@@ -154,17 +153,17 @@
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) deadStoneSymbolLayerWithContext:(CGContextRef)context
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, DeadStonesLayerDelegate* delegate)
 {
   // The symbol for marking a dead stone is an "x"; we draw this as the two
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by
   // making the square's size slightly smaller
-  CGSize layerSize = self.playViewMetrics.stoneInnerSquareSize;
-  CGFloat inset = floor(layerSize.width * (1.0 - self.scoringModel.deadStoneSymbolPercentage));
+  CGSize layerSize = delegate.playViewMetrics.stoneInnerSquareSize;
+  CGFloat inset = floor(layerSize.width * (1.0 - delegate.scoringModel.deadStoneSymbolPercentage));
   layerSize.width -= inset;
   layerSize.height -= inset;
 
@@ -179,8 +178,8 @@
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.width);
   CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
-  CGContextSetStrokeColorWithColor(layerContext, self.scoringModel.deadStoneSymbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, self.playViewModel.normalLineWidth);
+  CGContextSetStrokeColorWithColor(layerContext, delegate.scoringModel.deadStoneSymbolColor.CGColor);
+  CGContextSetLineWidth(layerContext, delegate.playViewModel.normalLineWidth);
   CGContextStrokePath(layerContext);
 
   return layer;

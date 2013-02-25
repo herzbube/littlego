@@ -54,9 +54,9 @@
   if (! self)
     return nil;
   self.crossHairPoint = nil;
-  self.blackStoneLayer = NULL;
-  self.whiteStoneLayer = NULL;
-  self.crossHairStoneLayer = NULL;
+  _blackStoneLayer = NULL;
+  _whiteStoneLayer = NULL;
+  _crossHairStoneLayer = NULL;
   return self;
 }
 
@@ -77,20 +77,20 @@
 // -----------------------------------------------------------------------------
 - (void) releaseStoneLayers
 {
-  if (self.blackStoneLayer)
+  if (_blackStoneLayer)
   {
-    CGLayerRelease(self.blackStoneLayer);
-    self.blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_blackStoneLayer);
+    _blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.whiteStoneLayer)
+  if (_whiteStoneLayer)
   {
-    CGLayerRelease(self.whiteStoneLayer);
-    self.whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_whiteStoneLayer);
+    _whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.crossHairStoneLayer)
+  if (_crossHairStoneLayer)
   {
-    CGLayerRelease(self.crossHairStoneLayer);
-    self.crossHairStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_crossHairStoneLayer);
+    _crossHairStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -134,23 +134,23 @@
 {
   if (! self.crossHairPoint)
     return;
-  if (! self.blackStoneLayer)
-    self.blackStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneBlackImageResource];
-  if (! self.whiteStoneLayer)
-    self.whiteStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneWhiteImageResource];
-  if (! self.crossHairStoneLayer)
-    self.crossHairStoneLayer = [self.playViewMetrics stoneLayerWithContext:context stoneImageNamed:stoneCrosshairImageResource];
+  if (! _blackStoneLayer)
+    _blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+  if (! _whiteStoneLayer)
+    _whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+  if (! _crossHairStoneLayer)
+    _crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
 
   CGLayerRef stoneLayer;
   if (self.crossHairPoint.hasStone)
-    stoneLayer = self.crossHairStoneLayer;
+    stoneLayer = _crossHairStoneLayer;
   else
   {
     GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
     if (boardPosition.currentPlayer.isBlack)
-      stoneLayer = self.blackStoneLayer;
+      stoneLayer = _blackStoneLayer;
     else
-      stoneLayer = self.whiteStoneLayer;
+      stoneLayer = _whiteStoneLayer;
   }
   [self.playViewMetrics drawLayer:stoneLayer withContext:context centeredAtPoint:self.crossHairPoint];
 }

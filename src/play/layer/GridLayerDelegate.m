@@ -50,8 +50,8 @@
   self = [super initWithLayer:aLayer metrics:metrics model:model];
   if (! self)
     return nil;
-  self.normalLineLayer = nil;
-  self.boundingLineLayer = nil;
+  _normalLineLayer = nil;
+  _boundingLineLayer = nil;
   return self;
 }
 
@@ -71,15 +71,15 @@
 // -----------------------------------------------------------------------------
 - (void) releaseLineLayers
 {
-  if (self.normalLineLayer)
+  if (_normalLineLayer)
   {
-    CGLayerRelease(self.normalLineLayer);
-    self.normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_normalLineLayer);
+    _normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.boundingLineLayer)
+  if (_boundingLineLayer)
   {
-    CGLayerRelease(self.boundingLineLayer);
-    self.boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_boundingLineLayer);
+    _boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -119,17 +119,19 @@
   if (! pointA1)
     return;
 
-  if (! self.normalLineLayer)
+  if (! _normalLineLayer)
   {
-    self.normalLineLayer = [self.playViewMetrics lineLayerWithContext:context
-                                                            lineColor:self.playViewModel.lineColor
-                                                            lineWidth:self.playViewModel.normalLineWidth];
+    _normalLineLayer = CreateLineLayer(context,
+                                       self.playViewModel.lineColor,
+                                       self.playViewModel.normalLineWidth,
+                                       self.playViewMetrics);
   }
-  if (! self.boundingLineLayer)
+  if (! _boundingLineLayer)
   {
-    self.boundingLineLayer = [self.playViewMetrics lineLayerWithContext:context
-                                                              lineColor:self.playViewModel.lineColor
-                                                              lineWidth:self.playViewModel.boundingLineWidth];
+    _boundingLineLayer = CreateLineLayer(context,
+                                        self.playViewModel.lineColor,
+                                        self.playViewModel.boundingLineWidth,
+                                        self.playViewMetrics);
   }
 
   for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
@@ -148,9 +150,9 @@
       CGLayerRef lineLayer;
       bool isBoundingLine = (nil == previousPoint || nil == nextPoint);
       if (isBoundingLine)
-        lineLayer = self.boundingLineLayer;
+        lineLayer = _boundingLineLayer;
       else
-        lineLayer = self.normalLineLayer;
+        lineLayer = _normalLineLayer;
       [self.playViewMetrics drawLineLayer:lineLayer withContext:context horizontal:isHorizontalLine positionedAtPoint:currentPoint];
 
       previousPoint = currentPoint;

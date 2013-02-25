@@ -50,7 +50,6 @@ enum TerritoryLayerType
 //@}
 /// @name Private helpers
 //@{
-- (CGLayerRef) territoryLayerWithContext:(CGContextRef)context layerType:(enum TerritoryLayerType)layerType;
 - (void) releaseLayers;
 //@}
 /// @name Privately declared properties
@@ -78,10 +77,10 @@ enum TerritoryLayerType
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
-  self.blackTerritoryLayer = NULL;
-  self.whiteTerritoryLayer = NULL;
-  self.inconsistentFillColorTerritoryLayer = NULL;
-  self.inconsistentDotSymbolTerritoryLayer = NULL;
+  _blackTerritoryLayer = NULL;
+  _whiteTerritoryLayer = NULL;
+  _inconsistentFillColorTerritoryLayer = NULL;
+  _inconsistentDotSymbolTerritoryLayer = NULL;
   return self;
 }
 
@@ -101,25 +100,25 @@ enum TerritoryLayerType
 // -----------------------------------------------------------------------------
 - (void) releaseLayers
 {
-  if (self.blackTerritoryLayer)
+  if (_blackTerritoryLayer)
   {
-    CGLayerRelease(self.blackTerritoryLayer);
-    self.blackTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_blackTerritoryLayer);
+    _blackTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.whiteTerritoryLayer)
+  if (_whiteTerritoryLayer)
   {
-    CGLayerRelease(self.whiteTerritoryLayer);
-    self.whiteTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_whiteTerritoryLayer);
+    _whiteTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.inconsistentFillColorTerritoryLayer)
+  if (_inconsistentFillColorTerritoryLayer)
   {
-    CGLayerRelease(self.inconsistentFillColorTerritoryLayer);
-    self.inconsistentFillColorTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_inconsistentFillColorTerritoryLayer);
+    _inconsistentFillColorTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.inconsistentDotSymbolTerritoryLayer)
+  if (_inconsistentDotSymbolTerritoryLayer)
   {
-    CGLayerRelease(self.inconsistentDotSymbolTerritoryLayer);
-    self.inconsistentDotSymbolTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_inconsistentDotSymbolTerritoryLayer);
+    _inconsistentDotSymbolTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -165,14 +164,14 @@ enum TerritoryLayerType
   if (! self.scoringModel.scoringMode)
     return;
 
-  if (! self.blackTerritoryLayer)
-    self.blackTerritoryLayer = [self territoryLayerWithContext:context layerType:TerritoryLayerTypeBlack];
-  if (! self.whiteTerritoryLayer)
-    self.whiteTerritoryLayer = [self territoryLayerWithContext:context layerType:TerritoryLayerTypeWhite];
-  if (! self.inconsistentFillColorTerritoryLayer)
-    self.inconsistentFillColorTerritoryLayer = [self territoryLayerWithContext:context layerType:TerritoryLayerTypeInconsistentFillColor];
-  if (! self.inconsistentDotSymbolTerritoryLayer)
-    self.inconsistentDotSymbolTerritoryLayer = [self territoryLayerWithContext:context layerType:TerritoryLayerTypeInconsistentDotSymbol];
+  if (! _blackTerritoryLayer)
+    _blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self);
+  if (! _whiteTerritoryLayer)
+    _whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self);
+  if (! _inconsistentFillColorTerritoryLayer)
+    _inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self);
+  if (! _inconsistentDotSymbolTerritoryLayer)
+    _inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentDotSymbol, self);
 
   CGLayerRef inconsistentTerritoryLayer = NULL;
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
@@ -180,12 +179,12 @@ enum TerritoryLayerType
   {
     case InconsistentTerritoryMarkupTypeDotSymbol:
     {
-      inconsistentTerritoryLayer = self.inconsistentDotSymbolTerritoryLayer;
+      inconsistentTerritoryLayer = _inconsistentDotSymbolTerritoryLayer;
       break;
     }
     case InconsistentTerritoryMarkupTypeFillColor:
     {
-      inconsistentTerritoryLayer = self.inconsistentFillColorTerritoryLayer;
+      inconsistentTerritoryLayer = _inconsistentFillColorTerritoryLayer;
       break;
     }
     case InconsistentTerritoryMarkupTypeNeutral:
@@ -207,10 +206,10 @@ enum TerritoryLayerType
     switch (point.region.territoryColor)
     {
       case GoColorBlack:
-        [self.playViewMetrics drawLayer:self.blackTerritoryLayer withContext:context centeredAtPoint:point];
+        [self.playViewMetrics drawLayer:_blackTerritoryLayer withContext:context centeredAtPoint:point];
         break;
       case GoColorWhite:
-        [self.playViewMetrics drawLayer:self.whiteTerritoryLayer withContext:context centeredAtPoint:point];
+        [self.playViewMetrics drawLayer:_whiteTerritoryLayer withContext:context centeredAtPoint:point];
         break;
       case GoColorNone:
         if (! point.region.territoryInconsistencyFound)
@@ -236,49 +235,49 @@ enum TerritoryLayerType
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) territoryLayerWithContext:(CGContextRef)context layerType:(enum TerritoryLayerType)layerType
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, TerritoryLayerDelegate* delegate)
 {
   UIColor* territoryColor;
   switch (layerType)
   {
     case TerritoryLayerTypeBlack:
     {
-      territoryColor = [UIColor colorWithWhite:0.0 alpha:self.scoringModel.alphaTerritoryColorBlack];
+      territoryColor = [UIColor colorWithWhite:0.0 alpha:delegate.scoringModel.alphaTerritoryColorBlack];
       break;
     }
     case TerritoryLayerTypeWhite:
     {
-      territoryColor = [UIColor colorWithWhite:1.0 alpha:self.scoringModel.alphaTerritoryColorWhite];
+      territoryColor = [UIColor colorWithWhite:1.0 alpha:delegate.scoringModel.alphaTerritoryColorWhite];
       break;
     }
     case TerritoryLayerTypeInconsistentFillColor:
     {
-      UIColor* fillColor = self.scoringModel.inconsistentTerritoryFillColor;
+      UIColor* fillColor = delegate.scoringModel.inconsistentTerritoryFillColor;
       territoryColor = [UIColor colorWithRed:fillColor.red
                                        green:fillColor.green
                                         blue:fillColor.blue
-                                       alpha:self.scoringModel.inconsistentTerritoryFillColorAlpha];
+                                       alpha:delegate.scoringModel.inconsistentTerritoryFillColorAlpha];
       break;
     }
     case TerritoryLayerTypeInconsistentDotSymbol:
     {
-      territoryColor = self.scoringModel.inconsistentTerritoryDotSymbolColor;
+      territoryColor = delegate.scoringModel.inconsistentTerritoryDotSymbolColor;
       break;
     }
     default:
     {
-      DDLogError(@"Unknown territory layer type %d", layerType);
+      DDLogCError(@"Unknown territory layer type %d", layerType);
       return NULL;
     }
   }
 
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = self.playViewMetrics.pointCellSize;
+  layerRect.size = delegate.playViewMetrics.pointCellSize;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -292,7 +291,7 @@ enum TerritoryLayerType
     CGContextAddArc(layerContext,
                     layerCenter.x,
                     layerCenter.y,
-                    self.playViewMetrics.stoneRadius * self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
+                    delegate.playViewMetrics.stoneRadius * delegate.scoringModel.inconsistentTerritoryDotSymbolPercentage,
                     startRadius,
                     endRadius,
                     clockwise);

@@ -128,12 +128,22 @@
 - (GoPoint*) pointNear:(CGPoint)coordinates;
 //@}
 
+/// @name Layer creation functions
+///
+/// @brief These functions exist as CF-like creation functions to make Xcode's
+/// analyze tool happy. If these functions are declared as Obj-C methods, the
+/// analyze tool reports a possible memory leak because it does not see the
+/// method as conforming to Core Foundation's ownership policy naming
+/// conventions.
+//@{
+CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWidth, PlayViewMetrics* metrics);
+CGLayerRef CreateStoneLayerWithColor(CGContextRef context, UIColor* stoneColor, PlayViewMetrics* metrics);
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
+//@}
+
 /// @name Drawing helpers
 //@{
-- (CGLayerRef) lineLayerWithContext:(CGContextRef)context lineColor:(UIColor*)lineColor lineWidth:(int)lineWidth;
 - (void) drawLineLayer:(CGLayerRef)layer withContext:(CGContextRef)context horizontal:(bool)horizontal positionedAtPoint:(GoPoint*)point;
-- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor;
-- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneImageNamed:(NSString*)name;
 - (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point;
 //@}
 

@@ -39,7 +39,6 @@
 //@}
 /// @name Private helpers
 //@{
-- (CGLayerRef) lastMoveLayerWithContext:(CGContextRef)context symbolColor:(UIColor*)symbolColor;
 - (void) releaseLayers;
 //@}
 /// @name Privately declared properties
@@ -65,8 +64,8 @@
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
-  self.blackLastMoveLayer = NULL;
-  self.whiteLastMoveLayer = NULL;
+  _blackLastMoveLayer = NULL;
+  _whiteLastMoveLayer = NULL;
   return self;
 }
 
@@ -86,15 +85,15 @@
 // -----------------------------------------------------------------------------
 - (void) releaseLayers
 {
-  if (self.blackLastMoveLayer)
+  if (_blackLastMoveLayer)
   {
-    CGLayerRelease(self.blackLastMoveLayer);
-    self.blackLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_blackLastMoveLayer);
+    _blackLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.whiteLastMoveLayer)
+  if (_whiteLastMoveLayer)
   {
-    CGLayerRelease(self.whiteLastMoveLayer);
-    self.whiteLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_whiteLastMoveLayer);
+    _whiteLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -142,10 +141,10 @@
   if (self.scoringModel.scoringMode)
     return;
 
-  if (! self.blackLastMoveLayer)
-    self.blackLastMoveLayer = [self lastMoveLayerWithContext:context symbolColor:[UIColor blackColor]];
-  if (! self.whiteLastMoveLayer)
-    self.whiteLastMoveLayer = [self lastMoveLayerWithContext:context symbolColor:[UIColor whiteColor]];
+  if (! _blackLastMoveLayer)
+    _blackLastMoveLayer = CreateLastMoveLayer(context, [UIColor blackColor], self);
+  if (! _whiteLastMoveLayer)
+    _whiteLastMoveLayer = CreateLastMoveLayer(context, [UIColor whiteColor], self);
 
   if (self.playViewModel.markLastMove)
   {
@@ -153,9 +152,9 @@
     if (lastMove && GoMoveTypePlay == lastMove.type)
     {
       if (lastMove.player.isBlack)
-        [self.playViewMetrics drawLayer:self.whiteLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
+        [self.playViewMetrics drawLayer:_whiteLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
       else
-        [self.playViewMetrics drawLayer:self.blackLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
+        [self.playViewMetrics drawLayer:_blackLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
     }
   }
 }
@@ -170,15 +169,15 @@
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) lastMoveLayerWithContext:(CGContextRef)context symbolColor:(UIColor*)symbolColor
+CGLayerRef CreateLastMoveLayer(CGContextRef context, UIColor* symbolColor, SymbolsLayerDelegate* delegate)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = self.playViewMetrics.stoneInnerSquareSize;
+  layerRect.size = delegate.playViewMetrics.stoneInnerSquareSize;
   // It looks better if the marker is slightly inset, and on the iPad we can
   // afford to waste the space
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
@@ -194,7 +193,7 @@
   CGContextBeginPath(layerContext);
   CGContextAddRect(layerContext, layerRect);
   CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, self.playViewModel.normalLineWidth);
+  CGContextSetLineWidth(layerContext, delegate.playViewModel.normalLineWidth);
   CGContextStrokePath(layerContext);
 
   return layer;

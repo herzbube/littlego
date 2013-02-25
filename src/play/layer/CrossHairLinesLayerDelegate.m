@@ -52,8 +52,8 @@
   if (! self)
     return nil;
   self.crossHairPoint = nil;
-  self.normalLineLayer = nil;
-  self.boundingLineLayer = nil;
+  _normalLineLayer = nil;
+  _boundingLineLayer = nil;
   return self;
 }
 
@@ -74,15 +74,15 @@
 // -----------------------------------------------------------------------------
 - (void) releaseLineLayers
 {
-  if (self.normalLineLayer)
+  if (_normalLineLayer)
   {
-    CGLayerRelease(self.normalLineLayer);
-    self.normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_normalLineLayer);
+    _normalLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
-  if (self.boundingLineLayer)
+  if (_boundingLineLayer)
   {
-    CGLayerRelease(self.boundingLineLayer);
-    self.boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    CGLayerRelease(_boundingLineLayer);
+    _boundingLineLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -126,32 +126,34 @@
 {
   if (! self.crossHairPoint)
     return;
-  if (! self.normalLineLayer)
+  if (! _normalLineLayer)
   {
-    self.normalLineLayer = [self.playViewMetrics lineLayerWithContext:context
-                                                            lineColor:self.playViewModel.crossHairColor
-                                                            lineWidth:self.playViewModel.normalLineWidth];
+    _normalLineLayer = CreateLineLayer(context,
+                                       self.playViewModel.crossHairColor,
+                                       self.playViewModel.normalLineWidth,
+                                       self.playViewMetrics);
   }
-  if (! self.boundingLineLayer)
+  if (! _boundingLineLayer)
   {
-    self.boundingLineLayer = [self.playViewMetrics lineLayerWithContext:context
-                                                              lineColor:self.playViewModel.crossHairColor
-                                                              lineWidth:self.playViewModel.boundingLineWidth];
+    _boundingLineLayer = CreateLineLayer(context,
+                                         self.playViewModel.crossHairColor,
+                                         self.playViewModel.boundingLineWidth,
+                                         self.playViewMetrics);
   }
 
   struct GoVertexNumeric numericVertex = self.crossHairPoint.vertex.numeric;
   CGLayerRef horizontalLineLayer;
   bool isBoundingLineHorizontal = (1 == numericVertex.y || self.playViewMetrics.boardSize == numericVertex.y);
   if (isBoundingLineHorizontal)
-    horizontalLineLayer = self.boundingLineLayer;
+    horizontalLineLayer = _boundingLineLayer;
   else
-    horizontalLineLayer = self.normalLineLayer;
+    horizontalLineLayer = _normalLineLayer;
   CGLayerRef verticalLineLayer;
   bool isBoundingLineVertical = (1 == numericVertex.x || self.playViewMetrics.boardSize == numericVertex.x);
   if (isBoundingLineVertical)
-    verticalLineLayer = self.boundingLineLayer;
+    verticalLineLayer = _boundingLineLayer;
   else
-    verticalLineLayer = self.normalLineLayer;
+    verticalLineLayer = _normalLineLayer;
 
   [self.playViewMetrics drawLineLayer:horizontalLineLayer withContext:context horizontal:true positionedAtPoint:self.crossHairPoint];
   [self.playViewMetrics drawLineLayer:verticalLineLayer withContext:context horizontal:false positionedAtPoint:self.crossHairPoint];

@@ -388,15 +388,15 @@
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) lineLayerWithContext:(CGContextRef)context lineColor:(UIColor*)lineColor lineWidth:(int)lineWidth
+CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWidth, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = CGSizeMake(self.lineLength, lineWidth);
+  layerRect.size = CGSizeMake(metrics.lineLength, lineWidth);
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -510,19 +510,19 @@
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 ///
 /// @note This method is currently not in use, it has been superseded by
 /// stoneLayerWithContext:stoneImageNamed:(). This method is preserved for
 /// demonstration purposes, i.e. how to draw a simple circle with a fill color.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneColor:(UIColor*)stoneColor
+CGLayerRef CreateStoneLayerWithColor(CGContextRef context, UIColor* stoneColor, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = self.pointCellSize;
+  layerRect.size = metrics.pointCellSize;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -536,7 +536,7 @@
   CGContextAddArc(layerContext,
                   layerCenter.x,
                   layerCenter.y,
-                  self.stoneRadius,
+                  metrics.stoneRadius,
                   startRadius,
                   endRadius,
                   clockwise);
@@ -556,15 +556,15 @@
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
-/// @note Whoever invokes this method is responsible for releasing the returned
-/// CGLayer object using the function CGLayerRelease when the layer is no
-/// longer needed.
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-- (CGLayerRef) stoneLayerWithContext:(CGContextRef)context stoneImageNamed:(NSString*)name
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = self.pointCellSize;
+  layerRect.size = metrics.pointCellSize;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -576,7 +576,7 @@
   }
   else
   {
-    switch (self.boardSize)
+    switch (metrics.boardSize)
     {
       case GoBoardSize7:
       case GoBoardSize9:
@@ -589,7 +589,7 @@
   }
   CGContextTranslateCTM(layerContext, 0, yAxisAdjustmentToVerticallyCenterImageOnIntersection);
 
-  UIImage* stoneImage = [UIImage imageNamed:name];
+  UIImage* stoneImage = [UIImage imageNamed:stoneImageName];
   // Let UIImage do all the drawing for us. This includes 1) compensating for
   // coordinate system differences (if we use CGContextDrawImage() the image
   // is drawn upside down); and 2) for scaling.
