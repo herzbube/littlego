@@ -58,7 +58,7 @@ enum GameInfoTableViewSection
 enum ScoreSectionItem
 {
   HeadingItem,
-  KomiItem,
+  KomiScoreItem,
   CapturedItem,
   DeadItem,
   TerritoryItem,
@@ -96,6 +96,7 @@ enum GameInfoSectionItem
 {
   HandicapItem,
   BoardSizeItem,
+  KomiItem,
   BlackPlayerItem,
   WhitePlayerItem,
   ActiveProfileItem,
@@ -663,6 +664,12 @@ enum BoardPositionSectionItem
           cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", game.board.size];
           break;
         }
+        case KomiItem:
+        {
+          cell.textLabel.text = @"Komi";
+          cell.detailTextLabel.text = [NSString stringWithKomi:game.komi numericZeroValue:false];
+          break;
+        }
         case BlackPlayerItem:
         {
           cell.textLabel.text = @"Black player";
@@ -838,7 +845,7 @@ enum BoardPositionSectionItem
       }
       break;
     }
-    case KomiItem:
+    case KomiScoreItem:
     {
       switch (column)
       {
