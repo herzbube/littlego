@@ -214,18 +214,28 @@ static ApplicationDelegate* sharedDelegate = nil;
 /// become inactive.
 ///
 /// Known events that trigger this:
-/// - Screen locking
 /// - Modifying an app's document folder via iTunes' "File sharing" feature
 ///   (only prior to iOS 5)
 /// - Any interrupt (e.g. incoming phone call, calling up the multitasking UI)
-/// - Anything that will put the app in the background
+/// - Anything that will put the app in the background (e.g. Home button, screen
+///   locking)
 // -----------------------------------------------------------------------------
 - (void) applicationWillResignActive:(UIApplication*)application
 {
   DDLogInfo(@"applicationWillResignActive:() received");
 
   if (GoGameTypeComputerVsComputer == self.game.type)
-    [[[[PauseGameCommand alloc] init] autorelease] submit];
+  {
+    switch (self.game.state)
+    {
+      case GoGameStateGameHasNotYetStarted:
+      case GoGameStateGameHasStarted:
+        [[[[PauseGameCommand alloc] init] autorelease] submit];
+        break;
+      default:
+        break;
+    }
+  }
   self.soundHandling.disabled = true;
 }
 
