@@ -33,6 +33,7 @@
 		CD00A368148C2C26004E1A0C /* SectionedDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */; };
 		CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
+		CD02629C16E0F06E007B35CC /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD02629B16E0F06E007B35CC /* book.dat */; };
 		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
 		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
@@ -260,7 +261,6 @@
 		CDE022D9155731740052ACE0 /* appicon-ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D6155731740052ACE0 /* appicon-ipad.png */; };
 		CDE022DA155731740052ACE0 /* appicon-iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D7155731740052ACE0 /* appicon-iphone.png */; };
 		CDE022DB155731740052ACE0 /* appicon-iphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D8155731740052ACE0 /* appicon-iphone@2x.png */; };
-		CDE15950164F2D62001C8ADF /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD8A43C613318409009F3C7F /* book.dat */; };
 		CDE1A16214C1CED200317ECA /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13514C1CED200317ECA /* About.html */; };
 		CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13614C1CED200317ECA /* BoostSoftwareLicense.html */; };
 		CDE1A16414C1CED200317ECA /* COPYING.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13714C1CED200317ECA /* COPYING.html */; };
@@ -378,6 +378,7 @@
 		CD00A360148C2C26004E1A0C /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SectionedDocumentViewController.h; sourceTree = "<group>"; };
 		CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SectionedDocumentViewController.m; sourceTree = "<group>"; };
+		CD02629B16E0F06E007B35CC /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = book.dat; sourceTree = "<group>"; };
 		CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "QuincyKit-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD02860B1640986B00CF23A1 /* build-quincykit.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-quincykit.sh"; sourceTree = "<group>"; };
 		CD0286281640AEE100CF23A1 /* BWCrashReportTextFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCrashReportTextFormatter.h; sourceTree = "<group>"; };
@@ -563,7 +564,6 @@
 		CD899E571645FFE400329154 /* TableViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewTextCell.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
-		CD8A43C613318409009F3C7F /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = book.dat; path = 3rdparty/install/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/share/fuego/book.dat; sourceTree = SOURCE_ROOT; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
 		CD8EFD021466DA7200A700B1 /* GoScore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoScore.h; sourceTree = "<group>"; };
@@ -892,6 +892,14 @@
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
 			);
 			path = main;
+			sourceTree = "<group>";
+		};
+		CD02629A16E0F06E007B35CC /* openingbook */ = {
+			isa = PBXGroup;
+			children = (
+				CD02629B16E0F06E007B35CC /* book.dat */,
+			);
+			path = openingbook;
 			sourceTree = "<group>";
 		};
 		CD0286271640AEE100CF23A1 /* quincykit */ = {
@@ -1477,7 +1485,7 @@
 				CDE1A15514C1CED200317ECA /* sound */,
 				CD48AD9A15A75B77004A7096 /* text */,
 				CDE1A15814C1CED200317ECA /* xib */,
-				CD8A43C613318409009F3C7F /* book.dat */,
+				CD02629A16E0F06E007B35CC /* openingbook */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -1747,7 +1755,6 @@
 				CD15A477168BA34400D4472A /* back@2x.png in Resources */,
 				CD36593C1691C49F00D75466 /* 40-forward.png in Resources */,
 				CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */,
-				CDE15950164F2D62001C8ADF /* book.dat in Resources */,
 				CDE6A52B16AB03FE00932B05 /* delete-to-left.png in Resources */,
 				CDE6A52D16AB5D2A00932B05 /* delete-to-left@2x.png in Resources */,
 				CDF6FCD216B59C6C009A2193 /* wooden-background@2x~ipad.png in Resources */,
@@ -1755,6 +1762,7 @@
 				CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */,
 				CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */,
 				CD96A47D16CC3568000C2792 /* LaunchImage-568h@2x.png in Resources */,
+				CD02629C16E0F06E007B35CC /* book.dat in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

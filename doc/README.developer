@@ -25,18 +25,12 @@ Quick-start guide on how to build and run Little Go
 6. Launch Xcode by opening "Little Go.xcodeproj"
 7. Change iOS Base SDK and deployment target versions to match your development
    environment
-8. Check whether the reference to book.dat in the "resource" folder is valid.
-   If it isn't (e.g. the reference appears in red color), fix the reference.
-   The usual cause is that the reference points to a path that includes an SDK
-   version that is different from the SDK version you used to build the 3rdparty
-   software packages. The simplest way how to fix this is to use a text editor
-   to manually edit the file "Little Go.xcodeproj/project.pbxproj".
-9. Make sure that you have a scheme that configures the target "Little Go" to
+8. Make sure that you have a scheme that configures the target "Little Go" to
    use the build configuration "Debug". See "Xcode schemes" further down if you
    need more information.
-10. Select that scheme, and one of the iPhone or iPad simulator destinations,
-    from the toolbar's scheme selector
-11. From the menu select Product > Run. The app should now be built in Debug
+9. Select that scheme, and one of the iPhone or iPad simulator destinations,
+   from the toolbar's scheme selector
+10. From the menu select Product > Run. The app should now be built in Debug
     mode and launched inside the simulator.
 
 
