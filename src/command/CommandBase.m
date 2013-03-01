@@ -118,7 +118,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Invokes submit() after @a delay seconds.
 // -----------------------------------------------------------------------------
-- (void) submitAfterDelayXXX:(NSTimeInterval)delay
+- (void) submitAfterDelay:(NSTimeInterval)delay
 {
   DDLogVerbose(@"CommandBase::submitAfterDelay() invoked with delay %f (%@)", delay, self);
   [self performSelector:@selector(submit) withObject:nil afterDelay:delay];

@@ -1002,7 +1002,6 @@ enum BoardPositionSectionItem
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
   self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
-  // TODO xxx save last selected type
   [self.tableView reloadData];
 }
 

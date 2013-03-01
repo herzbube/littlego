@@ -245,7 +245,7 @@ static UIViewController* m_interfaceOrientationSource;
 
 // How much space between toolbar left/right edge and the first/last toolbar
 // item (for simple items that display an image)
-// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// TODO only the iPhone portrait value is reliable, measure values also for
 // iPhone landscape and iPad
 + (int) toolbarPaddingHorizontal
 {
@@ -267,7 +267,7 @@ static UIViewController* m_interfaceOrientationSource;
 }
 
 // How much space between toolbar top/bottom edge and a toolbar item
-// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// TODO only the iPhone portrait value is reliable, measure values also for
 // iPhone landscape and iPad
 + (int) toolbarPaddingVertical
 {
@@ -289,7 +289,7 @@ static UIViewController* m_interfaceOrientationSource;
 }
 
 // How much space between toolbar items
-// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// TODO only the iPhone portrait value is reliable, measure values also for
 // iPhone landscape and iPad
 + (int) toolbarSpacing
 {
@@ -309,7 +309,7 @@ static UIViewController* m_interfaceOrientationSource;
 
 // For toolbar items with a custom UIView, how much space is added to the
 // left/right edge of the custom view by UIBarButtonItem. This padding is
-// TODO xxx only the iPhone portrait value is reliable, measure values also for
+// TODO only the iPhone portrait value is reliable, measure values also for
 // iPhone landscape and iPad
 // noticeable if the item is at the toolbar's left/right edge.
 + (int) toolbarCustomViewItemPaddingHorizontal
