@@ -18,7 +18,6 @@ Version 1.x
   - Display move numbers
   - Suggest move
   - Time-based play
-  - Replay game (manual, or automatic with delay)
 - Settings view
   - Player statistics (number of games played, possibly strength)
 - Archive view
@@ -26,9 +25,14 @@ Version 1.x
 - New game properties
   - Free handicap placement
 - Let users play against each other via network (Bonjour via Wi-Fi)
-- Artwork & media
   - Stones
   - Board
+
+Version 0.10.0 (March 1 2013)
+- View board positions for moves played earlier during the game (was: Replay
+  game)
+- Artwork & media: Stones and board (wooden background)
+- A lot more, not listed here
 
 Version 0.9 (November 25 2012)
 - Better control over the computer's playing strength

@@ -23,12 +23,21 @@ running.
 
 == Changes in this release ==
 
-This is the Little Go bugfix release 0.9.2. Thanks to the crash reporting
-service introduced in 0.9.0, three crash sources have been identified and fixed
-in this release. In addition, two memory leaks were found and eliminated, and a
-bug causing GUI updates on the Play tab to become disrupted was fixed.
+This is the Little Go feature release 0.10.0. A large number of changes have
+been made, only the most important ones are listed here:
 
-The ChangeLog document has a few more details.
+* Improve graphic design (wooden background, new artwork for stones, new layout on iPad)
+* View board positions for moves played earlier during the game
+* Replace "undo" with "discard move"
+* A game that has ended can now be resumed
+* Redesign of "New game" and "Game info" screens
+* 3 new user preferences
+* Add support for collecting logging data
+* Drop support for iOS 4.3, the minimum required version is now iOS 5.0
+* Add iOS 6 compatibility
+* Add iPhone 5 support
+
+The ChangeLog document has more details.
 
 
 == Known bugs ==

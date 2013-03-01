@@ -1,3 +1,52 @@
+Fri Mar 01 2013   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.10.0
+- Improve graphic design
+  - Add wooden background
+  - Add artwork for black/white/cross-hair stones (instead of just drawing
+    filled circles)
+  - New layout on iPad
+  - New icon for "continue" button in computer vs. computer games, to
+    distinguish it from the new "forward" button
+- Features
+  - View board positions for moves played earlier during the game
+  - Replace "undo" with "discard move"
+  - A game that has ended can now be resumed in two ways:
+    - Discard the most recent move if two pass moves were played by mistake
+    - Select "Undo resign" from the game actions menu after accidentally
+      resigning the game
+  - Redesign of "New game" and "Game info" screens
+  - New user preferences
+    - Settings > Play view > Stone distance from fingertip
+    - Setting > Board position > Discard future moves alert
+    - Settings > Scoring > Score when game ends
+  - Add support for collecting logging data
+    - Turn this on under Diagnostics > Collect logging data
+    - Logging data is automatically included in a bug report
+  - Do not trigger the computer player when a computer vs. computer game is
+    restored on app launch
+  - Add placeholder message to "Archive" tab if there are no saved games
+  - Various other small GUI updates and fixes
+- Bugfixes
+  - App no longer crashes if a computer vs. computer game is paused and the
+    computer passes or resigns
+  - Diagnostics > Bug report section is no longer disabled when computer player
+    resigns
+  - Fix various memory leaks
+  - GUI updates during long-running actions (e.g. app launch, load game) should
+    now happen always in the main thread; besides smoother GUI updates, this
+    should eliminate one more possible source of crashes
+- Known bugs
+  - The resigned state of a game is lost when a game is saved or loaded; this
+    is not new in this release, it's just been added to the list of known bugs
+- Technical changes
+  - Upgrade project to Xcode 4.6
+  - Drop support for iOS 4.3, the minimum required version is now iOS 5.0
+  - Add iOS 6 compatibility
+  - Add iPhone 5 support
+  - Improve 3rd party software build process
+  - Upgrade CocoaLumberjack to version 1.6
+  - Update Doxygen target to use the MacPorts path /opt/local/bin
+
 Sun Dec 22 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.9.2
 - Bugfixes
