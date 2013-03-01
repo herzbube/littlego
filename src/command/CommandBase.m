@@ -112,7 +112,7 @@
 - (bool) submit
 {
   CommandProcessor* processor = [CommandProcessor sharedProcessor];
-  return [processor submitCommand:self];  // self is probably deallocated here!
+  return [processor submitCommand:self];
 }
 
 // -----------------------------------------------------------------------------

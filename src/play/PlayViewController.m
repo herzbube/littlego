@@ -954,9 +954,6 @@ enum ActionType
 /// @a actionType is used to tweak the alert message so that contains a useful
 /// description of what the user tries to do.
 ///
-/// @a command must have a retain count of 1 so that the command's submit()
-/// method can be invoked.
-///
 /// If the Play view currently displays the last board position of the game,
 /// @a command is executed immediately.
 ///
