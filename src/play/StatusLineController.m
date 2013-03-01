@@ -186,7 +186,7 @@
           if (game.isComputerPlayersTurn)
             statusText = [playerName stringByAppendingString:@" is thinking..."];
           else
-            statusText = [@"Computer is playing for " stringByAppendingString:playerName];
+            statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
           break;
         }
         default:
