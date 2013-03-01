@@ -7,6 +7,8 @@ Before the release
 ------------------
 - Create a release branch. All remaining work will be done in this branch.
   git checkout -b release-0.9.0 develop
+- Run Xcode's analyze tool and fix all problems that are reported (with the
+  exception of those reported for MBProgressHUD.m)
 - Make sure that the issues in the bugtracker are up to date
 - If necessary, add an upgrade method to UserDefaultsUpdater
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
@@ -100,7 +102,8 @@ Make an AppStore distribution (production release)
   "Validate..." button
 - Select a code-signing identity (the default should be OK)
 - Wait a few moments for the validation result
-- If validation was successful, select "Submit..." in the Organizer window
+- If validation was successful, select "Distribute..." in the Organizer window,
+  followed by "Submit to the iOS App Store" on the next screen
 - The archive is now uploaded
 - After the upload has finished, the app's status in iTunes Connect should now
   have changed to "Upload Received" 
