@@ -664,7 +664,7 @@
   }
   else
   {
-    int moveNumber = boardPosition + 1;
+    int moveNumber = boardPosition;
     NSString* labelText = [NSString stringWithFormat:@"Move %d", moveNumber];
     int numberOfCapturedStones = move.capturedStones.count;
     if (numberOfCapturedStones > 0)
