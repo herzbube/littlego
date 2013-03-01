@@ -310,6 +310,9 @@ enum ProfileNotesSectionItem
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
           cell.textLabel.text = @"Advanced configuration";
+          // Necessary because other cells with DefaultCellType use a different
+          // text color
+          cell.textLabel.textColor = [UIColor blackColor];
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }

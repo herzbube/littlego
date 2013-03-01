@@ -311,6 +311,9 @@ enum GtpEngineProfileSectionItem
     {
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       cell.textLabel.text = [self.player gtpEngineProfile].name;
+      // Necessary because other cells with DefaultCellType use a different
+      // text color
+      cell.textLabel.textColor = [UIColor blackColor];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
