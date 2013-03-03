@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 /// defaults data.
 ///
 /// Regardless of the nature of the change, it is desirable for code that
-/// accesses the user defaults system that it can rely on the data structure
+/// accesses the user defaults system that it can rely on the user defaults data
 /// having a certain structure, namely the structure that it was developed
 /// for during the last application development cycle. The task of
 /// UserDefaultsUpdater therefore is to detect if a structural change has
@@ -58,7 +58,7 @@
 /// version). Upgrades are performed incrementally to make this task easier.
 ///
 ///
-/// @ The user defaults format version number
+/// @par The user defaults format version number
 ///
 /// To find out if upgrades need to be performed, UserDefaultsUpdater compares
 /// the format version of the current user defaults to the target format version
