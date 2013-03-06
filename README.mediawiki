@@ -7,7 +7,7 @@ __NOTOC__
 
 Little Go is an iOS application that lets you play the game of Go on the iPhone
 or iPad. You can play against another human, or against the computer. The
-minimum requirement for running this version of Little Go is iOS 4.3.
+minimum requirement for running this version of Little Go is iOS 5.0.
 
 For a detailed description of Little Go's features, see the MANUAL document
 (also available in-game from the "Help" tab).
