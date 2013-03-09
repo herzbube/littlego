@@ -55,7 +55,6 @@
   while (point = [enumerator nextObject])
   {
     STAssertEquals(region, point.region, nil);
-    STAssertTrue([region hasPoint:point], nil);
   }
 }
 
@@ -98,17 +97,16 @@
   GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
   STAssertNotNil(region.points, nil);
   STAssertEquals(expectedRegionSize, [region size], nil);
-  STAssertTrue([region hasPoint:point], nil);
   STAssertEquals(region, point.region, nil);
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertFalse([mainRegion hasPoint:point], nil);
+  STAssertTrue(mainRegion != point.region, nil);
 
   STAssertThrowsSpecificNamed([GoBoardRegion regionWithPoint:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the addPoint:() and hasPoint:() methods.
+/// @brief Exercises the addPoint:() method.
 // -----------------------------------------------------------------------------
 - (void) testAddPoint
 {
@@ -126,9 +124,9 @@
   STAssertNotNil(region.points, nil);
   STAssertEquals(expectedPointsCount, region.points.count, nil);
   STAssertEquals(0, [region size], nil);
-  STAssertFalse([region hasPoint:point1], nil);
-  STAssertFalse([region hasPoint:point2], nil);
-  STAssertFalse([region hasPoint:point3], nil);
+  STAssertTrue(point1.region != region, nil);
+  STAssertTrue(point2.region != region, nil);
+  STAssertTrue(point3.region != region, nil);
   STAssertTrue(point1.region == mainRegion, nil);
   STAssertTrue(point2.region == mainRegion, nil);
   STAssertTrue(point3.region == mainRegion, nil);
@@ -138,7 +136,6 @@
   [region addPoint:point1];
   STAssertEquals(expectedPointsCount, region.points.count, nil);
   STAssertEquals(1, [region size], nil);
-  STAssertTrue([region hasPoint:point1], nil);
   STAssertTrue(point1.region == region, nil);
 
   // Add second point that is a direct neighbour
@@ -146,8 +143,8 @@
   [region addPoint:point2];
   STAssertEquals(expectedPointsCount, region.points.count, nil);
   STAssertEquals(2, [region size], nil);
-  STAssertTrue([region hasPoint:point2], nil);
   STAssertTrue(point2.region == region, nil);
+
 
   // Add third point that is NOT a direct neighbour, and whose region reference
   // is nil
@@ -156,7 +153,6 @@
   [region addPoint:point3];
   STAssertEquals(expectedPointsCount, region.points.count, nil);
   STAssertEquals(3, [region size], nil);
-  STAssertTrue([region hasPoint:point3], nil);
   STAssertTrue(point3.region == region, nil);
 
   STAssertThrowsSpecificNamed([region addPoint:nil],
@@ -183,7 +179,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the removePoint:() and hasPoint:() methods.
+/// @brief Exercises the removePoint:() method.
 // -----------------------------------------------------------------------------
 - (void) testRemovePoint
 {
@@ -202,7 +198,6 @@
   [mainRegion removePoint:point1];
   STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
   STAssertEquals(expectedMainRegionPointsCount, mainRegion.points.count, nil);
-  STAssertFalse([mainRegion hasPoint:point1], nil);
   STAssertNil(point1.region, nil);
 
   STAssertThrowsSpecificNamed([mainRegion removePoint:nil],

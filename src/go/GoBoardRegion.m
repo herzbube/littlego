@@ -193,14 +193,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if @a point is a part of this GoBoardRegion.
-// -----------------------------------------------------------------------------
-- (bool) hasPoint:(GoPoint*)point
-{
-  return [_points containsObject:point];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Adds @a point to this GoBoardRegion.
 ///
 /// The GoBoardRegion reference of @a point is updated to this GoBoardRegion.
@@ -464,7 +456,7 @@
   for (GoPoint* neighbourOfRemovedPoint in removedPoint.neighbours)
   {
     // We are not interested in the neighbour if it is not in our region
-    if (! [self hasPoint:neighbourOfRemovedPoint])
+    if (neighbourOfRemovedPoint.region != self)
       continue;
     // Check if the current neighbour is connected to one of the other
     // neighbours that have been previously processed
@@ -515,7 +507,7 @@
   {
     if ([subRegion containsObject:neighbour])
       continue;
-    if (! [self hasPoint:neighbour])
+    if (neighbour.region != self)
       continue;
     [self fillSubRegion:subRegion containingPoint:neighbour];
   }

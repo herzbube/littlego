@@ -59,7 +59,6 @@
 + (GoBoardRegion*) region;
 + (GoBoardRegion*) regionWithPoint:(GoPoint*)point;
 - (int) size;
-- (bool) hasPoint:(GoPoint*)point;
 - (void) addPoint:(GoPoint*)point;
 - (void) removePoint:(GoPoint*)point;
 - (void) joinRegion:(GoBoardRegion*)region;
