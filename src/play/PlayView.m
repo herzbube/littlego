@@ -391,9 +391,12 @@ static PlayView* sharedPlayView = nil;
 {
   [super layoutSubviews];
 
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
   [self.playViewMetrics updateWithRect:self.bounds];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
   [self delayedUpdate];
+  [CATransaction commit];
 }
 
 // -----------------------------------------------------------------------------

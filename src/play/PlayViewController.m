@@ -29,6 +29,7 @@
 #import "boardposition/BoardPositionViewMetrics.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
 #import "gesture/TapGestureController.h"
+#import "scrollview/PlayViewScrollController.h"
 #import "splitview/LeftPaneViewController.h"
 #import "splitview/RightPaneViewController.h"
 #import "../main/ApplicationDelegate.h"
@@ -140,6 +141,8 @@ enum ActionType
 //@}
 /// @name Privately declared properties
 //@{
+@property(nonatomic, retain) UIScrollView* scrollView;
+@property(nonatomic, retain) PlayViewScrollController* playViewScrollController;
 @property(nonatomic, retain) PlayView* playView;
 @property(nonatomic, retain) UINavigationBar* navigationBarMain;
 @property(nonatomic, retain) UIToolbar* toolbarBoardPositionNavigation;
@@ -184,6 +187,8 @@ enum ActionType
 - (void) releaseObjects
 {
   self.view = nil;
+  self.scrollView = nil;
+  self.playViewScrollController = nil;
   self.playView = nil;
   self.navigationBarMain = nil;
   self.toolbarBoardPositionNavigation = nil;
@@ -255,10 +260,8 @@ enum ActionType
   CGRect mainViewFrame = [self mainViewFrame];
   self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  // Because we delay the setup of the remaining views, the default white
-  /// background is visible for a short time. By overriding the default with our
-  // own background we prevent a nasty white "flash".
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 }
 
 // -----------------------------------------------------------------------------
@@ -401,6 +404,57 @@ enum ActionType
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
+- (void) setupScrollView
+{
+  CGRect scrollViewFrame = [self scrollViewFrame];
+  self.scrollView = [[[UIScrollView alloc] initWithFrame:scrollViewFrame] autorelease];
+  UIView* superView = [self scrollViewSuperview];
+  [superView addSubview:self.scrollView];
+
+  self.scrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.scrollView.backgroundColor = [UIColor clearColor];
+
+  CGFloat zoomFactor = 3.0;  // todo xxx calculate based on maximum stone size
+  self.scrollView.minimumZoomScale = 1.0f;
+  self.scrollView.maximumZoomScale = self.scrollView.minimumZoomScale * zoomFactor;
+  self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
+  self.scrollView.bouncesZoom = NO;
+  self.scrollView.contentSize = scrollViewFrame.size;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) scrollViewFrame
+{
+  UIView* superView = [self scrollViewSuperview];
+  CGSize superViewSize = superView.bounds.size;
+  int viewX = 0;
+  int viewY = CGRectGetMaxY(self.navigationBarMain.frame);
+  int viewWidth = superViewSize.width;
+  int viewHeight = (superViewSize.height
+                    - self.navigationBarMain.frame.size.height
+                    - self.toolbarBoardPositionNavigation.frame.size.height);
+  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) scrollViewSuperview
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return self.view;
+  else
+    return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
 - (void) setupPlayView
 {
   CGRect playViewFrame = [self playViewFrame];
@@ -408,8 +462,11 @@ enum ActionType
   UIView* superView = [self playViewSuperview];
   [superView addSubview:self.playView];
 
-  self.playView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.playView.backgroundColor = [UIColor clearColor];
+  else
+    self.playView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 }
 
 // -----------------------------------------------------------------------------
@@ -418,24 +475,23 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
-  UIView* superView = [self playViewSuperview];
-  CGSize superViewSize = superView.bounds.size;
-  int playViewX = 0;
-  int playViewY = CGRectGetMaxY(self.navigationBarMain.frame);
-  int playViewWidth = superViewSize.width;
-  int playViewHeight;
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    playViewHeight = (superViewSize.height
-                      - self.navigationBarMain.frame.size.height
-                      - self.toolbarBoardPositionNavigation.frame.size.height);
+    CGSize contentSize = self.scrollView.contentSize;
+    return CGRectMake(0, 0, contentSize.width, contentSize.height);
   }
   else
   {
-    playViewHeight = (superViewSize.height
-                      - self.navigationBarMain.frame.size.height);
+    UIView* superView = [self playViewSuperview];
+    CGSize superViewSize = superView.bounds.size;
+    int viewX = 0;
+    int viewY = CGRectGetMaxY(self.navigationBarMain.frame);
+    int viewWidth = superViewSize.width;
+    int viewHeight;
+    viewHeight = (superViewSize.height
+                  - self.navigationBarMain.frame.size.height);
+    return CGRectMake(viewX, viewY, viewWidth, viewHeight);
   }
-  return CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -445,7 +501,7 @@ enum ActionType
 - (UIView*) playViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.view;
+    return self.scrollView;
   else
     return self.rightPaneViewController.view;
 }
@@ -708,6 +764,7 @@ enum ActionType
   {
     [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
+    [self setupScrollView];
     [self setupPlayView];
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
@@ -746,6 +803,7 @@ enum ActionType
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
+    self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.scrollView playView:self.playView] autorelease];
     self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBoardPositionNavigation
                                                                              boardPositionListView:self.boardPositionListView
                                                                           currentBoardPositionView:self.currentBoardPositionView] autorelease];

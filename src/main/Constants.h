@@ -30,6 +30,10 @@ extern const float gHalfPixel;
 /// This is based on
 /// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
 extern const float gDisabledViewAlpha;
+/// @brief On the iPhone, the gesture recognizer on the PlayView must use a
+/// small delay so as not to interfere with the pinch gesture used to initiate
+/// zooming.
+extern const CFTimeInterval gPlayViewPanningDelayIPhone;
 /// @brief On the iPad and in portrait orientation, the gesture recognizer on
 /// the PlayView must use a small delay so as not to interfere with the swipe
 /// gesture of the main UISplitViewController.

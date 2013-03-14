@@ -227,7 +227,12 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  return (self.isPanningEnabled ? YES : NO);
+  if (! self.isPanningEnabled)
+    return NO;
+  // 2 touches means pinching/zooming or scrolling
+  if (gestureRecognizer.numberOfTouches > 1)
+    return NO;
+  return YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -353,7 +358,11 @@
 - (void) updateMinimumPressDuration
 {
   CFTimeInterval minimumPressDuration = 0;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    minimumPressDuration = gPlayViewPanningDelayIPhone;
+  }
+  else
   {
     // Can't use the UIDevice object's orientation property, at application
     // launch this returns UIDeviceOrientationUnknown :-(
