@@ -105,6 +105,8 @@
 		CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA416A4B97800A088D5 /* UIImageAdditions.m */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
+		CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
+		CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
 		CD36593C1691C49F00D75466 /* 40-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593A1691C49F00D75466 /* 40-forward.png */; };
 		CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593B1691C49F00D75466 /* 40-forward@2x.png */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
@@ -235,6 +237,7 @@
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
+		CDB9212F16EB9852007BDB69 /* PlayViewScrollController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB9212E16EB9852007BDB69 /* PlayViewScrollController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBF976B13EC66FE00476748 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF976A13EC66FE00476748 /* SoundHandling.m */; };
@@ -494,6 +497,10 @@
 		CD252DA416A4B97800A088D5 /* UIImageAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageAdditions.m; sourceTree = "<group>"; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
+		CD30BAA316F7A2AE00C95DCF /* DoubleTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoubleTapGestureController.h; sourceTree = "<group>"; };
+		CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoubleTapGestureController.m; sourceTree = "<group>"; };
+		CD30BAA616F7B28A00C95DCF /* TwoFingerTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoFingerTapGestureController.h; sourceTree = "<group>"; };
+		CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoFingerTapGestureController.m; sourceTree = "<group>"; };
 		CD36593A1691C49F00D75466 /* 40-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward.png"; sourceTree = "<group>"; };
 		CD36593B1691C49F00D75466 /* 40-forward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward@2x.png"; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
@@ -620,6 +627,8 @@
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileSettingsController.m; sourceTree = "<group>"; };
+		CDB9212D16EB9852007BDB69 /* PlayViewScrollController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewScrollController.h; sourceTree = "<group>"; };
+		CDB9212E16EB9852007BDB69 /* PlayViewScrollController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewScrollController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -1080,6 +1089,7 @@
 				CD0FE8FD169A122400053671 /* boardposition */,
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CDF8B76714D9E91F00940D3E /* layer */,
+				CDB9212C16EB9852007BDB69 /* scrollview */,
 				CD05199216B1C09B002771F7 /* splitview */,
 				CDF8B6FA14D722B100940D3E /* ActivityIndicatorController.h */,
 				CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */,
@@ -1135,10 +1145,14 @@
 		CD3A0996169389A600ABDB5D /* gesture */ = {
 			isa = PBXGroup;
 			children = (
+				CD30BAA316F7A2AE00C95DCF /* DoubleTapGestureController.h */,
+				CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */,
 				CD3A0997169389A600ABDB5D /* PanGestureController.h */,
 				CD3A0998169389A600ABDB5D /* PanGestureController.m */,
 				CD3A099F16939E2200ABDB5D /* TapGestureController.h */,
 				CD3A09A016939E2200ABDB5D /* TapGestureController.m */,
+				CD30BAA616F7B28A00C95DCF /* TwoFingerTapGestureController.h */,
+				CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */,
 			);
 			path = gesture;
 			sourceTree = "<group>";
@@ -1226,6 +1240,16 @@
 			);
 			path = newgame;
 			sourceTree = "<group>";
+		};
+		CDB9212C16EB9852007BDB69 /* scrollview */ = {
+			isa = PBXGroup;
+			children = (
+				CDB9212D16EB9852007BDB69 /* PlayViewScrollController.h */,
+				CDB9212E16EB9852007BDB69 /* PlayViewScrollController.m */,
+			);
+			name = scrollview;
+			path = src/play/scrollview;
+			sourceTree = SOURCE_ROOT;
 		};
 		CDD48C80141034F000188B6A /* archive */ = {
 			isa = PBXGroup;
@@ -1945,6 +1969,9 @@
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
+				CDB9212F16EB9852007BDB69 /* PlayViewScrollController.m in Sources */,
+				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
+				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

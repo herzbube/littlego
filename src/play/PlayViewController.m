@@ -28,7 +28,9 @@
 #import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
+#import "gesture/DoubleTapGestureController.h"
 #import "gesture/TapGestureController.h"
+#import "gesture/TwoFingerTapGestureController.h"
 #import "scrollview/PlayViewScrollController.h"
 #import "splitview/LeftPaneViewController.h"
 #import "splitview/RightPaneViewController.h"
@@ -163,7 +165,9 @@ enum ActionType
 @property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
 @property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 @property(nonatomic, retain) PanGestureController* panGestureController;
+@property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
+@property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @property(nonatomic, retain) DebugPlayViewController* debugPlayViewController;
 //@}
 @end
@@ -209,7 +213,9 @@ enum ActionType
   self.currentBoardPositionViewController = nil;
   self.boardPositionTableListViewController = nil;
   self.panGestureController = nil;
+  self.doubleTapGestureController = nil;
   self.tapGestureController = nil;
+  self.twoFingerTapGestureController = nil;
   self.debugPlayViewController = nil;
 }
 
@@ -804,6 +810,8 @@ enum ActionType
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.scrollView playView:self.playView] autorelease];
+    self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
+    self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
     self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBoardPositionNavigation
                                                                              boardPositionListView:self.boardPositionListView
                                                                           currentBoardPositionView:self.currentBoardPositionView] autorelease];
