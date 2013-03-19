@@ -34,7 +34,7 @@
 //@}
 /// @name Gesture handler
 //@{
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer;
+- (void) handlePanFrom:(UILongPressGestureRecognizer*)gestureRecognizer;
 //@}
 /// @name UIGestureRecognizerDelegate protocol
 //@{
@@ -150,7 +150,7 @@
 /// @brief Reacts to a dragging, or panning, gesture in the view's Go board
 /// area.
 // -----------------------------------------------------------------------------
-- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
+- (void) handlePanFrom:(UILongPressGestureRecognizer*)gestureRecognizer
 {
   // TODO move the following summary somewhere else where it is not buried in
   // code and forgotten...
@@ -227,12 +227,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  if (! self.isPanningEnabled)
-    return NO;
-  // 2 touches means pinching/zooming or scrolling
-  if (gestureRecognizer.numberOfTouches > 1)
-    return NO;
-  return YES;
+  return (self.isPanningEnabled ? YES : NO);
 }
 
 // -----------------------------------------------------------------------------
