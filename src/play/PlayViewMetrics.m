@@ -124,11 +124,6 @@
   // that occur in the following calculations will re-added to the outer margin,
   // so in the end the margin will be slightly larger, and the board will be
   // slightly smaller than we calculate here.
-
-  // These values must be calculated even if the board size is not yet known
-  // so that the board itself can already be drawn.
-  // Note: This is important because the board will NOT be redrawn when the
-  // board size changes (see BoardLayerDelegate)!
   int boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
   self.topLeftBoardCornerX = boardOuterMargin + offsetForCenteringX;
   self.topLeftBoardCornerY = boardOuterMargin + offsetForCenteringY;
@@ -213,7 +208,7 @@
     //   a = r * sqrt(2)
     int stoneInnerSquareSideLength = floor(self.stoneRadius * sqrt(2));
     // Subtract an additional 1-2 points because we don't want to touch the
-    // stone circle. The square side length must be an odd number to prevent
+    // stone border. The square side length must be an odd number to prevent
     // anti-aliasing when the square is drawn (we assume that drawing occurs
     // with playViewModel.normalLineWidth and that the line width is an odd
     // number (typically 1 point)).

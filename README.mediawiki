@@ -52,7 +52,7 @@ See the "Troubleshooting" section in the MANUAL document.
 * The source code respository is [https://github.com/herzbube/littlego/ on GitHub]
 * The bugtracker is also [https://github.com/herzbube/littlego/issues on GitHub]. If you want to submit a new issue there you must be a registered GitHub user (it's free and they won't bother you with spam!). Since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab. Last but not least, you can also email me directly.
 * On Little Go's [https://trello.com/board/little-go/4fd84c295027333d460dcc32 Trello board] you can see what I am currently working on.
-* Little Go also has an [https://www.ohloh.net/p/littlego Ohloh page] that provides mildly interesting source code statistics. The statistics are for the master branch only and don't reflect the work that is currently being done for the next release in the develop (or any other) branch.
+* Little Go also has an [https://www.ohloh.net/p/littlego Ohloh page] that provides mildly interesting source code statistics.
 
 
 == Documentation ==

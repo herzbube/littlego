@@ -485,10 +485,10 @@
       break;
 
     // At this point we know that newSubRegion does not contain all the points
-    // of self (the main region), so a split is certain to occur. We can
-    // optimize by immediately removing the points of newSubRegion from self
-    // (the main region) so that the next iteration will find less objects in
-    // self.points and will therefore process more quickly.
+    // of self (the main region), so a split is certain to occur. We need to
+    // immediately remove the points of newSubRegion from self (the main region)
+    // so that in the next iteration the GoPoint.region property of those
+    // points is already correct.
     [[GoBoardRegion region] moveSubRegion:newSubRegion fromMainRegion:self];
   }
 }

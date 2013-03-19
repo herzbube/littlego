@@ -667,7 +667,11 @@ more expressive.
 A handy feature of the Objective-C runtime is called "Associative references":
 It allows to attach an object reference to another object under a certain name,
 and to retrieve the referenced object at a later time, e.g. in a delegate
-method. The required C functions are documented in [26].
+method. The required C functions are documented in [25].
+
+[26] is Apple's must-read guide when you start working with scroll views for the
+first time. I found this especially useful when it came to understand zooming.
+[27] is also a nice companion tutorial.
 
 Unless otherwise noted, the base for all of the following references is the
 "iOS Developer Library", found under this URL:
@@ -698,6 +702,8 @@ https://developer.apple.com/library/ios/navigation/.
 [23] iOS Developer Library > Guides > Predicate Programming Guide
 [24] iOS Developer Library > Guides > Predicate Programming Guide
 [25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
+[26] iOS Developer Library > Guides > Scroll View Programming Guide for iOS
+[27 http://www.raywenderlich.com/10518/how-to-use-uiscrollview-to-scroll-and-zoom-content
 
 
 Compilation command

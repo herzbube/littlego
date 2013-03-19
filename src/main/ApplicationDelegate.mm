@@ -339,7 +339,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   {
     [DDLog addLogger:self.fileLogger];
     // Enable this if you want logging to also go to the Debug console
-//    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
     DDLogInfo(@"Logging enabled. Log folder is %@", [self logFolder]);
   }
   else
