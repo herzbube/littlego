@@ -140,6 +140,7 @@
   // Completely disable symbols while scoring mode is enabled
   if (self.scoringModel.scoringMode)
     return;
+  DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
   if (! _blackLastMoveLayer)
     _blackLastMoveLayer = CreateLastMoveLayer(context, [UIColor blackColor], self);

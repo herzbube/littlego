@@ -118,6 +118,7 @@
   GoPoint* pointA1 = [[GoGame sharedGame].board pointAtVertex:@"A1"];
   if (! pointA1)
     return;
+  DDLogVerbose(@"GridLayerDelegate is drawing");
 
   if (! _normalLineLayer)
   {

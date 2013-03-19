@@ -163,6 +163,7 @@ enum TerritoryLayerType
 {
   if (! self.scoringModel.scoringMode)
     return;
+  DDLogVerbose(@"TerritoryLayerDelegate is drawing");
 
   if (! _blackTerritoryLayer)
     _blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self);

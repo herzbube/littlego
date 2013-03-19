@@ -118,6 +118,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  DDLogVerbose(@"StarPointsLayerDelegate is drawing");
+
   if (! _starPointLayer)
     _starPointLayer = CreateStarPointLayer(context, self);
 

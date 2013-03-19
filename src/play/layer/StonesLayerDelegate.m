@@ -123,6 +123,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  DDLogVerbose(@"StonesLayerDelegate is drawing");
+
   if (! _blackStoneLayer)
     _blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
   if (! _whiteStoneLayer)

@@ -130,6 +130,7 @@
 {
   if (! self.scoringModel.scoringMode)
     return;
+  DDLogVerbose(@"DeadStonesLayerDelegate is drawing");
 
   if (! _deadStoneSymbolLayer)
     _deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self);
