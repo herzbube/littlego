@@ -419,11 +419,6 @@ enum ActionType
 
   self.scrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.scrollView.backgroundColor = [UIColor clearColor];
-
-  CGFloat zoomFactor = 3.0;  // todo xxx calculate based on maximum stone size
-  self.scrollView.minimumZoomScale = 1.0f;
-  self.scrollView.maximumZoomScale = self.scrollView.minimumZoomScale * zoomFactor;
-  self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
   self.scrollView.bouncesZoom = NO;
   self.scrollView.contentSize = scrollViewFrame.size;
 }

@@ -61,6 +61,7 @@
   self.starPointRadius = 3;
   self.stoneRadiusPercentage = 1.0;
   self.crossHairColor = [UIColor greenColor];
+  self.maximumZoomScale = maximumZoomScaleDefault;
   self.stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
   self.infoTypeLastSelected = ScoreInfoType;
 
@@ -102,6 +103,7 @@
   self.starPointRadius = [[dictionary valueForKey:[starPointRadiusKey stringByAppendingDeviceSuffix]] intValue];
   self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
   self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
+  self.maximumZoomScale = [[dictionary valueForKey:maximumZoomScaleKey] floatValue];
   self.stoneDistanceFromFingertip = [[dictionary valueForKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]] floatValue];
   self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
 }
@@ -136,6 +138,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:[starPointRadiusKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.maximumZoomScale] forKey:maximumZoomScaleKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneDistanceFromFingertip] forKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed

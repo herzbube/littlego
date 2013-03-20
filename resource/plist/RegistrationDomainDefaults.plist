@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>5</integer>
+	<integer>6</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>PlayView</key>
@@ -44,6 +44,8 @@
 		<real>0.9</real>
 		<key>CrossHairColor</key>
 		<string>0000ff</string>
+		<key>MaximumZoomScale</key>
+		<real>3</real>
 		<key>StoneDistanceFromFingertip~iphone</key>
 		<real>2</real>
 		<key>StoneDistanceFromFingertip~ipad</key>

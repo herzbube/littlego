@@ -411,6 +411,8 @@ extern NSString* boardPositionChangeProgress;
 /// @name Play view settings default values
 // -----------------------------------------------------------------------------
 //@{
+extern const float maximumZoomScaleDefault;
+extern const float maximumZoomScaleMaximum;
 extern const float stoneDistanceFromFingertipDefault;
 extern const float stoneDistanceFromFingertipMaximum;
 //@}
@@ -587,6 +589,7 @@ extern NSString* starPointColorKey;
 extern NSString* starPointRadiusKey;
 extern NSString* stoneRadiusPercentageKey;
 extern NSString* crossHairColorKey;
+extern NSString* maximumZoomScaleKey;
 extern NSString* stoneDistanceFromFingertipKey;
 extern NSString* infoTypeLastSelectedKey;
 // New game settings

@@ -24,6 +24,7 @@
 #import "../ui/UiUtilities.h"
 
 // Constants
+static const float sliderValueFactorForMaximumZoomScale = 10.0;
 static const float sliderValueFactorForStoneDistanceFromFingertip = 5.0;
 
 
@@ -35,6 +36,7 @@ enum PlayViewTableViewSection
 {
   FeedbackSection,
   ViewSection,
+  ZoomSection,
   MaxSection
 };
 
@@ -58,6 +60,15 @@ enum ViewSectionItem
 //  DisplayMoveNumbersItem,
   StoneDistanceFromFingertipItem,
   MaxViewSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ZoomSection.
+// -----------------------------------------------------------------------------
+enum ZoomSectionItem
+{
+  MaxZoomScaleItem,  // not displayed on iPad
+  MaxZoomSectionItem
 };
 
 
@@ -152,7 +163,10 @@ enum ViewSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return MaxSection;
+  else
+    return MaxSection - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -166,6 +180,8 @@ enum ViewSectionItem
       return MaxFeedbackSectionItem;
     case ViewSection:
       return MaxViewSectionItem;
+    case ZoomSection:
+      return MaxZoomSectionItem;
     default:
       assert(0);
       break;
@@ -185,7 +201,6 @@ enum ViewSectionItem
     case ViewSection:
       return @"View settings";
     default:
-      assert(0);
       break;
   }
   return nil;
@@ -200,6 +215,8 @@ enum ViewSectionItem
   {
     case ViewSection:
       return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
+    case ZoomSection:
+      return @"Controls how far you can zoom in on the board. Because larger values consume more memory, it is recommended for iPhone 3GS users to leave this setting at a medium level.";
     default:
       break;
   }
@@ -281,6 +298,33 @@ enum ViewSectionItem
       }
       break;
     }
+    case ZoomSection:
+    {
+      switch (indexPath.row)
+      {
+        case MaxZoomScaleItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.valueLabelHidden = true;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxZoomScaleDidChange:)];
+          sliderCell.descriptionLabel.text = @"Maximum zoom";
+          sliderCell.slider.minimumValue = (1.0
+                                            * sliderValueFactorForMaximumZoomScale);
+          sliderCell.slider.maximumValue = (maximumZoomScaleMaximum
+                                            * sliderValueFactorForMaximumZoomScale);
+          sliderCell.value = (self.playViewModel.maximumZoomScale
+                              * sliderValueFactorForMaximumZoomScale);
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
     default:
     {
       assert(0);
@@ -297,8 +341,11 @@ enum ViewSectionItem
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   CGFloat height = tableView.rowHeight;
-  if (ViewSection == indexPath.section && StoneDistanceFromFingertipItem == indexPath.row)
+  if ((ViewSection == indexPath.section && StoneDistanceFromFingertipItem == indexPath.row) ||
+      (ZoomSection == indexPath.section && MaxZoomScaleItem == indexPath.row))
+  {
     height = [TableViewSliderCell rowHeightInTableView:tableView];
+  }
   return height;
 }
 
@@ -368,6 +415,15 @@ enum ViewSectionItem
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
   self.playViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user changing the "maximum zoom scale" setting.
+// -----------------------------------------------------------------------------
+- (void) maxZoomScaleDidChange:(id)sender
+{
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.playViewModel.maximumZoomScale = (1.0 * sliderCell.value / sliderValueFactorForMaximumZoomScale);
 }
 
 @end

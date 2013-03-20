@@ -46,6 +46,7 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 + (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion4:(NSDictionary*)registrationDomainDefaults;
 + (void) upgradeToVersion5:(NSDictionary*)registrationDomainDefaults;
++ (void) upgradeToVersion6:(NSDictionary*)registrationDomainDefaults;
 //@}
 /// @name Internal helpers
 //@{
@@ -391,6 +392,23 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
     NSMutableDictionary* scoringDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:scoringDictionary];
     [scoringDictionaryUpgrade setValue:[NSNumber numberWithBool:true] forKey:scoreWhenGameEndsKey];
     [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 6.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion6:(NSDictionary*)registrationDomainDefaults
+{
+  // Add new keys to "play view" dictionary
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  id playViewDictionary = [userDefaults objectForKey:playViewKey];
+  if (playViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:maximumZoomScaleDefault] forKey:maximumZoomScaleKey];
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 }
 

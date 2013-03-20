@@ -68,6 +68,8 @@ NSString* longRunningActionEnds = @"LongRunningActionEnds";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 
 // Play view settings default values
+const float maximumZoomScaleDefault = 3.0;
+const float maximumZoomScaleMaximum = 3.0;
 const float stoneDistanceFromFingertipDefault = 2.0;
 const float stoneDistanceFromFingertipMaximum = 4.0;
 
@@ -192,6 +194,7 @@ NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
+NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 // New game settings
