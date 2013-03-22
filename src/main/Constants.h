@@ -696,6 +696,7 @@ extern NSString* goMovePointKey;
 extern NSString* goMovePreviousKey;
 extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
+extern NSString* goMoveMoveNumberKey;
 // GoMoveModel keys
 extern NSString* goMoveModelMoveListKey;
 extern NSString* goMoveModelNumberOfMovesKey;

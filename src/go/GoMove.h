@@ -84,5 +84,8 @@
 /// if several stone groups were captured, the GoPoint objects do not form a
 /// single contiguous region.
 @property(nonatomic, retain, readonly) NSArray* capturedStones;
+/// @brief The move number of this GoMove object. The first move of the game
+/// has move number 1.
+@property(nonatomic, assign, readonly) int moveNumber;
 
 @end

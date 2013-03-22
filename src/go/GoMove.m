@@ -48,6 +48,7 @@
 @property(nonatomic, assign, readwrite) GoMove* previous;
 @property(nonatomic, assign, readwrite) GoMove* next;
 @property(nonatomic, retain, readwrite) NSArray* capturedStones;
+@property(nonatomic, assign, readwrite) int moveNumber;
 //@}
 @end
 
@@ -96,9 +97,12 @@
   GoMove* newMove = [[GoMove alloc] init:type by:player];
   if (newMove)
   {
-    newMove.previous = move;
     if (move)
-      move.next = newMove;  // set reference to self
+    {
+      newMove.previous = move;
+      move.next = newMove;
+      newMove.moveNumber = move.moveNumber + 1;
+    }
     [newMove autorelease];
   }
   return newMove;
@@ -106,7 +110,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoMove object. The GoMove has type @a aType, is
-/// associated with @a aPlayer, and has no predecessor or successor GoMove.
+/// associated with @a aPlayer, and has no predecessor or successor GoMove. The
+/// GoMove has move number 1.
 ///
 /// @note This is the designated initializer of GoMove.
 // -----------------------------------------------------------------------------
@@ -123,6 +128,7 @@
   self.previous = nil;
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
+  self.moveNumber = 1;
 
   return self;
 }
@@ -144,6 +150,7 @@
   self.previous = [decoder decodeObjectForKey:goMovePreviousKey];
   self.next = [decoder decodeObjectForKey:goMoveNextKey];
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
+  self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
 
   return self;
 }
@@ -179,7 +186,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoMove(%p): type = %d", self, _type];
+  return [NSString stringWithFormat:@"GoMove(%p): type = %d, move number = %d", self, _type, _moveNumber];
 }
 
 // -----------------------------------------------------------------------------
@@ -377,6 +384,7 @@
   [encoder encodeObject:self.previous forKey:goMovePreviousKey];
   [encoder encodeObject:self.next forKey:goMoveNextKey];
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
+  [encoder encodeObject:self.moveNumber forKey:goMoveMoveNumberKey];
 }
 
 @end

@@ -112,7 +112,7 @@ const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 
 // Bug reports constants
-const int bugReportFormatVersion = 1;
+const int bugReportFormatVersion = 3;
 NSString* bugReportDiagnosticsInformationFileName = @"littlego-bugreport.zip";
 NSString* bugReportDiagnosticsInformationFileMimeType = @"application/zip";
 NSString* bugReportInfoFileName = @"bugreport-info.plist";
@@ -296,6 +296,7 @@ NSString* goMovePointKey = @"Point";
 NSString* goMovePreviousKey = @"Previous";
 NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
+NSString* goMoveMoveNumberKey = @"MoveNumber";
 // GoMoveModel keys
 NSString* goMoveModelMoveListKey = @"MoveList";
 NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";

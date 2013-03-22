@@ -32,5 +32,6 @@
 - (void) testCapturedStones;
 - (void) testDoIt;
 - (void) testUndo;
+- (void) testMoveNumber;
 
 @end

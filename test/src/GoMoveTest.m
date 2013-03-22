@@ -375,4 +375,24 @@
   [move6 undo];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e moveNumber property
+// -----------------------------------------------------------------------------
+- (void) testMoveNumber
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+  GoMove* movePrevious = nil;
+
+  int expectedMoveNumber = 1;
+  GoMove* move1 = [GoMove move:moveType by:player after:movePrevious];
+  STAssertEquals(expectedMoveNumber, move1.moveNumber, nil);
+
+  moveType = GoMoveTypePass;
+  movePrevious = move1;
+  expectedMoveNumber = 2;
+  GoMove* move2 = [GoMove move:moveType by:player after:movePrevious];
+  STAssertEquals(expectedMoveNumber, move2.moveNumber, nil);
+}
+
 @end
