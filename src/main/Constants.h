@@ -415,6 +415,7 @@ extern const float maximumZoomScaleDefault;
 extern const float maximumZoomScaleMaximum;
 extern const float stoneDistanceFromFingertipDefault;
 extern const float stoneDistanceFromFingertipMaximum;
+extern const float moveNumbersPercentageDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -576,7 +577,7 @@ extern NSString* userDefaultsVersionApplicationDomainKey;
 extern NSString* playViewKey;
 extern NSString* markLastMoveKey;
 extern NSString* displayCoordinatesKey;
-extern NSString* displayMoveNumbersKey;
+extern NSString* moveNumbersPercentageKey;
 extern NSString* playSoundKey;
 extern NSString* vibrateKey;
 extern NSString* backgroundColorKey;

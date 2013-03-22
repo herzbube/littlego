@@ -12,8 +12,8 @@
 		<true/>
 		<key>DisplayCoordinates</key>
 		<false/>
-		<key>DisplayMoveNumbers</key>
-		<false/>
+		<key>MoveNumbersPercentage</key>
+		<real>0</real>
 		<key>PlaySound</key>
 		<false/>
 		<key>Vibrate</key>

@@ -25,6 +25,7 @@
 
 // Constants
 static const float sliderValueFactorForMaximumZoomScale = 10.0;
+static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
 static const float sliderValueFactorForStoneDistanceFromFingertip = 5.0;
 
 
@@ -57,7 +58,7 @@ enum ViewSectionItem
 {
   MarkLastMoveItem,
 //  DisplayCoordinatesItem,
-//  DisplayMoveNumbersItem,
+  MoveNumbersPercentageItem,
   StoneDistanceFromFingertipItem,
   MaxViewSectionItem
 };
@@ -102,7 +103,6 @@ enum ZoomSectionItem
 - (void) toggleVibrate:(id)sender;
 - (void) toggleMarkLastMove:(id)sender;
 - (void) toggleDisplayCoordinates:(id)sender;
-- (void) toggleDisplayMoveNumbers:(id)sender;
 //@}
 /// @name Privately declared properties
 //@{
@@ -271,11 +271,20 @@ enum ZoomSectionItem
 //            accessoryView.on = self.playViewModel.displayCoordinates;
 //            [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
 //            break;
-//          case DisplayMoveNumbersItem:
-//            cell.textLabel.text = @"Move numbers";
-//            accessoryView.on = self.playViewModel.displayMoveNumbers;
-//            [accessoryView addTarget:self action:@selector(toggleDisplayMoveNumbers:) forControlEvents:UIControlEventValueChanged];
-//            break;
+        case MoveNumbersPercentageItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.valueLabelHidden = true;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(moveNumbersPercentageDidChange:)];
+          sliderCell.descriptionLabel.text = @"Display move numbers";
+          sliderCell.slider.minimumValue = 0;
+          sliderCell.slider.maximumValue = (1.0
+                                            * sliderValueFactorForMoveNumbersPercentage);
+          sliderCell.value = (self.playViewModel.moveNumbersPercentage
+                              * sliderValueFactorForMoveNumbersPercentage);
+          break;
+        }
         case StoneDistanceFromFingertipItem:
         {
           cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
@@ -341,10 +350,31 @@ enum ZoomSectionItem
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   CGFloat height = tableView.rowHeight;
-  if ((ViewSection == indexPath.section && StoneDistanceFromFingertipItem == indexPath.row) ||
-      (ZoomSection == indexPath.section && MaxZoomScaleItem == indexPath.row))
+  switch (indexPath.section)
   {
-    height = [TableViewSliderCell rowHeightInTableView:tableView];
+    case ViewSection:
+    {
+      switch (indexPath.row)
+      {
+        case MoveNumbersPercentageItem:
+        case StoneDistanceFromFingertipItem:
+          height = [TableViewSliderCell rowHeightInTableView:tableView];
+          break;
+        default:
+          break;
+      }
+    }
+    case ZoomSection:
+    {
+      switch (indexPath.row)
+      {
+        case MaxZoomScaleItem:
+          height = [TableViewSliderCell rowHeightInTableView:tableView];
+          break;
+        default:
+          break;
+      }
+    }
   }
   return height;
 }
@@ -398,13 +428,12 @@ enum ZoomSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Display move numbers" switch. Writes
-/// the new value to the appropriate model.
+/// @brief Reacts to the user changing the "display move numbers" setting.
 // -----------------------------------------------------------------------------
-- (void) toggleDisplayMoveNumbers:(id)sender
+- (void) moveNumbersPercentageDidChange:(id)sender
 {
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.displayMoveNumbers = accessoryView.on;
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.playViewModel.moveNumbersPercentage = (1.0 * sliderCell.value / sliderValueFactorForMoveNumbersPercentage);
 }
 
 // -----------------------------------------------------------------------------

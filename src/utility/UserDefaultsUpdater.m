@@ -33,6 +33,7 @@ NSString* crossHairPointDistanceFromFingerKey = @"CrossHairPointDistanceFromFing
 NSString* blackPlayerKey = @"BlackPlayer";
 NSString* whitePlayerKey = @"WhitePlayer";
 NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
+NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -401,13 +402,17 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 // -----------------------------------------------------------------------------
 + (void) upgradeToVersion6:(NSDictionary*)registrationDomainDefaults
 {
-  // Add new keys to "play view" dictionary
+  // Add new keys to / change existing keys in "play view" dictionary
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
     NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    // This key is new
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:maximumZoomScaleDefault] forKey:maximumZoomScaleKey];
+    // Replace "DisplayMoveNumbers" key with "MoveNumbersPercentage"
+    [playViewDictionaryUpgrade removeObjectForKey:displayMoveNumbersKey];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:moveNumbersPercentageDefault] forKey:moveNumbersPercentageKey];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 }
