@@ -715,9 +715,6 @@ CALayer with pre-rendered CGLayers, no animations (build from commit a29292250c1
 
 
 Layers in their order of stacking
-- Board
-  - This layer draws the wooden (or whatever) board. Currently uses a solid
-    color, but may use a pattern or image in the future.
 - Grid
   - This layer draws the grid lines on whose intersections stones are placed
 - Coordinates
@@ -771,3 +768,75 @@ GoScoreScoringModeDisabled               Symbols              Show layer
 GoScoreCalculationEnds                   Territory            Update entire layer
                                          Dead Stones          Update entire layer
 InterfaceRotationChanged                 All layers           Update entire layer (space available for drawing changes)
+
+(note that this table may no longer be up-to-date)
+
+
+Memory usage after adding zooming
+---------------------------------
+The following measurements were taken with the "Activity Monitor" instrument for
+a release build on an iPhone 3GS. Unless otherwise noted (towards the end of
+the table), measurements were taken while running a human vs. human game, with
+the default GTP engine profile configured to have pondering disabled; in other
+words: Fuego didn't use up any memory.
+
+Memory usage   Situation
+----------------------------------------------------
+47.38 MB       After application launch, empty 19x19 board
+50.18 MB       While panning around the board
+50.38 MB       After placing the first stone
+52.16 MB       After starting a new 19x19 game
+53.79 MB       While panning around the board
+51.49 MB       After placing the first stone
+52.25 MB       After starting a new 19x19 game
+53.88 MB       While panning around the board
+51.55 MB       After placing the first stone
+51.89 MB       After switching to the Archive tab
+51.53 MB       After loading the Ear-redding game (325 moves on a 19x19 board)
+53.93 MB       While panning around the board
+54.61 MB       After zooming in to the maximum zoom scale (3.0)
+77.02 MB       While panning around the zoomed part of the board. Memory usage
+               remains at this value even after cancelling the gesture.
+62.21 MB       After scrolling around for a while, memory usage suddenly drops
+               to this value.
+76.45 MB       While panning around another zoomed part of the board.
+62.20 MB       Memory usage drops to this value on its own, i.e. I don't have
+               to do any scrolling.
+49.98 MB       After zooming out to normal zoom scale (1.0)
+52.52 MB       After starting a new 19x19 game
+52.60 MB       After zooming in to the maximum zoom scale (3.0)
+74.27 MB       While panning around the zoomed part of the board
+60.29 MB       Memory usage drops to this value on its own after placing the
+               stone and waiting for some time
+50.16 MB       After zooming out to normal zoom scale (1.0)
+53.20 MB       After zooming in to the maximum zoom scale (3.0)
+51.61 MB       Place a few stones while zoomed in, then zoom out, then zoom in
+               again, scroll and wait a few moments
+50.73 MB       After loading the Ear-reddening game, then zooming in to zoom
+               scale 1.5 (double-tap)
+55.30 MB       While panning at zoom scale 1.5
+51.98 MB       After zooming in to zoom scale 2.25 (double-tap)
+64.03 MB       While panning at zoom scale 2.25
+89.17 MB       This value is the last sample taken before the app crashes. The
+               setup that leads to the crash: Default profile settings (i.e.
+               32 MB memory for Fuego, pondering enabled), Ear-reddening game
+               loaded, zoom in to zoom scale 3.0.
+110.19 MB      Same setup, this time the app does not crash, even while panning
+               at zoom scale 3.0.
+
+Additional measurements
+- Similar actions with a 9x9 board yield roughly the same memory usage
+- Memory usage with the maximum setup on other devices
+  - iPhone 4S (retina display): 115.20 MB
+  - iPad 2nd generation (normal display): 103.36
+
+Conclusions
+- The board size is not relevant
+- It also doesn't matter much whether or not any stones are on the board
+- Zooming in to the maximum zoom scale (3.0) is relatively cheap (~ 2-3 MB)
+- Having a retina display is also less expensive than expected: A mere
+  additional ~5 MB when compared to the normal display
+- The most expensive operation is panning at high zoom scales (~ 22-23 MB at
+  zoom scale 3.0). Memory usage drops dramatically when panning at medium zoom
+  scales, but is still significant (~ 5 MB at zoom scale 1.5, ~ 12 MB at zoom
+  scale 2.25).
