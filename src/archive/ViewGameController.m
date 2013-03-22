@@ -143,10 +143,15 @@ enum GameAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
-  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(loadGame)] autorelease];
+  UIBarButtonItem* emailButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:emailIconResource]
+                                                              style:UIBarButtonItemStyleBordered
+                                                             target:self
+                                                             action:@selector(emailGame)] autorelease];
+  UIBarButtonItem* loadButton = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
+                                                                  style:UIBarButtonItemStylePlain
+                                                                 target:self
+                                                                 action:@selector(loadGame)] autorelease];
+  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:loadButton, emailButton, nil];
   [self updateLoadButtonState];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -434,6 +439,57 @@ enum GameAttributesSectionItem
     }
   }
   self.navigationItem.rightBarButtonItem.enabled = enableButton;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Presents mail composer with the .sgf file attached, or displays an
+/// alert if the device is not configured for sending emails.
+// -----------------------------------------------------------------------------
+- (void) emailGame
+{
+  if (! [self canSendMail])
+    return;
+  DDLogVerbose(@"%@: Presenting mail composer for game %@", self, self.game.name);
+  MFMailComposeViewController* mailComposeViewController = [[MFMailComposeViewController alloc] init];
+  mailComposeViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  mailComposeViewController.mailComposeDelegate = self;
+  mailComposeViewController.subject = self.game.name;
+
+  NSString* sgfFilePath = [self.model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
+  NSData* data = [NSData dataWithContentsOfFile:sgfFilePath];
+  [mailComposeViewController addAttachmentData:data mimeType:sgfMimeType fileName:self.game.fileName];
+
+  [self presentViewController:mailComposeViewController animated:YES completion:nil];
+  [mailComposeViewController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for emailGame.
+// -----------------------------------------------------------------------------
+- (bool) canSendMail
+{
+  bool canSendMail = [MFMailComposeViewController canSendMail];
+  if (! canSendMail)
+  {
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
+                                                    message:@"This device is not configured to send email."
+                                                   delegate:self
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeCannotSendEmail;
+    [alert show];
+    [alert release];
+  }
+  return canSendMail;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MFMailComposeViewControllerDelegate method
+// -----------------------------------------------------------------------------
+- (void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+  DDLogVerbose(@"%@: Dismissing mail composer for game %@", self, self.game.name);
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

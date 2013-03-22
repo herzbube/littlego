@@ -155,7 +155,7 @@
                                                    delegate:self
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeCannotSendBugReport;
+    alert.tag = AlertViewTypeCannotSendEmail;
     [alert show];
     [alert release];
     [self retain];  // must survive until the delegate method is invoked

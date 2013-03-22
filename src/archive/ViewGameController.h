@@ -19,6 +19,9 @@
 #import "../ui/EditTextController.h"
 #import "../newgame/NewGameController.h"
 
+// System includes
+#import <MessageUI/MFMailComposeViewController.h>
+
 // Forward declarations
 @class ArchiveGame;
 @class ArchiveViewModel;
@@ -37,7 +40,7 @@
 /// then expected to be displayed in the navigation bar of the parent
 /// navigation controller.
 // -----------------------------------------------------------------------------
-@interface ViewGameController : UITableViewController <EditTextDelegate, NewGameDelegate>
+@interface ViewGameController : UITableViewController <EditTextDelegate, NewGameDelegate, MFMailComposeViewControllerDelegate>
 {
 }
 

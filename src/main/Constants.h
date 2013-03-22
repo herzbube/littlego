@@ -174,7 +174,7 @@ enum AlertViewType
   AlertViewTypeUndoMoveFailed,
   AlertViewTypeAddToCannedCommands,
   AlertViewTypeMemoryWarning,
-  AlertViewTypeCannotSendBugReport,
+  AlertViewTypeCannotSendEmail,
   AlertViewTypeDiagnosticsInformationFileGenerated,
   AlertViewTypeDiagnosticsInformationFileNotGenerated,
   AlertViewTypeComputerPlayedIllegalMove,
@@ -462,6 +462,13 @@ extern NSString* defaultGtpEngineProfileUUID;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Archive view constants
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* sgfMimeType;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Diagnostics view settings default values
 // -----------------------------------------------------------------------------
 //@{
@@ -553,6 +560,7 @@ extern NSString* rewindButtonIconResource;
 extern NSString* rewindToStartButtonIconResource;
 extern NSString* humanIconResource;
 extern NSString* computerIconResource;
+extern NSString* emailIconResource;
 extern NSString* stoneBlackImageResource;
 extern NSString* stoneWhiteImageResource;
 extern NSString* stoneCrosshairImageResource;

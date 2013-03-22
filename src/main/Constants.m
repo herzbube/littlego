@@ -108,6 +108,9 @@ const unsigned long long fuegoMaxGamesPlayingStrength3 = 10000;  // on fast CPUs
                                                                  // limit (measurement made on a MacBook)
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
+// Archive view constants
+NSString* sgfMimeType = @"application/x-go-sgf";  // this is not officially registered with IANA, but seems to be in wide use
+
 // Diagnostics view settings default values
 const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
@@ -162,6 +165,7 @@ NSString* rewindButtonIconResource = @"rewind.png";
 NSString* rewindToStartButtonIconResource = @"rewindtostart.png";
 NSString* humanIconResource = @"111-user.png";
 NSString* computerIconResource = @"computer.png";
+NSString* emailIconResource = @"18-envelope.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
 NSString* stoneWhiteImageResource = @"stone-white.png";
 NSString* stoneCrosshairImageResource = @"stone-crosshair.png";

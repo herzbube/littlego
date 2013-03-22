@@ -97,6 +97,8 @@
 		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
+		CD1DB60616FCDCBE00C2E648 /* 18-envelope.png in Resources */ = {isa = PBXBuildFile; fileRef = CD1DB60416FCDCBE00C2E648 /* 18-envelope.png */; };
+		CD1DB60716FCDCBE00C2E648 /* 18-envelope@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
@@ -484,6 +486,8 @@
 		CD15A47F168CBE7F00D4472A /* GoMoveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModel.m; sourceTree = "<group>"; };
 		CD15A482168D044400D4472A /* GoMoveModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModelTest.h; sourceTree = "<group>"; };
 		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
+		CD1DB60416FCDCBE00C2E648 /* 18-envelope.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-envelope.png"; sourceTree = "<group>"; };
+		CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-envelope@2x.png"; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
@@ -1312,6 +1316,8 @@
 		CDE1A13B14C1CED200317ECA /* icon */ = {
 			isa = PBXGroup;
 			children = (
+				CD1DB60416FCDCBE00C2E648 /* 18-envelope.png */,
+				CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */,
 				CDE1A13C14C1CED200317ECA /* 20-gear-2.png */,
 				CDE1A13D14C1CED200317ECA /* 20-gear-2@2x.png */,
 				CDE1A14014C1CED200317ECA /* 33-cabinet.png */,
@@ -1787,6 +1793,8 @@
 				CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */,
 				CD96A47D16CC3568000C2792 /* LaunchImage-568h@2x.png in Resources */,
 				CD02629C16E0F06E007B35CC /* book.dat in Resources */,
+				CD1DB60616FCDCBE00C2E648 /* 18-envelope.png in Resources */,
+				CD1DB60716FCDCBE00C2E648 /* 18-envelope@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
