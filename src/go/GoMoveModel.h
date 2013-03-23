@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGame;
 @class GoMove;
 
 
@@ -24,12 +25,15 @@
 /// current game to its clients.
 ///
 /// All indexes in GoMoveModel are zero-based.
+///
+/// Invoking GoMoveModel methods that add or discard moves generally sets the
+/// GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 @interface GoMoveModel : NSObject <NSCoding>
 {
 }
 
-- (id) init;
+- (id) initWithGame:(GoGame*)game;
 
 - (void) appendMove:(GoMove*)move;
 - (void) discardLastMove;

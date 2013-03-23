@@ -19,6 +19,7 @@
 #import "GoGame.h"
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
+#import "GoGameDocument.h"
 #import "GoMove.h"
 #import "GoMoveModel.h"
 #import "GoPlayer.h"
@@ -79,13 +80,14 @@
   _komi = 0;
   _playerBlack = nil;
   _playerWhite = nil;
-  _moveModel = [[GoMoveModel alloc] init];
+  _moveModel = [[GoMoveModel alloc] initWithGame:self];
   _state = GoGameStateGameHasNotYetStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   _computerThinks = false;
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
   // GoMoveModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
+  _document = [[GoGameDocument alloc] init];
 
   return self;
 }
@@ -114,6 +116,7 @@
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   _computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
   _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
+  _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
 
   return self;
 }
@@ -138,6 +141,7 @@
   // requires GoMoveModel to still be around
   self.boardPosition = nil;
   self.moveModel = nil;
+  self.document = nil;
   [super dealloc];
 }
 
@@ -171,6 +175,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players making a #GoMoveTypePlay.
+///
+/// Invoking this method sets the document dirty flag.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
@@ -244,6 +250,8 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players making a #GoMoveTypePass.
 ///
+/// Invoking this method sets the document dirty flag.
+///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
 /// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
@@ -285,6 +293,8 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to one of the players resigning the game.
 ///
+/// Invoking this method sets the document dirty flag.
+///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
 /// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
@@ -302,7 +312,15 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  
+
+  // At the time of implementing this, setting the dirty flag in reaction to
+  // resigning the game is not strictly necessary, since saving the game will,
+  // at the moment, NOT store the resignation status in the .sgf file. This is
+  // either a bug in Fuego, or a limitation in the SGF file format - which one
+  // it is still needs to be researched. Nevertheless, the dirty flag is set
+  // to remain conceptually correct.
+  self.document.dirty = true;
+
   self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
   self.state = GoGameStateGameHasEnded;
 }
@@ -578,6 +596,7 @@
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
+  [encoder encodeObject:self.document forKey:goGameDocumentKey];
 }
 
 // -----------------------------------------------------------------------------
@@ -596,6 +615,15 @@
 /// that conforms to the Go rules. For instance, if two pass moves caused the
 /// game to end, then the most recent pass move should also be discarded after
 /// control returns to the caller.
+///
+/// If the game has ended due to resignation, invoking this method sets the
+/// document dirty flag. This behaviour exists to remain consistent with the
+/// resignation action, which also sets the document dirty flag. If the game
+/// ended for some reason other than resigning, it is expected that some other
+/// action in addition to invoking revertStateFromEndedToInProgress will cause
+/// the document dirty flag to be set. For instance, if two pass moves caused
+/// the game to end, then the document dirty flag needs to be reset by
+/// discarding the second pass move.
 // -----------------------------------------------------------------------------
 - (void) revertStateFromEndedToInProgress
 {
@@ -608,6 +636,9 @@
                                                    userInfo:nil];
     @throw exception;
   }
+
+  if (GoGameHasEndedReasonResigned == self.reasonForGameHasEnded)
+    self.document.dirty = true;
 
   self.reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   if (GoGameTypeComputerVsComputer == self.type)

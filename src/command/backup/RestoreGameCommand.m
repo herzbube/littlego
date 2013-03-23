@@ -65,7 +65,7 @@
 // -----------------------------------------------------------------------------
 - (void) restoreGame:(NSString*)sgfBackupFilePath
 {
-  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath gameName:@"Backup"] autorelease];
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath] autorelease];
   loadCommand.restoreMode = true;
   [loadCommand submit];
 }

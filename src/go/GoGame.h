@@ -18,6 +18,7 @@
 // Forward declarations
 @class GoBoard;
 @class GoBoardPosition;
+@class GoGameDocument;
 @class GoMove;
 @class GoMoveModel;
 @class GoPlayer;
@@ -120,5 +121,8 @@
 /// is currently described by the GoPoint and GoBoardRegion objects attached to
 /// this GoGame.
 @property(nonatomic, retain) GoBoardPosition* boardPosition;
+/// @brief Represents this GoGame as a document that can be saved to / loaded
+/// from disk.
+@property(nonatomic, retain) GoGameDocument* document;
 
 @end

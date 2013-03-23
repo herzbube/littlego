@@ -99,6 +99,8 @@
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
 		CD1DB60616FCDCBE00C2E648 /* 18-envelope.png in Resources */ = {isa = PBXBuildFile; fileRef = CD1DB60416FCDCBE00C2E648 /* 18-envelope.png */; };
 		CD1DB60716FCDCBE00C2E648 /* 18-envelope@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */; };
+		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
+		CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
@@ -488,6 +490,8 @@
 		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
 		CD1DB60416FCDCBE00C2E648 /* 18-envelope.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-envelope.png"; sourceTree = "<group>"; };
 		CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-envelope@2x.png"; sourceTree = "<group>"; };
+		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
+		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
@@ -1036,6 +1040,8 @@
 				CDBB035A133537C8007C1C3E /* GoBoardRegion.m */,
 				CD10881A13255A4700E83543 /* GoGame.h */,
 				CD10881B13255A4700E83543 /* GoGame.m */,
+				CD1DB60816FE181400C2E648 /* GoGameDocument.h */,
+				CD1DB60916FE181400C2E648 /* GoGameDocument.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
 				CD10881E13255A6100E83543 /* GoMove.m */,
 				CD15A47E168CBE7F00D4472A /* GoMoveModel.h */,
@@ -1980,6 +1986,7 @@
 				CDB9212F16EB9852007BDB69 /* PlayViewScrollController.m in Sources */,
 				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
+				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2071,6 +2078,7 @@
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
+				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

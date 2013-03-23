@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #import <go/GoBoard.h>
 #import <go/GoBoardRegion.h>
 #import <go/GoGame.h>
+#import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoMoveModel.h>
 #import <go/GoPoint.h>
@@ -67,6 +68,7 @@
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, @"game state test failed");
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   STAssertFalse(m_game.isComputerThinking, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -237,6 +239,7 @@
 - (void) testPlay
 {
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
 
   GoPoint* point1 = [m_game.board pointAtVertex:@"T19"];
   [m_game play:point1];
@@ -245,6 +248,7 @@
   STAssertEquals(GoMoveTypePlay, move1.type, nil);
   STAssertEquals(m_game.playerBlack, move1.player, nil);
   STAssertEquals(point1, move1.point, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
 
   GoPoint* point2 = [m_game.board pointAtVertex:@"S19"];
   [m_game play:point2];
@@ -279,6 +283,7 @@
 - (void) testPass
 {
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
 
   // Can start game with a pass
   [m_game pass];
@@ -287,6 +292,7 @@
   STAssertEquals(GoMoveTypePass, move1.type, nil);
   STAssertEquals(m_game.playerBlack, move1.player, nil);
   STAssertNil(move1.point, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
 
   [m_game play:[m_game.board pointAtVertex:@"B13"]];
 
@@ -314,10 +320,12 @@
 - (void) testResign
 {
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
 
   // Can start game with resign
   [m_game resign];
   STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
   // Resign in other situations already tested
 
   STAssertThrowsSpecificNamed([m_game resign],
@@ -506,16 +514,23 @@
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   [m_game pass];
   STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
+  m_game.document.dirty = false;
   [m_game revertStateFromEndedToInProgress];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
   [m_game resign];
   STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
+  m_game.document.dirty = false;
   [m_game revertStateFromEndedToInProgress];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
 
   STAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress],
                               NSException, NSInternalInconsistencyException, @"game already reverted");

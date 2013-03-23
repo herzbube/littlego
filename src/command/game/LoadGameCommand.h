@@ -74,11 +74,11 @@
   NSString* m_oldCurrentDirectory;
 }
 
-- (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName;
+- (id) initWithFilePath:(NSString*)filePath;
+- (id) initWithGameName:(NSString*)gameName;
 
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;
-@property(nonatomic, retain) NSString* gameName;
 /// @brief True if the command is executed to restore a backup game. False
 /// (the default) if the command is executed to load a game from the archive.
 @property(nonatomic, assign) bool restoreMode;

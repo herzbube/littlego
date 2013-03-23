@@ -51,8 +51,6 @@ NSString* goGameStateChanged = @"GoGameStateChanged";
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
 // Archive related notifications
-NSString* gameSavedToArchive = @"GameSavedToArchive";
-NSString* gameLoadedFromArchive = @"GameLoadedFromArchive";
 NSString* archiveContentChanged = @"ArchiveContentChanged";
 // GTP log related notifications
 NSString* gtpLogContentChanged = @"GtpLogContentChanged";
@@ -291,6 +289,7 @@ NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameBoardPositionKey = @"BoardPosition";
+NSString* goGameDocumentKey = @"Document";
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
@@ -303,6 +302,7 @@ NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveMoveNumberKey = @"MoveNumber";
 // GoMoveModel keys
+NSString* goMoveModelGameKey = @"Game";
 NSString* goMoveModelMoveListKey = @"MoveList";
 NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
 // GoBoardPosition keys
@@ -377,3 +377,6 @@ NSString* gtpLogItemHasResponseKey = @"HasResponse";
 NSString* gtpLogItemResponseStatusKey = @"ResponseStatus";
 NSString* gtpLogItemParsedResponseStringKey = @"ParsedResponseString";
 NSString* gtpLogItemRawResponseStringKey = @"RawResponseString";
+// GoGameDocument keys
+NSString* goGameDocumentDirtyKey = @"Dirty";
+NSString* goGameDocumentDocumentNameKey = @"DocumentName";

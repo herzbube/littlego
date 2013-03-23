@@ -41,6 +41,7 @@
 - (ArchiveGame*) gameAtIndex:(int)index;
 - (ArchiveGame*) gameWithName:(NSString*)name;
 - (NSString*) defaultGameName:(GoGame*)game;
+- (NSString*) filePathForGameWithName:(NSString*)name;
 
 /// @brief Path to folder that contains files with archived games.
 @property(nonatomic, retain) NSString* archiveFolder;

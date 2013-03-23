@@ -17,10 +17,12 @@
 
 // Project includes
 #import "SaveGameCommand.h"
+#import "../../archive/ArchiveViewModel.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoGameDocument.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../archive/ArchiveViewModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -132,7 +134,7 @@
     return false;
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameSavedToArchive object:self.gameName];
+  [[GoGame sharedGame].document save:self.gameName];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;
 }

@@ -21,13 +21,15 @@
 #import "../backup/BackupGameCommand.h"
 #import "../backup/CleanBackupCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../archive/ArchiveViewModel.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../gtp/GtpUtilities.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameDocument.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
@@ -79,19 +81,19 @@ static const int maxStepsForReplayMoves = 10;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a LoadGameCommand object.
+/// @brief Initializes a LoadGameCommand object that will load the .sgf file
+/// identified by the full file path @a filePath.
 ///
 /// @note This is the designated initializer of LoadGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithFilePath:(NSString*)aFilePath gameName:(NSString*)aGameName
+- (id) initWithFilePath:(NSString*)filePath
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  self.filePath = aFilePath;
-  self.gameName = aGameName;
+  self.filePath = filePath;
   self.restoreMode = false;
   self.didTriggerComputerPlayer = false;
   m_boardSize = GoBoardSizeUndefined;
@@ -107,12 +109,21 @@ static const int maxStepsForReplayMoves = 10;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a LoadGameCommand object that will load the .sgf file
+/// from the archive that is identified by @a gameName.
+// -----------------------------------------------------------------------------
+- (id) initWithGameName:(NSString*)gameName
+{
+  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  return [self initWithFilePath:[model filePathForGameWithName:gameName]];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this LoadGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
   self.filePath = nil;
-  self.gameName = nil;
   [m_handicap release];
   [m_komi release];
   [m_moves release];
@@ -359,12 +370,25 @@ static const int maxStepsForReplayMoves = 10;
   [self setupKomi:m_komi];
   [self setupMoves:m_moves];
   if (self.restoreMode)
-    ;  // no need to create a backup, we already have the one we are restoring from
+  {
+    // Can't invoke notifyGoGameDocument 1) because we are not loading from the
+    // archive so we don't have an archive game name; and 2) because we don't
+    // know whether the restored game has previously been saved, so we also
+    // cannot save the document dirty flag. The consequences: The document dirty
+    // flag remains set (which will cause a warning when the next new game is
+    // started), and the document name remains uninitialized (which will make
+    // it appear to anybody who evaluates the document name as if the game has
+    // has never been saved before).
+
+    // No need to create a backup, we already have the one we are restoring from
+  }
   else
+  {
+    [self notifyGoGameDocument];
     [[[[BackupGameCommand alloc] init] autorelease] submit];
+  }
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
-  [[NSNotificationCenter defaultCenter] postNotificationName:gameLoadedFromArchive object:self.gameName];
 }
 
 // -----------------------------------------------------------------------------
@@ -628,6 +652,16 @@ static const int maxStepsForReplayMoves = 10;
     [self handleCommandFailed:errorMessage];
     return;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Notifies the GoGameDocument associated with the new game that the
+/// game was loaded.
+// -----------------------------------------------------------------------------
+- (void) notifyGoGameDocument
+{
+  NSString* gameName = [[self.filePath lastPathComponent] stringByDeletingPathExtension];
+  [[GoGame sharedGame].document load:gameName];
 }
 
 // -----------------------------------------------------------------------------

@@ -17,6 +17,8 @@
 
 // Project includes
 #import "GoMoveModel.h"
+#import "GoGame.h"
+#import "GoGameDocument.h"
 #import "../go/GoMove.h"
 
 
@@ -35,6 +37,7 @@
 //@}
 /// @name Private properties
 //@{
+@property(nonatomic, assign) GoGame* game;
 @property(nonatomic, retain) NSMutableArray* moveList;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -47,20 +50,19 @@
 @implementation GoMoveModel
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoMoveModel object.
+/// @brief Initializes a GoMoveModel object that is associated with @a game.
 ///
 /// @note This is the designated initializer of GoMoveModel.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithGame:(GoGame*)game
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-
+  self.game = game;
   self.moveList = [NSMutableArray arrayWithCapacity:0];
   self.numberOfMoves = 0;
-
   return self;
 }
 
@@ -75,6 +77,7 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+  self.game = [decoder decodeObjectForKey:goMoveModelGameKey];
   self.moveList = [decoder decodeObjectForKey:goMoveModelMoveListKey];
   self.numberOfMoves = [decoder decodeIntForKey:goMoveModelNumberOfMovesKey];
 
@@ -86,6 +89,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.game = nil;
   self.moveList = nil;
   [super dealloc];
 }
@@ -94,10 +98,13 @@
 /// @brief Adds the GoMove object @a move to this model.
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
+///
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
   [_moveList addObject:move];
+  self.game.document.dirty = true;
   self.numberOfMoves = _moveList.count;  // triggers KVO observers
 }
 
@@ -105,6 +112,8 @@
 /// @brief Discards the last GoMove object in this model.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
+///
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) discardLastMove
 {
@@ -117,6 +126,8 @@
 ///
 /// Raises @e NSRangeException if @a index is <0 or exceeds the number of
 /// GoMove objects in this model.
+///
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) discardMovesFromIndex:(int)index
 {
@@ -146,6 +157,7 @@
     --numberOfMovesToDiscard;
   }
 
+  self.game.document.dirty = true;
   self.numberOfMoves = _moveList.count;  // triggers KVO observers
 }
 
@@ -153,6 +165,8 @@
 /// @brief Discards all GoMove objects in this model.
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
+///
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) discardAllMoves
 {
@@ -196,6 +210,7 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeObject:self.game forKey:goMoveModelGameKey];
   [encoder encodeObject:self.moveList forKey:goMoveModelMoveListKey];
   [encoder encodeInt:self.numberOfMoves forKey:goMoveModelNumberOfMovesKey];
 }

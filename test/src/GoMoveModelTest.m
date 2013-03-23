@@ -21,6 +21,7 @@
 // Application includes
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
+#import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoMoveModel.h>
 #import <go/GoPoint.h>
@@ -51,8 +52,10 @@
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   move1.point = [m_game.board pointAtVertex:@"A1"];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
   [moveModel appendMove:move1];
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
 
   STAssertThrowsSpecificNamed([moveModel appendMove:nil],
                               NSException, NSInvalidArgumentException, @"appendMove with nil object");
@@ -72,9 +75,12 @@
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
   [moveModel appendMove:move2];
   STAssertEquals(moveModel.numberOfMoves, 2, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
+  m_game.document.dirty = false;
 
   [moveModel discardLastMove];
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
   [moveModel discardLastMove];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
 
@@ -96,6 +102,8 @@
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
   STAssertEquals(moveModel.numberOfMoves, 3, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
+  m_game.document.dirty = false;
 
   STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:3],
                               NSException, NSRangeException, @"discardMovesFromIndex with index too high");
@@ -103,8 +111,10 @@
   STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:-1],
                               NSException, NSRangeException, @"discardMovesFromIndex with negative index");
   STAssertEquals(moveModel.numberOfMoves, 3, nil);
+  STAssertFalse(m_game.document.isDirty, nil);
   [moveModel discardMovesFromIndex:1];  // discard >1 moves
   STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
   [moveModel discardMovesFromIndex:0];  // discard single move
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
 
@@ -126,9 +136,12 @@
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
   STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  
+  STAssertTrue(m_game.document.isDirty, nil);
+  m_game.document.dirty = false;
+
   [moveModel discardAllMoves];
   STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  STAssertTrue(m_game.document.isDirty, nil);
 
   STAssertThrowsSpecificNamed([moveModel discardAllMoves],
                               NSException, NSRangeException, @"discardAllMoves with no moves");

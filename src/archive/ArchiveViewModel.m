@@ -235,4 +235,13 @@
   return defaultGameName;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the full file path of the game whose name is @a name.
+// -----------------------------------------------------------------------------
+- (NSString*) filePathForGameWithName:(NSString*)name
+{
+  ArchiveGame* archiveGame = [self gameWithName:name];
+  return [self.archiveFolder stringByAppendingPathComponent:archiveGame.fileName];
+}
+
 @end

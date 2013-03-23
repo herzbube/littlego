@@ -321,14 +321,6 @@ extern NSString* computerPlayerThinkingStops;
 /// @name Archive related notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that the current game has been saved and a
-/// corresponding .sgf file has been placed in the archive. An NSString instance
-/// with the game name (not the file name) is associated with the notification.
-extern NSString* gameSavedToArchive;
-/// @brief Is sent to indicate that a game has been loaded from an .sgf file in
-/// the archive. An NSString instance with the game name (not the file name) is
-/// associated with the notification.
-extern NSString* gameLoadedFromArchive;
 /// @brief Is sent to indicate that something about the content of the archive
 /// has changed (e.g. a game has been added, removed, renamed etc.).
 extern NSString* archiveContentChanged;
@@ -695,6 +687,7 @@ extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
 extern NSString* goGameBoardPositionKey;
+extern NSString* goGameDocumentKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
@@ -707,6 +700,7 @@ extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveMoveNumberKey;
 // GoMoveModel keys
+extern NSString* goMoveModelGameKey;
 extern NSString* goMoveModelMoveListKey;
 extern NSString* goMoveModelNumberOfMovesKey;
 // GoBoardPosition keys
@@ -781,4 +775,7 @@ extern NSString* gtpLogItemHasResponseKey;
 extern NSString* gtpLogItemResponseStatusKey;
 extern NSString* gtpLogItemParsedResponseStringKey;
 extern NSString* gtpLogItemRawResponseStringKey;
+// GoGameDocument keys
+extern NSString* goGameDocumentDirtyKey;
+extern NSString* goGameDocumentDocumentNameKey;
 //@}
