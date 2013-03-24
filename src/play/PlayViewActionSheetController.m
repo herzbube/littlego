@@ -268,12 +268,10 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  // TODO ask user for confirmation because this action cannot be undone
-
-  // Fuego does not have support for resignation, so we don't have to tell it
-  // about this event.
   [[GoGame sharedGame] resign];
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
+  backupCommand.saveSgf = true;
+  [backupCommand submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 

@@ -385,7 +385,9 @@ static const int maxStepsForReplayMoves = 10;
   else
   {
     [self notifyGoGameDocument];
-    [[[[BackupGameCommand alloc] init] autorelease] submit];
+    BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
+    backupCommand.saveSgf = true;
+    [backupCommand submit];
   }
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];

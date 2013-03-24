@@ -186,7 +186,9 @@
     return;
   }
 
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
+  backupCommand.saveSgf = true;
+  [backupCommand submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn

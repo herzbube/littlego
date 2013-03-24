@@ -25,8 +25,8 @@
 /// application re-launches after a crash or after it was killed while
 /// suspended.
 ///
-/// BackupGameCommand writes both a primary NSCoding archive and an .sgf file.
-/// The files are stored in a fixed location in the application's library
+/// BackupGameCommand writes a primary NSCoding archive, and optionally an .sgf
+/// file. The files are stored in a fixed location in the application's library
 /// folder. Because the files are not in the shared document folder, they are
 /// visible/accessible neither in iTunes, nor on the in-app tab "Archive".
 ///
@@ -41,5 +41,12 @@
 @interface BackupGameCommand : CommandBase
 {
 }
+
+/// @brief Indicates whether BackupGameCommand should save an .sgf file. This
+/// flag is false by default.
+///
+/// This flag should be set only by actors who trigger a backup after a move has
+/// been played or discarded.
+@property(nonatomic, assign) bool saveSgf;
 
 @end

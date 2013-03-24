@@ -75,10 +75,10 @@
       DDLogError(@"%@: Aborting because discardMoves failed", [self shortDescription]);
       return false;
     }
-    success = [[[[BackupGameCommand alloc] init] autorelease] submit];
+    success = [self backupGame];
     if (! success)
     {
-      DDLogError(@"%@: Aborting because BackupGameCommand execution failed", [self shortDescription]);
+      DDLogError(@"%@: Aborting because backupGame failed", [self shortDescription]);
       return false;
     }
     return success;
@@ -135,6 +135,17 @@
   GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) backupGame
+{
+  BackupGameCommand* command = [[[BackupGameCommand alloc] init] autorelease];
+  command.saveSgf = true;
+  bool success = [command submit];
+  return success;
 }
 
 // -----------------------------------------------------------------------------

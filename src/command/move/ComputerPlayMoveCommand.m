@@ -175,7 +175,9 @@
     }
   }
 
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
+  backupCommand.saveSgf = true;
+  [backupCommand submit];
 
   bool computerGoesOnPlaying = false;
   switch (self.game.state)
