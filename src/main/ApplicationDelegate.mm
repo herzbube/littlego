@@ -47,6 +47,7 @@
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
 #import "../command/SetupApplicationCommand.h"
+#import "../command/backup/BackupGameCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
@@ -266,8 +267,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) applicationDidEnterBackground:(UIApplication*)application
 {
   DDLogInfo(@"applicationDidEnterBackground:() received");
-
-  [self writeUserDefaults];
+  [self saveData];
 }
 
 // -----------------------------------------------------------------------------
@@ -296,7 +296,7 @@ static ApplicationDelegate* sharedDelegate = nil;
     DDLogWarn(@"No active GtpEngineProfile");
 
   // Save whatever data we can before the system kills the application
-  [self writeUserDefaults];
+  [self saveData];
 }
 
 // -----------------------------------------------------------------------------
@@ -633,29 +633,29 @@ static ApplicationDelegate* sharedDelegate = nil;
     // The delegate method tabBarController:didSelectViewController:() is not
     // invoked when the selectedViewController property is changed
     // programmatically
-    [self writeUserDefaults];
+    [self saveData];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UITabBarControllerDelegate method
 ///
-/// Writes user defaults in response to the user switching tabs.
+/// Invokes saveData in response to the user switching tabs.
 // -----------------------------------------------------------------------------
 - (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
 {
-  [self writeUserDefaults];
+  [self saveData];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UINavigationControllerDelegate method
 ///
-/// Writes user defaults in response to the user switching views on the tab
-/// bar controller's more navigation controller.
+/// Invokes saveData in response to the user switching views on the tab bar
+/// controller's more navigation controller.
 // -----------------------------------------------------------------------------
 - (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated
 {
-  [self writeUserDefaults];
+  [self saveData];
 }
 
 // -----------------------------------------------------------------------------
@@ -708,6 +708,28 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (NSString*) logFolder
 {
   return [self.fileLogger.logFileManager logsDirectory];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Saves user preference data and non-critical application state data.
+///
+/// This method should be invoked whenever an important event occurs that marks
+/// a data "save point". The two most important events are when the application
+/// receives a memory warning (application termination is imminent), and when
+/// the application is suspended (application may be killed while in
+/// suspension).
+///
+/// This method should not be invoked too frequently, in order to save on flash
+/// disk write cycles. This poses the risk of losing a bit of data if a crash
+/// occurs between save points.
+// -----------------------------------------------------------------------------
+- (void) saveData
+{
+  [self writeUserDefaults];
+  // Do NOT instruct BackupGameCommand to write an .sgf file!!! Writing an .sgf
+  // file is delegated to the GTP engine, but the GTP engine might not have the
+  // full game at this time (the user might be viewing an old board position).
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
 }
 
 @end
