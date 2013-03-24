@@ -17,70 +17,85 @@
 
 // Project includes
 #import "BackupGameCommand.h"
+#import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/boardposition/BoardPositionModel.h"
-
-
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BackupGameCommand.
-// -----------------------------------------------------------------------------
-@interface BackupGameCommand()
-- (void) dealloc;
-- (void) saveSgf;
-- (void) backupBoardPositionLastViewed;
-@end
+#import "../../play/ScoringModel.h"
 
 
 @implementation BackupGameCommand
-
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a BackupGameCommand object.
-///
-/// @note This is the designated initializer of BackupGameCommand.
-// -----------------------------------------------------------------------------
-- (id) init
-{
-  // Call designated initializer of superclass (CommandBase)
-  self = [super init];
-  if (! self)
-    return nil;
-  return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this BackupGameCommand object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [super dealloc];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  [self saveSgf];
+  NSString* backupFolder = [self backupFolder];
+  [self saveArchive:backupFolder];
+  [self saveSgf:backupFolder];
   [self backupBoardPositionLastViewed];
   return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true on success, false on failure.
+/// @brief Private helper for doIt().
 // -----------------------------------------------------------------------------
-- (void) saveSgf
+- (NSString*) backupFolder
 {
-  // Secretly and heinously change the working directory so that the .sgf
-  // file goes to a directory that the user cannot look into
   BOOL expandTilde = YES;
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
+  return [paths objectAtIndex:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) saveArchive:(NSString*)backupFolder
+{
+  DDLogVerbose(@"%@: Saving NSCoding archive", [self shortDescription]);
+
+  NSMutableData* data = [NSMutableData data];
+  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+
+  GoGame* game = [GoGame sharedGame];
+  [archiver encodeObject:game forKey:nsCodingGoGameKey];
+  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  if (scoringModel.scoringMode)
+  {
+    GoScore* score = scoringModel.score;
+    [archiver encodeObject:score forKey:nsCodingGoScoreKey];
+  }
+  [archiver finishEncoding];
+
+  NSString* archivePath = [backupFolder stringByAppendingPathComponent:archiveBackupFileName];
+  BOOL success = [data writeToFile:archivePath atomically:YES];
+  [archiver release];
+
+  if (! success)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to save NSCoding archive file %@", archivePath];
+    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) saveSgf:(NSString*)backupFolder
+{
+  DDLogVerbose(@"%@: Saving current game to .sgf file", [self shortDescription]);
+
+  // Secretly and heinously change the working directory so that the .sgf
+  // file goes to a directory that the user cannot look into
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:appSupportDirectory];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], appSupportDirectory);
+  [fileManager changeCurrentDirectoryPath:backupFolder];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolder);
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
   GtpCommand* command = [GtpCommand command:commandString];
@@ -93,10 +108,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true on success, false on failure.
+/// @brief Private helper for doIt().
 // -----------------------------------------------------------------------------
 - (void) backupBoardPositionLastViewed
 {
+  DDLogVerbose(@"%@: Backing up board position last viewed", [self shortDescription]);
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   [boardPositionModel writeUserDefaults];
 }

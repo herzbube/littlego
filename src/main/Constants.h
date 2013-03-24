@@ -235,8 +235,12 @@ extern const double gDefaultKomi;
 /// @brief Simple file name that violates none of the GTP protocol restrictions
 /// for file names. Is used for the "loadsgf" and "savesgf" GTP commands.
 extern NSString* sgfTemporaryFileName;
-/// @brief Name of the .sgf file used for backup/restore when the app goes
-// to/returns from the background. The file is stored in the Library folder.
+/// @brief Name of the primary NSCoding archive file used for backup/restore
+/// when the app goes to/returns from the background. The file is stored in the
+/// Library folder.
+extern NSString* archiveBackupFileName;
+/// @brief Name of the secondary .sgf file used for the same purpose as
+/// @e archiveBackupFileName.
 extern NSString* sgfBackupFileName;
 //@}
 
@@ -675,6 +679,9 @@ extern NSString* loggingEnabledKey;
 // General constants
 extern const int nscodingVersion;
 extern NSString* nscodingVersionKey;
+// Top-level object keys
+extern NSString* nsCodingGoGameKey;
+extern NSString* nsCodingGoScoreKey;
 // GoGame keys
 extern NSString* goGameTypeKey;
 extern NSString* goGameBoardKey;

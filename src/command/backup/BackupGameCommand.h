@@ -21,16 +21,18 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BackupGameCommand class is responsible for saving the current
-/// game to an .sgf file that is not visible in the archive. It also saves the
-/// value for the current board position.
+/// game and application state so that a restore can be made when the
+/// application re-launches after a crash or after it was killed while
+/// suspended.
 ///
-/// BackupGameCommand writes an .sgf file to a fixed location in the
-/// application's library folder. Because the backup file is not in the shared
-/// document folder, it is visible/accessible neither in iTunes, nor on the
-/// in-app tab "Archive".
+/// BackupGameCommand writes both a primary NSCoding archive and an .sgf file.
+/// The files are stored in a fixed location in the application's library
+/// folder. Because the files are not in the shared document folder, they are
+/// visible/accessible neither in iTunes, nor on the in-app tab "Archive".
 ///
-/// BackupGameCommand delegates its task to the GTP engine via the "savesgf" GTP
-/// command. If the .sgf file already exists, it is overwritten.
+/// BackupGameCommand delegates the .sgf saving task to the GTP engine via the
+/// "savesgf" GTP command. Both the NSCoding archiveand the .sgf file are
+/// overwritten if they already exist.
 ///
 /// BackupGameCommand executes synchronously.
 ///
@@ -39,7 +41,5 @@
 @interface BackupGameCommand : CommandBase
 {
 }
-
-- (id) init;
 
 @end

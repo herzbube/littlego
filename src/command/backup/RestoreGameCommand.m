@@ -20,31 +20,46 @@
 #import "../boardposition/ChangeBoardPositionCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../play/ScoringModel.h"
 #import "../../play/boardposition/BoardPositionModel.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private methods for RestoreGameCommand.
+// -----------------------------------------------------------------------------
+@interface RestoreGameCommand()
+@property(nonatomic, retain) GoGame* unarchivedGame;
+@property(nonatomic, retain) GoScore* unarchivedScore;
+@end
+
+
 @implementation RestoreGameCommand
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this RestoreGameCommand object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.unarchivedGame = nil;
+  self.unarchivedScore = nil;
+  [super dealloc];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSString* sgfBackupFilePath = [self sgfBackupFilePath];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL fileExists = [fileManager fileExistsAtPath:sgfBackupFilePath];
-  DDLogVerbose(@"%@: Checking file %@, file exists = %d", [self shortDescription], sgfBackupFilePath, fileExists);
-  if (fileExists)
+  if (! [self tryRestoreFromArchive])
   {
-    [self restoreGame:sgfBackupFilePath];
-    [self restoreBoardPosition];
-  }
-  else
-  {
-    [[[[NewGameCommand alloc] init] autorelease] submit];
+    if (! [self tryRestoreFromSgf])
+    {
+      [[[[NewGameCommand alloc] init] autorelease] submit];
+    }
   }
   return true;
 }
@@ -52,26 +67,67 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt().
 // -----------------------------------------------------------------------------
-- (NSString*) sgfBackupFilePath
+- (bool) tryRestoreFromArchive
 {
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  return [appSupportDirectory stringByAppendingPathComponent:sgfBackupFileName];
+  DDLogVerbose(@"%@: Restoring game from NSCoding archive", [self shortDescription]);
+  BOOL fileExists;
+  NSString* backupFilePath = [self filePathForBackupFileNamed:archiveBackupFileName fileExists:&fileExists];
+  if (! fileExists)
+    return false;
+  NSData* data = [NSData dataWithContentsOfFile:backupFilePath];
+  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+  self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
+  self.unarchivedScore = [unarchiver decodeObjectForKey:nsCodingGoScoreKey];
+  [unarchiver finishDecoding];
+  [unarchiver release];
+  if (! self.unarchivedGame)
+    return false;
+  [self fixObjectReferences];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tryRestoreFromArchive().
+// -----------------------------------------------------------------------------
+- (void) fixObjectReferences
+{
+  DDLogVerbose(@"%@: Fixing object references", [self shortDescription]);
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  applicationDelegate.game = self.unarchivedGame;
+  // Must send this notification manually. Must send it now before scoring model
+  // sends its own notification.
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:self.unarchivedGame];
+  if (self.unarchivedScore)
+  {
+    ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+    // Scoring model sends its own notification
+    [scoringModel restoreScoringModeWithScoreObject:self.unarchivedScore];
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt().
 // -----------------------------------------------------------------------------
-- (void) restoreGame:(NSString*)sgfBackupFilePath
+- (bool) tryRestoreFromSgf
 {
-  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:sgfBackupFilePath] autorelease];
+  DDLogVerbose(@"%@: Restoring game from .sgf file", [self shortDescription]);
+  BOOL fileExists;
+  NSString* backupFilePath = [self filePathForBackupFileNamed:sgfBackupFileName fileExists:&fileExists];
+  if (! fileExists)
+    return false;
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
   loadCommand.restoreMode = true;
-  [loadCommand submit];
+  // LoadGameCommand executes synchronously because this RestoreGameCommand
+  // is already asynchronous
+  bool success = [loadCommand submit];
+  if (! success)
+    return false;
+  [self restoreBoardPosition];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
+/// @brief Private helper for tryRestoreFromSgf().
 // -----------------------------------------------------------------------------
 - (void) restoreBoardPosition
 {
@@ -92,6 +148,21 @@
     // be executed synchronously.
     [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] autorelease] submit];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (NSString*) filePathForBackupFileNamed:(NSString*)backupFileName fileExists:(BOOL*)fileExists
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
+  NSString* appSupportDirectory = [paths objectAtIndex:0];
+  NSString* backupFilePath = [appSupportDirectory stringByAppendingPathComponent:backupFileName];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  *fileExists = [fileManager fileExistsAtPath:backupFilePath];
+  DDLogVerbose(@"%@: Checking file %@, file exists = %d", [self shortDescription], backupFilePath, *fileExists);
+  return backupFilePath;
 }
 
 @end

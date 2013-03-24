@@ -151,12 +151,15 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Enables scoring mode. Uses @a scoreObject instead of creating a new
-/// score object from scratch. This model takes ownership of @a scoreObject.
+/// score object from scratch. This model takes ownership of (i.e. retains)
+/// @a scoreObject.
 ///
-/// This method exists for the sole purpose of diagnosing a bug report which
-/// includes an archived GoScore object.
+/// This method is used to restore scoring mode when the application launches.
+/// Scoring mode needs to be restored when it was enabled during the previous
+/// session, and also when a bug report is received and archived GoScore object
+/// in the diagnostics information file is processed.
 // -----------------------------------------------------------------------------
-- (void) enableScoringModeWithScoreObject:(GoScore*)scoreObject
+- (void) restoreScoringModeWithScoreObject:(GoScore*)scoreObject
 {
   _scoringMode = true;       // don't use self because we don't want to trigger the setter
   self.score = scoreObject;  // use self to retain the score object

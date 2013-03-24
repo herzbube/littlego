@@ -30,7 +30,7 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
-- (void) enableScoringModeWithScoreObject:(GoScore*)scoreObject;
+- (void) restoreScoringModeWithScoreObject:(GoScore*)scoreObject;
 
 // -----------------------------------------------------------------------------
 /// @name User defaults properties

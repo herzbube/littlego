@@ -66,14 +66,10 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.game = aGame;
   _currentBoardPosition = 0;  // don't use self to avoid the setter
   _numberOfBoardPositions = self.game.moveModel.numberOfMoves + 1;
-
-  // KVO observing
-  [self.game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
-
+  [self setupKVOObserving];
   return self;
 }
 
@@ -85,14 +81,13 @@
   self = [super init];
   if (! self)
     return nil;
-
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.game = [decoder decodeObjectForKey:goBoardPositionGameKey];
   // Don't use self, otherwise we trigger the setter!
   _currentBoardPosition = [decoder decodeIntForKey:goBoardPositionCurrentBoardPositionKey];
   self.numberOfBoardPositions = [decoder decodeIntForKey:goBoardPositionNumberOfBoardPositionsKey];
-
+  [self setupKVOObserving];
   return self;
 }
 
@@ -104,6 +99,14 @@
   [self.game.moveModel removeObserver:self forKeyPath:@"numberOfMoves"];
   self.game = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupKVOObserving
+{
+  [self.game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------

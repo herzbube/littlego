@@ -34,6 +34,7 @@ const double gDefaultKomi = 6.5;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
+NSString* archiveBackupFileName = @"backup.plist";
 NSString* sgfBackupFileName = @"backup.sgf";
 
 // Application notifications
@@ -277,6 +278,9 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 // General constants
 const int nscodingVersion = 3;
 NSString* nscodingVersionKey = @"NSCodingVersion";
+// Top-level object keys
+NSString* nsCodingGoGameKey = @"GoGame";
+NSString* nsCodingGoScoreKey = @"GoScore";
 // GoGame keys
 NSString* goGameTypeKey = @"Type";
 NSString* goGameBoardKey = @"Board";

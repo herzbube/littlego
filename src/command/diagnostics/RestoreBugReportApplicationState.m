@@ -107,8 +107,8 @@
   NSString* archiveFilePath = [[BugReportUtilities diagnosticsInformationFolderPath] stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];
   NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-  self.unarchivedGame = [unarchiver decodeObjectForKey:@"GoGame"];
-  self.unarchivedScore = [unarchiver decodeObjectForKey:@"GoScore"];
+  self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
+  self.unarchivedScore = [unarchiver decodeObjectForKey:nsCodingGoScoreKey];
   [unarchiver finishDecoding];
   [unarchiver release];
 }
@@ -130,7 +130,7 @@
   {
     ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
     // Scoring model sends its own notification
-    [scoringModel enableScoringModeWithScoreObject:self.unarchivedScore];
+    [scoringModel restoreScoringModeWithScoreObject:self.unarchivedScore];
   }
 }
 

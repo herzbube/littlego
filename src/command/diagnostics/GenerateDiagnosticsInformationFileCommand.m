@@ -189,12 +189,12 @@
   NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
 
   GoGame* game = [GoGame sharedGame];
-  [archiver encodeObject:game forKey:@"GoGame"];
+  [archiver encodeObject:game forKey:nsCodingGoGameKey];
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
   if (scoringModel.scoringMode)
   {
     GoScore* score = scoringModel.score;
-    [archiver encodeObject:score forKey:@"GoScore"];
+    [archiver encodeObject:score forKey:nsCodingGoScoreKey];
   }
   [archiver finishEncoding];
 
