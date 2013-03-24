@@ -24,6 +24,7 @@
 #import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
+#import "../go/GoGameDocument.h"
 #import "../go/GoBoard.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
@@ -297,27 +298,23 @@ enum KomiSectionItem
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  GoGame* game = [GoGame sharedGame];
-  switch (game.state)
+  if ([GoGame sharedGame].document.isDirty)
   {
-    case GoGameStateGameHasStarted:
-    case GoGameStateGameIsPaused:
-    {
-      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game"
-                                                      message:@"Are you sure you want to start a new game and discard the game in progress?"
-                                                     delegate:self
-                                            cancelButtonTitle:@"No"
-                                            otherButtonTitles:@"Yes", nil];
-      alert.tag = AlertViewTypeNewGame;
-      [alert show];
-      [alert release];
-      break;
-    }
-    default:
-    {
-      [self newGame];
-      break;
-    }
+    NSString* message = @"The game in progress has unsaved changes that will "
+                         "be lost if you proceed. Are you sure you want to "
+                         "discard the game in progress?";
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:self.navigationItem.title
+                                                    message:message
+                                                   delegate:self
+                                          cancelButtonTitle:@"No"
+                                          otherButtonTitles:@"Yes", nil];
+    alert.tag = AlertViewTypeNewGame;
+    [alert show];
+    [alert release];
+  }
+  else
+  {
+    [self newGame];
   }
 }
 
