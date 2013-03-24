@@ -164,6 +164,11 @@ enum ActionSheetButton
           continue;
         if (game.boardPosition.isComputerPlayersTurn)
           continue;
+        // Resigning the game performs a backup of the game in progress. We
+        // can't let that happen if it's not the last board position, otherwise
+        // the backup .sgf file would not contain the full game.
+        if (! game.boardPosition.isLastPosition)
+          continue;
         title = @"Resign";
         break;
       case UndoResignButton:
