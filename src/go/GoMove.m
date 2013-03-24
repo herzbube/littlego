@@ -384,7 +384,7 @@
   [encoder encodeObject:self.previous forKey:goMovePreviousKey];
   [encoder encodeObject:self.next forKey:goMoveNextKey];
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
-  [encoder encodeObject:self.moveNumber forKey:goMoveMoveNumberKey];
+  [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
 }
 
 @end
