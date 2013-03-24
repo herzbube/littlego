@@ -275,7 +275,7 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 2;
+const int nscodingVersion = 3;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // GoGame keys
 NSString* goGameTypeKey = @"Type";
