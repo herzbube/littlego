@@ -34,48 +34,40 @@
 /// @brief Class extension with private methods for NewGameCommand.
 // -----------------------------------------------------------------------------
 @interface NewGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Helpers
-//@{
-- (void) newGame;
-- (void) setupGtpBoard;
-- (void) setupGtpHandicapAndKomi;
-- (void) triggerComputerPlayer;
-//@}
+@property(nonatomic, assign) GoGame* prefabricatedGame;
 @end
 
 
 @implementation NewGameCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a NewGameCommand object.
+/// @brief Initializes a NewGameCommand object that creates its own GoGame
+/// instance.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  return [self initWithGame:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a NewGameCommand object. If @a game is not nil,
+/// NewGameCommand will use this pre-fabricated GoGame object for its operation.
+/// If @a game is nil, NewGameCommand will create its own GoGame instance.
 ///
 /// @note This is the designated initializer of NewGameCommand.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithGame:(GoGame*)game
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
-
+  self.prefabricatedGame = game;
   self.shouldSetupGtpBoard = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayer = true;
-
   return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NewGameCommand object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -105,26 +97,38 @@
   GoGame* oldGame = [GoGame sharedGame];
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
-  // Create the new GoGame object
+  // Create the new GoGame object (unless a pre-fabricated object was supplied)
   // TODO: Prevent starting a new game if the defaults are somehow invalid
   // (currently known: player UUID may refer to a player that has been removed)
-  GoGame* newGame = [[[GoGame alloc] init] autorelease];
-  DDLogVerbose(@"%@: Created new game %@", [self shortDescription], newGame);
+  GoGame* newGame;
+  if (! self.prefabricatedGame)
+  {
+    newGame = [[[GoGame alloc] init] autorelease];
+    DDLogVerbose(@"%@: Created new game %@", [self shortDescription], newGame);
+  }
+  else
+  {
+    newGame = self.prefabricatedGame;
+    DDLogVerbose(@"%@: Using pre-fabricated game %@", [self shortDescription], newGame);
+  }
 
   // Replace the delegate's reference; an old GoGame object is now deallocated
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   appDelegate.game = newGame;
   DDLogVerbose(@"%@: Assigned game object to app delegate", [self shortDescription]);
 
-  // Configure the new GoGame object
-  NewGameModel* newGameModel = appDelegate.theNewGameModel;
-  newGame.board = [GoBoard boardWithDefaultSize];
-  newGame.komi = newGameModel.komi;
-  newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
-  newGame.playerBlack = [GoPlayer defaultBlackPlayer];
-  newGame.playerWhite = [GoPlayer defaultWhitePlayer];
-  newGame.type = newGameModel.gameType;
-  DDLogVerbose(@"%@: Configured game object: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@, playerWhite = %@, type = %d",
+  // Configure the new GoGame object (not necessary for pre-fabricated games)
+  if (! self.prefabricatedGame)
+  {
+    NewGameModel* newGameModel = appDelegate.theNewGameModel;
+    newGame.board = [GoBoard boardWithDefaultSize];
+    newGame.komi = newGameModel.komi;
+    newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
+    newGame.playerBlack = [GoPlayer defaultBlackPlayer];
+    newGame.playerWhite = [GoPlayer defaultWhitePlayer];
+    newGame.type = newGameModel.gameType;
+  }
+  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@, playerWhite = %@, type = %d",
                [self shortDescription],
                newGame.board,
                newGame.komi,

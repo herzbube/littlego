@@ -18,6 +18,7 @@
 // Project includes
 #import "RestoreGameCommand.h"
 #import "../boardposition/ChangeBoardPositionCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../../go/GoBoardPosition.h"
@@ -74,6 +75,7 @@
   NSString* backupFilePath = [self filePathForBackupFileNamed:archiveBackupFileName fileExists:&fileExists];
   if (! fileExists)
     return false;
+
   NSData* data = [NSData dataWithContentsOfFile:backupFilePath];
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
   self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
@@ -82,27 +84,41 @@
   [unarchiver release];
   if (! self.unarchivedGame)
     return false;
-  [self fixObjectReferences];
-  return true;
-}
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for tryRestoreFromArchive().
-// -----------------------------------------------------------------------------
-- (void) fixObjectReferences
-{
-  DDLogVerbose(@"%@: Fixing object references", [self shortDescription]);
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  applicationDelegate.game = self.unarchivedGame;
-  // Must send this notification manually. Must send it now before scoring model
-  // sends its own notification.
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:self.unarchivedGame];
+  NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:self.unarchivedGame] autorelease];
+  // Computer player must not be triggered before the GTP engine has been
+  // sync'ed
+  command.shouldTriggerComputerPlayer = false;
+  [command submit];
+
+  [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+
+  if (GoGameTypeComputerVsComputer == self.unarchivedGame.type)
+  {
+    if (GoGameStateGameHasNotYetStarted == self.unarchivedGame.state ||
+        GoGameStateGameHasStarted == self.unarchivedGame.state)
+    {
+      DDLogWarn(@"%@: Computer vs. computer game is in state %d, i.e. not paused", [self shortDescription], self.unarchivedGame.state);
+      [self.unarchivedGame pause];
+    }
+  }
+  // It is quite possible that the user suspended the app while the computer
+  // was thinking (the "computer play" function makes this possible even in
+  // human vs. human games) . We must reset that status here.
+  if (self.unarchivedGame.isComputerThinking)
+  {
+    DDLogInfo(@"%@: Computer vs. computer game, turning off 'computer is thinking' state", [self shortDescription]);
+    self.unarchivedGame.computerThinks = false;
+  }
+
   if (self.unarchivedScore)
   {
     ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
     // Scoring model sends its own notification
     [scoringModel restoreScoringModeWithScoreObject:self.unarchivedScore];
   }
+
+  return true;
 }
 
 // -----------------------------------------------------------------------------

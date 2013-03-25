@@ -33,7 +33,8 @@
 {
   NSString* backupFolder = [self backupFolder];
   [self saveArchive:backupFolder];
-  [self saveSgf:backupFolder];
+  if (self.saveSgf)
+    [self saveSgf:backupFolder];
   [self backupBoardPositionLastViewed];
   return true;
 }

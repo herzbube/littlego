@@ -18,6 +18,9 @@
 // Project includes
 #import "../CommandBase.h"
 
+// Forward declarations
+@class GoGame;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The NewGameCommand class is responsible for starting a new game
@@ -34,7 +37,9 @@
 ///   ComputerPlayMoveCommand instance
 ///
 /// A client may suppress some of these steps by clearing the corresponding
-/// property flag before a NewGameCommand object is executed.
+/// property flag before a NewGameCommand object is executed. A client may
+/// suppress the creation of a new GoGame by initializing NewGameCommand with
+/// a pre-fabricated GoGame object.
 ///
 /// @attention If @e shouldTriggerComputerPlayer is true, the calling thread
 /// must survive long enough for ComputerPlayMoveCommand to complete, otherwise
@@ -46,6 +51,7 @@
 }
 
 - (id) init;
+- (id) initWithGame:(GoGame*)game;
 
 @property(nonatomic, assign) bool shouldSetupGtpBoard;
 @property(nonatomic, assign) bool shouldSetupGtpHandicapAndKomi;
