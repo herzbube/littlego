@@ -27,8 +27,8 @@
 /// all board positions in the future of the board position currently displayed
 /// on the Play view, then playing a move.
 ///
-/// No board positions are discarded if BoardPositionModel is already at the
-/// last board position.
+/// No board positions are discarded if the Play view already displays the last
+/// board position.
 ///
 /// After board positions are discarded, DiscardAndPlayCommand executes one of
 /// several possible play commands. Which one is chosen depends on the

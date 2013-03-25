@@ -20,7 +20,6 @@
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/boardposition/BoardPositionModel.h"
 #import "../../play/ScoringModel.h"
 
 
@@ -35,7 +34,6 @@
   [self saveArchive:backupFolder];
   if (self.saveSgf)
     [self saveSgf:backupFolder];
-  [self backupBoardPositionLastViewed];
   return true;
 }
 
@@ -106,16 +104,6 @@
   // Switch back to the original directory
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
   DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
-// -----------------------------------------------------------------------------
-- (void) backupBoardPositionLastViewed
-{
-  DDLogVerbose(@"%@: Backing up board position last viewed", [self shortDescription]);
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  [boardPositionModel writeUserDefaults];
 }
 
 @end

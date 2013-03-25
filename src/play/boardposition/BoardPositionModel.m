@@ -17,25 +17,12 @@
 
 // Project includes
 #import "BoardPositionModel.h"
-#import "../../go/GoBoardPosition.h"
-#import "../../go/GoGame.h"
-
-
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BoardPositionModel.
-// -----------------------------------------------------------------------------
-@interface BoardPositionModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
 
 
 @implementation BoardPositionModel
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a ScoringModel object with user defaults data.
+/// @brief Initializes a BoardPositionModel object with user defaults data.
 ///
 /// @note This is the designated initializer of BoardPositionModel.
 // -----------------------------------------------------------------------------
@@ -45,19 +32,8 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.discardFutureMovesAlert = discardFutureMovesAlertDefault;
-  self.boardPositionLastViewed = 0;
-
   return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this BoardPositionModel object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -68,7 +44,6 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:boardPositionKey];
   self.discardFutureMovesAlert = [[dictionary valueForKey:discardFutureMovesAlertKey] boolValue];
-  self.boardPositionLastViewed = [[dictionary valueForKey:boardPositionLastViewedKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -77,12 +52,8 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
-  // See property documentation for why we do this
-  self.boardPositionLastViewed = [GoGame sharedGame].boardPosition.currentBoardPosition;
-
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:self.discardFutureMovesAlert] forKey:discardFutureMovesAlertKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.boardPositionLastViewed] forKey:boardPositionLastViewedKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 }

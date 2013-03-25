@@ -28,28 +28,5 @@
 - (void) writeUserDefaults;
 
 @property(nonatomic, assign) bool discardFutureMovesAlert;
-/// @brief This property is used to store the board position last viewed by the
-/// user across application relaunches.
-///
-/// This property is updated to the current board position of the current
-/// game in progress just before user defaults are written. This is guaranteed
-/// to occur at the following times:
-/// - When the application is suspended
-/// - When the current game is backed up after a new move has been made
-///
-/// When the application terminates in any way, the value thus stored will be
-/// read from from the user defaults when the application is launched the next
-/// time. The value can then be used to restore the board position that was seen
-/// before the application terminated.
-///
-/// @note Because this property is not updated on every change to the current
-/// board position, an application crash may leave a stale value in the user
-/// defaults on disk. A small amount of error handling is therefore necessary
-/// when the board position is restored on application launch.
-///
-/// @note The value -1 has the special meaning "last board position of the
-/// game". This value is used only once: When user defaults are upgraded from
-/// an earlier version of the application.
-@property(nonatomic, assign) int boardPositionLastViewed;
 
 @end

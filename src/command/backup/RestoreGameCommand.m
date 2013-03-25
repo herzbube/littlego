@@ -17,7 +17,6 @@
 
 // Project includes
 #import "RestoreGameCommand.h"
-#import "../boardposition/ChangeBoardPositionCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
@@ -26,7 +25,6 @@
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/ScoringModel.h"
-#import "../../play/boardposition/BoardPositionModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -136,34 +134,7 @@
   // LoadGameCommand executes synchronously because this RestoreGameCommand
   // is already asynchronous
   bool success = [loadCommand submit];
-  if (! success)
-    return false;
-  [self restoreBoardPosition];
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for tryRestoreFromSgf().
-// -----------------------------------------------------------------------------
-- (void) restoreBoardPosition
-{
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  // Integrity check in case the model has a stale value (e.g. due to an app
-  // crash)
-  if (boardPositionModel.boardPositionLastViewed > boardPosition.currentBoardPosition)
-    return;
-  // Special value -1 means "last board position of the game"
-  if (-1 == boardPositionModel.boardPositionLastViewed)
-    boardPositionModel.boardPositionLastViewed = boardPosition.currentBoardPosition;
-  else
-  {
-    // We don't care whether ChangeBoardPositionCommand presents itself as a
-    // synchronous or asynchronous command - because this RestoreGamecommand
-    // class already is asynchronous, ChangeBoardPositionCommand will always
-    // be executed synchronously.
-    [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:boardPositionModel.boardPositionLastViewed] autorelease] submit];
-  }
+  return success;
 }
 
 // -----------------------------------------------------------------------------

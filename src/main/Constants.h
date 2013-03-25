@@ -667,7 +667,6 @@ extern NSString* contactEmailCrashDataKey;
 // Board position settings
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
-extern NSString* boardPositionLastViewedKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
 //@}

@@ -34,6 +34,7 @@ NSString* blackPlayerKey = @"BlackPlayer";
 NSString* whitePlayerKey = @"WhitePlayer";
 NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
+NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -402,8 +403,9 @@ NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
 // -----------------------------------------------------------------------------
 + (void) upgradeToVersion6:(NSDictionary*)registrationDomainDefaults
 {
-  // Add new keys to / change existing keys in "play view" dictionary
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Add new keys to / change existing keys in "play view" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
@@ -414,6 +416,15 @@ NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
     [playViewDictionaryUpgrade removeObjectForKey:displayMoveNumbersKey];
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:moveNumbersPercentageDefault] forKey:moveNumbersPercentageKey];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+
+  // Remove unused key from "board position" dictionary
+  id boardPositionDictionary = [userDefaults objectForKey:boardPositionKey];
+  if (boardPositionDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* boardPositionDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardPositionDictionary];
+    [boardPositionDictionaryUpgrade removeObjectForKey:boardPositionLastViewedKey];
+    [userDefaults setObject:boardPositionDictionaryUpgrade forKey:boardPositionKey];
   }
 }
 

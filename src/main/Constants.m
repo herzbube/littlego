@@ -270,7 +270,6 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 // Board position settings
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
-NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
 
