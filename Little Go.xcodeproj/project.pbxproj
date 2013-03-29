@@ -101,6 +101,17 @@
 		CD1DB60716FCDCBE00C2E648 /* 18-envelope@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
 		CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
+		CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */; };
+		CD1DB60F170244CF00C2E648 /* HandleDocumentInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */; };
+		CD1DB610170257C000C2E648 /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
+		CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
+		CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
+		CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */; };
+		CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
+		CD1DB6151702582B00C2E648 /* TableViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E571645FFE400329154 /* TableViewTextCell.m */; };
+		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
+		CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55576516702DBC003B957B /* TableViewSegmentedCell.m */; };
+		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
@@ -492,6 +503,8 @@
 		CD1DB60516FCDCBE00C2E648 /* 18-envelope@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-envelope@2x.png"; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
+		CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteraction.h; sourceTree = "<group>"; };
+		CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteraction.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
@@ -1290,6 +1303,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
+				CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */,
+				CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */,
 				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
 				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
@@ -1987,6 +2002,7 @@
 				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
+				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2079,6 +2095,16 @@
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
+				CD1DB60F170244CF00C2E648 /* HandleDocumentInteraction.m in Sources */,
+				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
+				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
+				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
+				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
+				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,
+				CD1DB6151702582B00C2E648 /* TableViewTextCell.m in Sources */,
+				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
+				CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */,
+				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

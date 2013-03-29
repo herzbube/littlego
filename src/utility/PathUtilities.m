@@ -80,6 +80,62 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Copies the source file or folder located at @a sourcePath to the new
+/// location @a destinationPath, overwriting @a destinationPath if it exists.
+///
+/// Overwriting items with the NSFileManager API is rather cumbersome, so this
+/// method conveniently takes care of checking whether @a destinationPath
+/// exists and removing it, before the actual copy operation is invoked.
+// -----------------------------------------------------------------------------
++ (BOOL) copyItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error
+{
+  // Get rid of the destination file if it exists, otherwise copyItemAtPath:()
+  // further down will abort the copy attempt.
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:destinationPath])
+  {
+    BOOL success = [fileManager removeItemAtPath:destinationPath error:error];
+    if (! success)
+    {
+      DDLogError(@"Failed to remove item, reason: %@", [*error localizedDescription]);
+      return success;
+    }
+  }
+  BOOL success = [fileManager copyItemAtPath:sourcePath toPath:destinationPath error:error];
+  if (! success)
+    DDLogError(@"Failed to copy item, reason: %@", [*error localizedDescription]);
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the source file or folder located at @a sourcePath to the new
+/// location @a destinationPath, overwriting @a destinationPath if it exists.
+///
+/// Overwriting items with the NSFileManager API is rather cumbersome, so this
+/// method conveniently takes care of checking whether @a destinationPath
+/// exists and removing it, before the actual move operation is invoked.
+// -----------------------------------------------------------------------------
++ (BOOL) moveItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error
+{
+  // Get rid of the destination file if it exists, otherwise moveItemAtPath:()
+  // further down will abort the move attempt.
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:destinationPath])
+  {
+    BOOL success = [fileManager removeItemAtPath:destinationPath error:error];
+    if (! success)
+    {
+      DDLogError(@"Failed to remove item, reason: %@", [*error localizedDescription]);
+      return success;
+    }
+  }
+  BOOL success = [fileManager moveItemAtPath:sourcePath toPath:destinationPath error:error];
+  if (! success)
+    DDLogError(@"Failed to move item, reason: %@", [*error localizedDescription]);
+  return success;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the name of the application's preferences file.
 ///
 /// The file name is based on the main bundle's identifier.
@@ -113,6 +169,18 @@
   NSString* libraryFolderPath = [paths objectAtIndex:0];
   NSString* preferencesFolderPath = [libraryFolderPath stringByAppendingPathComponent:@"Preferences"];
   return [preferencesFolderPath stringByAppendingPathComponent:[PathUtilities preferencesFileName]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepends a pre-defined folder to @a fileName, then returns the
+/// resulting full path.
+// -----------------------------------------------------------------------------
++ (NSString*) backupFilePath:(NSString*)fileName
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
+  NSString* backupFolderPath = [paths objectAtIndex:0];
+  return [backupFolderPath stringByAppendingPathComponent:fileName];
 }
 
 @end

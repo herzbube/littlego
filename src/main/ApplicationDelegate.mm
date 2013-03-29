@@ -46,6 +46,7 @@
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
 #import "../command/CommandProcessor.h"
+#import "../command/HandleDocumentInteraction.h"
 #import "../command/SetupApplicationCommand.h"
 #import "../command/backup/BackupGameCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
@@ -93,6 +94,7 @@
 /// @name Privately declared properties
 //@{
 @property(nonatomic, retain) DDFileLogger* fileLogger;
+@property(nonatomic, assign) bool applicationOpenURLShouldIgnoreNextDocumentInteraction;
 //@}
 @end
 
@@ -147,6 +149,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   self.tabBarController = nil;
   self.window = nil;
+  self.documentInteractionURL = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;
   self.theNewGameModel = nil;
@@ -200,14 +203,31 @@ static ApplicationDelegate* sharedDelegate = nil;
   // progress HUD.
   [self setupGUI];
 
+  // If an URL is passed in, it is stored here and processed later during
+  // SetupApplicationCommand.
+  self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
+  self.documentInteractionURL = nil;
+  BOOL canHandleURL = YES;
+  NSURL* url = (NSURL*)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
+  if (url)
+  {
+    if ([url isFileURL])
+    {
+      self.applicationOpenURLShouldIgnoreNextDocumentInteraction = true;
+      self.documentInteractionURL = url;
+    }
+    else
+    {
+      canHandleURL = NO;
+    }
+  }
+
   // Further setup steps are executed in a secondary thread so that 1) we can
   // display a progress HUD, and 2) the application launches as quickly as
   // possible.
   [[[[SetupApplicationCommand alloc] init] autorelease] submit];
 
-  // We don't handle any URL resources in launchOptions
-  // -> always return success
-  return YES;
+  return canHandleURL;
 }
 
 // -----------------------------------------------------------------------------
@@ -297,6 +317,32 @@ static ApplicationDelegate* sharedDelegate = nil;
 
   // Save whatever data we can before the system kills the application
   [self saveData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Asks the delegate to open a resource identified by @a url.
+///
+/// This method is invoked both during application launch and while the
+/// application is already running, to open an .sgf file passed into the app
+/// via the system's document interaction mechanism.
+// -----------------------------------------------------------------------------
+- (BOOL) application:(UIApplication*)application
+             openURL:(NSURL*)url
+   sourceApplication:(NSString*)sourceApplication
+          annotation:(id)annotation
+{
+  DDLogInfo(@"Document interaction wants to open URL %@", url);
+  if (! [url isFileURL])
+    return NO;
+  if (self.applicationOpenURLShouldIgnoreNextDocumentInteraction)
+  {
+    self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
+    return NO;
+  }
+  self.documentInteractionURL = url;
+  // Control returns before the .sgf file is actually loaded
+  [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

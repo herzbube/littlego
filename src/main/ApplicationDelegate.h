@@ -96,6 +96,9 @@
 /// property can still be queried to see what happened during application
 /// launch.
 @property(nonatomic, assign) enum ApplicationLaunchMode applicationLaunchMode;
+/// @brief Refers to the last .sgf file passed into the app via the system's
+/// document interaction mechanism. Is nil if no .sgf file was ever passed in.
+@property(nonatomic, retain) NSURL* documentInteractionURL;
 /// @brief Is false during application launch, and shortly afterwards while this
 /// delegate is still setting up objects that are important for the application
 /// lifecycle.

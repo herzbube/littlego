@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SetupApplicationCommand.h"
+#import "HandleDocumentInteraction.h"
 #import "LoadOpeningBookCommand.h"
 #import "backup/RestoreGameCommand.h"
 #import "diagnostics/RestoreBugReportApplicationState.h"
@@ -132,6 +133,11 @@
     // survives the entire command execution - see the class documentation of
     // RestoreGameCommand for the reason why.
     [[[[RestoreGameCommand alloc] init] autorelease] submit];
+    if (delegate.documentInteractionURL)
+    {
+      // Control returns before the .sgf file is actually loaded
+      [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
+    }
   }
 
   return true;

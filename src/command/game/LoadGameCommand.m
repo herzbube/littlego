@@ -142,6 +142,7 @@ static const int maxStepsForReplayMoves = 10;
     DDLogError(@"%@: No file provided", [self shortDescription]);
     return false;
   }
+  DDLogVerbose(@"%@: Loading .sgf file %@", [self shortDescription], self.filePath);
 
   @try
   {
@@ -168,7 +169,7 @@ static const int maxStepsForReplayMoves = 10;
     NSFileManager* fileManager = [NSFileManager defaultManager];
     if (! [fileManager fileExistsAtPath:self.filePath])
     {
-      [self handleCommandFailed:@"Internal error: Archived .sgf file not found"];
+      [self handleCommandFailed:@"Internal error: .sgf file not found"];
       return false;
     }
     // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()

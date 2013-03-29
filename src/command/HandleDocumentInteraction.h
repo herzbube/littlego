@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,27 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "CommandBase.h"
+#import "../newgame/NewGameController.h"
+
+
 // -----------------------------------------------------------------------------
-/// @brief The PathUtilities class is a container for various utility functions
-/// related to handling of files and folders.
+/// @brief The HandleDocumentInteraction class is responsible for opening an
+/// .sgf file that was passed into the application via the system's document
+/// interaction mechanism.
 ///
-/// All functions in PathUtilities are class methods, so there is no need to
-/// create an instance of PathUtilities.
+/// The URL referring to .sgf file is the value of the ApplicationDelegate
+/// property @e documentInteractionURL.
+///
+/// @note Control will return from HandleDocumentInteraction's doIt() method
+/// before the game from the .sgf file is fully loaded. The reason is that
+/// HandleDocumentInteraction displays a NewGameController, i.e. the program
+/// control flow needs to be broken to let the controller handle user
+/// interaction.
 // -----------------------------------------------------------------------------
-@interface PathUtilities : NSObject
+@interface HandleDocumentInteraction : CommandBase <NewGameDelegate>
 {
 }
-
-+ (void) createFolder:(NSString*)path removeIfExists:(bool)removeIfExists;
-+ (void) deleteItemIfExists:(NSString*)path;
-+ (BOOL) copyItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error;
-+ (BOOL) moveItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error;
-+ (NSString*) preferencesFileName;
-+ (NSString*) preferencesFilePath;
-+ (NSString*) backupFilePath:(NSString*)fileName;
 
 @end
