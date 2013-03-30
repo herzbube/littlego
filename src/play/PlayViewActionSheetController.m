@@ -296,7 +296,7 @@ enum ActionSheetButton
 - (void) saveGame
 {
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  NSString* defaultGameName = [model defaultGameName:[GoGame sharedGame]];
+  NSString* defaultGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
   EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
                                                                              style:EditTextControllerStyleTextField
                                                                           delegate:self] retain];

@@ -202,13 +202,14 @@
     return true;
   if ([fileName isEqualToString:bugReportDiagnosticsInformationFileName])
     return true;
+  if ([fileName isEqualToString:@"Inbox"])  // ignore folder where document interaction places file
+    return true;
   return false;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a default name that can be used to save @a game right now.
-///
-/// The name is guaranteed to be unique at the time this method is invoked.
+/// @brief Returns a unique name that can be used to save @a game right now.
+/// The name is guaranteed to be unique only at the time this method is invoked.
 ///
 /// The name is suitable for display in the UI. The name pattern is
 /// "BBB vs. WWW iii", where
@@ -217,31 +218,67 @@
 /// - iii = Numeric counter starting with 1. The counter does not use prefix
 ///         zeroes.
 // -----------------------------------------------------------------------------
-- (NSString*) defaultGameName:(GoGame*)game;
+- (NSString*) uniqueGameNameForGame:(GoGame*)game;
 {
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* defaultGameName = nil;
+  NSString* uniqueGameName = nil;
   NSString* prefix = [NSString stringWithFormat:@"%@ vs. %@", game.playerBlack.player.name, game.playerWhite.player.name];
   int suffix = 1;
   while (true)
   {
-    defaultGameName = [NSString stringWithFormat:@"%@ %d", prefix, suffix];
-    NSString* defaultFileName = [defaultGameName stringByAppendingString:@".sgf"];
-    NSString* defaultFilePath = [self.archiveFolder stringByAppendingPathComponent:defaultFileName];
-    if (! [fileManager fileExistsAtPath:defaultFilePath])
+    uniqueGameName = [NSString stringWithFormat:@"%@ %d", prefix, suffix];
+    NSString* uniqueFileName = [uniqueGameName stringByAppendingString:@".sgf"];
+    NSString* uniqueFilePath = [self.archiveFolder stringByAppendingPathComponent:uniqueFileName];
+    if (! [fileManager fileExistsAtPath:uniqueFilePath])
       break;
     suffix++;
   }
-  return defaultGameName;
+  return uniqueGameName;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the full file path of the game whose name is @a name.
+/// @brief Returns a unique name for @a preferredGameName that can be used to
+/// save a game right now. The name is guaranteed to be unique only at the time
+/// this method is invoked.
+///
+/// If no other game exists with the same name, this method returns a copy of
+/// @a preferredGameName.
+///
+/// If another game with the same name already exists, this method adds a suffix
+/// to @a preferredGameName to make the preferred game name unique. The pattern
+/// is "preferredGameName iii", where
+/// - iii = Numeric counter starting with 1. The counter does not use prefix
+///         zeroes. If a game with counter 1 already exists, the counter is
+///         increased to 2, etc.
+// -----------------------------------------------------------------------------
+- (NSString*) uniqueGameNameForName:(NSString*)preferredGameName
+{
+  if (! [self gameWithName:preferredGameName])
+    return [preferredGameName copy];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* uniqueGameName = nil;
+  int suffix = 1;
+  while (true)
+  {
+    uniqueGameName = [NSString stringWithFormat:@"%@ %d", preferredGameName, suffix];
+    NSString* uniqueFileName = [uniqueGameName stringByAppendingString:@".sgf"];
+    NSString* uniqueFilePath = [self.archiveFolder stringByAppendingPathComponent:uniqueFileName];
+    if (! [fileManager fileExistsAtPath:uniqueFilePath])
+      break;
+    suffix++;
+  }
+  return uniqueGameName;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the full file path of the game whose name is @a name. The
+/// file path may or may not refer to an already existing file.
 // -----------------------------------------------------------------------------
 - (NSString*) filePathForGameWithName:(NSString*)name
 {
-  ArchiveGame* archiveGame = [self gameWithName:name];
-  return [self.archiveFolder stringByAppendingPathComponent:archiveGame.fileName];
+  NSString* fileName = [name stringByAppendingString:@".sgf"];
+  NSString* filePath = [self.archiveFolder stringByAppendingPathComponent:fileName];
+  return filePath;
 }
 
 @end

@@ -17,7 +17,7 @@
 
 // Project includes
 #import "HandleDocumentInteraction.h"
-#import "game/LoadGameCommand.h"
+#import "../archive/ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../utility/PathUtilities.h"
 
@@ -29,105 +29,63 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  bool success = [self moveDocumentInteractionFileToArchive];
+  if (success)
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+    [[ApplicationDelegate sharedDelegate] activateTab:TabTypeArchive];
+  }
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (bool) moveDocumentInteractionFileToArchive
+{
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   if (! delegate.documentInteractionURL)
     return false;
-  // The NewGameController is GUI stuff, so it must be presented in the main
-  // thread context. This command, however, may be executed by another command
-  // that is asynchronous, i.e. execution in this case occurs in a secondary
-  // thread.
-  [self performSelectorOnMainThread:@selector(doItInMainThread) withObject:nil waitUntilDone:YES];
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). doIt() always invokes this in the main
-/// thread's context.
-// -----------------------------------------------------------------------------
-- (void) doItInMainThread
-{
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:true] retain];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:newGameController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  [delegate.tabBarController presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
-  [newGameController release];
-  [self retain];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief NewGameDelegate protocol method
-// -----------------------------------------------------------------------------
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.tabBarController dismissViewControllerAnimated:YES completion:nil];
-  if (didStartNewGame)
-  {
-    [appDelegate activateTab:TabTypePlay];
-    if ([self moveDocumentInteractionFileToBackupFile])
-      [self loadGameFromBackup];
-    else
-      [self deleteDocumentInteractionFile];
-  }
-  else
-  {
-    [self deleteDocumentInteractionFile];
-  }
-  [self autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for newGameController:didStartNewGame:().
-// -----------------------------------------------------------------------------
-- (bool) moveDocumentInteractionFileToBackupFile
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NSString* documentInteractionFilePath = [appDelegate.documentInteractionURL path];
-  NSString* backupFilePath = [PathUtilities backupFilePath:sgfBackupFileName];
+  NSString* documentInteractionFilePath = [delegate.documentInteractionURL path];
+  NSString* documentInteractionFileName = [documentInteractionFilePath lastPathComponent];
+  NSString* preferredGameName = [documentInteractionFileName stringByDeletingPathExtension];
+  ArchiveViewModel* model = delegate.archiveViewModel;
+  NSString* uniqueGameName = [model uniqueGameNameForName:preferredGameName];
+  NSString* uniqueFilePath = [model filePathForGameWithName:uniqueGameName];
   NSError* error;
-  BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:backupFilePath error:&error];
+  BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:uniqueFilePath error:&error];
   if (success)
   {
+    NSString* message = [NSString stringWithFormat:@"You will find the imported game in the archive under this name:\n\n%@",
+                         uniqueGameName];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game import succeeded"
+                                                    message:message
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeHandleDocumentInteractionSucceeded;
+    [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
+    [alert release];
     return true;
   }
   else
   {
-    NSString* message = [NSString stringWithFormat:@"Internal error: Failed to move .sgf file, reason: %@",
+    // We don't know what exactly went wrong, so we delete both files to be on
+    // the safe side
+    [PathUtilities deleteItemIfExists:documentInteractionFilePath];
+    [PathUtilities deleteItemIfExists:uniqueFilePath];
+    NSString* message = [NSString stringWithFormat:@"Failed to import game into archive. Reason: %@",
                          [error localizedDescription]];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to load game"
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to import game"
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
     alert.tag = AlertViewTypeHandleDocumentInteractionFailed;
-    [alert show];
+    [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
     [alert release];
     return false;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for newGameController:didStartNewGame:().
-// -----------------------------------------------------------------------------
-- (void) loadGameFromBackup
-{
-  NSString* backupFilePath = [PathUtilities backupFilePath:sgfBackupFileName];
-  LoadGameCommand* command = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
-  command.restoreMode = true;
-  [command submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for newGameController:didStartNewGame:().
-// -----------------------------------------------------------------------------
-- (void) deleteDocumentInteractionFile
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NSString* documentInteractionFilePath = [appDelegate.documentInteractionURL path];
-  [PathUtilities deleteItemIfExists:documentInteractionFilePath];
 }
 
 @end

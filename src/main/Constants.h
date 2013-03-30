@@ -180,6 +180,7 @@ enum AlertViewType
   AlertViewTypeComputerPlayedIllegalMove,
   AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
   AlertViewTypeActionWillDiscardAllFutureMoves,
+  AlertViewTypeHandleDocumentInteractionSucceeded,
   AlertViewTypeHandleDocumentInteractionFailed
 };
 

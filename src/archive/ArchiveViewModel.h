@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,9 +27,8 @@
 /// displayed (e.g. sorting criteria).
 ///
 /// Although archived games ultimately refer to files, the UI presented to the
-/// user should not refer to them as such. With this in mind, the public
-/// interface of ArchiveViewModel does not include any file-related methods or
-/// properties.
+/// user should not refer to them as such. With this in mind, most of the public
+/// interface of ArchiveViewModel refers to "games" and "game names".
 // -----------------------------------------------------------------------------
 @interface ArchiveViewModel : NSObject
 {
@@ -40,7 +39,8 @@
 - (void) writeUserDefaults;
 - (ArchiveGame*) gameAtIndex:(int)index;
 - (ArchiveGame*) gameWithName:(NSString*)name;
-- (NSString*) defaultGameName:(GoGame*)game;
+- (NSString*) uniqueGameNameForGame:(GoGame*)game;
+- (NSString*) uniqueGameNameForName:(NSString*)preferredGameName;
 - (NSString*) filePathForGameWithName:(NSString*)name;
 
 /// @brief Path to folder that contains files with archived games.

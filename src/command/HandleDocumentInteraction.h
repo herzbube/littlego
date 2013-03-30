@@ -17,24 +17,17 @@
 
 // Project includes
 #import "CommandBase.h"
-#import "../newgame/NewGameController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The HandleDocumentInteraction class is responsible for opening an
+/// @brief The HandleDocumentInteraction class is responsible for importing an
 /// .sgf file that was passed into the application via the system's document
 /// interaction mechanism.
 ///
 /// The URL referring to .sgf file is the value of the ApplicationDelegate
 /// property @e documentInteractionURL.
-///
-/// @note Control will return from HandleDocumentInteraction's doIt() method
-/// before the game from the .sgf file is fully loaded. The reason is that
-/// HandleDocumentInteraction displays a NewGameController, i.e. the program
-/// control flow needs to be broken to let the controller handle user
-/// interaction.
 // -----------------------------------------------------------------------------
-@interface HandleDocumentInteraction : CommandBase <NewGameDelegate>
+@interface HandleDocumentInteraction : CommandBase
 {
 }
 
