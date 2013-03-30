@@ -23,6 +23,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../utility/PathUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -111,20 +112,7 @@
 
   // Get rid of another file of the same name (otherwise the subsequent move
   // operation fails)
-  if ([fileManager fileExistsAtPath:filePath])
-  {
-    BOOL success = [fileManager removeItemAtPath:filePath error:&error];
-    DDLogVerbose(@"%@: Removed file %@, result = %d", [self shortDescription], filePath, success);
-    if (! success)
-    {
-      [fileManager removeItemAtPath:sgfTemporaryFilePath error:nil];
-      assert(0);
-      [self showAlertWithError:error];
-      return false;
-    }
-  }
-
-  BOOL success = [fileManager moveItemAtPath:sgfTemporaryFilePath toPath:filePath error:&error];
+  BOOL success = [PathUtilities moveItemAtPath:sgfTemporaryFilePath overwritePath:filePath error:&error];
   DDLogVerbose(@"%@: Moved file %@ to %@, result = %d", [self shortDescription], sgfTemporaryFilePath, filePath, success);
   if (! success)
   {

@@ -22,11 +22,6 @@
 #import "../backup/CleanBackupCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../archive/ArchiveViewModel.h"
-#import "../../gtp/GtpCommand.h"
-#import "../../gtp/GtpResponse.h"
-#import "../../gtp/GtpUtilities.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../newgame/NewGameModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
@@ -34,6 +29,12 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
+#import "../../gtp/GtpCommand.h"
+#import "../../gtp/GtpResponse.h"
+#import "../../gtp/GtpUtilities.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../newgame/NewGameModel.h"
+#import "../../utility/PathUtilities.h"
 
 
 static const int maxStepsForReplayMoves = 10;
@@ -172,23 +173,11 @@ static const int maxStepsForReplayMoves = 10;
       [self handleCommandFailed:@"Internal error: .sgf file not found"];
       return false;
     }
-    // Get rid of the temporary file if it exists, otherwise copyItemAtPath:()
-    // further down will abort the copy attempt. A temporary file possibly exists
-    // if a previous file operation failed to properly clean up.
     NSError* error;
-    if ([fileManager fileExistsAtPath:sgfTemporaryFilePath])
-    {
-      BOOL success = [fileManager removeItemAtPath:sgfTemporaryFilePath error:&error];
-      if (! success)
-      {
-        [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file before load, reason: %@", [error localizedDescription]]];
-        return false;
-      }
-    }
-    BOOL success = [fileManager copyItemAtPath:self.filePath toPath:sgfTemporaryFilePath error:&error];
+    BOOL success = [PathUtilities copyItemAtPath:self.filePath overwritePath:sgfTemporaryFilePath error:&error];
     if (! success)
     {
-      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy archived .sgf file, reason: %@", [error localizedDescription]]];
+      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy .sgf file, reason: %@", [error localizedDescription]]];
       return false;
     }
 
@@ -237,7 +226,7 @@ static const int maxStepsForReplayMoves = 10;
   if (! response.status)
   {
     // This is the most probable error scenario, so no "Internal error"
-    [self handleCommandFailed:@"The archived game could not be loaded. Is the game file in .sgf format?"];
+    [self handleCommandFailed:@"The game could not be loaded. Is the game file in .sgf format?"];
     return;
   }
 
@@ -260,7 +249,7 @@ static const int maxStepsForReplayMoves = 10;
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect board size of archived game"];
+    [self handleCommandFailed:@"Internal error: Failed to detect board size of the game to be loaded"];
     assert(0);
     return;
   }
@@ -298,7 +287,7 @@ static const int maxStepsForReplayMoves = 10;
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect komi of archived game"];
+    [self handleCommandFailed:@"Internal error: Failed to detect komi of the game to be loaded"];
     assert(0);
     return;
   }
@@ -324,7 +313,7 @@ static const int maxStepsForReplayMoves = 10;
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect handicap of archived game"];
+    [self handleCommandFailed:@"Internal error: Failed to detect handicap of the game to be loaded"];
     assert(0);
     return;
   }
@@ -350,7 +339,7 @@ static const int maxStepsForReplayMoves = 10;
   // Was GTP command successful?
   if (! response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect moves of archived game"];
+    [self handleCommandFailed:@"Internal error: Failed to detect moves of the game to be loaded"];
     assert(0);
     return;
   }

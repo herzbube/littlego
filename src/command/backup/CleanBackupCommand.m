@@ -17,13 +17,7 @@
 
 // Project includes
 #import "CleanBackupCommand.h"
-
-
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for CleanBackupCommand.
-// -----------------------------------------------------------------------------
-@interface CleanBackupCommand()
-@end
+#import "../../utility/PathUtilities.h"
 
 
 @implementation CleanBackupCommand
@@ -33,18 +27,13 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  NSString* sgfBackupFilePath = [appSupportDirectory stringByAppendingPathComponent:sgfBackupFileName];
-
+  NSString* sgfBackupFilePath = [PathUtilities backupFilePath:sgfBackupFileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:sgfBackupFilePath])
   {
     BOOL result = [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
     DDLogVerbose(@"%@: Removed file %@, result = %d", [self shortDescription], sgfBackupFilePath, result);
   }
-
   return true;
 }
 
