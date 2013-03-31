@@ -202,7 +202,7 @@
     return true;
   if ([fileName isEqualToString:bugReportDiagnosticsInformationFileName])
     return true;
-  if ([fileName isEqualToString:@"Inbox"])  // ignore folder where document interaction places file
+  if ([fileName isEqualToString:inboxFolderName])  // ignore folder where document interaction places file
     return true;
   return false;
 }

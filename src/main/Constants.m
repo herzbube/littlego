@@ -36,6 +36,7 @@ const double gDefaultKomi = 6.5;
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
 NSString* archiveBackupFileName = @"backup.plist";
 NSString* sgfBackupFileName = @"backup.sgf";
+NSString* inboxFolderName = @"Inbox";
 
 // Application notifications
 NSString* applicationIsReadyForAction = @"ApplicationIsReadyForAction";

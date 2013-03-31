@@ -401,7 +401,8 @@ enum ActionSheetButton
     [alert release];
     return false;
   }
-  NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:@"SELF MATCHES '^(.|..)$'"];
+  NSString* predicateFormatString = [NSString stringWithFormat:@"SELF MATCHES '^(.|..|%@)$'", inboxFolderName];
+  NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:predicateFormatString];
   if ([predicateReservedWords evaluateWithObject:text])
   {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Illegal game name"

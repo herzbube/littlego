@@ -48,6 +48,11 @@
     return false;
   NSString* documentInteractionFilePath = [delegate.documentInteractionURL path];
   NSString* documentInteractionFileName = [documentInteractionFilePath lastPathComponent];
+  // The file always has an .sgf extension, iOS makes sure of that. Tested
+  // with a file downloaded via HTTP where the file has the proper MIME type,
+  // but a non-standard extension (i.e. something else than .sgf). When the user
+  // selects "Open in..." in Safari, the document interaction system passes the
+  // file into the app with the extension .sgf tacked on.
   NSString* preferredGameName = [documentInteractionFileName stringByDeletingPathExtension];
   ArchiveViewModel* model = delegate.archiveViewModel;
   NSString* uniqueGameName = [model uniqueGameNameForName:preferredGameName];

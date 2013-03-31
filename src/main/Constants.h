@@ -244,6 +244,9 @@ extern NSString* archiveBackupFileName;
 /// @brief Name of the secondary .sgf file used for the same purpose as
 /// @e archiveBackupFileName.
 extern NSString* sgfBackupFileName;
+/// @brief Name of the folder used by the document interaction system to pass
+/// files into the app. The folder is located in the Documents folder.
+extern NSString* inboxFolderName;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -413,8 +413,9 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up a number of folders in the application bundle, creating them
-/// if they do not exist.
+/// @brief Sets up a number of folders in the application bundle. Depending on
+/// the folder's purpose, it is either created if it does not exist, or deleted
+/// if it does exist.
 // -----------------------------------------------------------------------------
 - (void) setupFolders
 {
@@ -439,6 +440,15 @@ static ApplicationDelegate* sharedDelegate = nil;
            withIntermediateDirectories:YES
                             attributes:nil
                                  error:nil];
+  }
+  // Must not remove the Inbox folder if the application is launched because of
+  // document interaction. Removal in this case is delayed to the next app
+  // launch without document interaction.
+  if (! self.documentInteractionURL)
+  {
+    NSString* inboxDirectory = [documentsDirectory stringByAppendingPathComponent:inboxFolderName];
+    if ([fileManager fileExistsAtPath:inboxDirectory])
+      [fileManager removeItemAtPath:inboxDirectory error:nil];
   }
 }
 
