@@ -467,6 +467,7 @@ extern NSString* defaultGtpEngineProfileUUID;
 // -----------------------------------------------------------------------------
 //@{
 extern NSString* sgfMimeType;
+extern NSString* sgfUTI;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -561,7 +562,6 @@ extern NSString* rewindButtonIconResource;
 extern NSString* rewindToStartButtonIconResource;
 extern NSString* humanIconResource;
 extern NSString* computerIconResource;
-extern NSString* emailIconResource;
 extern NSString* stoneBlackImageResource;
 extern NSString* stoneWhiteImageResource;
 extern NSString* stoneCrosshairImageResource;

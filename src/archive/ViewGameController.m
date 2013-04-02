@@ -143,15 +143,15 @@ enum GameAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
-  UIBarButtonItem* emailButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:emailIconResource]
-                                                              style:UIBarButtonItemStyleBordered
-                                                             target:self
-                                                             action:@selector(emailGame)] autorelease];
   UIBarButtonItem* loadButton = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
                                                                   style:UIBarButtonItemStylePlain
                                                                  target:self
                                                                  action:@selector(loadGame)] autorelease];
-  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:loadButton, emailButton, nil];
+  UIBarButtonItem* actionButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                                 target:self
+                                                                                 action:@selector(action:)] autorelease];
+  actionButton.style = UIBarButtonItemStyleBordered;
+  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:actionButton, loadButton, nil];
   [self updateLoadButtonState];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -441,54 +441,75 @@ enum GameAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Presents mail composer with the .sgf file attached, or displays an
-/// alert if the device is not configured for sending emails.
+/// @brief Presents a UIDocumentInteractionController
 // -----------------------------------------------------------------------------
-- (void) emailGame
+- (void) action:(id)sender
 {
-  if (! [self canSendMail])
-    return;
-  DDLogVerbose(@"%@: Presenting mail composer for game %@", self, self.game.name);
-  MFMailComposeViewController* mailComposeViewController = [[MFMailComposeViewController alloc] init];
-  mailComposeViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  mailComposeViewController.mailComposeDelegate = self;
-  mailComposeViewController.subject = self.game.name;
-
-  NSString* sgfFilePath = [self.model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
-  NSData* data = [NSData dataWithContentsOfFile:sgfFilePath];
-  [mailComposeViewController addAttachmentData:data mimeType:sgfMimeType fileName:self.game.fileName];
-
-  [self presentViewController:mailComposeViewController animated:YES completion:nil];
-  [mailComposeViewController release];
+  NSString* sgfFilePath = [self.model filePathForGameWithName:self.game.name];
+  NSURL* sgfFileURL = [NSURL fileURLWithPath:sgfFilePath isDirectory:NO];
+  UIDocumentInteractionController* interactionController = [UIDocumentInteractionController interactionControllerWithURL:sgfFileURL];
+  interactionController.delegate = self;
+  interactionController.UTI = sgfUTI;
+  [interactionController retain];
+  // The Mail app does not appear in the "Open in..." menu if we use
+  // presentOpenInMenuFromBarButtonItem:animated:, so we use
+  // presentOptionsMenuFromBarButtonItem:animated:.
+  BOOL didPresentMenu = [interactionController presentOptionsMenuFromBarButtonItem:sender
+                                                                          animated:YES];
+  if (! didPresentMenu)
+    [interactionController autorelease];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for emailGame.
+/// @brief UIDocumentInteractionControllerDelegate method.
 // -----------------------------------------------------------------------------
-- (bool) canSendMail
+- (void) documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController*)controller
 {
-  bool canSendMail = [MFMailComposeViewController canSendMail];
-  if (! canSendMail)
+  [controller autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIDocumentInteractionControllerDelegate method.
+///
+/// This is deprecated in iOS 6, so it will probably go away in iOS 7. Until
+/// that happens we can still make use of it by adding an item to copy the .sgf
+/// file content to the clipboard. When this method goes away, we need to
+/// replace it with UIActivityViewController if we want to keep the "Copy"
+/// action.
+// -----------------------------------------------------------------------------
+- (BOOL) documentInteractionController:(UIDocumentInteractionController*)controller canPerformAction:(SEL)action
+{
+  if (@selector(copy:) == action)
+    return YES;
+  else
+    return NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIDocumentInteractionControllerDelegate method.
+///
+/// This implementation performs the "copy to pasteboard" action.
+///
+/// This is deprecated in iOS 6, so it will probably go away in iOS 7. See
+/// documentInteractionController:canPerformAction:() for some details.
+// -----------------------------------------------------------------------------
+- (BOOL) documentInteractionController:(UIDocumentInteractionController*)controller performAction:(SEL)action
+{
+  if (@selector(copy:) != action)
   {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
-                                                    message:@"This device is not configured to send email."
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeCannotSendEmail;
-    [alert show];
-    [alert release];
+    assert(0);
+    DDLogError(@"%@: Cannot perform unsupported action %@", self, NSStringFromSelector(action));
+    return NO;
   }
-  return canSendMail;
-}
 
-// -----------------------------------------------------------------------------
-/// @brief MFMailComposeViewControllerDelegate method
-// -----------------------------------------------------------------------------
-- (void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
-{
-  DDLogVerbose(@"%@: Dismissing mail composer for game %@", self, self.game.name);
-  [self dismissViewControllerAnimated:YES completion:nil];
+  NSStringEncoding usedEncoding;
+  NSError* error;
+  NSString* sgfFileContent = [NSString stringWithContentsOfURL:controller.URL
+                                                  usedEncoding:&usedEncoding
+                                                         error:&error];
+  UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
+  [pasteboard setString:sgfFileContent];
+  return YES;
 }
 
 @end
