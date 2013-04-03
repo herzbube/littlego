@@ -42,7 +42,6 @@
 //@}
 /// @name Notification responders
 //@{
-- (void) deviceOrientationDidChange:(NSNotification*)notification;
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goGameStateChanged:(NSNotification*)notification;
@@ -54,7 +53,6 @@
 /// @name Updaters
 //@{
 - (void) updatePanningEnabled;
-- (void) updateMinimumPressDuration;
 //@}
 /// @name Private helpers
 //@{
@@ -97,7 +95,6 @@
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
-  [self updateMinimumPressDuration];
 
   return self;
 }
@@ -126,6 +123,7 @@
   self.longPressRecognizer.delegate = self;
   CGFloat infiniteMovement = CGFLOAT_MAX;
   self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
+  self.longPressRecognizer.minimumPressDuration = gPlayViewLongPressDelay;
 }
 
 // -----------------------------------------------------------------------------
@@ -134,7 +132,6 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
@@ -228,15 +225,6 @@
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
   return (self.isPanningEnabled ? YES : NO);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the UIDeviceOrientationDidChangeNotification
-/// notification.
-// -----------------------------------------------------------------------------
-- (void) deviceOrientationDidChange:(NSNotification*)notification
-{
-  [self updateMinimumPressDuration];
 }
 
 // -----------------------------------------------------------------------------
@@ -345,27 +333,6 @@
       self.panningEnabled = false;
       break;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the delay after which the panning gesture is recognized.
-// -----------------------------------------------------------------------------
-- (void) updateMinimumPressDuration
-{
-  CFTimeInterval minimumPressDuration = 0;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    minimumPressDuration = gPlayViewPanningDelayIPhone;
-  }
-  else
-  {
-    // Can't use the UIDevice object's orientation property, at application
-    // launch this returns UIDeviceOrientationUnknown :-(
-    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.parentViewController.interfaceOrientation);
-    if (isPortraitOrientation)
-      minimumPressDuration = gPlayViewPanningDelayIPadPortrait;
-  }
-  self.longPressRecognizer.minimumPressDuration = minimumPressDuration;
 }
 
 @end

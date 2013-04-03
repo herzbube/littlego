@@ -302,6 +302,8 @@ enum ActionType
   CGRect rightPaneViewFrame = self.rightPaneViewController.view.frame;
   rightPaneViewFrame.size.height = splitViewControllerViewFrame.size.height;
   self.rightPaneViewController.view.frame = rightPaneViewFrame;
+
+  self.rightPaneViewController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 }
 
 // -----------------------------------------------------------------------------
@@ -434,9 +436,18 @@ enum ActionType
   int viewX = 0;
   int viewY = CGRectGetMaxY(self.navigationBarMain.frame);
   int viewWidth = superViewSize.width;
-  int viewHeight = (superViewSize.height
-                    - self.navigationBarMain.frame.size.height
-                    - self.toolbarBoardPositionNavigation.frame.size.height);
+  int viewHeight;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    viewHeight = (superViewSize.height
+                      - self.navigationBarMain.frame.size.height
+                      - self.toolbarBoardPositionNavigation.frame.size.height);
+  }
+  else
+  {
+    viewHeight = (superViewSize.height
+                      - self.navigationBarMain.frame.size.height);
+  }
   return CGRectMake(viewX, viewY, viewWidth, viewHeight);
 }
 
@@ -464,10 +475,7 @@ enum ActionType
   [superView addSubview:self.playView];
 
   self.playView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    self.playView.backgroundColor = [UIColor clearColor];
-  else
-    self.playView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+  self.playView.backgroundColor = [UIColor clearColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -476,23 +484,8 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    CGSize contentSize = self.scrollView.contentSize;
-    return CGRectMake(0, 0, contentSize.width, contentSize.height);
-  }
-  else
-  {
-    UIView* superView = [self playViewSuperview];
-    CGSize superViewSize = superView.bounds.size;
-    int viewX = 0;
-    int viewY = CGRectGetMaxY(self.navigationBarMain.frame);
-    int viewWidth = superViewSize.width;
-    int viewHeight;
-    viewHeight = (superViewSize.height
-                  - self.navigationBarMain.frame.size.height);
-    return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-  }
+  CGSize contentSize = self.scrollView.contentSize;
+  return CGRectMake(0, 0, contentSize.width, contentSize.height);
 }
 
 // -----------------------------------------------------------------------------
@@ -501,10 +494,7 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (UIView*) playViewSuperview
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.scrollView;
-  else
-    return self.rightPaneViewController.view;
+  return self.scrollView;
 }
 
 // -----------------------------------------------------------------------------
@@ -777,6 +767,7 @@ enum ActionType
   {
     [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
+    [self setupScrollView];
     [self setupPlayView];
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
@@ -801,12 +792,12 @@ enum ActionType
   self.navigationBarController.navigationBar = self.navigationBarMain;
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.scrollView playView:self.playView] autorelease];
+  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
+  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.scrollView playView:self.playView] autorelease];
-    self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
-    self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
     self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] initWithToolbar:self.toolbarBoardPositionNavigation
                                                                              boardPositionListView:self.boardPositionListView
                                                                           currentBoardPositionView:self.currentBoardPositionView] autorelease];

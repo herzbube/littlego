@@ -18,8 +18,7 @@
 // GUI constants
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
-const CFTimeInterval gPlayViewPanningDelayIPhone = 0.1;
-const CFTimeInterval gPlayViewPanningDelayIPadPortrait = 0.1;
+const CFTimeInterval gPlayViewLongPressDelay = 0.1;
 
 // Logging constants
 const int ddLogLevel = LOG_LEVEL_VERBOSE;

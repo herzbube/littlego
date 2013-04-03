@@ -43,7 +43,6 @@
   CGRect rightPaneViewFrame = CGRectMake(0, 0, [UiElementMetrics splitViewRightPaneWidth], [UiElementMetrics splitViewHeight]);
   self.view = [[[UIView alloc] initWithFrame:rightPaneViewFrame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
 }
 
 // -----------------------------------------------------------------------------

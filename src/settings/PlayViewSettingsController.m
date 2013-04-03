@@ -163,10 +163,7 @@ enum ZoomSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return MaxSection;
-  else
-    return MaxSection - 1;
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
