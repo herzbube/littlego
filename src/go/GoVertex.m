@@ -23,25 +23,12 @@
 /// @brief Class extension with private methods for GoVertex.
 // -----------------------------------------------------------------------------
 @interface GoVertex()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* string;
 @property(nonatomic, assign, readwrite) struct GoVertexNumeric numeric;
+@property(nonatomic, retain, readwrite) NSString* letterAxisCompound;
+@property(nonatomic, retain, readwrite) NSString* numberAxisCompound;
 //@}
 @end
 
@@ -69,14 +56,15 @@
 
   unichar charA = [@"A" characterAtIndex:0];
   unichar charH = [@"H" characterAtIndex:0];
-  unichar charVertexX = charA + numericValue.x - 1; // -1 because numeric vertex is not zero-based
-  if (charVertexX > charH)
-    charVertexX++;                                // +1 because "I" is never used
-  NSString* vertexX = [NSString stringWithCharacters:&charVertexX length:1];
-  NSString* vertexY = [NSString stringWithFormat:@"%d", numericValue.y];
-  NSString* stringValue = [vertexX stringByAppendingString:vertexY];
+  unichar charLetterAxisCompound = charA + numericValue.x - 1; // -1 because numeric vertex is not zero-based
+  if (charLetterAxisCompound > charH)
+    charLetterAxisCompound++;                                // +1 because "I" is never used
+  NSString* letterAxisCompound = [NSString stringWithCharacters:&charLetterAxisCompound length:1];
+  NSString* numberAxisCompound = [NSString stringWithFormat:@"%d", numericValue.y];
 
-  GoVertex* vertex = [[GoVertex alloc] initWithString:stringValue numeric:numericValue];
+  GoVertex* vertex = [[GoVertex alloc] initWithLetterAxisCompound:letterAxisCompound
+                                               numberAxisCompound:numberAxisCompound
+                                                          numeric:numericValue];
   if (vertex)
     [vertex autorelease];
   return vertex;
@@ -87,7 +75,7 @@
 /// @a stringValue.
 ///
 /// Raises an @e NSRangeException if one of the vertex compounds stored in
-/// @a stringValue is outside the supported range of values. Raises an
+/// @a stringValue are outside the supported range of values. Raises an
 /// @e NSInvalidArgumentException if @a stringValue is nil or otherwise
 /// fundamentally malformed.
 // -----------------------------------------------------------------------------
@@ -104,14 +92,14 @@
   }
 
   stringValue = [stringValue uppercaseString];
-  NSString* vertexX = [stringValue substringWithRange:NSMakeRange(0, 1)];
-  NSString* vertexY = [stringValue substringFromIndex:1];
-  unichar charVertexX = [vertexX characterAtIndex:0];
+  NSString* letterAxisCompound = [stringValue substringWithRange:NSMakeRange(0, 1)];
+  NSString* numberAxisCompound = [stringValue substringFromIndex:1];
+  unichar charLetterAxisCompound = [letterAxisCompound characterAtIndex:0];
   const unichar charA = [@"A" characterAtIndex:0];
   const unichar charH = [@"H" characterAtIndex:0];
   const unichar charI = [@"I" characterAtIndex:0];
 
-  if (charVertexX == charI)
+  if (charLetterAxisCompound == charI)
   {
     NSString* errorMessage = @"Letter 'I' may not be used";
     DDLogError(@"%@: %@", self, errorMessage);
@@ -122,10 +110,10 @@
   }
 
   struct GoVertexNumeric numericValue;
-  numericValue.x = charVertexX - charA + 1;  // +1 because vertex is not zero-based
-  if (charVertexX > charH)
-    numericValue.x--;                        // -1 because "I" is never used
-  numericValue.y = [vertexY intValue];       // no @try needed, intValue does not throw any exceptions
+  numericValue.x = charLetterAxisCompound - charA + 1;  // +1 because vertex is not zero-based
+  if (charLetterAxisCompound > charH)
+    numericValue.x--;                               // -1 because "I" is never used
+  numericValue.y = [numberAxisCompound intValue];   // no @try needed, intValue does not throw any exceptions
 
   if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
   {
@@ -137,23 +125,12 @@
     @throw exception;
   }
 
-  GoVertex* vertex = [[GoVertex alloc] initWithString:stringValue numeric:numericValue];
+  GoVertex* vertex = [[GoVertex alloc] initWithLetterAxisCompound:letterAxisCompound
+                                               numberAxisCompound:numberAxisCompound
+                                                          numeric:numericValue];
   if (vertex)
     [vertex autorelease];
   return vertex;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a GoVertex object. The object is a "null" vertex, i.e.
-/// it refers to an invalid position.
-// -----------------------------------------------------------------------------
-- (id) init
-{
-  // TODO: do we need this initializer?
-  struct GoVertexNumeric numericValue;
-  numericValue.x = 0;
-  numericValue.y = 0;
-  return [self initWithString:@"" numeric:numericValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -162,16 +139,18 @@
 ///
 /// @note This is the designated initializer of GoVertex.
 // -----------------------------------------------------------------------------
-- (id) initWithString:(NSString*)stringVertex numeric:(struct GoVertexNumeric)numericVertex
+- (id) initWithLetterAxisCompound:(NSString*)letterAxisCompound
+               numberAxisCompound:(NSString*)numberAxisCompound
+                          numeric:(struct GoVertexNumeric)numericVertex
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-
-  self.string = stringVertex;
+  self.string = [letterAxisCompound stringByAppendingString:numberAxisCompound];
   self.numeric = numericVertex;
-
+  self.letterAxisCompound = letterAxisCompound;
+  self.numberAxisCompound = numberAxisCompound;
   return self;
 }
 
@@ -183,7 +162,6 @@
   self = [super init];
   if (! self)
     return nil;
-
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.string = [decoder decodeObjectForKey:goVertexStringKey];
@@ -191,7 +169,8 @@
   numericVertex.x = [decoder decodeIntForKey:goVertexNumericXKey];
   numericVertex.y = [decoder decodeIntForKey:goVertexNumericYKey];
   self.numeric = numericVertex;
-
+  self.letterAxisCompound = [decoder decodeObjectForKey:goVertexLetterAxisCompoundKey];
+  self.numberAxisCompound = [decoder decodeObjectForKey:goVertexNumberAxisCompoundKey];
   return self;
 }
 
@@ -201,6 +180,8 @@
 - (void) dealloc
 {
   self.string = nil;
+  self.letterAxisCompound = nil;
+  self.numberAxisCompound = nil;
   [super dealloc];
 }
 
@@ -238,6 +219,8 @@
   [encoder encodeObject:self.string forKey:goVertexStringKey];
   [encoder encodeInt:self.numeric.x forKey:goVertexNumericXKey];
   [encoder encodeInt:self.numeric.y forKey:goVertexNumericYKey];
+  [encoder encodeObject:self.letterAxisCompound forKey:goVertexLetterAxisCompoundKey];
+  [encoder encodeObject:self.numberAxisCompound forKey:goVertexNumberAxisCompoundKey];
 }
 
 @end

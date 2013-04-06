@@ -59,5 +59,9 @@ struct GoVertexNumeric
 /// @brief The vertex in its numeric form, which is easier to process in
 /// calculations and iterations.
 @property(nonatomic, assign, readonly) struct GoVertexNumeric numeric;
+/// @brief The letter (x, horizontal) axis compound of the vertex.
+@property(nonatomic, retain, readonly) NSString* letterAxisCompound;
+/// @brief The number (y, vertical) axis compound of the vertex.
+@property(nonatomic, retain, readonly) NSString* numberAxisCompound;
 
 @end
