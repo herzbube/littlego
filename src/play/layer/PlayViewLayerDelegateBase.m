@@ -62,6 +62,13 @@
 
   self.layer.delegate = self;
 
+  // This disables the implicit animation that normally occurs when the layer
+  // delegate is drawing. As always, stackoverflow.com is our friend:
+  // http://stackoverflow.com/questions/2244147/disabling-implicit-animations-in-calayer-setneedsdisplayinrect
+  NSMutableDictionary* newActions = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"contents", nil];
+  self.layer.actions = newActions;
+  [newActions release];
+
   return self;
 }
 

@@ -301,12 +301,6 @@ static PlayView* sharedPlayView = nil;
 - (void) setupSubLayer:(CALayer*)subLayer
 {
   [self.layer addSublayer:subLayer];
-  // This disables the implicit animation that normally occurs when the layer
-  // delegate is drawing. As always, stackoverflow.com is our friend:
-  // http://stackoverflow.com/questions/2244147/disabling-implicit-animations-in-calayer-setneedsdisplayinrect
-  NSMutableDictionary* newActions = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"contents", nil];
-  subLayer.actions = newActions;
-  [newActions release];
 }
 
 // -----------------------------------------------------------------------------

@@ -30,7 +30,9 @@
 ///
 /// PlayViewLayerDelegateBase conveniently defines and synthesizes properties
 /// that store references to a metrics and a model object that will probably
-/// be used by all concrete delegate subclasses.
+/// be used by all concrete delegate subclasses. PlayViewLayerDelegateBase also
+/// disables implicit animations that normally occur when a delegate draws into
+/// a CALayer.
 ///
 /// In addition, PlayViewLayerDelegateBase provides the following simple
 /// implementation of the PlayViewLayerDelegate protocol:
