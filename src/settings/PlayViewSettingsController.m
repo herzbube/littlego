@@ -57,7 +57,7 @@ enum FeedbackSectionItem
 enum ViewSectionItem
 {
   MarkLastMoveItem,
-//  DisplayCoordinatesItem,
+  DisplayCoordinatesItem,
   MoveNumbersPercentageItem,
   StoneDistanceFromFingertipItem,
   MaxViewSectionItem
@@ -263,11 +263,15 @@ enum ZoomSectionItem
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
           break;
         }
-//          case DisplayCoordinatesItem:
-//            cell.textLabel.text = @"Coordinates";
-//            accessoryView.on = self.playViewModel.displayCoordinates;
-//            [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
-//            break;
+        case DisplayCoordinatesItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          cell.textLabel.text = @"Display coordinates";
+          accessoryView.on = self.playViewModel.displayCoordinates;
+          [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
+          break;
+        }
         case MoveNumbersPercentageItem:
         {
           cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];

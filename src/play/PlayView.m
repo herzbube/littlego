@@ -20,6 +20,7 @@
 #import "PlayViewMetrics.h"
 #import "PlayViewModel.h"
 #import "ScoringModel.h"
+#import "layer/CoordinateLabelsLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/DeadStonesLayerDelegate.h"
@@ -101,6 +102,15 @@
 @property(nonatomic, retain) id<PlayViewLayerDelegate> symbolsLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> territoryLayerDelegate;
 @property(nonatomic, retain) id<PlayViewLayerDelegate> deadStonesLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> coordinateLabelsLetterLayerDelegate;
+@property(nonatomic, retain) id<PlayViewLayerDelegate> coordinateLabelsNumberLayerDelegate;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) UIScrollView* coordinateLabelsLetterViewScrollView;
+@property(nonatomic, retain, readwrite) UIView* coordinateLabelsLetterView;
+@property(nonatomic, retain, readwrite) UIScrollView* coordinateLabelsNumberViewScrollView;
+@property(nonatomic, retain, readwrite) UIView* coordinateLabelsNumberView;
 //@}
 @end
 
@@ -177,7 +187,7 @@ static PlayView* sharedPlayView = nil;
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates;"];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [self.playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
@@ -198,6 +208,13 @@ static PlayView* sharedPlayView = nil;
   self.symbolsLayerDelegate = nil;
   self.territoryLayerDelegate = nil;
   self.deadStonesLayerDelegate = nil;
+  self.coordinateLabelsLetterLayerDelegate = nil;
+  self.coordinateLabelsNumberLayerDelegate = nil;
+
+  self.coordinateLabelsLetterViewScrollView = nil;
+  self.coordinateLabelsLetterView = nil;
+  self.coordinateLabelsNumberViewScrollView = nil;
+  self.coordinateLabelsNumberView = nil;
 
   [super dealloc];
 }
@@ -241,7 +258,7 @@ static PlayView* sharedPlayView = nil;
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
-  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates;" options:0 context:NULL];
+  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
@@ -285,6 +302,9 @@ static PlayView* sharedPlayView = nil;
                                                                    playViewModel:self.playViewModel
                                                                     scoringModel:self.scoringModel] autorelease];
 
+  // TODO xxx no longer need a method for the setup
+  // TODO xxx in fact: why can't the layer delegate create its own layer? we
+  // just pass it the main view, and it adds the layer as a sublayer...
   [self setupSubLayer:_gridLayerDelegate.layer];
   [self setupSubLayer:_starPointsLayerDelegate.layer];
   [self setupSubLayer:_crossHairLinesLayerDelegate.layer];
@@ -293,6 +313,32 @@ static PlayView* sharedPlayView = nil;
   [self setupSubLayer:_symbolsLayerDelegate.layer];
   [self setupSubLayer:_territoryLayerDelegate.layer];
   [self setupSubLayer:_deadStonesLayerDelegate.layer];
+
+  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterViewScrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.coordinateLabelsLetterViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsLetterViewScrollView.userInteractionEnabled = NO;
+  self.coordinateLabelsLetterView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.coordinateLabelsLetterViewScrollView addSubview:self.coordinateLabelsLetterView];
+  self.coordinateLabelsLetterLayerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithLayer:[CALayer layer]
+                                                                                           metrics:self.playViewMetrics
+                                                                                             model:self.playViewModel
+                                                                                              axis:CoordinateLabelAxisLetter
+                                                                                              view:self.coordinateLabelsLetterView] autorelease];
+  [self.coordinateLabelsLetterView.layer addSublayer:_coordinateLabelsLetterLayerDelegate.layer];
+
+  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsNumberViewScrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsNumberViewScrollView.userInteractionEnabled = NO;
+  self.coordinateLabelsNumberView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.coordinateLabelsNumberViewScrollView addSubview:self.coordinateLabelsNumberView];
+  self.coordinateLabelsNumberLayerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithLayer:[CALayer layer]
+                                                                                           metrics:self.playViewMetrics
+                                                                                             model:self.playViewModel
+                                                                                              axis:CoordinateLabelAxisNumber
+                                                                                              view:self.coordinateLabelsNumberView] autorelease];
+  [self.coordinateLabelsNumberView.layer addSublayer:_coordinateLabelsNumberLayerDelegate.layer];
 }
 
 // -----------------------------------------------------------------------------
@@ -351,6 +397,8 @@ static PlayView* sharedPlayView = nil;
   [_symbolsLayerDelegate drawLayer];
   [_territoryLayerDelegate drawLayer];
   [_deadStonesLayerDelegate drawLayer];
+  [_coordinateLabelsLetterLayerDelegate drawLayer];
+  [_coordinateLabelsNumberLayerDelegate drawLayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -370,6 +418,8 @@ static PlayView* sharedPlayView = nil;
   [_symbolsLayerDelegate notify:event eventInfo:eventInfo];
   [_territoryLayerDelegate notify:event eventInfo:eventInfo];
   [_deadStonesLayerDelegate notify:event eventInfo:eventInfo];
+  [_coordinateLabelsLetterLayerDelegate notify:event eventInfo:eventInfo];
+  [_coordinateLabelsNumberLayerDelegate notify:event eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------
@@ -385,12 +435,52 @@ static PlayView* sharedPlayView = nil;
 {
   [super layoutSubviews];
 
+  // Disabling animations here is essential for a smooth GUI update after a zoom
+  // operation ends. If animations were enabled, setting the layer frames would
+  // trigger an animation that looks like a "bounce". For details see
+  // http://stackoverflow.com/questions/15370803/how-to-prevent-bounce-effect-when-a-custom-view-redraws-after-zooming
   [CATransaction begin];
   [CATransaction setDisableActions:YES];
   [self.playViewMetrics updateWithRect:self.bounds];
+  [self layoutCoordinateLabelView:self.coordinateLabelsLetterView
+                       scrollView:self.coordinateLabelsLetterViewScrollView];
+  [self layoutCoordinateLabelView:self.coordinateLabelsNumberView
+                       scrollView:self.coordinateLabelsNumberViewScrollView];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
   [self delayedUpdate];
   [CATransaction commit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for layoutSubviews.
+// -----------------------------------------------------------------------------
+- (void) layoutCoordinateLabelView:(UIView*)view scrollView:(UIScrollView*)scrollView
+{
+  CGRect viewFrame = view.frame;
+  CGRect scrollViewFrame = scrollView.frame;
+  if (view == self.coordinateLabelsLetterView)
+  {
+    viewFrame.size.width = self.bounds.size.width;
+    viewFrame.size.height = self.playViewMetrics.coordinateLabelStripWidth;
+    scrollViewFrame.size.width = self.superview.bounds.size.width;
+    scrollViewFrame.size.height = self.playViewMetrics.coordinateLabelStripWidth;
+  }
+  else
+  {
+    viewFrame.size.width = self.playViewMetrics.coordinateLabelStripWidth;
+    viewFrame.size.height = self.bounds.size.height;
+    scrollViewFrame.size.width = self.playViewMetrics.coordinateLabelStripWidth;
+    scrollViewFrame.size.height = self.superview.bounds.size.height;
+  }
+  view.frame = viewFrame;
+  scrollView.contentSize = viewFrame.size;
+  // Changing the scroll view frame resets the content offset to (0,0). This
+  // must not happen because it would position the coordinate labels wrongly
+  // after a zoom operation. We preserve the content offset by re-applying it
+  // after the frame change.
+  CGPoint contentOffset = scrollView.contentOffset;
+  scrollView.frame = scrollViewFrame;
+  scrollView.contentOffset = contentOffset;
 }
 
 // -----------------------------------------------------------------------------
@@ -496,7 +586,7 @@ static PlayView* sharedPlayView = nil;
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
       [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self setNeedsLayout];
     }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
     {

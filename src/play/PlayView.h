@@ -32,13 +32,22 @@
 /// - Played stones (if any)
 /// - Cross-hair stone (during stone placement)
 /// - Symbols (if any)
-/// - Coordinate labels (if any)
 /// - Territory coloring (in scoring mode only)
 /// - Dead stone state (in scoring mode only)
 ///
-/// In addition, PlayView writes text into a status line and animates an
-/// activity indicator, to provide the user with feedback about operations
-/// that are currently going on.
+///
+/// @par Coordinate labels
+///
+/// Coordinate labels are drawn in separate views so that those views can be
+/// placed in the view hierarchy independently of PlayView. This is necessary
+/// because the user must be able to see coordinate labels even if PlayView is
+/// zoomed in and scrolled to a position where the board edges are no longer
+/// visible.
+///
+/// PlayView is responsible for creating and deallocating coordinate label
+/// views, and for triggering view updates when events occur. An external
+/// controller is responsible for placing coordinate label views into the
+/// view hierarchy.
 ///
 ///
 /// @par Delayed updates
@@ -106,5 +115,15 @@
 /// The coordinates of of the inner frame rect's origin are in the coordinate
 /// system of the PlayView superview, the same as the PlayView's frame property.
 @property(nonatomic, assign, readonly) CGRect boardFrame;
+/// @brief Scroll view that contains coordinateLabelsLetterView.
+@property(nonatomic, retain, readonly) UIScrollView* coordinateLabelsLetterViewScrollView;
+/// @brief View that draws coordinate labels along the letter axis of the
+/// game board.
+@property(nonatomic, retain, readonly) UIView* coordinateLabelsLetterView;
+/// @brief Scroll view that contains coordinateLabelsNumberView.
+@property(nonatomic, retain, readonly) UIScrollView* coordinateLabelsNumberViewScrollView;
+/// @brief View that draws coordinate labels along the number axis of the
+/// game board.
+@property(nonatomic, retain, readonly) UIView* coordinateLabelsNumberView;
 
 @end

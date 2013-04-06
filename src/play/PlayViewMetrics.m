@@ -120,20 +120,16 @@
     offsetForCenteringX += floor((newRect.size.width - boardSideLengthBase) / 2);
   }
 
-  // Outer margin and board side length are not yet final - any rounding errors
-  // that occur in the following calculations will re-added to the outer margin,
-  // so in the end the margin will be slightly larger, and the board will be
-  // slightly smaller than we calculate here.
-  int boardOuterMargin = floor(boardSideLengthBase * self.playViewModel.boardOuterMarginPercentage);
-  self.topLeftBoardCornerX = boardOuterMargin + offsetForCenteringX;
-  self.topLeftBoardCornerY = boardOuterMargin + offsetForCenteringY;
-  self.boardSideLength = boardSideLengthBase - (boardOuterMargin * 2);
-
   if (GoBoardSizeUndefined == newBoardSize)
   {
     // Assign hard-coded values and don't rely on calculations that might
     // produce insane results. This also removes the risk of division by zero
     // errors.
+    self.topLeftBoardCornerX = offsetForCenteringX;
+    self.topLeftBoardCornerY = offsetForCenteringY;
+    self.boardSideLength = 0;
+    self.coordinateLabelStripWidth = 0;
+    self.coordinateLabelInset = 0;
     self.numberOfCells = 0;
     self.cellWidth = 0;
     self.pointDistance = 0;
@@ -146,12 +142,43 @@
   }
   else
   {
+    // Outer margin and board side length are not yet final - any rounding
+    // errors that occur in the following calculations will be re-added to the
+    // outer margin, so in the end the margin will be slightly larger, and the
+    // board will be slightly smaller than we calculate here.
+    self.topLeftBoardCornerX = offsetForCenteringX;
+    self.topLeftBoardCornerY = offsetForCenteringY;
+    self.boardSideLength = boardSideLengthBase;
+
+    if (self.playViewModel.displayCoordinates)
+    {
+      // Arbitrary values
+      static const CGFloat coordinateLabelInsetPercentage = 0.05;
+      static const int coordinateLabelInsetMinimum = 1;
+
+      // The coordinate labels' font size will be selected so that labels fit
+      // into the width of the strip that we calculate here. To look good, the
+      // width of the strip should be about (self.cellWidth / 2). Since we don't
+      // have self.cellWidth yet we need to approximate.
+      self.coordinateLabelStripWidth = floor(self.boardSideLength / newBoardSize / 2);
+      self.coordinateLabelInset = floor(self.coordinateLabelStripWidth * coordinateLabelInsetPercentage);
+      if (self.coordinateLabelInset < coordinateLabelInsetMinimum)
+        self.coordinateLabelInset = coordinateLabelInsetMinimum;
+    }
+    else
+    {
+      self.coordinateLabelStripWidth = 0;
+      self.coordinateLabelInset = 0;
+    }
+
     self.numberOfCells = newBoardSize - 1;
 
     // For the purpose of calculating the cell width, we assume that all lines
     // have the same thickness. The difference between normal and bounding line
     // width is added to the *OUTSIDE* of the board (see GridLayerDelegate).
-    int numberOfPointsAvailableForCells = self.boardSideLength - newBoardSize * self.playViewModel.normalLineWidth;
+    int numberOfPointsAvailableForCells = (self.boardSideLength
+                                           - 2 * self.coordinateLabelStripWidth
+                                           - newBoardSize * self.playViewModel.normalLineWidth);
     assert(numberOfPointsAvailableForCells >= 0);
     if (numberOfPointsAvailableForCells < 0)
       DDLogError(@"%@: Negative value %d for numberOfPointsAvailableForCells", self, numberOfPointsAvailableForCells);
@@ -162,11 +189,10 @@
     // so that we can draw neatly aligned half-cell rectangles 
     if (self.cellWidth % 2 != 0)
     {
-      // We can't increase self.cellWidth to get an even number because if
-      // self.boardSideLength is very small, increasing self.cellWidth might
-      // cause the sum of all cells to exceed self.boardSideLength. Decreasing
+      // We can't increase self.cellWidth because increasing will cause the
+      // sum of all cells to exceed numberOfPointsAvailableForCells. Decreasing
       // self.cellWidth therefore is the only option, although this wastes a
-      // small amount of screen estate.
+      // certain amount of screen estate.
       self.cellWidth--;
     }
 

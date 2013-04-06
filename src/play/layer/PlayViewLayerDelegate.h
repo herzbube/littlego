@@ -28,8 +28,10 @@ enum PlayViewLayerDelegateEvent
   /// @brief Occurs when a move is played or undone.
   PVLDEventBoardPositionChanged,
   PVLDEventMarkLastMoveChanged,
-  PVLDEventDisplayCoordinatesChanged,
-  PVLDEventMoveNumbersPercentageChanged,
+  /// @brief This event can be treated the same as PVLDEventRectangleChanged
+  /// because it fundamentally changes the board geometry.
+  PVLDEventDisplayCoordinatesChanged = PVLDEventRectangleChanged,
+  PVLDEventMoveNumbersPercentageChanged = PVLDEventMarkLastMoveChanged + 1,
   PVLDEventInconsistentTerritoryMarkupTypeChanged,
   /// @brief The event info object that accompanies this event type is a GoPoint
   /// object that identifies the location of the cross-hair center.

@@ -41,42 +41,45 @@
 /// corner.
 ///
 /// The following schematic illustrates the composition of the view for a
-/// (theoretical) 4x4 board.
+/// (theoretical) 4x4 board. Note that view has rectangular dimensions, while
+/// the board is square and centered within the view rectangle.
 ///
 /// @verbatim
-///    +------ topLeftBoardCorner
-///    |   +-- topLeftPoint
-///    |   |
-/// +- | - | ---------------rect----------------------+
-/// |  v   |                boardOuterMargin          |
-/// |  +---v----------------board------------------+  |
-/// |  |  /-\         /-\                          |  |
-/// |  | |-o-|-------|-o-|--grid---o-----------o   |  |
-/// |  |  \-/         \-/          |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |          /-\         /-\          |   |  |
-/// |  |   o---------|-o-|-------|-o-|---------o   |  |
-/// |  |   |          \-/         \-/          |   |  |
-/// |  |   |           |         ^   ^         |   |  |
-/// |  |   |           |         +---+         |   |  |
-/// |  |   |           |    stoneRadius*2+1    |   |  |
-/// |  |   |           |       (diameter)      |   |  |
-/// |  |   o-----------o-----------+-----------o   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   |           |           |           |   |  |
-/// |  |   o-----------o-----------o-----------o   |  |
-/// |  |   ^           ^^         ^            ^   |  |
-/// |  +-- | --------- ||  cell   | ---------- | --+  |
-/// |  ^   |           |+--Width--+            |   ^  |
-/// +- |   |           | point    ^            |   | -+
-///    |   |           +-Distance-+            |   |
-///    |   +------------lineLength-------------+   |
-///    +--------------boardSideLength--------------+
+///                                                      offsetForCenteringX
+///       +------- topLeftBoardCorner                   +-----+
+///       |    +-- topLeftPoint                         |     |
+///       |    |                                        |     v
+/// +---- | -- | --------------view-------------------- | ----+ <--+
+/// |     v    |                                        v     |    | offsetForCenteringY
+/// |     +--- v --------------board--------------------+ <--------+
+/// |     |    A           B           C           D    |     |
+/// |     |   /-\         /-\                           |     |
+/// |     |4 | o |-------| o |--grid---o-----------o   4|     |
+/// |     |   \-/         \-/          |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |          /-\         /-\         /-\   |     |
+/// |     |3   o---------| o |-------| o |-------| o | 3<-------- coordinate label
+/// |     |    |          \-/         \-/         \-/   |     |   coordinateLabelStripWidth
+/// |     |    |           |         ^   ^         |    |     |   is the distance from the
+/// |     |    |           |         +---+         |    |     |   stone to the board edge
+/// |     |    |           |    stoneRadius*2+1    |    |     |
+/// |     |    |           |       (diameter)      |    |     |
+/// |     |2   o-----------o-----------+-----------o   2|     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |    |           |           |           |    |     |
+/// |     |1   o-----------o-----------o-----------o   1|     |
+/// |     |    ^           ^^         ^            ^    |     |
+/// |     +--- | --------- ||  cell   | ---------- | ---+     |
+/// |     ^    |           |+--Width--+            |    ^     |
+/// +---- |    |           | point    ^            |    | ----+
+///       |    |           +-Distance-+            |    |
+///       |    +------------lineLength-------------+    |
+///       +--------------boardSideLength----------------+
 /// @endverbatim
 ///
 ///
@@ -211,4 +214,40 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// component (x or y) to find the coordinate of the starting point to draw a
 /// bounding grid line.
 @property(nonatomic, assign) CGFloat boundingLineStrokeOffset;
+/// @brief The width of the strip inside which coordinate labels are drawn. For
+/// the horizontal strip this is the strip's height.
+///
+/// If coordinate labels are not displayed, coordinateLabelStripWidth is 0.
+///
+/// As shown in the following schematic, the strip width includes
+/// coordinateLabelInset.
+///
+/// @verbatim
+/// +------- x------------
+/// |       +-+     +-+   \
+/// |       |A|     |B|    +-- x = coordinateLabelInset
+/// |       +-+     +-+   /
+/// |        x------------
+/// | +--+  /-\
+/// | |19| | o |-----o----
+/// | +--+  \-/      |
+/// |        |       |
+/// |        |       |
+/// | +--+  /-\      |
+/// | |18| | o |-----o----
+/// | +--+  \-/      |
+/// |     ^  |       |
+/// ^     |
+/// |     |
+/// +-----+
+///  coordinateLabelStripWidth
+/// @endverbatim
+@property(nonatomic, assign) int coordinateLabelStripWidth;
+/// @brief A coordinate label is drawn a small distance away from both the stone
+/// and the board edge. coordinateLabelInset denotes that distance.
+///
+/// If coordinate labels are not displayed, coordinateLabelInset is 0.
+/// coordinateLabelInset may also be 0 if coordinateLabelStripWidth is very
+/// small and not enough space exists for a pretty inset.
+@property(nonatomic, assign) int coordinateLabelInset;
 @end

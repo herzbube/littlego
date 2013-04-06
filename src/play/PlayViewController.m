@@ -143,7 +143,7 @@ enum ActionType
 //@}
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) UIScrollView* scrollView;
+@property(nonatomic, retain) UIScrollView* playViewScrollView;
 @property(nonatomic, retain) PlayViewScrollController* playViewScrollController;
 @property(nonatomic, retain) PlayView* playView;
 @property(nonatomic, retain) UINavigationBar* navigationBarMain;
@@ -191,7 +191,7 @@ enum ActionType
 - (void) releaseObjects
 {
   self.view = nil;
-  self.scrollView = nil;
+  self.playViewScrollView = nil;
   self.playViewScrollController = nil;
   self.playView = nil;
   self.navigationBarMain = nil;
@@ -412,26 +412,26 @@ enum ActionType
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (void) setupScrollView
+- (void) setupPlayViewScrollView
 {
-  CGRect scrollViewFrame = [self scrollViewFrame];
-  self.scrollView = [[[UIScrollView alloc] initWithFrame:scrollViewFrame] autorelease];
-  UIView* superView = [self scrollViewSuperview];
-  [superView addSubview:self.scrollView];
+  CGRect scrollViewFrame = [self playViewScrollViewFrame];
+  self.playViewScrollView = [[[UIScrollView alloc] initWithFrame:scrollViewFrame] autorelease];
+  UIView* superView = [self playViewScrollViewSuperview];
+  [superView addSubview:self.playViewScrollView];
 
-  self.scrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.scrollView.backgroundColor = [UIColor clearColor];
-  self.scrollView.bouncesZoom = NO;
-  self.scrollView.contentSize = scrollViewFrame.size;
+  self.playViewScrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.playViewScrollView.backgroundColor = [UIColor clearColor];
+  self.playViewScrollView.bouncesZoom = NO;
+  self.playViewScrollView.contentSize = scrollViewFrame.size;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (CGRect) scrollViewFrame
+- (CGRect) playViewScrollViewFrame
 {
-  UIView* superView = [self scrollViewSuperview];
+  UIView* superView = [self playViewScrollViewSuperview];
   CGSize superViewSize = superView.bounds.size;
   int viewX = 0;
   int viewY = CGRectGetMaxY(self.navigationBarMain.frame);
@@ -455,12 +455,41 @@ enum ActionType
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (UIView*) scrollViewSuperview
+- (UIView*) playViewScrollViewSuperview
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     return self.view;
   else
     return self.rightPaneViewController.view;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupCoordinateLabelScrollViews
+{
+  UIView* superView = [self coordinateLabelScrollViewsSuperview];
+  NSArray* scrollViews = [NSArray arrayWithObjects:
+                          self.playView.coordinateLabelsLetterViewScrollView,
+                          self.playView.coordinateLabelsNumberViewScrollView,
+                          nil];
+  for (UIView* scrollView in scrollViews)
+  {
+    CGRect scrollViewFrame = scrollView.frame;
+    scrollViewFrame.origin = self.playViewScrollView.frame.origin;
+    scrollView.frame = scrollViewFrame;
+    [superView addSubview:scrollView];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) coordinateLabelScrollViewsSuperview
+{
+  return [self playViewScrollViewSuperview];
 }
 
 // -----------------------------------------------------------------------------
@@ -484,7 +513,7 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (CGRect) playViewFrame
 {
-  CGSize contentSize = self.scrollView.contentSize;
+  CGSize contentSize = self.playViewScrollView.contentSize;
   return CGRectMake(0, 0, contentSize.width, contentSize.height);
 }
 
@@ -494,7 +523,7 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (UIView*) playViewSuperview
 {
-  return self.scrollView;
+  return self.playViewScrollView;
 }
 
 // -----------------------------------------------------------------------------
@@ -755,8 +784,9 @@ enum ActionType
   {
     [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
-    [self setupScrollView];
+    [self setupPlayViewScrollView];
     [self setupPlayView];
+    [self setupCoordinateLabelScrollViews];
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
     [self setupBoardPositionListView];
@@ -767,8 +797,9 @@ enum ActionType
   {
     [self setupNavigationBarMain];
     [self setupToolbarBoardPositionNavigation];
-    [self setupScrollView];
+    [self setupPlayViewScrollView];
     [self setupPlayView];
+    [self setupCoordinateLabelScrollViews];
     [self setupActivityIndicatorView];
     [self setupStatusLineView];
     [self setupBoardPositionListContainerView];
@@ -792,9 +823,9 @@ enum ActionType
   self.navigationBarController.navigationBar = self.navigationBarMain;
   self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
   self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
-  self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.scrollView playView:self.playView] autorelease];
-  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
-  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.scrollView] autorelease];
+  self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.playViewScrollView playView:self.playView] autorelease];
+  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];
+  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
