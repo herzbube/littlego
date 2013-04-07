@@ -37,9 +37,6 @@
 ///
 /// @par Calculations
 ///
-/// All calculations rely on the coordinate system origin being in the top-left
-/// corner.
-///
 /// The following schematic illustrates the composition of the view for a
 /// (theoretical) 4x4 board. Note that view has rectangular dimensions, while
 /// the board is square and centered within the view rectangle.
@@ -83,6 +80,12 @@
 /// @endverbatim
 ///
 ///
+/// The coordinates of topLeftBoardCorner, topLeftPoint and bottomRightPoint
+/// are based on a coordinate system whose origin is in the top-left corner.
+/// UIKit and Core Animation use such a coordinate system, while Core Graphics
+/// uses a coordinate system with the origin in the lower-left corner. Also see
+/// http://developer.apple.com/library/ios/#documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html
+///
 /// As a small reminder for how to calculate distances, lengths and sizes in the
 /// graphics system: The coordinate system is zero-based, and the distance
 /// between two points always includes the starting point, but not the end point
@@ -99,8 +102,13 @@
 /// drawn with its center at an intersection on the Go board, and the
 /// intersection coordinate has fractional x.5 values.
 ///
-/// Half-pixel translation may not be required if a CGLayer is drawn with its
-/// upper-left corner at a coordinate whose values are integral numbers.
+/// A straight line of width 1 can be drawn in different ways. Core Graphics
+/// can be observed to behave differently for the following cases:
+/// - The line is created with a path. To prevent anti-aliasing, the path must
+///   start and end at coordinates that have fractional x.5 values.
+/// - The line is created by filling a path that is a rectangle of width or
+///   height 1. To prevent anti-aliasing, the rectangle origin must be at a
+///   coordinate that has integral x.0 values.
 ///
 /// @note It's not possible to turn off anti-aliasing, instead of doing
 /// half-pixel translation. The reason is that 1) round shapes (e.g. star
@@ -159,12 +167,12 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// false if the rectangle uses landscape orientation.
 @property(nonatomic, assign) bool portrait;
 @property(nonatomic, assign) int boardSideLength;
-@property(nonatomic, assign) int topLeftBoardCornerX;
-@property(nonatomic, assign) int topLeftBoardCornerY;
-@property(nonatomic, assign) int topLeftPointX;
-@property(nonatomic, assign) int topLeftPointY;
-@property(nonatomic, assign) int bottomRightPointX;
-@property(nonatomic, assign) int bottomRightPointY;
+@property(nonatomic, assign) CGFloat topLeftBoardCornerX;
+@property(nonatomic, assign) CGFloat topLeftBoardCornerY;
+@property(nonatomic, assign) CGFloat topLeftPointX;
+@property(nonatomic, assign) CGFloat topLeftPointY;
+@property(nonatomic, assign) CGFloat bottomRightPointX;
+@property(nonatomic, assign) CGFloat bottomRightPointY;
 @property(nonatomic, assign) int numberOfCells;
 /// @brief Denotes the number of uncovered points between two grid lines. The
 /// numeric value is guaranteed to be an even number.

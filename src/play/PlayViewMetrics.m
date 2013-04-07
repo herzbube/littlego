@@ -135,18 +135,17 @@
   // orientation and use the smaller dimension of the rect as the base for
   // the Go board's side length.
   self.portrait = newRect.size.height >= newRect.size.width;
-  int boardSideLengthBase = 0;
   int offsetForCenteringX = 0;
   int offsetForCenteringY = 0;
   if (self.portrait)
   {
-    boardSideLengthBase = newRect.size.width;
-    offsetForCenteringY += floor((newRect.size.height - boardSideLengthBase) / 2);
+    self.boardSideLength = floor(newRect.size.width);
+    offsetForCenteringY += floor((newRect.size.height - self.boardSideLength) / 2);
   }
   else
   {
-    boardSideLengthBase = newRect.size.height;
-    offsetForCenteringX += floor((newRect.size.width - boardSideLengthBase) / 2);
+    self.boardSideLength = floor(newRect.size.height);
+    offsetForCenteringX += floor((newRect.size.width - self.boardSideLength) / 2);
   }
 
   if (GoBoardSizeUndefined == newBoardSize)
@@ -154,9 +153,9 @@
     // Assign hard-coded values and don't rely on calculations that might
     // produce insane results. This also removes the risk of division by zero
     // errors.
+    self.boardSideLength = 0;
     self.topLeftBoardCornerX = offsetForCenteringX;
     self.topLeftBoardCornerY = offsetForCenteringY;
-    self.boardSideLength = 0;
     self.coordinateLabelStripWidth = 0;
     self.coordinateLabelInset = 0;
     self.coordinateLabelFont = nil;
@@ -173,9 +172,19 @@
   }
   else
   {
-    self.topLeftBoardCornerX = offsetForCenteringX;
-    self.topLeftBoardCornerY = offsetForCenteringY;
-    self.boardSideLength = boardSideLengthBase;
+    // When the board is zoomed, the rect usually has a size with fractions.
+    // We need the fraction part so that we can make corrections to coordinates
+    // that prevent anti-aliasing.
+    CGFloat rectWidthFraction = newRect.size.width - floor(newRect.size.width);
+    CGFloat rectHeightFraction = newRect.size.height - floor(newRect.size.height);
+    // All coordinate calculations are based on topLeftBoardCorner, so if we
+    // correct this coordinate, the correction will propagate appropriately.
+    // TODO Find out why exactly the fractions need to be added and not
+    // subtracted. It has something to do with the origin of the Core Graphics
+    // coordinate system (lower-left corner), but I have not thought this
+    // through.
+    self.topLeftBoardCornerX = offsetForCenteringX + rectWidthFraction;
+    self.topLeftBoardCornerY = offsetForCenteringY + rectHeightFraction;
 
     if (self.playViewModel.displayCoordinates)
     {
@@ -371,6 +380,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns view coordinates that correspond to the intersection
 /// @a point.
+///
+/// The origin of the coordinate system is assumed to be in the top-left corner.
 // -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point
 {
@@ -385,6 +396,8 @@
 ///
 /// Returns nil if @a coordinates do not refer to a valid intersection (e.g.
 /// because @a coordinates are outside the board's edges).
+///
+/// The origin of the coordinate system is assumed to be in the top-left corner.
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates
 {
