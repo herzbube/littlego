@@ -173,10 +173,6 @@
   }
   else
   {
-    // Outer margin and board side length are not yet final - any rounding
-    // errors that occur in the following calculations will be re-added to the
-    // outer margin, so in the end the margin will be slightly larger, and the
-    // board will be slightly smaller than we calculate here.
     self.topLeftBoardCornerX = offsetForCenteringX;
     self.topLeftBoardCornerY = offsetForCenteringY;
     self.boardSideLength = boardSideLengthBase;

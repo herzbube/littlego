@@ -190,7 +190,6 @@ NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
 NSString* backgroundColorKey = @"BackgroundColor";
 NSString* boardColorKey = @"BoardColor";
-NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 NSString* lineColorKey = @"LineColor";
 NSString* boundingLineWidthKey = @"BoundingLineWidth";
 NSString* normalLineWidthKey = @"NormalLineWidth";

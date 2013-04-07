@@ -34,7 +34,6 @@
 @property(nonatomic, assign) bool vibrate;
 @property(nonatomic, retain) UIColor* backgroundColor;
 @property(nonatomic, retain) UIColor* boardColor;
-@property(nonatomic, assign) float boardOuterMarginPercentage;
 @property(nonatomic, retain) UIColor* lineColor;
 @property(nonatomic, assign) int boundingLineWidth;
 @property(nonatomic, assign) int normalLineWidth;

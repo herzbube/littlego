@@ -22,10 +22,6 @@
 		<string>ffffff</string>
 		<key>BoardColor</key>
 		<string>f3ac5f</string>
-		<key>BoardOuterMarginPercentage~iphone</key>
-		<real>0.02</real>
-		<key>BoardOuterMarginPercentage~ipad</key>
-		<real>0.025</real>
 		<key>LineColor</key>
 		<string>000000</string>
 		<key>BoundingLineWidth~iphone</key>

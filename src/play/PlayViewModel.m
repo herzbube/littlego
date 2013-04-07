@@ -53,7 +53,6 @@
   self.vibrate = false;
   self.backgroundColor = [UIColor whiteColor];
   self.boardColor = [UIColor orangeColor];
-  self.boardOuterMarginPercentage = 0.0;
   self.lineColor = [UIColor blackColor];
   self.boundingLineWidth = 2;
   self.normalLineWidth = 1;
@@ -95,7 +94,6 @@
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
   self.backgroundColor = [UIColor colorFromHexString:[dictionary valueForKey:backgroundColorKey]];
   self.boardColor = [UIColor colorFromHexString:[dictionary valueForKey:boardColorKey]];
-  self.boardOuterMarginPercentage = [[dictionary valueForKey:[boardOuterMarginPercentageKey stringByAppendingDeviceSuffix]] floatValue];
   self.lineColor = [UIColor colorFromHexString:[dictionary valueForKey:lineColorKey]];
   self.boundingLineWidth = [[dictionary valueForKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]] intValue];
   self.normalLineWidth = [[dictionary valueForKey:normalLineWidthKey] intValue];
@@ -130,7 +128,6 @@
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.backgroundColor] forKey:backgroundColorKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.boardColor] forKey:boardColorKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.boardOuterMarginPercentage] forKey:[boardOuterMarginPercentageKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.lineColor] forKey:lineColorKey];
   [dictionary setValue:[NSNumber numberWithInt:self.boundingLineWidth] forKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.normalLineWidth] forKey:normalLineWidthKey];

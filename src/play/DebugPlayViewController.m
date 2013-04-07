@@ -46,7 +46,6 @@
 //@}
 /// @name Privately declared property
 //@{
-@property(nonatomic, retain) UITextField* boardOuterMarginPercentageTextField;
 @property(nonatomic, retain) UITextField* normalLineWidthTextField;
 @property(nonatomic, retain) UITextField* boundingLineWidthTextField;
 @property(nonatomic, retain) UITextField* starPointRadiusTextField;
@@ -68,7 +67,6 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  self.boardOuterMarginPercentageTextField = nil;
   self.normalLineWidthTextField = nil;
   self.boundingLineWidthTextField = nil;
   self.starPointRadiusTextField = nil;
@@ -81,7 +79,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardOuterMarginPercentageTextField = nil;
   self.normalLineWidthTextField = nil;
   self.boundingLineWidthTextField = nil;
   self.starPointRadiusTextField = nil;
@@ -111,25 +108,20 @@
     NSString* placeHolderString;
     if (0 == textFieldIndex)
     {
-      self.boardOuterMarginPercentageTextField = textField;
-      placeHolderString = @"BoardOuterMarginPercentage";
-    }
-    else if (1 == textFieldIndex)
-    {
       self.normalLineWidthTextField = textField;
       placeHolderString = @"NormalLineWidth";
     }
-    else if (2 == textFieldIndex)
+    else if (1 == textFieldIndex)
     {
       self.boundingLineWidthTextField = textField;
       placeHolderString = @"BoundingLineWidth";
     }
-    else if (3 == textFieldIndex)
+    else if (2 == textFieldIndex)
     {
       self.starPointRadiusTextField = textField;
       placeHolderString = @"StarPointRadius";
     }
-    else if (4 == textFieldIndex)
+    else if (3 == textFieldIndex)
     {
       self.stoneRadiusPercentageTextField = textField;
       placeHolderString = @"StoneRadiusPercentage";
@@ -178,8 +170,6 @@
   if (newIntValue > 0 || newFloatValue > 0.0)
   {
     valueChanged = true;
-    if (aTextField == self.boardOuterMarginPercentageTextField)
-      playViewModel.boardOuterMarginPercentage = newFloatValue;
     if (aTextField == self.normalLineWidthTextField)
       playViewModel.normalLineWidth = newIntValue;
     if (aTextField == self.boundingLineWidthTextField)

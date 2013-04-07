@@ -35,6 +35,7 @@ NSString* whitePlayerKey = @"WhitePlayer";
 NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
 NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
+NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 //@}
 
 // -----------------------------------------------------------------------------
@@ -415,6 +416,12 @@ NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
     // Replace "DisplayMoveNumbers" key with "MoveNumbersPercentage"
     [playViewDictionaryUpgrade removeObjectForKey:displayMoveNumbersKey];
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:moveNumbersPercentageDefault] forKey:moveNumbersPercentageKey];
+    // Remove unused device-specific key
+    for (NSString* deviceSuffix in [UIDevice deviceSuffixes])
+    {
+      NSString* keyWithDeviceSuffix = [boardOuterMarginPercentageKey stringByAppendingString:deviceSuffix];
+      [playViewDictionaryUpgrade removeObjectForKey:keyWithDeviceSuffix];
+    }
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
