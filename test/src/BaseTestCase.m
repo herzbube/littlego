@@ -38,9 +38,10 @@
 
   STAssertEquals(m_delegate.applicationLaunchMode, ApplicationLaunchModeNormal, @"Application launch mode is not ApplicationLaunchModeNormal");
 
-  // Xcode 4: The log file for unit tests run in the simulator environment is
-  // located in ~/Library/Application Support/iPhone Simulator/Documents/Logs
+  // The log file for unit tests run in the simulator environment is located in
+  // ~/Library/Application Support/iPhone Simulator/Library/Caches/Logs
   [m_delegate setupLogging];
+  DDLogInfo(@"Setting up test environment for test %@", self);
 
   @try
   {
@@ -80,6 +81,7 @@
 - (void) tearDown
 {
   NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+  DDLogInfo(@"Tearing down test environment for test %@", self);
   [m_delegate release];
   [pool drain];  // draining the pool also deallocates it
   STAssertNil([ApplicationDelegate sharedDelegate], @"ApplicationDelegate object not released in tearDown()");

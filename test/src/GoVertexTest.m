@@ -32,12 +32,16 @@
   struct GoVertexNumeric inputVertex;
   inputVertex.x = 3;
   inputVertex.y = 17;
-  NSString* expectedStringResult = @"C17";
+  NSString* expectedLetterResult = @"C";
+  NSString* expectedNumberResult = @"17";
+  NSString* expectedStringResult = [expectedLetterResult stringByAppendingString:expectedNumberResult];
   struct GoVertexNumeric expectedNumericResult = inputVertex;
 
   GoVertex* vertex = [GoVertex vertexFromNumeric:inputVertex];
   STAssertNotNil(vertex, nil);
   STAssertTrue([vertex.string isEqualToString:expectedStringResult], nil);
+  STAssertTrue([vertex.letterAxisCompound isEqualToString:expectedLetterResult], nil);
+  STAssertTrue([vertex.numberAxisCompound isEqualToString:expectedNumberResult], nil);
   STAssertEquals(vertex.numeric, expectedNumericResult, nil);
 }
 
@@ -46,7 +50,11 @@
 // -----------------------------------------------------------------------------
 - (void) testVertexFromString
 {
-  NSString* inputVertex = @"F12";
+  NSString* inputLetterAxisCompound = @"F";
+  NSString* inputNumberAxisCompound = @"12";
+  NSString* inputVertex = [inputLetterAxisCompound stringByAppendingString:inputNumberAxisCompound];
+  NSString* expectedLetterResult = [inputLetterAxisCompound copy];
+  NSString* expectedNumberResult = [inputNumberAxisCompound copy];
   NSString* expectedStringResult = [inputVertex copy];
   struct GoVertexNumeric expectedNumericResult;
   expectedNumericResult.x = 6;
@@ -55,6 +63,8 @@
   GoVertex* vertex = [GoVertex vertexFromString:inputVertex];
   STAssertNotNil(vertex, nil);
   STAssertTrue([vertex.string isEqualToString:expectedStringResult], nil);
+  STAssertTrue([vertex.letterAxisCompound isEqualToString:expectedLetterResult], nil);
+  STAssertTrue([vertex.numberAxisCompound isEqualToString:expectedNumberResult], nil);
   STAssertEquals(vertex.numeric, expectedNumericResult, nil);
 }
 
