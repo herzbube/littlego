@@ -250,4 +250,19 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// coordinateLabelInset may also be 0 if coordinateLabelStripWidth is very
 /// small and not enough space exists for a pretty inset.
 @property(nonatomic, assign) int coordinateLabelInset;
+/// @brief The font to use for drawing move numbers. Is nil if no suitable font
+/// exists for the current metrics (usually because stoneRadius is too small).
+@property(nonatomic, assign) UIFont* moveNumberFont;
+/// @brief The maximum size required for drawing the widest possible move
+/// number using the current @e moveNumberFont. Is CGSizeZero if no suitable
+/// font exists.
+@property(nonatomic, assign) CGSize moveNumberMaximumSize;
+/// @brief The font to use for drawing coordinate labels. Is nil if no suitable
+/// font exists for the current metrics (usually because
+/// coordinateLabelStripWidth is too small).
+@property(nonatomic, assign) UIFont* coordinateLabelFont;
+/// @brief The maximum size required for drawing the widest possible coordinate
+/// label using the current @e coordinateLabelFont. Is CGSizeZero if no suitable
+/// font exists.
+@property(nonatomic, assign) CGSize coordinateLabelMaximumSize;
 @end

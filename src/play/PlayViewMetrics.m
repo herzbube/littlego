@@ -23,6 +23,7 @@
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/FontRange.h"
 
 
 // -----------------------------------------------------------------------------
@@ -37,6 +38,8 @@
 //@{
 @property(nonatomic, retain) UIView* playView;
 @property(nonatomic, retain) PlayViewModel* playViewModel;
+@property(nonatomic, retain) FontRange* moveNumberFontRange;
+@property(nonatomic, retain) FontRange* coordinateLabelFontRange;
 //@}
 @end
 
@@ -57,6 +60,7 @@
   
   self.playView = view;
   self.playViewModel = model;
+  [self setupFontRanges];
 
   self.rect = CGRectNull;
   self.boardSize = GoBoardSizeUndefined;
@@ -72,7 +76,32 @@
 - (void) dealloc
 {
   self.playViewModel = nil;
+  self.moveNumberFontRange = nil;
+  self.coordinateLabelFontRange = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupFontRanges
+{
+  // The minimum should not be smaller: There is no point in displaying text
+  // that is so small that nobody can read it. Especially for coordinate labels,
+  // it is much better to not display the labels and give the unused space to
+  // the grid (on the iPhone and on a 19x19 board, every pixel counts!).
+  int minimumFontSize = 8;
+  // The maximum could be larger
+  int maximumFontSize = 20;
+
+  NSString* widestMoveNumber = @"388";
+  self.moveNumberFontRange = [[[FontRange alloc] initWithText:widestMoveNumber
+                                              minimumFontSize:minimumFontSize
+                                              maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestCoordinateLabel = @"18";
+  self.coordinateLabelFontRange = [[[FontRange alloc] initWithText:widestCoordinateLabel
+                                                   minimumFontSize:minimumFontSize
+                                                   maximumFontSize:maximumFontSize] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -130,6 +159,8 @@
     self.boardSideLength = 0;
     self.coordinateLabelStripWidth = 0;
     self.coordinateLabelInset = 0;
+    self.coordinateLabelFont = nil;
+    self.coordinateLabelMaximumSize = CGSizeZero;
     self.numberOfCells = 0;
     self.cellWidth = 0;
     self.pointDistance = 0;
@@ -152,23 +183,65 @@
 
     if (self.playViewModel.displayCoordinates)
     {
-      // Arbitrary values
-      static const CGFloat coordinateLabelInsetPercentage = 0.05;
-      static const int coordinateLabelInsetMinimum = 1;
-
       // The coordinate labels' font size will be selected so that labels fit
-      // into the width of the strip that we calculate here. To look good, the
-      // width of the strip should be about (self.cellWidth / 2). Since we don't
-      // have self.cellWidth yet we need to approximate.
+      // into the width of the strip that we calculate here. The following
+      // simple calculation assumes that to look good, the width of the strip
+      // should be about (self.cellWidth / 2). Because we do not yet have
+      // self.cellWidth we need to approximate.
+      // TODO: The current calculation is too simple and gives us a strip that
+      // is wider than necessary, i.e. it will take away more space from
+      // self.cellWidth than necessary. A more intelligent approach should find
+      // out if a few pixels can be gained for self.cellWidth by choosing a
+      // smaller coordinate label font. In the balance, the font size sacrifice
+      // must not become too great, for instance the sacrifice would be too
+      // great if no font could be found anymore and thus no coordinate labels
+      // would be drawn. An algorithm that achieves such a balance would
+      // probably need to find its solution in multiple iterations.
       self.coordinateLabelStripWidth = floor(self.boardSideLength / newBoardSize / 2);
+
+      // We want coordinate labels to be drawn with an inset: It just doesn't
+      // look good if a coordinate label is drawn right at the screen edge or
+      // touches a stone at the board edge.
+      static const int coordinateLabelInsetMinimum = 1;
+      // If there is sufficient space the inset can grow beyond the minimum.
+      // We use a percentage so that the inset grows with the available drawing
+      // area. The percentage chosen here is an arbitrary value.
+      static const CGFloat coordinateLabelInsetPercentage = 0.05;
       self.coordinateLabelInset = floor(self.coordinateLabelStripWidth * coordinateLabelInsetPercentage);
       if (self.coordinateLabelInset < coordinateLabelInsetMinimum)
         self.coordinateLabelInset = coordinateLabelInsetMinimum;
+
+      // Finally we are able to select a font. We use the largest possible font,
+      // but if there isn't one we sacrifice 1 inset point and try again. The
+      // idea is that it is better to display coordinate labels and use an inset
+      // that is not the desired optimum, than to not display labels at all.
+      // coordinateLabelInsetMinimum is still the hard limit, though.
+      bool didFindCoordinateLabelFont = false;
+      while (! didFindCoordinateLabelFont
+             && self.coordinateLabelInset >= coordinateLabelInsetMinimum)
+      {
+        int coordinateLabelAvailableWidth = (self.coordinateLabelStripWidth
+                                             - 2 * self.coordinateLabelInset);
+        didFindCoordinateLabelFont = [self.coordinateLabelFontRange queryForWidth:coordinateLabelAvailableWidth
+                                                                             font:&_coordinateLabelFont
+                                                                         textSize:&_coordinateLabelMaximumSize];
+        if (! didFindCoordinateLabelFont)
+          self.coordinateLabelInset--;
+      }
+      if (! didFindCoordinateLabelFont)
+      {
+        self.coordinateLabelStripWidth = 0;
+        self.coordinateLabelInset = 0;
+        self.coordinateLabelFont = nil;
+        self.coordinateLabelMaximumSize = CGSizeZero;
+      }
     }
     else
     {
       self.coordinateLabelStripWidth = 0;
       self.coordinateLabelInset = 0;
+      self.coordinateLabelFont = nil;
+      self.coordinateLabelMaximumSize = CGSizeZero;
     }
 
     self.numberOfCells = newBoardSize - 1;
@@ -276,6 +349,15 @@
     self.boundingLineStrokeOffset = normalLineStrokeCoordinate - boundingLineStrokeCoordinate;
     CGFloat boundingLineStartCoordinate = boundingLineStrokeCoordinate - boundingLineHalfWidth;
     self.lineStartOffset = normalLineStrokeCoordinate - boundingLineStartCoordinate;
+
+    bool success = [self.moveNumberFontRange queryForWidth:self.stoneInnerSquareSize.width
+                                                      font:&_moveNumberFont
+                                                  textSize:&_moveNumberMaximumSize];
+    if (! success)
+    {
+      self.moveNumberFont = nil;
+      self.moveNumberMaximumSize = CGSizeZero;
+    }
   }  // else [if (GoBoardSizeUndefined == newBoardSize)]
 }
 

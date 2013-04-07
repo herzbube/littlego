@@ -221,6 +221,8 @@
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9A49A7170F3550009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */; };
 		CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */; };
+		CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
+		CD9A49AC171099FB009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
 		CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
 		CD9FB5441687E1310042AA89 /* fastforward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5401687E1310042AA89 /* fastforward.png */; };
@@ -607,6 +609,8 @@
 		CD99EC6514B12059007B3B67 /* GoPlayerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayerTest.m; sourceTree = "<group>"; };
 		CD9A49A5170F3550009E7514 /* CoordinateLabelsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsLayerDelegate.h; sourceTree = "<group>"; };
 		CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsLayerDelegate.m; sourceTree = "<group>"; };
+		CD9A49A917107BC9009E7514 /* FontRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRange.h; sourceTree = "<group>"; };
+		CD9A49AA17107BC9009E7514 /* FontRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontRange.m; sourceTree = "<group>"; };
 		CD9AA709146028770012C3EA /* HandicapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandicapSelectionController.h; sourceTree = "<group>"; };
 		CD9AA70A146028770012C3EA /* HandicapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandicapSelectionController.m; sourceTree = "<group>"; };
 		CD9AA70B146028770012C3EA /* KomiSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KomiSelectionController.h; sourceTree = "<group>"; };
@@ -1456,6 +1460,8 @@
 			children = (
 				CDDD52681485B05B0027476B /* DocumentGenerator.h */,
 				CDDD52691485B05C0027476B /* DocumentGenerator.m */,
+				CD9A49A917107BC9009E7514 /* FontRange.h */,
+				CD9A49AA17107BC9009E7514 /* FontRange.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
 				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
@@ -2002,6 +2008,7 @@
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
 				CD9A49A7170F3550009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
+				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2105,6 +2112,7 @@
 				CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 				CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
+				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

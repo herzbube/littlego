@@ -18,6 +18,7 @@
 // Project includes
 #import "CoordinateLabelsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
+#import "../PlayViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
@@ -75,27 +76,29 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  NSString* textToDetermineSize = @"19";
-  UIFont* currentCoordinateLabelFont = [UIFont systemFontOfSize:14];
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-  CGSize textSize = [textToDetermineSize sizeWithFont:currentCoordinateLabelFont
-                                    constrainedToSize:constraintSize
-                                        lineBreakMode:UILineBreakModeWordWrap];
+  UIFont* coordinateLabelFont = self.playViewMetrics.coordinateLabelFont;
+  if (! coordinateLabelFont)
+    return;
+  DDLogVerbose(@"CoordinateLabelsLayerDelegate is drawing axis %d with font size %f",
+               self.coordinateLabelAxis,
+               coordinateLabelFont.pointSize);
 
   CGRect coordinateLabelRect = CGRectZero;
-  coordinateLabelRect.size = textSize;
+  coordinateLabelRect.size = self.playViewMetrics.coordinateLabelMaximumSize;
   if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
   {
     coordinateLabelRect.origin.x = (self.playViewMetrics.topLeftPointX
-                                    - floor(textSize.width / 2));
-    coordinateLabelRect.origin.y = floor((self.playViewMetrics.coordinateLabelStripWidth - textSize.height) / 2);
+                                    - floor(self.playViewMetrics.coordinateLabelMaximumSize.width / 2));
+    coordinateLabelRect.origin.y = floor((self.playViewMetrics.coordinateLabelStripWidth
+                                          - self.playViewMetrics.coordinateLabelMaximumSize.height) / 2);
   }
   else
   {
-    coordinateLabelRect.origin.x = floor((self.playViewMetrics.coordinateLabelStripWidth - textSize.width) / 2);
+    coordinateLabelRect.origin.x = floor((self.playViewMetrics.coordinateLabelStripWidth
+                                          - self.playViewMetrics.coordinateLabelMaximumSize.width) / 2);
     coordinateLabelRect.origin.y = (self.playViewMetrics.topLeftPointY
                                     + (self.playViewMetrics.numberOfCells * self.playViewMetrics.pointDistance)
-                                    - floor(textSize.height / 2));
+                                    - floor(self.playViewMetrics.coordinateLabelMaximumSize.height / 2));
   }
 
   // Drawing the label in white makes it stand out nicely from the wooden
@@ -117,10 +120,9 @@
     else
       coordinateLabelText = point.vertex.numberAxisCompound;
     [coordinateLabelText drawInRect:coordinateLabelRect
-                           withFont:currentCoordinateLabelFont
+                           withFont:coordinateLabelFont
                       lineBreakMode:UILineBreakModeWordWrap
                           alignment:NSTextAlignmentCenter];
-
     if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
     {
       point = point.right;
@@ -133,6 +135,17 @@
     }
   }
   UIGraphicsPopContext();  // balance UIGraphicsPushContext()
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:
+// -----------------------------------------------------------------------------
+- (bool) shouldDisplayCoordinateLabels
+{
+  if (! self.playViewMetrics.coordinateLabelFont)
+    return false;
+  else
+    return self.playViewModel.displayCoordinates;
 }
 
 @end

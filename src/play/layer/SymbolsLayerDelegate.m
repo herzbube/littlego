@@ -48,21 +48,6 @@
 @property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
-/// @brief Array that contains font objects for fonts with different sizes, and
-/// the rectangle size required to draw move numbers with that font.
-///
-/// Each entry in the @e moveNumberFonts array is another array with three
-/// elements: The first element is the font object (an UIFont object), the
-/// second and third elements are the rectangle width and height (both NSNumber
-/// object with a float value).
-///
-/// Entries in @e moveNumberFonts appear ordered by font size. The first entry
-/// is the one with the largest font size.
-@property(nonatomic, retain) NSArray* moveNumberFonts;
-@property(nonatomic, assign) bool currentMoveNumberFontNeedsUpdate;
-@property(nonatomic, assign) bool currentMoveNumberFontIsValid;
-@property(nonatomic, assign) UIFont* currentMoveNumberFont;
-@property(nonatomic, assign) CGSize currentMoveNumberSize;
 //@}
 @end
 
@@ -83,8 +68,6 @@
   self.scoringModel = theScoringModel;
   _blackLastMoveLayer = NULL;
   _whiteLastMoveLayer = NULL;
-  [self setupCurrentMoveNumberFont];
-  [self setupMoveNumberFonts];
   return self;
 }
 
@@ -96,73 +79,6 @@
   self.scoringModel = nil;
   [self releaseLayers];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
-// -----------------------------------------------------------------------------
-- (void) setupCurrentMoveNumberFont
-{
-  self.currentMoveNumberFontNeedsUpdate = true;
-  [self invalidateCurrentMoveNumberFont];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
-// -----------------------------------------------------------------------------
-- (void) setupMoveNumberFonts
-{
-  NSMutableArray* moveNumberFonts = [NSMutableArray arrayWithCapacity:0];
-  // This must be the move number that takes up the most drawing space
-  NSString* textToDetermineSize = @"388";
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-
-  const int maximumFontSize = [UIFont systemFontSize];
-  const int minimumFontSize = MIN(8, maximumFontSize);
-  for (int fontSize = maximumFontSize; fontSize >= minimumFontSize; --fontSize)
-  {
-    UIFont* font = [UIFont systemFontOfSize:fontSize];
-    CGSize textSize = [textToDetermineSize sizeWithFont:font
-                                      constrainedToSize:constraintSize
-                                          lineBreakMode:UILineBreakModeWordWrap];
-    NSArray* array = [NSArray arrayWithObjects:font,
-                                               [NSNumber numberWithFloat:textSize.width],
-                                               [NSNumber numberWithFloat:textSize.height],
-                                               nil];
-    [moveNumberFonts addObject:array];
-  }
-  self.moveNumberFonts = moveNumberFonts;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Fills the out variables @a font and @a textSize with values that are
-/// suitable for drawing move numbers with the current play view metrics.
-///
-/// Returns true if suitable values were found. Returns false if no suitable
-/// value were found (the content of @a font and @a textSize in this case is not
-/// specified).
-///
-/// @a textSize is wide enough to draw the widest possible move number using
-/// @a font. If a move number about to be drawn is less wide than the maximum,
-/// it should be horizontally centered in @a textSize.
-///
-/// @a textSize is high enough to draw one line of text using @a font.
-// -----------------------------------------------------------------------------
-- (bool) moveNumberFont:(UIFont**)font textSize:(CGSize*)textSize
-{
-  CGFloat stoneInnerSquareSizeWidth = self.playViewMetrics.stoneInnerSquareSize.width;
-  // Iteration is in order of font size (largest first)
-  for (NSArray* array in self.moveNumberFonts)
-  {
-    CGFloat minimumRequiredWidth = [[array objectAtIndex:1] floatValue];
-    if (minimumRequiredWidth > stoneInnerSquareSizeWidth)
-      continue;
-    CGFloat minimumRequiredHeight = [[array objectAtIndex:2] floatValue];
-    *textSize = CGSizeMake(minimumRequiredWidth, minimumRequiredHeight);
-    *font = [array objectAtIndex:0];
-    return true;
-  }
-  return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -184,16 +100,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Marks the current move number font properties as invalid.
-// -----------------------------------------------------------------------------
-- (void) invalidateCurrentMoveNumberFont
-{
-  self.currentMoveNumberFontIsValid = false;
-  self.currentMoveNumberFont = nil;
-  self.currentMoveNumberSize = CGSizeZero;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief PlayViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
@@ -204,8 +110,6 @@
     {
       self.layer.frame = self.playViewMetrics.rect;
       [self releaseLayers];
-      self.currentMoveNumberFontNeedsUpdate = true;
-      [self invalidateCurrentMoveNumberFont];
       self.dirty = true;
       break;
     }
@@ -213,8 +117,6 @@
     {
       [self releaseLayers];
       self.dirty = true;
-      self.currentMoveNumberFontNeedsUpdate = true;
-      [self invalidateCurrentMoveNumberFont];
       break;
     }
     case PVLDEventBoardPositionChanged:
@@ -247,11 +149,6 @@
     _blackLastMoveLayer = CreateLastMoveLayer(context, [UIColor blackColor], self);
   if (! _whiteLastMoveLayer)
     _whiteLastMoveLayer = CreateLastMoveLayer(context, [UIColor whiteColor], self);
-  if (self.currentMoveNumberFontNeedsUpdate)
-  {
-    self.currentMoveNumberFontNeedsUpdate = false;
-    self.currentMoveNumberFontIsValid = [self moveNumberFont:&_currentMoveNumberFont textSize:&_currentMoveNumberSize];
-  }
 
   if ([self shouldDisplayMoveNumbers])
   {
@@ -278,7 +175,7 @@
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayMoveNumbers
 {
-  if (! self.currentMoveNumberFontIsValid)
+  if (! self.playViewMetrics.moveNumberFont)
     return false;
   else if (0.0 == self.playViewModel.moveNumbersPercentage)
     return false;
@@ -291,11 +188,12 @@
 // -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
 {
-  DDLogVerbose(@"Drawing move numbers with font size %f", self.currentMoveNumberFont.pointSize);
+  UIFont* moveNumberFont = self.playViewMetrics.moveNumberFont;
+  DDLogVerbose(@"Drawing move numbers with font size %f", moveNumberFont.pointSize);
 
   CGRect layerRect;
   layerRect.origin = CGPointZero;
-  layerRect.size = self.currentMoveNumberSize;
+  layerRect.size = self.playViewMetrics.moveNumberMaximumSize;
   NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
 
@@ -338,7 +236,7 @@
     CGContextRef layerContext = CGLayerGetContext(layer);
     UIGraphicsPushContext(layerContext);
     CGContextSetFillColorWithColor(layerContext, textColor.CGColor);
-    [moveNumberText drawInRect:layerRect withFont:self.currentMoveNumberFont lineBreakMode:UILineBreakModeWordWrap alignment:NSTextAlignmentCenter];
+    [moveNumberText drawInRect:layerRect withFont:moveNumberFont lineBreakMode:UILineBreakModeWordWrap alignment:NSTextAlignmentCenter];
     UIGraphicsPopContext();
     [self.playViewMetrics drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered];
     CGLayerRelease(layer);
