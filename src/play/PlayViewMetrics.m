@@ -244,17 +244,30 @@
       self.coordinateLabelMaximumSize = CGSizeZero;
     }
 
-    self.numberOfCells = newBoardSize - 1;
+    // Valid values for this constant:
+    // 1 = A single coordinate label strip is displayed for each of the axis.
+    //     The strips are drawn above and on the left hand side of the board
+    // 2 = Two coordinate label strips are displayed for each of the axis. The
+    //     strips are drawn on all edges of the board.
+    // Note that this constant cannot be set to 0 to disable coordinate labels.
+    // The calculations above already achieve this by setting
+    // self.coordinateLabelStripWidth to 0.
+    //
+    // TODO: Currently only one strip is drawn even if this constant is set to
+    // the value 2. The only effect that value 2 has is that drawing space is
+    // reserved for the second strip.
+    static const int numberOfCoordinateLabelStripsPerAxis = 1;
 
     // For the purpose of calculating the cell width, we assume that all lines
     // have the same thickness. The difference between normal and bounding line
     // width is added to the *OUTSIDE* of the board (see GridLayerDelegate).
     int numberOfPointsAvailableForCells = (self.boardSideLength
-                                           - 2 * self.coordinateLabelStripWidth
+                                           - (numberOfCoordinateLabelStripsPerAxis * self.coordinateLabelStripWidth)
                                            - newBoardSize * self.playViewModel.normalLineWidth);
     assert(numberOfPointsAvailableForCells >= 0);
     if (numberOfPointsAvailableForCells < 0)
       DDLogError(@"%@: Negative value %d for numberOfPointsAvailableForCells", self, numberOfPointsAvailableForCells);
+    self.numberOfCells = newBoardSize - 1;
     // +1 to self.numberOfCells because we need one-half of a cell on both sides
     // of the board (top/bottom or left/right) to draw, for instance, a stone
     self.cellWidth = floor(numberOfPointsAvailableForCells / (self.numberOfCells + 1));
@@ -276,25 +289,23 @@
     self.lineLength = pointsUsedForGridLines + self.cellWidth * self.numberOfCells;
 
     
-    
-    // Calculate topLeftPointMargin so that the grid is centered. -1 to
+    // Calculate topLeftPointOffset so that the grid is centered. -1 to
     // newBoardSize because our goal is to get the coordinates of the top-left
     // point, which sits in the middle of a normal line. Because the centering
     // calculation divides by 2 we must subtract a full line width here, not
     // just half a line width.
     int widthForCentering = self.cellWidth * self.numberOfCells + (newBoardSize - 1) * self.playViewModel.normalLineWidth;
-    int topLeftPointMargin = floor((self.boardSideLength - widthForCentering) / 2);
-    if (topLeftPointMargin < self.cellWidth / 2.0)
+    int topLeftPointOffset = floor((self.boardSideLength
+                                    - (numberOfCoordinateLabelStripsPerAxis * self.coordinateLabelStripWidth)
+                                    - widthForCentering) / 2);
+    topLeftPointOffset += self.coordinateLabelStripWidth;
+    if (topLeftPointOffset < self.cellWidth / 2.0)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Insufficient space to draw stones: topLeftPointMargin %d is below half-cell width", topLeftPointMargin];
+      NSString* errorMessage = [NSString stringWithFormat:@"Insufficient space to draw stones: topLeftPointOffset %d is below half-cell width", topLeftPointOffset];
       DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
     }
-    self.topLeftPointX = self.topLeftBoardCornerX + topLeftPointMargin;
-    self.topLeftPointY = self.topLeftBoardCornerY + topLeftPointMargin;
+    self.topLeftPointX = self.topLeftBoardCornerX + topLeftPointOffset;
+    self.topLeftPointY = self.topLeftBoardCornerY + topLeftPointOffset;
     self.bottomRightPointX = self.topLeftPointX + (newBoardSize - 1) * self.pointDistance;
     self.bottomRightPointY = self.topLeftPointY + (newBoardSize - 1) * self.pointDistance;
 
