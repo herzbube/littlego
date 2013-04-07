@@ -276,16 +276,6 @@
     // +1 to self.numberOfCells because we need one-half of a cell on both sides
     // of the board (top/bottom or left/right) to draw, for instance, a stone
     self.cellWidth = floor(numberOfPointsAvailableForCells / (self.numberOfCells + 1));
-    // We want an even number so that half a cell leaves us with no fractions,
-    // so that we can draw neatly aligned half-cell rectangles 
-    if (self.cellWidth % 2 != 0)
-    {
-      // We can't increase self.cellWidth because increasing will cause the
-      // sum of all cells to exceed numberOfPointsAvailableForCells. Decreasing
-      // self.cellWidth therefore is the only option, although this wastes a
-      // certain amount of screen estate.
-      self.cellWidth--;
-    }
 
     self.pointDistance = self.cellWidth + self.playViewModel.normalLineWidth;
     self.stoneRadius = floor(self.cellWidth / 2 * self.playViewModel.stoneRadiusPercentage);
