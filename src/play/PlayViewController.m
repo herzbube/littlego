@@ -90,10 +90,6 @@ enum ActionType
 //@{
 - (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 //@}
-/// @name Notification responders
-//@{
-- (void) applicationIsReadyForAction:(NSNotification*)notification;
-//@}
 /// @name Main view hierarchy setup
 //@{
 - (void) setupMainView;
@@ -136,7 +132,6 @@ enum ActionType
 /// @name Private helpers
 //@{
 - (void) releaseObjects;
-- (void) makeControllerReadyForAction;
 - (void) setupSubviews;
 - (void) setupSubcontrollers;
 - (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
@@ -228,11 +223,11 @@ enum ActionType
   // application is starting up, iOS will first start up in portrait orientation
   // and then initiate an auto-rotation to landscape orientation. Because the
   // main view has an autoresizing mask, it will have the correct size at the
-  // time makeControllerReadyForAction() is invoked.
+  // time viewDidLoad() is invoked.
   [self setupMainView];
 
   // Prerequisite for setupSplitViewController(). For the iPhone we could
-  // invoke this in makeControllerReadyForAction().
+  // invoke this in viewDidLoad().
   [self setupNavigationBarController];
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
@@ -243,19 +238,21 @@ enum ActionType
   }
   else
   {
-    // Cannot delay creation of UISplitViewControlller until
-    // makeControllerReadyForAction() is invoked, otherwise swipe gestures
-    // are initially not recognized when the app is launched in portrait mode.
-    // UISplitViewControlller starts to recgonize swipe gesture if the device
-    // is rotated to landscape and back to portrait, but not before. The reason
-    // for this behaviour of UISplitViewControlller is unknown, but the only
-    // way I have found to fix the problem is to not delay creation of the
-    // controller.
+    // Cannot delay creation of UISplitViewControlller until viewDidLoad() is
+    // invoked, otherwise swipe gestures are initially not recognized when the
+    // app is launched in portrait mode. UISplitViewControlller starts to
+    // recgonize swipe gesture if the device is rotated to landscape and back
+    // to portrait, but not before. The reason for this behaviour of
+    // UISplitViewControlller is unknown, but the only way I have found to fix
+    // the problem is to not delay creation of the controller.
+    // TODO: Check if this comment is still relevant. In an earlier
+    // implementation, the comment did not talk about viewDidLoad, but about
+    // makeControllerReadyForAction() which was invoked with a delay.
     [self setupSplitViewController];
     [self setupSplitView];
   }
 
-  // Setup of remaining views is delayed to makeControllerReadyForAction()
+  // Setup of remaining views is delayed to viewDidLoad()
 }
 
 // -----------------------------------------------------------------------------
@@ -748,34 +745,12 @@ enum ActionType
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  if (! delegate.applicationReadyForAction)
-  {
-    // This branch is executed during application startup
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
-  }
-  else
-  {
-    // This branch is executed if the view is reloaded during the normal
-    // app lifecycle (e.g. because it was previously unloaded due to a memory
-    // warning)
-    [self makeControllerReadyForAction];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up this controller and makes it "ready for action".
-// -----------------------------------------------------------------------------
-- (void) makeControllerReadyForAction
-{
   [self setupSubviews];
   [self setupSubcontrollers];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by viewDidLoad().
 // -----------------------------------------------------------------------------
 - (void) setupSubviews
 {
@@ -813,7 +788,7 @@ enum ActionType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by makeControllerReadyForAction().
+/// @brief This is an internal helper invoked by viewDidLoad().
 // -----------------------------------------------------------------------------
 - (void) setupSubcontrollers
 {
@@ -904,8 +879,7 @@ enum ActionType
   // Dismiss the controller before releasing/deallocating objects
   [self.navigationBarController dismissGameInfoViewController];
   // Here we need to undo all of the stuff that is happening in
-  // makeControllerReadyForAction(), because makeControllerReadyForAction()
-  // will be invoked again later by viewDidLoad(). Notes:
+  // viewDidLoad(). Notes:
   // - If the game info view is currently visible, it will not be visible
   //   anymore when viewDidLoad() is invoked the next time
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -1017,17 +991,6 @@ enum ActionType
       break;
     }
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #applicationIsReadyForAction notification.
-// -----------------------------------------------------------------------------
-- (void) applicationIsReadyForAction:(NSNotification*)notification
-{
-  // We only need this notification once
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
-  
-  [self makeControllerReadyForAction];
 }
 
 // -----------------------------------------------------------------------------

@@ -99,14 +99,6 @@
 /// @brief Refers to the last .sgf file passed into the app via the system's
 /// document interaction mechanism. Is nil if no .sgf file was ever passed in.
 @property(nonatomic, retain) NSURL* documentInteractionURL;
-/// @brief Is false during application launch, and shortly afterwards while this
-/// delegate is still setting up objects that are important for the application
-/// lifecycle.
-///
-/// Becomes true after the application delegate has finished setting everything
-/// up. Just after this flag becomes true, the notification
-/// #applicationIsReadyForAction is posted to the global notification center.
-@property(nonatomic, assign) bool applicationReadyForAction;
 /// @brief Flag is true if user defaults should be written to the user defaults
 /// system at the appropriate times. Flag is false if user defaults should never
 /// be written to the user defaults system.

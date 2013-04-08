@@ -69,10 +69,6 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:0.0
-                                        nextStepMessage:@"Starting up..."];
-
   @try
   {
     [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
@@ -80,46 +76,13 @@
                withObject:longRunningActionStarts
             waitUntilDone:YES];
 
-    ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-
-    [delegate setupLogging];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupApplicationLaunchMode];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupFolders];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupResourceBundle];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupRegistrationDomain];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupUserDefaults];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupSound];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupFuego];
-    [self increaseProgressAndNotifyDelegate];
-
-    [delegate setupTabBarController];
-    [self increaseProgressAndNotifyDelegate];
-
-    delegate.applicationReadyForAction = true;
-    [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
-    [self increaseProgressAndNotifyDelegate];
-
     [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
-    [self increaseProgressAndNotifyDelegate];
 
     // At this point the progress in self.asynchronousCommandDelegate is at 100%.
     // From now on, other commands will take over and manage the progress, with
     // an initial resetting to 0% and display of a different message.
 
+    ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
     if (ApplicationLaunchModeDiagnostics == delegate.applicationLaunchMode)
     {
       RestoreBugReportApplicationState* command = [[[RestoreBugReportApplicationState alloc] init] autorelease];
@@ -165,15 +128,6 @@
 - (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
-// -----------------------------------------------------------------------------
-- (void) increaseProgressAndNotifyDelegate
-{
-  self.progress += self.stepIncrease;
-  [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
 }
 
 @end

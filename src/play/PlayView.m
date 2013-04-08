@@ -57,7 +57,6 @@
 //@}
 /// @name Notification responders
 //@{
-- (void) applicationIsReadyForAction:(NSNotification*)notification;
 - (void) goGameWillCreate:(NSNotification*)notification;
 - (void) goGameDidCreate:(NSNotification*)notification;
 - (void) goScoreScoringModeEnabled:(NSNotification*)notification;
@@ -69,11 +68,9 @@
 //@}
 /// @name Private helpers
 //@{
-- (void) makeViewReadyForDrawing;
 - (void) setupSubLayer:(CALayer*)subLayer;
 - (void) updateCrossHairPointDistanceFromFinger;
 - (void) updateLayers;
-- (void) delayedUpdate;
 - (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
 //@}
 /// @name Update optimizing
@@ -90,7 +87,6 @@
 //@}
 /// @name Other privately declared properties
 //@{
-@property(nonatomic, assign) bool viewReadyForDrawing;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
@@ -150,7 +146,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (id) initWithFrame:(CGRect)aRect
 {
-  // Call designated initializer of superclass (NSView)
+  // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:aRect];
   if (! self)
     return nil;
@@ -160,22 +156,9 @@ static PlayView* sharedPlayView = nil;
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playViewModel = delegate.playViewModel;
   self.scoringModel = delegate.scoringModel;
-  // Cannot delay creation of the metrics object to makeViewReadyForDrawing()
-  // because external forces need access to the boardFrame property
   self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
                                                           model:self.playViewModel] autorelease];
-
-  if (! delegate.applicationReadyForAction)
-  {
-    self.viewReadyForDrawing = false;
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self selector:@selector(applicationIsReadyForAction:) name:applicationIsReadyForAction object:nil];
-  }
-  else
-  {
-    [self makeViewReadyForDrawing];
-    self.viewReadyForDrawing = true;
-  }
+  [self setupView];
 
   return self;
 }
@@ -220,26 +203,9 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #applicationIsReadyForAction notification.
-// -----------------------------------------------------------------------------
-- (void) applicationIsReadyForAction:(NSNotification*)notification
-{
-  // We only need this notification once
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:applicationIsReadyForAction object:nil];
-
-  [self makeViewReadyForDrawing];
-  self.viewReadyForDrawing = true;
-
-  // Now perform all drawing updates that have accumulated so far
-  // (at least layoutSubviews(), which has been invoked at least once after
-  // initialization)
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Sets up the view and makes it ready for drawing.
 // -----------------------------------------------------------------------------
-- (void) makeViewReadyForDrawing
+- (void) setupView
 {
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
@@ -374,14 +340,6 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) updateLayers
 {
-  // Guard against
-  // - updates triggered while the view is still uninitialized and not yet ready
-  //   for drawing (occurs during application launch)
-  if (! self.viewReadyForDrawing)
-  {
-    self.updatesWereDelayed = true;
-    return;
-  }
   // No game -> no board -> no drawing. This situation exists right after the
   // application has launched and the initial game is created only after a
   // small delay.

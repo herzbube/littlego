@@ -37,8 +37,6 @@ NSString* archiveBackupFileName = @"backup.plist";
 NSString* sgfBackupFileName = @"backup.sgf";
 NSString* inboxFolderName = @"Inbox";
 
-// Application notifications
-NSString* applicationIsReadyForAction = @"ApplicationIsReadyForAction";
 // GTP notifications
 NSString* gtpCommandWillBeSubmittedNotification = @"GtpCommandWillBeSubmitted";
 NSString* gtpResponseWasReceivedNotification = @"GtpResponseWasReceived";

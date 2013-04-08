@@ -37,6 +37,7 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
 #import "../play/boardposition/BoardPositionModel.h"
+#import "../play/PlayViewController.h"
 #import "../play/PlayViewModel.h"
 #import "../play/ScoringModel.h"
 #import "../play/SoundHandling.h"
@@ -137,7 +138,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   sharedDelegate = [[[ApplicationDelegate alloc] init] autorelease];
   sharedDelegate.applicationLaunchMode = ApplicationLaunchModeNormal;
-  sharedDelegate.applicationReadyForAction = false;
   sharedDelegate.writeUserDefaultsEnabled = false;
   return sharedDelegate;
 }
@@ -183,10 +183,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
-  // Clients need to see that we are not yet ready. Flag will become true when
-  // secondary thread has finished setup.
-  self.applicationReadyForAction = false;
-
   // Enable in normal (i.e. not unit testing) environment
   self.writeUserDefaultsEnabled = true;
 
@@ -197,11 +193,20 @@ static ApplicationDelegate* sharedDelegate = nil;
   // send a crash report. In fact, QuincyKit will not do anything at all.
   [self setupCrashReporting];
 
-  // Causes MainWindow.xib to be loaded. Shortly after this method returns the
-  // launch image will go away and the main window will come to the front. The
-  // SetupApplicationCommand instance further down will cover this with a
-  // progress HUD.
+  // Don't change the following sequence without thoroughly checking the
+  // dependencies
+  // TODO: Document dependencies
   [self setupGUI];
+  [self setupLogging];
+  [self setupApplicationLaunchMode];
+  [self setupFolders];
+  [self setupResourceBundle];
+  [self setupRegistrationDomain];
+  [self setupUserDefaults];
+  [self setupSound];
+  [self setupFuego];
+  [self setupTabBarController];
+  [self setupPlayTab];
 
   // If an URL is passed in, it is stored here and processed later during
   // SetupApplicationCommand.
@@ -638,6 +643,18 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   [self tabBarController].delegate = self;
   [self tabBarController].moreNavigationController.delegate = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and initializes objects that are required to display the
+/// view hierarchy on the Play tab (the tab that is initially visible after
+/// application launch).
+// -----------------------------------------------------------------------------
+- (void) setupPlayTab
+{
+  PlayViewController* playViewController = [[[PlayViewController alloc] init] autorelease];
+  UINavigationController* playTabRootController = (UINavigationController*)[self tabController:TabTypePlay];
+  [playTabRootController pushViewController:playViewController animated:NO];
 }
 
 // -----------------------------------------------------------------------------

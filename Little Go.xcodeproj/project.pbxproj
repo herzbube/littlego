@@ -223,6 +223,33 @@
 		CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */; };
 		CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
 		CD9A49AC171099FB009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
+		CD9A49D81712504A009E7514 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
+		CD9A49D91712505A009E7514 /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FB14D722B100940D3E /* ActivityIndicatorController.m */; };
+		CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */; };
+		CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */; };
+		CD9A49DC1712507D009E7514 /* BoardPositionView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE905169A134C00053671 /* BoardPositionView.m */; };
+		CD9A49DD17125081009E7514 /* BoardPositionToolbarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA116A4969D00A088D5 /* BoardPositionToolbarController.m */; };
+		CD9A49DE17125092009E7514 /* BoardPositionViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */; };
+		CD9A49DF17125095009E7514 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
+		CD9A49E0171250A4009E7514 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFEDB14F01C1C000FE1B5 /* DebugPlayViewController.m */; };
+		CD9A49E1171250AA009E7514 /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
+		CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A0998169389A600ABDB5D /* PanGestureController.m */; };
+		CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
+		CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
+		CD9A49E5171250D0009E7514 /* PlayViewScrollController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB9212E16EB9852007BDB69 /* PlayViewScrollController.m */; };
+		CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
+		CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
+		CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
+		CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
+		CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
+		CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
+		CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC4E979167B996C00AFDB51 /* ItemScrollView.m */; };
+		CD9A49ED17125133009E7514 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A41693A50700ABDB5D /* NavigationBarController.m */; };
+		CD9A49EE17125148009E7514 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48D8A1412BEFB00188B6A /* PlayViewActionSheetController.m */; };
+		CD9A49EF1712514C009E7514 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD721FE21461E8FA005EAC65 /* GameInfoViewController.m */; };
+		CD9A49F017125155009E7514 /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B6FE14D722BA00940D3E /* StatusLineController.m */; };
+		CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
+		CD9A49F21712516D009E7514 /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
 		CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
 		CD9FB5441687E1310042AA89 /* fastforward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5401687E1310042AA89 /* fastforward.png */; };
@@ -2113,6 +2140,33 @@
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 				CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
+				CD9A49D81712504A009E7514 /* PlayViewController.m in Sources */,
+				CD9A49D91712505A009E7514 /* ActivityIndicatorController.m in Sources */,
+				CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */,
+				CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */,
+				CD9A49DC1712507D009E7514 /* BoardPositionView.m in Sources */,
+				CD9A49DD17125081009E7514 /* BoardPositionToolbarController.m in Sources */,
+				CD9A49DE17125092009E7514 /* BoardPositionViewMetrics.m in Sources */,
+				CD9A49DF17125095009E7514 /* CurrentBoardPositionViewController.m in Sources */,
+				CD9A49E0171250A4009E7514 /* DebugPlayViewController.m in Sources */,
+				CD9A49E1171250AA009E7514 /* DoubleTapGestureController.m in Sources */,
+				CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */,
+				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
+				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
+				CD9A49E5171250D0009E7514 /* PlayViewScrollController.m in Sources */,
+				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
+				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
+				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
+				CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */,
+				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
+				CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */,
+				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
+				CD9A49ED17125133009E7514 /* NavigationBarController.m in Sources */,
+				CD9A49EE17125148009E7514 /* PlayViewActionSheetController.m in Sources */,
+				CD9A49EF1712514C009E7514 /* GameInfoViewController.m in Sources */,
+				CD9A49F017125155009E7514 /* StatusLineController.m in Sources */,
+				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
+				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
