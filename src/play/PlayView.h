@@ -91,6 +91,7 @@
 }
 
 + (PlayView*) sharedView;
+- (void) delayedUpdate;
 - (GoPoint*) crossHairPointNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
 - (GoPoint*) pointNear:(CGPoint)coordinates;

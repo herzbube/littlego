@@ -185,7 +185,7 @@
   self.playView.coordinateLabelsNumberViewScrollView.hidden = NO;
 
   // Finally, trigger the view/layer to redraw their content
-  [self.playView setNeedsLayout];
+  [self.playView delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -242,7 +242,7 @@
         DDLogVerbose(@"%@: New content size = %f / %f ",
                      self, newContentSize.width, newContentSize.height);
 
-        [self.playView setNeedsLayout];
+        [self.playView delayedUpdate];
       }
     }
   }
