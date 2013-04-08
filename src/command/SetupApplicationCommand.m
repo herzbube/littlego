@@ -73,74 +73,98 @@
                                             didProgress:0.0
                                         nextStepMessage:@"Starting up..."];
 
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-
-  [delegate setupLogging];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupApplicationLaunchMode];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupFolders];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupResourceBundle];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupRegistrationDomain];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupUserDefaults];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupSound];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupFuego];
-  [self increaseProgressAndNotifyDelegate];
-
-  [delegate setupTabBarController];
-  [self increaseProgressAndNotifyDelegate];
-
-  delegate.applicationReadyForAction = true;
-  [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
-  [self increaseProgressAndNotifyDelegate];
-
-  [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
-  [self increaseProgressAndNotifyDelegate];
-
-  // At this point the progress in self.asynchronousCommandDelegate is at 100%.
-  // From now on, other commands will take over and manage the progress, with
-  // an initial resetting to 0% and display of a different message.
-
-  if (ApplicationLaunchModeDiagnostics == delegate.applicationLaunchMode)
+  @try
   {
-    RestoreBugReportApplicationState* command = [[[RestoreBugReportApplicationState alloc] init] autorelease];
-    bool success = [command submit];
-    if (! success)
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionStarts
+            waitUntilDone:YES];
+
+    ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+
+    [delegate setupLogging];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupApplicationLaunchMode];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupFolders];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupResourceBundle];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupRegistrationDomain];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupUserDefaults];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupSound];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupFuego];
+    [self increaseProgressAndNotifyDelegate];
+
+    [delegate setupTabBarController];
+    [self increaseProgressAndNotifyDelegate];
+
+    delegate.applicationReadyForAction = true;
+    [[NSNotificationCenter defaultCenter] postNotificationName:applicationIsReadyForAction object:nil];
+    [self increaseProgressAndNotifyDelegate];
+
+    [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
+    [self increaseProgressAndNotifyDelegate];
+
+    // At this point the progress in self.asynchronousCommandDelegate is at 100%.
+    // From now on, other commands will take over and manage the progress, with
+    // an initial resetting to 0% and display of a different message.
+
+    if (ApplicationLaunchModeDiagnostics == delegate.applicationLaunchMode)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"];
-      DDLogError(@"%@: %@", [self shortDescription], errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
+      RestoreBugReportApplicationState* command = [[[RestoreBugReportApplicationState alloc] init] autorelease];
+      bool success = [command submit];
+      if (! success)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Failed to restore in-memory objects while launching in mode ApplicationLaunchModeDiagnostics"];
+        DDLogError(@"%@: %@", [self shortDescription], errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+    else
+    {
+      // Important: We must execute this command in the context of a thread that
+      // survives the entire command execution - see the class documentation of
+      // RestoreGameCommand for the reason why.
+      [[[[RestoreGameCommand alloc] init] autorelease] submit];
+      if (delegate.documentInteractionURL)
+      {
+        // Control returns before the .sgf file is actually loaded
+        [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
+      }
     }
   }
-  else
+  @finally
   {
-    // Important: We must execute this command in the context of a thread that
-    // survives the entire command execution - see the class documentation of
-    // RestoreGameCommand for the reason why.
-    [[[[RestoreGameCommand alloc] init] autorelease] submit];
-    if (delegate.documentInteractionURL)
-    {
-      // Control returns before the .sgf file is actually loaded
-      [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
-    }
+    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:longRunningActionEnds
+            waitUntilDone:YES];
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Is invoked in the context of the main
+/// thread.
+// -----------------------------------------------------------------------------
+- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 // -----------------------------------------------------------------------------
