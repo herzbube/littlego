@@ -364,6 +364,7 @@ enum ZoomSectionItem
         default:
           break;
       }
+      break;
     }
     case ZoomSection:
     {
@@ -375,6 +376,11 @@ enum ZoomSectionItem
         default:
           break;
       }
+      break;
+    }
+    default:
+    {
+      break;
     }
   }
   return height;
