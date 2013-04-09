@@ -67,8 +67,7 @@ NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 // Play view settings default values
 const float maximumZoomScaleDefault = 3.0;
 const float maximumZoomScaleMaximum = 3.0;
-const float stoneDistanceFromFingertipDefault = 2.0;
-const float stoneDistanceFromFingertipMaximum = 4.0;
+const float stoneDistanceFromFingertipDefault = 0.5;
 const float moveNumbersPercentageDefault = 0.0;
 
 // Board position settings default values

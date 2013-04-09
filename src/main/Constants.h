@@ -400,7 +400,6 @@ extern NSString* boardPositionChangeProgress;
 extern const float maximumZoomScaleDefault;
 extern const float maximumZoomScaleMaximum;
 extern const float stoneDistanceFromFingertipDefault;
-extern const float stoneDistanceFromFingertipMaximum;
 extern const float moveNumbersPercentageDefault;
 //@}
 

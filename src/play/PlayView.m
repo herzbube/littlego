@@ -424,7 +424,6 @@ static PlayView* sharedPlayView = nil;
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [self updateCrossHairPointDistanceFromFinger];  // depends on board size
   [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
   [self delayedUpdate];
@@ -531,32 +530,28 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 /// @brief Updates self.crossHairPointDistanceFromFinger.
 ///
-/// The calculation performed by this method depends on the following input
-/// parameters:
-/// - The value of the "stone distance from fingertip" user preference
-/// - The current board size
+/// The calculation performed by this method depends on the value of the
+/// "stone distance from fingertip" user preference. The value is a percentage
+/// that is applied to a maximum distance of n fingertips, i.e. if the user has
+/// selected the maximum distance the cross-hair stone will appear n fingertips
+/// away from the actual touch point on the screen. Currently n = 3, and 1
+/// fingertip is assumed to be the size of a toolbar button as per Apple's HIG.
 // -----------------------------------------------------------------------------
 - (void) updateCrossHairPointDistanceFromFinger
 {
   GoGame* game = [GoGame sharedGame];
-  float scaleFactor;
-  if (! game)
-    scaleFactor = 1.0;
+  if (! game || 0.0f == self.playViewModel.stoneDistanceFromFingertip)
+  {
+    self.crossHairPointDistanceFromFinger = 0;
+  }
   else
   {
-    // Distance from fingertip should scale with board size. The base for
-    // calculating the scale factor is the minimum board size.
-    scaleFactor = 1.0 * game.board.size / GoBoardSizeMin;
-    // Straight scaling results in a scale factor that is too large for big
-    // boards, so we tune down the scale a little bit. The following
-    // hard-coded factor has been determined experimentally.
-    scaleFactor *= 0.6;
-    // The final scale factor must not drop below 1 because we don't want to
-    // get below stoneDistanceFromFingertip.
-    if (scaleFactor < 1.0)
-      scaleFactor = 1.0;
+    static const float fingertipSizeInPoints = 20.0;  // toolbar button size in points
+    static const float numberOfFingertips = 3.0;
+    self.crossHairPointDistanceFromFinger = (fingertipSizeInPoints
+                                             * numberOfFingertips
+                                             * self.playViewModel.stoneDistanceFromFingertip);
   }
-  self.crossHairPointDistanceFromFinger = self.playViewModel.stoneDistanceFromFingertip * scaleFactor;
 }
 
 // -----------------------------------------------------------------------------
@@ -566,8 +561,8 @@ static PlayView* sharedPlayView = nil;
 ///
 /// Determining "closest" works like this:
 /// - If the user has turned this on in the preferences, @a coordinates are
-///   slightly adjusted so that the intersection is not directly under the
-///   user's fingertip
+///   adjusted so that the intersection is not directly under the user's
+///   fingertip
 /// - Otherwise the same rules as for pointNear:() apply - see that method's
 ///   documentation.
 // -----------------------------------------------------------------------------
@@ -575,7 +570,7 @@ static PlayView* sharedPlayView = nil;
 {
   // Adjust so that the cross-hair is not directly under the user's fingertip,
   // but one or more point distances above
-  coordinates.y -= self.crossHairPointDistanceFromFinger * self.playViewMetrics.pointDistance;
+  coordinates.y -= self.crossHairPointDistanceFromFinger;
   return [_playViewMetrics pointNear:coordinates];
 }
 

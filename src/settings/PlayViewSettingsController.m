@@ -26,7 +26,7 @@
 // Constants
 static const float sliderValueFactorForMaximumZoomScale = 10.0;
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
-static const float sliderValueFactorForStoneDistanceFromFingertip = 5.0;
+static const float sliderValueFactorForStoneDistanceFromFingertip = 100.0;
 
 
 // -----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ enum ZoomSectionItem
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(stoneDistanceFromFingertipDidChange:)];
           sliderCell.descriptionLabel.text = @"Stone distance from fingertip";
           sliderCell.slider.minimumValue = 0;
-          sliderCell.slider.maximumValue = (stoneDistanceFromFingertipMaximum
+          sliderCell.slider.maximumValue = (1.0
                                             * sliderValueFactorForStoneDistanceFromFingertip);
           sliderCell.value = (self.playViewModel.stoneDistanceFromFingertip
                               * sliderValueFactorForStoneDistanceFromFingertip);

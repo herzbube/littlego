@@ -43,7 +43,7 @@
 		<key>MaximumZoomScale</key>
 		<real>3</real>
 		<key>StoneDistanceFromFingertip~iphone</key>
-		<real>2</real>
+		<real>0.5</real>
 		<key>StoneDistanceFromFingertip~ipad</key>
 		<integer>0</integer>
 	</dict>

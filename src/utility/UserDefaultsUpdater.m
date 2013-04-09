@@ -36,6 +36,7 @@ NSString* placeStoneUnderFingerKey = @"PlaceStoneUnderFinger";
 NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
 NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
+const float stoneDistanceFromFingertipMaximum = 4.0;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -421,6 +422,16 @@ NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
     {
       NSString* keyWithDeviceSuffix = [boardOuterMarginPercentageKey stringByAppendingString:deviceSuffix];
       [playViewDictionaryUpgrade removeObjectForKey:keyWithDeviceSuffix];
+    }
+    // These keys change their value: The value they previously had
+    // (between 0 and stoneDistanceFromFingertipMaximum) must be transformed
+    // into a percentage (stoneDistanceFromFingertipMaximum = 100%)
+    for (NSString* deviceSuffix in [UIDevice deviceSuffixes])
+    {
+      NSString* keyWithDeviceSuffix = [stoneDistanceFromFingertipKey stringByAppendingString:deviceSuffix];
+      float stoneDistanceFromFingertip = [[playViewDictionaryUpgrade valueForKey:keyWithDeviceSuffix] floatValue];
+      stoneDistanceFromFingertip /= stoneDistanceFromFingertipMaximum;
+      [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:stoneDistanceFromFingertip] forKey:keyWithDeviceSuffix];
     }
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
