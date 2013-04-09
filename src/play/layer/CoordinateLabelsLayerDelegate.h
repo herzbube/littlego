@@ -36,8 +36,9 @@ enum CoordinateLabelAxis
 ///
 /// CoordinateLabelsLayerDelegate is exceptional in that it is not a sublayer
 /// of PlayView. Instead CoordinateLabelsLayerDelegate is a sublayer of a
-/// separate coordinate label view. For more information on why this is the
-/// case, see the PlayView class documentation.
+/// separate coordinate label view (specified as @a mainView parameter when the
+/// initializer is invoked). For more information on why this is the case, see
+/// the PlayView class documentation.
 ///
 /// Despite this, CoordinateLabelsLayerDelegate adopts the PlayViewLayerDelegate
 /// protocol so that it and PlayView can make use of the same event and drawing
@@ -47,15 +48,12 @@ enum CoordinateLabelAxis
 {
 }
 
-- (id) initWithLayer:(CALayer*)layer
-             metrics:(PlayViewMetrics*)metrics
-               model:(PlayViewModel*)playViewModel
-                axis:(enum CoordinateLabelAxis)axis
-                view:(UIView*)view;
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+                  model:(PlayViewModel*)playViewModel
+                   axis:(enum CoordinateLabelAxis)axis;
 
 /// @brief The axis that CoordinateLabelsLayerDelegate is drawing.
 @property(nonatomic, assign) enum CoordinateLabelAxis coordinateLabelAxis;
-/// @brief The view that the CoordinateLabelsLayerDelegate draws to.
-@property(nonatomic, assign) UIView* coordinateLabelView;
 
 @end

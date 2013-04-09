@@ -36,30 +36,31 @@
 
 @implementation PlayViewLayerDelegateBase
 
-@synthesize layer;
-@synthesize playViewMetrics;
-@synthesize playViewModel;
-@synthesize dirty;
+@synthesize layer = _layer;
+@synthesize mainView = _mainView;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayViewLayerDelegateBase object. The layer object is
-/// set up to use the PlayViewLayerDelegateBase object as its delegate.
+/// @brief Initializes a PlayViewLayerDelegateBase object. Adds a newly created
+/// CALayer to @a mainView. The layer object is set up to use this
+/// PlayViewLayerDelegateBase as its delegate.
 ///
 /// @note This is the designated initializer of PlayViewLayerDelegateBase.
 // -----------------------------------------------------------------------------
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.layer = aLayer;
+  self.layer = [CALayer layer];
+  self.mainView = mainView;
   self.playViewMetrics = metrics;
   self.playViewModel = model;
   self.dirty = false;
 
+  [self.mainView.layer addSublayer:self.layer];
   self.layer.delegate = self;
 
   // This disables the implicit animation that normally occurs when the layer
@@ -79,6 +80,7 @@
 - (void) dealloc
 {
   self.layer = nil;
+  self.mainView = nil;
   self.playViewMetrics = nil;
   self.playViewModel = nil;
   [super dealloc];

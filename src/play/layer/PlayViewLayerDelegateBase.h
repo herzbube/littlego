@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,10 @@
 ///
 /// In addition, PlayViewLayerDelegateBase provides the following simple
 /// implementation of the PlayViewLayerDelegate protocol:
-/// - Synthesizes the property @e layer
+/// - Synthesizes the properties @e layer and @e mainView
+/// - In its initializer, creates a new CALayer object, adds it as a sublayer
+///   to @e mainView, and configures the layer object to use the
+///   PlayViewLayerDelegateBase as its delegate.
 /// - Provides an empty "do-nothing" implementation of notify:(). A concrete
 ///   delegate subclass must override notify:(), otherwise an instance of the
 ///   concrete delegate class won't react to any events.
@@ -50,7 +53,7 @@
 {
 }
 
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
 
 /// @name PlayViewLayerDelegate methods
 //@{

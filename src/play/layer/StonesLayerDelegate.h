@@ -29,7 +29,7 @@
 
 /// @name Initialization and deallocation
 //@{
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
 - (void) dealloc;
 //@}
 

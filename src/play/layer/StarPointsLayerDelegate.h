@@ -27,7 +27,7 @@
 {
 }
 
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
 
 /// @name PlayViewLayerDelegate methods
 //@{

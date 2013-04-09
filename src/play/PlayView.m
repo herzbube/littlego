@@ -68,7 +68,6 @@
 //@}
 /// @name Private helpers
 //@{
-- (void) setupSubLayer:(CALayer*)subLayer;
 - (void) updateCrossHairPointDistanceFromFinger;
 - (void) updateLayers;
 - (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
@@ -90,16 +89,7 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> gridLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> starPointsLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairLinesLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> stonesLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> crossHairStoneLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> symbolsLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> territoryLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> deadStonesLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> coordinateLabelsLetterLayerDelegate;
-@property(nonatomic, retain) id<PlayViewLayerDelegate> coordinateLabelsNumberLayerDelegate;
+@property(nonatomic, retain) NSMutableArray* layerDelegates;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -158,6 +148,8 @@ static PlayView* sharedPlayView = nil;
   self.scoringModel = delegate.scoringModel;
   self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
                                                           model:self.playViewModel] autorelease];
+  self.layerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+
   [self setupView];
 
   return self;
@@ -183,16 +175,7 @@ static PlayView* sharedPlayView = nil;
     sharedPlayView = nil;
 
   self.playViewMetrics = nil;
-  self.gridLayerDelegate = nil;
-  self.starPointsLayerDelegate = nil;
-  self.crossHairLinesLayerDelegate = nil;
-  self.stonesLayerDelegate = nil;
-  self.crossHairStoneLayerDelegate = nil;
-  self.symbolsLayerDelegate = nil;
-  self.territoryLayerDelegate = nil;
-  self.deadStonesLayerDelegate = nil;
-  self.coordinateLabelsLetterLayerDelegate = nil;
-  self.coordinateLabelsNumberLayerDelegate = nil;
+  self.layerDelegates = nil;
 
   self.coordinateLabelsLetterViewScrollView = nil;
   self.coordinateLabelsLetterView = nil;
@@ -240,79 +223,80 @@ static PlayView* sharedPlayView = nil;
     [self.playViewMetrics updateWithBoardSize:game.board.size];
 
 
-  self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                             metrics:self.playViewMetrics
-                                                               model:self.playViewModel] autorelease];
-  self.starPointsLayerDelegate = [[[StarPointsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                         metrics:self.playViewMetrics
-                                                                           model:self.playViewModel] autorelease];
-  self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                 metrics:self.playViewMetrics
-                                                                                   model:self.playViewModel] autorelease];
-  self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                 metrics:self.playViewMetrics
-                                                                   model:self.playViewModel] autorelease];
-  self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                 metrics:self.playViewMetrics
-                                                                                   model:self.playViewModel] autorelease];
-  self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                   metrics:self.playViewMetrics
-                                                             playViewModel:self.playViewModel
-                                                              scoringModel:self.scoringModel] autorelease];
-  self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                       metrics:self.playViewMetrics
-                                                                 playViewModel:self.playViewModel
-                                                                  scoringModel:self.scoringModel] autorelease];
-  self.deadStonesLayerDelegate = [[[DeadStonesLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                         metrics:self.playViewMetrics
-                                                                   playViewModel:self.playViewModel
-                                                                    scoringModel:self.scoringModel] autorelease];
+  id<PlayViewLayerDelegate> layerDelegate;
+  layerDelegate = [[[GridLayerDelegate alloc] initWithMainView:self
+                                                    metrics:self.playViewMetrics
+                                                      model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[StarPointsLayerDelegate alloc] initWithMainView:self
+                                                          metrics:self.playViewMetrics
+                                                            model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithMainView:self
+                                                              metrics:self.playViewMetrics
+                                                                model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[StonesLayerDelegate alloc] initWithMainView:self
+                                                      metrics:self.playViewMetrics
+                                                        model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithMainView:self
+                                                              metrics:self.playViewMetrics
+                                                                model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[SymbolsLayerDelegate alloc] initWithMainView:self
+                                                       metrics:self.playViewMetrics
+                                                 playViewModel:self.playViewModel
+                                                  scoringModel:self.scoringModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[TerritoryLayerDelegate alloc] initWithMainView:self
+                                                         metrics:self.playViewMetrics
+                                                   playViewModel:self.playViewModel
+                                                    scoringModel:self.scoringModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[DeadStonesLayerDelegate alloc] initWithMainView:self
+                                                          metrics:self.playViewMetrics
+                                                    playViewModel:self.playViewModel
+                                                     scoringModel:self.scoringModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
 
-  // TODO xxx no longer need a method for the setup
-  // TODO xxx in fact: why can't the layer delegate create its own layer? we
-  // just pass it the main view, and it adds the layer as a sublayer...
-  [self setupSubLayer:_gridLayerDelegate.layer];
-  [self setupSubLayer:_starPointsLayerDelegate.layer];
-  [self setupSubLayer:_crossHairLinesLayerDelegate.layer];
-  [self setupSubLayer:_stonesLayerDelegate.layer];
-  [self setupSubLayer:_crossHairStoneLayerDelegate.layer];
-  [self setupSubLayer:_symbolsLayerDelegate.layer];
-  [self setupSubLayer:_territoryLayerDelegate.layer];
-  [self setupSubLayer:_deadStonesLayerDelegate.layer];
-
-  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsLetterViewScrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.coordinateLabelsLetterViewScrollView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsLetterViewScrollView.userInteractionEnabled = NO;
   self.coordinateLabelsLetterView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.coordinateLabelsLetterViewScrollView addSubview:self.coordinateLabelsLetterView];
-  self.coordinateLabelsLetterLayerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                           metrics:self.playViewMetrics
-                                                                                             model:self.playViewModel
-                                                                                              axis:CoordinateLabelAxisLetter
-                                                                                              view:self.coordinateLabelsLetterView] autorelease];
-  [self.coordinateLabelsLetterView.layer addSublayer:_coordinateLabelsLetterLayerDelegate.layer];
-
-  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsNumberViewScrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsNumberViewScrollView.userInteractionEnabled = NO;
+  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  [self setupCoordinateLabelView:self.coordinateLabelsLetterView
+                      scrollView:self.coordinateLabelsLetterViewScrollView
+                            axis:CoordinateLabelAxisLetter];
   self.coordinateLabelsNumberView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.coordinateLabelsNumberViewScrollView addSubview:self.coordinateLabelsNumberView];
-  self.coordinateLabelsNumberLayerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithLayer:[CALayer layer]
-                                                                                           metrics:self.playViewMetrics
-                                                                                             model:self.playViewModel
-                                                                                              axis:CoordinateLabelAxisNumber
-                                                                                              view:self.coordinateLabelsNumberView] autorelease];
-  [self.coordinateLabelsNumberView.layer addSublayer:_coordinateLabelsNumberLayerDelegate.layer];
+  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  [self setupCoordinateLabelView:self.coordinateLabelsNumberView
+                      scrollView:self.coordinateLabelsNumberViewScrollView
+                            axis:CoordinateLabelAxisNumber];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the specified layer as a sublayer of this Play view.
+/// @brief Private helper for setupView().
 // -----------------------------------------------------------------------------
-- (void) setupSubLayer:(CALayer*)subLayer
+- (void) setupLayerDelegate:(id<PlayViewLayerDelegate>)layerDelegate withView:(UIView*)view
 {
-  [self.layer addSublayer:subLayer];
+  [view.layer addSublayer:layerDelegate.layer];
+  [self.layerDelegates addObject:layerDelegate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupView().
+// -----------------------------------------------------------------------------
+- (void) setupCoordinateLabelView:(UIView*)labelView
+                       scrollView:(UIScrollView*)scrollView
+                             axis:(enum CoordinateLabelAxis)axis
+{
+  scrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  scrollView.backgroundColor = [UIColor clearColor];
+  scrollView.userInteractionEnabled = NO;
+  [scrollView addSubview:labelView];
+  id<PlayViewLayerDelegate> layerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithMainView:labelView
+                                                                                             metrics:self.playViewMetrics
+                                                                                               model:self.playViewModel
+                                                                                                axis:axis] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:labelView];
 }
 
 // -----------------------------------------------------------------------------
@@ -346,17 +330,8 @@ static PlayView* sharedPlayView = nil;
   if (! [GoGame sharedGame])
     return;
   self.updatesWereDelayed = false;
-
-  [_gridLayerDelegate drawLayer];
-  [_starPointsLayerDelegate drawLayer];
-  [_crossHairLinesLayerDelegate drawLayer];
-  [_stonesLayerDelegate drawLayer];
-  [_crossHairStoneLayerDelegate drawLayer];
-  [_symbolsLayerDelegate drawLayer];
-  [_territoryLayerDelegate drawLayer];
-  [_deadStonesLayerDelegate drawLayer];
-  [_coordinateLabelsLetterLayerDelegate drawLayer];
-  [_coordinateLabelsNumberLayerDelegate drawLayer];
+  for (id<PlayViewLayerDelegate> layerDelegate in self.layerDelegates)
+    [layerDelegate drawLayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -368,16 +343,8 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
-  [_gridLayerDelegate notify:event eventInfo:eventInfo];
-  [_starPointsLayerDelegate notify:event eventInfo:eventInfo];
-  [_crossHairLinesLayerDelegate notify:event eventInfo:eventInfo];
-  [_stonesLayerDelegate notify:event eventInfo:eventInfo];
-  [_crossHairStoneLayerDelegate notify:event eventInfo:eventInfo];
-  [_symbolsLayerDelegate notify:event eventInfo:eventInfo];
-  [_territoryLayerDelegate notify:event eventInfo:eventInfo];
-  [_deadStonesLayerDelegate notify:event eventInfo:eventInfo];
-  [_coordinateLabelsLetterLayerDelegate notify:event eventInfo:eventInfo];
-  [_coordinateLabelsNumberLayerDelegate notify:event eventInfo:eventInfo];
+  for (id<PlayViewLayerDelegate> layerDelegate in self.layerDelegates)
+    [layerDelegate notify:event eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------

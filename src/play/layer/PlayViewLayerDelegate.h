@@ -80,5 +80,8 @@ enum PlayViewLayerDelegateEvent
 /// @brief The layer managed by the delegate.
 @property(nonatomic, retain) CALayer* layer;
 
+/// @brief The main view that the layer belongs to.
+@property(nonatomic, assign) UIView* mainView;
+
 @end
 

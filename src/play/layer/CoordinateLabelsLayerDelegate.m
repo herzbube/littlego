@@ -35,18 +35,16 @@
 ///
 /// @note This is the designated initializer of CoordinateLabelsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithLayer:(CALayer*)layer
-             metrics:(PlayViewMetrics*)metrics
-               model:(PlayViewModel*)playViewModel
-                axis:(enum CoordinateLabelAxis)axis
-                view:(UIView*)view
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+                  model:(PlayViewModel*)playViewModel
+                   axis:(enum CoordinateLabelAxis)axis
 {
   // Call designated initializer of superclass (PlayViewLayerDelegateBase)
-  self = [super initWithLayer:layer metrics:metrics model:playViewModel];
+  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
-  self.coordinateLabelView = view;
   return self;
 }
 
@@ -60,7 +58,7 @@
     case PVLDEventRectangleChanged:
     case PVLDEventGoGameStarted:
     {
-      self.layer.frame = self.coordinateLabelView.bounds;
+      self.layer.frame = self.mainView.bounds;
       self.dirty = true;
       break;
     }

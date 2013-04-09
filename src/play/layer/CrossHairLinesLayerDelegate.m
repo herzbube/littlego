@@ -45,10 +45,10 @@
 ///
 /// @note This is the designated initializer of CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
 {
   // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithLayer:aLayer metrics:metrics model:model];
+  self = [super initWithMainView:mainView metrics:metrics model:model];
   if (! self)
     return nil;
   self.crossHairPoint = nil;

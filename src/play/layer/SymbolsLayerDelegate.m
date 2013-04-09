@@ -59,10 +59,10 @@
 ///
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithLayer:(CALayer*)aLayer metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
 {
   // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithLayer:aLayer metrics:metrics model:playViewModel];
+  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
