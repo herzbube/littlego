@@ -27,8 +27,7 @@
 ///
 /// Most of the time the status view displays textual information, but whenever
 /// the GTP engine is taking a long time to calculate something (e.g. computer
-/// player makes its move), the status view displays an activity indicator
-/// instead.
+/// player makes its move), the status view also displays an activity indicator.
 // -----------------------------------------------------------------------------
 @interface StatusViewController : NSObject
 {

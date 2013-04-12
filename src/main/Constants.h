@@ -354,6 +354,12 @@ extern NSString* goScoreCalculationStarts;
 ///
 /// The GoScore object is associated with the notification.
 extern NSString* goScoreCalculationEnds;
+/// @brief Is sent to indicate that querying the GTP engine for an initial set
+/// of dead stones is about to start. Is sent after #goScoreCalculationStarts.
+extern NSString* askGtpEngineForDeadStonesStarts;
+/// @brief Is sent to indicate that querying the GTP engine for an initial set
+/// of dead stones has ended. Is sent before #goScoreCalculationEnds.
+extern NSString* askGtpEngineForDeadStonesEnds;
 //@}
 
 // -----------------------------------------------------------------------------

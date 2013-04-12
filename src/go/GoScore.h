@@ -167,6 +167,7 @@
 //@{
 @property(nonatomic, assign) bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
+@property(nonatomic, assign) bool askGtpEngineForDeadStonesInProgress; ///< @brief Is true if the GTP engine is currently being queried for dead stones.
 //@}
 // -----------------------------------------------------------------------------
 /// @name Scoring properties (for the current board position)

@@ -57,8 +57,10 @@ NSString* gtpLogItemChanged = @"GtpLogItemChanged";
 // Scoring related notifications
 NSString* goScoreScoringModeEnabled = @"GoScoreScoringModeEnabled";
 NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
-NSString* goScoreCalculationStarts = @"goScoreCalculationStarts";
-NSString* goScoreCalculationEnds = @"goScoreCalculationEnds";
+NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
+NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
+NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
+NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";

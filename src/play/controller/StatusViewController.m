@@ -105,8 +105,9 @@
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
+  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
@@ -207,7 +208,7 @@
   bool activityIndicatorShouldAnimate = false;
   if (self.scoringModel.scoringMode)
   {
-    if (self.scoringModel.score.scoringInProgress)
+    if (self.scoringModel.score.askGtpEngineForDeadStonesInProgress)
       activityIndicatorShouldAnimate = true;
     else
       activityIndicatorShouldAnimate = false;
@@ -421,22 +422,42 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationStarts notifications.
+/// @brief Responds to the #goScoreCalculationEnds notifications.
 // -----------------------------------------------------------------------------
-- (void) goScoreCalculationStarts:(NSNotification*)notification
+- (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  self.activityIndicatorNeedsUpdate = true;
+  // No activity indicator update here, this is handled by
+  // askGtpEngineForDeadStonesEnds because the notification is optional.
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notifications.
+/// @brief Responds to the #askGtpEngineForDeadStonesStarts notifications.
 // -----------------------------------------------------------------------------
-- (void) goScoreCalculationEnds:(NSNotification*)notification
+- (void) askGtpEngineForDeadStonesStarts:(NSNotification*)notification
 {
   self.activityIndicatorNeedsUpdate = true;
+  // The activity indicator is displayed long enough so that it's worth to
+  // display a status message. Note that we don't display a message if only
+  // goScoreCalculationStarts is received, but no
+  // askGtpEngineForDeadStonesStarts is received. The reason is that the actual
+  // score calculations is quite fast, even on an older device such as an
+  // iPhone 3GS, so an update for goScoreCalculationStarts would be followed
+  // almost immediately by another update for goScoreCalculationEnds, which
+  // might cause flickering.
   self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #askGtpEngineForDeadStonesEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) askGtpEngineForDeadStonesEnds:(NSNotification*)notification
+{
+  self.activityIndicatorNeedsUpdate = true;
+  // No label update here, the "scoring in progress..." message must remain
+  // until goScoreCalculationEnds is received.
   [self delayedUpdate];
 }
 

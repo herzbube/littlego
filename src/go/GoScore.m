@@ -115,6 +115,7 @@
 
   _territoryScoresAvailable = false;
   _scoringInProgress = false;
+  _askGtpEngineForDeadStonesInProgress = false;
   _game = nil;
   _operationQueue = nil;
   _boardIsInitialized = false;
@@ -409,6 +410,11 @@
   // Initialize dead stones
   if ([ApplicationDelegate sharedDelegate].scoringModel.askGtpEngineForDeadStones)
   {
+    self.askGtpEngineForDeadStonesInProgress = true;
+    [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:askGtpEngineForDeadStonesStarts
+            waitUntilDone:YES];
     GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
     command.waitUntilDone = true;
     [command submit];
@@ -438,9 +444,23 @@
       // live without one
       // -> do nothing and simply go on, ultimately returning success
     }
+    self.askGtpEngineForDeadStonesInProgress = false;
+    [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
+                 onThread:[NSThread mainThread]
+               withObject:askGtpEngineForDeadStonesEnds
+            waitUntilDone:YES];
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for initializeBoard(). Is invoked in the context of the main
+/// thread.
+// -----------------------------------------------------------------------------
+- (void) postAskGtpEngineForDeadStonesNotificationOnMainThread:(NSString*)notificationName
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 // -----------------------------------------------------------------------------
