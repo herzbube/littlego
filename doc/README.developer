@@ -476,8 +476,10 @@ Coding guidelines
   is much stricter than for lines of code
 - Setter/getter methods should be named after the property they encapsulate
   (e.g. getter = icon(), setter = setIcon:())
-- Private methods and properties of a class are declared in class extension
-  which is declared in the .m file
+- Private properties of a class are declared in class extension which appears
+  in the .m file
+- Private methods of a class should not be declared to avoid unnecessary
+  duplication of method signatures.
 - Consider making properties "readonly" in the public interface of a class, then
   redeclare them as "readwrite" in the private interface in the .m file
 - Always declare a property's setter semantics, i.e. explicitly declare "assign"
@@ -485,9 +487,9 @@ Coding guidelines
 - Use "nonatomic" unless the property really needs to be atomic
 - Find good names for variables, methods and classes; don't hesitate to use
   long names; never (!) use abbreviations; don't use i, j, k for loop variables
-- Redeclare overrides inherited from a base class
 - Method signatures should start in column 0 and use spaces etc. as in the
-  following example:
+  following example. It's the style I like, although it deviates from Apple's
+  style (which everybody else on the planet seems to have adopted).
     - (NSString*) foo:(NSString*)bar;
 - Never ever use side-effects, e.g.
   - Don't place ++/-- operators in the same line as an assignment

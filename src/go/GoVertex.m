@@ -20,7 +20,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoVertex.
+/// @brief Class extension with private properties for GoVertex.
 // -----------------------------------------------------------------------------
 @interface GoVertex()
 /// @name Re-declaration of properties to make them readwrite privately

@@ -28,7 +28,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RestoreGameCommand.
+/// @brief Class extension with private properties for RestoreGameCommand.
 // -----------------------------------------------------------------------------
 @interface RestoreGameCommand()
 @property(nonatomic, retain) GoGame* unarchivedGame;

@@ -22,20 +22,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for TableViewTextCell.
+/// @brief Class extension with private properties for TableViewTextCell.
 // -----------------------------------------------------------------------------
 @interface TableViewTextCell()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithReuseIdentifier:(NSString*)reuseIdentifier;
-- (void) dealloc;
-- (void) setupCell;
-- (void) setupContentView;
-//@}
-/// @name Overrides from superclass
-//@{
-- (void) layoutSubviews;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) UILabel* label;

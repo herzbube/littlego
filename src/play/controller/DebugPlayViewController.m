@@ -25,32 +25,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DebugPlayViewController.
+/// @brief Class extension with private properties for DebugPlayViewController.
 // -----------------------------------------------------------------------------
 @interface DebugPlayViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-//@}
-/// @name UITextFieldDelegate protocol method.
-//@{
-- (BOOL) textFieldShouldReturn:(UITextField*)aTextField;
-//@}
-/// @name Private helpers
-//@{
-- (UITextField*) createTextFieldWithFrame:(CGRect)textFieldFrame;
-//@}
-/// @name Privately declared property
-//@{
 @property(nonatomic, retain) UITextField* normalLineWidthTextField;
 @property(nonatomic, retain) UITextField* boundingLineWidthTextField;
 @property(nonatomic, retain) UITextField* starPointRadiusTextField;
 @property(nonatomic, retain) UITextField* stoneRadiusPercentageTextField;
-//@}
 @end
 
 

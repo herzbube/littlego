@@ -24,39 +24,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for TapGestureController.
+/// @brief Class extension with private properties for TapGestureController.
 // -----------------------------------------------------------------------------
 @interface TapGestureController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Gesture handler
-//@{
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name UIGestureRecognizerDelegate protocol
-//@{
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name Notification responders
-//@{
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) goScoreCalculationStarts:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
-//@}
-/// @name Updaters
-//@{
-- (void) updateTappingEnabled;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupTapGestureRecognizer;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 /// @brief The view that TapGestureController manages gestures for.
 @property(nonatomic, assign) PlayView* playView;
 /// @brief The model that manages scoring-related data.

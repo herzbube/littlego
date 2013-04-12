@@ -43,36 +43,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayView.
+/// @brief Class extension with private properties for PlayView.
 // -----------------------------------------------------------------------------
 @interface PlayView()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithFrame:(CGRect)aRect;
-- (void) dealloc;
-//@}
-/// @name UIView methods
-//@{
-- (void) layoutSubviews;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Private helpers
-//@{
-- (void) updateCrossHairPointDistanceFromFinger;
-- (void) updateLayers;
-- (void) notifyLayerDelegates:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
-//@}
-/// @name Update optimizing
+/// @name Update optimizing properties
 //@{
 /// @brief Number of "expensive" actions that are currently in progress. View
 /// updates are delayed while this number is >0.

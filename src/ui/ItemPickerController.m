@@ -22,39 +22,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ItemPickerController.
+/// @brief Class extension with private properties for ItemPickerController.
 // -----------------------------------------------------------------------------
 @interface ItemPickerController()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Helpers
-//@{
-- (bool) isSelectionValid;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* title;

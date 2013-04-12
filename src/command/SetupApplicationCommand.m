@@ -25,7 +25,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SetupApplicationCommand.
+/// @brief Class extension with private properties for SetupApplicationCommand.
 // -----------------------------------------------------------------------------
 @interface SetupApplicationCommand()
 @property(nonatomic, assign) int totalSteps;

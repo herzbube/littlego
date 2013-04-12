@@ -28,52 +28,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// SubmitGtpCommandViewController.
 // -----------------------------------------------------------------------------
 @interface SubmitGtpCommandViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITextFieldDelegate protocol method.
-//@{
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
-- (BOOL) textFieldShouldReturn:(UITextField*)aTextField;
-//@}
-/// @name Action methods
-//@{
-- (void) submitCommand:(id)sender;
-//@}
-/// @name Private helpers
-//@{
-- (CGRect) mainViewFrame;
-- (CGRect) textFieldViewFrame;
-- (CGRect) tableViewFrame;
-- (void) setupNavigationItem;
-- (bool) isTextAcceptable:(NSString*)aText;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) UITextField* textField;
-//@}
 @end
 
 

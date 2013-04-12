@@ -25,42 +25,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PanGestureController.
+/// @brief Class extension with private properties for PanGestureController.
 // -----------------------------------------------------------------------------
 @interface PanGestureController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Gesture handler
-//@{
-- (void) handlePanFrom:(UILongPressGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name UIGestureRecognizerDelegate protocol
-//@{
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goGameStateChanged:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Updaters
-//@{
-- (void) updatePanningEnabled;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupLongPressGestureRecognizer;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) PlayView* playView;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;

@@ -74,40 +74,11 @@ enum ZoomSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewSettingsController.
+/// @brief Class extension with private properties for
+/// PlayViewSettingsController.
 // -----------------------------------------------------------------------------
 @interface PlayViewSettingsController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Action methods
-//@{
-- (void) togglePlaySound:(id)sender;
-- (void) toggleVibrate:(id)sender;
-- (void) toggleMarkLastMove:(id)sender;
-- (void) toggleDisplayCoordinates:(id)sender;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) PlayViewModel* playViewModel;
-//@}
 @end
 
 

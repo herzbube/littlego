@@ -27,17 +27,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for Player.
+/// @brief Class extension with private properties for Player.
 // -----------------------------------------------------------------------------
 @interface Player()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Property accessors
-//@{
-- (void) setHuman:(bool)newValue;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* uuid;

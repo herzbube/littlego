@@ -22,21 +22,6 @@
 #import "../../utility/UIColorAdditions.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ScoringModel.
-// -----------------------------------------------------------------------------
-@interface ScoringModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Setters needed for posting notifications to notify our observers
-//@{
-- (void) setScoringMode:(bool)newMode;
-//@}
-@end
-
-
 @implementation ScoringModel
 
 // -----------------------------------------------------------------------------

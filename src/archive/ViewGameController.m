@@ -55,53 +55,6 @@ enum GameAttributesSectionItem
   MaxGameAttributesSectionItem
 };
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ViewGameController.
-// -----------------------------------------------------------------------------
-@interface ViewGameController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name EditTextDelegate protocol
-//@{
-- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
-//@}
-/// @name NewGameDelegate protocol
-//@{
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameStateChanged:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Helpers
-//@{
-- (void) editGame;
-- (void) loadGame;
-- (void) updateLoadButtonState;
-//@}
-@end
-
 
 @implementation ViewGameController
 

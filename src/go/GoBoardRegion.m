@@ -22,32 +22,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoBoardRegion.
+/// @brief Class extension with private properties for GoBoardRegion.
 // -----------------------------------------------------------------------------
 @interface GoBoardRegion()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Private helper methods
-//@{
-- (void) splitRegionAfterRemovingPoint:(GoPoint*)removedPoint;
-- (void) fillSubRegion:(NSMutableArray*)subRegion containingPoint:(GoPoint*)point;
-- (void) moveSubRegion:(NSArray*)subRegion fromMainRegion:(GoBoardRegion*)mainRegion;
-- (void) removeSubRegion:(NSArray*)subRegion;
-- (void) fillCache;
-- (void) invalidateCache;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSArray* points;

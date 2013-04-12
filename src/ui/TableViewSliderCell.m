@@ -22,27 +22,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for TableViewSliderCell.
+/// @brief Class extension with private properties for TableViewSliderCell.
 // -----------------------------------------------------------------------------
 @interface TableViewSliderCell()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithReuseIdentifier:(NSString*)reuseIdentifier;
-- (void) dealloc;
-- (void) setupCell;
-- (void) setupContentView;
-//@}
-/// @name Action methods
-//@{
-- (void) sliderValueChanged:(UISlider*)sender;
-//@}
-/// @name Other methods
-//@{
-- (CGRect) descriptionLabelFrame;
-- (CGRect) valueLabelFrame;
-- (CGRect) sliderFrame;
-- (void) updateValueLabel;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;

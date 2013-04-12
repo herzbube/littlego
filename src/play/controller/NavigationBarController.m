@@ -30,73 +30,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NavigationBarController.
+/// @brief Class extension with private properties for NavigationBarController.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Action methods for toolbar items
-//@{
-- (void) pass:(id)sender;
-- (void) computerPlay:(id)sender;
-- (void) pause:(id)sender;
-- (void) continue:(id)sender;
-- (void) interrupt:(id)sender;
-- (void) gameInfo:(id)sender;
-- (void) gameActions:(id)sender;
-- (void) done:(id)sender;
-//@}
-/// @name GameInfoViewControllerDelegate protocol
-//@{
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller;
-//@}
-/// @name PlayViewActionSheetDelegate protocol
-//@{
-- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
-//@}
-/// @name UISplitViewControllerDelegate protocol
-//@{
-- (void) splitViewController:(UISplitViewController*)svc willHideViewController:(UIViewController*)aViewController withBarButtonItem:(UIBarButtonItem*)barButtonItem forPopoverController:(UIPopoverController*)pc;
-- (void) splitViewController:(UISplitViewController*)svc willShowViewController:(UIViewController*)aViewController invalidatingBarButtonItem:(UIBarButtonItem*)button;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goGameStateChanged:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) goScoreCalculationStarts:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) populateNavigationBar;
-- (void) updateButtonStates;
-- (void) updateComputerPlayButtonState;
-- (void) updatePassButtonState;
-- (void) updatePauseButtonState;
-- (void) updateContinueButtonState;
-- (void) updateInterruptButtonState;
-- (void) updateGameInfoButtonState;
-- (void) updateGameActionsButtonState;
-- (void) updateDoneButtonState;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupNavigationItem;
-- (void) setupButtons;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
@@ -126,7 +62,6 @@
 @property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
 @property(nonatomic, retain) UIBarButtonItem* doneButton;
 @property(nonatomic, retain) UIBarButtonItem* statusViewButton;
-//@}
 @end
 
 

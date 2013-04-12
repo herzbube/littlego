@@ -26,21 +26,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoBoardPosition.
+/// @brief Class extension with private properties for GoBoardPosition.
 // -----------------------------------------------------------------------------
 @interface GoBoardPosition()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Private methods
-//@{
-- (void) updateGoObjectsToNewPosition:(int)newBoardPosition;
-//@}
 /// @name Private properties
 //@{
 @property(nonatomic, assign) GoGame* game;

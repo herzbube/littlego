@@ -33,37 +33,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// GenerateDiagnosticsInformationFileCommand.
 // -----------------------------------------------------------------------------
 @interface GenerateDiagnosticsInformationFileCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Collecting pieces of information
-//@{
-- (void) saveBugReportInfo;
-- (void) saveInMemoryObjects;
-- (void) saveUserDefaults;
-- (void) saveCurrentGameAsSgf;
-- (void) saveBoardScreenshot;
-- (void) saveBoardAsSeenByGtpEngine;
-//@}
-/// @name Private helpers
-//@{
-- (void) setup;
-- (void) cleanup;
-- (void) zipDiagnosticsInformationFolder;
-- (NSString*) boardAsSeenByGtpEngine;
-- (void) writeBoardAsSeenByGtpEngine:(NSString*)boardAsSeenByGtpEngine toFile:(NSString*)filePath;
-- (bool) shouldIgnoreUserDefaultsKey:(NSString*)key;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, retain) NSString* diagnosticsInformationFolderPath;
 @property(nonatomic, retain) NSDictionary* registrationDomainDefaults;
-//@}
 @end
 
 

@@ -39,25 +39,6 @@ static NSString* gridLineColor = @"A9ABAD";
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for TableViewGridCell.
-// -----------------------------------------------------------------------------
-@interface TableViewGridCell()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithReuseIdentifier:(NSString*)reuseIdentifier;
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (GridCellContentView*) gridCellContentView;
-+ (UILabel*) valueLabelWithFrame:(CGRect)frame;
-+ (UILabel*) titleLabelWithFrame:(CGRect)frame;
-//@}
-//@}
-@end
-
-
-// -----------------------------------------------------------------------------
 /// @brief Helper view used to draw vertical grid lines.
 // -----------------------------------------------------------------------------
 @interface GridCellContentView : UIView

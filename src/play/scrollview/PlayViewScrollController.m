@@ -21,11 +21,11 @@
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 
+
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewScrollController.
+/// @brief Class extension with private properties for PlayViewScrollController.
 // -----------------------------------------------------------------------------
 @interface PlayViewScrollController()
-
 @property(nonatomic, assign) UIScrollView* playViewScrollView;
 @property(nonatomic, assign) PlayView* playView;
 /// @brief The overall zoom scale currently in use for drawing the Play view.

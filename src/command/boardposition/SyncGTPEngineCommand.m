@@ -28,21 +28,7 @@
 #import "../../gtp/GtpResponse.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SyncGTPEngineCommand.
-// -----------------------------------------------------------------------------
-@interface SyncGTPEngineCommand()
-/// @name Private helpers
-//@{
-- (bool) syncGTPEngineClearBoard;
-- (bool) syncGTPEngineHandicap;
-- (bool) syncGTPEngineMoves;
-//@}
-@end
-
-
 @implementation SyncGTPEngineCommand
-
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.

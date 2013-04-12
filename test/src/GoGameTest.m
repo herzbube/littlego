@@ -31,14 +31,6 @@
 #import <command/game/NewGameCommand.h>
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoGameTest.
-// -----------------------------------------------------------------------------
-@interface GoGameTest()
-- (void) verifyFragmentedRegionsOfTestDiscardCausesRegionToFragment:(NSString*)failureDescription;
-@end
-
-
 @implementation GoGameTest
 
 // -----------------------------------------------------------------------------

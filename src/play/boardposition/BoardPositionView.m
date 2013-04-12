@@ -32,29 +32,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BoardPositionView.
+/// @brief Class extension with private properties for BoardPositionView.
 // -----------------------------------------------------------------------------
 @interface BoardPositionView()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Overrides from superclass
-//@{
-- (void) layoutSubviews;
-//@}
-/// @name Private helpers
-//@{
-- (NSString*) labelTextForFirstBoardPosition;
-- (NSString*) labelTextForMove:(GoMove*)move moveIndex:(int)moveIndex;
-- (UILabel*) labelWithText:(NSString*)labelText;
-- (UIImageView*) stoneImageViewForMove:(GoMove*)move;
-- (void) setupBackgroundColorForMove:(GoMove*)move;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) BoardPositionViewMetrics* viewMetrics;
-//@}
 @end
 
 

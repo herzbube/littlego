@@ -33,61 +33,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) computerPlayerThinkingStarts:(NSNotification*)notification;
-- (void) computerPlayerThinkingStops:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (NSIndexPath*) tableView:(UITableView*)tableView willSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) updateAllData;
-- (void) updateCurrentBoardPosition;
-- (void) updateCurrentBoardPositionInCurrentBoardPositionTableView;
-- (void) updateCurrentBoardPositionInBoardPositionListTableView;
-- (void) updateNumberOfItems;
-- (void) updateTappingEnabled;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupTableViews;
-- (void) setupCurrentBoardPositionTableView;
-- (void) setupBoardPositionListTableView;
-- (void) setupCurrentBoardPositionTitleLabel;
-- (void) setupBoardPositionListTitleLabel;
-- (UILabel*) titleLabelWithText:(NSString*)labelText;
-- (void) setupNotificationResponders;
-- (void) setupStoneImages;
-- (UIImage*) stoneImageForMove:(GoMove*)move;
-- (UIColor*) backgroundColorForMove:(GoMove*)move;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) UILabel* currentBoardPositionTitleLabel;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
 @property(nonatomic, retain) UILabel* boardPositionListTitleLabel;
@@ -101,7 +50,6 @@
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
-//@}
 @end
 
 

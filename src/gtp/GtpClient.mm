@@ -38,24 +38,10 @@ static std::ifstream responseStream;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpClient.
+/// @brief Class extension with private properties for GtpClient.
 // -----------------------------------------------------------------------------
 @interface GtpClient()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithPipes:(NSArray*)pipes;
-- (void) dealloc;
-//@}
-/// @name Private helper methods
-//@{
-- (void) mainLoop:(NSArray*)pipes;
-- (void) processCommand:(GtpCommand*)command;
-- (void) notifyResponseTarget:(GtpResponse*)response;
-//@}
-/// @name Privately declared properties
-//@{
 @property(retain) NSThread* thread;
-//@}
 @end
 
 

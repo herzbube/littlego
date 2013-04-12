@@ -24,48 +24,6 @@
 #import "../ui/UiUtilities.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpCommandViewController.
-// -----------------------------------------------------------------------------
-@interface GtpCommandViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView moveRowAtIndexPath:(NSIndexPath*)fromIndexPath toIndexPath:(NSIndexPath*)toIndexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name EditTextDelegate protocol
-//@{
-- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
-//@}
-/// @name Action methods
-//@{
-- (void) addCommand:(id)sender;
-- (void) editCommandAtIndex:(int)index;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupNavigationItem;
-//@}
-@end
-
-
 @implementation GtpCommandViewController
 
 // -----------------------------------------------------------------------------

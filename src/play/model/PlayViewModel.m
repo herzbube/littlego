@@ -21,17 +21,6 @@
 #import "../../utility/UIColorAdditions.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewModel.
-// -----------------------------------------------------------------------------
-@interface PlayViewModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation PlayViewModel
 
 // -----------------------------------------------------------------------------

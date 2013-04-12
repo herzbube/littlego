@@ -53,43 +53,11 @@ enum TwoAndMoreHandicapSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for HandicapSelectionController.
+/// @brief Class extension with private properties for
+/// HandicapSelectionController.
 // -----------------------------------------------------------------------------
 @interface HandicapSelectionController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Private helpers
-//@{
-- (int) handicapValueForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (NSIndexPath*) indexPathForHandicapValue:(int)handicapValue;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) int maximumHandicap;
-//@}
 @end
 
 

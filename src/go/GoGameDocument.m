@@ -21,10 +21,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods/properties for GoGameDocument.
+/// @brief Class extension with private properties for GoGameDocument.
 // -----------------------------------------------------------------------------
 @interface GoGameDocument()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
 @property(nonatomic, retain, readwrite) NSString* documentName;
+//@}
 @end
 
 

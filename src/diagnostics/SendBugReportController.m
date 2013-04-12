@@ -23,36 +23,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SendBugReportController.
+/// @brief Class extension with private properties for SendBugReportController.
 // -----------------------------------------------------------------------------
 @interface SendBugReportController()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name MFMailComposeViewControllerDelegate methods
-//@{
-- (void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name Private helpers
-//@{
-- (bool) canSendMail;
-- (bool) generateDiagnosticsInformationFileInternal;
-- (void) presentMailComposeController;
-- (NSString*) mailMessageBody;
-- (void) notifyDelegate;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, assign) bool sendBugReportMode;
 @property(nonatomic, retain) UIViewController* modalViewControllerParent;
 @property(nonatomic, retain) NSString* diagnosticsInformationFilePath;
-//@}
 @end
 
 

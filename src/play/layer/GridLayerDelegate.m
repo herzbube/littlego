@@ -28,10 +28,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GridLayerDelegate.
+/// @brief Class extension with private properties for GridLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface GridLayerDelegate()
-- (void) releaseLineLayers;
 @property(nonatomic, assign) CGLayerRef normalLineLayer;
 @property(nonatomic, assign) CGLayerRef boundingLineLayer;
 @end

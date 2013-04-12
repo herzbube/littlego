@@ -30,22 +30,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DeadStonesLayerDelegate.
+/// @brief Class extension with private properties for DeadStonesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface DeadStonesLayerDelegate()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (void) releaseLayer;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef deadStoneSymbolLayer;
-//@}
 @end
 
 

@@ -53,43 +53,6 @@ enum NoHandicapGameSectionItem
 };
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for KomiSelectionController.
-// -----------------------------------------------------------------------------
-@interface KomiSelectionController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Private helpers
-//@{
-- (double) komiValueForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (NSIndexPath*) indexPathForKomiValue:(double)komiValue;
-//@}
-@end
-
-
 @implementation KomiSelectionController
 
 // -----------------------------------------------------------------------------

@@ -19,17 +19,6 @@
 #import "NewGameModel.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewGameModel.
-// -----------------------------------------------------------------------------
-@interface NewGameModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation NewGameModel
 
 // -----------------------------------------------------------------------------

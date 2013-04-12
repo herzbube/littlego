@@ -23,18 +23,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoMoveModel.
+/// @brief Class extension with private properties for GoMoveModel.
 // -----------------------------------------------------------------------------
 @interface GoMoveModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
 /// @name Private properties
 //@{
 @property(nonatomic, assign) GoGame* game;

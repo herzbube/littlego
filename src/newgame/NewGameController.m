@@ -106,69 +106,11 @@ enum KomiSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewGameController.
+/// @brief Class extension with private properties for NewGameController.
 // -----------------------------------------------------------------------------
 @interface NewGameController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
-- (void) gameTypeChanged:(id)sender;
-- (void) toggleComputerPlaysWhite:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name ItemPickerDelegate protocol
-//@{
-- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name HandicapSelectionDelegate protocol
-//@{
-- (void) handicapSelectionController:(HandicapSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name KomiSelectionDelegate protocol
-//@{
-- (void) komiSelectionController:(KomiSelectionController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name Helpers
-//@{
-- (UITableViewCell*) createCellForTableView:(UITableView*)tableView forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (Player*) playerForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (bool) shouldPickHumanPlayerForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) updateWithNewPlayer:(Player*)newPlayer forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) updateCell:(UITableViewCell*)cell withPlayer:(NSString*)playerUUID;
-- (bool) isSelectionValid;
-- (void) newGame;
-+ (int) segmentIndexForGameType:(enum GoGameType)gameType;
-+ (enum GoGameType) gameTypeForSegmentIndex:(int)segmentIndex;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
-//@}
 @end
 
 

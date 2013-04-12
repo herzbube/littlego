@@ -27,7 +27,7 @@
 #import <go/GoUtilities.h>
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoBoardPositionTest.
+/// @brief Class extension with private properties for GoBoardPositionTest.
 // -----------------------------------------------------------------------------
 @interface GoBoardPositionTest()
 @property(nonatomic, assign) int numberOfNotificationsReceived;

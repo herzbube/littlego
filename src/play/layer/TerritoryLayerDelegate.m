@@ -41,25 +41,14 @@ enum TerritoryLayerType
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for TerritoryLayerDelegate.
+/// @brief Class extension with private properties for TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface TerritoryLayerDelegate()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (void) releaseLayers;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef blackTerritoryLayer;
 @property(nonatomic, assign) CGLayerRef whiteTerritoryLayer;
 @property(nonatomic, assign) CGLayerRef inconsistentFillColorTerritoryLayer;
 @property(nonatomic, assign) CGLayerRef inconsistentDotSymbolTerritoryLayer;
-//@}
 @end
 
 

@@ -19,21 +19,6 @@
 #import "ArchiveGame.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ArchiveGame.
-// -----------------------------------------------------------------------------
-@interface ArchiveGame()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Property accessors
-//@{
-- (NSString*) name;
-//@}
-@end
-
-
 @implementation ArchiveGame
 
 // -----------------------------------------------------------------------------

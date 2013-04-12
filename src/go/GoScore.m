@@ -32,37 +32,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoScore.
+/// @brief Class extension with private properties for GoScore.
 // -----------------------------------------------------------------------------
 @interface GoScore()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-- (void) setupAfterUnarchiving;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (void) resetValues;
-- (void) doCalculate;
-- (void) calculateEnds;
-- (bool) initializeBoard;
-- (void) uninitializeBoard;
-- (bool) updateTerritoryColor;
-- (void) updateScoringProperties;
-- (NSArray*) parseDeadStoneGtpResponse:(NSString*)gtpResponse;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) GoGame* game;
 @property(nonatomic, retain) NSOperationQueue* operationQueue;
 /// @brief This flag is set only if @e territoryScoresAvailable is true.
@@ -77,7 +49,6 @@
 /// not-quite-cheap). The list must be discarded when the board position
 /// changes.
 @property(nonatomic, retain) NSArray* allRegions;
-//@}
 @end
 
 

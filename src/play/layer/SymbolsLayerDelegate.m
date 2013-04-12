@@ -32,23 +32,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SymbolsLayerDelegate.
+/// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (void) releaseLayers;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
-//@}
 @end
 
 

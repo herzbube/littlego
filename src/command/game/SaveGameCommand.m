@@ -26,22 +26,6 @@
 #import "../../utility/PathUtilities.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SaveGameCommand.
-// -----------------------------------------------------------------------------
-@interface SaveGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Helpers
-//@{
-- (void) showAlertWithError:(NSError*)error;
-- (void) showAlertWithMessage:(NSString*)message;
-//@}
-@end
-
-
 @implementation SaveGameCommand
 
 // -----------------------------------------------------------------------------

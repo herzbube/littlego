@@ -23,19 +23,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpEngineProfile.
+/// @brief Class extension with private properties for GtpEngineProfile.
 // -----------------------------------------------------------------------------
 @interface GtpEngineProfile()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (NSString*) description;
-- (int) playingStrength;
-- (void) setPlayingStrength:(int)playingStrength;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* uuid;

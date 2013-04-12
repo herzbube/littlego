@@ -21,18 +21,6 @@
 #import "../../ui/UiUtilities.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RightPaneViewController.
-// -----------------------------------------------------------------------------
-@interface RightPaneViewController()
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-@end
-
-
 @implementation RightPaneViewController
 
 // -----------------------------------------------------------------------------

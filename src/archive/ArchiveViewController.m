@@ -27,46 +27,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ArchiveViewController.
+/// @brief Class extension with private properties for ArchiveViewController.
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Notification responders
-//@{
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Helpers
-//@{
-- (void) setupPlaceholderView;
-- (void) updateVisibleStateOfPlaceholderView;
-- (void) updateVisibleStateOfEditButton;
-- (void) viewGame:(ArchiveGame*)game;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, retain) UIView* placeholderView;
-//@}
 @end
 
 

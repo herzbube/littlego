@@ -117,58 +117,11 @@ enum MaxGamesCategory
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// EditGtpEngineProfileSettingsController.
 // -----------------------------------------------------------------------------
 @interface EditGtpEngineProfileSettingsController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) togglePondering:(id)sender;
-- (void) toggleReuseSubtree:(id)sender;
-- (void) maxMemoryDidChange:(id)sender;
-- (void) threadCountDidChange:(id)sender;
-- (void) maxPonderTimeDidChange:(id)sender;
-- (void) maxThinkingTimeDidChange:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name ItemPickerDelegate protocol
-//@{
-- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name UIActionSheetDelegate protocol
-//@{
-- (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name Private helpers
-//@{
-- (NSString*) maxGamesCategoryName:(enum MaxGamesCategory)maxGamesCategory;
-- (unsigned long long) maxGames:(enum MaxGamesCategory)maxGamesCategory;
-- (enum MaxGamesCategory) maxGamesCategory:(unsigned long long)maxGames;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) UISwitch* reuseSubtreeSwitch;
-//@}
 @end
 
 

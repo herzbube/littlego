@@ -20,17 +20,6 @@
 #import "GtpEngineProfile.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpEngineProfileModel.
-// -----------------------------------------------------------------------------
-@interface GtpEngineProfileModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation GtpEngineProfileModel
 
 // -----------------------------------------------------------------------------

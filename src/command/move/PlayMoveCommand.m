@@ -28,22 +28,6 @@
 #import "../../play/PlayView.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayMoveCommand.
-// -----------------------------------------------------------------------------
-@interface PlayMoveCommand()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithMoveType:(enum GoMoveType)aMoveType;
-- (void) dealloc;
-//@}
-/// @name GTP response handlers
-//@{
-- (void) gtpResponseReceived:(GtpResponse*)response;
-//@}
-@end
-
-
 @implementation PlayMoveCommand
 
 // -----------------------------------------------------------------------------

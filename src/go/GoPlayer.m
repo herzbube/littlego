@@ -24,24 +24,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoPlayer.
+/// @brief Class extension with private properties for GoPlayer.
 // -----------------------------------------------------------------------------
 @interface GoPlayer()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithPlayer:(Player*)aPlayer;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-+ (Player*) playerWithUUID:(NSString*)uuid;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) Player* player;

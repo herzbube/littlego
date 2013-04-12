@@ -19,17 +19,6 @@
 #import "PlayerStatistics.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayerStatistics.
-// -----------------------------------------------------------------------------
-@interface PlayerStatistics()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation PlayerStatistics
 
 // -----------------------------------------------------------------------------

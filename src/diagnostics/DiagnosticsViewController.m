@@ -83,56 +83,11 @@ enum BugReportSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DiagnosticsViewController.
+/// @brief Class extension with private properties for
+/// DiagnosticsViewController.
 // -----------------------------------------------------------------------------
 @interface DiagnosticsViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Notification responders
-//@{
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goScoreCalculationStarts:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
-//@}
-/// @name Action methods
-//@{
-- (void) viewGtpLog;
-- (void) viewCannedGtpCommands;
-- (void) viewGtpSettings;
-- (void) viewCrashReportSettings;
-- (void) sendBugReport;
-- (void) generateDiagnosticsInformationFile;
-//@}
-/// @name Helpers
-//@{
-- (void) updateBugReportSection;
-- (bool) shouldDisableBugReportSection;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, assign) bool bugReportSectionIsDisabled;
-//@}
 @end
 
 

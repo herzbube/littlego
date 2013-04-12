@@ -24,18 +24,6 @@
 #import "../../go/GoMoveModel.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ChangeAndDiscardCommand.
-// -----------------------------------------------------------------------------
-@interface ChangeAndDiscardCommand()
-/// @name Private helpers
-//@{
-- (bool) shouldDiscardBoardPositions;
-- (bool) discardMoves;
-//@}
-@end
-
-
 @implementation ChangeAndDiscardCommand
 
 

@@ -28,57 +28,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpLogViewController.
+/// @brief Class extension with private properties for GtpLogViewController.
 // -----------------------------------------------------------------------------
 @interface GtpLogViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Action methods
-//@{
-- (void) flipView:(id)sender;
-- (void) composeCommand:(id)sender;
-- (void) viewLogItem:(GtpLogItem*)logItem;
-//@}
-/// @name Notification responders
-//@{
-- (void) gtpLogContentChanged:(NSNotification*)notification;
-- (void) gtpLogItemChanged:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (CGRect) mainViewFrame;
-- (void) setupNavigationItem;
-- (void) setupFrontSideView;
-- (void) setupBackSideView;
-- (void) reloadBackSideView;
-- (void) appendToBackSideView:(GtpLogItem*)logItem;
-- (void) updateBackSideView:(NSString*)newText;
-- (NSString*) rawLogStringForItem:(GtpLogItem*)logItem;
-- (void) scrollToBottomOfFrontSideView;
-- (void) scrollToBottomOfBackSideView;
-//@}
-/// @name Privately declared properties
-//@{
 /// @brief The frontside view. Log items are represented by table view cells.
 @property(nonatomic, retain) UITableView* frontSideView;
 /// @brief The backside view. Log items are represented by raw text.
@@ -91,7 +43,6 @@
 /// how GtpLogModel sends its notifications, and we should find a better way
 /// for handling update conflicts.
 @property(nonatomic, assign) bool updateScheduledByGtpLogContentChanged;
-//@}
 @end
 
 

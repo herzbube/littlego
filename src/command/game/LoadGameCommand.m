@@ -40,39 +40,12 @@
 static const int maxStepsForReplayMoves = 10;
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for LoadGameCommand.
+/// @brief Class extension with private properties for LoadGameCommand.
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name GTP response handlers
-//@{
-- (void) loadsgfCommandResponseReceived:(GtpResponse*)response;
-- (void) gopointnumbersCommandResponseReceived:(GtpResponse*)response;
-- (void) getkomiCommandResponseReceived:(GtpResponse*)response;
-- (void) listhandicapCommandResponseReceived:(GtpResponse*)response;
-- (void) listmovesCommandResponseReceived:(GtpResponse*)response;
-//@}
-/// @name Helpers
-//@{
-- (void) handleCommandSucceeded;
-- (void) handleCommandFailed:(NSString*)message;
-- (void) startNewGameForSuccessfulCommand:(bool)success boardSize:(enum GoBoardSize)boardSize;
-- (void) setupHandicap:(NSString*)handicapFromGtp;
-- (void) setupKomi:(NSString*)komiFromGtp;
-- (void) setupMoves:(NSString*)movesFromGtp;
-- (void) triggerComputerPlayer;
-- (void) showAlert:(NSString*)message;
-- (void) replayMoves:(NSArray*)moveList;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, assign) int totalSteps;
 @property(nonatomic, assign) float stepIncrease;
 @property(nonatomic, assign) float progress;
-//@}
 @end
 
 

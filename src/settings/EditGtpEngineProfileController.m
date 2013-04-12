@@ -65,56 +65,6 @@ enum ProfileNotesSectionItem
   MaxProfileNotesSectionItem,
 };
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
-/// EditGtpEngineProfileController.
-// -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) create:(id)sender;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name EditTextDelegate protocol
-//@{
-- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
-//@}
-/// @name ItemPickerDelegate protocol
-//@{
-- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
-//@}
-/// @name EditGtpEngineProfileSettingsDelegate protocol
-//@{
-- (void) didChangeProfile:(EditGtpEngineProfileSettingsController*)editGtpEngineProfileSettingsController;
-//@}
-/// @name Private helpers
-//@{
-- (bool) isProfileValid;
-//@}
-@end
-
 
 @implementation EditGtpEngineProfileController
 

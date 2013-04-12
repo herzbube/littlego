@@ -20,7 +20,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension for DoubleTapGestureController.
+/// @brief Class extension with private properties for
+/// DoubleTapGestureController.
 // -----------------------------------------------------------------------------
 @interface DoubleTapGestureController()
 @property(nonatomic, assign) UIScrollView* scrollView;

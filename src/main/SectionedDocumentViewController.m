@@ -25,37 +25,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// SectionedDocumentViewController.
 // -----------------------------------------------------------------------------
 @interface SectionedDocumentViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Private helpers
-//@{
-- (void) viewSectionAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) DocumentGenerator* documentGenerator;
-//@}
 @end
 
 

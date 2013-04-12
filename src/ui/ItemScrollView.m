@@ -20,51 +20,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ItemScrollView.
+/// @brief Class extension with private properties for ItemScrollView.
 // -----------------------------------------------------------------------------
 @interface ItemScrollView()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Overrides from superclass
-//@{
-- (void) layoutSubviews;
-//@}
-/// @name Gesture handler
-//@{
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name Helpers
-//@{
-- (void) setupItemContainerView;
-- (void) setupTapGestureRecognizer;
-- (void) updateTapRecognition;
-- (void) removeAllVisibleItems;
-- (void) resetScrollPosition;
-- (void) updateContentSize;
-- (void) cleanupExcessItemViews;
-- (void) updateContentOffsetAfterNumberOfItemsHasDecreased;
-- (bool) isContentOffsetValid;
-- (void) updateVisibleAreaWithMinimumEdge:(CGFloat)minimumEdge maximumEdge:(CGFloat)maximumEdge;
-- (void) updateVisibleAreaAtMaximumEdge:(CGFloat)maximumVisible;
-- (void) updateVisibleAreaFromMinimumEdge:(CGFloat)minimumVisible;
-- (void) removeItemsAfterMaximumEdge:(CGFloat)maximumVisible;
-- (void) removeItemsBeforeMinimumEdge:(CGFloat)maximumVisible;
-- (UIView*) itemViewWithIndex:(int)index;
-- (UIView*) nextItemView;
-- (UIView*) previousItemView;
-- (CGFloat) placeItemView:(UIView*)itemView withMinimumEdgeAt:(CGFloat)position;
-- (CGFloat) placeItemView:(UIView*)itemView withMaximumEdgeAt:(CGFloat)position;
-- (bool) isBeforeFirstVisibleItemViewIndex:(int)index;
-- (bool) isAfterLastVisibleItemViewIndex:(int)index;
-- (CGPoint) contentOffsetOfItemViewAtMinimumEdgeWithIndex:(int)index;
-- (CGPoint) contentOffsetOfItemViewAtMaximumEdgeWithIndex:(int)index;
-- (int) indexOfItemViewWithFrameContainingPosition:(CGFloat)position;
-- (CGFloat) minimumEdgeOfItemViewWithIndex:(int)index;
-- (CGFloat) maximumEdgeOfItemViewWithIndex:(int)index;
-- (int) itemViewExtent;
-//@}
 /// @name Privately declared properties
 //@{
 /// @brief Array that contains the item views and their indexes that are

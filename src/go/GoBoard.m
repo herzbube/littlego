@@ -34,32 +34,14 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoBoard.
+/// @brief Class extension with private properties for GoBoard.
 // -----------------------------------------------------------------------------
 @interface GoBoard()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithSize:(enum GoBoardSize)boardSize;
-- (void) dealloc;
-- (void) setupBoard;
-- (void) setupGoPoints;
-- (void) setupStarPoints;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoBoardSize size;
 @property(nonatomic, retain, readwrite) NSArray* starPoints;
 //@}
-- (NSArray*) starPointVertexes;
 @end
 
 

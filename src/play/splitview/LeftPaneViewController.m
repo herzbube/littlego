@@ -21,18 +21,6 @@
 #import "../../ui/UiUtilities.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for LeftPaneViewController.
-// -----------------------------------------------------------------------------
-@interface LeftPaneViewController()
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-@end
-
-
 @implementation LeftPaneViewController
 
 // -----------------------------------------------------------------------------

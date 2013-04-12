@@ -21,22 +21,6 @@
 #import "../utility/NSStringAdditions.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpLogItem.
-// -----------------------------------------------------------------------------
-@interface GtpLogItem()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-@end
-
-
 @implementation GtpLogItem
 
 // -----------------------------------------------------------------------------

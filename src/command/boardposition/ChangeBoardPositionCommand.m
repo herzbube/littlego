@@ -27,7 +27,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ChangeBoardPositionCommand.
+/// @brief Class extension with private properties for
+/// ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
 @interface ChangeBoardPositionCommand()
 @property(nonatomic, assign) int newBoardPosition;

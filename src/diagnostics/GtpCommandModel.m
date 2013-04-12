@@ -20,13 +20,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpCommandModel.
+/// @brief Class extension with private properties for GtpCommandModel.
 // -----------------------------------------------------------------------------
 @interface GtpCommandModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSArray* commandList;

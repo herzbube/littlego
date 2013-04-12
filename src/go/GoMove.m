@@ -24,23 +24,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoMove.
+/// @brief Class extension with private properties for GoMove.
 // -----------------------------------------------------------------------------
 @interface GoMove()
-/// @name Initialization and deallocation
-//@{
-- (id) init:(enum GoMoveType)aType by:(GoPlayer*)aPlayer;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoMoveType type;

@@ -27,45 +27,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for EditTextController.
+/// @brief Class extension with private properties for EditTextController.
 // -----------------------------------------------------------------------------
 @interface EditTextController()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewWillAppear:(BOOL)animated;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name Action methods
-//@{
-- (void) done:(id)sender;
-- (void) cancel:(id)sender;
-//@}
-/// @name UITextFieldDelegate protocol method.
-//@{
-- (BOOL) textField:(UITextField*)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
-- (BOOL) textFieldShouldClear:(UITextField*)aTextField;
-- (BOOL) textFieldShouldReturn:(UITextField*)aTextField;
-//@}
-/// @name UITextViewDelegate protocol method.
-//@{
-- (void) textViewDidChange:(UITextView*)aTextView;
-//@}
-/// @name Helpers
-//@{
-- (bool) isTextAcceptable:(NSString*)aText;
-//@}
-/// @name Privately declared property
-//@{
 @property(nonatomic, retain) UITextField* textField;
 @property(nonatomic, retain) UITextView* textView;
-//@}
 @end
 
 

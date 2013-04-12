@@ -27,20 +27,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewMetrics.
+/// @brief Class extension with private properties for PlayViewMetrics.
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics()
-/// @name Private helpers
-//@{
-- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) UIView* playView;
 @property(nonatomic, retain) PlayViewModel* playViewModel;
 @property(nonatomic, retain) FontRange* moveNumberFontRange;
 @property(nonatomic, retain) FontRange* coordinateLabelFontRange;
-//@}
 @end
 
 

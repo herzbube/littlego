@@ -22,17 +22,6 @@
 #import "../../archive/ArchiveViewModel.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for RenameGameCommand.
-// -----------------------------------------------------------------------------
-@interface RenameGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation RenameGameCommand
 
 // -----------------------------------------------------------------------------

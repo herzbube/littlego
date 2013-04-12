@@ -26,22 +26,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for SoundHandling.
+/// @brief Class extension with private properties for SoundHandling.
 // -----------------------------------------------------------------------------
 @interface SoundHandling()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) computerPlayerThinkingStops:(NSNotification*)notification;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) PlayViewModel* model;
 @property(nonatomic, assign) SystemSoundID playStoneSystemSound;
-//@}
 @end
 
 

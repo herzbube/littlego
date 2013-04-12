@@ -21,23 +21,6 @@
 #import "../../ui/UiUtilities.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for BoardPositionViewMetrics.
-// -----------------------------------------------------------------------------
-@interface BoardPositionViewMetrics()
-/// @name Private helpers
-//@{
-- (void) setupConstantProperties;
-- (void) setupLabelSize;
-- (void) setupStoneImageSize;
-- (void) setupStoneImages;
-- (void) setupCapturedStonesLabelFrame;
-- (void) setupBoardPositionViewSize;
-- (UIImage*) stoneImageWithSize:(CGSize)size color:(UIColor*)color;
-//@}
-@end
-
-
 @implementation BoardPositionViewMetrics
 
 // -----------------------------------------------------------------------------

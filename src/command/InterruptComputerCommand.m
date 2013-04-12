@@ -22,19 +22,7 @@
 #import "../main/ApplicationDelegate.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for InterruptComputerCommand.
-// -----------------------------------------------------------------------------
-@interface InterruptComputerCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation InterruptComputerCommand
-
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a InterruptComputerCommand object.

@@ -23,46 +23,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// CurrentBoardPositionViewController.
 // -----------------------------------------------------------------------------
 @interface CurrentBoardPositionViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Gesture handler
-//@{
-- (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name UIGestureRecognizerDelegate protocol
-//@{
-- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) computerPlayerThinkingStarts:(NSNotification*)notification;
-- (void) computerPlayerThinkingStops:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) updateAllData;
-- (void) updateBoardPositionView;
-- (void) updateTappingEnabled;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupTapGestureRecognizer;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) BoardPositionView* boardPositionView;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 @property(nonatomic, assign) int actionsInProgress;

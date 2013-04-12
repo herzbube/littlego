@@ -20,7 +20,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension for TwoFingerTapGestureController.
+/// @brief Class extension with private properties for
+/// TwoFingerTapGestureController.
 // -----------------------------------------------------------------------------
 @interface TwoFingerTapGestureController()
 @property(nonatomic, assign) UIScrollView* scrollView;

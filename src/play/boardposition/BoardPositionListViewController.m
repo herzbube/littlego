@@ -25,50 +25,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// BoardPositionListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionListViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) computerPlayerThinkingStarts:(NSNotification*)notification;
-- (void) computerPlayerThinkingStops:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name ItemScrollViewDataSource protocol
-//@{
-- (int) numberOfItemsInItemScrollView:(ItemScrollView*)itemScrollView;
-- (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index;
-- (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView;
-- (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView;
-//@}
-/// @name ItemScrollViewDelegate protocol
-//@{
-- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) updateAllData;
-- (void) updateCurrentBoardPosition;
-- (void) updateNumberOfItems;
-- (void) updateTappingEnabled;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupBoardPositionListView;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) ItemScrollView* boardPositionListView;
 @property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 @property(nonatomic, assign) int actionsInProgress;
@@ -77,7 +37,6 @@
 @property(nonatomic, assign) int oldBoardPosition;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
-//@}
 @end
 
 

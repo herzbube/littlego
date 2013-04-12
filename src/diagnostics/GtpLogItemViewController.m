@@ -64,42 +64,6 @@ enum ResponseStringSectionItem
 };
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpLogItemViewController.
-// -----------------------------------------------------------------------------
-@interface GtpLogItemViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Action methods
-//@{
-- (void) addToCannedCommands:(id)sender;
-//@}
-/// @name Notification responders
-//@{
-- (void) gtpLogItemChanged:(NSNotification*)notification;
-//@}
-@end
-
-
 @implementation GtpLogItemViewController
 
 // -----------------------------------------------------------------------------

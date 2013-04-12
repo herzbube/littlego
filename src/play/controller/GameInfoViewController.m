@@ -130,17 +130,14 @@ enum BoardPositionSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods and properties for
+/// @brief Class extension with private properties and properties for
 /// GameInfoViewController.
 // -----------------------------------------------------------------------------
 @interface GameInfoViewController()
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) GoScore* score;
 @property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
-//@}
 @end
 
 

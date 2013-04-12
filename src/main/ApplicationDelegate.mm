@@ -68,35 +68,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ApplicationDelegate.
+/// @brief Class extension with private properties for ApplicationDelegate.
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIApplicationDelegate protocol
-//@{
-- (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions;
-- (void) applicationWillResignActive:(UIApplication*)application;
-- (void) applicationDidEnterBackground:(UIApplication*)application;
-- (void) applicationWillEnterForeground:(UIApplication*)application;
-- (void) applicationDidBecomeActive:(UIApplication*)application;
-- (void) applicationDidReceiveMemoryWarning:(UIApplication*)application;
-//@}
-/// @name UITabBarControllerDelegate protocol
-//@{
-- (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController;
-//@}
-/// @name UINavigationControllerDelegate protocol
-//@{
-- (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) DDFileLogger* fileLogger;
 @property(nonatomic, assign) bool applicationOpenURLShouldIgnoreNextDocumentInteraction;
-//@}
 @end
 
 

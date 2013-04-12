@@ -22,29 +22,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DocumentGenerator.
+/// @brief Class extension with private properties for DocumentGenerator.
 // -----------------------------------------------------------------------------
 @interface DocumentGenerator()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (int) sectionIDForSection:(int)sectionIndex inGroup:(int)groupIndex;
-- (int) addGroup;
-- (void) addSectionID:(int)sectionID toGroup:(int)groupIndex;
-- (void) parseFileContent:(NSString*)fileContent;
-- (void) parseGroupContentLines:(NSArray*)groupContentLines forGroup:(int)groupIndex;
-- (NSString*) parseSectionContentLines:(NSArray*)sectionContentLines;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) NSMutableArray* groupTitles;
 @property(nonatomic, retain) NSMutableArray* sectionIndexPaths;  // each element is another NSMutableArray
 @property(nonatomic, retain) NSMutableArray* sectionTitles;
 @property(nonatomic, retain) NSMutableArray* sectionContents;
-//@}
 @end
 
 

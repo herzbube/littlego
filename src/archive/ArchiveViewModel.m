@@ -25,23 +25,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ArchiveViewModel.
+/// @brief Class extension with private properties for ArchiveViewModel.
 // -----------------------------------------------------------------------------
 @interface ArchiveViewModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-- (void) updateGameList;
-//@}
-/// @name Notification responders
-//@{
-- (void) archiveContentChanged:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (ArchiveGame*) gameWithFileName:(NSString*)fileName;
-- (bool) shouldIgnoreFileName:(NSString*)fileName;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSArray* gameList;

@@ -23,17 +23,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewLayerDelegateBase.
-// -----------------------------------------------------------------------------
-@interface PlayViewLayerDelegateBase()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation PlayViewLayerDelegateBase
 
 @synthesize layer = _layer;

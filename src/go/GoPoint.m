@@ -22,32 +22,15 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoPoint.
+/// @brief Class extension with private properties for GoPoint.
 // -----------------------------------------------------------------------------
 @interface GoPoint()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithVertex:(GoVertex*)aVertex onBoard:(GoBoard*)aBoard;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) bool isLeftValid;
 @property(nonatomic, assign) bool isRightValid;
 @property(nonatomic, assign) bool isAboveValid;
 @property(nonatomic, assign) bool isBelowValid;
 @property(nonatomic, assign) bool isNextValid;
 @property(nonatomic, assign) bool isPreviousValid;
-//@}
 @end
 
 

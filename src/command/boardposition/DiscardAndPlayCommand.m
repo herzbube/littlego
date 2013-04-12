@@ -38,26 +38,12 @@ enum PlayCommandType
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DiscardAndPlayCommand.
+/// @brief Class extension with private properties for DiscardAndPlayCommand.
 // -----------------------------------------------------------------------------
 @interface DiscardAndPlayCommand()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithCommandType:(enum PlayCommandType)aPlayCommandType;
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (bool) shouldDiscardBoardPositions;
-- (bool) discardBoardPositions;
-- (bool) playCommand;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, assign) enum PlayCommandType playCommandType;
 @property(nonatomic, assign) enum GoMoveType moveType;
 @property(nonatomic, retain) GoPoint* point;
-//@}
 @end
 
 

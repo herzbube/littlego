@@ -31,48 +31,10 @@ enum NavigationDirection
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// BoardPositionToolbarController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) populateToolbar;
-- (void) updateButtonStates;
-//@}
-/// @name Action methods
-//@{
-- (void) rewindToStart:(id)sender;
-- (void) rewind:(id)sender;
-- (void) previousBoardPosition:(id)sender;
-- (void) nextBoardPosition:(id)sender;
-- (void) fastForward:(id)sender;
-- (void) fastForwardToEnd:(id)sender;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupSpacerItems;
-- (void) setupCustomViewItemsWithBoardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView;
-- (void) setupNavigationBarButtonItems;
-- (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector navigationDirection:(enum NavigationDirection)direction;
-- (void) setupNotificationResponders;
-//@}
-/// @name Privately declared properties
-//@{
 /// @brief Updates are delayed as long as this is above zero.
 @property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
@@ -87,7 +49,6 @@ enum NavigationDirection
 @property(nonatomic, retain) UIBarButtonItem* currentBoardPositionViewItem;
 @property(nonatomic, assign) bool boardPositionListViewIsVisible;
 @property(nonatomic, assign) int numberOfBoardPositionsOnPage;
-//@}
 @end
 
 

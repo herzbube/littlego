@@ -20,17 +20,6 @@
 #import "CommandProcessor.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for CommandBase.
-// -----------------------------------------------------------------------------
-@interface CommandBase()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation CommandBase
 
 @synthesize name;

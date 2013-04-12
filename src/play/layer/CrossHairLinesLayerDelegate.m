@@ -29,10 +29,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for CrossHairLinesLayerDelegate.
+/// @brief Class extension with private properties for
+/// CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface CrossHairLinesLayerDelegate()
-- (void) releaseLineLayers;
 @property(nonatomic, assign) CGLayerRef normalLineLayer;
 @property(nonatomic, assign) CGLayerRef boundingLineLayer;
 @end

@@ -22,34 +22,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for DocumentViewController.
+/// @brief Class extension with private properties for DocumentViewController.
 // -----------------------------------------------------------------------------
 @interface DocumentViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UIWebViewDelegate protocol
-//@{
-- (BOOL) webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType;
-//@}
-/// @name Private helper methods
-//@{
-- (void) showAboutDocument:(NSString*)documentContent;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) NSString* titleString;
 @property(nonatomic, retain) NSString* htmlString;
 @property(nonatomic, retain) NSString* resourceName;
-//@}
 @end
 
 

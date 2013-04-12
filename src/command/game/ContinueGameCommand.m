@@ -21,17 +21,6 @@
 #import "../move/ComputerPlayMoveCommand.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ContinueGameCommand.
-// -----------------------------------------------------------------------------
-@interface ContinueGameCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation ContinueGameCommand
 
 // -----------------------------------------------------------------------------

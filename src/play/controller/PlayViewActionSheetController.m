@@ -48,42 +48,11 @@ enum ActionSheetButton
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewActionSheetController.
+/// @brief Class extension with private properties for
+/// PlayViewActionSheetController.
 // -----------------------------------------------------------------------------
 @interface PlayViewActionSheetController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIActionSheetDelegate protocol
-//@{
-- (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name NewGameDelegate protocol
-//@{
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
-//@}
-/// @name EditTextDelegate protocol
-//@{
-- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
-//@}
-/// @name Helpers
-//@{
-- (void) score;
-- (void) resign;
-- (void) saveGame;
-- (void) doSaveGame:(NSString*)gameName;
-- (void) newGame;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) NSString* saveGameName;
-//@}
 @end
 
 

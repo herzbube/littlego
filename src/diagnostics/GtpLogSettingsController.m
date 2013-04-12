@@ -66,39 +66,11 @@ enum ResetCannedCommandsSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpLogSettingsController.
+/// @brief Class extension with private properties for GtpLogSettingsController.
 // -----------------------------------------------------------------------------
 @interface GtpLogSettingsController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Action methods
-//@{
-- (void) logSizeDidChange:(id)sender;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) GtpLogModel* logModel;
 @property(nonatomic, retain) GtpCommandModel* commandModel;
-//@}
 @end
 
 

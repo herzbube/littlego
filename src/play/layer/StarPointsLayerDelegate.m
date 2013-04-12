@@ -30,21 +30,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for StarPointsLayerDelegate.
+/// @brief Class extension with private properties for StarPointsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface StarPointsLayerDelegate()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (void) releaseLayer;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) CGLayerRef starPointLayer;
-//@}
 @end
 
 

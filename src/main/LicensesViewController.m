@@ -51,37 +51,6 @@ enum LicensesSectionItem
 };
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for LicensesViewController.
-// -----------------------------------------------------------------------------
-@interface LicensesViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name Private helpers
-//@{
-- (void) viewLicenseForRow:(int)row;
-- (NSString*) licenseTitleForRow:(int)row;
-- (NSString*) licenseResourceNameForRow:(int)row;
-//@}
-@end
-
-
 @implementation LicensesViewController
 
 

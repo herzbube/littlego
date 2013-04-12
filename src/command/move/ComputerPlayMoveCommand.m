@@ -33,36 +33,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for ComputerPlayMoveCommand.
+/// @brief Class extension with private properties for ComputerPlayMoveCommand.
 // -----------------------------------------------------------------------------
 @interface ComputerPlayMoveCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name GTP response handlers
-//@{
-- (void) gtpResponseReceived:(GtpResponse*)response;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name SendBugReportControllerDelegate protocol
-//@{
-- (void) sendBugReportDidFinish:(SendBugReportController*)sendBugReportController;
-//@}
-/// @name Helpers
-//@{
-- (void) handleComputerPlayedIllegalMove1;
-- (void) handleComputerPlayedIllegalMove2;
-- (void) sendBugReport;
-- (void) startNewGame;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, retain) GoPoint* illegalMove;
-//@}
 @end
 
 

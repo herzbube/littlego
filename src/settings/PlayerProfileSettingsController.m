@@ -57,62 +57,12 @@ enum GtpEngineProfilesSectionItem
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// PlayerProfileSettingsController.
 // -----------------------------------------------------------------------------
 @interface PlayerProfileSettingsController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (void) setEditing:(BOOL)editing animated:(BOOL)animated;
-//@}
-/// @name UITableViewDataSource protocol
-//@{
-- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView;
-- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section;
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section;
-- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (BOOL) tableView:(UITableView*)tableView canEditRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name UITableViewDelegate protocol
-//@{
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath;
-- (UITableViewCellEditingStyle) tableView:(UITableView*)tableView editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath;
-//@}
-/// @name EditPlayerDelegate protocol
-//@{
-- (void) didChangePlayer:(EditPlayerController*)editPlayerController;
-- (void) didCreatePlayer:(EditPlayerController*)editPlayerController;
-//@}
-/// @name EditGtpEngineProfileDelegate protocol
-//@{
-- (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
-- (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameDidCreate:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (void) newPlayer;
-- (void) newProfile;
-- (void) editPlayer:(Player*)player;
-- (void) editProfile:(GtpEngineProfile*)profile;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, assign) PlayerModel* playerModel;
 @property(nonatomic, assign) GtpEngineProfileModel* gtpEngineProfileModel;
-//@}
 @end
 
 

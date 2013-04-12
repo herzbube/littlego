@@ -39,28 +39,8 @@ NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 const float stoneDistanceFromFingertipMaximum = 4.0;
 //@}
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for UserDefaultsUpdater.
-// -----------------------------------------------------------------------------
-@interface UserDefaultsUpdater()
-/// @name Upgrade methods
-//@{
-+ (void) upgradeToVersion1:(NSDictionary*)registrationDomainDefaults;
-+ (void) upgradeToVersion2:(NSDictionary*)registrationDomainDefaults;
-+ (void) upgradeToVersion3:(NSDictionary*)registrationDomainDefaults;
-+ (void) upgradeToVersion4:(NSDictionary*)registrationDomainDefaults;
-+ (void) upgradeToVersion5:(NSDictionary*)registrationDomainDefaults;
-+ (void) upgradeToVersion6:(NSDictionary*)registrationDomainDefaults;
-//@}
-/// @name Internal helpers
-//@{
-+ (void) upgradeDictionary:(NSMutableDictionary*)dictionary forKey:(NSString*)key upgradeDeviceSuffix:(NSString*)upgradeDeviceSuffix registrationDomainDefaults:(NSDictionary*)registrationDomainDefaults;
-//@}
-@end
-
 
 @implementation UserDefaultsUpdater
-
 
 // -----------------------------------------------------------------------------
 /// @brief Performs all the required upgrades to the user defaults data to reach

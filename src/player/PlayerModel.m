@@ -20,17 +20,6 @@
 #import "Player.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayerModel.
-// -----------------------------------------------------------------------------
-@interface PlayerModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation PlayerModel
 
 // -----------------------------------------------------------------------------

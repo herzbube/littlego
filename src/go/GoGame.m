@@ -29,27 +29,6 @@
 #import "../main/ApplicationDelegate.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GoGame.
-// -----------------------------------------------------------------------------
-@interface GoGame()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name NSCoding protocol
-//@{
-- (id) initWithCoder:(NSCoder*)decoder;
-- (void) encodeWithCoder:(NSCoder*)encoder;
-//@}
-/// @name Setters needed for posting notifications to notify our observers
-//@{
-- (void) setComputerThinks:(bool)newValue;
-//@}
-@end
-
-
 @implementation GoGame
 
 // -----------------------------------------------------------------------------

@@ -31,11 +31,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for StonesLayerDelegate.
+/// @brief Class extension with private properties for StonesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface StonesLayerDelegate()
-- (void) releaseLayers;
-- (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point;
 @property(nonatomic, assign) CGLayerRef blackStoneLayer;
 @property(nonatomic, assign) CGLayerRef whiteStoneLayer;
 @end

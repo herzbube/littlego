@@ -57,80 +57,9 @@ enum ActionType
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for PlayViewController.
+/// @brief Class extension with private properties for PlayViewController.
 // -----------------------------------------------------------------------------
 @interface PlayViewController()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name UIViewController methods
-//@{
-- (void) loadView;
-- (void) viewDidLoad;
-- (void) viewDidUnload;
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-//@}
-/// @name NavigationBarControllerDelegate protocol
-//@{
-- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command;
-- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-- (void) navigationBarController:(NavigationBarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
-//@}
-/// @name PanGestureControllerDelegate protocol
-//@{
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
-//@}
-/// @name CurrentBoardPositionViewControllerDelegate protocol
-//@{
-- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller;
-//@}
-/// @name UIAlertViewDelegate protocol
-//@{
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
-//@}
-/// @name Main view hierarchy setup
-//@{
-- (void) setupMainView;
-- (CGRect) mainViewFrame;
-//@}
-/// @name View hierarchy setup
-//@{
-- (void) setupSplitView;
-- (CGRect) splitViewFrame;
-- (UIView*) splitViewSuperview;
-- (void) setupNavigationBarMain;
-- (CGRect) navigationBarMainFrame;
-- (UIView*) navigationBarMainSuperview;
-- (void) setupToolbarBoardPositionNavigation;
-- (CGRect) toolbarBoardPositionNavigationFrame;
-- (UIView*) toolbarBoardPositionNavigationSuperview;
-- (void) setupPlayView;
-- (CGRect) playViewFrame;
-- (UIView*) playViewSuperview;
-- (void) setupBoardPositionListView;
-- (CGRect) boardPositionListViewFrame;
-- (void) setupCurrentBoardPositionView;
-- (CGRect) currentBoardPositionViewFrame;
-- (void) setupBoardPositionListContainerView;
-- (CGRect) boardPositionListContainerViewFrame;
-- (UIView*) boardPositionListContainerViewSuperview;
-- (void) setupDebugView;
-//@}
-/// @name View controller setup
-//@{
-- (void) setupNavigationBarController;
-- (void) setupSplitViewController;
-//@}
-/// @name Private helpers
-//@{
-- (void) releaseObjects;
-- (void) setupSubviews;
-- (void) setupSubcontrollers;
-- (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command;
-//@}
-/// @name Privately declared properties
-//@{
 @property(nonatomic, retain) UIScrollView* playViewScrollView;
 @property(nonatomic, retain) PlayViewScrollController* playViewScrollController;
 @property(nonatomic, retain) PlayView* playView;
@@ -154,7 +83,6 @@ enum ActionType
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @property(nonatomic, retain) DebugPlayViewController* debugPlayViewController;
-//@}
 @end
 
 

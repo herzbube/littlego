@@ -26,25 +26,7 @@
 #import <zipkit/ZKFileArchive.h>
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
-/// RestoreBugReportUserDefaultsCommand.
-// -----------------------------------------------------------------------------
-@interface RestoreBugReportUserDefaultsCommand()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Initialization and deallocation
-//@{
-- (bool) unzipDiagnosticsInformationFile;
-- (bool) restoreUserDefaults;
-//@}
-@end
-
-
 @implementation RestoreBugReportUserDefaultsCommand
-
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RestoreBugReportUserDefaultsCommand object.

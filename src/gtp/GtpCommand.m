@@ -21,22 +21,6 @@
 #import "../main/ApplicationDelegate.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpCommand.
-// -----------------------------------------------------------------------------
-@interface GtpCommand()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
-@end
-
-
 @implementation GtpCommand
 
 // -----------------------------------------------------------------------------

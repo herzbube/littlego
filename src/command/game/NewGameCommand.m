@@ -31,7 +31,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for NewGameCommand.
+/// @brief Class extension with private properties for NewGameCommand.
 // -----------------------------------------------------------------------------
 @interface NewGameCommand()
 @property(nonatomic, assign) GoGame* prefabricatedGame;

@@ -22,7 +22,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for CommandProcessor.
+/// @brief Class extension with private properties for CommandProcessor.
 // -----------------------------------------------------------------------------
 @interface CommandProcessor()
 @property(nonatomic, retain) NSThread* thread;

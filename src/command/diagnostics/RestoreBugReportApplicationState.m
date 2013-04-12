@@ -27,25 +27,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for
+/// @brief Class extension with private properties for
 /// RestoreBugReportApplicationState.
 // -----------------------------------------------------------------------------
 @interface RestoreBugReportApplicationState()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Private helpers
-//@{
-- (void) unarchiveInMemoryObjects;
-- (void) fixObjectReferences;
-- (void) loadCurrentGameFromSgf;
-//@}
-/// @name Private properties
-//@{
 @property(nonatomic, retain) GoGame* unarchivedGame;
 @property(nonatomic, retain) GoScore* unarchivedScore;
-//@}
 @end
 
 

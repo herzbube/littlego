@@ -23,28 +23,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpLogModel.
+/// @brief Class extension with private properties for GtpLogModel.
 // -----------------------------------------------------------------------------
 @interface GtpLogModel()
-/// @name Initialization and deallocation
-//@{
-- (void) dealloc;
-//@}
-/// @name Notification responders
-//@{
-- (void) gtpCommandWillBeSubmitted:(NSNotification*)notification;
-- (void) gtpResponseWasReceived:(NSNotification*)notification;
-//@}
-/// @name Private helpers
-//@{
-- (void) gtpCommandWillBeSubmittedDelegate:(GtpCommand*)command;
-- (void) gtpResponseWasReceivedDelegate:(GtpResponse*)response;
-- (void) addItemToLog:(GtpCommand*)command;
-- (void) trimLog;
-- (void) enqueueItemWithNoResponse:(GtpLogItem*)logItem;
-- (GtpLogItem*) dequeueItemWithNoResponse;
-- (void) clearItemQueueWithNoResponse;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSArray* itemList;

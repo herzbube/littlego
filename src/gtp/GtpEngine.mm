@@ -22,18 +22,6 @@
 #include <fuego/FuegoMainUtil.h>
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpEngine.
-// -----------------------------------------------------------------------------
-@interface GtpEngine()
-/// @name Initialization and deallocation
-//@{
-- (id) initWithPipes:(NSArray*)pipes;
-- (void) dealloc;
-//@}
-@end
-
-
 @implementation GtpEngine
 
 // -----------------------------------------------------------------------------

@@ -30,10 +30,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for CrossHairStoneLayerDelegate.
+/// @brief Class extension with private properties for
+/// CrossHairStoneLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface CrossHairStoneLayerDelegate()
-- (void) releaseStoneLayers;
 @property(nonatomic, assign) CGLayerRef blackStoneLayer;
 @property(nonatomic, assign) CGLayerRef whiteStoneLayer;
 @property(nonatomic, assign) CGLayerRef crossHairStoneLayer;

@@ -20,18 +20,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for GtpResponse.
+/// @brief Class extension with private properties for GtpResponse.
 // -----------------------------------------------------------------------------
 @interface GtpResponse()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name Other methods
-//@{
-- (NSString*) description;
-//@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) NSString* rawResponse;
