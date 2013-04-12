@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NavigationBarController.h"
+#import "StatusViewController.h"
 #import "../model/ScoringModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
@@ -78,8 +79,6 @@
 //@{
 - (void) delayedUpdate;
 - (void) populateNavigationBar;
-- (void) populateNavigationBarLeft;
-- (void) populateNavigationBarRight;
 - (void) updateButtonStates;
 - (void) updateComputerPlayButtonState;
 - (void) updatePassButtonState;
@@ -101,6 +100,9 @@
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
+@property(nonatomic, assign) ScoringModel* scoringModel;
+@property(nonatomic, retain) UINavigationBar* navigationBar;
+@property(nonatomic, assign) StatusViewController* statusViewController;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
 /// @brief GoScore object used while the game info view is displayed and scoring
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
@@ -117,11 +119,13 @@
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
 @property(nonatomic, retain) UIBarButtonItem* interruptButton;
-@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButton;
+@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButtonLeft;
+@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButtonRight;
 @property(nonatomic, assign) UIBarButtonItem* barButtonItemForShowingTheHiddenViewController;
 @property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
 @property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
 @property(nonatomic, retain) UIBarButtonItem* doneButton;
+@property(nonatomic, retain) UIBarButtonItem* statusViewButton;
 //@}
 @end
 
@@ -140,8 +144,9 @@
   if (! self)
     return nil;
 
-  _navigationBar = nil;  // don't use self to avoid invoking the setter
-  _scoringModel = nil;   // ditto
+  self.navigationBar = nil;
+  self.scoringModel = nil;
+  self.statusViewController = nil;
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
@@ -181,11 +186,13 @@
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
-  self.flexibleSpaceButton = nil;
+  self.flexibleSpaceButtonLeft = nil;
+  self.flexibleSpaceButtonRight = nil;
   self.barButtonItemForShowingTheHiddenViewController = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
   self.doneButton = nil;
+  self.statusViewButton = nil;
   [super dealloc];
 }
 
@@ -238,9 +245,13 @@
                                                                    target:self
                                                                    action:@selector(done:)] autorelease];
   self.doneButton.style = UIBarButtonItemStyleBordered;
-  self.flexibleSpaceButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                            target:nil
-                                                                            action:nil] autorelease];
+  self.flexibleSpaceButtonLeft = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                target:nil
+                                                                                action:nil] autorelease];
+  self.flexibleSpaceButtonRight = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                 target:nil
+                                                                                 action:nil] autorelease];
+  self.statusViewButton = nil;  // is set up delayed
 }
 
 // -----------------------------------------------------------------------------
@@ -267,24 +278,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Setting of navigation bar occurs delayed (i.e. not during
-/// initialization of the controller object) due to timing needs of the parent
+/// @brief Setting of some objects occurs delayed (i.e. not during
+/// initialization of this controller object) due to timing needs of the parent
 /// view controller.
 // -----------------------------------------------------------------------------
-- (void) setNavigationBar:(UINavigationBar*)aNavigationBar
+- (void) setupWithScoringModel:(ScoringModel*)scoringModel
+                 navigationBar:(UINavigationBar*)navigationBar
+                    statusViewController:(StatusViewController*)statusViewController
 {
-  _navigationBar = aNavigationBar;
+  self.scoringModel = scoringModel;
+  self.navigationBar = navigationBar;
   [_navigationBar pushNavigationItem:self.navigationItem animated:NO];
-}
+  self.statusViewController = statusViewController;
+  self.statusViewButton = [[[UIBarButtonItem alloc] initWithCustomView:statusViewController.statusView] autorelease];
 
-// -----------------------------------------------------------------------------
-/// @brief Setting of navigation bar occurs delayed (i.e. not during
-/// initialization of the controller object) due to timing needs of the parent
-/// view controller.
-// -----------------------------------------------------------------------------
-- (void) setScoringModel:(ScoringModel*)scoringModel
-{
-  _scoringModel = scoringModel;
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -616,14 +623,44 @@
     return;
   self.navigationBarNeedsPopulation = false;
 
-  [self populateNavigationBarLeft];
-  [self populateNavigationBarRight];
+  NSArray* leftBarButtonItems = [self leftBarButtonItems];
+  NSArray* rightBarButtonItems = [self rightBarButtonItems];
+
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObjectsFromArray:leftBarButtonItems];
+  if (self.statusViewController)
+  {
+    int maximumNumberOfButtons = 5;
+    if (self.barButtonItemForShowingTheHiddenViewController)
+      maximumNumberOfButtons++;
+    int numberOfUnusedButtons = maximumNumberOfButtons - leftBarButtonItems.count - rightBarButtonItems.count;
+    int statusViewMinimumWidth;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+      statusViewMinimumWidth = 60;
+    else
+      statusViewMinimumWidth = 100;
+    int widthPerUnusedButton = 20;
+    int statusViewWidth = (statusViewMinimumWidth
+                           + (widthPerUnusedButton * numberOfUnusedButtons));
+    self.statusViewController.statusViewWidth = statusViewWidth;
+
+    [barButtonItems addObject:self.flexibleSpaceButtonLeft];
+    [barButtonItems addObject:self.statusViewButton];
+    [barButtonItems addObject:self.flexibleSpaceButtonRight];
+  }
+  else
+  {
+    [barButtonItems addObject:self.flexibleSpaceButtonLeft];  // need only one spacer
+  }
+  [barButtonItems addObjectsFromArray:rightBarButtonItems];
+  self.navigationItem.leftBarButtonItems = barButtonItems;
+  self.navigationItem.rightBarButtonItems = nil;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by populateNavigationBar().
 // -----------------------------------------------------------------------------
-- (void) populateNavigationBarLeft
+- (NSArray*) leftBarButtonItems
 {
   NSMutableArray* leftBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
@@ -673,20 +710,20 @@
       }
     }
   }
-  self.navigationItem.leftBarButtonItems = leftBarButtonItems;
+  return leftBarButtonItems;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked by populateNavigationBar().
 // -----------------------------------------------------------------------------
-- (void) populateNavigationBarRight
+- (NSArray*) rightBarButtonItems
 {
   NSMutableArray* rightBarButtonItems = [NSMutableArray arrayWithCapacity:0];
-  [rightBarButtonItems addObject:self.gameActionsButton];
-  [rightBarButtonItems addObject:self.gameInfoButton];
   if (self.barButtonItemForShowingTheHiddenViewController)
     [rightBarButtonItems addObject:self.barButtonItemForShowingTheHiddenViewController];
-  self.navigationItem.rightBarButtonItems = rightBarButtonItems;
+  [rightBarButtonItems addObject:self.gameInfoButton];
+  [rightBarButtonItems addObject:self.gameActionsButton];
+  return rightBarButtonItems;
 }
 
 // -----------------------------------------------------------------------------

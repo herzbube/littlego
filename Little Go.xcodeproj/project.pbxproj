@@ -95,13 +95,13 @@
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
-		CD1311C517180B60006CE699 /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E56171806FE00E1B7D1 /* ActivityIndicatorController.m */; };
 		CD1311C617180B63006CE699 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */; };
 		CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
-		CD1311C917180B6F006CE699 /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E62171806FE00E1B7D1 /* StatusLineController.m */; };
 		CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
 		CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
+		CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
+		CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
 		CD15A476168BA34400D4472A /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A474168BA34400D4472A /* back.png */; };
 		CD15A477168BA34400D4472A /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A475168BA34400D4472A /* back@2x.png */; };
 		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
@@ -120,13 +120,11 @@
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55576516702DBC003B957B /* TableViewSegmentedCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
-		CD1E9E63171806FE00E1B7D1 /* ActivityIndicatorController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E56171806FE00E1B7D1 /* ActivityIndicatorController.m */; };
 		CD1E9E64171806FE00E1B7D1 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
-		CD1E9E69171806FE00E1B7D1 /* StatusLineController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E62171806FE00E1B7D1 /* StatusLineController.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
@@ -524,6 +522,8 @@
 		CD1311BE17180B45006CE699 /* PlayViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewModel.m; sourceTree = "<group>"; };
 		CD1311BF17180B45006CE699 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
 		CD1311C017180B45006CE699 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
+		CD1311CC17180D57006CE699 /* StatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusViewController.h; sourceTree = "<group>"; };
+		CD1311CD17180D57006CE699 /* StatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusViewController.m; sourceTree = "<group>"; };
 		CD15A474168BA34400D4472A /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		CD15A475168BA34400D4472A /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
 		CD15A47E168CBE7F00D4472A /* GoMoveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModel.h; sourceTree = "<group>"; };
@@ -534,8 +534,6 @@
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteraction.h; sourceTree = "<group>"; };
 		CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteraction.m; sourceTree = "<group>"; };
-		CD1E9E55171806FE00E1B7D1 /* ActivityIndicatorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityIndicatorController.h; sourceTree = "<group>"; };
-		CD1E9E56171806FE00E1B7D1 /* ActivityIndicatorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityIndicatorController.m; sourceTree = "<group>"; };
 		CD1E9E57171806FE00E1B7D1 /* DebugPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugPlayViewController.h; sourceTree = "<group>"; };
 		CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugPlayViewController.m; sourceTree = "<group>"; };
 		CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
@@ -546,8 +544,6 @@
 		CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewActionSheetController.m; sourceTree = "<group>"; };
 		CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
 		CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
-		CD1E9E61171806FE00E1B7D1 /* StatusLineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusLineController.h; sourceTree = "<group>"; };
-		CD1E9E62171806FE00E1B7D1 /* StatusLineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusLineController.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
@@ -1195,8 +1191,6 @@
 		CD1E9E54171806FE00E1B7D1 /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				CD1E9E55171806FE00E1B7D1 /* ActivityIndicatorController.h */,
-				CD1E9E56171806FE00E1B7D1 /* ActivityIndicatorController.m */,
 				CD1E9E57171806FE00E1B7D1 /* DebugPlayViewController.h */,
 				CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
@@ -1207,8 +1201,8 @@
 				CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */,
 				CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */,
 				CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */,
-				CD1E9E61171806FE00E1B7D1 /* StatusLineController.h */,
-				CD1E9E62171806FE00E1B7D1 /* StatusLineController.m */,
+				CD1311CC17180D57006CE699 /* StatusViewController.h */,
+				CD1311CD17180D57006CE699 /* StatusViewController.m */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -2044,15 +2038,14 @@
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
 				CD9A49A7170F3550009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
-				CD1E9E63171806FE00E1B7D1 /* ActivityIndicatorController.m in Sources */,
 				CD1E9E64171806FE00E1B7D1 /* DebugPlayViewController.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
 				CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
-				CD1E9E69171806FE00E1B7D1 /* StatusLineController.m in Sources */,
 				CD1311C117180B45006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
+				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2177,13 +2170,12 @@
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 				CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
-				CD1311C517180B60006CE699 /* ActivityIndicatorController.m in Sources */,
 				CD1311C617180B63006CE699 /* DebugPlayViewController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
-				CD1311C917180B6F006CE699 /* StatusLineController.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
+				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

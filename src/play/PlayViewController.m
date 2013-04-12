@@ -25,9 +25,8 @@
 #import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
-#import "controller/ActivityIndicatorController.h"
 #import "controller/DebugPlayViewController.h"
-#import "controller/StatusLineController.h"
+#import "controller/StatusViewController.h"
 #import "gesture/DoubleTapGestureController.h"
 #import "gesture/TapGestureController.h"
 #import "gesture/TwoFingerTapGestureController.h"
@@ -109,12 +108,6 @@ enum ActionType
 - (void) setupPlayView;
 - (CGRect) playViewFrame;
 - (UIView*) playViewSuperview;
-- (void) setupStatusLineView;
-- (CGRect) statusLineViewFrame;
-- (UIView*) statusLineSuperview;
-- (void) setupActivityIndicatorView;
-- (CGRect) activityIndicatorViewFrame;
-- (UIView*) activityIndicatorViewSuperview;
 - (void) setupBoardPositionListView;
 - (CGRect) boardPositionListViewFrame;
 - (void) setupCurrentBoardPositionView;
@@ -145,16 +138,13 @@ enum ActionType
 @property(nonatomic, retain) UIToolbar* toolbarBoardPositionNavigation;
 @property(nonatomic, retain) ItemScrollView* boardPositionListView;
 @property(nonatomic, retain) BoardPositionView* currentBoardPositionView;
-@property(nonatomic, retain) UILabel* statusLine;
-@property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, retain) UIView* boardPositionListContainerView;
 @property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
 @property(nonatomic, retain) UISplitViewController* splitViewController;
 @property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
 @property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
-@property(nonatomic, retain) StatusLineController* statusLineController;
-@property(nonatomic, retain) ActivityIndicatorController* activityIndicatorController;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
 @property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
@@ -193,16 +183,13 @@ enum ActionType
   self.toolbarBoardPositionNavigation = nil;
   self.boardPositionListView = nil;
   self.currentBoardPositionView = nil;
-  self.statusLine = nil;
-  self.activityIndicator = nil;
   self.boardPositionListContainerView = nil;
   self.boardPositionViewMetrics = nil;
   self.splitViewController = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
   self.navigationBarController = nil;
-  self.statusLineController = nil;
-  self.activityIndicatorController = nil;
+  self.statusViewController = nil;
   self.boardPositionToolbarController = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
@@ -226,8 +213,7 @@ enum ActionType
   // time viewDidLoad() is invoked.
   [self setupMainView];
 
-  // Prerequisite for setupSplitViewController(). For the iPhone we could
-  // invoke this in viewDidLoad().
+  // Prerequisite for setupSplitViewController()
   [self setupNavigationBarController];
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
@@ -527,116 +513,6 @@ enum ActionType
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
-- (void) setupStatusLineView
-{
-  CGRect statusLineViewFrame = [self statusLineViewFrame];
-  self.statusLine = [[[UILabel alloc] initWithFrame:statusLineViewFrame] autorelease];
-  UIView* superView = [self statusLineSuperview];
-  [superView addSubview:self.statusLine];
-
-  self.statusLine.autoresizingMask = (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
-  self.statusLine.backgroundColor = [UIColor clearColor];
-  self.statusLine.lineBreakMode = UILineBreakModeWordWrap;
-  self.statusLine.numberOfLines = 1;
-  self.statusLine.font = [UIFont systemFontOfSize:self.boardPositionViewMetrics.boardPositionViewFontSize];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) statusLineViewFrame
-{
-  CGRect boardFrame = self.playView.boardFrame;
-  CGRect activityIndicatorFrame = self.activityIndicator.frame;
-  int statusLineViewX = boardFrame.origin.x;
-  int statusLineViewWidth = (activityIndicatorFrame.origin.x
-                             - statusLineViewX
-                             - [UiElementMetrics spacingHorizontal]);
-  UIFont* statusLineViewFont = [UIFont systemFontOfSize:self.boardPositionViewMetrics.boardPositionViewFontSize];
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-  CGSize statusLineTextSize = [@"A" sizeWithFont:statusLineViewFont
-                               constrainedToSize:constraintSize
-                                   lineBreakMode:UILineBreakModeWordWrap];
-  int statusLineViewHeight = statusLineTextSize.height;
-
-  // [UiElementMetrics spacingVertical] is too much, we are too constrained
-  // on the iPhone screen, and too greedy on the iPad. Instead we choose 2
-  // points as an arbitrary spacing value to set the statusline bottom slightly
-  // apart from its vertical neighbour
-  int statusLineSpacingVertical = 2;
-  int statusLineViewY;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    statusLineViewY = (self.toolbarBoardPositionNavigation.frame.origin.y
-                           - statusLineViewHeight
-                           - statusLineSpacingVertical);
-  }
-  else
-  {
-    UIView* superView = [self statusLineSuperview];
-    statusLineViewY = (superView.frame.size.height
-                       - statusLineViewHeight
-                       - statusLineSpacingVertical);
-  }
-  return CGRectMake(statusLineViewX, statusLineViewY, statusLineViewWidth, statusLineViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) statusLineSuperview
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.view;
-  else
-    return self.rightPaneViewController.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupActivityIndicatorView
-{
-  CGRect activityIndicatorFrame = [self activityIndicatorViewFrame];
-  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  UIView* superView = [self activityIndicatorViewSuperview];
-  [superView addSubview:self.activityIndicator];
-  self.activityIndicator.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin);
-  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) activityIndicatorViewFrame
-{
-  int activityIndicatorViewWidth = [UiElementMetrics activityIndicatorWidthAndHeight];
-  int activityIndicatorViewHeight = [UiElementMetrics activityIndicatorWidthAndHeight];
-  int activityIndicatorViewX = CGRectGetMaxX(self.playView.boardFrame) - activityIndicatorViewWidth;
-  int activityIndicatorViewY = CGRectGetMaxY(self.playView.frame) - activityIndicatorViewHeight;
-  return CGRectMake(activityIndicatorViewX, activityIndicatorViewY, activityIndicatorViewWidth, activityIndicatorViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) activityIndicatorViewSuperview
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return self.view;
-  else
-    return self.rightPaneViewController.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
 - (void) setupBoardPositionListView
 {
   self.boardPositionListView = [[[ItemScrollView alloc] initWithFrame:[self boardPositionListViewFrame]
@@ -762,8 +638,6 @@ enum ActionType
     [self setupPlayViewScrollView];
     [self setupPlayView];
     [self setupCoordinateLabelScrollViews];
-    [self setupActivityIndicatorView];
-    [self setupStatusLineView];
     [self setupBoardPositionListView];
     [self setupCurrentBoardPositionView];
     self.boardPositionListContainerView = nil;
@@ -775,8 +649,6 @@ enum ActionType
     [self setupPlayViewScrollView];
     [self setupPlayView];
     [self setupCoordinateLabelScrollViews];
-    [self setupActivityIndicatorView];
-    [self setupStatusLineView];
     [self setupBoardPositionListContainerView];
     self.boardPositionListView = nil;
     self.currentBoardPositionView = nil;
@@ -794,10 +666,11 @@ enum ActionType
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
 
-  self.navigationBarController.scoringModel = scoringModel;
-  self.navigationBarController.navigationBar = self.navigationBarMain;
-  self.statusLineController = [StatusLineController controllerWithStatusLine:self.statusLine];
-  self.activityIndicatorController = [ActivityIndicatorController controllerWithActivityIndicator:self.activityIndicator];
+  self.statusViewController = [[[StatusViewController alloc] initWithPlayView:self.playView
+                                                                 scoringModel:scoringModel] autorelease];
+  [self.navigationBarController setupWithScoringModel:scoringModel
+                                        navigationBar:self.navigationBarMain
+                                           statusViewController:self.statusViewController];
   self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.playViewScrollView playView:self.playView] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];

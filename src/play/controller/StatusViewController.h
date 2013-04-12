@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,28 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class PlayView;
+@class ScoringModel;
+
+
 // -----------------------------------------------------------------------------
-/// @brief The ActivityIndicatorController class is responsible for turning the
-/// activity indicator on the Play tab on or off.
+/// @brief The StatusViewController class is responsible for displaying status
+/// information about the current game situation in a status view that is
+/// visible on the Play tab.
 ///
-/// This is a very simple class that has been refactored out from the main
-/// PlayView class to keep that class focused on drawing the Go board.
+/// Most of the time the status view displays textual information, but whenever
+/// the GTP engine is taking a long time to calculate something (e.g. computer
+/// player makes its move), the status view displays an activity indicator
+/// instead.
 // -----------------------------------------------------------------------------
-@interface ActivityIndicatorController : NSObject
+@interface StatusViewController : NSObject
 {
 }
 
-+ (ActivityIndicatorController*) controllerWithActivityIndicator:(UIActivityIndicatorView*)activityIndicator;
+- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel;
+
+@property(nonatomic, retain, readonly) UIView* statusView;
+@property(nonatomic, assign) int statusViewWidth;
 
 @end

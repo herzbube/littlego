@@ -16,10 +16,9 @@
 
 
 // Project includes
-#import "StatusLineController.h"
+#import "StatusViewController.h"
 #import "../PlayView.h"
 #import "../model/ScoringModel.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
@@ -28,81 +27,52 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
 #import "../../player/Player.h"
+#import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private methods for StatusLineController.
+/// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
-@interface StatusLineController()
-/// @name Initialization and deallocation
-//@{
-- (id) init;
-- (void) dealloc;
-//@}
-/// @name Updaters
-//@{
-- (void) delayedUpdate;
-- (void) updateStatusLine;
-//@}
-/// @name Notification responders
-//@{
-- (void) goGameWillCreate:(NSNotification*)notification;
-- (void) goGameDidCreate:(NSNotification*)notification;
-- (void) goGameStateChanged:(NSNotification*)notification;
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification;
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification;
-- (void) goScoreCalculationStarts:(NSNotification*)notification;
-- (void) goScoreCalculationEnds:(NSNotification*)notification;
-- (void) longRunningActionStarts:(NSNotification*)notification;
-- (void) longRunningActionEnds:(NSNotification*)notification;
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
-//@}
-/// @name Private helpers
-//@{
-- (void) setupNotificationResponders;
-//@}
+@interface StatusViewController()
 /// @name Privately declared properties
 //@{
-@property(nonatomic, retain) UILabel* statusLine;
+@property(nonatomic, assign) UILabel* statusLabel;
+@property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
+@property(nonatomic, assign) PlayView* playView;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) int actionsInProgress;
-@property(nonatomic, assign) bool statusLineNeedsUpdate;
+@property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
+@property(nonatomic, assign) bool viewLayoutNeedsUpdate;
+@property(nonatomic, assign) bool statusLabelNeedsUpdate;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) UIView* statusView;
 //@}
 @end
 
 
-@implementation StatusLineController
+@implementation StatusViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates an StatusLineController instance
-/// that manages @a statusLine.
-// -----------------------------------------------------------------------------
-+ (StatusLineController*) controllerWithStatusLine:(UILabel*)statusLine
-{
-  StatusLineController* controller = [[StatusLineController alloc] init];
-  if (controller)
-  {
-    [controller autorelease];
-    controller.statusLine = statusLine;
-  }
-  return controller;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes an StatusLineController object.
+/// @brief Initializes a StatusViewController object.
 ///
-/// @note This is the designated initializer of StatusLineController.
+/// @note This is the designated initializer of StatusViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  self.statusLine = nil;
+  self.playView = playView;
+  self.scoringModel = scoringModel;
   self.actionsInProgress = 0;
-  self.statusLineNeedsUpdate = false;
-  self.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  self.activityIndicatorNeedsUpdate = false;
+  self.viewLayoutNeedsUpdate = false;
+  self.statusLabelNeedsUpdate = false;
+  [self setupView];
   [self setupNotificationResponders];
   return self;
 }
@@ -113,9 +83,12 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[PlayView sharedView] removeObserver:self forKeyPath:@"crossHairPoint"];
+  [self.playView removeObserver:self forKeyPath:@"crossHairPoint"];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  self.statusLine = nil;
+  self.statusView = nil;
+  self.statusLabel = nil;
+  self.activityIndicator = nil;
+  self.playView = nil;
   self.scoringModel = nil;
   [super dealloc];
 }
@@ -137,8 +110,67 @@
   [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
-  [[PlayView sharedView] addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
+  [self.playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupView
+{
+  self.statusLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.statusLabel.numberOfLines = 3;
+  self.statusLabel.font = [UIFont systemFontOfSize:10];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.statusLabel.textColor = [UIColor whiteColor];
+  else
+    self.statusLabel.textColor = [UIColor blackColor];
+  self.statusLabel.backgroundColor = [UIColor clearColor];
+  self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLabel.textAlignment = NSTextAlignmentCenter;
+  // Give the view its proper height. The width will later change depending on
+  // how much space the view gets within the navigation bar
+  self.statusLabel.text = @"line 1\nline 2\nline 3";
+  [self.statusLabel sizeToFit];
+  self.statusLabel.text = nil;
+
+  CGRect activityIndicatorFrame;
+  activityIndicatorFrame.size.width = [UiElementMetrics activityIndicatorWidthAndHeight];
+  activityIndicatorFrame.size.height = [UiElementMetrics activityIndicatorWidthAndHeight];
+  activityIndicatorFrame.origin.x = CGRectGetMaxX(self.statusLabel.frame);
+  activityIndicatorFrame.origin.y = (self.statusLabel.frame.size.height - activityIndicatorFrame.size.height) / 2;
+  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+  else
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  self.activityIndicator.hidden = YES;
+
+  // The activity indicator is initially hidden, so we can use the label size
+  // for the initial frame
+  self.statusView = [[[UIView alloc] initWithFrame:self.statusLabel.bounds] autorelease];
+  [self.statusView addSubview:self.statusLabel];
+  [self.statusView addSubview:self.activityIndicator];
+  // Don't use self, we don't want to trigger the setter
+  _statusViewWidth = self.statusView.frame.size.width;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the status view frame with the new width. May also adjust
+/// the text, i.e. make it longer or shorter depending on the new width.
+// -----------------------------------------------------------------------------
+- (void) setStatusViewWidth:(int)newWidth
+{
+  if (self.statusViewWidth == newWidth)
+    return;
+  _statusViewWidth = newWidth;
+  CGRect frame = self.statusView.frame;
+  frame.size.width = self.statusViewWidth;
+  self.statusView.frame = frame;
+
+  self.viewLayoutNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -149,18 +181,94 @@
 {
   if (self.actionsInProgress > 0)
     return;
-  [self updateStatusLine];
+  [self updateStatusView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the status line with text that provides feedback to the user
-/// about what's going on.
+/// @brief Updates the status view with text that provides feedback to the user
+/// about what's going on. Also starts/stops animating the activity indicator.
 // -----------------------------------------------------------------------------
-- (void) updateStatusLine
+- (void) updateStatusView
 {
-  if (! self.statusLineNeedsUpdate)
+  [self updateActivityIndicator];  // invoke before updateViewLayout, may trigger a view layout update
+  [self updateViewLayout];
+  [self updateStatusLabel];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusView.
+// -----------------------------------------------------------------------------
+- (void) updateActivityIndicator
+{
+  if (! self.activityIndicatorNeedsUpdate)
     return;
-  self.statusLineNeedsUpdate = false;
+  self.activityIndicatorNeedsUpdate = false;
+
+  bool activityIndicatorShouldAnimate = false;
+  if (self.scoringModel.scoringMode)
+  {
+    if (self.scoringModel.score.scoringInProgress)
+      activityIndicatorShouldAnimate = true;
+    else
+      activityIndicatorShouldAnimate = false;
+  }
+  else
+  {
+    if ([[GoGame sharedGame] isComputerThinking])
+      activityIndicatorShouldAnimate = true;
+    else
+      activityIndicatorShouldAnimate = false;
+  }
+
+  if (activityIndicatorShouldAnimate)
+  {
+    if (! self.activityIndicator.isAnimating)
+    {
+      [self.activityIndicator startAnimating];
+      self.activityIndicator.hidden = NO;
+      self.viewLayoutNeedsUpdate = true;
+    }
+  }
+  else
+  {
+    if (self.activityIndicator.isAnimating)
+    {
+      [self.activityIndicator stopAnimating];
+      self.activityIndicator.hidden = YES;
+      self.viewLayoutNeedsUpdate = true;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusView.
+// -----------------------------------------------------------------------------
+- (void) updateViewLayout
+{
+  if (! self.viewLayoutNeedsUpdate)
+    return;
+  self.viewLayoutNeedsUpdate = false;
+
+  CGRect statusLabelFrame = self.statusLabel.frame;
+  if (self.activityIndicator.hidden)
+    statusLabelFrame.size.width = self.statusView.frame.size.width;
+  else
+    statusLabelFrame.size.width = self.statusView.frame.size.width - self.activityIndicator.frame.size.width;
+  self.statusLabel.frame = statusLabelFrame;
+
+  CGRect activityIndicatorFrame = self.activityIndicator.frame;
+  activityIndicatorFrame.origin.x = CGRectGetMaxX(statusLabelFrame);
+  self.activityIndicator.frame = activityIndicatorFrame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusView.
+// -----------------------------------------------------------------------------
+- (void) updateStatusLabel
+{
+  if (! self.statusLabelNeedsUpdate)
+    return;
+  self.statusLabelNeedsUpdate = false;
 
   NSString* statusText = @"";
 
@@ -200,7 +308,7 @@
         if (self.scoringModel.score.scoringInProgress)
           statusText = @"Scoring in progress...";
         else
-          statusText = [NSString stringWithFormat:@"%@. Tap to mark dead stones.", [self.scoringModel.score resultString]];
+          statusText = [NSString stringWithFormat:@"%@ - Tap to mark dead stones", [self.scoringModel.score resultString]];
       }
       else
       {
@@ -253,8 +361,7 @@
       }
     }
   }
-
-  self.statusLine.text = statusText;
+  self.statusLabel.text = statusText;
 }
 
 // -----------------------------------------------------------------------------
@@ -273,10 +380,13 @@
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  // In case a new game is started abruptly without cleaning up state in the
+  // old game
+  self.activityIndicatorNeedsUpdate = true;
   // We don't get a goGameStateChanged because the old game is deallocated
   // without a state change, and the new game already starts with its correct
   // initial state
-  self.statusLineNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -285,7 +395,7 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  self.statusLineNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -295,7 +405,8 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  self.statusLineNeedsUpdate = true;
+  self.activityIndicatorNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -305,7 +416,7 @@
 - (void) goScoreScoringModeDisabled:(NSNotification*)notification
 {
   // Need this to remove score summary message
-  self.statusLineNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -314,7 +425,8 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
-  self.statusLineNeedsUpdate = true;
+  self.activityIndicatorNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -323,7 +435,8 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  self.statusLineNeedsUpdate = true;
+  self.activityIndicatorNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -355,7 +468,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  self.statusLineNeedsUpdate = true;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 

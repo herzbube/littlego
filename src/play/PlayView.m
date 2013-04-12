@@ -605,15 +605,4 @@ static PlayView* sharedPlayView = nil;
   return [_playViewMetrics pointNear:coordinates];
 }
 
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (CGRect) boardFrame
-{
-  return CGRectMake(self.frame.origin.x + _playViewMetrics.topLeftBoardCornerX,
-                    self.frame.origin.y + _playViewMetrics.topLeftBoardCornerY,
-                    _playViewMetrics.boardSideLength,
-                    _playViewMetrics.boardSideLength);
-}
-
 @end
