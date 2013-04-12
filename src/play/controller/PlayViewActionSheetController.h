@@ -16,8 +16,8 @@
 
 
 // Project includes
-#import "../newgame/NewGameController.h"
-#import "../ui/EditTextController.h"
+#import "../../newgame/NewGameController.h"
+#import "../../ui/EditTextController.h"
 
 // Forward declarations
 @class PlayViewActionSheetController;

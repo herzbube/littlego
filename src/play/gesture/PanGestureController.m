@@ -18,7 +18,7 @@
 // Project includes
 #import "PanGestureController.h"
 #import "../PlayView.h"
-#import "../ScoringModel.h"
+#import "../model/ScoringModel.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"

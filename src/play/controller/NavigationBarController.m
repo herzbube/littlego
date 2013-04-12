@@ -17,15 +17,15 @@
 
 // Project includes
 #import "NavigationBarController.h"
-#import "ScoringModel.h"
-#import "../main/ApplicationDelegate.h"
-#import "../go/GoBoardPosition.h"
-#import "../go/GoGame.h"
-#import "../go/GoScore.h"
-#import "../command/InterruptComputerCommand.h"
-#import "../command/boardposition/ChangeAndDiscardCommand.h"
-#import "../command/boardposition/DiscardAndPlayCommand.h"
-#import "../command/game/PauseGameCommand.h"
+#import "../model/ScoringModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
+#import "../../command/InterruptComputerCommand.h"
+#import "../../command/boardposition/ChangeAndDiscardCommand.h"
+#import "../../command/boardposition/DiscardAndPlayCommand.h"
+#import "../../command/game/PauseGameCommand.h"
 
 
 // -----------------------------------------------------------------------------

@@ -17,10 +17,7 @@
 
 // Project includes
 #import "PlayViewController.h"
-#import "ActivityIndicatorController.h"
-#import "DebugPlayViewController.h"
 #import "PlayView.h"
-#import "StatusLineController.h"
 #import "boardposition/BoardPositionListViewController.h"
 #import "boardposition/BoardPositionModel.h"
 #import "boardposition/BoardPositionTableListViewController.h"
@@ -28,6 +25,9 @@
 #import "boardposition/BoardPositionView.h"
 #import "boardposition/BoardPositionViewMetrics.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
+#import "controller/ActivityIndicatorController.h"
+#import "controller/DebugPlayViewController.h"
+#import "controller/StatusLineController.h"
 #import "gesture/DoubleTapGestureController.h"
 #import "gesture/TapGestureController.h"
 #import "gesture/TwoFingerTapGestureController.h"

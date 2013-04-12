@@ -18,8 +18,8 @@
 // Project includes
 #import "DeadStonesLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../PlayViewModel.h"
-#import "../ScoringModel.h"
+#import "../model/PlayViewModel.h"
+#import "../model/ScoringModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"

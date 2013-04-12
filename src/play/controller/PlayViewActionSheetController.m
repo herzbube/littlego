@@ -17,16 +17,16 @@
 
 // Project includes
 #import "PlayViewActionSheetController.h"
-#import "ScoringModel.h"
-#import "../main/ApplicationDelegate.h"
-#import "../go/GoBoardPosition.h"
-#import "../go/GoGame.h"
-#import "../go/GoScore.h"
-#import "../archive/ArchiveViewModel.h"
-#import "../command/backup/BackupGameCommand.h"
-#import "../command/backup/CleanBackupCommand.h"
-#import "../command/game/SaveGameCommand.h"
-#import "../command/game/NewGameCommand.h"
+#import "../model/ScoringModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
+#import "../../archive/ArchiveViewModel.h"
+#import "../../command/backup/BackupGameCommand.h"
+#import "../../command/backup/CleanBackupCommand.h"
+#import "../../command/game/SaveGameCommand.h"
+#import "../../command/game/NewGameCommand.h"
 
 
 // -----------------------------------------------------------------------------

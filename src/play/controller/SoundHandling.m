@@ -17,9 +17,9 @@
 
 // Project includes
 #import "SoundHandling.h"
-#import "PlayViewModel.h"
-#import "../main/ApplicationDelegate.h"
-#import "../go/GoGame.h"
+#import "../model/PlayViewModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../go/GoGame.h"
 
 // System includes
 #include <AudioToolbox/AudioServices.h>

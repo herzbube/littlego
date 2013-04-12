@@ -18,7 +18,7 @@
 // Project includes
 #import "CrossHairStoneLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../PlayViewModel.h"
+#import "../model/PlayViewModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"

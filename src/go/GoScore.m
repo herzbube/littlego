@@ -28,7 +28,7 @@
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../utility/NSStringAdditions.h"
-#import "../play/ScoringModel.h"
+#import "../play/model/ScoringModel.h"
 
 
 // -----------------------------------------------------------------------------

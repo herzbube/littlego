@@ -18,7 +18,7 @@
 // Project includes
 #import "PlayViewScrollController.h"
 #import "../PlayView.h"
-#import "../PlayViewModel.h"
+#import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 
 // -----------------------------------------------------------------------------

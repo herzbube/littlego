@@ -17,9 +17,9 @@
 
 // Project includes
 #import "ScoringModel.h"
-#import "../go/GoGame.h"
-#import "../go/GoScore.h"
-#import "../utility/UIColorAdditions.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------

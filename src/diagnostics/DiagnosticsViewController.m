@@ -25,7 +25,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/ScoringModel.h"
+#import "../play/model/ScoringModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 

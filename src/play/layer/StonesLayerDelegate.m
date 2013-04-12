@@ -18,7 +18,7 @@
 // Project includes
 #import "StonesLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../PlayViewModel.h"
+#import "../model/PlayViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"

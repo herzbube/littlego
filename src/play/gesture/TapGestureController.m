@@ -18,7 +18,7 @@
 // Project includes
 #import "TapGestureController.h"
 #import "../PlayView.h"
-#import "../ScoringModel.h"
+#import "../model/ScoringModel.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 

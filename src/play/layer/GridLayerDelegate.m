@@ -18,7 +18,7 @@
 // Project includes
 #import "GridLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../PlayViewModel.h"
+#import "../model/PlayViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"

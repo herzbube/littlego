@@ -18,8 +18,8 @@
 // Project includes
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../PlayViewModel.h"
-#import "../ScoringModel.h"
+#import "../model/PlayViewModel.h"
+#import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"

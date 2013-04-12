@@ -23,7 +23,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/ScoringModel.h"
+#import "../../play/model/ScoringModel.h"
 
 
 // -----------------------------------------------------------------------------

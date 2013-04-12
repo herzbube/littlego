@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "../ui/TableViewGridCell.h"
+#import "../../ui/TableViewGridCell.h"
 
 // Forward declarations
 @class GameInfoViewController;

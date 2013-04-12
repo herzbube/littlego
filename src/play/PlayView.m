@@ -18,8 +18,6 @@
 // Project includes
 #import "PlayView.h"
 #import "PlayViewMetrics.h"
-#import "PlayViewModel.h"
-#import "ScoringModel.h"
 #import "layer/CoordinateLabelsLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
@@ -29,6 +27,8 @@
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
+#import "model/PlayViewModel.h"
+#import "model/ScoringModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../go/GoBoard.h"
 #import "../go/GoBoardPosition.h"

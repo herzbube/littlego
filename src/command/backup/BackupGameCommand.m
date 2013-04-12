@@ -20,7 +20,7 @@
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/ScoringModel.h"
+#import "../../play/model/ScoringModel.h"
 
 
 @implementation BackupGameCommand

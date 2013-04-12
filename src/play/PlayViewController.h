@@ -16,9 +16,9 @@
 
 
 // Project includes
-#import "NavigationBarController.h"
-#import "gesture/PanGestureController.h"
 #import "boardposition/CurrentBoardPositionViewController.h"
+#import "controller/NavigationBarController.h"
+#import "gesture/PanGestureController.h"
 
 
 // -----------------------------------------------------------------------------

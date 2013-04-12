@@ -17,8 +17,8 @@
 
 // Project includes
 #import "PlayViewModel.h"
-#import "../utility/NSStringAdditions.h"
-#import "../utility/UIColorAdditions.h"
+#import "../../utility/NSStringAdditions.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------

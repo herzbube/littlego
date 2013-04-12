@@ -17,10 +17,10 @@
 
 // Project includes
 #import "ActivityIndicatorController.h"
-#import "ScoringModel.h"
-#import "../main/ApplicationDelegate.h"
-#import "../go/GoGame.h"
-#import "../go/GoScore.h"
+#import "../model/ScoringModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
 
 
 // -----------------------------------------------------------------------------

@@ -17,17 +17,17 @@
 
 // Project includes
 #import "StatusLineController.h"
-#import "ScoringModel.h"
-#import "PlayView.h"
-#import "../main/ApplicationDelegate.h"
-#import "../go/GoBoardPosition.h"
-#import "../go/GoGame.h"
-#import "../go/GoMove.h"
-#import "../go/GoPlayer.h"
-#import "../go/GoPoint.h"
-#import "../go/GoScore.h"
-#import "../go/GoVertex.h"
-#import "../player/Player.h"
+#import "../PlayView.h"
+#import "../model/ScoringModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoMove.h"
+#import "../../go/GoPlayer.h"
+#import "../../go/GoPoint.h"
+#import "../../go/GoScore.h"
+#import "../../go/GoVertex.h"
+#import "../../player/Player.h"
 
 
 // -----------------------------------------------------------------------------
