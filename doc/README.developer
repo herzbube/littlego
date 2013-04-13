@@ -1329,19 +1329,17 @@ occur at - almost - any time. It goes like this:
   data, and risking to lose that simply is not appropriate. So let's not worry
   about write cycles and hope that the flash drive manufacturers and Apple
   have done their job and optimized disk activity to death.
-- Preferences data and application state data is saved only when the user
-  switches tabs, or when the application is suspended for any reason. This is
-  not as thorough as saving the game in progress, but it should be sufficient.
-  It would have been a larger effort to introduce events for each and every
-  preference and application state change, so I have decided to go for the
-  optimization with the tab changes and application suspension - events which
-  are simple to detect. I am also assuming that 1) losing a bit of preferences
-  or application state data in case of a crash is not as grave as losing the
-  game in progress (imagine you lose a game of several hours), and 2) in the
-  case of preferences data, that changing preferences is a relatively
-  well-tested process that is not likely to trigger a crash, so saving data can
-  wait until the user switches tabs to do other, potentially more dangerous
-  things.
+- Preferences data is saved only when the user switches tabs, or when the
+  application is suspended for any reason. This is not as thorough as saving
+  the game in progress, but it should be sufficient. It would have been a larger
+  effort to introduce events for each and every preference and application state
+  change, so I have decided to go for the optimization with the tab changes and
+  application suspension - events which are simple to detect. I am also assuming
+  that 1) losing a bit of preferences in case of a crash is not as grave as
+  losing the game in progress (imagine you lose a game of several hours), and
+  2) that changing preferences is a relatively well-tested process that is not
+  likely to trigger a crash, so saving data can wait until the user switches
+  tabs to do other, potentially more dangerous things.
 
 With the introduction of board positions in 0.10.0, it has become essential that
 the game in progress is backed up as outlined above. Whenever the board
