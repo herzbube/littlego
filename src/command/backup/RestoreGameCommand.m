@@ -20,7 +20,9 @@
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/LoadGameCommand.h"
 #import "../game/NewGameCommand.h"
+#import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
+#import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
@@ -32,7 +34,6 @@
 // -----------------------------------------------------------------------------
 @interface RestoreGameCommand()
 @property(nonatomic, retain) GoGame* unarchivedGame;
-@property(nonatomic, retain) GoScore* unarchivedScore;
 @end
 
 
@@ -44,7 +45,6 @@
 - (void) dealloc
 {
   self.unarchivedGame = nil;
-  self.unarchivedScore = nil;
   [super dealloc];
 }
 
@@ -77,11 +77,18 @@
   NSData* data = [NSData dataWithContentsOfFile:backupFilePath];
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
   self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
-  self.unarchivedScore = [unarchiver decodeObjectForKey:nsCodingGoScoreKey];
   [unarchiver finishDecoding];
   [unarchiver release];
   if (! self.unarchivedGame)
     return false;
+
+  // Since we are not capable of restoring scoring mode, we must make sure that
+  // GoBoardRegion objects are reset to their non-scoring-mode state. We cannot
+  // be sure whether none, all or only some of the objects are in scoring mode,
+  // so we have to iterate over all of them.
+  NSArray* allRegions = self.unarchivedGame.board.regions;
+  for (GoBoardRegion* region in allRegions)
+    region.scoringMode = false;
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:self.unarchivedGame] autorelease];
   // Computer player must not be triggered before the GTP engine has been
@@ -107,13 +114,6 @@
   {
     DDLogInfo(@"%@: Computer vs. computer game, turning off 'computer is thinking' state", [self shortDescription]);
     self.unarchivedGame.computerThinks = false;
-  }
-
-  if (self.unarchivedScore)
-  {
-    ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-    // Scoring model sends its own notification
-    [scoringModel restoreScoringModeWithScoreObject:self.unarchivedScore];
   }
 
   return true;
