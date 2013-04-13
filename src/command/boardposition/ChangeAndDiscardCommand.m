@@ -26,7 +26,6 @@
 
 @implementation ChangeAndDiscardCommand
 
-
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
@@ -42,13 +41,10 @@
                  onThread:[NSThread mainThread]
                withObject:longRunningActionStarts
             waitUntilDone:YES];
-    // Before we discard, first change to a board position that will be valid
-    // even after the discard. Note that because we step back only one board
-    // position, ChangeBoardPositionCommand is executed synchronously.
-    bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
+    bool success = [self changeBoardPosition];
     if (! success)
     {
-      DDLogError(@"%@: Aborting because ChangeBoardPositionCommand execution failed", [self shortDescription]);
+      DDLogError(@"%@: Aborting because changeBoardPosition failed", [self shortDescription]);
       return false;
     }
     success = [self revertGameStateIfNecessary];
@@ -92,6 +88,19 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) changeBoardPosition
+{
+  // Before we discard, first change to a board position that will be valid
+  // even after the discard. Note that because we step back only one board
+  // position, ChangeBoardPositionCommand is executed synchronously.
+  ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease];
+  command.performBackup = false;  // we already perform a backup, no need for doing it twice
+  return [command submit];
 }
 
 // -----------------------------------------------------------------------------

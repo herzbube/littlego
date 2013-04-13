@@ -19,6 +19,7 @@
 #import "ChangeBoardPositionCommand.h"
 #import "SyncGTPEngineCommand.h"
 #import "../AsynchronousCommand.h"
+#import "../backup/BackupGameCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -72,6 +73,7 @@
   if (! self)
     return nil;
   self.newBoardPosition = aBoardPosition;
+  self.performBackup = true;
   return self;
 }
 
@@ -167,6 +169,14 @@
 
     if (scoringModel.scoringMode)
       [scoringModel.score calculateWaitUntilDone:false];
+
+    // If scoring mode is enabled we are backing up while scoring is in
+    // progress, i.e. we are backing up GoBoardRegion objects with half-baked
+    // values. We can do this because we know that RestoreGameCommand takes
+    // care of this problem for us.
+    // TODO: Remove this comment when issue #124 is implemented.
+    if (self.performBackup)
+      [[[[BackupGameCommand alloc] init] autorelease] submit];  // don't save .sgf file
 
     return true;
   }

@@ -45,6 +45,9 @@
 /// - Synchronizes the GTP engine with the new board position
 /// - Recalculates the score for the new board position if scoring mode is
 ///   currently enabled
+/// - Performs a backup so that the board position can be restored when the
+///   application launches the next time. The backup can optionally be disabled
+///   by whoever executes ChangeBoardPositionCommand.
 // -----------------------------------------------------------------------------
 @interface ChangeBoardPositionCommand : CommandBase
 {
@@ -54,5 +57,16 @@
 - (id) initWithFirstBoardPosition;
 - (id) initWithLastBoardPosition;
 - (id) initWithOffset:(int)offset;
+
+/// @brief Indicates whether ChangeBoardPositionCommand should perform a backup
+/// as part of its operation. This flag is true by default.
+///
+/// This flag is intended to be used by actors that perform their own backup and
+/// do not need ChangeBoardPositionCommand to do this as well.
+///
+/// @note If ChangeBoardPositionCommand performs a backup, it does so without
+/// saving an .sgf file (i.e. only the internal application state is backed
+/// up).
+@property(nonatomic, assign) bool performBackup;
 
 @end
