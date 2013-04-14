@@ -15,6 +15,7 @@ Before the release
   updated if something relevant has changed since the last release. If the
   NSCoding version changes, the bug report format version MUST also be changed.
   Vice versa this is not always the case.
+- Make sure that the TTY logger is disabled in ApplicationDelegate setupLogging
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
 - Update the ChangeLog
