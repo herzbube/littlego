@@ -398,9 +398,17 @@ static PlayView* sharedPlayView = nil;
 {
   GoGame* newGame = [notification object];
   [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
   [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
+  [self layoutCoordinateLabelView:self.coordinateLabelsLetterView
+                       scrollView:self.coordinateLabelsLetterViewScrollView];
+  [self layoutCoordinateLabelView:self.coordinateLabelsNumberView
+                       scrollView:self.coordinateLabelsNumberViewScrollView];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
   [self delayedUpdate];
+  [CATransaction commit];
 }
 
 // -----------------------------------------------------------------------------
