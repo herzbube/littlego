@@ -52,6 +52,7 @@
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
+#import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 #import "../ui/UiElementMetrics.h"
 
@@ -400,36 +401,17 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupFolders
 {
-  // TODO: Reimplement with loop over a list that was previously filled with
-  // the enum values representing the required directories
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
-  NSString* documentsDirectory = [paths objectAtIndex:0];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if (! [fileManager fileExistsAtPath:documentsDirectory])
-  {
-    [fileManager createDirectoryAtPath:documentsDirectory
-           withIntermediateDirectories:YES
-                            attributes:nil
-                                 error:nil];
-  }
-  paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  if (! [fileManager fileExistsAtPath:appSupportDirectory])
-  {
-    [fileManager createDirectoryAtPath:appSupportDirectory
-           withIntermediateDirectories:YES
-                            attributes:nil
-                                 error:nil];
-  }
+  NSString* archiveFolderPath = [PathUtilities archiveFolderPath];
+  [PathUtilities createFolder:archiveFolderPath removeIfExists:false];
+  NSString* backupFolderPath = [PathUtilities backupFolderPath];
+  [PathUtilities createFolder:backupFolderPath removeIfExists:false];
   // Must not remove the Inbox folder if the application is launched because of
   // document interaction. Removal in this case is delayed to the next app
   // launch without document interaction.
   if (! self.documentInteractionURL)
   {
-    NSString* inboxDirectory = [documentsDirectory stringByAppendingPathComponent:inboxFolderName];
-    if ([fileManager fileExistsAtPath:inboxDirectory])
-      [fileManager removeItemAtPath:inboxDirectory error:nil];
+    NSString* inboxFolderPath = [PathUtilities inboxFolderPath];
+    [PathUtilities deleteItemIfExists:inboxFolderPath];
   }
 }
 

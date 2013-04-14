@@ -172,15 +172,58 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Prepends a pre-defined folder to @a fileName, then returns the
-/// resulting full path.
+/// @brief Returns the full path to the folder that is used to store backup
+/// files (i.e. files used to restore the application state from a previous
+/// session).
 // -----------------------------------------------------------------------------
-+ (NSString*) backupFilePath:(NSString*)fileName
++ (NSString*) backupFolderPath
 {
   BOOL expandTilde = YES;
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* backupFolderPath = [paths objectAtIndex:0];
-  return [backupFolderPath stringByAppendingPathComponent:fileName];
+  return [paths objectAtIndex:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepends a pre-defined folder to @a fileName, then returns the
+/// resulting full path.
+///
+/// If @a fileExists is not nil, this method also checks whether the file
+/// exists and fills @a fileExists with the result.
+// -----------------------------------------------------------------------------
++ (NSString*) filePathForBackupFileNamed:(NSString*)fileName fileExists:(BOOL*)fileExists
+{
+  NSString* backupFolderPath = [PathUtilities backupFolderPath];
+  NSString* backupFilePath = [backupFolderPath stringByAppendingPathComponent:fileName];
+  if (fileExists)
+  {
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    *fileExists = [fileManager fileExistsAtPath:backupFilePath];
+    DDLogVerbose(@"Checking backup file %@, file exists = %d", backupFilePath, *fileExists);
+  }
+  return backupFilePath;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the full path to the folder that contains the application
+/// archive, i.e. the folder where .sgf files are stored.
+// -----------------------------------------------------------------------------
++ (NSString*) archiveFolderPath
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  return [paths objectAtIndex:0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the full path to the Inbox folder, i.e. the folder used by
+/// the document interaction system to pass files into the app.
+// -----------------------------------------------------------------------------
++ (NSString*) inboxFolderPath
+{
+  BOOL expandTilde = YES;
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
+  NSString* documentsDirectory = [paths objectAtIndex:0];
+  return [documentsDirectory stringByAppendingPathComponent:inboxFolderName];
 }
 
 @end

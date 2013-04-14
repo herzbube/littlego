@@ -19,6 +19,7 @@
 #import "BackupGameCommand.h"
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
+#import "../../utility/PathUtilities.h"
 
 
 @implementation BackupGameCommand
@@ -28,21 +29,11 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSString* backupFolder = [self backupFolder];
-  [self saveArchive:backupFolder];
+  NSString* backupFolderPath = [PathUtilities backupFolderPath];
+  [self saveArchive:backupFolderPath];
   if (self.saveSgf)
-    [self saveSgf:backupFolder];
+    [self saveSgf:backupFolderPath];
   return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
-// -----------------------------------------------------------------------------
-- (NSString*) backupFolder
-{
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  return [paths objectAtIndex:0];
 }
 
 // -----------------------------------------------------------------------------

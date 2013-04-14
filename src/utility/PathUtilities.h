@@ -32,6 +32,9 @@
 + (BOOL) moveItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error;
 + (NSString*) preferencesFileName;
 + (NSString*) preferencesFilePath;
-+ (NSString*) backupFilePath:(NSString*)fileName;
++ (NSString*) backupFolderPath;
++ (NSString*) filePathForBackupFileNamed:(NSString*)fileName fileExists:(BOOL*)fileExists;
++ (NSString*) inboxFolderPath;
++ (NSString*) archiveFolderPath;
 
 @end

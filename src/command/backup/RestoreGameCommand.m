@@ -27,6 +27,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/ScoringModel.h"
+#import "../../utility/PathUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -70,7 +71,8 @@
 {
   DDLogVerbose(@"%@: Restoring game from NSCoding archive", [self shortDescription]);
   BOOL fileExists;
-  NSString* backupFilePath = [self filePathForBackupFileNamed:archiveBackupFileName fileExists:&fileExists];
+  NSString* backupFilePath = [PathUtilities filePathForBackupFileNamed:archiveBackupFileName
+                                                            fileExists:&fileExists];
   if (! fileExists)
   {
     DDLogVerbose(@"%@: Restoring not possible, NSCoding archive does not exist", [self shortDescription]);
@@ -135,7 +137,8 @@
 {
   DDLogVerbose(@"%@: Restoring game from .sgf file", [self shortDescription]);
   BOOL fileExists;
-  NSString* backupFilePath = [self filePathForBackupFileNamed:sgfBackupFileName fileExists:&fileExists];
+  NSString* backupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
+                                                            fileExists:&fileExists];
   if (! fileExists)
     return false;
   LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
@@ -144,21 +147,6 @@
   // is already asynchronous
   bool success = [loadCommand submit];
   return success;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (NSString*) filePathForBackupFileNamed:(NSString*)backupFileName fileExists:(BOOL*)fileExists
-{
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, expandTilde);
-  NSString* appSupportDirectory = [paths objectAtIndex:0];
-  NSString* backupFilePath = [appSupportDirectory stringByAppendingPathComponent:backupFileName];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  *fileExists = [fileManager fileExistsAtPath:backupFilePath];
-  DDLogVerbose(@"%@: Checking file %@, file exists = %d", [self shortDescription], backupFilePath, *fileExists);
-  return backupFilePath;
 }
 
 @end

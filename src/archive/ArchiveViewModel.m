@@ -21,6 +21,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
 #import "../player/Player.h"
+#import "../utility/PathUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -49,9 +50,7 @@
   if (! self)
     return nil;
 
-  BOOL expandTilde = YES;
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
-  self.archiveFolder = [paths objectAtIndex:0];
+  self.archiveFolder = [PathUtilities archiveFolderPath];
 
   self.gameList = [NSMutableArray arrayWithCapacity:0];
   self.sortCriteria = ArchiveSortCriteriaFileName;

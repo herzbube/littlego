@@ -27,15 +27,18 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSString* sgfBackupFilePath = [PathUtilities backupFilePath:sgfBackupFileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:sgfBackupFilePath])
+  BOOL fileExists;
+  NSString* sgfBackupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
+                                                               fileExists:&fileExists];
+  if (fileExists)
   {
     BOOL result = [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
     DDLogVerbose(@"%@: Removed .sgf file %@, result = %d", [self shortDescription], sgfBackupFilePath, result);
   }
-  NSString* archiveBackupFilePath = [PathUtilities backupFilePath:archiveBackupFileName];
-  if ([fileManager fileExistsAtPath:archiveBackupFilePath])
+  NSString* archiveBackupFilePath = [PathUtilities filePathForBackupFileNamed:archiveBackupFileName
+                                                                   fileExists:&fileExists];
+  if (fileExists)
   {
     BOOL result = [fileManager removeItemAtPath:archiveBackupFilePath error:nil];
     DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveBackupFilePath, result);
