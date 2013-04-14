@@ -136,6 +136,11 @@
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.allDataNeedsUpdate = true;
+  // currentBoardPosition also needs update to cover the case where the app
+  // launches and we need to display a non-zero board position right after a
+  // game is created
+  self.currentBoardPositionNeedsUpdate = true;
+  self.oldBoardPosition = -1;
   self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
