@@ -126,7 +126,6 @@
 {
   if (! self.crossHairPoint)
     return;
-  DDLogVerbose(@"CrossHairLinesLayerDelegate is drawing");
 
   if (! _normalLineLayer)
   {

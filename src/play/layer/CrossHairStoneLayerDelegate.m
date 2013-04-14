@@ -134,7 +134,6 @@
 {
   if (! self.crossHairPoint)
     return;
-  DDLogVerbose(@"CrossHairStoneLayerDelegate is drawing");
 
   if (! _blackStoneLayer)
     _blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
