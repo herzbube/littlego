@@ -345,12 +345,6 @@ NSString* goPointIsAboveValidKey = @"IsAboveValid";
 NSString* goPointIsBelowValidKey = @"IsBelowValid";
 NSString* goPointIsNextValidKey = @"IsNextValid";
 NSString* goPointIsPreviousValidKey = @"IsPreviousValid";
-// GoVertex keys
-NSString* goVertexStringKey = @"String";
-NSString* goVertexNumericXKey = @"NumericX";
-NSString* goVertexNumericYKey = @"NumericY";
-NSString* goVertexLetterAxisCompoundKey = @"LetterAxisCompound";
-NSString* goVertexNumberAxisCompoundKey = @"NumberAxisCompound";
 // GoScore keys
 NSString* goScoreTerritoryScoresAvailableKey = @"TerritoryScoresAvailable";
 NSString* goScoreScoringInProgressKey = @"ScoringInProgress";

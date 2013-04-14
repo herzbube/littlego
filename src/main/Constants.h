@@ -742,12 +742,6 @@ extern NSString* goPointIsAboveValidKey;
 extern NSString* goPointIsBelowValidKey;
 extern NSString* goPointIsNextValidKey;
 extern NSString* goPointIsPreviousValidKey;
-// GoVertex keys
-extern NSString* goVertexStringKey;
-extern NSString* goVertexNumericXKey;
-extern NSString* goVertexNumericYKey;
-extern NSString* goVertexLetterAxisCompoundKey;
-extern NSString* goVertexNumberAxisCompoundKey;
 // GoScore keys
 extern NSString* goScoreTerritoryScoresAvailableKey;
 extern NSString* goScoreScoringInProgressKey;
