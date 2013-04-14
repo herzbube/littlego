@@ -72,7 +72,10 @@
   BOOL fileExists;
   NSString* backupFilePath = [self filePathForBackupFileNamed:archiveBackupFileName fileExists:&fileExists];
   if (! fileExists)
+  {
+    DDLogVerbose(@"%@: Restoring not possible, NSCoding archive does not exist", [self shortDescription]);
     return false;
+  }
 
   NSData* data = [NSData dataWithContentsOfFile:backupFilePath];
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
@@ -80,7 +83,13 @@
   [unarchiver finishDecoding];
   [unarchiver release];
   if (! self.unarchivedGame)
+  {
+    DDLogVerbose(@"%@: Restoring not possible, NSCoding archive not compatible", [self shortDescription]);
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    BOOL result = [fileManager removeItemAtPath:backupFilePath error:nil];
+    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], backupFilePath, result);
     return false;
+  }
 
   // Since we are not capable of restoring scoring mode, we must make sure that
   // GoBoardRegion objects are reset to their non-scoring-mode state. We cannot
