@@ -102,6 +102,8 @@
 		CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
 		CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
+		CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
+		CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD15A476168BA34400D4472A /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A474168BA34400D4472A /* back.png */; };
 		CD15A477168BA34400D4472A /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD15A475168BA34400D4472A /* back@2x.png */; };
 		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
@@ -524,6 +526,8 @@
 		CD1311C017180B45006CE699 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
 		CD1311CC17180D57006CE699 /* StatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusViewController.h; sourceTree = "<group>"; };
 		CD1311CD17180D57006CE699 /* StatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusViewController.m; sourceTree = "<group>"; };
+		CD1311D0171B5853006CE699 /* LoggingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggingModel.h; sourceTree = "<group>"; };
+		CD1311D1171B5854006CE699 /* LoggingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggingModel.m; sourceTree = "<group>"; };
 		CD15A474168BA34400D4472A /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		CD15A475168BA34400D4472A /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
 		CD15A47E168CBE7F00D4472A /* GoMoveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModel.h; sourceTree = "<group>"; };
@@ -1125,6 +1129,8 @@
 				CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */,
 				CD0CCBF014311AD300A3F869 /* GtpLogViewController.h */,
 				CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */,
+				CD1311D0171B5853006CE699 /* LoggingModel.h */,
+				CD1311D1171B5854006CE699 /* LoggingModel.m */,
 				CDFA32AC15A10AD500439B4E /* SendBugReportController.h */,
 				CDFA32AD15A10AD500439B4E /* SendBugReportController.m */,
 				CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */,
@@ -2046,6 +2052,7 @@
 				CD1311C117180B45006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
+				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2176,6 +2183,7 @@
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
+				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

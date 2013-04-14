@@ -46,6 +46,7 @@
 #import "../diagnostics/CrashReportingModel.h"
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
+#import "../diagnostics/LoggingModel.h"
 #import "../command/CommandProcessor.h"
 #import "../command/HandleDocumentInteraction.h"
 #import "../command/SetupApplicationCommand.h"
@@ -140,6 +141,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpLogModel = nil;
   self.gtpCommandModel = nil;
   self.crashReportingModel = nil;
+  self.loggingModel = nil;
   self.fileLogger = nil;
   [CommandProcessor releaseSharedProcessor];
   if (self == sharedDelegate)
@@ -362,7 +364,14 @@ static ApplicationDelegate* sharedDelegate = nil;
     self.fileLogger.maximumFileSize = 1024 * 1024;
     self.fileLogger.logFileManager.maximumNumberOfLogFiles = 10;
   }
-  bool loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
+  // If possible take the user preference from LoggingModel. If we're called
+  // during application launch, however, that model object does not exist yet
+  // and we have to fall back to reading directly from NSUserDefaults.
+  bool loggingEnabled;
+  if (self.loggingModel)
+    loggingEnabled = self.loggingModel.loggingEnabled;
+  else
+    loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
   if (loggingEnabled)
   {
     [DDLog addLogger:self.fileLogger];
@@ -473,6 +482,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpLogModel = [[[GtpLogModel alloc] init] autorelease];
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
   self.crashReportingModel = [[[CrashReportingModel alloc] init] autorelease];
+  self.loggingModel = [[[LoggingModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -483,6 +493,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.gtpLogModel readUserDefaults];
   [self.gtpCommandModel readUserDefaults];
   [self.crashReportingModel readUserDefaults];
+  [self.loggingModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -511,6 +522,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.gtpLogModel writeUserDefaults];
   [self.gtpCommandModel writeUserDefaults];
   [self.crashReportingModel writeUserDefaults];
+  [self.loggingModel writeUserDefaults];
 
   [[NSUserDefaults standardUserDefaults] synchronize];
 }

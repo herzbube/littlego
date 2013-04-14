@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,20 +16,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The CrashReportingModel class provides user defaults data to its
-/// clients that describes the behaviour of the crash reporting service.
+/// @brief The LoggingModel class provides user defaults data to its clients
+/// that is relevant for the logging service.
 // -----------------------------------------------------------------------------
-@interface CrashReportingModel : NSObject
+@interface LoggingModel : NSObject
 {
 }
 
-- (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property(nonatomic, assign) bool collectCrashData;
-@property(nonatomic, assign) bool automaticReport;
-@property(nonatomic, assign) bool allowContact;
-@property(nonatomic, retain) NSString* contactEmail;
+@property(nonatomic, assign) bool loggingEnabled;
 
 @end

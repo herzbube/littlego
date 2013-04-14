@@ -21,6 +21,7 @@
 #import "GtpLogViewController.h"
 #import "GtpLogSettingsController.h"
 #import "GtpCommandViewController.h"
+#import "LoggingModel.h"
 #import "SendBugReportController.h"
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
@@ -88,6 +89,7 @@ enum BugReportSectionItem
 // -----------------------------------------------------------------------------
 @interface DiagnosticsViewController()
 @property(nonatomic, assign) bool bugReportSectionIsDisabled;
+@property(nonatomic, assign) bool ignoreLoggingEnabledModelUpdate;
 @end
 
 
@@ -100,6 +102,8 @@ enum BugReportSectionItem
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  [loggingModel removeObserver:self forKeyPath:@"loggingEnabled"];
   [super dealloc];
 }
 
@@ -127,12 +131,15 @@ enum BugReportSectionItem
   [super viewDidLoad];
 
   self.bugReportSectionIsDisabled = [self shouldDisableBugReportSection];
+  self.ignoreLoggingEnabledModelUpdate = false;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  [loggingModel addObserver:self forKeyPath:@"loggingEnabled" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -150,6 +157,8 @@ enum BugReportSectionItem
 
   // Undo all of the stuff that is happening in viewDidLoad
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  [loggingModel removeObserver:self forKeyPath:@"loggingEnabled"];
 }
 
 // -----------------------------------------------------------------------------
@@ -288,7 +297,7 @@ enum BugReportSectionItem
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Collect logging data";
-      accessoryView.on = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
+      accessoryView.on = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
       [accessoryView addTarget:self action:@selector(toggleLoggingEnabled:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -486,6 +495,23 @@ enum BugReportSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  if ([keyPath isEqualToString:@"loggingEnabled"])
+  {
+    if (self.ignoreLoggingEnabledModelUpdate)
+      return;
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:LoggingEnabledItem
+                                                inSection:LoggingSection];
+    NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+    [self.tableView reloadRowsAtIndexPaths:indexPaths
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Enables or disables the features in the "Send bug report" section,
 /// depending on the current state of the application.
 ///
@@ -553,8 +579,11 @@ enum BugReportSectionItem
 - (void) toggleLoggingEnabled:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:accessoryView.on] forKey:loggingEnabledKey];
-  [[ApplicationDelegate sharedDelegate] setupLogging];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  self.ignoreLoggingEnabledModelUpdate = true;
+  appDelegate.loggingModel.loggingEnabled = accessoryView.on;
+  self.ignoreLoggingEnabledModelUpdate = false;
+  [appDelegate setupLogging];
 }
 
 @end

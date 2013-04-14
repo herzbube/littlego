@@ -22,6 +22,7 @@
 #import "../game/NewGameCommand.h"
 #import "../game/SaveGameCommand.h"
 #import "../../archive/ArchiveViewModel.h"
+#import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
@@ -187,13 +188,25 @@
 // -----------------------------------------------------------------------------
 - (void) handleComputerPlayedIllegalMove1
 {
-  NSString* message = @"The computer played an illegal move. This is almost certainly a bug in Little Go. Would you like to report this incident now so that we can fix the bug?"; 
+  NSString* message = @"The computer played an illegal move. This is almost certainly a bug in Little Go. ";
+  enum AlertViewType alertViewType;
+  bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
+  if (loggingEnabled)
+  {
+    message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can fix the bug?"];
+    alertViewType = AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled;
+  }
+  else
+  {
+    message = [message stringByAppendingString:@"You should enable logging now so that you can report the bug when it occurs the next time.\n\nWould you like to enable logging now?"];
+    alertViewType = AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled;
+  }
   UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Unexpected error"
                                                   message:message
                                                  delegate:self
                                         cancelButtonTitle:@"No"
                                         otherButtonTitles:@"Yes", nil];
-  alert.tag = AlertViewTypeComputerPlayedIllegalMove;
+  alert.tag = alertViewType;
   [alert show];
   [alert release];
 
@@ -241,7 +254,20 @@
 
   switch (alertView.tag)
   {
-    case AlertViewTypeComputerPlayedIllegalMove:
+    case AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled:
+    {
+      switch (buttonIndex)
+      {
+        case AlertViewButtonTypeYes:
+          [self enableLogging];
+          break;
+        default:
+          break;
+      }
+      [self handleComputerPlayedIllegalMove2];
+      break;
+    }
+    case AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled:
     {
       switch (buttonIndex)
       {
@@ -262,6 +288,19 @@
       break;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables logging.
+///
+/// This method has been added to gather information in order to fix issue 90
+/// on GitHub. This method can be removed as soon the issue has been fixed.
+// -----------------------------------------------------------------------------
+- (void) enableLogging
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  appDelegate.loggingModel.loggingEnabled = true;
+  [appDelegate setupLogging];
 }
 
 // -----------------------------------------------------------------------------

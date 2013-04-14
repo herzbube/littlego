@@ -34,6 +34,7 @@
 @class GtpLogModel;
 @class GtpCommandModel;
 @class CrashReportingModel;
+@class LoggingModel;
 
 
 // -----------------------------------------------------------------------------
@@ -140,6 +141,9 @@
 /// @brief Model object that stores attributes that describe the behaviour of
 /// the crash reporting service.
 @property(nonatomic, retain) CrashReportingModel* crashReportingModel;
+/// @brief Model object that stores attributes that are relevant for the
+/// logging service.
+@property(nonatomic, retain) LoggingModel* loggingModel;
 
 @end
 
