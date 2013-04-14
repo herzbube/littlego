@@ -26,6 +26,10 @@
 ///
 /// The URL referring to .sgf file is the value of the ApplicationDelegate
 /// property @e documentInteractionURL.
+///
+/// HandleDocumentInteraction displays an alert to the user informing her under
+/// which name the imported .sgf file can be found in the archive. Command
+/// execution returns while the alert is still displayed.
 // -----------------------------------------------------------------------------
 @interface HandleDocumentInteraction : CommandBase
 {

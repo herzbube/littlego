@@ -50,7 +50,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.totalSteps = 11;
+  self.totalSteps = 1;
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
   return self;
@@ -71,15 +71,23 @@
 {
   @try
   {
+    [self.asynchronousCommandDelegate asynchronousCommand:self
+                                              didProgress:0.0
+                                          nextStepMessage:@"Starting up..."];
+
     [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
                  onThread:[NSThread mainThread]
                withObject:longRunningActionStarts
             waitUntilDone:YES];
 
+    // Here we are sending the very first GTP command to the GTP engine. The
+    // engine is probably still in the process of setting itself up, so there
+    // will be a delay in executing the command.
     [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
+    [self increaseProgressAndNotifyDelegate];
 
-    // At this point the progress in self.asynchronousCommandDelegate is at 100%.
-    // From now on, other commands will take over and manage the progress, with
+    // At this point the progress in self.asynchronousCommandDelegate is at
+    // 100%. From now on, other commands may take over the progress HUD, with
     // an initial resetting to 0% and display of a different message.
 
     ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
@@ -105,7 +113,7 @@
       [[[[RestoreGameCommand alloc] init] autorelease] submit];
       if (delegate.documentInteractionURL)
       {
-        // Control returns before the .sgf file is actually loaded
+        // Control returns while an alert is still being displayed
         [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
       }
     }
@@ -128,6 +136,15 @@
 - (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) increaseProgressAndNotifyDelegate
+{
+  self.progress += self.stepIncrease;
+  [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
 }
 
 @end
