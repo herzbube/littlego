@@ -37,6 +37,8 @@ enum PlayViewTableViewSection
 {
   FeedbackSection,
   ViewSection,
+  DisplayMoveNumbersSection,
+  StoneDistanceFromFingertipSection,
   ZoomSection,
   MaxSection
 };
@@ -58,9 +60,25 @@ enum ViewSectionItem
 {
   MarkLastMoveItem,
   DisplayCoordinatesItem,
-  MoveNumbersPercentageItem,
-  StoneDistanceFromFingertipItem,
   MaxViewSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DisplayMoveNumbersSection.
+// -----------------------------------------------------------------------------
+enum DisplayMoveNumbersSectionItem
+{
+  MoveNumbersPercentageItem,
+  MaxDisplayMoveNumbersSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the StoneDistanceFromFingertipSection.
+// -----------------------------------------------------------------------------
+enum StoneDistanceFromFingertipSectionItem
+{
+  StoneDistanceFromFingertipItem,
+  MaxStoneDistanceFromFingertipSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -68,7 +86,7 @@ enum ViewSectionItem
 // -----------------------------------------------------------------------------
 enum ZoomSectionItem
 {
-  MaxZoomScaleItem,  // not displayed on iPad
+  MaxZoomScaleItem,
   MaxZoomSectionItem
 };
 
@@ -148,6 +166,10 @@ enum ZoomSectionItem
       return MaxFeedbackSectionItem;
     case ViewSection:
       return MaxViewSectionItem;
+    case DisplayMoveNumbersSection:
+      return MaxDisplayMoveNumbersSectionItem;
+    case StoneDistanceFromFingertipSection:
+      return MaxStoneDistanceFromFingertipSectionItem;
     case ZoomSection:
       return MaxZoomSectionItem;
     default:
@@ -182,9 +204,13 @@ enum ZoomSectionItem
   switch (section)
   {
     case ViewSection:
+      return @"On the iPhone/iPod, on 15x15 boards or larger you need to zoom in to see coordinate labels.";
+    case DisplayMoveNumbersSection:
+      return @"On the iPhone/iPod, on 11x11 boards or larger you need to zoom in to see move numbers.";
+    case StoneDistanceFromFingertipSection:
       return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
     case ZoomSection:
-      return @"Controls how far you can zoom in on the board. Because larger values consume more memory, it is recommended for iPhone 3GS users to leave this setting at a medium level.";
+      return @"Controls how far you can zoom in on the board. Because larger values consume more memory, it is recommended to leave this setting at a medium level for the following devices: iPhone 3GS, iPad 1st generation, iPod Touch 3rd and 4th generation.";
     default:
       break;
   }
@@ -243,6 +269,13 @@ enum ZoomSectionItem
           [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
           break;
         }
+      }
+      break;
+    }
+    case DisplayMoveNumbersSection:
+    {
+      switch (indexPath.row)
+      {
         case MoveNumbersPercentageItem:
         {
           cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
@@ -257,6 +290,13 @@ enum ZoomSectionItem
                               * sliderValueFactorForMoveNumbersPercentage);
           break;
         }
+      }
+      break;
+    }
+    case StoneDistanceFromFingertipSection:
+    {
+      switch (indexPath.row)
+      {
         case StoneDistanceFromFingertipItem:
         {
           cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
@@ -324,11 +364,22 @@ enum ZoomSectionItem
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
-    case ViewSection:
+    case DisplayMoveNumbersSection:
     {
       switch (indexPath.row)
       {
         case MoveNumbersPercentageItem:
+          height = [TableViewSliderCell rowHeightInTableView:tableView];
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    case StoneDistanceFromFingertipSection:
+    {
+      switch (indexPath.row)
+      {
         case StoneDistanceFromFingertipItem:
           height = [TableViewSliderCell rowHeightInTableView:tableView];
           break;
