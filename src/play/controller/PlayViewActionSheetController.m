@@ -370,7 +370,7 @@ enum ActionSheetButton
     [alert release];
     return false;
   }
-  NSString* predicateFormatString = [NSString stringWithFormat:@"SELF MATCHES '^(.|..|%@)$'", inboxFolderName];
+  NSString* predicateFormatString = [NSString stringWithFormat:@"SELF MATCHES '^(\\\\.|\\\\.\\\\.|%@)$'", inboxFolderName];
   NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:predicateFormatString];
   if ([predicateReservedWords evaluateWithObject:text])
   {
