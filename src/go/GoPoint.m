@@ -119,7 +119,9 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  self.vertex = [decoder decodeObjectForKey:goPointVertexKey];
+  // We can do this because there is a 1:1 relationship between GoPoint and
+  // GoVertex
+  self.vertex = [GoVertex vertexFromString:[decoder decodeObjectForKey:goPointVertexKey]];
   self.board = [decoder decodeObjectForKey:goPointBoardKey];
   _left = [decoder decodeObjectForKey:goPointLeftKey];
   _right = [decoder decodeObjectForKey:goPointRightKey];
@@ -343,7 +345,9 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeObject:self.vertex forKey:goPointVertexKey];
+  // Encode the string instead of the GoVertex object to save on the size of
+  // the NSCoding archive.
+  [encoder encodeObject:self.vertex.string forKey:goPointVertexKey];
   [encoder encodeObject:self.board forKey:goPointBoardKey];
   [encoder encodeObject:self.left forKey:goPointLeftKey];
   [encoder encodeObject:self.right forKey:goPointRightKey];
