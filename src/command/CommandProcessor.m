@@ -110,8 +110,7 @@ static CommandProcessor* sharedProcessor = nil;
     UIView* superview = [ApplicationDelegate sharedDelegate].window;
     _progressHUD = [[MBProgressHUD alloc] initWithView:superview];
     [superview addSubview:_progressHUD];
-    _progressHUD.mode = MBProgressHUDModeDeterminate;
-    _progressHUD.determinateStyle = MBDeterminateStyleBar;
+    _progressHUD.mode = MBProgressHUDModeAnnularDeterminate;
     _progressHUD.dimBackground = YES;
   }
   return _progressHUD;
