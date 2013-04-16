@@ -479,7 +479,7 @@
   {
     [self.boardPositionListTableView scrollToRowAtIndexPath:indexPathForNewCurrentBoardPosition
                                            atScrollPosition:UITableViewScrollPositionMiddle
-                                                   animated:YES];
+                                                   animated:NO];
   }
 }
 
