@@ -64,6 +64,8 @@ Basic game play functionality
   must be placed
 - Place a stone. The computer player must immediately respond with a move. This
   indicates that the opening book is present.
+- In the Play view settings, set the move numbers slider to its lowest value,
+  then switch back to the Play tab
 - The white stone is marked with the symbol for the last stone that was placed
 - The "discard" button has now become visible
 - Tap the "computer play" button. The computer must generate a move on behalf of
@@ -377,6 +379,53 @@ Board position
   at the beginning of the game
 
 
+Zooming/scrolling, coordinates and move number
+- Switch to the Play view settings screen
+- Enable "mark last move"
+- Enable "display coordinates"
+- Set the move numbers slider to its maximum value
+- Set the maximum zoom to its maximum value
+- From the Archive tab, load the ear-reddening game (use two human players)
+- iPad
+  - Coordinate labels are displayed
+  - Move numbers are displayed for all stones
+  - The last move number (325) is displayed in red
+- iPhone
+  - Neither coordinate nor move numbers are displayed
+  - The last move is marked up with a symbol
+- Double tap. The board is zoomed in.
+- iPhone
+  - Coordinate labels are now displayed
+  - Move numbers are still not displayed
+- Double tap. The board is zoomed in again.
+- iPhone
+  - Move numbers are now displayed for all stones (scroll around the board
+    for verification)
+  - The last move number (325) is displayed in red
+- Scroll around. The coordinate labels stick to the left/upper edge of the
+  screen, but scroll together with the horizontal/vertical scroll direction so
+  that they are always centered on the grid lines they are labelling.
+- From the Archive tab, load the "9x9_1" game (use two human players)
+- When the game has finished loading, the board is still zoomed in to the same
+  zoom scale as before
+- Touch two fingers. The board is zoomed out.
+- Pinch to zoom in. Zooming stops at a certain maximum.
+- In the Play view settings, reduce the maximum zoom slider to half position.
+- Back on the Play tab, the board has zoomed out to match the new maximum zoom
+- Pinch to zoom out until the board is at its normal size
+- iPhone: Both move numbers and display coordinates are shown because we are
+  now on a 9x9 board.
+- In the Play view settings, disable coordinate labels
+- Back on the Play tab, coordinate labels are now hidden
+- In the Play view settings, reduce the move numbers slider to half position
+- Back on the Play tab, move numbers 41-80 are displayed, move numbers 1-40 are
+  not displayed
+- Go to board position 40
+- Move numbers are displayed for all the stones (move numbers 1-40)
+- Go to board position 41
+- Move number 1 is no longer displayed
+
+
 Players & profiles
 - Start a new computer vs. human game with players "Anonymous" and "Fuego"
 - Navigate to the players & profiles preferences screen
@@ -423,7 +472,7 @@ Players & profiles
   be selected.
 
 
-Archive
+Archive, document interaction
 - On the archive tab, select an entry from the list of saved games
 - The detail view displays the same information as the table view entry, plus
   a load button
@@ -442,9 +491,28 @@ Archive
 - Tap done
 - Using iTunes, upload an .sgf file to the device and download the .sgf files
   already in the archive from the device
-- After each upload check that archive view updates itself
+- After each upload check that the archive view updates itself
   - Known bug: Self-updating currently does not work
+- On the archive view, select one of the saved games
+- Tap the "actions" button
+- A menu opens that offers to export the .sgf file to the following desintations
+  - Mail
+  - Pasteboard
+  - PandaTetsuki (if installed)
+  - Drop Box (if installed)
+- Select Mail, then proceed to send the email with the attached file to your
+  own address
+- Check your email inbox that you received the message
+- Open the message, tap the attached .sgf file
+- A menu opens that offers to export the .sgf file 1) to Little Go, and 2) to
+  the same destinations (except the pasteboard) that were available when
+  exporting from Little Go above
+- Select Little Go
+- Little Go launches and informs the user that the game was imported
+- Import the same .sgf again
+- The name of the imported game is adjusted so that it remains unique
 - Make sure that the following types of saved games are present on the device
+  (typically by importing them from DropBox, or via iTunes file sharing):
   - a game with handicap
   - a game with no komi
   - games with different board sizes
