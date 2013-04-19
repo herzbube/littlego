@@ -521,8 +521,7 @@ static PlayView* sharedPlayView = nil;
 // -----------------------------------------------------------------------------
 - (void) updateCrossHairPointDistanceFromFinger
 {
-  GoGame* game = [GoGame sharedGame];
-  if (! game || 0.0f == self.playViewModel.stoneDistanceFromFingertip)
+  if (0.0f == self.playViewModel.stoneDistanceFromFingertip)
   {
     self.crossHairPointDistanceFromFinger = 0;
   }
