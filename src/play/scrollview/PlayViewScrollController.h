@@ -20,15 +20,19 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewScrollController class manages the scroll view that
-/// contains the Play view.
-///
-/// PlayViewScrollController is used only on the iPhone
+/// @brief The PlayViewScrollController class manages the scroll views that
+/// contain the Play view and the coordinate label views.
 ///
 /// PlayViewScrollController's has the following responsibilities:
-/// - xxx
-/// - xxx
-/// - xxx
+/// - Initialize zoom scales
+/// - Synchronize content offset between Play view and coordinate label views
+///   when the Play view is scrolled
+/// - Synchronize zoom scale and content size between Play view and coordinate
+///   label views when the Play view is scrolled
+/// - Trigger redrawing of Play view and coordinate label views after a zoom
+///   operation completes
+/// - Monitor the maximum zoom scale user preference and apply the new value
+///   to Play view and coordinate label views
 // -----------------------------------------------------------------------------
 @interface PlayViewScrollController : NSObject <UIScrollViewDelegate>
 {
