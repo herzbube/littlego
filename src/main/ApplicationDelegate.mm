@@ -73,6 +73,9 @@
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate()
 @property(nonatomic, retain) DDFileLogger* fileLogger;
+/// @brief Is true if application:OpenURL:sourceApplication:annotation: should
+/// not handle document interaction because
+/// application:didFinishLaunchingWithOptions: already does the handling.
 @property(nonatomic, assign) bool applicationOpenURLShouldIgnoreNextDocumentInteraction;
 @end
 
@@ -177,6 +180,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupGUI];
   [self setupLogging];
   [self setupApplicationLaunchMode];
+  bool setupDocumentInteractionSuccess = [self setupDocumentInteraction:launchOptions];
   [self setupFolders];
   [self setupResourceBundle];
   [self setupRegistrationDomain];
@@ -186,30 +190,11 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupTabBarController];
   [self setupPlayTab];
 
-  // If an URL is passed in, it is stored here and processed later during
-  // SetupApplicationCommand.
-  self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
-  self.documentInteractionURL = nil;
-  BOOL canHandleURL = YES;
-  NSURL* url = (NSURL*)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
-  if (url)
-  {
-    if ([url isFileURL])
-    {
-      self.applicationOpenURLShouldIgnoreNextDocumentInteraction = true;
-      self.documentInteractionURL = url;
-    }
-    else
-    {
-      canHandleURL = NO;
-    }
-  }
-
-  // Further setup steps are executed in a secondary thread so that 1) we can
-  // display a progress HUD, and 2) the application launches as quickly as
-  // possible.
+  // Further setup steps are executed in a secondary thread so that we can
+  // display a progress HUD
   [[[[SetupApplicationCommand alloc] init] autorelease] submit];
 
+  BOOL canHandleURL = setupDocumentInteractionSuccess ? YES : NO;
   return canHandleURL;
 }
 
@@ -401,6 +386,41 @@ static ApplicationDelegate* sharedDelegate = nil;
     DDLogInfo(@"Launching in mode ApplicationLaunchModeNormal");
     self.applicationLaunchMode = ApplicationLaunchModeNormal;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Scans @a launchOptions if it contains a document interaction URL,
+/// and if it does whether the URL can be handled.
+///
+/// Returns true for success, false for failure. Success means either
+/// - @a launchOptions does not contain an URL, or
+/// - @a launchOptions contains an URL that can be handled
+///
+/// Failure means that @a launchOptions contains an URL that cannot be handled.
+///
+/// As a side-effect, if a URL that can be handled is detected this method sets
+/// up document interaction related properties of this app delegate.
+// -----------------------------------------------------------------------------
+- (bool) setupDocumentInteraction:(NSDictionary*)launchOptions
+{
+  self.documentInteractionURL = nil;
+  self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
+
+  bool success = true;
+  NSURL* url = [launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
+  if (url)
+  {
+    if ([url isFileURL])
+    {
+      self.documentInteractionURL = url;
+      self.applicationOpenURLShouldIgnoreNextDocumentInteraction = true;
+    }
+    else
+    {
+      success = false;
+    }
+  }
+  return success;
 }
 
 // -----------------------------------------------------------------------------
