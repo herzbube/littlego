@@ -37,7 +37,6 @@
 		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
 		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD02863F1640B3CE00CF23A1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
-		CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */ = {isa = PBXBuildFile; fileRef = CD04987C164C6AD5007E0721 /* README.mediawiki */; };
 		CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */; };
@@ -436,7 +435,6 @@
 		CD02862E1640AEE100CF23A1 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
 		CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CD0286401640B4A800CF23A1 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
-		CD04987C164C6AD5007E0721 /* README.mediawiki */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mediawiki; sourceTree = "<group>"; };
 		CD05199316B1C09B002771F7 /* LeftPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftPaneViewController.h; sourceTree = "<group>"; };
 		CD05199416B1C09B002771F7 /* LeftPaneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftPaneViewController.m; sourceTree = "<group>"; };
 		CD05199716B1C29B002771F7 /* RightPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RightPaneViewController.h; sourceTree = "<group>"; };
@@ -612,6 +610,7 @@
 		CD66127E155862F6009C6535 /* appicon-ipad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-ipad@2x.png"; sourceTree = "<group>"; };
 		CD6612811558692A009C6535 /* appicon-appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore.png"; sourceTree = "<group>"; };
 		CD6612821558692A009C6535 /* appicon-appstore@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore@2x.png"; sourceTree = "<group>"; };
+		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
@@ -905,7 +904,7 @@
 				CD1087701323D07800E83543 /* LICENSE */,
 				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
-				CD04987C164C6AD5007E0721 /* README.mediawiki */,
+				CD6BBED81723161D00BCC492 /* README.md */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
@@ -1827,7 +1826,6 @@
 				CD899E3D1643477300329154 /* Quincy.bundle in Resources */,
 				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
-				CD04987D164C6AD5007E0721 /* README.mediawiki in Resources */,
 				CDF82294164D450500F53C01 /* 298-circlex.png in Resources */,
 				CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */,
 				CDD961011662A8E300B54E09 /* render-readme.rb in Resources */,

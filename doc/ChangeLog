@@ -1,3 +1,66 @@
+Sat Apr 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.11.0
+- Features
+  - Display coordinate labels (#12). This can be turned on or off under
+    "Settings > Play view > Display coordinates".
+  - Display move numbers (#17). The user preference can be found under
+    "Settings > Play view > Display move numbers". Because displaying many move
+    numbers is cluttering the board, the percentage of move numbers to display
+    can be adjusted with a slider.
+  - Zoom the board up to a 3x zoom scale (#16). All standard zoom gestures are
+    supported. Because zooming costs memory the user may want to limit herself
+    to a maximum zoom scale that is below 3x. This can be done with the slider
+    found under "Settings > Play view > Maximum zoom". A limit of 2x zoom scale
+    is recommended for devices that do not have much RAM (typically older
+    devices such as the iPhone 3GS or the iPad 1st generation).
+  - Archived games can now be exported to Mail (#19) and other apps that are
+    capable of processing .sgf files (e.g. DropBox).
+  - Games can now be imported from Mail (#20) and other apps that are capable
+    of exporting .sgf files (e.g. DropBox).
+- Other improvements and changes
+  - The application now launches much faster (#114), except for the first time
+    after upgrading from a previous version.
+  - Status text and activity indicator are now displayed in the navigation bar
+    at the top of the screen (#120).
+  - When a new game is started, the "discard old game" question is not displayed
+    anymore if there have been no changes since the game was saved the last
+    time (#42).
+  - Loading a game from the archive is now about 10% faster (commit 139bb46).
+  - Drawing of Go board now makes better use of the available space. This is
+    especially noticeable for the large 19x19 board on a small iPhone screen
+    (commit 86443d9).
+  - The "stone distance from fingertip" user preference now behaves more
+    predictably: Previously a "clever" algorithm tried to figure out the "best"
+    distance by taking into account various parameters such as board size and
+    screen size. The new algorithm now simply scales a fixed maximum distance
+    according to the value of the slider.
+- Bugfixes
+  - No longer crash when a computer vs. computer game is restored during app
+    launch and that game has already ended (#127). Thanks to Serge Grossenbacher
+    for reporting this bug.
+  - No longer draw in secondary thread during app launch (#117). This eliminates
+    another potential source of crashes.
+  - iPad only: Screen should no longer be flickering wildly after loading some
+    games from the archive (#126).
+  - It is now possible to save games with a name that consists of 1 or 2
+    characters (#125).
+  - Resigning is no longer possible when viewing an old board position. This
+    fixes the problem that resigning when viewing an old board position corrupts
+    the backup .sgf (#115).
+  - During scoring, the activity indicator is now only displayed for finding
+    the initial set of dead stones (#121).
+- Known bugs
+  - App may crash when board position is changed (possibly forward going only)
+    (#128)
+  - App crashes when user plays an illegal move while viewing an old board
+    position (#129)
+  - App crashes during launch after a player has been deleted (#130)
+- Technical changes
+  - MBProgressHUD upgraded to the newest version (HEAD of the git repository).
+    The progress indicator is now a round shape instead of a horizontal bar.
+  - Private Objective-C method declarations in .m files have been removed to
+    reduce unnecessary code duplication (#102).
+
 Fri Mar 01 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.10.0
 - Improve graphic design

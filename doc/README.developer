@@ -335,6 +335,9 @@ Architecture and implementation notes
     1) The submitter does not need the result of the command
     2) A later command does not need the GTP engine to be in a particular state
 - Application states and transitions
+  - The following article has a very nice flowchart that shows the general
+    flow of state transitions:
+    http://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
   - When the application starts up (application:didFinishLaunchingWithOptions:),
     it displays the "Play" view. If the application detects that a game was in
     progress the last time it was running, it loads that game so that the user
@@ -675,6 +678,13 @@ method. The required C functions are documented in [25].
 first time. I found this especially useful when it came to understand zooming.
 [27] is also a nice companion tutorial.
 
+An app that knows how to work with one or more document types (.sgf files in the
+case of Little Go) should support Document Interaction so that files of a given
+type can be passed to the app from another app. The concept and how to implement
+support for it is explained in [28]. The Info.plist key CFBundleDocumentTypes
+is documented in [21]. Information about Uniform Type Identifiers (UTI) can be
+found in [29], while [30] lists the System-Declared Uniform Type Identifiers
+
 Unless otherwise noted, the base for all of the following references is the
 "iOS Developer Library", found under this URL:
 https://developer.apple.com/library/ios/navigation/.
@@ -706,6 +716,10 @@ https://developer.apple.com/library/ios/navigation/.
 [25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
 [26] iOS Developer Library > Guides > Scroll View Programming Guide for iOS
 [27 http://www.raywenderlich.com/10518/how-to-use-uiscrollview-to-scroll-and-zoom-content
+[28] iOS Developer Library > Guides > Document Interaction Programming Topics for iOS
+[29] iOS Developer Library > Guides > Uniform Type Identifiers Overview
+[30] iOS Developer Library > Reference > Uniform Type Identifiers Reference
+[29] http://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
 
 
 Compilation command
