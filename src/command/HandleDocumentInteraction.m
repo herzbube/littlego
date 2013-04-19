@@ -61,9 +61,9 @@
   BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:uniqueFilePath error:&error];
   if (success)
   {
-    NSString* message = [NSString stringWithFormat:@"You will find the imported game in the archive under this name:\n\n%@",
+    NSString* message = [NSString stringWithFormat:@"The game has been imported and stored in the archive under this name:\n\n%@",
                          uniqueGameName];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game import succeeded"
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game imported"
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:nil
@@ -79,9 +79,9 @@
     // the safe side
     [PathUtilities deleteItemIfExists:documentInteractionFilePath];
     [PathUtilities deleteItemIfExists:uniqueFilePath];
-    NSString* message = [NSString stringWithFormat:@"Failed to import game into archive. Reason: %@",
+    NSString* message = [NSString stringWithFormat:@"The game could not be imported. Reason for the failure: %@",
                          [error localizedDescription]];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to import game"
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game not imported"
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:nil
