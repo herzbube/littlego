@@ -239,7 +239,7 @@
 - (NSString*) uniqueGameNameForName:(NSString*)preferredGameName
 {
   if (! [self gameWithName:preferredGameName])
-    return [preferredGameName copy];
+    return [[preferredGameName copy] autorelease];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* uniqueGameName = nil;
   int suffix = 1;
