@@ -405,12 +405,15 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     }
     // These keys change their value: The value they previously had
     // (between 0 and stoneDistanceFromFingertipMaximum) must be transformed
-    // into a percentage (stoneDistanceFromFingertipMaximum = 100%)
+    // into a percentage (stoneDistanceFromFingertipMaximum = 100%). Because of
+    // the new semantics of the user preference, we don't attempt a linear
+    // conversion.
     for (NSString* deviceSuffix in [UIDevice deviceSuffixes])
     {
       NSString* keyWithDeviceSuffix = [stoneDistanceFromFingertipKey stringByAppendingString:deviceSuffix];
       float stoneDistanceFromFingertip = [[playViewDictionaryUpgrade valueForKey:keyWithDeviceSuffix] floatValue];
-      stoneDistanceFromFingertip /= stoneDistanceFromFingertipMaximum;
+      if (stoneDistanceFromFingertip > 0)
+        stoneDistanceFromFingertip = 1.0f;
       [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:stoneDistanceFromFingertip] forKey:keyWithDeviceSuffix];
     }
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
