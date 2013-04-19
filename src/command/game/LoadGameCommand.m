@@ -639,10 +639,13 @@ static const int maxStepsForReplayMoves = 10;
   {
     if (self.restoreMode)
     {
-      // On application launch we want to be able to restore the board position
-      // last viewed by the user, so we never trigger the computer player.
       if (GoGameTypeComputerVsComputer == game.type)
-        [game pause];
+      {
+        // The game may already have ended, in which case there is no need to
+        // pause (in fact, we must not pause, otherwise we trigger an exception)
+        if (GoGameStateGameHasEnded != game.state)
+          [game pause];
+      }
     }
     else
     {
