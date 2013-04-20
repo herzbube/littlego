@@ -23,15 +23,12 @@ Quick-start guide on how to build and run Little Go
    This will take substantial time, for instance my 2.33 GHz Core 2 Duo laptop
    requires nearly one hour for building everything.
 6. Launch Xcode by opening "Little Go.xcodeproj"
-7. Change iOS Base SDK and deployment target versions to match your development
-   environment
-8. Make sure that you have a scheme that configures the target "Little Go" to
-   use the build configuration "Debug". See "Xcode schemes" further down if you
-   need more information.
-9. Select that scheme, and one of the iPhone or iPad simulator destinations,
-   from the toolbar's scheme selector
-10. From the menu select Product > Run. The app should now be built in Debug
-    mode and launched inside the simulator.
+7. Make sure that the Xcode project's Base SDK and deployment target versions
+   match the versions you have in your script/build-env.sh file (see step 3).
+8. Select the "Little Go Debug" scheme, and one of the iPhone or iPad simulator
+   destinations, from the toolbar's scheme selector
+9. From the menu select Product > Run. The app should now be built in Debug
+   mode and launched inside the simulator.
 
 
 Folder structure
@@ -178,9 +175,9 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 
 Xcode schemes
 -------------
-Xcode build schemes are not part of the Little Go distribution, nor are they
-committed to the project's version control system. The following is a short
-overview of how I usually configure my schemes:
+Little Go's Xcode build schemes are stored in source control along with the
+Xcode project itself. [1] has the answer how to achieve this. The following is
+a short overview of how I configured those schemes:
 - Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
 - Rename the "Little Go" scheme to "Little Go Debug", and disable the "Archive"
@@ -196,9 +193,10 @@ overview of how I usually configure my schemes:
   actions use the "Distribute_AppStore" build configuration
 - In all schemes, make sure that the checkox "Run" is checked not only for the
   main target, but for the unit test target as well. This ensures that unit
-  tests are build & run every time the main target is built. Note that the same
-  result can also be achieved by a target dependency, which is saved to the
-  Xcode project file and thus placed under version control.
+  tests are built & run every time the main target is built. Note that the same
+  result can also be achieved by a target dependency.
+
+[1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
 
 
 Platform notes
