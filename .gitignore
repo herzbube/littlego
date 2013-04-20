@@ -1,7 +1,5 @@
 # Build products
 DerivedData/
-# Xcode files
-Little Go.xcodeproj
 # Other files
 3rdparty/
 doxygen/
