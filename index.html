@@ -31,32 +31,52 @@
         <hr>
 
         <section id="main_content">
-          <h3>Welcome to GitHub Pages.</h3>
+          <p>Little Go is an iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human, or against the computer. The minimum requirement for running this version of Little Go is iOS 5.0.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>For a detailed description of Little Go's features, see the <code>MANUAL</code> document (also available in-game from the "Help" tab).</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>If you are interested in Little Go as a developer, you can either clone the source code repository <a href="https://github.com/herzbube/littlego/">on GitHub</a>, or download a release snapshot of the source code for one of the release tags. Release snapshots are also available <a href="https://github.com/herzbube/littlego/tags">from GitHub</a>. Either way, you should read the quick-start guide in <code>README.developer</code> to get up and running.</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h1>Changes in this release</h1>
 
-<h3>Designer Templates</h3>
+<p>This is the Little Go feature release 0.10.0. A large number of changes have been made, only the most important ones are listed here:</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<ul>
+<li>Improve graphic design (wooden background, new artwork for stones, new layout on iPad)</li>
+<li>View board positions for moves played earlier during the game</li>
+<li>Replace "undo" with "discard move"</li>
+<li>A game that has ended can now be resumed</li>
+<li>Redesign of "New game" and "Game info" screens</li>
+<li>3 new user preferences</li>
+<li>Add support for collecting logging data</li>
+<li>Drop support for iOS 4.3, the minimum required version is now iOS 5.0</li>
+<li>Add iOS 6 compatibility</li>
+<li>Add iPhone 5 support</li>
+</ul><p>The <code>ChangeLog</code> document has more details.</p>
 
-<h3>Rather Drive Stick?</h3>
+<h1>Known bugs</h1>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>See the "Troubleshooting" section in the <code>MANUAL</code> document.</p>
 
-<h3>Authors and Contributors</h3>
+<h1>Links and resources</h1>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<ul>
+<li><a href="http://www.herzbube.ch/littlego">Project website</a></li>
+<li><a href="http://itunes.apple.com/us/app/little-go/id490753989?ls=1&amp;mt=8">App Store link</a></li>
+<li>The source code respository is <a href="https://github.com/herzbube/littlego/">on GitHub</a>
+</li>
+<li>The bugtracker is also <a href="https://github.com/herzbube/littlego/issues">on GitHub</a>. If you want to submit a new issue there you must be a registered GitHub user (it's free and they won't bother you with spam!). Since version 0.9.0 Little Go also has a built-in bug report feature, which you can find on the "Diagnostics" tab. Last but not least, you can also email me directly.</li>
+<li>On Little Go's <a href="https://trello.com/board/little-go/4fd84c295027333d460dcc32">Trello board</a> you can see what I am currently working on.</li>
+<li>Little Go also has an <a href="https://www.ohloh.net/p/littlego">Ohloh page</a> that provides mildly interesting source code statistics.</li>
+</ul><h1>Documentation</h1>
 
-<h3>Support or Contact</h3>
+<ul>
+<li>The source code is documented with Doxygen. The project is set up to generate the documentation with a a premade <code>Doxyfile</code> configuration file and an Xcode target that expects Doxygen and GraphViz to be located in <code>/opt/local/bin</code> (the standard MacPorts path).</li>
+<li>A class diagram in the <code>doc</code> folder (a .jpg file) provides an overview of Little Go's core classes. The diagram was created with the free community edition of the UML modeling application <a href="http://astah.net/">Astah</a>. The model itself is in the file <code>littlego.asta</code>.</li>
+<li>The end user documentation, which is available from within the game, is in <code>doc/MANUAL</code>.</li>
+</ul><h1>License and source code</h1>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Little Go is released under the Apache License (2.0). You should have received a copy of the license along with the Little Go application bundle or the source distribution (see the file LICENSE inside the application bundle or source distribution, or start the application and choose the "More:Licenses:Apache License" tab item). If not, see <a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a>.</p>
         </section>
 
         <footer>
