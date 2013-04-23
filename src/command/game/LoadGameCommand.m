@@ -34,6 +34,7 @@
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -120,10 +121,7 @@ static const int maxStepsForReplayMoves = 10;
 
   @try
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionStarts
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     NSString* message;
     if (self.restoreMode)
@@ -167,10 +165,7 @@ static const int maxStepsForReplayMoves = 10;
   }
   @finally
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionEnds
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
 
@@ -678,14 +673,6 @@ static const int maxStepsForReplayMoves = 10;
 {
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

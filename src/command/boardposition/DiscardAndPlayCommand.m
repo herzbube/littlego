@@ -23,6 +23,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveModel.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -133,10 +134,7 @@ enum PlayCommandType
 {
   @try
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionStarts
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] increment];
     bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
     if (shouldDiscardBoardPositions)
     {
@@ -157,10 +155,7 @@ enum PlayCommandType
   }
   @finally
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionEnds
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
 
@@ -250,14 +245,6 @@ enum PlayCommandType
   {
     return false;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

@@ -27,6 +27,7 @@
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -44,8 +45,6 @@
 /// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
 /// obtained from elsewhere.
 @property(nonatomic, retain) GoScore* gameInfoScore;
-/// @brief Updates are delayed as long as this is above zero.
-@property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, retain) UINavigationItem* navigationItem;
@@ -86,7 +85,6 @@
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
   self.gameInfoScore = nil;
-  self.actionsInProgress = 0;
   self.barButtonItemForShowingTheHiddenViewController = nil;
   [self setupNavigationItem];
   [self setupButtons];
@@ -204,7 +202,6 @@
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -492,26 +489,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notifications.
-///
-/// Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  self.actionsInProgress++;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notifications.
-///
-/// Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+/// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-    [self delayedUpdate];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -542,7 +524,7 @@
 // -----------------------------------------------------------------------------
 - (void) delayedUpdate
 {
-  if (self.actionsInProgress > 0)
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
   [self populateNavigationBar];
   [self updateButtonStates];

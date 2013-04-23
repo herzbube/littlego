@@ -22,6 +22,7 @@
 #import "backup/RestoreGameCommand.h"
 #import "diagnostics/RestoreBugReportApplicationState.h"
 #import "../main/ApplicationDelegate.h"
+#import "../shared/LongRunningActionCounter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -75,10 +76,7 @@
                                               didProgress:0.0
                                           nextStepMessage:@"Starting up..."];
 
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionStarts
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     // Here we are sending the very first GTP command to the GTP engine. The
     // engine is probably still in the process of setting itself up, so there
@@ -120,22 +118,10 @@
   }
   @finally
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionEnds
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 
   return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Is invoked in the context of the main
-/// thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 // -----------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/ScoringModel.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -154,10 +155,7 @@
 
   @try
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionStarts
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
     if (scoringModel.scoringMode)
@@ -182,19 +180,8 @@
   }
   @finally
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionEnds
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

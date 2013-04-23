@@ -20,6 +20,7 @@
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIElementMetrics.h"
 
 // Enums
@@ -35,8 +36,6 @@ enum NavigationDirection
 /// BoardPositionToolbarController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController()
-/// @brief Updates are delayed as long as this is above zero.
-@property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, assign) UIToolbar* toolbar;
@@ -76,7 +75,6 @@ enum NavigationDirection
   if (! self)
     return nil;
 
-  self.actionsInProgress = 0;
   self.toolbar = aToolbar;
   self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
@@ -188,7 +186,6 @@ enum NavigationDirection
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -232,26 +229,11 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notifications.
-///
-/// Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  self.actionsInProgress++;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notifications.
-///
-/// Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+/// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-    [self delayedUpdate];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -275,7 +257,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) delayedUpdate
 {
-  if (self.actionsInProgress > 0)
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
   [self populateToolbar];
   [self updateButtonStates];

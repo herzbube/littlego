@@ -359,6 +359,8 @@
 		CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CDEF3DD8140C55AB002D9C1C /* TableViewCellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */; };
 		CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
+		CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */; };
+		CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */; };
 		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
@@ -792,6 +794,8 @@
 		CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewSliderCell.m; sourceTree = "<group>"; };
 		CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCellFactory.h; sourceTree = "<group>"; };
 		CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCellFactory.m; sourceTree = "<group>"; };
+		CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LongRunningActionCounter.h; sourceTree = "<group>"; };
+		CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LongRunningActionCounter.m; sourceTree = "<group>"; };
 		CDF43D031402BF2A007F44A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDF43D9B1402E970007F44A4 /* BaseTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTestCase.h; sourceTree = "<group>"; };
 		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTestCase.m; sourceTree = "<group>"; };
@@ -1554,6 +1558,7 @@
 				CD1088561326CBB300E83543 /* play */,
 				CDE302811360BDA3005235F2 /* player */,
 				CD1088571326CBB300E83543 /* settings */,
+				CDF341C317270D0800AEFB20 /* shared */,
 				CDEF3D87140C2F39002D9C1C /* ui */,
 				CDE30138135CA7D5005235F2 /* utility */,
 			);
@@ -1633,6 +1638,15 @@
 				CDB457B3147F14490043EDE4 /* UiUtilities.m */,
 			);
 			path = ui;
+			sourceTree = "<group>";
+		};
+		CDF341C317270D0800AEFB20 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */,
+				CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */,
+			);
+			path = shared;
 			sourceTree = "<group>";
 		};
 		CDF630A7168F50BA003C8BEF /* boardposition */ = {
@@ -2053,6 +2067,7 @@
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
+				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2184,6 +2199,7 @@
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
+				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

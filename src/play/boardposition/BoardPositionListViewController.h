@@ -81,8 +81,8 @@
 ///
 /// @par Delayed updates
 ///
-/// BoardPositionListViewController utilizes the #longRunningActionStarts and
-/// #longRunningActionEnds notifications to delay view updates.
+/// BoardPositionListViewController utilizes long-running actions to delay
+/// view updates.
 ///
 /// Methods in BoardPositionListViewController that need to update something in
 /// the board position list view should not trigger the update themselves,

@@ -35,6 +35,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoPoint.h"
 #import "../go/GoVertex.h"
+#import "../shared/LongRunningActionCounter.h"
 #import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -48,10 +49,7 @@
 @interface PlayView()
 /// @name Update optimizing properties
 //@{
-/// @brief Number of "expensive" actions that are currently in progress. View
-/// updates are delayed while this number is >0.
-@property(nonatomic, assign) int actionsInProgress;
-/// @brief Is true if updates were delayed because @e actionsInProgress was >0.
+/// @brief Is true if updates were delayed because of long-running actions.
 @property(nonatomic, assign) bool updatesWereDelayed;
 //@}
 /// @name Dynamically calculated properties
@@ -168,7 +166,6 @@ static PlayView* sharedPlayView = nil;
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointDistanceFromFinger = 0;
 
-  self.actionsInProgress = 0;
   self.updatesWereDelayed = false;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -177,7 +174,6 @@ static PlayView* sharedPlayView = nil;
   [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
@@ -278,15 +274,15 @@ static PlayView* sharedPlayView = nil;
 /// methods that need a view update should invoke this helper instead of
 /// updateLayers().
 ///
-/// If @e actionsInProgress is 0, this helper invokes updateLayers(),
-/// thus triggering the update in UIKit.
+/// If no long-running actions are in progress, this helper invokes
+/// updateLayers(), thus triggering the update in UIKit.
 ///
-/// If @e actionsInProgress is >0, this helper sets @e updatesWereDelayed to
-/// true.
+/// If any long-running actions are in progress, this helper sets
+/// @e updatesWereDelayed to true.
 // -----------------------------------------------------------------------------
 - (void) delayedUpdate
 {
-  if (self.actionsInProgress > 0)
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
     self.updatesWereDelayed = true;
   else
     [self updateLayers];
@@ -439,31 +435,12 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notifications.
-///
-/// Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  self.actionsInProgress++;
-  DDLogVerbose(@"PlayView, longRunningActionStarts, new value for self.actionsInProgress = %d", self.actionsInProgress);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notifications.
-///
-/// Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+/// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-  {
-    if (self.updatesWereDelayed)
-      [self updateLayers];
-  }
-  DDLogVerbose(@"PlayView, longRunningActionEnds, new value for self.actionsInProgress = %d", self.actionsInProgress);
+  if (self.updatesWereDelayed)
+    [self updateLayers];
 }
 
 // -----------------------------------------------------------------------------

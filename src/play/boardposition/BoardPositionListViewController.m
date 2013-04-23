@@ -22,6 +22,7 @@
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,7 +32,6 @@
 @interface BoardPositionListViewController()
 @property(nonatomic, assign) ItemScrollView* boardPositionListView;
 @property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
-@property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) int oldBoardPosition;
@@ -58,7 +58,6 @@
 
   self.boardPositionListView = view;
   self.boardPositionViewMetrics = metrics;
-  self.actionsInProgress = 0;
   self.allDataNeedsUpdate = true;
   self.currentBoardPositionNeedsUpdate = true;
   self.oldBoardPosition = -1;
@@ -107,7 +106,6 @@
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -164,26 +162,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notifications.
-///
-/// Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  self.actionsInProgress++;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notifications.
-///
-/// Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+/// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-    [self delayedUpdate];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -220,7 +203,7 @@
 // -----------------------------------------------------------------------------
 - (void) delayedUpdate
 {
-  if (self.actionsInProgress > 0)
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
   [self updateAllData];
   [self updateCurrentBoardPosition];

@@ -367,32 +367,12 @@ extern NSString* askGtpEngineForDeadStonesEnds;
 /// @name Other notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent when a long-running action starts that is known to trigger
-/// many UI updates on the Play tab.
-///
-/// Each instance of #longRunningActionStarts being sent will eventually be
-/// matched by a corresponding #longRunningActionEnds. However, a second
-/// #longRunningActionStarts may be sent before #longRunningActionEnds for the
-/// first action is sent.
-///
-/// When an observer receives the first #longRunningActionStarts, it may start
-/// to delay view updates (or other similar expensive actions) until it receives
-/// a corresponding number of #longRunningActionEnds.
-///
-/// The typical example for when this notification is sent is when a game is
-/// loaded from the archive. Views on the Play tab can protect themselves from
-/// an update for each move in the archived game being replayed.
-///
-/// @attention This notification is guaranteed to be delivered in the main
-/// thread.
+/// @brief Is sent when the first of a nested series of long-running actions
+/// starts. See LongRunningActionCounter for a detailed discussion of the
+/// concept.
 extern NSString* longRunningActionStarts;
-/// @brief Is sent when a long-running action ends that is known to trigger
-/// many UI updates on the Play tab.
-///
-/// See #longRunningActionStarts for details.
-///
-/// @attention This notification is guaranteed to be delivered in the main
-/// thread.
+/// @brief Is sent when the last of a nested series of long-running actions
+/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
 extern NSString* longRunningActionEnds;
 /// @brief Is sent (B-A) times while the current board position in
 /// GoBoardPosition changes from A to B. Observers can use this notification to

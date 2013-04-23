@@ -53,6 +53,7 @@
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
+#import "../shared/LongRunningActionCounter.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 #import "../ui/UiElementMetrics.h"
@@ -147,6 +148,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.loggingModel = nil;
   self.fileLogger = nil;
   [CommandProcessor releaseSharedProcessor];
+  [LongRunningActionCounter releaseSharedCounter];
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];

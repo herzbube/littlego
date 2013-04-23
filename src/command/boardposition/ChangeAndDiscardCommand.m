@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveModel.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 @implementation ChangeAndDiscardCommand
@@ -37,10 +38,7 @@
 
   @try
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionStarts
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] increment];
     bool success = [self changeBoardPosition];
     if (! success)
     {
@@ -69,10 +67,7 @@
   }
   @finally
   {
-    [self performSelector:@selector(postLongRunningNotificationOnMainThread:)
-                 onThread:[NSThread mainThread]
-               withObject:longRunningActionEnds
-            waitUntilDone:YES];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
 
@@ -143,14 +138,6 @@
   command.saveSgf = true;
   bool success = [command submit];
   return success;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postLongRunningNotificationOnMainThread:(NSString*)notificationName
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

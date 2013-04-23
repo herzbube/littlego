@@ -52,12 +52,11 @@
 ///
 /// @par Delayed updates
 ///
-/// PlayView utilizes the #longRunningActionStarts and #longRunningActionEnds
-/// notifications to delay view updates. Events that would normally trigger
-/// drawing updates are processed as normal, but the drawing itself is delayed.
-/// When all #longRunningActionStarts notifications have been matched by a
-/// #longRunningActionEnds notification, all drawing updates that have
-/// accumulated are now coalesced into a single update.
+/// PlayView utilizes long-running actions to delay view updates. Events that
+/// would normally trigger drawing updates are processed as normal, but the
+/// drawing itself is delayed. When the #longRunningActionEnds notification
+/// is received, all drawing updates that have accumulated are now coalesced
+/// into a single update.
 ///
 /// As a consequence, clients that want to update the view directly must invoke
 /// delayedUpdate() instead of setNeedsDisplay(). Using delayedUpdate() makes

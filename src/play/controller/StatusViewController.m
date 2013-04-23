@@ -27,6 +27,7 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
 #import "../../player/Player.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
@@ -41,7 +42,6 @@
 @property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) PlayView* playView;
 @property(nonatomic, assign) ScoringModel* scoringModel;
-@property(nonatomic, assign) int actionsInProgress;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool viewLayoutNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
@@ -68,7 +68,6 @@
     return nil;
   self.playView = playView;
   self.scoringModel = scoringModel;
-  self.actionsInProgress = 0;
   self.activityIndicatorNeedsUpdate = false;
   self.viewLayoutNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
@@ -108,7 +107,6 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
@@ -180,7 +178,7 @@
 // -----------------------------------------------------------------------------
 - (void) delayedUpdate
 {
-  if (self.actionsInProgress > 0)
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
   [self updateStatusView];
 }
@@ -462,26 +460,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notifications.
-///
-/// Increases @e actionsInProgress by 1.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  self.actionsInProgress++;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notifications.
-///
-/// Decreases @e actionsInProgress by 1. Triggers a view update if
-/// @e actionsInProgress becomes 0 and @e updatesWereDelayed is true.
+/// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  self.actionsInProgress--;
-  if (0 == self.actionsInProgress)
-    [self delayedUpdate];
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
