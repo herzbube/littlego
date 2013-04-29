@@ -361,6 +361,12 @@
 		CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */; };
 		CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */; };
+		CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C91727507900AEFB20 /* ApplicationStateManager.m */; };
+		CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C91727507900AEFB20 /* ApplicationStateManager.m */; };
+		CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341CE172D609400AEFB20 /* RestoreApplicationStateCommand.m */; };
+		CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341CE172D609400AEFB20 /* RestoreApplicationStateCommand.m */; };
+		CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341D0172D609400AEFB20 /* SaveApplicationStateCommand.m */; };
+		CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341D0172D609400AEFB20 /* SaveApplicationStateCommand.m */; };
 		CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43D9C1402E970007F44A4 /* BaseTestCase.m */; };
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
@@ -796,6 +802,12 @@
 		CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCellFactory.m; sourceTree = "<group>"; };
 		CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LongRunningActionCounter.h; sourceTree = "<group>"; };
 		CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LongRunningActionCounter.m; sourceTree = "<group>"; };
+		CDF341C81727507900AEFB20 /* ApplicationStateManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationStateManager.h; sourceTree = "<group>"; };
+		CDF341C91727507900AEFB20 /* ApplicationStateManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationStateManager.m; sourceTree = "<group>"; };
+		CDF341CD172D609400AEFB20 /* RestoreApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreApplicationStateCommand.h; sourceTree = "<group>"; };
+		CDF341CE172D609400AEFB20 /* RestoreApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreApplicationStateCommand.m; sourceTree = "<group>"; };
+		CDF341CF172D609400AEFB20 /* SaveApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveApplicationStateCommand.h; sourceTree = "<group>"; };
+		CDF341D0172D609400AEFB20 /* SaveApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveApplicationStateCommand.m; sourceTree = "<group>"; };
 		CDF43D031402BF2A007F44A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDF43D9B1402E970007F44A4 /* BaseTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTestCase.h; sourceTree = "<group>"; };
 		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTestCase.m; sourceTree = "<group>"; };
@@ -1344,6 +1356,7 @@
 		CDD48FA61413E00E00188B6A /* command */ = {
 			isa = PBXGroup;
 			children = (
+				CDF341CC172D609400AEFB20 /* applicationstate */,
 				CD05B115142A606400214BBE /* backup */,
 				CDF630A7168F50BA003C8BEF /* boardposition */,
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
@@ -1645,9 +1658,23 @@
 			children = (
 				CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */,
 				CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */,
+				CDF341C81727507900AEFB20 /* ApplicationStateManager.h */,
+				CDF341C91727507900AEFB20 /* ApplicationStateManager.m */,
 			);
 			path = shared;
 			sourceTree = "<group>";
+		};
+		CDF341CC172D609400AEFB20 /* applicationstate */ = {
+			isa = PBXGroup;
+			children = (
+				CDF341CD172D609400AEFB20 /* RestoreApplicationStateCommand.h */,
+				CDF341CE172D609400AEFB20 /* RestoreApplicationStateCommand.m */,
+				CDF341CF172D609400AEFB20 /* SaveApplicationStateCommand.h */,
+				CDF341D0172D609400AEFB20 /* SaveApplicationStateCommand.m */,
+			);
+			name = applicationstate;
+			path = src/command/applicationstate;
+			sourceTree = SOURCE_ROOT;
 		};
 		CDF630A7168F50BA003C8BEF /* boardposition */ = {
 			isa = PBXGroup;
@@ -2068,6 +2095,9 @@
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
+				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
+				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
+				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2200,6 +2230,9 @@
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
+				CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
+				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
+				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

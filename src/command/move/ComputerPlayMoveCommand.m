@@ -31,6 +31,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/ApplicationStateManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -93,6 +94,8 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // It's important that we do not wait for the GTP command to complete. This
+  // gives the UI the time to update (e.g. status view, activity indicator).
   NSString* commandString = @"genmove ";
   commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
   GtpCommand* command = [GtpCommand command:commandString
@@ -119,62 +122,72 @@
     return;
   }
 
-  NSString* responseString = [response.parsedResponse lowercaseString];
-  if ([responseString isEqualToString:@"pass"])
-    [self.game pass];
-  else if ([responseString isEqualToString:@"resign"])
-    [self.game resign];
-  else
+  @try
   {
-    GoPoint* point = [self.game.board pointAtVertex:responseString];
-    if (point)
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+
+    NSString* responseString = [response.parsedResponse lowercaseString];
+    if ([responseString isEqualToString:@"pass"])
+      [self.game pass];
+    else if ([responseString isEqualToString:@"resign"])
+      [self.game resign];
+    else
     {
-      // TODO: Remove this check, and handleComputerPlayedIllegalMove1/2
-      // methods, as soon as issue 90 on GitHub has been fixed.
-      if ([self.game isLegalMove:point])
+      GoPoint* point = [self.game.board pointAtVertex:responseString];
+      if (point)
       {
-        [self.game play:point];
+        // TODO: Remove this check, and handleComputerPlayedIllegalMove1/2
+        // methods, as soon as issue 90 on GitHub has been fixed.
+        if ([self.game isLegalMove:point])
+        {
+          [self.game play:point];
+        }
+        else
+        {
+          self.illegalMove = point;
+          [self handleComputerPlayedIllegalMove1];
+          return;
+        }
       }
       else
       {
-        self.illegalMove = point;
-        [self handleComputerPlayedIllegalMove1];
+        DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
+        assert(0);
         return;
       }
     }
+
+    [[[[BackupGameCommand alloc] init] autorelease] submit];
+
+    bool computerGoesOnPlaying = false;
+    switch (self.game.state)
+    {
+      case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
+      case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
+        break;
+      default:
+        if ([self.game isComputerPlayersTurn])
+          computerGoesOnPlaying = true;
+        break;
+    }
+
+    if (computerGoesOnPlaying)
+    {
+      // Invoking another ComputerPlayMoveCommand does not result in an infinite
+      // series of commands during computer vs. coputer games because the next
+      // ComputerPlayMoveCommand will not wait for its GTP command to complete.
+      [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+    }
     else
     {
-      DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
-      assert(0);
-      return;
+      // Thinking state must change after any of the other things; this order is
+      // important for observer notifications.
+      self.game.computerThinks = false;
     }
   }
-
-  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
-  backupCommand.saveSgf = true;
-  [backupCommand submit];
-
-  bool computerGoesOnPlaying = false;
-  switch (self.game.state)
+  @finally
   {
-    case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
-    case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
-      break;
-    default:
-      if ([self.game isComputerPlayersTurn])
-        computerGoesOnPlaying = true;
-      break;
-  }
-
-  if (computerGoesOnPlaying)
-  {
-    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
-  }
-  else
-  {
-    // Thinking state must change after any of the other things; this order is
-    // important for observer notifications.
-    self.game.computerThinks = false;
+    [[ApplicationStateManager sharedManager] commitSavePoint];
   }
 }
 

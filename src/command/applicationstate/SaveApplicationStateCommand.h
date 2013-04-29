@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,24 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The RestoreGameCommand class is responsible for restoring the moves
-/// from a backed up .sgf file during application startup.
+/// @brief The SaveApplicationStateCommand class is responsible for saving the
+/// current application state to an NSCoding archive so that the application
+/// state can be restored when the application re-launches after a crash or
+/// after it was killed while suspended.
 ///
-/// RestoreGameCommand fails if no backup .sgf file exists.
+/// SaveApplicationStateCommand stores the NSCoding archive in a fixed location
+/// in the application's library folder. Because the file is not in the shared
+/// document folder, it is visible/accessible neither in iTunes, nor on the
+/// in-app tab "Archive".
 ///
-/// @see BackupGameCommand.
+/// The NSCoding archive is overwritten if it already exists.
+///
+/// SaveApplicationStateCommand executes synchronously.
+///
+/// @see RestoreApplicationStateCommand.
 /// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------
-@interface RestoreGameCommand : CommandBase
+@interface SaveApplicationStateCommand : CommandBase
 {
 }
 

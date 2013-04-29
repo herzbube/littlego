@@ -25,6 +25,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/ScoringModel.h"
+#import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -74,7 +75,6 @@
   if (! self)
     return nil;
   self.newBoardPosition = aBoardPosition;
-  self.performBackup = true;
   return self;
 }
 
@@ -155,6 +155,7 @@
 
   @try
   {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
     ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
@@ -168,18 +169,11 @@
     if (scoringModel.scoringMode)
       [scoringModel.score calculateWaitUntilDone:false];
 
-    // If scoring mode is enabled we are backing up while scoring is in
-    // progress, i.e. we are backing up GoBoardRegion objects with half-baked
-    // values. We can do this because we know that RestoreGameCommand takes
-    // care of this problem for us.
-    // TODO: Remove this comment when issue #124 is implemented.
-    if (self.performBackup)
-      [[[[BackupGameCommand alloc] init] autorelease] submit];  // don't save .sgf file
-
     return true;
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] commitSavePoint];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
 }

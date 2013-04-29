@@ -21,32 +21,25 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BackupGameCommand class is responsible for saving the current
-/// game and application state so that a restore can be made when the
+/// game to an .sgf file so that the raw game moves can be restored when the
 /// application re-launches after a crash or after it was killed while
 /// suspended.
 ///
-/// BackupGameCommand writes a primary NSCoding archive, and optionally an .sgf
-/// file. The files are stored in a fixed location in the application's library
-/// folder. Because the files are not in the shared document folder, they are
-/// visible/accessible neither in iTunes, nor on the in-app tab "Archive".
+/// BackupGameCommand stores the .sgf file in a fixed location in the
+/// application's library folder. Because the file is not in the shared document
+/// folder, it is visible/accessible neither in iTunes, nor on the in-app tab
+/// "Archive".
 ///
 /// BackupGameCommand delegates the .sgf saving task to the GTP engine via the
-/// "savesgf" GTP command. Both the NSCoding archiveand the .sgf file are
-/// overwritten if they already exist.
+/// "savesgf" GTP command. The .sgf file is overwritten if it already exists.
 ///
 /// BackupGameCommand executes synchronously.
 ///
 /// @see RestoreGameCommand.
+/// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------
 @interface BackupGameCommand : CommandBase
 {
 }
-
-/// @brief Indicates whether BackupGameCommand should save an .sgf file. This
-/// flag is false by default.
-///
-/// This flag should be set only by actors who trigger a backup after a move has
-/// been played or discarded.
-@property(nonatomic, assign) bool saveSgf;
 
 @end

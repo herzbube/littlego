@@ -125,12 +125,12 @@ static CommandProcessor* sharedProcessor = nil;
 /// already executed in a secondary thread's context, submits another command.
 /// Submission then occurs in the secondary thread's context.
 ///
-/// If the command's property @e asynchronous is false, the command is executed
-/// immediately in the context of the caller's thread (which may or may not be
-/// the main thread).
+/// If @a command does not conform to the AsynchronousCommand protocol, it is
+/// executed immediately in the context of the caller's thread (which may or
+/// may not be the main thread).
 ///
-/// If the command's property @e asynchronous is true, what happens next depends
-/// on the current thread context:
+/// If @a command conforms to the AsynchronousCommand protocol, what happens
+/// next depends on the current thread context:
 /// - If the current thread already is the secondary thread in which all
 ///   asynchronous commands are executed, then the command is executed
 ///   synchronously. This occurs if an asynchronous command submits another
@@ -140,10 +140,11 @@ static CommandProcessor* sharedProcessor = nil;
 ///   returns to the caller and the command is executed in the context of the
 ///   command execution secondary thread.
 ///
-/// If @a command is executed synchronously, this method returns whatever value
-/// the command's doIt() method returns. True means the command executed
-/// successfully, false means the command failed. Exceptions raised while
-/// executing the command are passed back to the caller.
+/// If @a command is executed synchronously (which as noted above may be the
+/// case even if a command conform to the AsynchronousCommand protocol), this
+/// method returns whatever value the command's doIt() method returns. True
+/// means the command executed successfully, false means the command failed.
+/// Exceptions raised while executing the command are passed back to the caller.
 ///
 /// If @a command is executed asynchronously, the return value of this method
 /// is always true. The caller has no way to determine whether command execution

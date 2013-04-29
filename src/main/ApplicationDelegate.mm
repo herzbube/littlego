@@ -54,6 +54,7 @@
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
 #import "../shared/LongRunningActionCounter.h"
+#import "../shared/ApplicationStateManager.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 #import "../ui/UiElementMetrics.h"
@@ -149,6 +150,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.fileLogger = nil;
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
+  [ApplicationStateManager releaseSharedManager];
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];
@@ -259,6 +261,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   DDLogInfo(@"applicationDidEnterBackground:() received");
 
   [self writeUserDefaults];
+  [[ApplicationStateManager sharedManager] applicationDidEnterBackground];
 }
 
 // -----------------------------------------------------------------------------
@@ -268,6 +271,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) applicationWillEnterForeground:(UIApplication*)application
 {
   DDLogInfo(@"applicationWillEnterForeground:() received");
+  [[ApplicationStateManager sharedManager] applicationWillEnterForeground];
 }
 
 // -----------------------------------------------------------------------------

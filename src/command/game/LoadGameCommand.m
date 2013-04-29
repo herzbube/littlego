@@ -34,6 +34,7 @@
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
+#import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../utility/PathUtilities.h"
 
@@ -322,33 +323,40 @@ static const int maxStepsForReplayMoves = 10;
 // -----------------------------------------------------------------------------
 - (void) handleCommandSucceeded
 {
-  [self increaseProgressAndNotifyDelegate];
-  [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
-  [self setupHandicap:m_handicap];
-  [self setupKomi:m_komi];
-  [self setupMoves:m_moves];
-  if (self.restoreMode)
+  @try
   {
-    // Can't invoke notifyGoGameDocument 1) because we are not loading from the
-    // archive so we don't have an archive game name; and 2) because we don't
-    // know whether the restored game has previously been saved, so we also
-    // cannot save the document dirty flag. The consequences: The document dirty
-    // flag remains set (which will cause a warning when the next new game is
-    // started), and the document name remains uninitialized (which will make
-    // it appear to anybody who evaluates the document name as if the game has
-    // has never been saved before).
+    [[ApplicationStateManager sharedManager] beginSavePoint];
 
-    // No need to create a backup, we already have the one we are restoring from
+    [self increaseProgressAndNotifyDelegate];
+    [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
+    [self setupHandicap:m_handicap];
+    [self setupKomi:m_komi];
+    [self setupMoves:m_moves];
+    if (self.restoreMode)
+    {
+      // Can't invoke notifyGoGameDocument 1) because we are not loading from the
+      // archive so we don't have an archive game name; and 2) because we don't
+      // know whether the restored game has previously been saved, so we also
+      // cannot save the document dirty flag. The consequences: The document dirty
+      // flag remains set (which will cause a warning when the next new game is
+      // started), and the document name remains uninitialized (which will make
+      // it appear to anybody who evaluates the document name as if the game has
+      // has never been saved before).
+
+      // No need to create a backup, we already have the one we are restoring from
+    }
+    else
+    {
+      [self notifyGoGameDocument];
+      [[[[BackupGameCommand alloc] init] autorelease] submit];
+    }
+    [GtpUtilities setupComputerPlayer];
+    [self triggerComputerPlayer];
   }
-  else
+  @finally
   {
-    [self notifyGoGameDocument];
-    BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
-    backupCommand.saveSgf = true;
-    [backupCommand submit];
+    [[ApplicationStateManager sharedManager] commitSavePoint];
   }
-  [GtpUtilities setupComputerPlayer];
-  [self triggerComputerPlayer];
 }
 
 // -----------------------------------------------------------------------------

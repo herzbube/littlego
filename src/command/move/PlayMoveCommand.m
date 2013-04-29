@@ -26,6 +26,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../play/PlayView.h"
+#import "../../shared/ApplicationStateManager.h"
 
 
 @implementation PlayMoveCommand
@@ -108,31 +109,40 @@
   // Must get this before updating the game model
   NSString* colorForMove = self.game.currentPlayer.colorString;
 
-  // Update game model now, don't wait until we get the response to the GTP
-  // command (as most of the other commands do). If we update the game model
-  // now, the play view only needs to be updated once, which is good! If we
-  // wait with the model update until after we receive the GTP response, the
-  // play view will be updated twice:
-  // - Once immediately after this method returns, which causes the cross-hair
-  //   point to disappear
-  // - A second time after a slight delay, when the GTP response arrives and
-  //   we perform the model update
-  // The delay looks very bad: It appears as if the stone that was just set by
-  // the user's finger goes away for a moment (first update: the cross-hair
-  // point is removed) and then reappears after a moment (second update: the
-  // actual stone is set due to the model update).
-  switch (self.moveType)
+  @try
   {
-    case GoMoveTypePlay:
-      [self.game play:self.point];
-      break;
-    case GoMoveTypePass:
-      [self.game pass];
-      break;
-    default:
-      DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
-      assert(0);
-      return false;
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+
+    // Update game model now, don't wait until we get the response to the GTP
+    // command (as most of the other commands do). If we update the game model
+    // now, the play view only needs to be updated once, which is good! If we
+    // wait with the model update until after we receive the GTP response, the
+    // play view will be updated twice:
+    // - Once immediately after this method returns, which causes the cross-hair
+    //   point to disappear
+    // - A second time after a slight delay, when the GTP response arrives and
+    //   we perform the model update
+    // The delay looks very bad: It appears as if the stone that was just set by
+    // the user's finger goes away for a moment (first update: the cross-hair
+    // point is removed) and then reappears after a moment (second update: the
+    // actual stone is set due to the model update).
+    switch (self.moveType)
+    {
+      case GoMoveTypePlay:
+        [self.game play:self.point];
+        break;
+      case GoMoveTypePass:
+        [self.game pass];
+        break;
+      default:
+        DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
+        assert(0);
+        return false;
+    }
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] commitSavePoint];
   }
 
   NSString* commandString = @"play ";
@@ -170,9 +180,7 @@
     return;
   }
 
-  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
-  backupCommand.saveSgf = true;
-  [backupCommand submit];
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn

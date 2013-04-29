@@ -27,6 +27,7 @@
 #import "../../command/backup/CleanBackupCommand.h"
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
+#import "../../shared/ApplicationStateManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -237,10 +238,16 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  [[GoGame sharedGame] resign];
-  BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
-  backupCommand.saveSgf = true;
-  [backupCommand submit];
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[GoGame sharedGame] resign];
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
+  [[[[BackupGameCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -251,9 +258,15 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) undoResign
 {
-  // Fuego does not have support for resignation, so we don't have to tell it
-  // about this event.
-  [[GoGame sharedGame] revertStateFromEndedToInProgress];
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[GoGame sharedGame] revertStateFromEndedToInProgress];
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
   [[[[BackupGameCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }

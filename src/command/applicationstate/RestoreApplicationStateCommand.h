@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,18 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The RestoreGameCommand class is responsible for restoring the moves
-/// from a backed up .sgf file during application startup.
+/// @brief The RestoreApplicationStateCommand class is responsible for restoring
+/// the application state to the state previously saved to an NSCoding archive.
+/// RestoreApplicationStateCommand is executed during application startup.
 ///
-/// RestoreGameCommand fails if no backup .sgf file exists.
+/// RestoreApplicationStateCommand fails if the NSCoding archive is not
+/// compatible to the current application version. If this occurs,
+/// RestoreApplicationStateCommand removes the NSCoding archive file.
 ///
-/// @see BackupGameCommand.
+/// @see SaveApplicationStateCommand.
 /// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------
-@interface RestoreGameCommand : CommandBase
+@interface RestoreApplicationStateCommand : CommandBase
 {
 }
 

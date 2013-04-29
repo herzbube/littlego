@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveModel.h"
+#import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -38,6 +39,7 @@
 
   @try
   {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
     bool success = [self changeBoardPosition];
     if (! success)
@@ -67,6 +69,7 @@
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] commitSavePoint];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
@@ -93,9 +96,7 @@
   // Before we discard, first change to a board position that will be valid
   // even after the discard. Note that because we step back only one board
   // position, ChangeBoardPositionCommand is executed synchronously.
-  ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease];
-  command.performBackup = false;  // we already perform a backup, no need for doing it twice
-  return [command submit];
+  return [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -134,10 +135,7 @@
 // -----------------------------------------------------------------------------
 - (bool) backupGame
 {
-  BackupGameCommand* command = [[[BackupGameCommand alloc] init] autorelease];
-  command.saveSgf = true;
-  bool success = [command submit];
-  return success;
+  return [[[[BackupGameCommand alloc] init] autorelease] submit];
 }
 
 @end

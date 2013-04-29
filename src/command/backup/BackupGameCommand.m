@@ -17,7 +17,6 @@
 
 // Project includes
 #import "BackupGameCommand.h"
-#import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../utility/PathUtilities.h"
 
@@ -30,54 +29,13 @@
 - (bool) doIt
 {
   NSString* backupFolderPath = [PathUtilities backupFolderPath];
-  [self saveArchive:backupFolderPath];
-  if (self.saveSgf)
-    [self saveSgf:backupFolderPath];
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
-// -----------------------------------------------------------------------------
-- (void) saveArchive:(NSString*)backupFolder
-{
-  DDLogVerbose(@"%@: Saving NSCoding archive", [self shortDescription]);
-
-  NSMutableData* data = [NSMutableData data];
-  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-
-  GoGame* game = [GoGame sharedGame];
-  [archiver encodeObject:game forKey:nsCodingGoGameKey];
-  [archiver finishEncoding];
-
-  NSString* archivePath = [backupFolder stringByAppendingPathComponent:archiveBackupFileName];
-  BOOL success = [data writeToFile:archivePath atomically:YES];
-  [archiver release];
-
-  if (! success)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to save NSCoding archive file %@", archivePath];
-    DDLogError(@"%@: %@", [self shortDescription], errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt().
-// -----------------------------------------------------------------------------
-- (void) saveSgf:(NSString*)backupFolder
-{
-  DDLogVerbose(@"%@: Saving current game to .sgf file", [self shortDescription]);
 
   // Secretly and heinously change the working directory so that the .sgf
   // file goes to a directory that the user cannot look into
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:backupFolder];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolder);
+  [fileManager changeCurrentDirectoryPath:backupFolderPath];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolderPath);
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
   GtpCommand* command = [GtpCommand command:commandString];
@@ -87,6 +45,8 @@
   // Switch back to the original directory
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
   DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
+
+  return true;
 }
 
 @end

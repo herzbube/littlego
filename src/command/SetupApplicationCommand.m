@@ -19,9 +19,9 @@
 #import "SetupApplicationCommand.h"
 #import "HandleDocumentInteraction.h"
 #import "LoadOpeningBookCommand.h"
-#import "backup/RestoreGameCommand.h"
 #import "diagnostics/RestoreBugReportApplicationState.h"
 #import "../main/ApplicationDelegate.h"
+#import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
 
 
@@ -105,10 +105,7 @@
     }
     else
     {
-      // Important: We must execute this command in the context of a thread that
-      // survives the entire command execution - see the class documentation of
-      // RestoreGameCommand for the reason why.
-      [[[[RestoreGameCommand alloc] init] autorelease] submit];
+      [[ApplicationStateManager sharedManager] restoreApplicationState];
       if (delegate.documentInteractionURL)
       {
         // Control returns while an alert is still being displayed
