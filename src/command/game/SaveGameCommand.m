@@ -23,6 +23,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/ApplicationStateManager.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -107,6 +108,7 @@
   }
 
   [[GoGame sharedGame].document save:self.gameName];
+  [[ApplicationStateManager sharedManager] applicationStateDidChange];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;
 }

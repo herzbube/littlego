@@ -56,9 +56,11 @@
 ///   when they are changed. This allows ApplicationStateManager to keep track
 ///   of what needs to be saved when it finally creates the save point.
 ///
-/// @note The last point has not been fully implemented yet, at the moment
-/// ApplicationStateManager will just save the entire application state whenever
-/// any change is reported by GoGame et al.
+/// @note The last point has not been implemented yet. At the moment GoGame
+/// et al. do not notify ApplicationStateManager of any changes, this is still
+/// the duty of the agent that invokes beginSavePoint and commitSavePoint. The
+/// agent needs to invoke applicationStateDidChange, which will cause the entire
+/// archive to be saved.
 ///
 /// These are the advantages of the system:
 /// - Reduces complexity because agents do not have to know about each other,
@@ -66,6 +68,27 @@
 /// - More important still, the overall system becomes more flexible and
 ///   friendly to change. For instance, it is no longer a problem if commands
 ///   that previously were executed standalone are suddenly executed nested.
+///
+///
+/// @par Delayed state saving
+///
+/// Certain changes of the application state are more important than others.
+/// An agent may decide that the change it just made is not very important and
+/// does not need to be saved immediately. The agent in this case invokes
+/// applicationStateDidChanage without also invoking beginSavePoint and
+/// commitSavePoint. As a result, the application state is not saved until at
+/// a later time.
+///
+/// The state change will be saved when one of the following occurs:
+/// - When someone else invokes beginSavePoint and commitSavePoint: In this case
+///   the older state change is saved together with the newer state change
+/// - When ApplicationStateManager receives the applicationDidEnterBackground
+///   message: In this case the application state is saved while the application
+///   goes to the background
+///
+/// An agent that employs delayed state saving accepts the risk that its change
+/// to the application state may be lost if the application crashes before the
+/// state change can be saved.
 ///
 ///
 /// @par Multi-threading
@@ -89,8 +112,8 @@
 /// application goes to the background or comes back to the foreground.
 ///
 /// If the application goes to the background while ApplicationStateManager is
-/// in the process of saving the application state, ApplicationStateManager
-/// starts a background operation that allows it to complete the process.
+/// in the process of saving the application state, the notifying application
+/// delegate is blocked until ApplicationStateManager completes the process.
 ///
 /// If the application goes to the background while ApplicationStateManager is
 /// not in the process of saving the application state, but there are still
@@ -99,6 +122,13 @@
 /// going-to-background process. Agents are still allowed to invoke
 /// commitSavePoint, but if this would result in saving the application state
 /// the invoking thread is blocked.
+///
+/// If the application goes to the background while ApplicationStateManager is
+/// not in the process of saving the application state, and no agents hold
+/// unfinished save points, but some agent has previously invoked
+/// applicationStateDidChange (with the intent to delay state saving),
+/// ApplicationStateManager now invokes saveApplicationState. The notifying
+/// application delegate is blocked until the state saving process completes.
 ///
 /// When the application comes back to the foreground, everything continues as
 /// normal: A thread that was blocked because it tried to save the application
@@ -139,6 +169,7 @@
 
 - (void) beginSavePoint;
 - (void) commitSavePoint;
+- (void) saveApplicationState;
 - (void) restoreApplicationState;
 - (void) applicationStateDidChange;
 - (void) applicationDidEnterBackground;

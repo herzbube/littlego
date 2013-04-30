@@ -155,7 +155,6 @@
 
   @try
   {
-    [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
     ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
@@ -173,7 +172,8 @@
   }
   @finally
   {
-    [[ApplicationStateManager sharedManager] commitSavePoint];
+    // Application state will be saved later
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
 }

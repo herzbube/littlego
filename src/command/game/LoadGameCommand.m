@@ -355,6 +355,7 @@ static const int maxStepsForReplayMoves = 10;
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
 }

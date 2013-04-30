@@ -245,6 +245,7 @@ enum ActionSheetButton
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [[[[BackupGameCommand alloc] init] autorelease] submit];
@@ -265,6 +266,7 @@ enum ActionSheetButton
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [[[[BackupGameCommand alloc] init] autorelease] submit];

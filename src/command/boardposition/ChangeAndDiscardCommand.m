@@ -69,6 +69,7 @@
   }
   @finally
   {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
