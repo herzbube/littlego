@@ -59,14 +59,6 @@
     return false;
   }
 
-  // Since we are not capable of restoring scoring mode, we must make sure that
-  // GoBoardRegion objects are reset to their non-scoring-mode state. We cannot
-  // be sure whether none, all or only some of the objects are in scoring mode,
-  // so we have to iterate over all of them.
-  NSArray* allRegions = unarchivedGame.board.regions;
-  for (GoBoardRegion* region in allRegions)
-    region.scoringMode = false;
-
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // Computer player must not be triggered before the GTP engine has been
   // sync'ed (it is irrelevant that we are not going to trigger the computer

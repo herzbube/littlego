@@ -23,7 +23,6 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/model/ScoringModel.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -165,12 +164,6 @@
 
   GoGame* game = [GoGame sharedGame];
   [archiver encodeObject:game forKey:nsCodingGoGameKey];
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  if (scoringModel.scoringMode)
-  {
-    GoScore* score = scoringModel.score;
-    [archiver encodeObject:score forKey:nsCodingGoScoreKey];
-  }
   [archiver finishEncoding];
 
   NSString* archivePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];

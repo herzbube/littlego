@@ -24,6 +24,7 @@
 #import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoScore.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -117,14 +118,15 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
     return;
   DDLogVerbose(@"DeadStonesLayerDelegate is drawing");
 
   if (! _deadStoneSymbolLayer)
     _deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self);
 
-  NSEnumerator* enumerator = [[GoGame sharedGame].board pointEnumerator];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {

@@ -23,6 +23,7 @@
 @class GoMoveModel;
 @class GoPlayer;
 @class GoPoint;
+@class GoScore;
 
 
 // -----------------------------------------------------------------------------
@@ -124,5 +125,8 @@
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;
+/// @brief The GoScore object that provides scoring information about this
+/// GoGame.
+@property(nonatomic, retain) GoScore* score;
 
 @end

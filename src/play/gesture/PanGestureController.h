@@ -19,7 +19,6 @@
 @class CommandBase;
 @class PanGestureController;
 @class PlayView;
-@class ScoringModel;
 
 
 // -----------------------------------------------------------------------------
@@ -52,7 +51,6 @@
 }
 
 - (id) initWithPlayView:(PlayView*)playView
-           scoringModel:(ScoringModel*)scoringModel
                delegate:(id<PanGestureControllerDelegate>)delegate
    parentViewController:(UIViewController*)parentViewController;
 

@@ -41,10 +41,6 @@
 @property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, assign) StatusViewController* statusViewController;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
-/// @brief GoScore object used while the game info view is displayed and scoring
-/// mode is NOT enabled. If scoring mode is enabled, the GoScore object is
-/// obtained from elsewhere.
-@property(nonatomic, retain) GoScore* gameInfoScore;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, retain) UINavigationItem* navigationItem;
@@ -84,7 +80,6 @@
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
   self.gameInfoViewController = nil;
-  self.gameInfoScore = nil;
   self.barButtonItemForShowingTheHiddenViewController = nil;
   [self setupNavigationItem];
   [self setupButtons];
@@ -111,7 +106,6 @@
   self.delegate = nil;
   self.parentViewController = nil;
   self.gameInfoViewController = nil;
-  self.gameInfoScore = nil;
   self.navigationItem = nil;
   self.computerPlayButton = nil;
   self.passButton = nil;
@@ -198,8 +192,8 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -294,24 +288,10 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
 {
-  GoScore* score;
-  if (self.scoringModel.scoringMode)
-    score = self.scoringModel.score;
-  else
-  {
-    assert(! self.gameInfoScore);
-    if (! self.gameInfoScore)
-    {
-      self.gameInfoScore = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:false];
-      [self.gameInfoScore calculateWaitUntilDone:true];
-    }
-    else
-    {
-      DDLogError(@"%@: GoScore object not nil: %@", self, self.gameInfoScore);
-    }
-    score = self.gameInfoScore;
-  }
-  self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self score:score];
+  GoScore* score = [GoGame sharedGame].score;
+  if (! score.territoryScoringEnabled)
+    [score calculateWaitUntilDone:true];
+  self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
   [self.delegate navigationBarController:self
                              makeVisible:true
                   gameInfoViewController:self.gameInfoViewController];
@@ -326,14 +306,6 @@
                              makeVisible:false
             gameInfoViewController:controller];
   self.gameInfoViewController = nil;
-  // Get rid of temporary scoring object
-  if (! self.scoringModel.scoringMode)
-  {
-    assert(self.gameInfoScore);
-    if (! self.gameInfoScore)
-      DDLogError(@"%@: GoScore object is nil", self);
-    self.gameInfoScore = nil;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -390,7 +362,7 @@
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  self.scoringModel.scoringMode = false;  // triggers notification to which this controller reacts
+  [GoGame sharedGame].score.territoryScoringEnabled = false;  // triggers notification to which this controller reacts
 }
 
 // -----------------------------------------------------------------------------
@@ -403,7 +375,7 @@
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   // Disable scoring mode while the old GoGame is still around
-  self.scoringModel.scoringMode = false;
+  oldGame.score.territoryScoringEnabled = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -433,8 +405,8 @@
   {
     if (self.scoringModel.scoreWhenGameEnds)
     {
-      self.scoringModel.scoringMode = true;
-      [self.scoringModel.score calculateWaitUntilDone:false];
+      game.score.territoryScoringEnabled = true;
+      [game.score calculateWaitUntilDone:false];
     }
   }
 }
@@ -451,9 +423,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
 {
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
@@ -461,9 +433,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
@@ -582,7 +554,7 @@
   NSMutableArray* leftBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  if (self.scoringModel.scoringMode)
+  if (game.score.territoryScoringEnabled)
   {
     [leftBarButtonItems addObject:self.doneButton];
     [leftBarButtonItems addObject:self.discardBoardPositionButton];
@@ -669,17 +641,18 @@
 - (void) updateComputerPlayButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
         break;
       default:
       {
-        if ([GoGame sharedGame].isComputerThinking)
+        if (game.isComputerThinking)
           break;
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
@@ -703,22 +676,23 @@
 - (void) updatePassButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
         break;
       default:
       {
-        if ([GoGame sharedGame].isComputerThinking)
+        if (game.isComputerThinking)
           break;
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
-            GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+            GoBoardPosition* boardPosition = game.boardPosition;
             if (boardPosition.isComputerPlayersTurn)
               enabled = NO;
             else
@@ -742,14 +716,15 @@
 - (void) updateDiscardBoardPositionButtonState
 {
   BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
   {
-    if (! self.scoringModel.score.scoringInProgress)
+    if (! game.score.scoringInProgress)
       enabled = YES;
   }
   else
   {
-    if (! [GoGame sharedGame].isComputerThinking)
+    if (! game.isComputerThinking)
       enabled = YES;
   }
   self.discardBoardPositionButton.enabled = enabled;
@@ -761,13 +736,14 @@
 - (void) updatePauseButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
       {
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
@@ -791,13 +767,14 @@
 - (void) updateContinueButtonState
 {
   BOOL enabled = NO;
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
       {
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           case GoGameStateGameIsPaused:
             enabled = YES;
@@ -820,14 +797,15 @@
 - (void) updateInterruptButtonState
 {
   BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
   {
-    if (self.scoringModel.score.scoringInProgress)
+    if (game.score.scoringInProgress)
       enabled = YES;
   }
   else
   {
-    if ([GoGame sharedGame].isComputerThinking)
+    if (game.isComputerThinking)
       enabled = YES;
   }
   self.interruptButton.enabled = enabled;
@@ -839,9 +817,10 @@
 - (void) updateGameInfoButtonState
 {
   BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
   {
-    if (! self.scoringModel.score.scoringInProgress)
+    if (! game.score.scoringInProgress)
       enabled = YES;
   }
   else
@@ -857,25 +836,26 @@
 - (void) updateGameActionsButtonState
 {
   BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
   {
-    if (! self.scoringModel.score.scoringInProgress)
+    if (! game.score.scoringInProgress)
       enabled = YES;
   }
   else
   {
-    switch ([GoGame sharedGame].type)
+    switch (game.type)
     {
       case GoGameTypeComputerVsComputer:
       {
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           case GoGameStateGameHasEnded:
             enabled = YES;
             break;
           case GoGameStateGameIsPaused:
             // Computer may still be thinking
-            enabled = ! [GoGame sharedGame].isComputerThinking;
+            enabled = ! game.isComputerThinking;
             break;
           default:
             break;
@@ -884,9 +864,9 @@
       }
       default:
       {
-        if ([GoGame sharedGame].isComputerThinking)
+        if (game.isComputerThinking)
           break;
-        switch ([GoGame sharedGame].state)
+        switch (game.state)
         {
           default:
             enabled = YES;
@@ -905,9 +885,10 @@
 - (void) updateDoneButtonState
 {
   BOOL enabled = NO;
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
   {
-    if (! self.scoringModel.score.scoringInProgress)
+    if (! game.score.scoringInProgress)
       enabled = YES;
   }
   self.doneButton.enabled = enabled;

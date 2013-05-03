@@ -17,7 +17,6 @@
 
 // Project includes
 #import "PlayViewActionSheetController.h"
-#import "../model/ScoringModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -111,8 +110,6 @@ enum ActionSheetButton
                                              destructiveButtonTitle:nil
                                                   otherButtonTitles:nil];
 
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-
   // Add buttons in the order that they appear in the ActionSheetButton enum
   GoGame* game = [GoGame sharedGame];
   for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
@@ -121,7 +118,7 @@ enum ActionSheetButton
     switch (iterButtonIndex)
     {
       case ScoreButton:
-        if (scoringModel.scoringMode)
+        if (game.score.territoryScoringEnabled)
           continue;
         title = @"Score";
         break;
@@ -130,7 +127,7 @@ enum ActionSheetButton
           continue;
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        if (scoringModel.scoringMode)
+        if (game.score.territoryScoringEnabled)
           continue;
         if (game.boardPosition.isComputerPlayersTurn)
           continue;
@@ -226,9 +223,9 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) score
 {
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  scoringModel.scoringMode = ! scoringModel.scoringMode;
-  [scoringModel.score calculateWaitUntilDone:false];
+  GoScore* score = [GoGame sharedGame].score;
+  score.territoryScoringEnabled = ! score.territoryScoringEnabled;
+  [score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 

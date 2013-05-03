@@ -19,13 +19,13 @@
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
-#import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoMoveModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoScore.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -35,7 +35,6 @@
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
-@property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
 @end
@@ -48,13 +47,12 @@
 ///
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel
 {
   // Call designated initializer of superclass (PlayViewLayerDelegate)
   self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
   if (! self)
     return nil;
-  self.scoringModel = theScoringModel;
   _blackLastMoveLayer = NULL;
   _whiteLastMoveLayer = NULL;
   return self;
@@ -65,7 +63,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.scoringModel = nil;
   [self releaseLayers];
   [super dealloc];
 }
@@ -130,7 +127,8 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   // Completely disable symbols while scoring mode is enabled
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
     return;
   DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
@@ -147,7 +145,7 @@
   {
     if (self.playViewModel.markLastMove)
     {
-      GoMove* lastMove = [GoGame sharedGame].boardPosition.currentMove;
+      GoMove* lastMove = game.boardPosition.currentMove;
       if (lastMove && GoMoveTypePlay == lastMove.type)
       {
         if (lastMove.player.isBlack)

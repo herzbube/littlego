@@ -34,6 +34,7 @@
 #import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoPoint.h"
+#import "../go/GoScore.h"
 #import "../go/GoVertex.h"
 #import "../shared/LongRunningActionCounter.h"
 #import "../utility/NSStringAdditions.h"
@@ -171,8 +172,8 @@ static PlayView* sharedPlayView = nil;
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
@@ -216,8 +217,7 @@ static PlayView* sharedPlayView = nil;
   [self setupLayerDelegate:layerDelegate withView:self];
   layerDelegate = [[[SymbolsLayerDelegate alloc] initWithMainView:self
                                                        metrics:self.playViewMetrics
-                                                 playViewModel:self.playViewModel
-                                                  scoringModel:self.scoringModel] autorelease];
+                                                 playViewModel:self.playViewModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
   layerDelegate = [[[TerritoryLayerDelegate alloc] initWithMainView:self
                                                          metrics:self.playViewMetrics
@@ -408,18 +408,18 @@ static PlayView* sharedPlayView = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeEnabled eventInfo:nil];
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeDisabled eventInfo:nil];
   [self delayedUpdate];
@@ -452,7 +452,7 @@ static PlayView* sharedPlayView = nil;
   {
     if ([keyPath isEqualToString:@"inconsistentTerritoryMarkupType"])
     {
-      if (self.scoringModel.scoringMode)
+      if ([GoGame sharedGame].score.territoryScoringEnabled)
       {
         [self notifyLayerDelegates:PVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedUpdate];

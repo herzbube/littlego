@@ -594,8 +594,7 @@ enum ActionType
 {
   ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
 
-  self.statusViewController = [[[StatusViewController alloc] initWithPlayView:self.playView
-                                                                 scoringModel:scoringModel] autorelease];
+  self.statusViewController = [[[StatusViewController alloc] initWithPlayView:self.playView] autorelease];
   [self.navigationBarController setupWithScoringModel:scoringModel
                                         navigationBar:self.navigationBarMain
                                            statusViewController:self.statusViewController];
@@ -628,10 +627,9 @@ enum ActionType
     self.currentBoardPositionViewController = nil;
   }
   self.panGestureController = [[[PanGestureController alloc] initWithPlayView:self.playView
-                                                                 scoringModel:scoringModel
                                                                      delegate:self
                                                          parentViewController:self] autorelease];
-  self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView scoringModel:scoringModel] autorelease];
+  self.tapGestureController = [[[TapGestureController alloc] initWithPlayView:self.playView] autorelease];
 }
 
 // -----------------------------------------------------------------------------

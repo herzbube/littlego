@@ -20,7 +20,6 @@
 
 // Forward declarations
 @class GameInfoViewController;
-@class GoScore;
 
 
 // -----------------------------------------------------------------------------
@@ -51,7 +50,7 @@
 {
 }
 
-+ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score;
++ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate;
 - (void) dismiss;
 
 /// @brief This is the delegate that will be informed when the user wants to

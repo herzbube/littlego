@@ -18,7 +18,7 @@
 // Project includes
 #import "TapGestureController.h"
 #import "../PlayView.h"
-#import "../model/ScoringModel.h"
+#import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 
@@ -29,8 +29,6 @@
 @interface TapGestureController()
 /// @brief The view that TapGestureController manages gestures for.
 @property(nonatomic, assign) PlayView* playView;
-/// @brief The model that manages scoring-related data.
-@property(nonatomic, assign) ScoringModel* scoringModel;
 /// @brief The gesture recognizer used to detect the tap gesture.
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a tapping gesture is currently allowed, false if not (e.g.
@@ -46,20 +44,16 @@
 ///
 /// @note This is the designated initializer of TapGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)aPlayView scoringModel:(ScoringModel*)aScoringModel
+- (id) initWithPlayView:(PlayView*)playView
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-
-  self.playView = aPlayView;
-  self.scoringModel = aScoringModel;
-
+  self.playView = playView;
   [self setupTapGestureRecognizer];
   [self setupNotificationResponders];
   [self updateTappingEnabled];
-
   return self;
 }
 
@@ -70,7 +64,6 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.playView = nil;
-  self.scoringModel = nil;
   self.tapRecognizer = nil;
   [super dealloc];
 }
@@ -91,8 +84,8 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 }
@@ -109,8 +102,9 @@
   GoPoint* deadStonePoint = [self.playView pointNear:tappingLocation];
   if (! deadStonePoint || ! [deadStonePoint hasStone])
     return;
-  [self.scoringModel.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
-  [self.scoringModel.score calculateWaitUntilDone:false];
+  GoGame* game = [GoGame sharedGame];
+  [game.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
+  [game.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -122,17 +116,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
 {
   [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
   [self updateTappingEnabled];
 }
@@ -158,8 +152,9 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  if (self.scoringModel.scoringMode)
-    self.tappingEnabled = ! self.scoringModel.score.scoringInProgress;
+  GoScore* score = [GoGame sharedGame].score;
+  if (score.territoryScoringEnabled)
+    self.tappingEnabled = ! score.scoringInProgress;
   else
     self.tappingEnabled = false;
 }

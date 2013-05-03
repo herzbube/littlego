@@ -17,7 +17,6 @@
 
 // Forward declarations
 @class PlayView;
-@class ScoringModel;
 
 
 // -----------------------------------------------------------------------------
@@ -29,6 +28,6 @@
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel;
+- (id) initWithPlayView:(PlayView*)playView;
 
 @end

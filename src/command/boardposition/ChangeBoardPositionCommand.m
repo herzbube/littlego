@@ -23,8 +23,6 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 
@@ -140,7 +138,8 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
   DDLogVerbose(@"%@: newBoardPosition = %d, currentBoardPosition = %d, numberOfBoardPositions = %d",
                [self shortDescription],
                self.newBoardPosition,
@@ -157,16 +156,22 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-    if (scoringModel.scoringMode)
-      [scoringModel.score reinitialize];  // disable GoBoardRegion caching
+    bool reenableTerritoryScoring = false;
+    if (game.score.territoryScoringEnabled)
+    {
+      game.score.territoryScoringEnabled = false;  // disable GoBoardRegion caching
+      reenableTerritoryScoring = true;
+    }
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
     [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
-    if (scoringModel.scoringMode)
-      [scoringModel.score calculateWaitUntilDone:false];
+    if (reenableTerritoryScoring)
+    {
+      game.score.territoryScoringEnabled = true;
+      [game.score calculateWaitUntilDone:false];
+    }
 
     return true;
   }

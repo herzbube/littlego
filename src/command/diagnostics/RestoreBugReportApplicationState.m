@@ -19,11 +19,9 @@
 #import "RestoreBugReportApplicationState.h"
 #import "../../diagnostics/BugReportUtilities.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/model/ScoringModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,7 +30,6 @@
 // -----------------------------------------------------------------------------
 @interface RestoreBugReportApplicationState()
 @property(nonatomic, retain) GoGame* unarchivedGame;
-@property(nonatomic, retain) GoScore* unarchivedScore;
 @end
 
 
@@ -50,10 +47,7 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.unarchivedGame = nil;
-  self.unarchivedScore = nil;
-
   return self;
 }
 
@@ -64,7 +58,6 @@
 - (void) dealloc
 {
   self.unarchivedGame = nil;
-  self.unarchivedScore = nil;
   [super dealloc];
 }
 
@@ -80,6 +73,7 @@
     return false;
   }
   [self fixObjectReferences];
+  [self postNotifications];
   [self loadCurrentGameFromSgf];
   return true;
 }
@@ -95,7 +89,6 @@
   NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
   self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
-  self.unarchivedScore = [unarchiver decodeObjectForKey:nsCodingGoScoreKey];
   [unarchiver finishDecoding];
   [unarchiver release];
 }
@@ -109,16 +102,16 @@
 
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   applicationDelegate.game = self.unarchivedGame;
-  // Must send this notification manually. Must send it now before scoring model
-  // sends its own notification.
-  [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:self.unarchivedGame];
+}
 
-  if (self.unarchivedScore)
-  {
-    ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-    // Scoring model sends its own notification
-    [scoringModel restoreScoringModeWithScoreObject:self.unarchivedScore];
-  }
+// -----------------------------------------------------------------------------
+/// @brief Posts notifications that were not sent during unarchiving
+// -----------------------------------------------------------------------------
+- (void) postNotifications
+{
+  DDLogVerbose(@"%@: Posting notifications", [self shortDescription]);
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:self.unarchivedGame];
 }
 
 // -----------------------------------------------------------------------------

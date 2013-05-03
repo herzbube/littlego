@@ -17,7 +17,6 @@
 
 // Forward declarations
 @class PlayView;
-@class ScoringModel;
 
 
 // -----------------------------------------------------------------------------
@@ -33,7 +32,7 @@
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel;
+- (id) initWithPlayView:(PlayView*)playView;
 
 @property(nonatomic, retain, readonly) UIView* statusView;
 @property(nonatomic, assign) int statusViewWidth;

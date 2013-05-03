@@ -24,6 +24,7 @@
 #import "GoMoveModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
+#import "GoScore.h"
 #import "GoUtilities.h"
 #import "../player/Player.h"
 #import "../main/ApplicationDelegate.h"
@@ -67,7 +68,7 @@
   // GoMoveModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
   _document = [[GoGameDocument alloc] init];
-
+  _score = [[GoScore alloc] initWithGame:self];
   return self;
 }
 
@@ -96,6 +97,7 @@
   _computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
   _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
+  _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
 
   return self;
 }
@@ -121,6 +123,7 @@
   self.boardPosition = nil;
   self.moveModel = nil;
   self.document = nil;
+  self.score = nil;
   [super dealloc];
 }
 
@@ -576,6 +579,7 @@
   [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
+  [encoder encodeObject:self.score forKey:goGameScoreKey];
 }
 
 // -----------------------------------------------------------------------------

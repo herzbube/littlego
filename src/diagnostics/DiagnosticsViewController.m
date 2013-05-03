@@ -26,7 +26,6 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/ScoringModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -563,10 +562,9 @@ enum BugReportSectionItem
         break;
     }
   }
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-  if (scoringModel.scoringMode)
+  if (game.score.territoryScoringEnabled)
   {
-    if (scoringModel.score.scoringInProgress)
+    if (game.score.scoringInProgress)
       return true;
   }
   return false;

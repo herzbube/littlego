@@ -340,11 +340,10 @@ extern NSString* gtpLogItemChanged;
 /// @name Scoring related notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that scoring mode has been enabled. Is sent
-/// before the first score is calculated.
-extern NSString* goScoreScoringModeEnabled;
-/// @brief Is sent to indicate that scoring mode has been disabled.
-extern NSString* goScoreScoringModeDisabled;
+/// @brief Is sent to indicate that territory scoring mode has been enabled.
+extern NSString* goScoreTerritoryScoringEnabled;
+/// @brief Is sent to indicate that territory scoring mode has been disabled.
+extern NSString* goScoreTerritoryScoringDisabled;
 /// @brief Is sent to indicate that the calculation of a new score is about to
 /// start.
 ///
@@ -655,7 +654,6 @@ extern const int nscodingVersion;
 extern NSString* nscodingVersionKey;
 // Top-level object keys
 extern NSString* nsCodingGoGameKey;
-extern NSString* nsCodingGoScoreKey;
 // GoGame keys
 extern NSString* goGameTypeKey;
 extern NSString* goGameBoardKey;
@@ -669,6 +667,7 @@ extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameIsComputerThinkingKey;
 extern NSString* goGameBoardPositionKey;
 extern NSString* goGameDocumentKey;
+extern NSString* goGameScoreKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
@@ -724,8 +723,9 @@ extern NSString* goPointIsBelowValidKey;
 extern NSString* goPointIsNextValidKey;
 extern NSString* goPointIsPreviousValidKey;
 // GoScore keys
-extern NSString* goScoreTerritoryScoresAvailableKey;
+extern NSString* goScoreTerritoryScoringEnabledKey;
 extern NSString* goScoreScoringInProgressKey;
+extern NSString* goScoreAskGtpEngineForDeadStonesInProgressKey;
 extern NSString* goScoreKomiKey;
 extern NSString* goScoreCapturedByBlackKey;
 extern NSString* goScoreCapturedByWhiteKey;
@@ -742,9 +742,8 @@ extern NSString* goScoreStonesPlayedByWhiteKey;
 extern NSString* goScorePassesPlayedByBlackKey;
 extern NSString* goScorePassesPlayedByWhiteKey;
 extern NSString* goScoreGameKey;
-extern NSString* goScoreBoardIsInitializedKey;
+extern NSString* goScoreDidAskGtpEngineForDeadStonesKey;
 extern NSString* goScoreLastCalculationHadErrorKey;
-extern NSString* goScoreAllRegionsKey;
 // GtpLogItem keys
 extern NSString* gtpLogItemCommandStringKey;
 extern NSString* gtpLogItemTimeStampKey;

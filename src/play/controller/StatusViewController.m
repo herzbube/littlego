@@ -18,7 +18,6 @@
 // Project includes
 #import "StatusViewController.h"
 #import "../PlayView.h"
-#import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
@@ -41,7 +40,6 @@
 @property(nonatomic, assign) UILabel* statusLabel;
 @property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool viewLayoutNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
@@ -60,14 +58,13 @@
 ///
 /// @note This is the designated initializer of StatusViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)playView scoringModel:(ScoringModel*)scoringModel
+- (id) initWithPlayView:(PlayView*)playView
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
   self.playView = playView;
-  self.scoringModel = scoringModel;
   self.activityIndicatorNeedsUpdate = false;
   self.viewLayoutNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
@@ -88,7 +85,6 @@
   self.statusLabel = nil;
   self.activityIndicator = nil;
   self.playView = nil;
-  self.scoringModel = nil;
   [super dealloc];
 }
 
@@ -103,7 +99,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
@@ -203,17 +199,18 @@
     return;
   self.activityIndicatorNeedsUpdate = false;
 
+  GoGame* game = [GoGame sharedGame];
   bool activityIndicatorShouldAnimate = false;
-  if (self.scoringModel.scoringMode)
+  if (game.score.territoryScoringEnabled)
   {
-    if (self.scoringModel.score.askGtpEngineForDeadStonesInProgress)
+    if (game.score.askGtpEngineForDeadStonesInProgress)
       activityIndicatorShouldAnimate = true;
     else
       activityIndicatorShouldAnimate = false;
   }
   else
   {
-    if ([[GoGame sharedGame] isComputerThinking])
+    if ([game isComputerThinking])
       activityIndicatorShouldAnimate = true;
     else
       activityIndicatorShouldAnimate = false;
@@ -302,12 +299,13 @@
     }
     else
     {
-      if (self.scoringModel.scoringMode)
+      GoScore* score = [GoGame sharedGame].score;
+      if (score.territoryScoringEnabled)
       {
-        if (self.scoringModel.score.scoringInProgress)
+        if (score.scoringInProgress)
           statusText = @"Scoring in progress...";
         else
-          statusText = [NSString stringWithFormat:@"%@ - Tap to mark dead stones", [self.scoringModel.score resultString]];
+          statusText = [NSString stringWithFormat:@"%@ - Tap to mark dead stones", [[GoGame sharedGame].score resultString]];
       }
       else
       {
@@ -410,9 +408,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
   // Need this to remove score summary message
   self.statusLabelNeedsUpdate = true;

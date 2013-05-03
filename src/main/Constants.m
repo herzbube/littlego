@@ -55,8 +55,8 @@ NSString* archiveContentChanged = @"ArchiveContentChanged";
 NSString* gtpLogContentChanged = @"GtpLogContentChanged";
 NSString* gtpLogItemChanged = @"GtpLogItemChanged";
 // Scoring related notifications
-NSString* goScoreScoringModeEnabled = @"GoScoreScoringModeEnabled";
-NSString* goScoreScoringModeDisabled = @"GoScoreScoringModeDisabled";
+NSString* goScoreTerritoryScoringEnabled = @"GoScoreTerritoryScoringEnabled";
+NSString* goScoreTerritoryScoringDisabled = @"GoScoreTerritoryScoringDisabled";
 NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
 NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
@@ -115,7 +115,7 @@ const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 
 // Bug reports constants
-const int bugReportFormatVersion = 3;
+const int bugReportFormatVersion = 4;
 NSString* bugReportDiagnosticsInformationFileName = @"littlego-bugreport.zip";
 NSString* bugReportDiagnosticsInformationFileMimeType = @"application/zip";
 NSString* bugReportInfoFileName = @"bugreport-info.plist";
@@ -273,11 +273,10 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 3;
+const int nscodingVersion = 4;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // Top-level object keys
 NSString* nsCodingGoGameKey = @"GoGame";
-NSString* nsCodingGoScoreKey = @"GoScore";
 // GoGame keys
 NSString* goGameTypeKey = @"Type";
 NSString* goGameBoardKey = @"Board";
@@ -291,6 +290,7 @@ NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameIsComputerThinkingKey = @"IsComputerThinking";
 NSString* goGameBoardPositionKey = @"BoardPosition";
 NSString* goGameDocumentKey = @"Document";
+NSString* goGameScoreKey = @"Score";
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
@@ -346,8 +346,9 @@ NSString* goPointIsBelowValidKey = @"IsBelowValid";
 NSString* goPointIsNextValidKey = @"IsNextValid";
 NSString* goPointIsPreviousValidKey = @"IsPreviousValid";
 // GoScore keys
-NSString* goScoreTerritoryScoresAvailableKey = @"TerritoryScoresAvailable";
+NSString* goScoreTerritoryScoringEnabledKey = @"TerritoryScoringEnabled";
 NSString* goScoreScoringInProgressKey = @"ScoringInProgress";
+NSString* goScoreAskGtpEngineForDeadStonesInProgressKey = @"AskGtpEngineForDeadStonesInProgress";
 NSString* goScoreKomiKey = @"Komi";
 NSString* goScoreCapturedByBlackKey = @"CapturedByBlack";
 NSString* goScoreCapturedByWhiteKey = @"CapturedByWhite";
@@ -364,9 +365,8 @@ NSString* goScoreStonesPlayedByWhiteKey = @"StonesPlayedByWhite";
 NSString* goScorePassesPlayedByBlackKey = @"PassesPlayedByBlack";
 NSString* goScorePassesPlayedByWhiteKey = @"PassesPlayedByWhite";
 NSString* goScoreGameKey = @"Game";
-NSString* goScoreBoardIsInitializedKey = @"BoardIsInitialized";
+NSString* goScoreDidAskGtpEngineForDeadStonesKey = @"DidAskGtpEngineForDeadStones";
 NSString* goScoreLastCalculationHadErrorKey = @"LastCalculationHadError";
-NSString* goScoreAllRegionsKey = @"AllRegions";
 // GtpLogItem keys
 NSString* gtpLogItemCommandStringKey = @"CommandString";
 NSString* gtpLogItemTimeStampKey = @"TimeStamp";

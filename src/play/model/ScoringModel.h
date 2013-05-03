@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class GoScore;
-
-
 // -----------------------------------------------------------------------------
 /// @brief The ScoringModel class provides user defaults data to its clients
 /// that is related to scoring.
@@ -30,7 +26,6 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
-- (void) restoreScoringModeWithScoreObject:(GoScore*)scoreObject;
 
 // -----------------------------------------------------------------------------
 /// @name User defaults properties
@@ -48,17 +43,6 @@
 @property(nonatomic, assign) float inconsistentTerritoryDotSymbolPercentage;
 @property(nonatomic, retain) UIColor* inconsistentTerritoryFillColor;
 @property(nonatomic, assign) float inconsistentTerritoryFillColorAlpha;
-//@}
-
-// -----------------------------------------------------------------------------
-/// @name Scoring properties
-// -----------------------------------------------------------------------------
-//@{
-/// @brief Is true if scoring mode is enabled on the Play view.
-@property(nonatomic, assign) bool scoringMode;
-/// @brief The GoScore object that provides scoring data while scoring mode is
-/// enabled. Is nil while scoring mode is disabled.
-@property(nonatomic, retain) GoScore* score;
 //@}
 
 @end

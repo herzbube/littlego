@@ -37,64 +37,33 @@
 @interface GoScore()
 @property(nonatomic, assign) GoGame* game;
 @property(nonatomic, retain) NSOperationQueue* operationQueue;
-/// @brief This flag is set only if @e territoryScoresAvailable is true.
-@property(nonatomic, assign) bool boardIsInitialized;
+@property(nonatomic, assign) bool didAskGtpEngineForDeadStones;
 @property(nonatomic, assign) bool lastCalculationHadError;
-/// @brief List with all GoBoardRegion objects that currently exist on the
-/// board.
-///
-/// This property exists for optimization reasons only: It contains a
-/// pre-calculated list that can be reused by various methods so that they don't
-/// have to re-calculate the list repeatedly (re-calculation is
-/// not-quite-cheap). The list must be discarded when the board position
-/// changes.
-@property(nonatomic, retain) NSArray* allRegions;
 @end
 
 
 @implementation GoScore
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GoScore instance that operates on
-/// @a game.
-///
-/// If @a withTerritoryScores is true, this GoScore calculates territory scores.
-// -----------------------------------------------------------------------------
-+ (GoScore*) scoreForGame:(GoGame*)game withTerritoryScores:(bool)withTerritoryScores
-{
-  GoScore* score = [[GoScore alloc] init];
-  if (score)
-  {
-    score.game = game;
-    score.territoryScoresAvailable = withTerritoryScores;
-    [score autorelease];
-  }
-  return score;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a GoScore object.
+/// @brief Initializes a GoScore object that operates on @a game.
 ///
 /// @note This is the designated initializer of GoScore.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithGame:(GoGame*)game
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  _territoryScoresAvailable = false;
-  _scoringInProgress = false;
-  _askGtpEngineForDeadStonesInProgress = false;
-  _game = nil;
-  _operationQueue = nil;
-  _boardIsInitialized = false;
+  _territoryScoringEnabled = false;              // don't use self to avoid triggering a notification
+  _scoringInProgress = false;                    // ditto
+  _askGtpEngineForDeadStonesInProgress = false;  // ditto
+  _game = game;
+  _operationQueue = [[NSOperationQueue alloc] init];
+  _didAskGtpEngineForDeadStones = false;
   _lastCalculationHadError = false;
-  _allRegions = nil;
   [self resetValues];
-
-  [self setupAfterUnarchiving];
 
   return self;
 }
@@ -110,29 +79,29 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  self.territoryScoresAvailable = [decoder decodeBoolForKey:goScoreTerritoryScoresAvailableKey];
-  self.scoringInProgress = [decoder decodeBoolForKey:goScoreScoringInProgressKey];
-  self.komi = [decoder decodeDoubleForKey:goScoreKomiKey];
-  self.capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
-  self.capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
-  self.deadBlack = [decoder decodeIntForKey:goScoreDeadBlackKey];
-  self.deadWhite = [decoder decodeIntForKey:goScoreDeadWhiteKey];
-  self.territoryBlack = [decoder decodeIntForKey:goScoreTerritoryBlackKey];
-  self.territoryWhite = [decoder decodeIntForKey:goScoreTerritoryWhiteKey];
-  self.totalScoreBlack = [decoder decodeIntForKey:goScoreTotalScoreBlackKey];
-  self.totalScoreWhite = [decoder decodeDoubleForKey:goScoreTotalScoreWhiteKey];
-  self.result = [decoder decodeIntForKey:goScoreResultKey];
-  self.numberOfMoves = [decoder decodeIntForKey:goScoreNumberOfMovesKey];
-  self.stonesPlayedByBlack = [decoder decodeIntForKey:goScoreStonesPlayedByBlackKey];
-  self.stonesPlayedByWhite = [decoder decodeIntForKey:goScoreStonesPlayedByWhiteKey];
-  self.passesPlayedByBlack = [decoder decodeIntForKey:goScorePassesPlayedByBlackKey];
-  self.passesPlayedByWhite = [decoder decodeIntForKey:goScorePassesPlayedByWhiteKey];
-  self.game = [decoder decodeObjectForKey:goScoreGameKey];
-  self.boardIsInitialized = [decoder decodeBoolForKey:goScoreBoardIsInitializedKey];
-  self.lastCalculationHadError = [decoder decodeBoolForKey:goScoreLastCalculationHadErrorKey];
-  self.allRegions = [decoder decodeObjectForKey:goScoreAllRegionsKey];
+  _territoryScoringEnabled = [decoder decodeBoolForKey:goScoreTerritoryScoringEnabledKey];
+  _scoringInProgress = [decoder decodeBoolForKey:goScoreScoringInProgressKey];
+  _askGtpEngineForDeadStonesInProgress = [decoder decodeBoolForKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
+  _komi = [decoder decodeDoubleForKey:goScoreKomiKey];
+  _capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
+  _capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
+  _deadBlack = [decoder decodeIntForKey:goScoreDeadBlackKey];
+  _deadWhite = [decoder decodeIntForKey:goScoreDeadWhiteKey];
+  _territoryBlack = [decoder decodeIntForKey:goScoreTerritoryBlackKey];
+  _territoryWhite = [decoder decodeIntForKey:goScoreTerritoryWhiteKey];
+  _totalScoreBlack = [decoder decodeIntForKey:goScoreTotalScoreBlackKey];
+  _totalScoreWhite = [decoder decodeDoubleForKey:goScoreTotalScoreWhiteKey];
+  _result = [decoder decodeIntForKey:goScoreResultKey];
+  _numberOfMoves = [decoder decodeIntForKey:goScoreNumberOfMovesKey];
+  _stonesPlayedByBlack = [decoder decodeIntForKey:goScoreStonesPlayedByBlackKey];
+  _stonesPlayedByWhite = [decoder decodeIntForKey:goScoreStonesPlayedByWhiteKey];
+  _passesPlayedByBlack = [decoder decodeIntForKey:goScorePassesPlayedByBlackKey];
+  _passesPlayedByWhite = [decoder decodeIntForKey:goScorePassesPlayedByWhiteKey];
+  _game = [decoder decodeObjectForKey:goScoreGameKey];
+  _didAskGtpEngineForDeadStones = [decoder decodeBoolForKey:goScoreDidAskGtpEngineForDeadStonesKey];
+  _lastCalculationHadError = [decoder decodeBoolForKey:goScoreLastCalculationHadErrorKey];
 
-  [self setupAfterUnarchiving];
+  _operationQueue = [[NSOperationQueue alloc] init];
 
   return self;
 }
@@ -143,38 +112,8 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (self.territoryScoresAvailable)
-    [self uninitializeBoard];
   self.operationQueue = nil;
-  self.allRegions = nil;
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Performs initialization after the NSCoding initializer has done its
-/// work.
-///
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (void) setupAfterUnarchiving
-{
-  self.operationQueue = [[[NSOperationQueue alloc] init] autorelease];
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
-{
-  // Now that a new GoGame is about to be created, we can expect to be
-  // deallocated very soon. However, we can't be sure if this will happen while
-  // the old GoGame object is still around, therefore we clear our reference
-  // now so that our dealloc() does not access an object that no longer exists.
-  // Note: No more calculations are possible after this.
-  self.game = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -201,6 +140,56 @@
 }
 
 // -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setTerritoryScoringEnabled:(bool)newState
+{
+  if (_territoryScoringEnabled == newState)
+    return;
+  _territoryScoringEnabled = newState;
+  NSString* notificationName;
+  if (newState)
+  {
+    [self initializeRegions];
+    self.didAskGtpEngineForDeadStones = false;
+    notificationName = goScoreTerritoryScoringEnabled;
+  }
+  else
+  {
+    [self uninitializeRegions];
+    notificationName = goScoreTerritoryScoringDisabled;
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setTerritoryScoringEnabled.
+// -----------------------------------------------------------------------------
+- (void) initializeRegions
+{
+  NSArray* allRegions = self.game.board.regions;
+  DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %d", self, allRegions.count);
+  for (GoBoardRegion* region in allRegions)
+  {
+    region.territoryColor = GoColorNone;
+    region.territoryInconsistencyFound = false;
+    region.deadStoneGroup = false;
+    region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setTerritoryScoringEnabled.
+// -----------------------------------------------------------------------------
+- (void) uninitializeRegions
+{
+  NSArray* allRegions = self.game.board.regions;
+  DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %d", self, allRegions.count);
+  for (GoBoardRegion* region in allRegions)
+    region.scoringMode = false;  // forget cached values
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Starts calculation of a new score.
 ///
 /// If @a waitUntilDone is false, this method returns immediately and does not
@@ -208,7 +197,8 @@
 ///
 /// Observers are notified of the start and end of the calculation by the
 /// notifications #goScoreCalculationStarts and #goScoreCalculationStarts which
-/// are posted on the application's default NSNotificationCentre.
+/// are posted on the application's default NSNotificationCentre in the context
+/// of the main thread.
 ///
 /// @note This method does nothing if a scoring operation is already in
 /// progress.
@@ -221,8 +211,6 @@
                self.scoringInProgress,
                self.game);
   if (self.scoringInProgress)
-    return;
-  if (! self.game)
     return;
   self.scoringInProgress = true;  // notify while we're still in the main thread context
 
@@ -253,22 +241,10 @@
     self.lastCalculationHadError = false;
     [self resetValues];
 
-    // Pre-calculate region list exactly once
-    if (! self.allRegions)
-      self.allRegions = self.game.board.regions;
-
-    // Do territory related stuff at the beginning - if any errors occur we can
-    // safely abort, without half of the values already having been calculated.
-    if (self.territoryScoresAvailable)
+    if (self.territoryScoringEnabled)
     {
-      bool success = [self initializeBoard];
-      DDLogVerbose(@"%@: initializeBoard returned with result = %d", self, success);
-      if (! success)
-      {
-        self.lastCalculationHadError = true;
-        return;
-      }
-      success = [self updateTerritoryColor];
+      [self askGtpEngineForDeadStones];
+      bool success = [self updateTerritoryColor];
       DDLogVerbose(@"%@: updateTerritoryColor returned with result = %d", self, success);
       if (! success)
       {
@@ -277,8 +253,6 @@
       }
     }
 
-    // Now that territory calculations have finished, simply add up all the
-    // scores and statistics
     [self updateScoringProperties];
   }
   @finally
@@ -354,32 +328,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes all GoBoardRegion objects in preparation of territory
-/// scoring.
-///
-/// The GoBoardRegion objects are set to belong to no territory. An initial set
-/// of dead stones, discovered by the GTP engine, is also marked.
-///
-/// Returns true if initialization was successful, false if not.
+/// @brief Queries the GTP engine for an initial set of dead stones. Updates
+/// GoBoardRegion objects with the result of the query.
 // -----------------------------------------------------------------------------
-- (bool) initializeBoard
+- (void) askGtpEngineForDeadStones
 {
-  if (self.boardIsInitialized)
-    return true;
-  self.boardIsInitialized = true;
-  DDLogVerbose(@"%@: initializing the board, number of regions = %d", self, self.allRegions.count);
+  if (! [ApplicationDelegate sharedDelegate].scoringModel.askGtpEngineForDeadStones)
+    return;
+  if (self.didAskGtpEngineForDeadStones)
+    return;
+  self.didAskGtpEngineForDeadStones = true;
 
-  // Initialize territory color
-  for (GoBoardRegion* region in self.allRegions)
-  {
-    region.territoryColor = GoColorNone;
-    region.territoryInconsistencyFound = false;
-    region.deadStoneGroup = false;
-    region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
-  }
-
-  // Initialize dead stones
-  if ([ApplicationDelegate sharedDelegate].scoringModel.askGtpEngineForDeadStones)
+  @try
   {
     self.askGtpEngineForDeadStonesInProgress = true;
     [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
@@ -399,7 +359,7 @@
         {
           DDLogError(@"%@: GTP engine reports vertex %@ is dead stone, but point %@ has no stone", self, vertex, point);
           assert(0);
-          return false;
+          continue;
         }
         // TODO The next statement is problematic in two respects: 1) If the
         // region has more than one point, we repeatedly set it to be dead,
@@ -411,41 +371,27 @@
     }
     else
     {
-      // Although we would prefer to get a response from the GTP engine, we can
-      // live without one
-      // -> do nothing and simply go on, ultimately returning success
+      DDLogError(@"%@: Querying GTP engine for initial set of dead stones failed", self);
+      assert(0);
     }
+  }
+  @finally
+  {
     self.askGtpEngineForDeadStonesInProgress = false;
     [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
                  onThread:[NSThread mainThread]
                withObject:askGtpEngineForDeadStonesEnds
             waitUntilDone:YES];
   }
-
-  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for initializeBoard(). Is invoked in the context of the main
-/// thread.
+/// @brief Private helper for askGtpEngineForDeadStones(). Is invoked in the
+/// context of the main thread.
 // -----------------------------------------------------------------------------
 - (void) postAskGtpEngineForDeadStonesNotificationOnMainThread:(NSString*)notificationName
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Un-initializes all GoBoardRegion objects. When this method returns
-/// the GoBoardRegion objects are no longer prepared for territory scoring.
-// -----------------------------------------------------------------------------
-- (void) uninitializeBoard
-{
-  if (! self.boardIsInitialized)
-    return;
-  DDLogVerbose(@"%@: uninitializing the board, number of regions = %d", self, self.allRegions.count);
-  self.boardIsInitialized = false;
-  for (GoBoardRegion* region in self.allRegions)
-    region.scoringMode = false;  // forget cached values
 }
 
 // -----------------------------------------------------------------------------
@@ -494,11 +440,9 @@
 // -----------------------------------------------------------------------------
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup
 {
-  if (! self.territoryScoresAvailable)
+  if (! self.territoryScoringEnabled)
     return;
   if (self.scoringInProgress)
-    return;
-  if (! self.game)
     return;
   if (! [stoneGroup isStoneGroup])
     return;
@@ -596,9 +540,9 @@
 /// objects. For details see the class documentation, paragraph "Determining
 /// territory color".
 ///
-/// Initial dead stones are set up by initializeBoard(). User interaction during
-/// scoring invokes toggleDeadStoneStateOfGroup:() to add more dead stones, or
-/// turn them back to alive.
+/// Initial dead stones are set up by askGtpEngineForDeadStones(). User
+/// interaction during scoring invokes toggleDeadStoneStateOfGroup:() to add
+/// more dead stones, or turn them back to alive.
 // -----------------------------------------------------------------------------
 - (bool) updateTerritoryColor
 {
@@ -608,7 +552,8 @@
   // Pass 1: Set territory colors for stone groups. This is easy and can be
   // done both for groups that are alive and dead. While we are at it, we can
   // also collect empty regions, which will be processed in pass 2.
-  for (GoBoardRegion* region in self.allRegions)
+  NSArray* allRegions = self.game.board.regions;
+  for (GoBoardRegion* region in allRegions)
   {
     if (! [region isStoneGroup])
     {
@@ -805,9 +750,10 @@
   }
 
   // Territory & dead stones (for current board position)
-  if (self.territoryScoresAvailable)
+  if (self.territoryScoringEnabled)
   {
-    for (GoBoardRegion* region in self.allRegions)
+    NSArray* allRegions = self.game.board.regions;
+    for (GoBoardRegion* region in allRegions)
     {
       int regionSize = [region size];
       // Territory: We only count dead stones and empty intersections
@@ -864,8 +810,9 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeBool:self.territoryScoresAvailable forKey:goScoreTerritoryScoresAvailableKey];
+  [encoder encodeBool:self.territoryScoringEnabled forKey:goScoreTerritoryScoringEnabledKey];
   [encoder encodeBool:self.scoringInProgress forKey:goScoreScoringInProgressKey];
+  [encoder encodeBool:self.askGtpEngineForDeadStonesInProgress forKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
   [encoder encodeDouble:self.komi forKey:goScoreKomiKey];
   [encoder encodeInt:self.capturedByBlack forKey:goScoreCapturedByBlackKey];
   [encoder encodeInt:self.capturedByWhite forKey:goScoreCapturedByWhiteKey];
@@ -882,32 +829,8 @@
   [encoder encodeInt:self.passesPlayedByBlack forKey:goScorePassesPlayedByBlackKey];
   [encoder encodeInt:self.passesPlayedByWhite forKey:goScorePassesPlayedByWhiteKey];
   [encoder encodeObject:self.game forKey:goScoreGameKey];
-  [encoder encodeBool:self.boardIsInitialized forKey:goScoreBoardIsInitializedKey];
+  [encoder encodeBool:self.didAskGtpEngineForDeadStones forKey:goScoreDidAskGtpEngineForDeadStonesKey];
   [encoder encodeBool:self.lastCalculationHadError forKey:goScoreLastCalculationHadErrorKey];
-  [encoder encodeObject:self.allRegions forKey:goScoreAllRegionsKey];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reinitializes this GoScore object. When this method is invoked, this
-/// GoScore object will no longer provide any useful values.
-///
-/// The main purpose of this method is to return all GoBoardRegion objects to
-/// their normal, non-scoring state where they do not cache any values. This
-/// method is intended to be invoked before the current board position is
-/// changed (but may be used for other purposes as well).
-///
-/// A new round of calculation can be started by invoking
-/// calculateWaitUntilDone:(). The behaviour will be the same as if calculation
-/// had been started the first time after creating this GoScore object (e.g. an
-/// initial set of dead stones will be calculated by the GTP engine).
-// -----------------------------------------------------------------------------
-- (void) reinitialize
-{
-  DDLogVerbose(@"%@: reinitialize invoked; territoryScoresAvailable = %d", self, self.territoryScoresAvailable);
-  [self resetValues];
-  if (self.territoryScoresAvailable)
-    [self uninitializeBoard];
-  self.allRegions = nil;
 }
 
 @end

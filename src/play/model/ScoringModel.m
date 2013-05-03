@@ -17,8 +17,6 @@
 
 // Project includes
 #import "ScoringModel.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../utility/UIColorAdditions.h"
 
 
@@ -48,8 +46,6 @@
   self.inconsistentTerritoryDotSymbolPercentage = 0.5;
   self.inconsistentTerritoryFillColor = [UIColor redColor];
   self.inconsistentTerritoryFillColorAlpha = 0.3;
-  self.score = nil;
-  _scoringMode = false;  // don't use self to avoid triggering a notification
 
   return self;
 }
@@ -60,7 +56,6 @@
 - (void) dealloc
 {
   self.deadStoneSymbolColor = nil;
-  self.score = nil;
   [super dealloc];
 }
 
@@ -110,45 +105,6 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryFillColorAlpha] forKey:inconsistentTerritoryFillColorAlphaKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:scoringKey];
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setScoringMode:(bool)newMode
-{
-  if (_scoringMode == newMode)
-    return;
-  _scoringMode = newMode;
-  NSString* notificationName;
-  if (newMode)
-  {
-    self.score = [GoScore scoreForGame:[GoGame sharedGame] withTerritoryScores:true];
-    notificationName = goScoreScoringModeEnabled;
-  }
-  else
-  {
-    self.score = nil;
-    notificationName = goScoreScoringModeDisabled;
-  }
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Enables scoring mode. Uses @a scoreObject instead of creating a new
-/// score object from scratch. This model takes ownership of (i.e. retains)
-/// @a scoreObject.
-///
-/// This method is used to restore scoring mode when the application launches.
-/// Scoring mode needs to be restored when it was enabled during the previous
-/// session, and also when a bug report is received and archived GoScore object
-/// in the diagnostics information file is processed.
-// -----------------------------------------------------------------------------
-- (void) restoreScoringModeWithScoreObject:(GoScore*)scoreObject
-{
-  _scoringMode = true;       // don't use self because we don't want to trigger the setter
-  self.score = scoreObject;  // use self to retain the score object
-  [[NSNotificationCenter defaultCenter] postNotificationName:goScoreScoringModeEnabled object:nil];
 }
 
 @end

@@ -21,33 +21,42 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoScore class collects scoring information from a GoGame object.
+/// @brief The GoScore class collects scoring information and move statistics
+/// from the GoGame object that is specified during initialization. Scoring
+/// information is collected for the current board position, while the move
+/// statistics refer to the entire game.
 ///
 /// @ingroup go
 ///
-/// A controller must initiate scoring by invoking calculateWaitUntilDone:().
-/// Unless specified otherwise by the controller, scoring occurs asynchronously
-/// in a secondary thread. When the new score has been calculated, GoScore
-/// posts the notification #goScoreCalculationEnds to the default
-/// NSNotificationCenter. Another notificaton #goScoreCalculationStarts is
-/// posted right before calculation starts. Both notifications are delivered in
-/// the main thread context.
+/// GoScore does not automatically collect any information, nor does it
+/// automatically update previously collected information.
+/// calculateWaitUntilDone:() must be invoked for the initial information
+/// collection, and also every time that the information needs to be updated.
+/// - If invoked with argument false, calculateWaitUntilDone:() initiates the
+///   information collection process in a secondary thread, then returns control
+///   immediately to the caller before the desired information is actually
+///   available.
+/// - If invoked with argument true, calculateWaitUntilDone:() performs the
+///   information collection process synchronously, i.e. when it returns control
+///   to the caller the desired information is already available.
 ///
-/// A GoScore instance operates on the GoGame object that was specified during
-/// construction. The GoGame object does not need to be in any particular state,
-/// e.g. it is not necessary for the game to be in state
-/// #GoGameStateGameHasEnded. The score is calculated for the current board
-/// position, while the move statistics are calculated for the entire game.
+/// Regardless of whether information is collected synchronously or
+/// asynchronously, GoScore posts the following notifications to the default
+/// NSNotificationCenter: #goScoreCalculationStarts right before calculation
+/// starts, and #goScoreCalculationEnds after calculation ends and the desired
+/// information is available. Both notifications are delivered in the context
+/// of the main thread.
 ///
-/// Most of the scoring information is collected by simply inspecting the state
-/// of GoGame and its associated objects:
-/// - Komi is collected from GoGame
-/// - The number of captured stones as well as move statistics are collected
-///   from GoMove objects (up to the current board position)
+/// By default GoScore does not collect territory scoring information because
+/// this is a potentially time-consuming operation. A controller may enable
+/// the collection of territory scoring information by setting the
+/// @e territoryScoringEnabled property to true. In this case the controller
+/// should invoke calculateWaitUntilDone:() with argument false so that the
+/// time-consuming operation is performed in a secondary thread.
 ///
-/// Territory scoring is more complicated and a potentially time-consuming
-/// operation. For this reason, when a client creates a new GoScore object the
-/// client may optionally request that no territory scoring be performed.
+/// GoScore posts notifications to the default NSNotificationCenter when
+/// territory scoring is enabled (#goScoreTerritoryScoringEnabled) or disabled
+/// (#goScoreTerritoryScoringDisabled).
 ///
 /// @note GoScore currently only supports territory scoring without handling for
 /// counting eyes in seki.
@@ -83,8 +92,8 @@
 ///   - Calculation of the territory color entirely depends on the
 ///     @e deadStoneGroup property of all GoBoardRegion objects having been
 ///     set up correctly before.
-///   - See the "Guidelines" section below for details on how the calculation
-///     works
+///   - See the section "Determining territory color" below for details on how
+///     the calculation works
 /// # updateScoringProperties:() (a private helper method invoked as part of
 ///   the scoring process) finally adds up all the scores and statistics and
 ///   stores the values in GoScore's publicly accessible scoring and statistics
@@ -155,17 +164,27 @@
 {
 }
 
-+ (GoScore*) scoreForGame:(GoGame*)game withTerritoryScores:(bool)withTerritoryScores;
+- (id) initWithGame:(GoGame*)game;
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup;
-- (void) reinitialize;
 - (NSString*) resultString;
 
 // -----------------------------------------------------------------------------
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-@property(nonatomic, assign) bool territoryScoresAvailable;  ///< @brief Is true if territory scoring is enabled on this GoScore object.
+/// @brief Is true if territory scoring is enabled on this GoScore object.
+///
+/// Setting this property to true puts all GoBoardRegion objects that currently
+/// exist into scoring mode (see the GoBoardRegion class documentation for
+/// details) and initializes them to belong to no territory. Also, when
+/// calculateWaitUntilDone:() is invoked the next time, the GTP engine will be
+/// queried for an initial set of dead stones (unless suppressed by the user
+/// preference).
+///
+/// Setting this property to false puts all GoBoardRegion objects that currently
+/// exist into normal mode, i.e. "not scoring" mode.
+@property(nonatomic, assign) bool territoryScoringEnabled;
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 @property(nonatomic, assign) bool askGtpEngineForDeadStonesInProgress; ///< @brief Is true if the GTP engine is currently being queried for dead stones.
 //@}

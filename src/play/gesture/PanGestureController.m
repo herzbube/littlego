@@ -18,10 +18,10 @@
 // Project includes
 #import "PanGestureController.h"
 #import "../PlayView.h"
-#import "../model/ScoringModel.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
 
 
 // -----------------------------------------------------------------------------
@@ -29,7 +29,6 @@
 // -----------------------------------------------------------------------------
 @interface PanGestureController()
 @property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
 @property(nonatomic, assign) UIViewController* parentViewController;
 @property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
@@ -44,25 +43,20 @@
 ///
 /// @note This is the designated initializer of PanGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)aPlayView
-           scoringModel:(ScoringModel*)aScoringModel
-               delegate:(id<PanGestureControllerDelegate>)aDelegate
-   parentViewController:(UIViewController*)aParentViewController
+- (id) initWithPlayView:(PlayView*)playView
+               delegate:(id<PanGestureControllerDelegate>)delegate
+   parentViewController:(UIViewController*)parentViewController
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-
-  self.playView = aPlayView;
-  self.scoringModel = aScoringModel;
-  self.delegate = aDelegate;
-  self.parentViewController = aParentViewController;
-
+  self.playView = playView;
+  self.delegate = delegate;
+  self.parentViewController = parentViewController;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
-
   return self;
 }
 
@@ -74,7 +68,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.playView = nil;
-  self.scoringModel = nil;
   self.longPressRecognizer = nil;
   self.delegate = nil;
   [super dealloc];
@@ -104,8 +97,8 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeEnabled:) name:goScoreScoringModeEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringModeDisabled:) name:goScoreScoringModeDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
@@ -231,17 +224,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeEnabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeEnabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
 {
   [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringModeDisabled notification.
+/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringModeDisabled:(NSNotification*)notification
+- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
   [self updatePanningEnabled];
 }
@@ -262,14 +255,14 @@
 // -----------------------------------------------------------------------------
 - (void) updatePanningEnabled
 {
-  if (self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
   {
     self.panningEnabled = false;
     return;
   }
 
-  GoGame* game = [GoGame sharedGame];
-  if (! game)
+  if (game.score.territoryScoringEnabled)
   {
     self.panningEnabled = false;
     return;

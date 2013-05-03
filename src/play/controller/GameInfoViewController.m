@@ -134,7 +134,6 @@ enum BoardPositionSectionItem
 /// GameInfoViewController.
 // -----------------------------------------------------------------------------
 @interface GameInfoViewController()
-@property(nonatomic, retain) GoScore* score;
 @property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
@@ -144,17 +143,15 @@ enum BoardPositionSectionItem
 @implementation GameInfoViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GameInfoViewController instance
-/// that loads its view from a .nib file.
+/// @brief Convenience constructor.
 // -----------------------------------------------------------------------------
-+ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate score:(GoScore*)score
++ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate
 {
   GameInfoViewController* controller = [[GameInfoViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.score = score;
     controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   }
   return controller;
@@ -167,7 +164,6 @@ enum BoardPositionSectionItem
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.delegate = nil;
-  self.score = nil;
   self.playViewModel = nil;
   self.navigationBar = nil;
   self.tableView = nil;
@@ -435,7 +431,7 @@ enum BoardPositionSectionItem
       if (! [GoGame sharedGame].boardPosition.isLastPosition)
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
       NSString* titlePartTwo = nil;
-      if (! self.score.territoryScoresAvailable)
+      if (! [GoGame sharedGame].score.territoryScoringEnabled)
         titlePartTwo = @"Dead stones and territory scores are not available because you are not in scoring mode.";
       if (titlePartOne && titlePartTwo)
         return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
@@ -491,7 +487,7 @@ enum BoardPositionSectionItem
     {
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       // TODO include whether a player has resigned
-      cell.textLabel.text = [self.score resultString];
+      cell.textLabel.text = [[GoGame sharedGame].score resultString];
       cell.textLabel.textAlignment = UITextAlignmentCenter;
       break;
     }
@@ -703,37 +699,38 @@ enum BoardPositionSectionItem
     }
     case MoveStatisticsSection:
     {
+      GoScore* score = game.score;
       cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
       switch (indexPath.row)
       {
         case NumberOfMovesItem:
         {
           cell.textLabel.text = @"Total number of moves";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.numberOfMoves];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.numberOfMoves];
           break;
         }
         case StonesPlayedByBlackItem:
         {
           cell.textLabel.text = @"Stones played by black";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.stonesPlayedByBlack];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.stonesPlayedByBlack];
           break;
         }
         case StonesPlayedByWhiteItem:
         {
           cell.textLabel.text = @"Stones played by white";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.stonesPlayedByWhite];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.stonesPlayedByWhite];
           break;
         }
         case PassMovesPlayedByBlackItem:
         {
           cell.textLabel.text = @"Pass moves played by black";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.passesPlayedByBlack];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.passesPlayedByBlack];
           break;
         }
         case PassMovesPlayedByWhiteItem:
         {
           cell.textLabel.text = @"Pass moves played by white";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.score.passesPlayedByWhite];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.passesPlayedByWhite];
           break;
         }
         default:
@@ -827,6 +824,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) gridCell:(TableViewGridCell*)gridCell textForColumn:(NSInteger)column
 {
+  GoScore* score = [GoGame sharedGame].score;
   switch (gridCell.tag)
   {
     case HeadingItem:
@@ -851,7 +849,7 @@ enum BoardPositionSectionItem
         case TitleColumn:
           return @"Komi";
         case WhitePlayerColumn:
-          return [NSString stringWithKomi:self.score.komi numericZeroValue:false];
+          return [NSString stringWithKomi:score.komi numericZeroValue:false];
         default:
           assert(0);
           break;
@@ -863,11 +861,11 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.capturedByBlack];
+          return [NSString stringWithFormat:@"%d", score.capturedByBlack];
         case TitleColumn:
           return @"Captured";
         case WhitePlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.capturedByWhite];
+          return [NSString stringWithFormat:@"%d", score.capturedByWhite];
         default:
           assert(0);
           break;
@@ -879,15 +877,15 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          if (self.score.territoryScoresAvailable)
-            return [NSString stringWithFormat:@"%d", self.score.deadWhite];
+          if (score.territoryScoringEnabled)
+            return [NSString stringWithFormat:@"%d", score.deadWhite];
           else
             return @"n/a";
         case TitleColumn:
           return @"Dead";
         case WhitePlayerColumn:
-          if (self.score.territoryScoresAvailable)
-            return [NSString stringWithFormat:@"%d", self.score.deadBlack];
+          if (score.territoryScoringEnabled)
+            return [NSString stringWithFormat:@"%d", score.deadBlack];
           else
             return @"n/a";
         default:
@@ -901,15 +899,15 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          if (self.score.territoryScoresAvailable)
-            return [NSString stringWithFormat:@"%d", self.score.territoryBlack];
+          if (score.territoryScoringEnabled)
+            return [NSString stringWithFormat:@"%d", score.territoryBlack];
           else
             return @"n/a";
         case TitleColumn:
           return @"Territory";
         case WhitePlayerColumn:
-          if (self.score.territoryScoresAvailable)
-            return [NSString stringWithFormat:@"%d", self.score.territoryWhite];
+          if (score.territoryScoringEnabled)
+            return [NSString stringWithFormat:@"%d", score.territoryWhite];
           else
             return @"n/a";
         default:
@@ -923,11 +921,11 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", self.score.totalScoreBlack];
+          return [NSString stringWithFormat:@"%d", score.totalScoreBlack];
         case TitleColumn:
           return @"Score";
         case WhitePlayerColumn:
-          return [NSString stringWithFractionValue:self.score.totalScoreWhite];
+          return [NSString stringWithFractionValue:score.totalScoreWhite];
         default:
           assert(0);
           break;

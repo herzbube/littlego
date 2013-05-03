@@ -24,6 +24,7 @@
 #import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoScore.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 
@@ -150,7 +151,8 @@ enum TerritoryLayerType
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! self.scoringModel.scoringMode)
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.territoryScoringEnabled)
     return;
   DDLogVerbose(@"TerritoryLayerDelegate is drawing");
 
@@ -189,7 +191,7 @@ enum TerritoryLayerType
     }
   }
 
-  NSEnumerator* enumerator = [[GoGame sharedGame].board pointEnumerator];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {

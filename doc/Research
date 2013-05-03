@@ -759,10 +759,10 @@ CrossHairChanged                         Cross-hair           A set of rectangle
 GoGameDidCreate                          All layers           Entire layers (a new game might include a board size change)
 playViewBoardPositionChanged             Stones               1-n rectangles, for a stone being placed + stones being captured/replaced
                                          Symbols              Update last move marker
-GoScoreScoringModeEnabled                Symbols              Hide layer
+GoScoreTerritoryScoringEnabled           Symbols              Hide layer
                                          Territory            Show layer
                                          Dead Stones          Show layer
-GoScoreScoringModeDisabled               Symbols              Show layer
+GoScoreTerritoryScoringDisabled          Symbols              Show layer
                                          Territory            Hide layer
                                          Dead Stones          Hide layer
 GoScoreCalculationEnds                   Territory            Update entire layer
