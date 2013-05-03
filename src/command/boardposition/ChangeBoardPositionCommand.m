@@ -156,20 +156,16 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    bool reenableTerritoryScoring = false;
     if (game.score.territoryScoringEnabled)
-    {
-      game.score.territoryScoringEnabled = false;  // disable GoBoardRegion caching
-      reenableTerritoryScoring = true;
-    }
+      [game.score willChangeBoardPosition];  // disable GoBoardRegion caching
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
     [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
-    if (reenableTerritoryScoring)
+    if (game.score.territoryScoringEnabled)
     {
-      game.score.territoryScoringEnabled = true;
+      [game.score didChangeBoardPosition];  // re-enable GoBoardRegion caching
       [game.score calculateWaitUntilDone:false];
     }
 

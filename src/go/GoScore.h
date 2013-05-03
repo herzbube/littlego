@@ -168,6 +168,8 @@
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup;
 - (NSString*) resultString;
+- (void) willChangeBoardPosition;
+- (void) didChangeBoardPosition;
 
 // -----------------------------------------------------------------------------
 /// @name General properties

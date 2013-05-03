@@ -193,6 +193,39 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Notifies this GoScore that the board position is about to be changed.
+/// Invocation of this method must be balanced by also invoking
+/// didChangeBoardPosition.
+///
+/// If territory scoring is currently enabled, this GoScore temporarily
+/// un-initializes GoGame and its associated objects so that the territory
+/// scoring mode does not interfere with the board position change.
+// -----------------------------------------------------------------------------
+- (void) willChangeBoardPosition
+{
+  if (! self.territoryScoringEnabled)
+    return;
+  [self uninitializeRegions];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Notifies this GoScore that a board position change has been
+/// completed. This method must be invoked to balance a previous invocation of
+/// willChangeBoardPosition.
+///
+/// If territory scoring is currently enabled, this GoScore re-initializes
+/// GoGame and its associated objects for territory scoring mode so that a new
+/// score can be calculated for the new board position.
+// -----------------------------------------------------------------------------
+- (void) didChangeBoardPosition
+{
+  if (! self.territoryScoringEnabled)
+    return;
+  [self initializeRegions];
+  self.didAskGtpEngineForDeadStones = false;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Starts calculation of a new score.
 ///
 /// If @a waitUntilDone is false, this method returns immediately and does not
