@@ -592,12 +592,9 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) setupSubcontrollers
 {
-  ScoringModel* scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
-
   self.statusViewController = [[[StatusViewController alloc] initWithPlayView:self.playView] autorelease];
-  [self.navigationBarController setupWithScoringModel:scoringModel
-                                        navigationBar:self.navigationBarMain
-                                           statusViewController:self.statusViewController];
+  [self.navigationBarController setupWithNavigationBar:self.navigationBarMain
+                                  statusViewController:self.statusViewController];
   self.playViewScrollController = [[[PlayViewScrollController alloc] initWithScrollView:self.playViewScrollView playView:self.playView] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] initWithScrollView:self.playViewScrollView] autorelease];

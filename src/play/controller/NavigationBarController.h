@@ -22,7 +22,6 @@
 // Forward declarations
 @class CommandBase;
 @class NavigationBarController;
-@class ScoringModel;
 @class StatusViewController;
 
 
@@ -65,8 +64,7 @@
 
 - (id) initWithDelegate:(id<NavigationBarControllerDelegate>)delegate parentViewController:(UIViewController*)parentViewController;
 - (void) dismissGameInfoViewController;
-- (void) setupWithScoringModel:(ScoringModel*)scoringModel
-                 navigationBar:(UINavigationBar*)navigationBar
-                    statusViewController:(StatusViewController*)statusViewController;
+- (void) setupWithNavigationBar:(UINavigationBar*)navigationBar
+           statusViewController:(StatusViewController*)statusViewController;
 
 @end

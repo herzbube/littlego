@@ -37,7 +37,6 @@
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 /// @brief The parent view controller of this subcontroller.
 @property(nonatomic, assign) UIViewController* parentViewController;
-@property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, assign) StatusViewController* statusViewController;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
@@ -75,7 +74,6 @@
     return nil;
 
   self.navigationBar = nil;
-  self.scoringModel = nil;
   self.statusViewController = nil;
   self.delegate = aDelegate;
   self.parentViewController = aParentViewController;
@@ -102,7 +100,6 @@
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   self.navigationBar = nil;
-  self.scoringModel = nil;
   self.delegate = nil;
   self.parentViewController = nil;
   self.gameInfoViewController = nil;
@@ -208,11 +205,9 @@
 /// initialization of this controller object) due to timing needs of the parent
 /// view controller.
 // -----------------------------------------------------------------------------
-- (void) setupWithScoringModel:(ScoringModel*)scoringModel
-                 navigationBar:(UINavigationBar*)navigationBar
-                    statusViewController:(StatusViewController*)statusViewController
+- (void) setupWithNavigationBar:(UINavigationBar*)navigationBar
+           statusViewController:(StatusViewController*)statusViewController
 {
-  self.scoringModel = scoringModel;
   self.navigationBar = navigationBar;
   [_navigationBar pushNavigationItem:self.navigationItem animated:NO];
   self.statusViewController = statusViewController;
@@ -403,7 +398,7 @@
   GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded == game.state)
   {
-    if (self.scoringModel.scoreWhenGameEnds)
+    if ([ApplicationDelegate sharedDelegate].scoringModel.scoreWhenGameEnds)
     {
       game.score.territoryScoringEnabled = true;
       [game.score calculateWaitUntilDone:false];
