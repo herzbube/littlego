@@ -28,6 +28,7 @@
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../shared/ApplicationStateManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -432,6 +433,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
 {
+  [[ApplicationStateManager sharedManager] applicationStateDidChange];
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -451,6 +453,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
+  [[ApplicationStateManager sharedManager] applicationStateDidChange];
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
