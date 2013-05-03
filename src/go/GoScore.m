@@ -159,7 +159,10 @@
     [self uninitializeRegions];
     notificationName = goScoreTerritoryScoringDisabled;
   }
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+  [self performSelector:@selector(postNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:notificationName
+          waitUntilDone:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -257,23 +260,8 @@
   }
   @finally
   {
-    [self performSelector:@selector(calculateEnds)
-                 onThread:[NSThread mainThread]
-               withObject:nil
-            waitUntilDone:NO];
+    self.scoringInProgress = false;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Is invoked by doCalculate() when it finishes its calculation.
-/// Notifies observers by posting #goScoreCalculationEnds on the application's
-/// default NSNotificationCentre.
-///
-/// This method is always executed in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) calculateEnds
-{
-  self.scoringInProgress = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -289,7 +277,10 @@
     notificationName = goScoreCalculationStarts;
   else
     notificationName = goScoreCalculationEnds;
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+  [self performSelector:@selector(postNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:notificationName
+          waitUntilDone:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -342,7 +333,7 @@
   @try
   {
     self.askGtpEngineForDeadStonesInProgress = true;
-    [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
+    [self performSelector:@selector(postNotificationOnMainThread:)
                  onThread:[NSThread mainThread]
                withObject:askGtpEngineForDeadStonesStarts
             waitUntilDone:YES];
@@ -378,7 +369,7 @@
   @finally
   {
     self.askGtpEngineForDeadStonesInProgress = false;
-    [self performSelector:@selector(postAskGtpEngineForDeadStonesNotificationOnMainThread:)
+    [self performSelector:@selector(postNotificationOnMainThread:)
                  onThread:[NSThread mainThread]
                withObject:askGtpEngineForDeadStonesEnds
             waitUntilDone:YES];
@@ -386,10 +377,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for askGtpEngineForDeadStones(). Is invoked in the
-/// context of the main thread.
+/// @brief Private helper. Is invoked in the context of the main thread.
 // -----------------------------------------------------------------------------
-- (void) postAskGtpEngineForDeadStonesNotificationOnMainThread:(NSString*)notificationName
+- (void) postNotificationOnMainThread:(NSString*)notificationName
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
