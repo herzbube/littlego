@@ -105,6 +105,8 @@ enum NavigationDirection
   self.boardPositionListViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
   self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
   self.currentBoardPositionViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
+
+  self.currentBoardPositionViewController.delegate = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -181,7 +183,14 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
+  CGRect frame = CGRectZero;
+  // Need the correct initial width so that the board position list view width
+  // can be calculated correctly (autoresizingMask does not help us here because
+  // the board position list view is added to the toolbar as a bar button item,
+  // not as a regular subview)
+  frame.size.width = [UiElementMetrics screenWidth];
+  frame.size.height = [UiElementMetrics toolbarHeight];
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:frame] autorelease];
   self.view = self.toolbar;
   self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 

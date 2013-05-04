@@ -64,7 +64,6 @@
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
 
-//xxx    self.boardPositionToolbarController.currentBoardPositionViewController.delegate = self.scrollViewController.playViewController;
   self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
