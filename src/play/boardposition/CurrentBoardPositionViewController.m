@@ -45,13 +45,15 @@
 /// @note This is the designated initializer of
 /// CurrentBoardPositionViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithCurrentBoardPositionView:(BoardPositionView*)view;
+- (id) init
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  [self releaseObjects];
+  self.delegate = nil;
+  self.boardPositionViewMetrics = nil;
+  [self setupTapGestureRecognizer];
   self.allDataNeedsUpdate = false;
   self.boardPositionViewNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
@@ -64,23 +66,21 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [self releaseObjects];
+  [self removeNotificationResponders];
+  self.delegate = nil;
+  self.tapRecognizer = nil;
+  self.boardPositionViewMetrics = nil;
+  self.boardPositionView = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
+/// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
-- (void) releaseObjects
+- (void) setupTapGestureRecognizer
 {
-  self.view = nil;
-  self.boardPositionView = nil;
-  self.delegate = nil;
-  self.tapRecognizer = nil;
-  self.boardPositionViewMetrics = nil;
+  self.tapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
+  self.tapRecognizer.delegate = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -92,7 +92,7 @@
                                                                  viewMetrics:self.boardPositionViewMetrics] autorelease];
   self.view = self.boardPositionView;
 
-  [self setupTapGestureRecognizer];
+	[self.boardPositionView addGestureRecognizer:self.tapRecognizer];
   [self setupNotificationResponders];
 
   self.allDataNeedsUpdate = true;
@@ -103,13 +103,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------
-- (void) setupTapGestureRecognizer
+- (void) viewWillUnload
 {
-  self.tapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
-	[self.boardPositionView addGestureRecognizer:self.tapRecognizer];
-  self.tapRecognizer.delegate = self;
+  [self removeNotificationResponders];
+  self.boardPositionView = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -126,6 +126,16 @@
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 // -----------------------------------------------------------------------------

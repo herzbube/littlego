@@ -64,7 +64,6 @@
 {
   self.boardPositionTableListViewController = nil;
   self.boardPositionToolbarController = nil;
-  self.view = nil;
 }
 
 // -----------------------------------------------------------------------------

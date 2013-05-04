@@ -69,9 +69,6 @@ enum NavigationDirection
     return nil;
   [self releaseObjects];
   [self setupChildControllers];
-  self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
-  self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
-  self.navigationBarButtonItemsForward = [NSMutableArray arrayWithCapacity:0];
   self.numberOfBoardPositionsOnPage = 10;
   self.boardPositionListViewIsVisible = false;
   self.toolbarNeedsPopulation = false;
@@ -85,11 +82,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+  [self removeNotificationResponders];
   [self releaseObjects];
+  self.boardPositionViewMetrics = nil;
+  self.boardPositionListViewController = nil;
+  self.currentBoardPositionViewController = nil;
   [super dealloc];
 }
 
@@ -112,10 +109,6 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.boardPositionViewMetrics = nil;
-  self.boardPositionListViewController = nil;
-  self.currentBoardPositionViewController = nil;
-  self.view = nil;
   self.toolbar = nil;
   self.negativeSpacer = nil;
   self.flexibleSpacer = nil;
@@ -205,6 +198,17 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (void) viewWillUnload
+{
+  [super viewWillUnload];
+  [self removeNotificationResponders];
+  [self releaseObjects];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------
@@ -259,6 +263,10 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupBarButtonItems
 {
+  self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
+  self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
+  self.navigationBarButtonItemsForward = [NSMutableArray arrayWithCapacity:0];
+
   enum NavigationDirection direction = NavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
   [self addButtonWithImageNamed:rewindButtonIconResource withSelector:@selector(rewind:) navigationDirection:direction];
@@ -317,6 +325,17 @@ enum NavigationDirection
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------

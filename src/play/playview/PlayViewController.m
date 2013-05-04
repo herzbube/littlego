@@ -54,7 +54,9 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self releaseObjects];
+  self.playView = nil;
+  self.panGestureController = nil;
+  self.tapGestureController = nil;
   [super dealloc];
 }
 
@@ -65,17 +67,6 @@
 {
   self.panGestureController = [[[PanGestureController alloc] init] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.view = nil;
-  self.playView = nil;
-  self.panGestureController = nil;
-  self.tapGestureController = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -92,39 +83,20 @@
   self.tapGestureController.playView = self.playView;
 }
 
-/*xxx
-// -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-// -----------------------------------------------------------------------------
-- (void) viewDidLoad
-{
-  [super viewDidLoad];
- // Activate the following code to display controls that you can use to change
- // Play view drawing parameters that are normally immutable at runtime. This
- // is nice for debugging changes to the drawing system.
- //  [self setupDebugView];
-  [self setupSubcontrollers];
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
 /// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------
-- (void) viewDidUnload
+- (void) viewWillUnload
 {
-  [super viewDidUnload];
-
-  // Dismiss the controller before releasing/deallocating objects
-  [self.navigationBarController dismissGameInfoViewController];
-  // Here we need to undo all of the stuff that is happening in
-  // viewDidLoad(). Notes:
-  // - If the game info view is currently visible, it will not be visible
-  //   anymore when viewDidLoad() is invoked the next time
+  [super viewWillUnload];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self releaseObjects];
+  self.playView = nil;
+  self.panGestureController.playView = nil;
+  self.tapGestureController.playView = nil;
 }
 
+/*xxx
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------

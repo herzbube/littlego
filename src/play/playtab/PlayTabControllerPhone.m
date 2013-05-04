@@ -73,7 +73,6 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.view = nil;
   self.navigationBarController = nil;
   self.scrollViewController = nil;
   self.boardPositionToolbarController = nil;
@@ -171,6 +170,16 @@
   [self setupCoordinateLabelScrollViews];
 
   self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (void) viewWillUnload
+{
+  [super viewWillUnload];
+  self.navigationBarController.statusViewController.playView = nil;
 }
 
 // -----------------------------------------------------------------------------

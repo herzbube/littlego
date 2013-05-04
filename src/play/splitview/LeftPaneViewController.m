@@ -44,7 +44,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self releaseObjects];
+  self.boardPositionController = nil;
   [super dealloc];
 }
 
@@ -54,15 +54,6 @@
 - (void) setupChildControllers
 {
   self.boardPositionController = [[[BoardPositionController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.view = nil;
-  self.boardPositionController = nil;
 }
 
 // -----------------------------------------------------------------------------

@@ -63,7 +63,9 @@
 {
   PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   [playViewModel removeObserver:self forKeyPath:@"maximumZoomScale"];
-  [self releaseObjects];
+  self.playViewController = nil;
+  self.doubleTapGestureController = nil;
+  self.twoFingerTapGestureController = nil;
   [super dealloc];
 }
 
@@ -75,17 +77,6 @@
   self.playViewController = [[[PlayViewController alloc] init] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.view = nil;
-  self.playViewController = nil;
-  self.doubleTapGestureController = nil;
-  self.twoFingerTapGestureController = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -149,6 +140,18 @@
 
   self.doubleTapGestureController.scrollView = self.scrollView;
   self.twoFingerTapGestureController.scrollView = self.scrollView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (void) viewWillUnload
+{
+  [super viewWillUnload];
+  self.doubleTapGestureController.scrollView = nil;
+  self.twoFingerTapGestureController.scrollView = nil;
+  self.scrollView = nil;
 }
 
 // -----------------------------------------------------------------------------

@@ -59,6 +59,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.playView = nil;
   [self releaseObjects];
   self.activityIndicatorNeedsUpdate = false;
   self.viewLayoutNeedsUpdate = false;
@@ -71,8 +72,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [self removeNotificationResponders];
   [self releaseObjects];
   [super dealloc];
 }
@@ -82,10 +82,8 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.view = nil;
   self.statusLabel = nil;
   self.activityIndicator = nil;
-  self.playView = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -95,6 +93,17 @@
 {
   [self setupView];
   [self setupNotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (void) viewWillUnload
+{
+  [super viewWillUnload];
+  [self removeNotificationResponders];
+  [self releaseObjects];
 }
 
 // -----------------------------------------------------------------------------
@@ -157,6 +166,15 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 // -----------------------------------------------------------------------------

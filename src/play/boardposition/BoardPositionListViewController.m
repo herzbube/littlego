@@ -52,7 +52,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  [self releaseObjects];
+  self.boardPositionListView = nil;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
   self.oldBoardPosition = -1;
@@ -67,22 +67,10 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  [self releaseObjects];
-  [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.view = nil;
+  [self removeNotificationResponders];
   self.boardPositionListView = nil;
   self.boardPositionViewMetrics = nil;
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -109,6 +97,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (void) viewWillUnload
+{
+  [super viewWillUnload];
+  [self removeNotificationResponders];
+  self.boardPositionListView = nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
@@ -123,6 +122,17 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------
