@@ -131,15 +131,15 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  CGRect frame = CGRectZero;
+  // Setup of subviews requires that the parent view has a certain minimal
+  // height, so we assign an arbitrary height here that will later be expanded
+  // to the real height thanks to the autoresizingMask. Note that the height
+  // must be greater than a toolbar height + some vertical spacing.
+  frame.size.height = 200;
+  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
   [self setupBoardPositionToolbar];
   [self setupBoardPositionTableListView];
 }

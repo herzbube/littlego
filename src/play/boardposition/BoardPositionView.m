@@ -43,23 +43,21 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionView object that represents the board
-/// position identified by @a aBoardPosition and uses @a aViewMetrics to obtain
+/// position identified by @a boardPosition and uses @a viewMetrics to obtain
 /// sizes and other attributes that define the view's layout.
 ///
 /// @note This is the designated initializer of BoardPositionView.
 // -----------------------------------------------------------------------------
-- (id) initWithBoardPosition:(int)aBoardPosition viewMetrics:(BoardPositionViewMetrics*)aViewMetrics
+- (id) initWithBoardPosition:(int)boardPosition viewMetrics:(BoardPositionViewMetrics*)viewMetrics
 {
   // Call designated initializer of superclass (UIView)
-  self = [super initWithFrame:CGRectMake(0, 0, 0, 0)];
+  self = [super initWithFrame:CGRectZero];
   if (! self)
     return nil;
-
-  _boardPosition = aBoardPosition;  // don't use self, we don't want to trigger the setter
+  _boardPosition = boardPosition;  // don't use self, we don't want to trigger the setter
   _currentBoardPosition = false;    // ditto
-  self.viewMetrics = aViewMetrics;
-  self.frame = self.viewMetrics.boardPositionViewFrame;
-
+  self.viewMetrics = viewMetrics;
+  self.bounds = self.viewMetrics.boardPositionViewBounds;
   return self;
 }
 

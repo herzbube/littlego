@@ -54,7 +54,7 @@
 /// @brief Number of pixels to use for internal spacing of a board position view
 /// (i.e. how much space should be between the label and the stone image).
 @property(nonatomic, assign) int boardPositionViewHorizontalSpacing;
-@property(nonatomic, assign) CGRect boardPositionViewFrame;
+@property(nonatomic, assign) CGRect boardPositionViewBounds;
 //@}
 
 @end

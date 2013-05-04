@@ -208,9 +208,10 @@
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
     [self setupNavigationBar];
-    [self setupBoardPositionToolbar];  // set up before scroll view because scroll view depends on toolbar position
+    [self setupBoardPositionToolbar];  // set up before scroll view because scroll view height depends on toolbar position
     [self setupScrollView];
     // TODO xxx shouldn't the scrollviewcontroller be responsible for this?
+    // if yes, then it should also be responsible for setting width/height
     [self setupCoordinateLabelScrollViews];
   }
   else
@@ -219,6 +220,7 @@
     [self setupNavigationBar];
     [self setupScrollView];
     // TODO xxx shouldn't the scrollviewcontroller be responsible for this?
+    // if yes, then it should also be responsible for setting width/height
     [self setupCoordinateLabelScrollViews];
     [self setupBoardPositionView];
   }

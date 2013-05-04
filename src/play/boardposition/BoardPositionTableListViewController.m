@@ -38,7 +38,6 @@
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
-@property(nonatomic, assign) bool subviewsNotYetCreated;
 @property(nonatomic, retain) UILabel* currentBoardPositionTitleLabel;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
 @property(nonatomic, retain) UILabel* boardPositionListTitleLabel;
@@ -69,7 +68,6 @@
   if (! self)
     return nil;
   [self releaseObjects];
-  self.subviewsNotYetCreated = true;
   self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
@@ -112,22 +110,19 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  CGRect frame = CGRectZero;
+  // setupTableViews requires that the parent view has a certain minimal height,
+  // so we assign an arbitrary height here that will later be expanded to the
+  // real height thanks to the autoresizingMask. Note that the height must be
+  // greater than 2 * label height + current board position table view height +
+  // some vertical spacing.
+  frame.size.height = 200;
+  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
-  if (self.subviewsNotYetCreated)
-  {
-    self.subviewsNotYetCreated = false;
-    [self setupTableViews];
-    [self setupNotificationResponders];
-    [self setupStoneImages];
-  }
+  [self setupTableViews];
+  [self setupNotificationResponders];
+  [self setupStoneImages];
 }
 
 // -----------------------------------------------------------------------------
@@ -221,6 +216,7 @@
   self.currentBoardPositionTableView.frame = currentBoardPositionTableViewFrame;
 
   self.currentBoardPositionTableView.backgroundView = nil;
+  self.currentBoardPositionTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.currentBoardPositionTableView.scrollEnabled = NO;
 }
 
@@ -243,7 +239,7 @@
   self.boardPositionListTableView.dataSource = self;
 
   self.boardPositionListTableView.backgroundView = nil;
-  self.boardPositionListTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+  self.boardPositionListTableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 }
 
 // -----------------------------------------------------------------------------

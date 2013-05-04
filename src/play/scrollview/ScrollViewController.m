@@ -125,13 +125,7 @@
   self.scrollView.bouncesZoom = NO;
   self.scrollView.delegate = self;
 
-/*xxx
-  CGRect playViewFrame = CGRectZero;
-  playViewFrame.size = self.scrollView.contentSize;
-  self.playViewController.view.frame = playViewFrame;
-*/
   [self.view addSubview:self.playViewController.view];
-
 
   // Even though these scroll views do not scroll or zoom interactively, we
   // still need to become their delegate so that we can change their zoomScale

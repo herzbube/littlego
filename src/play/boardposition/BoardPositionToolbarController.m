@@ -229,21 +229,8 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupCurrentBoardPositionView
 {
-  CGRect currentBoardPositionViewFrame = [self currentBoardPositionViewFrame];
+  CGRect currentBoardPositionViewFrame = self.boardPositionViewMetrics.boardPositionViewBounds;
   self.currentBoardPositionViewController.view.frame = currentBoardPositionViewFrame;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) currentBoardPositionViewFrame
-{
-  int boardPositionViewX = 0;
-  int boardPositionViewY = 0;
-  int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
-  int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
-  return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
 }
 
 // -----------------------------------------------------------------------------

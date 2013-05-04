@@ -179,13 +179,13 @@
                                    + self.boardPositionViewHorizontalSpacing
                                    + MAX(self.stoneImageWidthAndHeight, self.capturedStonesLabelFrame.size.width));
     self.boardPositionViewHeight = self.labelHeight;
-    self.boardPositionViewFrame = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
+    self.boardPositionViewBounds = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
   }
   else
   {
     self.boardPositionViewWidth = [UiElementMetrics splitViewLeftPaneWidth];
     self.boardPositionViewHeight = self.labelHeight;
-    self.boardPositionViewFrame = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
+    self.boardPositionViewBounds = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
   }
 }
 
