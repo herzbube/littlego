@@ -15,24 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class NavigationBarController;
-@class ScrollViewController;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabController class is the main view controller on the
-/// "Play" tab.
+/// @brief The PlayTabController class represents the root view controller on
+/// the "Play" tab.
 ///
-/// PlayTabController arranges its child view controllers differently depending
-/// on the device that runs the application.
+/// The view hierarchy on the "Play" tab is laid out differently depending on
+/// the device that runs the application. Use the class method
+/// playTabController() to obtain a device-dependent controller object that
+/// knows how to set up the correct view hierarchy for the current device.
 // -----------------------------------------------------------------------------
 @interface PlayTabController : UIViewController
 {
 }
 
-@property(nonatomic, retain) NavigationBarController* navigationBarController;
-@property(nonatomic, retain) ScrollViewController* scrollViewController;
-@property(nonatomic, retain) UIViewController* boardPositionController;
++ (PlayTabController*) playTabController;
 
 @end

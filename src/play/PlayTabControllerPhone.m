@@ -16,28 +16,28 @@
 
 
 // Project includes
-#import "RightPaneViewController.h"
-#import "../PlayView.h"
-#import "../PlayViewController.h"
-#import "../controller/DiscardFutureMovesAlertController.h"
-#import "../controller/NavigationBarController.h"
-#import "../controller/StatusViewController.h"
-#import "../gesture/PanGestureController.h"
-#import "../scrollview/ScrollViewController.h"
-#import "../../ui/UiElementMetrics.h"
-#import "../../ui/UiUtilities.h"
+#import "PlayTabControllerPhone.h"
+#import "PlayView.h"
+#import "PlayViewController.h"
+#import "boardposition/BoardPositionToolbarController.h"
+#import "controller/DiscardFutureMovesAlertController.h"
+#import "controller/NavigationBarController.h"
+#import "controller/StatusViewController.h"
+#import "gesture/PanGestureController.h"
+#import "scrollview/ScrollViewController.h"
+#import "../ui/UiElementMetrics.h"
 
 
-@implementation RightPaneViewController
+@implementation PlayTabControllerPhone
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a RightPaneViewController object.
+/// @brief Initializes a PlayTabControllerPhone object.
 ///
-/// @note This is the designated initializer of RightPaneViewController.
+/// @note This is the designated initializer of PlayTabControllerPhone.
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (UIViewController)
+  // Call designated initializer of superclass (PlayTabController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -46,7 +46,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this RightPaneViewController object.
+/// @brief Deallocates memory allocated by this PlayTabControllerPhone object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -61,8 +61,10 @@
 {
   self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
   self.scrollViewController = [[[ScrollViewController alloc] init] autorelease];
+  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
 
+//xxx    self.boardPositionToolbarController.currentBoardPositionViewController.delegate = self.scrollViewController.playViewController;
   self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
@@ -72,9 +74,9 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.view = nil;
   self.navigationBarController = nil;
   self.scrollViewController = nil;
+  self.boardPositionToolbarController = nil;
   self.discardFutureMovesAlertController = nil;
 }
 
@@ -129,18 +131,42 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionToolbarController:(BoardPositionToolbarController*)boardPositionToolbarController
+{
+  if (_boardPositionToolbarController == boardPositionToolbarController)
+    return;
+  if (_boardPositionToolbarController)
+  {
+    [_boardPositionToolbarController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionToolbarController removeFromParentViewController];
+    [_boardPositionToolbarController release];
+    _boardPositionToolbarController = nil;
+  }
+  if (boardPositionToolbarController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionToolbarController];
+    [boardPositionToolbarController didMoveToParentViewController:self];
+    [boardPositionToolbarController retain];
+    _boardPositionToolbarController = boardPositionToolbarController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect rightPaneViewFrame = CGRectZero;
-  rightPaneViewFrame.size.width = [UiElementMetrics splitViewRightPaneWidth];
-  rightPaneViewFrame.size.height = [UiElementMetrics splitViewHeight];
-  self.view = [[[UIView alloc] initWithFrame:rightPaneViewFrame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  [super loadView];
   self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 
   [self setupNavigationBar];
+  // Set up before scroll view because scroll view height depends on toolbar
+  // position
+  [self setupBoardPositionToolbar];
   [self setupScrollView];
   // TODO xxx shouldn't the scrollviewcontroller be responsible for this?
   // if yes, then it should also be responsible for setting width/height
@@ -212,7 +238,8 @@
   int viewY = CGRectGetMaxY(self.navigationBarController.view.frame);
   int viewWidth = superviewSize.width;
   int viewHeight = (superviewSize.height
-                    - self.navigationBarController.view.frame.size.height);
+                    - self.navigationBarController.view.frame.size.height
+                    - self.boardPositionToolbarController.view.frame.size.height);
   return CGRectMake(viewX, viewY, viewWidth, viewHeight);
 }
 
@@ -255,12 +282,38 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
 // -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupBoardPositionToolbar
 {
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+  CGRect toolbarFrame = [self boardPositionToolbarFrame];
+  self.boardPositionToolbarController.view.frame = toolbarFrame;
+  UIView* superview = [self boardPositionToolbarSuperview];
+  [superview addSubview:self.boardPositionToolbarController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionToolbarFrame
+{
+  UIView* superview = [self boardPositionToolbarSuperview];
+  int toolbarViewX = 0;
+  int toolbarViewWidth = superview.bounds.size.width;
+  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
+  int toolbarViewY = superview.bounds.size.height - toolbarViewHeight;
+  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (UIView*) boardPositionToolbarSuperview
+{
+  return self.view;
 }
 
 @end

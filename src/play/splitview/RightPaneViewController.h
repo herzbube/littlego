@@ -15,6 +15,11 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class DiscardFutureMovesAlertController;
+@class NavigationBarController;
+@class ScrollViewController;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The RightPaneViewController class manages a simple container view
@@ -30,5 +35,9 @@
 @interface RightPaneViewController : UIViewController
 {
 }
+
+@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) ScrollViewController* scrollViewController;
+@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 
 @end

@@ -15,25 +15,29 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#include "PlayTabController.h"
+
 // Forward declarations
-@class BoardPositionController;
+@class LeftPaneViewController;
+@class RightPaneViewController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The LeftPaneViewController class manages a simple container view
-/// intended to be displayed as the left pane of a split view (i.e. the view
-/// managed by UISplitViewController).
+/// @brief The PlayTabControllerPad class is the root view controller on the
+/// "Play" tab for the iPad.
 ///
-/// LeftPaneViewController's has the following responsibilities:
-/// - Create its view with a frame that is appropriate at the time of creation
-/// - Supply the view with an autoresizing mask that lets it resize in all
-///   directions
-/// - Enable rotation to all orientations
+/// The PlayTabController class method playTabController() should be used to
+/// create a PlayTabControllerPad instance.
 // -----------------------------------------------------------------------------
-@interface LeftPaneViewController : UIViewController
+@interface PlayTabControllerPad : PlayTabController
 {
 }
 
-@property(nonatomic, retain) BoardPositionController* boardPositionController;
+// Cannot name this property splitViewController, there already is a property
+// of that name in UIViewController, and it has a different meaning
+@property(nonatomic, retain) UISplitViewController* splitViewControllerChild;
+@property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
+@property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
 
 @end

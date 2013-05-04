@@ -17,19 +17,93 @@
 
 // Project includes
 #import "LeftPaneViewController.h"
+#import "../boardposition/BoardPositionController.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
 
 @implementation LeftPaneViewController
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a LeftPaneViewController object.
+///
+/// @note This is the designated initializer of LeftPaneViewController.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
+  if (! self)
+    return nil;
+  [self setupChildControllers];
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this LeftPaneViewController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupChildControllers
+{
+  self.boardPositionController = [[[BoardPositionController alloc] init] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.view = nil;
+  self.boardPositionController = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionController:(BoardPositionController*)boardPositionController
+{
+  if (_boardPositionController == boardPositionController)
+    return;
+  if (_boardPositionController)
+  {
+    [_boardPositionController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionController removeFromParentViewController];
+    [_boardPositionController release];
+    _boardPositionController = nil;
+  }
+  if (boardPositionController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionController];
+    [boardPositionController didMoveToParentViewController:self];
+    [boardPositionController retain];
+    _boardPositionController = boardPositionController;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Creates the view that this controller manages.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  CGRect leftPaneViewFrame = CGRectZero;
+  leftPaneViewFrame.size.width = [UiElementMetrics splitViewLeftPaneWidth];
+  leftPaneViewFrame.size.height = [UiElementMetrics splitViewHeight];
+  self.view = [[[UIView alloc] initWithFrame:leftPaneViewFrame] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   [UiUtilities addGroupTableViewBackgroundToView:self.view];
+
+  self.boardPositionController.view.frame = self.view.bounds;
+  [self.view addSubview:self.boardPositionController.view];
 }
 
 // -----------------------------------------------------------------------------

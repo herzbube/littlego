@@ -648,7 +648,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupPlayTab
 {
-  UIViewController* playTabController = [[[PlayTabController alloc] init] autorelease];
+  UIViewController* playTabController = [PlayTabController playTabController];
   UINavigationController* playTabRootController = (UINavigationController*)[self tabController:TabTypePlay];
   [playTabRootController pushViewController:playTabController animated:NO];
 }

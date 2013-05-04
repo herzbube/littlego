@@ -15,25 +15,30 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#include "PlayTabController.h"
+
 // Forward declarations
-@class BoardPositionController;
+@class BoardPositionToolbarController;
+@class DiscardFutureMovesAlertController;
+@class NavigationBarController;
+@class ScrollViewController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The LeftPaneViewController class manages a simple container view
-/// intended to be displayed as the left pane of a split view (i.e. the view
-/// managed by UISplitViewController).
+/// @brief The PlayTabControllerPhone class is the root view controller on the
+/// "Play" tab for the iPhone.
 ///
-/// LeftPaneViewController's has the following responsibilities:
-/// - Create its view with a frame that is appropriate at the time of creation
-/// - Supply the view with an autoresizing mask that lets it resize in all
-///   directions
-/// - Enable rotation to all orientations
+/// The PlayTabController class method playTabController() should be used to
+/// create a PlayTabControllerPhone instance.
 // -----------------------------------------------------------------------------
-@interface LeftPaneViewController : UIViewController
+@interface PlayTabControllerPhone : PlayTabController
 {
 }
 
-@property(nonatomic, retain) BoardPositionController* boardPositionController;
+@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) ScrollViewController* scrollViewController;
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
+@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 
 @end
