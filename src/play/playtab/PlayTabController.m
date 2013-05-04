@@ -20,6 +20,7 @@
 #import "PlayTabControllerPad.h"
 #import "PlayTabControllerPhone.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 
 
 @implementation PlayTabController
@@ -81,6 +82,15 @@
                         - [UiElementMetrics tabBarHeight]
                         - [UiElementMetrics statusBarHeight]);
   return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
+/// be removed if deployment target is set to iOS 6.
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 @end
