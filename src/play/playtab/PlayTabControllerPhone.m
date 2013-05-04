@@ -167,8 +167,6 @@
   // position
   [self setupBoardPositionToolbar];
   [self setupScrollView];
-  // TODO xxx shouldn't the scrollviewcontroller be responsible for this?
-  // if yes, then it should also be responsible for setting width/height
   [self setupCoordinateLabelScrollViews];
 
   self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
@@ -256,7 +254,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupCoordinateLabelScrollViews
 {
-  UIView* superview = [self coordinateLabelScrollViewsSuperview];
+  UIView* superview = [self scrollViewSuperview];
   NSArray* scrollViews = [NSArray arrayWithObjects:
                           self.scrollViewController.playViewController.playView.coordinateLabelsLetterViewScrollView,
                           self.scrollViewController.playViewController.playView.coordinateLabelsNumberViewScrollView,
@@ -268,15 +266,6 @@
     scrollView.frame = scrollViewFrame;
     [superview addSubview:scrollView];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) coordinateLabelScrollViewsSuperview
-{
-  return [self scrollViewSuperview];
 }
 
 // -----------------------------------------------------------------------------
