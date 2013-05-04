@@ -18,10 +18,10 @@
 // Project includes
 #import "PlayViewController.h"
 #import "PlayView.h"
-#import "controller/DebugPlayViewController.h"
-#import "gesture/PanGestureController.h"
-#import "gesture/TapGestureController.h"
-#import "../ui/UiUtilities.h"
+#import "../controller/DebugPlayViewController.h"
+#import "../gesture/PanGestureController.h"
+#import "../gesture/TapGestureController.h"
+#import "../../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------

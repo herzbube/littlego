@@ -17,7 +17,7 @@
 
 // Project includes
 #import "DebugPlayViewController.h"
-#import "../PlayView.h"
+#import "../playview/PlayView.h"
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/UiElementMetrics.h"

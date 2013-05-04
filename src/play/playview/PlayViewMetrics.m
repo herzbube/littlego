@@ -17,13 +17,13 @@
 
 // Project includes
 #import "PlayViewMetrics.h"
-#import "model/PlayViewModel.h"
-#import "../go/GoBoard.h"
-#import "../go/GoGame.h"
-#import "../go/GoPoint.h"
-#import "../go/GoVertex.h"
-#import "../ui/UiUtilities.h"
-#import "../utility/FontRange.h"
+#import "../model/PlayViewModel.h"
+#import "../../go/GoBoard.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoPoint.h"
+#import "../../go/GoVertex.h"
+#import "../../ui/UiUtilities.h"
+#import "../../utility/FontRange.h"
 
 
 // -----------------------------------------------------------------------------

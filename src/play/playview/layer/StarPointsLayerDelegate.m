@@ -18,12 +18,12 @@
 // Project includes
 #import "StarPointsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoBoard.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoVertex.h"
-#import "../../ui/UiUtilities.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoVertex.h"
+#import "../../../ui/UiUtilities.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

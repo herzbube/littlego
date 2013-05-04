@@ -18,10 +18,10 @@
 // Project includes
 #import "GridLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoBoard.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPoint.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

@@ -17,10 +17,10 @@
 
 // Project includes
 #import "PlayTabControllerPad.h"
-#import "controller/NavigationBarController.h"
-#import "splitview/LeftPaneViewController.h"
-#import "splitview/RightPaneViewController.h"
-#import "../ui/UiElementMetrics.h"
+#import "../controller/NavigationBarController.h"
+#import "../splitview/LeftPaneViewController.h"
+#import "../splitview/RightPaneViewController.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 @implementation PlayTabControllerPad

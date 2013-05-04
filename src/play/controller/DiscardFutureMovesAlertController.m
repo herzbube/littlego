@@ -17,7 +17,7 @@
 
 // Project includes
 #import "DiscardFutureMovesAlertController.h"
-#import "../boardposition/BoardPositionModel.h"
+#import "../model/BoardPositionModel.h"
 #import "../../command/CommandBase.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"

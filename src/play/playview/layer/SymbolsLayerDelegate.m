@@ -18,14 +18,14 @@
 // Project includes
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoBoardPosition.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoMove.h"
-#import "../../go/GoMoveModel.h"
-#import "../../go/GoPlayer.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoScore.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoBoardPosition.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoMove.h"
+#import "../../../go/GoMoveModel.h"
+#import "../../../go/GoPlayer.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoScore.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

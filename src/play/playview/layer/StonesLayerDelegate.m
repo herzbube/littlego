@@ -16,36 +16,35 @@
 
 
 // Project includes
-#import "CrossHairStoneLayerDelegate.h"
+#import "StonesLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoBoardPosition.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPlayer.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoVertex.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoBoardRegion.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoVertex.h"
+#import "../../../ui/UiUtilities.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for
-/// CrossHairStoneLayerDelegate.
+/// @brief Class extension with private properties for StonesLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface CrossHairStoneLayerDelegate()
+@interface StonesLayerDelegate()
 @property(nonatomic, assign) CGLayerRef blackStoneLayer;
 @property(nonatomic, assign) CGLayerRef whiteStoneLayer;
-@property(nonatomic, assign) CGLayerRef crossHairStoneLayer;
 @end
 
 
-@implementation CrossHairStoneLayerDelegate
+@implementation StonesLayerDelegate
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a CrossHairStoneLayerDelegate object.
+/// @brief Initializes a StonesLayerDelegate object.
 ///
-/// @note This is the designated initializer of CrossHairStoneLayerDelegate.
+/// @note This is the designated initializer of StonesLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
 {
@@ -53,29 +52,25 @@
   self = [super initWithMainView:mainView metrics:metrics model:model];
   if (! self)
     return nil;
-  self.crossHairPoint = nil;
   _blackStoneLayer = NULL;
   _whiteStoneLayer = NULL;
-  _crossHairStoneLayer = NULL;
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this CrossHairStoneLayerDelegate
-/// object.
+/// @brief Deallocates memory allocated by this StonesLayerDelegate object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.crossHairPoint = nil;
-  [self releaseStoneLayers];
+  [self releaseLayers];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Releases stone layers if they are currently allocated. Otherwise does
-/// nothing.
+/// @brief Releases stone layers if they are currently allocated. Otherwise
+/// does nothing.
 // -----------------------------------------------------------------------------
-- (void) releaseStoneLayers
+- (void) releaseLayers
 {
   if (_blackStoneLayer)
   {
@@ -86,11 +81,6 @@
   {
     CGLayerRelease(_whiteStoneLayer);
     _whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
-  if (_crossHairStoneLayer)
-  {
-    CGLayerRelease(_crossHairStoneLayer);
-    _crossHairStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -104,19 +94,18 @@
     case PVLDEventRectangleChanged:
     {
       self.layer.frame = self.playViewMetrics.rect;
-      [self releaseStoneLayers];
+      [self releaseLayers];
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change -> need to recalculate size of cross-hair stone
+    case PVLDEventGoGameStarted:  // possible board size change + place handicap stones
     {
-      [self releaseStoneLayers];
+      [self releaseLayers];
       self.dirty = true;
       break;      
     }
-    case PVLDEventCrossHairChanged:
+    case PVLDEventBoardPositionChanged:
     {
-      self.crossHairPoint = eventInfo;
       self.dirty = true;
       break;
     }
@@ -132,28 +121,52 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! self.crossHairPoint)
-    return;
+  DDLogVerbose(@"StonesLayerDelegate is drawing");
 
   if (! _blackStoneLayer)
     _blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
   if (! _whiteStoneLayer)
     _whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
-  if (! _crossHairStoneLayer)
-    _crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
 
-  CGLayerRef stoneLayer;
-  if (self.crossHairPoint.hasStone)
-    stoneLayer = _crossHairStoneLayer;
-  else
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
   {
-    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-    if (boardPosition.currentPlayer.isBlack)
-      stoneLayer = _blackStoneLayer;
+    if (point.hasStone)
+    {
+      if (point.blackStone)
+        [self.playViewMetrics drawLayer:_blackStoneLayer withContext:context centeredAtPoint:point];
+      else
+        [self.playViewMetrics drawLayer:_whiteStoneLayer withContext:context centeredAtPoint:point];
+    }
     else
-      stoneLayer = _whiteStoneLayer;
+    {
+      // TODO remove this or make it into something that can be turned on
+      // at runtime for debugging
+//      [self drawEmpty:context point:point];
+    }
   }
-  [self.playViewMetrics drawLayer:stoneLayer withContext:context centeredAtPoint:self.crossHairPoint];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a small circle at intersection @a point, when @a point does
+/// not have a stone on it. The color of the circle is different for different
+/// regions.
+///
+/// This method is a debugging aid to see how GoBoardRegions are calculated.
+// -----------------------------------------------------------------------------
+- (void) drawEmpty:(CGContextRef)context point:(GoPoint*)point
+{
+  CGPoint coordinates = [self.playViewMetrics coordinatesFromPoint:point];
+	CGContextSetFillColorWithColor(context, point.region.randomColor.CGColor);
+  
+  const int startRadius = [UiUtilities radians:0];
+  const int endRadius = [UiUtilities radians:360];
+  const int clockwise = 0;
+  int circleRadius = floor(self.playViewMetrics.stoneRadius / 2);
+  CGContextAddArc(context, coordinates.x + gHalfPixel, coordinates.y + gHalfPixel, circleRadius, startRadius, endRadius, clockwise);
+  CGContextFillPath(context);
 }
 
 @end

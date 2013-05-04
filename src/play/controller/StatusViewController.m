@@ -17,7 +17,7 @@
 
 // Project includes
 #import "StatusViewController.h"
-#import "../PlayView.h"
+#import "../playview/PlayView.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"

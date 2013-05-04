@@ -17,15 +17,15 @@
 
 // Project includes
 #import "PlayTabControllerPhone.h"
-#import "PlayView.h"
-#import "PlayViewController.h"
-#import "boardposition/BoardPositionToolbarController.h"
-#import "controller/DiscardFutureMovesAlertController.h"
-#import "controller/NavigationBarController.h"
-#import "controller/StatusViewController.h"
-#import "gesture/PanGestureController.h"
-#import "scrollview/ScrollViewController.h"
-#import "../ui/UiElementMetrics.h"
+#import "../boardposition/BoardPositionToolbarController.h"
+#import "../controller/DiscardFutureMovesAlertController.h"
+#import "../controller/NavigationBarController.h"
+#import "../controller/StatusViewController.h"
+#import "../gesture/PanGestureController.h"
+#import "../playview/PlayView.h"
+#import "../playview/PlayViewController.h"
+#import "../playview/ScrollViewController.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 @implementation PlayTabControllerPhone

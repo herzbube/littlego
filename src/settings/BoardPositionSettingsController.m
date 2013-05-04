@@ -18,7 +18,7 @@
 // Project includes
 #import "BoardPositionSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/boardposition/BoardPositionModel.h"
+#import "../play/model/BoardPositionModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 

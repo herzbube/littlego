@@ -18,15 +18,15 @@
 // Project includes
 #import "TerritoryLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../model/ScoringModel.h"
-#import "../../go/GoBoard.h"
-#import "../../go/GoBoardRegion.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoScore.h"
-#import "../../ui/UiUtilities.h"
-#import "../../utility/UIColorAdditions.h"
+#import "../../model/PlayViewModel.h"
+#import "../../model/ScoringModel.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoBoardRegion.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoScore.h"
+#import "../../../ui/UiUtilities.h"
+#import "../../../utility/UIColorAdditions.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

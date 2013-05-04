@@ -18,11 +18,11 @@
 // Project includes
 #import "CoordinateLabelsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoBoard.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoVertex.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoVertex.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

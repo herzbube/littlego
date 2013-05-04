@@ -75,10 +75,7 @@
 		CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
 		CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */; };
 		CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */; };
-		CD0DFED814EB2163000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */; };
-		CD0DFED914EB2171000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */; };
 		CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */; };
-		CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE901169A122400053671 /* BoardPositionModel.m */; };
 		CD0FE906169A135400053671 /* BoardPositionView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE905169A134C00053671 /* BoardPositionView.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
 		CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087A41324344C00E83543 /* GtpEngine.mm */; };
@@ -89,7 +86,6 @@
 		CD10881F13255A6100E83543 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
 		CD10882213255A6B00E83543 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
-		CD10887D1326D2C100E83543 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
 		CD1311C117180B45006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
@@ -136,18 +132,46 @@
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
 		CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
-		CD3591C017342309000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591BF17342309000E2963 /* PlayTabController.m */; };
-		CD3591C117342309000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591BF17342309000E2963 /* PlayTabController.m */; };
-		CD3591C217342CEF000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
-		CD3591C317342CF0000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1088601326CD2400E83543 /* PlayViewController.m */; };
 		CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
 		CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
 		CD3591CE173475E2000E2963 /* BoardPositionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591CD173475E2000E2963 /* BoardPositionController.m */; };
 		CD3591CF173475E2000E2963 /* BoardPositionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591CD173475E2000E2963 /* BoardPositionController.m */; };
-		CD3591D417355216000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D117355211000E2963 /* PlayTabControllerPad.m */; };
-		CD3591D517355216000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D117355211000E2963 /* PlayTabControllerPad.m */; };
-		CD3591D617355216000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D317355215000E2963 /* PlayTabControllerPhone.m */; };
-		CD3591D717355216000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D317355215000E2963 /* PlayTabControllerPhone.m */; };
+		CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
+		CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
+		CD3592021735A757000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayTabController.m */; };
+		CD3592031735A757000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayTabController.m */; };
+		CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayTabControllerPad.m */; };
+		CD3592051735A757000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayTabControllerPad.m */; };
+		CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */; };
+		CD3592071735A757000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */; };
+		CD3592081735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E61735A757000E2963 /* CoordinateLabelsLayerDelegate.m */; };
+		CD3592091735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E61735A757000E2963 /* CoordinateLabelsLayerDelegate.m */; };
+		CD35920A1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */; };
+		CD35920B1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */; };
+		CD35920C1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */; };
+		CD35920D1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */; };
+		CD35920E1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */; };
+		CD35920F1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */; };
+		CD3592101735A757000E2963 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EE1735A757000E2963 /* GridLayerDelegate.m */; };
+		CD3592111735A757000E2963 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EE1735A757000E2963 /* GridLayerDelegate.m */; };
+		CD3592121735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */; };
+		CD3592131735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */; };
+		CD3592141735A757000E2963 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F31735A757000E2963 /* StarPointsLayerDelegate.m */; };
+		CD3592151735A757000E2963 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F31735A757000E2963 /* StarPointsLayerDelegate.m */; };
+		CD3592161735A757000E2963 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F51735A757000E2963 /* StonesLayerDelegate.m */; };
+		CD3592171735A757000E2963 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F51735A757000E2963 /* StonesLayerDelegate.m */; };
+		CD3592181735A757000E2963 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F71735A757000E2963 /* SymbolsLayerDelegate.m */; };
+		CD3592191735A757000E2963 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F71735A757000E2963 /* SymbolsLayerDelegate.m */; };
+		CD35921A1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F91735A757000E2963 /* TerritoryLayerDelegate.m */; };
+		CD35921B1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F91735A757000E2963 /* TerritoryLayerDelegate.m */; };
+		CD35921C1735A757000E2963 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FB1735A757000E2963 /* PlayView.m */; };
+		CD35921D1735A757000E2963 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FB1735A757000E2963 /* PlayView.m */; };
+		CD35921E1735A757000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FD1735A757000E2963 /* PlayViewController.m */; };
+		CD35921F1735A757000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FD1735A757000E2963 /* PlayViewController.m */; };
+		CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FF1735A757000E2963 /* PlayViewMetrics.m */; };
+		CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FF1735A757000E2963 /* PlayViewMetrics.m */; };
+		CD3592221735A757000E2963 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3592011735A757000E2963 /* ScrollViewController.m */; };
+		CD3592231735A757000E2963 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3592011735A757000E2963 /* ScrollViewController.m */; };
 		CD36593C1691C49F00D75466 /* 40-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593A1691C49F00D75466 /* 40-forward.png */; };
 		CD36593D1691C49F00D75466 /* 40-forward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD36593B1691C49F00D75466 /* 40-forward@2x.png */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
@@ -241,8 +265,6 @@
 		CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
-		CD9A49A7170F3550009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */; };
-		CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */; };
 		CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
 		CD9A49AC171099FB009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
 		CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */; };
@@ -255,7 +277,6 @@
 		CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A0998169389A600ABDB5D /* PanGestureController.m */; };
 		CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
 		CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
-		CD9A49E5171250D0009E7514 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB9212E16EB9852007BDB69 /* ScrollViewController.m */; };
 		CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
@@ -296,7 +317,6 @@
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
-		CDB9212F16EB9852007BDB69 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB9212E16EB9852007BDB69 /* ScrollViewController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
@@ -312,7 +332,6 @@
 		CDD961011662A8E300B54E09 /* render-readme.rb in Resources */ = {isa = PBXBuildFile; fileRef = CDD961001662A8E300B54E09 /* render-readme.rb */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
-		CDDBA88616A885D1001AB7DA /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE901169A122400053671 /* BoardPositionModel.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
@@ -389,25 +408,6 @@
 		CDF82294164D450500F53C01 /* 298-circlex.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82292164D450500F53C01 /* 298-circlex.png */; };
 		CDF82295164D450500F53C01 /* 298-circlex@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF82293164D450500F53C01 /* 298-circlex@2x.png */; };
 		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
-		CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */; };
-		CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
-		CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
-		CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */; };
-		CDF8B77B14DB598F00940D3E /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */; };
-		CDF8B77C14DB598F00940D3E /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */; };
-		CDF8B77F14DB5C9700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
-		CDF8B78214DB5CA400940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
-		CDF8B78814DC757C00940D3E /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */; };
-		CDF8B78914DDD72500940D3E /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10887C1326D2C100E83543 /* PlayView.m */; };
-		CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */; };
-		CDF8B78C14DDD73500940D3E /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */; };
-		CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */; };
-		CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77214DB598000940D3E /* GridLayerDelegate.m */; };
-		CDF8B78F14DDD73E00940D3E /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */; };
-		CDF8B79014DDD74300940D3E /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */; };
-		CDF8B79114DDD74700940D3E /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */; };
-		CDF8B79214DDD74A00940D3E /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */; };
-		CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */; };
 		CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
@@ -505,13 +505,8 @@
 		CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogItemViewController.m; sourceTree = "<group>"; };
 		CD0CCEC41439147C00A3F869 /* GtpLogSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogSettingsController.h; sourceTree = "<group>"; };
 		CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogSettingsController.m; sourceTree = "<group>"; };
-		CD0DFED514E6A47B000FE1B5 /* PlayViewLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegate.h; sourceTree = "<group>"; };
-		CD0DFED614EB2159000FE1B5 /* CrossHairStoneLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairStoneLayerDelegate.h; sourceTree = "<group>"; };
-		CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairStoneLayerDelegate.m; sourceTree = "<group>"; };
 		CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionListViewController.h; sourceTree = "<group>"; };
 		CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListViewController.m; sourceTree = "<group>"; };
-		CD0FE900169A122400053671 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
-		CD0FE901169A122400053671 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
 		CD0FE904169A134C00053671 /* BoardPositionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionView.h; sourceTree = "<group>"; };
 		CD0FE905169A134C00053671 /* BoardPositionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionView.m; sourceTree = "<group>"; };
 		CD1087701323D07800E83543 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -534,10 +529,6 @@
 		CD10882113255A6B00E83543 /* GoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayer.m; sourceTree = "<group>"; };
 		CD10882313255AA600E83543 /* GoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPoint.h; sourceTree = "<group>"; };
 		CD10882413255AA600E83543 /* GoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPoint.m; sourceTree = "<group>"; };
-		CD10885F1326CD2400E83543 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
-		CD1088601326CD2400E83543 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
-		CD10887B1326D2C100E83543 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
-		CD10887C1326D2C100E83543 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
 		CD1311BD17180B45006CE699 /* PlayViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewModel.h; sourceTree = "<group>"; };
 		CD1311BE17180B45006CE699 /* PlayViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewModel.m; sourceTree = "<group>"; };
 		CD1311BF17180B45006CE699 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
@@ -583,16 +574,47 @@
 		CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoubleTapGestureController.m; sourceTree = "<group>"; };
 		CD30BAA616F7B28A00C95DCF /* TwoFingerTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoFingerTapGestureController.h; sourceTree = "<group>"; };
 		CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoFingerTapGestureController.m; sourceTree = "<group>"; };
-		CD3591BE17342309000E2963 /* PlayTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabController.h; sourceTree = "<group>"; };
-		CD3591BF17342309000E2963 /* PlayTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabController.m; sourceTree = "<group>"; };
 		CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardFutureMovesAlertController.h; sourceTree = "<group>"; };
 		CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardFutureMovesAlertController.m; sourceTree = "<group>"; };
 		CD3591CC173475E2000E2963 /* BoardPositionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionController.h; sourceTree = "<group>"; };
 		CD3591CD173475E2000E2963 /* BoardPositionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionController.m; sourceTree = "<group>"; };
-		CD3591D01735520F000E2963 /* PlayTabControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPad.h; sourceTree = "<group>"; };
-		CD3591D117355211000E2963 /* PlayTabControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPad.m; sourceTree = "<group>"; };
-		CD3591D217355213000E2963 /* PlayTabControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPhone.h; sourceTree = "<group>"; };
-		CD3591D317355215000E2963 /* PlayTabControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPhone.m; sourceTree = "<group>"; };
+		CD3591D81735A711000E2963 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
+		CD3591D91735A711000E2963 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
+		CD3591DD1735A757000E2963 /* PlayTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabController.h; sourceTree = "<group>"; };
+		CD3591DE1735A757000E2963 /* PlayTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabController.m; sourceTree = "<group>"; };
+		CD3591DF1735A757000E2963 /* PlayTabControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPad.h; sourceTree = "<group>"; };
+		CD3591E01735A757000E2963 /* PlayTabControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPad.m; sourceTree = "<group>"; };
+		CD3591E11735A757000E2963 /* PlayTabControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPhone.h; sourceTree = "<group>"; };
+		CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPhone.m; sourceTree = "<group>"; };
+		CD3591E51735A757000E2963 /* CoordinateLabelsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591E61735A757000E2963 /* CoordinateLabelsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591E71735A757000E2963 /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591E91735A757000E2963 /* CrossHairStoneLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairStoneLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairStoneLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591EB1735A757000E2963 /* DeadStonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeadStonesLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeadStonesLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591ED1735A757000E2963 /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591EE1735A757000E2963 /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591EF1735A757000E2963 /* PlayViewLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591F01735A757000E2963 /* PlayViewLayerDelegateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegateBase.h; sourceTree = "<group>"; };
+		CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewLayerDelegateBase.m; sourceTree = "<group>"; };
+		CD3591F21735A757000E2963 /* StarPointsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StarPointsLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591F31735A757000E2963 /* StarPointsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarPointsLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591F41735A757000E2963 /* StonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StonesLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591F51735A757000E2963 /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591F61735A757000E2963 /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591F71735A757000E2963 /* SymbolsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolsLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591F81735A757000E2963 /* TerritoryLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerritoryLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591F91735A757000E2963 /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591FA1735A757000E2963 /* PlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayView.h; sourceTree = "<group>"; };
+		CD3591FB1735A757000E2963 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
+		CD3591FC1735A757000E2963 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
+		CD3591FD1735A757000E2963 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
+		CD3591FE1735A757000E2963 /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
+		CD3591FF1735A757000E2963 /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
+		CD3592001735A757000E2963 /* ScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollViewController.h; sourceTree = "<group>"; };
+		CD3592011735A757000E2963 /* ScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollViewController.m; sourceTree = "<group>"; };
 		CD36593A1691C49F00D75466 /* 40-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward.png"; sourceTree = "<group>"; };
 		CD36593B1691C49F00D75466 /* 40-forward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "40-forward@2x.png"; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
@@ -672,8 +694,6 @@
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
 		CD99EC6514B12059007B3B67 /* GoPlayerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayerTest.m; sourceTree = "<group>"; };
-		CD9A49A5170F3550009E7514 /* CoordinateLabelsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsLayerDelegate.h; sourceTree = "<group>"; };
-		CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsLayerDelegate.m; sourceTree = "<group>"; };
 		CD9A49A917107BC9009E7514 /* FontRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontRange.h; sourceTree = "<group>"; };
 		CD9A49AA17107BC9009E7514 /* FontRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontRange.m; sourceTree = "<group>"; };
 		CD9AA709146028770012C3EA /* HandicapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandicapSelectionController.h; sourceTree = "<group>"; };
@@ -717,8 +737,6 @@
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileSettingsController.m; sourceTree = "<group>"; };
-		CDB9212D16EB9852007BDB69 /* ScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollViewController.h; sourceTree = "<group>"; };
-		CDB9212E16EB9852007BDB69 /* ScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollViewController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -845,24 +863,6 @@
 		CDF82293164D450500F53C01 /* 298-circlex@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "298-circlex@2x.png"; sourceTree = "<group>"; };
 		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
 		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
-		CDF8B76814D9E92000940D3E /* PlayViewLayerDelegateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegateBase.h; sourceTree = "<group>"; };
-		CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewLayerDelegateBase.m; sourceTree = "<group>"; };
-		CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
-		CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
-		CDF8B77114DB598000940D3E /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B77214DB598000940D3E /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B77414DB598B00940D3E /* StarPointsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StarPointsLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarPointsLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B77614DB598C00940D3E /* StonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StonesLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B77814DB598D00940D3E /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolsLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B77D14DB5C9400940D3E /* DeadStonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeadStonesLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeadStonesLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B78014DB5CA100940D3E /* TerritoryLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerritoryLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
-		CDF8B78614DC757700940D3E /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
-		CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
 		CDF9740316C4082200D01D24 /* AsynchronousCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynchronousCommand.h; sourceTree = "<group>"; };
 		CDFA329015990C8400439B4E /* build-zipkit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-zipkit.sh"; sourceTree = "<group>"; };
 		CDFA329A159FA0F400439B4E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1078,8 +1078,6 @@
 				CD3591CD173475E2000E2963 /* BoardPositionController.m */,
 				CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */,
 				CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */,
-				CD0FE900169A122400053671 /* BoardPositionModel.h */,
-				CD0FE901169A122400053671 /* BoardPositionModel.m */,
 				CD0519D216B2D23B002771F7 /* BoardPositionTableListViewController.h */,
 				CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */,
 				CD252DA016A4969D00A088D5 /* BoardPositionToolbarController.h */,
@@ -1183,22 +1181,10 @@
 				CD0FE8FD169A122400053671 /* boardposition */,
 				CD1E9E54171806FE00E1B7D1 /* controller */,
 				CD3A0996169389A600ABDB5D /* gesture */,
-				CDF8B76714D9E91F00940D3E /* layer */,
 				CD1311BC17180AFC006CE699 /* model */,
-				CDB9212C16EB9852007BDB69 /* scrollview */,
+				CD3591DC1735A757000E2963 /* playtab */,
+				CD3591E31735A757000E2963 /* playview */,
 				CD05199216B1C09B002771F7 /* splitview */,
-				CD3591BE17342309000E2963 /* PlayTabController.h */,
-				CD3591BF17342309000E2963 /* PlayTabController.m */,
-				CD3591D01735520F000E2963 /* PlayTabControllerPad.h */,
-				CD3591D117355211000E2963 /* PlayTabControllerPad.m */,
-				CD3591D217355213000E2963 /* PlayTabControllerPhone.h */,
-				CD3591D317355215000E2963 /* PlayTabControllerPhone.m */,
-				CD10887B1326D2C100E83543 /* PlayView.h */,
-				CD10887C1326D2C100E83543 /* PlayView.m */,
-				CD10885F1326CD2400E83543 /* PlayViewController.h */,
-				CD1088601326CD2400E83543 /* PlayViewController.m */,
-				CDF8B76E14D9EFA300940D3E /* PlayViewMetrics.h */,
-				CDF8B76F14D9EFA500940D3E /* PlayViewMetrics.m */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -1229,6 +1215,8 @@
 		CD1311BC17180AFC006CE699 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				CD3591D81735A711000E2963 /* BoardPositionModel.h */,
+				CD3591D91735A711000E2963 /* BoardPositionModel.m */,
 				CD1311BD17180B45006CE699 /* PlayViewModel.h */,
 				CD1311BE17180B45006CE699 /* PlayViewModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
@@ -1257,6 +1245,63 @@
 				CD1311CD17180D57006CE699 /* StatusViewController.m */,
 			);
 			path = controller;
+			sourceTree = "<group>";
+		};
+		CD3591DC1735A757000E2963 /* playtab */ = {
+			isa = PBXGroup;
+			children = (
+				CD3591DD1735A757000E2963 /* PlayTabController.h */,
+				CD3591DE1735A757000E2963 /* PlayTabController.m */,
+				CD3591DF1735A757000E2963 /* PlayTabControllerPad.h */,
+				CD3591E01735A757000E2963 /* PlayTabControllerPad.m */,
+				CD3591E11735A757000E2963 /* PlayTabControllerPhone.h */,
+				CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */,
+			);
+			path = playtab;
+			sourceTree = "<group>";
+		};
+		CD3591E31735A757000E2963 /* playview */ = {
+			isa = PBXGroup;
+			children = (
+				CD3591E41735A757000E2963 /* layer */,
+				CD3591FA1735A757000E2963 /* PlayView.h */,
+				CD3591FB1735A757000E2963 /* PlayView.m */,
+				CD3591FC1735A757000E2963 /* PlayViewController.h */,
+				CD3591FD1735A757000E2963 /* PlayViewController.m */,
+				CD3591FE1735A757000E2963 /* PlayViewMetrics.h */,
+				CD3591FF1735A757000E2963 /* PlayViewMetrics.m */,
+				CD3592001735A757000E2963 /* ScrollViewController.h */,
+				CD3592011735A757000E2963 /* ScrollViewController.m */,
+			);
+			path = playview;
+			sourceTree = "<group>";
+		};
+		CD3591E41735A757000E2963 /* layer */ = {
+			isa = PBXGroup;
+			children = (
+				CD3591E51735A757000E2963 /* CoordinateLabelsLayerDelegate.h */,
+				CD3591E61735A757000E2963 /* CoordinateLabelsLayerDelegate.m */,
+				CD3591E71735A757000E2963 /* CrossHairLinesLayerDelegate.h */,
+				CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */,
+				CD3591E91735A757000E2963 /* CrossHairStoneLayerDelegate.h */,
+				CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */,
+				CD3591EB1735A757000E2963 /* DeadStonesLayerDelegate.h */,
+				CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */,
+				CD3591ED1735A757000E2963 /* GridLayerDelegate.h */,
+				CD3591EE1735A757000E2963 /* GridLayerDelegate.m */,
+				CD3591EF1735A757000E2963 /* PlayViewLayerDelegate.h */,
+				CD3591F01735A757000E2963 /* PlayViewLayerDelegateBase.h */,
+				CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */,
+				CD3591F21735A757000E2963 /* StarPointsLayerDelegate.h */,
+				CD3591F31735A757000E2963 /* StarPointsLayerDelegate.m */,
+				CD3591F41735A757000E2963 /* StonesLayerDelegate.h */,
+				CD3591F51735A757000E2963 /* StonesLayerDelegate.m */,
+				CD3591F61735A757000E2963 /* SymbolsLayerDelegate.h */,
+				CD3591F71735A757000E2963 /* SymbolsLayerDelegate.m */,
+				CD3591F81735A757000E2963 /* TerritoryLayerDelegate.h */,
+				CD3591F91735A757000E2963 /* TerritoryLayerDelegate.m */,
+			);
+			path = layer;
 			sourceTree = "<group>";
 		};
 		CD3A0996169389A600ABDB5D /* gesture */ = {
@@ -1357,16 +1402,6 @@
 			);
 			path = newgame;
 			sourceTree = "<group>";
-		};
-		CDB9212C16EB9852007BDB69 /* scrollview */ = {
-			isa = PBXGroup;
-			children = (
-				CDB9212D16EB9852007BDB69 /* ScrollViewController.h */,
-				CDB9212E16EB9852007BDB69 /* ScrollViewController.m */,
-			);
-			name = scrollview;
-			path = src/play/scrollview;
-			sourceTree = SOURCE_ROOT;
 		};
 		CDD48C80141034F000188B6A /* archive */ = {
 			isa = PBXGroup;
@@ -1721,34 +1756,6 @@
 			path = boardposition;
 			sourceTree = "<group>";
 		};
-		CDF8B76714D9E91F00940D3E /* layer */ = {
-			isa = PBXGroup;
-			children = (
-				CD9A49A5170F3550009E7514 /* CoordinateLabelsLayerDelegate.h */,
-				CD9A49A6170F3550009E7514 /* CoordinateLabelsLayerDelegate.m */,
-				CDF8B78614DC757700940D3E /* CrossHairLinesLayerDelegate.h */,
-				CDF8B78714DC757900940D3E /* CrossHairLinesLayerDelegate.m */,
-				CD0DFED614EB2159000FE1B5 /* CrossHairStoneLayerDelegate.h */,
-				CD0DFED714EB215C000FE1B5 /* CrossHairStoneLayerDelegate.m */,
-				CDF8B77D14DB5C9400940D3E /* DeadStonesLayerDelegate.h */,
-				CDF8B77E14DB5C9500940D3E /* DeadStonesLayerDelegate.m */,
-				CDF8B77114DB598000940D3E /* GridLayerDelegate.h */,
-				CDF8B77214DB598000940D3E /* GridLayerDelegate.m */,
-				CD0DFED514E6A47B000FE1B5 /* PlayViewLayerDelegate.h */,
-				CDF8B76814D9E92000940D3E /* PlayViewLayerDelegateBase.h */,
-				CDF8B76914D9E92000940D3E /* PlayViewLayerDelegateBase.m */,
-				CDF8B77414DB598B00940D3E /* StarPointsLayerDelegate.h */,
-				CDF8B77514DB598B00940D3E /* StarPointsLayerDelegate.m */,
-				CDF8B77614DB598C00940D3E /* StonesLayerDelegate.h */,
-				CDF8B77714DB598C00940D3E /* StonesLayerDelegate.m */,
-				CDF8B77814DB598D00940D3E /* SymbolsLayerDelegate.h */,
-				CDF8B77914DB598E00940D3E /* SymbolsLayerDelegate.m */,
-				CDF8B78014DB5CA100940D3E /* TerritoryLayerDelegate.h */,
-				CDF8B78114DB5CA200940D3E /* TerritoryLayerDelegate.m */,
-			);
-			path = layer;
-			sourceTree = "<group>";
-		};
 		CDFA32A215A0A3C400439B4E /* diagnostics */ = {
 			isa = PBXGroup;
 			children = (
@@ -1992,7 +1999,6 @@
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
-				CD10887D1326D2C100E83543 /* PlayView.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
@@ -2060,16 +2066,6 @@
 				CD00A367148C2C26004E1A0C /* main.m in Sources */,
 				CD00A368148C2C26004E1A0C /* SectionedDocumentViewController.m in Sources */,
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
-				CDF8B76A14D9E92000940D3E /* PlayViewLayerDelegateBase.m in Sources */,
-				CDF8B77014D9EFA700940D3E /* PlayViewMetrics.m in Sources */,
-				CDF8B77314DB598100940D3E /* GridLayerDelegate.m in Sources */,
-				CDF8B77A14DB598F00940D3E /* StarPointsLayerDelegate.m in Sources */,
-				CDF8B77B14DB598F00940D3E /* StonesLayerDelegate.m in Sources */,
-				CDF8B77C14DB598F00940D3E /* SymbolsLayerDelegate.m in Sources */,
-				CDF8B77F14DB5C9700940D3E /* DeadStonesLayerDelegate.m in Sources */,
-				CDF8B78214DB5CA400940D3E /* TerritoryLayerDelegate.m in Sources */,
-				CDF8B78814DC757C00940D3E /* CrossHairLinesLayerDelegate.m in Sources */,
-				CD0DFED814EB2163000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
@@ -2093,7 +2089,6 @@
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
-				CD0FE903169A122400053671 /* BoardPositionModel.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
@@ -2107,12 +2102,10 @@
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
-				CDB9212F16EB9852007BDB69 /* ScrollViewController.m in Sources */,
 				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
-				CD9A49A7170F3550009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E64171806FE00E1B7D1 /* DebugPlayViewController.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
@@ -2127,12 +2120,26 @@
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
-				CD3591C017342309000E2963 /* PlayTabController.m in Sources */,
-				CD3591C317342CF0000E2963 /* PlayViewController.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591CE173475E2000E2963 /* BoardPositionController.m in Sources */,
-				CD3591D417355216000E2963 /* PlayTabControllerPad.m in Sources */,
-				CD3591D617355216000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
+				CD3592021735A757000E2963 /* PlayTabController.m in Sources */,
+				CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */,
+				CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3592081735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */,
+				CD35920A1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */,
+				CD35920C1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */,
+				CD35920E1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */,
+				CD3592101735A757000E2963 /* GridLayerDelegate.m in Sources */,
+				CD3592121735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */,
+				CD3592141735A757000E2963 /* StarPointsLayerDelegate.m in Sources */,
+				CD3592161735A757000E2963 /* StonesLayerDelegate.m in Sources */,
+				CD3592181735A757000E2963 /* SymbolsLayerDelegate.m in Sources */,
+				CD35921A1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
+				CD35921C1735A757000E2963 /* PlayView.m in Sources */,
+				CD35921E1735A757000E2963 /* PlayViewController.m in Sources */,
+				CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */,
+				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2190,17 +2197,6 @@
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
-				CDF8B78914DDD72500940D3E /* PlayView.m in Sources */,
-				CDF8B78A14DDD72900940D3E /* PlayViewMetrics.m in Sources */,
-				CDF8B78C14DDD73500940D3E /* CrossHairLinesLayerDelegate.m in Sources */,
-				CDF8B78D14DDD73700940D3E /* DeadStonesLayerDelegate.m in Sources */,
-				CDF8B78E14DDD73B00940D3E /* GridLayerDelegate.m in Sources */,
-				CDF8B78F14DDD73E00940D3E /* PlayViewLayerDelegateBase.m in Sources */,
-				CDF8B79014DDD74300940D3E /* StarPointsLayerDelegate.m in Sources */,
-				CDF8B79114DDD74700940D3E /* StonesLayerDelegate.m in Sources */,
-				CDF8B79214DDD74A00940D3E /* SymbolsLayerDelegate.m in Sources */,
-				CDF8B79314DDD74F00940D3E /* TerritoryLayerDelegate.m in Sources */,
-				CD0DFED914EB2171000FE1B5 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */,
@@ -2216,7 +2212,6 @@
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
-				CDDBA88616A885D1001AB7DA /* BoardPositionModel.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
@@ -2232,7 +2227,6 @@
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
 				CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
-				CD9A49A8170F41A2009E7514 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
 				CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */,
 				CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */,
@@ -2244,7 +2238,6 @@
 				CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */,
 				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
-				CD9A49E5171250D0009E7514 /* ScrollViewController.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
 				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
@@ -2267,12 +2260,26 @@
 				CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
-				CD3591C117342309000E2963 /* PlayTabController.m in Sources */,
-				CD3591C217342CEF000E2963 /* PlayViewController.m in Sources */,
 				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591CF173475E2000E2963 /* BoardPositionController.m in Sources */,
-				CD3591D517355216000E2963 /* PlayTabControllerPad.m in Sources */,
-				CD3591D717355216000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
+				CD3592031735A757000E2963 /* PlayTabController.m in Sources */,
+				CD3592051735A757000E2963 /* PlayTabControllerPad.m in Sources */,
+				CD3592071735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3592091735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */,
+				CD35920B1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */,
+				CD35920D1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */,
+				CD35920F1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */,
+				CD3592111735A757000E2963 /* GridLayerDelegate.m in Sources */,
+				CD3592131735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */,
+				CD3592151735A757000E2963 /* StarPointsLayerDelegate.m in Sources */,
+				CD3592171735A757000E2963 /* StonesLayerDelegate.m in Sources */,
+				CD3592191735A757000E2963 /* SymbolsLayerDelegate.m in Sources */,
+				CD35921B1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
+				CD35921D1735A757000E2963 /* PlayView.m in Sources */,
+				CD35921F1735A757000E2963 /* PlayViewController.m in Sources */,
+				CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */,
+				CD3592231735A757000E2963 /* ScrollViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

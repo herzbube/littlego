@@ -18,11 +18,11 @@
 // Project includes
 #import "CrossHairLinesLayerDelegate.h"
 #import "../PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoPlayer.h"
-#import "../../go/GoPoint.h"
-#import "../../go/GoVertex.h"
+#import "../../model/PlayViewModel.h"
+#import "../../../go/GoGame.h"
+#import "../../../go/GoPlayer.h"
+#import "../../../go/GoPoint.h"
+#import "../../../go/GoVertex.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>

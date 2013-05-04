@@ -17,8 +17,8 @@
 
 // Project includes
 #import "ScrollViewController.h"
-#import "../PlayView.h"
-#import "../PlayViewController.h"
+#import "PlayView.h"
+#import "PlayViewController.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/PlayViewModel.h"

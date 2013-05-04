@@ -17,13 +17,13 @@
 
 // Project includes
 #import "RightPaneViewController.h"
-#import "../PlayView.h"
-#import "../PlayViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
-#import "../scrollview/ScrollViewController.h"
+#import "../playview/PlayView.h"
+#import "../playview/PlayViewController.h"
+#import "../playview/ScrollViewController.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
