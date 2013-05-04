@@ -72,7 +72,6 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.playView removeObserver:self forKeyPath:@"crossHairPoint"];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [self releaseObjects];
   [super dealloc];
@@ -157,8 +156,21 @@
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
-  [self.playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setPlayView:(PlayView*)playView
+{
+  if (_playView == playView)
+    return;
+  if (_playView)
+    [_playView removeObserver:self forKeyPath:@"crossHairPoint"];
+  _playView = playView;
+  if (_playView)
+    [_playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
