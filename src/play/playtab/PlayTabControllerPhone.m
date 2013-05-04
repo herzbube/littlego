@@ -171,7 +171,6 @@
   // if yes, then it should also be responsible for setting width/height
   [self setupCoordinateLabelScrollViews];
 
-  // TODO xxx Should we know statusviewcontroller and playViewController?
   self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
 }
 

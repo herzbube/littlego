@@ -25,7 +25,6 @@
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
-#import "../../play/playview/PlayView.h"
 #import "../../shared/ApplicationStateManager.h"
 
 

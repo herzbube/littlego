@@ -278,11 +278,10 @@
 
   NSString* statusText = @"";
 
-  PlayView* playView = [PlayView sharedView];
-  if (playView.crossHairPoint)
+  if (self.playView.crossHairPoint)
   {
-    statusText = playView.crossHairPoint.vertex.string;
-    if (! playView.crossHairPointIsLegalMove)
+    statusText = self.playView.crossHairPoint.vertex.string;
+    if (! self.playView.crossHairPointIsLegalMove)
       statusText = [statusText stringByAppendingString:@" - You can't play there"];
   }
   else

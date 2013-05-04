@@ -77,19 +77,6 @@
 @implementation PlayView
 
 // -----------------------------------------------------------------------------
-/// @brief Shared instance of PlayView.
-// -----------------------------------------------------------------------------
-static PlayView* sharedPlayView = nil;
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the shared PlayView object.
-// -----------------------------------------------------------------------------
-+ (PlayView*) sharedView
-{
-  return sharedPlayView;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Initializes a PlayView object with frame rectangle @a aRect. This
 /// happens at least once during application launch, but may occur again later
 /// on if the view is unloaded and then reloaded due to a memory warning.
@@ -113,8 +100,6 @@ static PlayView* sharedPlayView = nil;
   self = [super initWithFrame:aRect];
   if (! self)
     return nil;
-
-  sharedPlayView = self;
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playViewModel = delegate.playViewModel;
@@ -144,8 +129,6 @@ static PlayView* sharedPlayView = nil;
   self.playViewModel = nil;
   self.scoringModel = nil;
   self.crossHairPoint = nil;
-  if (self == sharedPlayView)
-    sharedPlayView = nil;
 
   self.playViewMetrics = nil;
   self.layerDelegates = nil;
