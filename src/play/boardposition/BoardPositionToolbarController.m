@@ -17,6 +17,9 @@
 
 // Project includes
 #import "BoardPositionToolbarController.h"
+#import "BoardPositionListViewController.h"
+#import "BoardPositionViewMetrics.h"
+#import "CurrentBoardPositionViewController.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -36,6 +39,8 @@ enum NavigationDirection
 /// BoardPositionToolbarController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController()
+@property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
+@property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, assign) UIToolbar* toolbar;
@@ -54,43 +59,25 @@ enum NavigationDirection
 @implementation BoardPositionToolbarController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionToolbarController object that places its
-/// buttons into @a aToolbar.
-// -----------------------------------------------------------------------------
-- (id) initWithToolbar:(UIToolbar*)aToolbar
-{
-  return [self initWithToolbar:aToolbar boardPositionListView:nil currentBoardPositionView:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionToolbarController object that places its
-/// buttons, @a listView and @a currentView into @a aToolbar.
+/// @brief Initializes a BoardPositionToolbarController object.
 ///
 /// @note This is the designated initializer of BoardPositionToolbarController.
 // -----------------------------------------------------------------------------
-- (id) initWithToolbar:(UIToolbar*)aToolbar boardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView
+- (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  self.toolbar = aToolbar;
+  [self releaseObjects];
+  [self setupChildControllers];
   self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
   self.navigationBarButtonItemsForward = [NSMutableArray arrayWithCapacity:0];
   self.numberOfBoardPositionsOnPage = 10;
   self.boardPositionListViewIsVisible = false;
-
-  [self setupSpacerItems];
-  [self setupNavigationBarButtonItems];
-  [self setupCustomViewItemsWithBoardPositionListView:listView currentBoardPositionView:currentView];
-  [self setupNotificationResponders];
-
-  self.toolbarNeedsPopulation = true;
-  self.buttonStatesNeedUpdate = true;
-  [self delayedUpdate];
-
+  self.toolbarNeedsPopulation = false;
+  self.buttonStatesNeedUpdate = false;
   return self;
 }
 
@@ -104,6 +91,31 @@ enum NavigationDirection
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupChildControllers
+{
+  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+  self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
+  self.boardPositionListViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
+  self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
+  self.currentBoardPositionViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.boardPositionViewMetrics = nil;
+  self.boardPositionListViewController = nil;
+  self.currentBoardPositionViewController = nil;
+  self.view = nil;
   self.toolbar = nil;
   self.negativeSpacer = nil;
   self.flexibleSpacer = nil;
@@ -112,7 +124,126 @@ enum NavigationDirection
   self.navigationBarButtonItemsForward = nil;
   self.boardPositionListViewItem = nil;
   self.currentBoardPositionViewItem = nil;
-  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionListViewController:(BoardPositionListViewController*)boardPositionListViewController
+{
+  if (_boardPositionListViewController == boardPositionListViewController)
+    return;
+  if (_boardPositionListViewController)
+  {
+    [_boardPositionListViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionListViewController removeFromParentViewController];
+    [_boardPositionListViewController release];
+    _boardPositionListViewController = nil;
+  }
+  if (boardPositionListViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionListViewController];
+    [_boardPositionListViewController didMoveToParentViewController:self];
+    [boardPositionListViewController retain];
+    _boardPositionListViewController = boardPositionListViewController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)currentBoardPositionViewController
+{
+  if (_currentBoardPositionViewController == currentBoardPositionViewController)
+    return;
+  if (_currentBoardPositionViewController)
+  {
+    [_currentBoardPositionViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_currentBoardPositionViewController removeFromParentViewController];
+    [_currentBoardPositionViewController release];
+    _currentBoardPositionViewController = nil;
+  }
+  if (currentBoardPositionViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:currentBoardPositionViewController];
+    [_currentBoardPositionViewController didMoveToParentViewController:self];
+    [currentBoardPositionViewController retain];
+    _currentBoardPositionViewController = currentBoardPositionViewController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
+  self.view = self.toolbar;
+  self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+  [self setupBoardPositionListView];
+  [self setupCurrentBoardPositionView];
+  [self setupSpacerItems];
+  [self setupBarButtonItems];
+  [self setupCustomViewItems];
+  [self setupNotificationResponders];
+
+  self.toolbarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionListView
+{
+  CGRect boardPositionListViewFrame = [self boardPositionListViewFrame];
+  self.boardPositionListViewController.view.frame = boardPositionListViewFrame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionListViewFrame
+{
+  int listViewX = 0;
+  int listViewY = 0;
+  int listViewWidth = (self.view.frame.size.width
+                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
+                       - self.boardPositionViewMetrics.boardPositionViewWidth
+                       - (2 * [UiElementMetrics toolbarSpacing]));
+  int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (void) setupCurrentBoardPositionView
+{
+  CGRect currentBoardPositionViewFrame = [self currentBoardPositionViewFrame];
+  self.currentBoardPositionViewController.view.frame = currentBoardPositionViewFrame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked when the view hierarchy is
+/// created.
+// -----------------------------------------------------------------------------
+- (CGRect) currentBoardPositionViewFrame
+{
+  int boardPositionViewX = 0;
+  int boardPositionViewY = 0;
+  int boardPositionViewWidth = self.boardPositionViewMetrics.boardPositionViewWidth;
+  int boardPositionViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  return CGRectMake(boardPositionViewX, boardPositionViewY, boardPositionViewWidth, boardPositionViewHeight);
 }
 
 // -----------------------------------------------------------------------------
@@ -132,7 +263,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
-- (void) setupNavigationBarButtonItems
+- (void) setupBarButtonItems
 {
   enum NavigationDirection direction = NavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
@@ -145,7 +276,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupNavigationBarButtonItems().
+/// @brief Private helper for setupBarButtonItems().
 // -----------------------------------------------------------------------------
 - (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector navigationDirection:(enum NavigationDirection)direction
 {
@@ -163,17 +294,18 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
-- (void) setupCustomViewItemsWithBoardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView
+- (void) setupCustomViewItems
 {
-  if (listView)
-    self.boardPositionListViewItem = [[[UIBarButtonItem alloc] initWithCustomView:listView] autorelease];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.boardPositionListViewItem = [[[UIBarButtonItem alloc] initWithCustomView:self.boardPositionListViewController.view] autorelease];
+    self.currentBoardPositionViewItem = [[[UIBarButtonItem alloc] initWithCustomView:self.currentBoardPositionViewController.view] autorelease];
+  }
   else
+  {
     self.boardPositionListViewItem = nil;
-
-  if (currentView)
-    self.currentBoardPositionViewItem = [[[UIBarButtonItem alloc] initWithCustomView:currentView] autorelease];
-  else
     self.currentBoardPositionViewItem = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -384,6 +516,14 @@ enum NavigationDirection
 - (void) fastForwardToEnd:(id)sender
 {
   [[[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief CurrentBoardPositionViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
+{
+  [self toggleToolbarItems];
 }
 
 @end

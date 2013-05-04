@@ -38,10 +38,6 @@
 /// positions. The delegate executes @a command, possibly displaying an alert
 /// first which the user must confirmed.
 - (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-/// @brief This method is invoked when the user calls up or dismisses the Game
-/// Info view. The delegate is responsible for making the view visible, or
-/// hiding the view (@a makeVisible indicates which).
-- (void) navigationBarController:(NavigationBarController*)controller makeVisible:(bool)makeVisible gameInfoViewController:(UIViewController*)gameInfoViewController;
 @end
 
 
@@ -55,16 +51,16 @@
 /// - Enable/disable buttons
 /// - Reacting to the user tapping on buttons
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : NSObject <GameInfoViewControllerDelegate,
-                                               PlayViewActionSheetDelegate,
-                                               UIAlertViewDelegate,
-                                               UISplitViewControllerDelegate>
+@interface NavigationBarController : UIViewController <GameInfoViewControllerDelegate,
+                                                       PlayViewActionSheetDelegate,
+                                                       UIAlertViewDelegate,
+                                                       UISplitViewControllerDelegate>
 {
 }
 
-- (id) initWithDelegate:(id<NavigationBarControllerDelegate>)delegate parentViewController:(UIViewController*)parentViewController;
 - (void) dismissGameInfoViewController;
-- (void) setupWithNavigationBar:(UINavigationBar*)navigationBar
-           statusViewController:(StatusViewController*)statusViewController;
+
+@property(nonatomic, retain) StatusViewController* statusViewController;
+@property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 
 @end

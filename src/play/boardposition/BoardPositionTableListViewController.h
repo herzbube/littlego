@@ -33,6 +33,4 @@
 {
 }
 
-- (id) initWithContainerView:(UIView*)containerView;
-
 @end

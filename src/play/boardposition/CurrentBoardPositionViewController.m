@@ -18,6 +18,7 @@
 // Project includes
 #import "CurrentBoardPositionViewController.h"
 #import "BoardPositionView.h"
+#import "BoardPositionViewMetrics.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -28,7 +29,6 @@
 /// CurrentBoardPositionViewController.
 // -----------------------------------------------------------------------------
 @interface CurrentBoardPositionViewController()
-@property(nonatomic, assign) BoardPositionView* boardPositionView;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionViewNeedsUpdate;
@@ -40,31 +40,22 @@
 @implementation CurrentBoardPositionViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a CurrentBoardPositionViewController object that manages
-/// board position view @a view.
+/// @brief Initializes a CurrentBoardPositionViewController object.
 ///
 /// @note This is the designated initializer of
 /// CurrentBoardPositionViewController.
 // -----------------------------------------------------------------------------
 - (id) initWithCurrentBoardPositionView:(BoardPositionView*)view;
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  self.boardPositionView = view;
-  self.delegate = nil;
-  self.allDataNeedsUpdate = true;
+  [self releaseObjects];
+  self.allDataNeedsUpdate = false;
   self.boardPositionViewNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = true;
-  self.tappingEnabled = true;
-
-  [self setupTapGestureRecognizer];
-  [self setupNotificationResponders];
-
-  [self delayedUpdate];
-
+  self.tappingEnabledNeedsUpdate = false;
+  self.tappingEnabled = false;
   return self;
 }
 
@@ -76,10 +67,39 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.view = nil;
   self.boardPositionView = nil;
   self.delegate = nil;
   self.tapRecognizer = nil;
-  [super dealloc];
+  self.boardPositionViewMetrics = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.boardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
+                                                                 viewMetrics:self.boardPositionViewMetrics] autorelease];
+  self.view = self.boardPositionView;
+
+  [self setupTapGestureRecognizer];
+  [self setupNotificationResponders];
+
+  self.allDataNeedsUpdate = true;
+  self.boardPositionViewNeedsUpdate = false;
+  self.tappingEnabledNeedsUpdate = true;
+  self.tappingEnabled = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------

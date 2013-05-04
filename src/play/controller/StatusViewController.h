@@ -28,13 +28,11 @@
 /// the GTP engine is taking a long time to calculate something (e.g. computer
 /// player makes its move), the status view also displays an activity indicator.
 // -----------------------------------------------------------------------------
-@interface StatusViewController : NSObject
+@interface StatusViewController : UIViewController
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView;
-
-@property(nonatomic, retain, readonly) UIView* statusView;
 @property(nonatomic, assign) int statusViewWidth;
+@property(nonatomic, assign) PlayView* playView;
 
 @end

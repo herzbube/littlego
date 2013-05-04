@@ -24,7 +24,6 @@
 /// DoubleTapGestureController.
 // -----------------------------------------------------------------------------
 @interface DoubleTapGestureController()
-@property(nonatomic, assign) UIScrollView* scrollView;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 @end
 
@@ -32,18 +31,17 @@
 @implementation DoubleTapGestureController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DoubleTapGestureController object that handles
-/// double-tap gestures in the screen area occupied by @a scrollView.
+/// @brief Initializes a DoubleTapGestureController object.
 ///
 /// @note This is the designated initializer of DoubleTapGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithScrollView:(UIScrollView*)scrollView
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  self.scrollView = scrollView;
+  self.scrollView = nil;
   [self setupTapGestureRecognizer];
   return self;
 }
@@ -54,6 +52,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.scrollView = nil;
   self.tapRecognizer = nil;
   [super dealloc];
 }
@@ -66,7 +65,20 @@
   self.tapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
   self.tapRecognizer.numberOfTapsRequired = 2;
   self.tapRecognizer.numberOfTouchesRequired = 1;
-  [self.scrollView addGestureRecognizer:self.tapRecognizer];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setScrollView:(UIScrollView*)scrollView
+{
+  if (_scrollView == scrollView)
+    return;
+  if (_scrollView && self.tapRecognizer)
+    [_scrollView removeGestureRecognizer:self.tapRecognizer];
+  _scrollView = scrollView;
+  if (_scrollView && self.tapRecognizer)
+    [_scrollView addGestureRecognizer:self.tapRecognizer];
 }
 
 // -----------------------------------------------------------------------------

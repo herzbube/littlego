@@ -50,8 +50,7 @@
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView
-               delegate:(id<PanGestureControllerDelegate>)delegate
-   parentViewController:(UIViewController*)parentViewController;
+@property(nonatomic, assign) PlayView* playView;
+@property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
 
 @end

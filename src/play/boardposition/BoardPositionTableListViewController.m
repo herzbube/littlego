@@ -38,6 +38,7 @@
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
+@property(nonatomic, assign) bool subviewsNotYetCreated;
 @property(nonatomic, retain) UILabel* currentBoardPositionTitleLabel;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
 @property(nonatomic, retain) UILabel* boardPositionListTitleLabel;
@@ -56,37 +57,25 @@
 @implementation BoardPositionTableListViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionTableListViewController object that places
-/// the table views it manages as subviews of @a containerView.
+/// @brief Initializes a BoardPositionTableListViewController object.
 ///
 /// @note This is the designated initializer of
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithContainerView:(UIView*)containerView
+- (id) init
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  self.view = containerView;
-  self.currentBoardPositionTitleLabel = nil;
-  self.currentBoardPositionTableView = nil;
-  self.boardPositionListTitleLabel = nil;
-  self.boardPositionListTableView = nil;
+  [self releaseObjects];
+  self.subviewsNotYetCreated = true;
   self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
   self.oldCurrentBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
-  self.blackStoneImage = nil;
-  self.whiteStoneImage = nil;
-
-  [self setupTableViews];
-  [self setupNotificationResponders];
-  [self setupStoneImages];
-
   return self;
 }
 
@@ -100,13 +89,45 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.view = nil;
   self.currentBoardPositionTitleLabel = nil;
   self.currentBoardPositionTableView = nil;
   self.boardPositionListTitleLabel = nil;
   self.boardPositionListTableView = nil;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
-  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  if (self.subviewsNotYetCreated)
+  {
+    self.subviewsNotYetCreated = false;
+    [self setupTableViews];
+    [self setupNotificationResponders];
+    [self setupStoneImages];
+  }
 }
 
 // -----------------------------------------------------------------------------

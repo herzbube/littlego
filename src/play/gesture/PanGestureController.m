@@ -28,9 +28,6 @@
 /// @brief Class extension with private properties for PanGestureController.
 // -----------------------------------------------------------------------------
 @interface PanGestureController()
-@property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
-@property(nonatomic, assign) UIViewController* parentViewController;
 @property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
 @property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
 @end
@@ -39,21 +36,18 @@
 @implementation PanGestureController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PanGestureController object that manages @a playView.
+/// @brief Initializes a PanGestureController object.
 ///
 /// @note This is the designated initializer of PanGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)playView
-               delegate:(id<PanGestureControllerDelegate>)delegate
-   parentViewController:(UIViewController*)parentViewController
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  self.playView = playView;
-  self.delegate = delegate;
-  self.parentViewController = parentViewController;
+  self.playView = nil;
+  self.delegate = nil;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
@@ -79,7 +73,6 @@
 - (void) setupLongPressGestureRecognizer
 {
   self.longPressRecognizer = [[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)] autorelease];
-	[self.playView addGestureRecognizer:self.longPressRecognizer];
   self.longPressRecognizer.delegate = self;
   CGFloat infiniteMovement = CGFLOAT_MAX;
   self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
@@ -101,6 +94,20 @@
   [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setPlayView:(PlayView*)playView
+{
+  if (_playView == playView)
+    return;
+  if (_playView && self.longPressRecognizer)
+    [_playView removeGestureRecognizer:self.longPressRecognizer];
+  _playView = playView;
+  if (_playView && self.longPressRecognizer)
+    [_playView addGestureRecognizer:self.longPressRecognizer];
 }
 
 // -----------------------------------------------------------------------------

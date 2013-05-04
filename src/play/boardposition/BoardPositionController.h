@@ -15,29 +15,11 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "RightPaneViewController.h"
-#import "../../ui/UiUtilities.h"
-
-
-@implementation RightPaneViewController
-
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief The BoardPositionController class xxx
 // -----------------------------------------------------------------------------
-- (void) loadView
+@interface BoardPositionController : UIViewController
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 @end

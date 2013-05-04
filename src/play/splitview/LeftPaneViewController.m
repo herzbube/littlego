@@ -17,7 +17,6 @@
 
 // Project includes
 #import "LeftPaneViewController.h"
-#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
 
@@ -28,8 +27,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect leftPaneViewFrame = CGRectMake(0, 0, [UiElementMetrics splitViewLeftPaneWidth], [UiElementMetrics splitViewHeight]);
-  self.view = [[[UIView alloc] initWithFrame:leftPaneViewFrame] autorelease];
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   [UiUtilities addGroupTableViewBackgroundToView:self.view];
 }

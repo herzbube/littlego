@@ -18,6 +18,7 @@
 // Forward declarations
 @class CurrentBoardPositionViewController;
 @class BoardPositionView;
+@class BoardPositionViewMetrics;
 
 
 // -----------------------------------------------------------------------------
@@ -42,12 +43,12 @@
 /// - Detect a tap gesture on the current board position view. The actual
 ///   handling is delegated.
 // -----------------------------------------------------------------------------
-@interface CurrentBoardPositionViewController : NSObject <UIGestureRecognizerDelegate>
+@interface CurrentBoardPositionViewController : UIViewController <UIGestureRecognizerDelegate>
 {
 }
 
-- (id) initWithCurrentBoardPositionView:(BoardPositionView*)view;
-
 @property(nonatomic, assign) id<CurrentBoardPositionViewControllerDelegate> delegate;
+@property(nonatomic, retain) BoardPositionView* boardPositionView;
+@property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 
 @end

@@ -27,8 +27,6 @@
 /// @brief Class extension with private properties for TapGestureController.
 // -----------------------------------------------------------------------------
 @interface TapGestureController()
-/// @brief The view that TapGestureController manages gestures for.
-@property(nonatomic, assign) PlayView* playView;
 /// @brief The gesture recognizer used to detect the tap gesture.
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a tapping gesture is currently allowed, false if not (e.g.
@@ -40,17 +38,17 @@
 @implementation TapGestureController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a TapGestureController object that manages @a playView.
+/// @brief Initializes a TapGestureController object.
 ///
 /// @note This is the designated initializer of TapGestureController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)playView
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  self.playView = playView;
+  self.playView = nil;
   [self setupTapGestureRecognizer];
   [self setupNotificationResponders];
   [self updateTappingEnabled];
@@ -74,7 +72,6 @@
 - (void) setupTapGestureRecognizer
 {
   self.tapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
-	[self.playView addGestureRecognizer:self.tapRecognizer];
   self.tapRecognizer.delegate = self;
 }
 
@@ -89,6 +86,20 @@
   [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setPlayView:(PlayView*)playView
+{
+  if (_playView == playView)
+    return;
+  if (_playView && self.tapRecognizer)
+    [_playView removeGestureRecognizer:self.tapRecognizer];
+  _playView = playView;
+  if (_playView && self.tapRecognizer)
+    [_playView addGestureRecognizer:self.tapRecognizer];
 }
 
 // -----------------------------------------------------------------------------

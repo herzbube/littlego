@@ -99,10 +99,10 @@
 /// progress). An updater method will always check if its "needs update" flag
 /// has been set.
 // -----------------------------------------------------------------------------
-@interface BoardPositionListViewController : NSObject <ItemScrollViewDataSource, ItemScrollViewDelegate>
+@interface BoardPositionListViewController : UIViewController <ItemScrollViewDataSource, ItemScrollViewDelegate>
 {
 }
 
-- (id) initWithBoardPositionListView:(ItemScrollView*)view viewMetrics:(BoardPositionViewMetrics*)metrics;
+@property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 
 @end

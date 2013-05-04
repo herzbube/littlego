@@ -15,29 +15,24 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "RightPaneViewController.h"
-#import "../../ui/UiUtilities.h"
+// Forward declarations
+@class NavigationBarController;
+@class ScrollViewController;
 
-
-@implementation RightPaneViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief The PlayTabController class is the main view controller on the
+/// "Play" tab.
+///
+/// PlayTabController arranges its child view controllers differently depending
+/// on the device that runs the application.
 // -----------------------------------------------------------------------------
-- (void) loadView
+@interface PlayTabController : UIViewController
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
+@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) ScrollViewController* scrollViewController;
+@property(nonatomic, retain) UIViewController* boardPositionController;
 
 @end

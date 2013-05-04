@@ -15,10 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "boardposition/CurrentBoardPositionViewController.h"
-#import "controller/NavigationBarController.h"
-#import "gesture/PanGestureController.h"
+// Forward declarations
+@class PlayView;
+@class PanGestureController;
 
 
 // -----------------------------------------------------------------------------
@@ -42,11 +41,11 @@
 /// autoresizing mask so that when the interface rotates UIKit automatically
 /// resizes and shifts the views.
 // -----------------------------------------------------------------------------
-@interface PlayViewController : UIViewController <PanGestureControllerDelegate,
-                                                  NavigationBarControllerDelegate,
-                                                  CurrentBoardPositionViewControllerDelegate,
-                                                  UIAlertViewDelegate>
+@interface PlayViewController : UIViewController
 {
 }
+
+@property(nonatomic, retain) PlayView* playView;
+@property(nonatomic, retain) PanGestureController* panGestureController;
 
 @end

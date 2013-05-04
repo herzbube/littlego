@@ -15,6 +15,12 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "CurrentBoardPositionViewController.h"
+
+// Forward declarations
+@class BoardPositionViewMetrics;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionToolbarController class is responsible for managing
@@ -41,13 +47,10 @@
 /// BoardPositionToolbarController can be triggered to repopulate the toolbar.
 /// This only has an effect if custom views are used.
 // -----------------------------------------------------------------------------
-@interface BoardPositionToolbarController : NSObject
+@interface BoardPositionToolbarController : UIViewController <CurrentBoardPositionViewControllerDelegate>
 {
 }
 
-- (id) initWithToolbar:(UIToolbar*)toolbar;
-- (id) initWithToolbar:(UIToolbar*)toolbar boardPositionListView:(UIView*)listView currentBoardPositionView:(UIView*)currentView;
-
-- (void) toggleToolbarItems;
+@property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
 
 @end

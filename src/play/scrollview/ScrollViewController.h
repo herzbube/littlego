@@ -16,24 +16,23 @@
 
 
 // Forward declarations
-@class PlayView;
+@class PlayViewController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewScrollController class manages the scroll view that
+/// @brief The ScrollViewController class manages the scroll view that
 /// contains the Play view.
 ///
-/// PlayViewScrollController is used only on the iPhone
-///
-/// PlayViewScrollController's has the following responsibilities:
+/// ScrollViewController's has the following responsibilities:
 /// - xxx
 /// - xxx
 /// - xxx
 // -----------------------------------------------------------------------------
-@interface PlayViewScrollController : NSObject <UIScrollViewDelegate>
+@interface ScrollViewController : UIViewController <UIScrollViewDelegate>
 {
 }
 
-- (id) initWithScrollView:(UIScrollView*)scrollView playView:(PlayView*)playView;
+@property(nonatomic, assign) UIScrollView* scrollView;
+@property(nonatomic, retain) PlayViewController* playViewController;
 
 @end

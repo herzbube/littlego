@@ -36,7 +36,7 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
-#import "../play/PlayViewController.h"
+#import "../play/PlayTabController.h"
 #import "../play/boardposition/BoardPositionModel.h"
 #import "../play/controller/SoundHandling.h"
 #import "../play/model/PlayViewModel.h"
@@ -648,9 +648,9 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupPlayTab
 {
-  PlayViewController* playViewController = [[[PlayViewController alloc] init] autorelease];
+  UIViewController* playTabController = [[[PlayTabController alloc] init] autorelease];
   UINavigationController* playTabRootController = (UINavigationController*)[self tabController:TabTypePlay];
-  [playTabRootController pushViewController:playViewController animated:NO];
+  [playTabRootController pushViewController:playTabController animated:NO];
 }
 
 // -----------------------------------------------------------------------------

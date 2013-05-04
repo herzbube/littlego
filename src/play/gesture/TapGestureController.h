@@ -28,6 +28,6 @@
 {
 }
 
-- (id) initWithPlayView:(PlayView*)playView;
+@property(nonatomic, assign) PlayView* playView;
 
 @end

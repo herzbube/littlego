@@ -39,14 +39,9 @@
 //@{
 @property(nonatomic, assign) UILabel* statusLabel;
 @property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
-@property(nonatomic, assign) PlayView* playView;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool viewLayoutNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
-//@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, retain, readwrite) UIView* statusView;
 //@}
 @end
 
@@ -58,18 +53,16 @@
 ///
 /// @note This is the designated initializer of StatusViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithPlayView:(PlayView*)playView
+- (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  self.playView = playView;
+  [self releaseObjects];
   self.activityIndicatorNeedsUpdate = false;
   self.viewLayoutNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
-  [self setupView];
-  [self setupNotificationResponders];
   return self;
 }
 
@@ -81,32 +74,28 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.playView removeObserver:self forKeyPath:@"crossHairPoint"];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  self.statusView = nil;
-  self.statusLabel = nil;
-  self.activityIndicator = nil;
-  self.playView = nil;
+  [self releaseObjects];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper for dealloc and viewDidUnload
 // -----------------------------------------------------------------------------
-- (void) setupNotificationResponders
+- (void) releaseObjects
 {
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
-  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
-  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
-  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  // KVO observing
-  [self.playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
-  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  self.view = nil;
+  self.statusLabel = nil;
+  self.activityIndicator = nil;
+  self.playView = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  [self setupView];
+  [self setupNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
@@ -144,11 +133,32 @@
 
   // The activity indicator is initially hidden, so we can use the label size
   // for the initial frame
-  self.statusView = [[[UIView alloc] initWithFrame:self.statusLabel.bounds] autorelease];
-  [self.statusView addSubview:self.statusLabel];
-  [self.statusView addSubview:self.activityIndicator];
+  self.view = [[[UIView alloc] initWithFrame:self.statusLabel.bounds] autorelease];
+  [self.view addSubview:self.statusLabel];
+  [self.view addSubview:self.activityIndicator];
   // Don't use self, we don't want to trigger the setter
-  _statusViewWidth = self.statusView.frame.size.width;
+  _statusViewWidth = self.view.frame.size.width;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
+  [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  // KVO observing
+  [self.playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
+  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -160,9 +170,9 @@
   if (self.statusViewWidth == newWidth)
     return;
   _statusViewWidth = newWidth;
-  CGRect frame = self.statusView.frame;
+  CGRect frame = self.view.frame;
   frame.size.width = self.statusViewWidth;
-  self.statusView.frame = frame;
+  self.view.frame = frame;
 
   self.viewLayoutNeedsUpdate = true;
   [self delayedUpdate];
@@ -247,9 +257,9 @@
 
   CGRect statusLabelFrame = self.statusLabel.frame;
   if (self.activityIndicator.hidden)
-    statusLabelFrame.size.width = self.statusView.frame.size.width;
+    statusLabelFrame.size.width = self.view.frame.size.width;
   else
-    statusLabelFrame.size.width = self.statusView.frame.size.width - self.activityIndicator.frame.size.width;
+    statusLabelFrame.size.width = self.view.frame.size.width - self.activityIndicator.frame.size.width;
   self.statusLabel.frame = statusLabelFrame;
 
   CGRect activityIndicatorFrame = self.activityIndicator.frame;

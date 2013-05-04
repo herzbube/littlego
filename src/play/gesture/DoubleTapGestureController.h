@@ -35,6 +35,6 @@
 {
 }
 
-- (id) initWithScrollView:(UIScrollView*)scrollView;
+@property(nonatomic, assign) UIScrollView* scrollView;
 
 @end

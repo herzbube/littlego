@@ -35,15 +35,10 @@
 /// @brief Class extension with private properties for NavigationBarController.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController()
-@property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
-/// @brief The parent view controller of this subcontroller.
-@property(nonatomic, assign) UIViewController* parentViewController;
 @property(nonatomic, retain) UINavigationBar* navigationBar;
-@property(nonatomic, assign) StatusViewController* statusViewController;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
-@property(nonatomic, retain) UINavigationItem* navigationItem;
 @property(nonatomic, retain) UIBarButtonItem* computerPlayButton;
 @property(nonatomic, retain) UIBarButtonItem* passButton;
 @property(nonatomic, retain) UIBarButtonItem* discardBoardPositionButton;
@@ -67,27 +62,16 @@
 ///
 /// @note This is the designated initializer of NavigationBarController.
 // -----------------------------------------------------------------------------
-- (id) initWithDelegate:(id<NavigationBarControllerDelegate>)aDelegate parentViewController:(UIViewController*)aParentViewController
+- (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  self.navigationBar = nil;
-  self.statusViewController = nil;
-  self.delegate = aDelegate;
-  self.parentViewController = aParentViewController;
-  self.gameInfoViewController = nil;
-  self.barButtonItemForShowingTheHiddenViewController = nil;
-  [self setupNavigationItem];
-  [self setupButtons];
-  [self setupNotificationResponders];
-
-  self.navigationBarNeedsPopulation = true;
-  self.buttonStatesNeedUpdate = true;
-  [self delayedUpdate];
-
+  [self releaseObjects];
+  [self setupChildControllers];
+  self.navigationBarNeedsPopulation = false;
+  self.buttonStatesNeedUpdate = false;
   return self;
 }
 
@@ -100,11 +84,28 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+  [self releaseObjects];
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupChildControllers
+{
+  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc and viewDidUnload
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.view = nil;
   self.navigationBar = nil;
+  self.statusViewController = nil;
   self.delegate = nil;
-  self.parentViewController = nil;
   self.gameInfoViewController = nil;
-  self.navigationItem = nil;
   self.computerPlayButton = nil;
   self.passButton = nil;
   self.discardBoardPositionButton = nil;
@@ -118,15 +119,51 @@
   self.gameActionsButton = nil;
   self.doneButton = nil;
   self.statusViewButton = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setupNavigationItem
+- (void) setStatusViewController:(StatusViewController*)statusViewController
 {
-  self.navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
+  if (_statusViewController == statusViewController)
+    return;
+  if (_statusViewController)
+  {
+    [_statusViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_statusViewController removeFromParentViewController];
+    [_statusViewController release];
+    _statusViewController = nil;
+  }
+  if (statusViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:statusViewController];
+    [_statusViewController didMoveToParentViewController:self];
+    [statusViewController retain];
+    _statusViewController = statusViewController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
+  self.view = self.navigationBar;
+  self.navigationBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+  UINavigationItem* navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
+  [self.navigationBar pushNavigationItem:navigationItem animated:NO];
+
+  [self setupButtons];
+  [self setupNotificationResponders];
+
+  self.navigationBarNeedsPopulation = true;
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -176,7 +213,7 @@
   self.flexibleSpaceButtonRight = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                  target:nil
                                                                                  action:nil] autorelease];
-  self.statusViewButton = nil;  // is set up delayed
+  self.statusViewButton = [[[UIBarButtonItem alloc] initWithCustomView:self.statusViewController.view] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -199,24 +236,6 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Setting of some objects occurs delayed (i.e. not during
-/// initialization of this controller object) due to timing needs of the parent
-/// view controller.
-// -----------------------------------------------------------------------------
-- (void) setupWithNavigationBar:(UINavigationBar*)navigationBar
-           statusViewController:(StatusViewController*)statusViewController
-{
-  self.navigationBar = navigationBar;
-  [_navigationBar pushNavigationItem:self.navigationItem animated:NO];
-  self.statusViewController = statusViewController;
-  self.statusViewButton = [[[UIBarButtonItem alloc] initWithCustomView:statusViewController.statusView] autorelease];
-
-  self.navigationBarNeedsPopulation = true;
-  self.buttonStatesNeedUpdate = true;
-  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -288,9 +307,7 @@
   if (! score.territoryScoringEnabled)
     [score calculateWaitUntilDone:true];
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
-  [self.delegate navigationBarController:self
-                             makeVisible:true
-                  gameInfoViewController:self.gameInfoViewController];
+  [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -298,9 +315,7 @@
 // -----------------------------------------------------------------------------
 - (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
 {
-  [self.delegate navigationBarController:self
-                             makeVisible:false
-            gameInfoViewController:controller];
+  [self.navigationController popViewControllerAnimated:YES];
   self.gameInfoViewController = nil;
 }
 
@@ -540,8 +555,8 @@
     [barButtonItems addObject:self.flexibleSpaceButtonLeft];  // need only one spacer
   }
   [barButtonItems addObjectsFromArray:rightBarButtonItems];
-  self.navigationItem.leftBarButtonItems = barButtonItems;
-  self.navigationItem.rightBarButtonItems = nil;
+  self.navigationBar.topItem.leftBarButtonItems = barButtonItems;
+  self.navigationBar.topItem.rightBarButtonItems = nil;
 }
 
 // -----------------------------------------------------------------------------

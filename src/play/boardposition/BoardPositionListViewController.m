@@ -31,7 +31,6 @@
 // -----------------------------------------------------------------------------
 @interface BoardPositionListViewController()
 @property(nonatomic, assign) ItemScrollView* boardPositionListView;
-@property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) int oldBoardPosition;
@@ -43,32 +42,22 @@
 @implementation BoardPositionListViewController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionListViewController object that manages
-/// the board position list view @a view and uses @a metrics to obtain sizes and
-/// other attributes that define the layout for new BoardPositionView objects.
+/// @brief Initializes a BoardPositionListViewController object.
 ///
 /// @note This is the designated initializer of BoardPositionListViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithBoardPositionListView:(ItemScrollView*)view viewMetrics:(BoardPositionViewMetrics*)metrics
+- (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  self.boardPositionListView = view;
-  self.boardPositionViewMetrics = metrics;
-  self.allDataNeedsUpdate = true;
-  self.currentBoardPositionNeedsUpdate = true;
+  [self releaseObjects];
+  self.allDataNeedsUpdate = false;
+  self.currentBoardPositionNeedsUpdate = false;
   self.oldBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = true;
-
-  [self setupBoardPositionListView];
-  [self setupNotificationResponders];
-
-  [self delayedUpdate];
-
+  self.tappingEnabledNeedsUpdate = false;
   return self;
 }
 
@@ -82,18 +71,41 @@
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  self.boardPositionListView = nil;
-  self.boardPositionViewMetrics = nil;
+  [self releaseObjects];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Private helper for dealloc and viewDidUnload
 // -----------------------------------------------------------------------------
-- (void) setupBoardPositionListView
+- (void) releaseObjects
 {
+  self.view = nil;
+  self.boardPositionListView = nil;
+  self.boardPositionViewMetrics = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  self.boardPositionListView = [[[ItemScrollView alloc] initWithFrame:CGRectZero
+                                                          orientation:ItemScrollViewOrientationHorizontal] autorelease];
+  self.view = self.boardPositionListView;
+  self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  self.view.backgroundColor = [UIColor clearColor];
   self.boardPositionListView.itemScrollViewDelegate = self;
   self.boardPositionListView.itemScrollViewDataSource = self;
+
+  [self setupNotificationResponders];
+
+  self.allDataNeedsUpdate = true;
+  self.currentBoardPositionNeedsUpdate = true;
+  self.oldBoardPosition = -1;
+  self.numberOfItemsNeedsUpdate = false;
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
