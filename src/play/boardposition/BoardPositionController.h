@@ -15,11 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class BoardPositionTableListViewController;
+@class BoardPositionToolbarController;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionController class xxx
 // -----------------------------------------------------------------------------
 @interface BoardPositionController : UIViewController
 {
 }
+
+@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 
 @end

@@ -73,6 +73,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.view = nil;
   self.navigationBarController = nil;
   self.scrollViewController = nil;
   self.boardPositionToolbarController = nil;
@@ -218,7 +219,6 @@
   UIView* superview = [self scrollViewSuperview];
   [superview addSubview:self.scrollViewController.view];
 
-  // TODO xxx should this not be the responsibility of self.scrollViewController?
   self.scrollViewController.scrollView.contentSize = scrollViewFrame.size;
 }
 

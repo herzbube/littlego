@@ -19,6 +19,7 @@
 #import "CurrentBoardPositionViewController.h"
 
 // Forward declarations
+@class BoardPositionListViewController;
 @class BoardPositionViewMetrics;
 
 
@@ -52,5 +53,7 @@
 }
 
 @property(nonatomic, retain) BoardPositionViewMetrics* boardPositionViewMetrics;
+@property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
+@property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
 
 @end

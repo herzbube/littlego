@@ -22,15 +22,6 @@
 #import "../../ui/UiElementMetrics.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for BoardPositionController.
-// -----------------------------------------------------------------------------
-@interface BoardPositionController()
-@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
-@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
-@end
-
-
 @implementation BoardPositionController
 
 // -----------------------------------------------------------------------------
@@ -166,11 +157,7 @@
   int toolbarViewX = 0;
   int toolbarViewWidth = superview.bounds.size.width;
   int toolbarViewHeight = [UiElementMetrics toolbarHeight];
-  int toolbarViewY;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    toolbarViewY = superview.bounds.size.height - toolbarViewHeight;  // TODO xxx unused
-  else
-    toolbarViewY = 0;
+  int toolbarViewY = 0;
   return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
 }
 
@@ -180,10 +167,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) boardPositionToolbarSuperview
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return nil;
-  else
-    return self.view;
+  return self.view;
 }
 
 // -----------------------------------------------------------------------------
@@ -218,10 +202,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) boardPositionTableListViewSuperview
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return nil;
-  else
-    return self.view;
+  return self.view;
 }
 
 @end

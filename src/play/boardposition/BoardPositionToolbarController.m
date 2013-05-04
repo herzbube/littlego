@@ -39,8 +39,6 @@ enum NavigationDirection
 /// BoardPositionToolbarController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController()
-@property(nonatomic, retain) BoardPositionListViewController* boardPositionListViewController;
-@property(nonatomic, retain) CurrentBoardPositionViewController* currentBoardPositionViewController;
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, assign) UIToolbar* toolbar;

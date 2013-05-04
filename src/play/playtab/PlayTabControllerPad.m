@@ -74,6 +74,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.view = nil;
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
