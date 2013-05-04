@@ -90,7 +90,6 @@
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
-		CD1311C617180B63006CE699 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */; };
 		CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
@@ -117,7 +116,6 @@
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55576516702DBC003B957B /* TableViewSegmentedCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
-		CD1E9E64171806FE00E1B7D1 /* DebugPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
@@ -547,8 +545,6 @@
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteraction.h; sourceTree = "<group>"; };
 		CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteraction.m; sourceTree = "<group>"; };
-		CD1E9E57171806FE00E1B7D1 /* DebugPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugPlayViewController.h; sourceTree = "<group>"; };
-		CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugPlayViewController.m; sourceTree = "<group>"; };
 		CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
 		CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
 		CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
@@ -1229,8 +1225,6 @@
 		CD1E9E54171806FE00E1B7D1 /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				CD1E9E57171806FE00E1B7D1 /* DebugPlayViewController.h */,
-				CD1E9E58171806FE00E1B7D1 /* DebugPlayViewController.m */,
 				CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */,
 				CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
@@ -2107,7 +2101,6 @@
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
-				CD1E9E64171806FE00E1B7D1 /* DebugPlayViewController.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
 				CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */,
@@ -2249,7 +2242,6 @@
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 				CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
-				CD1311C617180B63006CE699 /* DebugPlayViewController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,

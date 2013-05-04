@@ -18,7 +18,6 @@
 // Project includes
 #import "PlayViewController.h"
 #import "PlayView.h"
-#import "../controller/DebugPlayViewController.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
 #import "../../ui/UiUtilities.h"
@@ -29,7 +28,6 @@
 // -----------------------------------------------------------------------------
 @interface PlayViewController()
 @property(nonatomic, retain) TapGestureController* tapGestureController;
-@property(nonatomic, retain) DebugPlayViewController* debugPlayViewController;
 @end
 
 
@@ -78,7 +76,6 @@
   self.playView = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
-  self.debugPlayViewController = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -93,19 +90,6 @@
 
   self.panGestureController.playView = self.playView;
   self.tapGestureController.playView = self.playView;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupDebugView
-{
-//xxx  self.debugPlayViewController = [[[DebugPlayViewController alloc] init] autorelease];
-//xxx  [self.view addSubview:self.debugPlayViewController.view];
-//xxx  CGRect debugPlayViewFrame = self.debugPlayViewController.view.frame;
-//xxx  debugPlayViewFrame.origin.y += self.navigationBarMain.frame.size.height;
-//xxx  self.debugPlayViewController.view.frame = debugPlayViewFrame;
 }
 
 /*xxx
