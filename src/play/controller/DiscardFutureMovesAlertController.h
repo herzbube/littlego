@@ -21,7 +21,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DiscardFutureMovesAlertController class xxx
+/// @brief The DiscardFutureMovesAlertController class displays an alert and
+/// executes a command, working as a delegate on behalf of PanGestureController
+/// and NavigationBarController.
 // -----------------------------------------------------------------------------
 @interface DiscardFutureMovesAlertController : NSObject <UIAlertViewDelegate,
                                                          PanGestureControllerDelegate,

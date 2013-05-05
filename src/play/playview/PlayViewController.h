@@ -18,28 +18,14 @@
 // Forward declarations
 @class PlayView;
 @class PanGestureController;
+@class TapGestureController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewController class is the main controller on the "Play"
-/// tab. It does not manage user interaction on its own, instead it delegates
-/// this task to a variety of other sub-controllers.
+/// @brief The PlayViewController class is responsible for setting up the main
+/// view on the "Play" tab that represents the Go board.
 ///
-/// PlayViewController has the following responsibilities:
-/// - Set up the view hierarchy on the "Play" tab
-/// - Create and configure sub-controllers
-/// - Manage the timing of these tasks during application launch
-/// - Manage the transition to and from the Game Info view. The transition is
-///   triggered by a sub-controller, but managed by PlayViewController because
-///   only PlayViewController knows the details of the view hierarchy
-/// - Display alerts that are used by more than one sub-controller
-///
-///
-/// @par Interface rotation
-///
-/// PlayViewController sets up all views on the "Play" tab with an appropriate
-/// autoresizing mask so that when the interface rotates UIKit automatically
-/// resizes and shifts the views.
+/// PlayViewController is a child view controller.
 // -----------------------------------------------------------------------------
 @interface PlayViewController : UIViewController
 {
@@ -47,5 +33,6 @@
 
 @property(nonatomic, retain) PlayView* playView;
 @property(nonatomic, retain) PanGestureController* panGestureController;
+@property(nonatomic, retain) TapGestureController* tapGestureController;
 
 @end

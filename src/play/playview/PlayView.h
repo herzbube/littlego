@@ -21,11 +21,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayView class is a custom view that is responsible for drawing
-/// a Go board.
+/// the Go board on the "Play" tab.
 ///
 /// The view content is drawn in layers:
 /// - View background
-/// - Board background
 /// - Grid lines
 /// - Cross-hair lines (during stone placement)
 /// - Star points
@@ -34,6 +33,12 @@
 /// - Symbols (if any)
 /// - Territory coloring (in scoring mode only)
 /// - Dead stone state (in scoring mode only)
+///
+/// @todo These days the class name "PlayView" is a bit of a misnomer, it should
+/// probably be renamed to something like "BoardView". The name has its root in
+/// the early days of the app when there was only a single view on the "Play"
+/// tab and there were only very few classes, so "PlayView" seemed to be a good
+/// choice.
 ///
 ///
 /// @par Coordinate labels

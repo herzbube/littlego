@@ -20,13 +20,15 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The ScrollViewController class manages the scroll view that
-/// contains the Play view.
+/// @brief The ScrollViewController class manages the scroll view that contains
+/// the "Play" view on the "Play" tab.
 ///
-/// ScrollViewController's has the following responsibilities:
-/// - xxx
-/// - xxx
-/// - xxx
+/// ScrollViewController is a container view controller. It has the following
+/// responsibilities:
+/// - Manage zooming and scrolling
+/// - Synchronize zooming and scrolling properties of scroll views that contain
+///   coordinate label views with the corresponding properties of the main
+///   scroll view
 // -----------------------------------------------------------------------------
 @interface ScrollViewController : UIViewController <UIScrollViewDelegate>
 {

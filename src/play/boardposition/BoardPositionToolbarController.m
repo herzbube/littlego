@@ -105,7 +105,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
@@ -245,7 +245,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupSpacerItems
 {
@@ -259,7 +259,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupBarButtonItems
 {
@@ -294,7 +294,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupCustomViewItems
 {
@@ -311,7 +311,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {

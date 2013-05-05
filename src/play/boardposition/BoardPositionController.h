@@ -21,7 +21,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionController class xxx
+/// @brief The BoardPositionController class is responsible for aggregating all
+/// child view controllers that are related to managing the board position.
+///
+/// BoardPositionController is a container view controller. It is used on the
+/// iPad only.
 // -----------------------------------------------------------------------------
 @interface BoardPositionController : UIViewController
 {

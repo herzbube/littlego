@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewMetrics class is responsible for calculating the
-/// coordinates and sizes of UI elements on the Play view, and for providing
+/// coordinates and sizes of UI elements on the PlayView, and for providing
 /// those values to clients that need them for drawing. PlayViewMetrics also
 /// provides a few drawing helper methods because their implementation is also
 /// calculation-heavy.

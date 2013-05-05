@@ -108,7 +108,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {

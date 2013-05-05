@@ -23,10 +23,6 @@
 /// BoardPositionViewMetrics performs all calculations once, and only once,
 /// when it is initialized. The current device is taken into account when values
 /// are calculated.
-///
-/// @note Although there is no explicit link to PlayViewController,
-/// BoardPositionViewMetrics has implicit knowledge of the way how
-/// PlayViewController sets up the view hierarchy.
 // -----------------------------------------------------------------------------
 @interface BoardPositionViewMetrics : NSObject
 {

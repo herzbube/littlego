@@ -27,26 +27,19 @@
 /// @brief The BoardPositionToolbarController class is responsible for managing
 /// the toolbar with controls to navigate the game's list of board positions.
 ///
-/// BoardPositionToolbarController has the following responsibilities:
+/// BoardPositionToolbarController is a container view controller on the iPhone,
+/// and a child view controller on the iPad. It has the following
+/// responsibilities:
 /// - Populate the toolbar with controls. This includes knowledge how the
 ///   controls need to be laid out in the toolbar.
-/// - React to taps on self-created bar buttons
+/// - iPhone only: Integrate child view controllers' root views into the toolbar
+///   as bar button items with custom views
+/// - React to taps on bar buttons (only those owned by
+///   BoardPositionToolbarController)
 ///
-/// One of the initializers is used to supply custom views that also need to be
-/// displayed in the toolbar. The only thing BoardPositionToolbarController
-/// knows about these custom views is where to place them in the toolbar.
 /// BoardPositionToolbarController specifically is @b NOT responsible for
-/// managing user interaction with these custom views - there are separate
-/// controllers for that.
-///
-/// @note Custom views are used on the iPhone only.
-///
-/// The remaining controls are a set of buttons that are self-created by
-/// BoardPositionToolbarController. For these, BoardPositionToolbarController
-/// also manages user interaction.
-///
-/// BoardPositionToolbarController can be triggered to repopulate the toolbar.
-/// This only has an effect if custom views are used.
+/// managing user interaction with custom view bar button items - this is the
+/// job of the respective child view controllers.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController : UIViewController <CurrentBoardPositionViewControllerDelegate>
 {

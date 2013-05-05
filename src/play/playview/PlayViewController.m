@@ -20,15 +20,6 @@
 #import "PlayView.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
-#import "../../ui/UiUtilities.h"
-
-
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayViewController.
-// -----------------------------------------------------------------------------
-@interface PlayViewController()
-@property(nonatomic, retain) TapGestureController* tapGestureController;
-@end
 
 
 @implementation PlayViewController
@@ -95,38 +86,5 @@
   self.panGestureController.playView = nil;
   self.tapGestureController.playView = nil;
 }
-
-/*xxx
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // In iOS 5, the system purges the view and self.isViewLoaded becomes false
-  // before didReceiveMemoryWarning() is invoked. In iOS 6 the system does not
-  // purge the view and self.isViewLoaded is still true when we get here. The
-  // view's window property then becomes important: It is nil if the main tab
-  // bar controller displays a different tab than the one where the view is
-  // visible.
-  if (self.isViewLoaded && ! self.view.window)
-  {
-    // Do not release anything in iOS 6 and later (as opposed to iOS 5 where we
-    // are forced to release stuff in viewDidUnload). A run through Instruments
-    // shows that releasing objects here frees between 100-300 KB. Since the
-    // user is expected to switch back to the Play tab anyway, this gain is
-    // only temporary.
-    //
-    // Furthermore: If we want to release objects here, we need to first
-    // resolve this issue: When the memory warning occurs while the game info
-    // view controller is at the top of the navigation stack, it seems to be
-    // impossible to pop the controller without the application crashing. In
-    // iOS 5 / viewDidUnload(), popping the controller seems to work with
-    //   [self.navigationBarController dismissGameInfoViewController];
-    // (tested only in the simulator), but invoking the same method here
-    // causes a crash.
-  }
-}
-*/
 
 @end

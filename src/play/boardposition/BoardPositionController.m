@@ -44,7 +44,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self releaseObjects];
+  self.boardPositionTableListViewController = nil;
+  self.boardPositionToolbarController = nil;
   [super dealloc];
 }
 
@@ -55,15 +56,6 @@
 {
   self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.boardPositionTableListViewController = nil;
-  self.boardPositionToolbarController = nil;
 }
 
 // -----------------------------------------------------------------------------

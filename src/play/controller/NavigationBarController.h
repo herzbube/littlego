@@ -45,11 +45,14 @@
 /// @brief The NavigationBarController class is responsible for managing the
 /// navigation bar above the Play view on the Play tab.
 ///
-/// The responsibilities of NavigationBarController include:
+/// NavigationBarController is a container view controller. Its responsibilities
+/// include:
 /// - Populate the navigation bar with buttons that are appropriate for the
 ///   current game state
 /// - Enable/disable buttons
-/// - Reacting to the user tapping on buttons
+/// - React to the user tapping on buttons
+/// - Integrate the status view provided by the StatusViewController child view
+///   controller into the navigation bar
 // -----------------------------------------------------------------------------
 @interface NavigationBarController : UIViewController <GameInfoViewControllerDelegate,
                                                        PlayViewActionSheetDelegate,
@@ -57,8 +60,6 @@
                                                        UISplitViewControllerDelegate>
 {
 }
-
-- (void) dismissGameInfoViewController;
 
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;

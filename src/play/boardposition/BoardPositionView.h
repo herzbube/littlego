@@ -24,7 +24,7 @@
 /// of the scrollable board position list view on the Play tab. It represents a
 /// board position and shows information about that board position.
 ///
-/// BoardPositionView is used only on the iPhone.
+/// BoardPositionView is used on the iPhone only.
 // -----------------------------------------------------------------------------
 @interface BoardPositionView : UIView
 {

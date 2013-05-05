@@ -367,18 +367,50 @@ Architecture and implementation notes
   separate the UI for application preferences from the application, though, and
   therefore chose to implement a dedicated Preferences view inside the
   application.
-- The "Play" tab is the centerpiece of the entire application. It has a large
-  number of UI elements, many of them interacting with each other, and some of
-  them are not visible all the time. To reduce complexity and keep the "Play"
-  tab in its entirety in a maintainable state, it is paramount to have many
-  small model and controller classes with clearly assigned responsibilities.
-  PlayViewController and PlayView are the most generic classes and, as the past
-  has shown, have a certain "natural" tendency to attract wildly diverse code
-  and become bewildering hotpots. Even though refactoring is always an option
-  (and has indeed been used heavily to tame PlayView and PlayViewController),
-  it should not be relied upon because there are no automated GUI tests in this
-  project. It is therefore better to "get it right" already at the time when a
-  new feature is developed.
+- About the "Play" tab
+  - The "Play" tab is the centerpiece of the entire application. It has a large
+    number of UI elements, many of them interacting with each other, and some of
+    them are not visible all the time. To reduce complexity and keep the "Play"
+    tab in its entirety in a maintainable state, it is paramount to have many
+    small model and controller classes with clearly assigned responsibilities.
+  - Static design: PlayTabController is the tab's root view controller. There
+    are two subclasses, one for each device-specific view hierarchy. With a few
+    exceptions, the view hierarchy is represented by a corresponding hierarchy
+    of container/child UIViewControllers. Not all controller classes are view
+    controllers, though: There are also a number of controllers that manage
+    gesture recognizing, alert views or action sheets.
+  - Dynamic design: When the application launches, the app delegate creates an
+    instance of the appropriate PlayTabController subclass. This starts a
+    first cascade of object creation during which all the controller objects are
+    created and the delegate connections are made. A little bit later iOS
+    accesses for the first time the view of the root PlayTabController. This
+    triggers a second cascade of object creation during which all the view
+    objects are created and notification and KVO observing mechanisms are
+    initialized.
+  - View sizing and layouting: Apple makes the following suggestions:
+    1) Container view controllers are responsible for placing and sizing the
+       root views of their child view controllers (frame.origin and frame.size)
+    2) Child view controllers are responsible for placing the subviews they own
+       based on the size given to their root view by their container view
+       controller.
+    3) The autoresizingMask of each view handles how views are resized when
+       some size change occurs, e.g. when the device orientation changes
+    The main question in regard of 2) is: When does a child view controller know
+    the size given to its root view? It definitely cannot know in loadView, so
+    theoretically a child view controller needs to delay creation of its
+    subviews until either viewWillAppear: or viewWillLayoutSubviews is invoked
+    (the root view size is known then). The drawback of this is that these
+    methods are invoked not just once, but many times, so the child view
+    controller would need to take special measures so that it creates its
+    subviews only once. I don't like this, so I have decided to use a slightly
+    different approach: Create subviews in loadView, but where necessary assume
+    an arbitrary initial root view size that is sufficient to place subviews
+    inside the root view. The initial arbitrary sizes are fixed up later when
+    views are laid out according to the selected autoresizingMask. The only
+    drawback of this approach: The container view controller must make sure that
+    when it places the child view controller's root view into a superview, the
+    superview must have a size that is greater or equal to the root view's size,
+    otherwise the size fixup according to autoresizingMask will go wrong.
 - UI design: As noted, the "Play" tab has a large number of UI elements, and
   these must somehow be fitted onto the small screeen estate available on the
   iPhone. Here I try to outline the thoughts that went into the iPhone UI
@@ -396,13 +428,13 @@ Architecture and implementation notes
       dynamically adjusting to any changes such as device orientation changes.
     - User preferences modify view appearance (e.g. display labels) and user
       interaction behaviour.
-  - The toolbar
-    - Toolbar space is limited, therefore the only buttons that are displayed
-      are those that are actually enabled (e.g. while the computer is thinking
-      most actions are not allowed, so the only button that is displayed is the
-      one that interrupts the computer's thinking). The result is a "nervous"
-      UI, i.e. toolbar buttons are constantly being shown and hidden. I have not
-      yet come up with a UI design that is more "calm".
+  - The navigation bar
+    - Navigation bar space is limited, therefore the only buttons that are
+      displayed are those that are actually enabled (e.g. while the computer is
+      thinking most actions are not allowed, so the only button that is
+      displayed is the one that interrupts the computer's thinking). The result
+      is a "nervous" UI, i.e. toolbar buttons are constantly being shown and
+      hidden. I have not yet come up with a UI design that is more "calm".
     - At the right-most position there is a "Game Actions" button which provides
       access to an action sheet with additional actions that are not used very
       often. Only actions related to games as a whole are to be displayed on
@@ -415,19 +447,23 @@ Architecture and implementation notes
     - Most toolbar items do not use the iOS provided icons available from
       UIBarButtonItem. The reason is that, although the icons' visual appearance
       might seem appropriate, their semantic meaning is not!
-  - The status line
-    - Currently a status line is situated below the game view, which is used
-      to display information about the current game state to the user.
-    - The status line uses a relatively small font to make room for the list of
-      board positions.
-    - Somehow this seems to be rather clunky, I want to find a different way
-      how to represent the information in the UI.
+  - The status view
+    - A status view is used to display information about the current game state
+      to the user.
+    - The status view currently is situated in the center of the navigation bar.
+      Previous versions of the app had the status view situated in a single line
+      below the board view, but this was redesigned because it took away some of
+      the already precious space from the board view.
+    - The status line uses a very small font to make room for the list of board
+      positions.
   - The activity indicator
     - An activity indicator is needed to let the user know when the Go engine
       is busy so that he knows why some UI elements are disabled.
-    - Currently the indicator is located next to the status line. I am not happy
-      with this, especially because the activity indicator has a different
-      height than the status line, so this might change in the future.
+    - Currently the indicator is located in the navigation bar, next to the
+      status view. Although there is not a lot of space in the navigation bar,
+      this works surprisingly well, because whenever the activity indicator
+      becomes visible it trades space with one or more other buttons that become
+      hidden in its stead.
   - The list of board positions
     - This view exists because the toolbar buttons to go back/forward one board
       position make it hard to access board positions that are far away from

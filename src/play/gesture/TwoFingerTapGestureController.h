@@ -17,10 +17,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The TwoFingerTapGestureController class is responsible for managing
-/// the two-finger-tap gesture on the Play view. Two-finger-tapping is used to
-/// zoom out on the Play view.
-///
-/// TwoFingerTapGestureController is used only on the iPhone
+/// the two-finger-tap gesture on the "Play" tab. Two-finger-tapping is used to
+/// zoom out on the "Play" view.
 ///
 /// Every two-finger-tap performs a 50% zoom-out. Repeated two-finger-taps zoom
 /// out up to the minimum zoom scale. Once the minimum zoom scale has been

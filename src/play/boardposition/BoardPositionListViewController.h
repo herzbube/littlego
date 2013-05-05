@@ -27,7 +27,8 @@
 /// the "board position list view", i.e. the scroll view on the Play tab that
 /// displays the board positions of the current game.
 ///
-/// BoardPositionListViewController is used only on the iPhone.
+/// BoardPositionListViewController is a child view controller. It is used on
+/// the iPhone only.
 ///
 /// The board position list view displays a series of small subviews, each of
 /// which represents one of the board positions of the current game. A board

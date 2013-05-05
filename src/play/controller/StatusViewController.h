@@ -27,6 +27,8 @@
 /// Most of the time the status view displays textual information, but whenever
 /// the GTP engine is taking a long time to calculate something (e.g. computer
 /// player makes its move), the status view also displays an activity indicator.
+///
+/// StatusViewController is a child view controller.
 // -----------------------------------------------------------------------------
 @interface StatusViewController : UIViewController
 {

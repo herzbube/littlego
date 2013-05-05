@@ -24,11 +24,8 @@
 /// intended to be displayed as the left pane of a split view (i.e. the view
 /// managed by UISplitViewController).
 ///
-/// LeftPaneViewController's has the following responsibilities:
-/// - Create its view with a frame that is appropriate at the time of creation
-/// - Supply the view with an autoresizing mask that lets it resize in all
-///   directions
-/// - Enable rotation to all orientations
+/// LeftPaneViewController is a container view controller. It is used on the
+/// iPad only.
 // -----------------------------------------------------------------------------
 @interface LeftPaneViewController : UIViewController
 {

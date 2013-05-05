@@ -35,7 +35,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PanGestureController class is responsible for managing the pan
-/// gesture on the "Play" view. Panning is used to place a stone on the board.
+/// gesture on the "Play" tab. Panning is used to place a stone on the board.
 ///
 /// Despite its name, PanGestureController does not use UIPanGestureRecognizer
 /// for gesture recognition, because UIPanGestureRecognizer requires a

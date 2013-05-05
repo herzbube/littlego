@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the "Play" view. Tapping is used to mark dead stones during
+/// gesture on the "Play" tab. Tapping is used to mark dead stones during
 /// scoring.
 // -----------------------------------------------------------------------------
 @interface TapGestureController : NSObject <UIGestureRecognizerDelegate>

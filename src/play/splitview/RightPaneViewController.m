@@ -50,7 +50,9 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self releaseObjects];
+  self.navigationBarController = nil;
+  self.scrollViewController = nil;
+  self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
 
@@ -65,17 +67,6 @@
 
   self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.view = nil;
-  self.navigationBarController = nil;
-  self.scrollViewController = nil;
-  self.discardFutureMovesAlertController = nil;
 }
 
 // -----------------------------------------------------------------------------

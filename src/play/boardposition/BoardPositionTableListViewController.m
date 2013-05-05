@@ -89,7 +89,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for dealloc and viewDidUnload
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
@@ -250,7 +250,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
