@@ -95,13 +95,22 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
-  self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
-  self.boardPositionListViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
-  self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
-  self.currentBoardPositionViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
+    self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
+    self.boardPositionListViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
+    self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
+    self.currentBoardPositionViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
 
-  self.currentBoardPositionViewController.delegate = self;
+    self.currentBoardPositionViewController.delegate = self;
+  }
+  else
+  {
+    self.boardPositionViewMetrics = nil;
+    self.boardPositionListViewController = nil;
+    self.currentBoardPositionViewController = nil;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -185,8 +194,11 @@ enum NavigationDirection
   self.view = self.toolbar;
   self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
-  [self setupBoardPositionListView];
-  [self setupCurrentBoardPositionView];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    [self setupBoardPositionListView];
+    [self setupCurrentBoardPositionView];
+  }
   [self setupSpacerItems];
   [self setupBarButtonItems];
   [self setupCustomViewItems];

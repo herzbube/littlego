@@ -17,7 +17,6 @@
 
 // Project includes
 #import "BoardPositionViewMetrics.h"
-#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 
 
@@ -64,22 +63,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupConstantProperties
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    self.boardPositionViewFontSize = 11;
-    self.labelNumberOfLines = 2;
-    self.boardPositionViewHorizontalPadding = 2;
-    self.boardPositionViewHorizontalSpacing = 2;
-  }
-  else
-  {
-    // For the moment the value we choose here doesn't matter much, we are on
-    // the iPad and can be wasteful :-)
-    self.boardPositionViewFontSize = 13;
-    self.labelNumberOfLines = 2;
-    self.boardPositionViewHorizontalPadding = 5;
-    self.boardPositionViewHorizontalSpacing = 5;
-  }
+  self.boardPositionViewFontSize = 11;
+  self.labelNumberOfLines = 2;
+  self.boardPositionViewHorizontalPadding = 2;
+  self.boardPositionViewHorizontalSpacing = 2;
 }
 
 // -----------------------------------------------------------------------------
@@ -172,21 +159,12 @@
 // -----------------------------------------------------------------------------
 - (void) setupBoardPositionViewSize
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    self.boardPositionViewWidth = ((2 * self.boardPositionViewHorizontalPadding)
-                                   + self.labelWidth
-                                   + self.boardPositionViewHorizontalSpacing
-                                   + MAX(self.stoneImageWidthAndHeight, self.capturedStonesLabelFrame.size.width));
-    self.boardPositionViewHeight = self.labelHeight;
-    self.boardPositionViewBounds = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
-  }
-  else
-  {
-    self.boardPositionViewWidth = [UiElementMetrics splitViewLeftPaneWidth];
-    self.boardPositionViewHeight = self.labelHeight;
-    self.boardPositionViewBounds = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
-  }
+  self.boardPositionViewWidth = ((2 * self.boardPositionViewHorizontalPadding)
+                                 + self.labelWidth
+                                 + self.boardPositionViewHorizontalSpacing
+                                 + MAX(self.stoneImageWidthAndHeight, self.capturedStonesLabelFrame.size.width));
+  self.boardPositionViewHeight = self.labelHeight;
+  self.boardPositionViewBounds = CGRectMake(0, 0, self.boardPositionViewWidth, self.boardPositionViewHeight);
 }
 
 // -----------------------------------------------------------------------------

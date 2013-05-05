@@ -19,17 +19,15 @@
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionViewMetrics class is responsible for providing pre-
 /// calculated sizes and other values to BoardPositionView.
-///
 /// BoardPositionViewMetrics performs all calculations once, and only once,
-/// when it is initialized. The current device is taken into account when values
-/// are calculated.
+/// when it is initialized.
+///
+/// BoardPositionViewMetrics is used on the iPhone only.
 // -----------------------------------------------------------------------------
 @interface BoardPositionViewMetrics : NSObject
 {
 }
 
-/// @name Board position view properties
-//@{
 @property(nonatomic, assign) int boardPositionViewFontSize;
 @property(nonatomic, assign) int labelWidth;
 @property(nonatomic, assign) int labelHeight;
@@ -51,6 +49,5 @@
 /// (i.e. how much space should be between the label and the stone image).
 @property(nonatomic, assign) int boardPositionViewHorizontalSpacing;
 @property(nonatomic, assign) CGRect boardPositionViewBounds;
-//@}
 
 @end
