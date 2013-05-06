@@ -283,7 +283,6 @@
 
   switch (game.state)
   {
-    case GoGameStateGameHasNotYetStarted:
     case GoGameStateGameHasStarted:
       if (game.isComputerThinking)
         self.panningEnabled = false;

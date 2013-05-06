@@ -221,7 +221,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   {
     switch (self.game.state)
     {
-      case GoGameStateGameHasNotYetStarted:
       case GoGameStateGameHasStarted:
         [[[[PauseGameCommand alloc] init] autorelease] submit];
         break;

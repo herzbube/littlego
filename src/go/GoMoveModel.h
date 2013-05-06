@@ -42,16 +42,13 @@
 - (GoMove*) moveAtIndex:(int)index;
 
 /// @brief Returns the number of moves in the current game. Returns 0 if there
-/// are no moves (e.g. the game is still in state
-/// #GoGameStateGameHasNotYetStarted).
+/// are no moves.
 @property(nonatomic, assign, readonly) int numberOfMoves;
 /// @brief The GoMove object that represents the first move of the game. nil if
-/// the game currently has no move (e.g. the game is still in state
-/// #GoGameStateGameHasNotYetStarted).
+/// the game currently has no move.
 @property(nonatomic, assign, readonly) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
-/// the game currently has no move (e.g. the game is still in state
-/// #GoGameStateGameHasNotYetStarted).
+/// the game currently has no move.
 @property(nonatomic, assign, readonly) GoMove* lastMove;
 
 @end

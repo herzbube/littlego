@@ -61,7 +61,7 @@
   _playerBlack = nil;
   _playerWhite = nil;
   _moveModel = [[GoMoveModel alloc] initWithGame:self];
-  _state = GoGameStateGameHasNotYetStarted;
+  _state = GoGameStateGameHasStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   _computerThinks = false;
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
@@ -161,8 +161,8 @@
 /// Invoking this method sets the document dirty flag.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
-/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused.
 ///
 /// @note Play when in paused state is allowed only because the computer
 /// player who is thinking at the time the game is paused must be able to
@@ -174,11 +174,9 @@
 // -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)aPoint
 {
-  if (GoGameStateGameHasNotYetStarted != self.state &&
-      GoGameStateGameHasStarted != self.state &&
-      GoGameStateGameIsPaused != self.state)
+  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
   {
-    NSString* errorMessage = @"Play is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    NSString* errorMessage = @"Play is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -221,11 +219,6 @@
 
   [move doIt];
   [self.moveModel appendMove:move];
-
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
-  if (GoGameStateGameHasNotYetStarted == self.state)
-    self.state = GoGameStateGameHasStarted;  // don't set this state if game is currently paused
 }
 
 // -----------------------------------------------------------------------------
@@ -235,16 +228,14 @@
 /// Invoking this method sets the document dirty flag.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
-/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
-  if (GoGameStateGameHasNotYetStarted != self.state &&
-      GoGameStateGameHasStarted != self.state &&
-      GoGameStateGameIsPaused != self.state)
+  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
   {
-    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -264,11 +255,6 @@
     self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
     self.state = GoGameStateGameHasEnded;
   }
-  else
-  {
-    if (GoGameStateGameHasNotYetStarted == self.state)
-      self.state = GoGameStateGameHasStarted;  // don't set this state if game is currently paused
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -278,16 +264,14 @@
 /// Invoking this method sets the document dirty flag.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted,
-/// #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused.
 // -----------------------------------------------------------------------------
 - (void) resign
 {
-  if (GoGameStateGameHasNotYetStarted != self.state &&
-      GoGameStateGameHasStarted != self.state &&
-      GoGameStateGameIsPaused != self.state)
+  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
   {
-    NSString* errorMessage = @"Resign is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted, GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    NSString* errorMessage = @"Resign is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -320,15 +304,14 @@
 /// its thinking.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasNotYetStarted
-/// or #GoGameStateGameHasStarted, or if this GoGame object is not of type
-/// #GoGameTypeComputerVsComputer.
+/// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
+/// this GoGame object is not of type #GoGameTypeComputerVsComputer.
 // -----------------------------------------------------------------------------
 - (void) pause
 {
-  if (GoGameStateGameHasNotYetStarted != self.state && GoGameStateGameHasStarted != self.state)
+  if (GoGameStateGameHasStarted != self.state)
   {
-    NSString* errorMessage = @"Pause is possible only while GoGame object is either in state GoGameStateGameHasNotYetStarted or GoGameStateGameHasStarted";
+    NSString* errorMessage = @"Pause is possible only while GoGame object is either in state GoGameStateGameHasStarted";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -517,9 +500,9 @@
 // -----------------------------------------------------------------------------
 - (void) setHandicapPoints:(NSArray*)newValue
 {
-  if (GoGameStateGameHasNotYetStarted != self.state)
+  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasNotYetStarted";
+    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage

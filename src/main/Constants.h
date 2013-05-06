@@ -77,8 +77,7 @@ enum GoGameType
 /// @brief Enumerates the possible states of a GoGame.
 enum GoGameState
 {
-  GoGameStateGameHasNotYetStarted,  ///< @brief Denotes a new game that is ready to begin.
-  GoGameStateGameHasStarted,        ///< @brief Denotes a game that has started and has at least 1 GoMove.
+  GoGameStateGameHasStarted,        ///< @brief Denotes a game that has not yet ended, and is not paused.
   GoGameStateGameIsPaused,          ///< @brief Denotes a computer vs. computer game that is paused.
   GoGameStateGameHasEnded           ///< @brief Denotes a game that has ended, no moves can be played anymore.
 };

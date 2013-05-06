@@ -526,14 +526,12 @@ enum BoardPositionSectionItem
           cell.textLabel.text = @"State";
           switch (game.state)
           {
-            case GoGameStateGameHasNotYetStarted:
-            {
-              cell.detailTextLabel.text = @"Game has not yet started";
-              break;
-            }
             case GoGameStateGameHasStarted:
             {
-              cell.detailTextLabel.text = @"Game is in progress";
+              if (! game.firstMove)
+                cell.detailTextLabel.text = @"Game has not yet started";
+              else
+                cell.detailTextLabel.text = @"Game is in progress";
               break;
             }
             case GoGameStateGameIsPaused:
@@ -592,11 +590,6 @@ enum BoardPositionSectionItem
             cell.textLabel.text = @"Last move";
             switch (game.state)
             {
-              case GoGameStateGameHasNotYetStarted:
-              {
-                cell.detailTextLabel.text = @"None";
-                break;
-              }
               case GoGameStateGameHasStarted:
               case GoGameStateGameIsPaused:
               {

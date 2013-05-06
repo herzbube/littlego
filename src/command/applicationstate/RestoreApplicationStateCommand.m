@@ -70,11 +70,19 @@
 
   if (GoGameTypeComputerVsComputer == unarchivedGame.type)
   {
-    if (GoGameStateGameHasNotYetStarted == unarchivedGame.state ||
-        GoGameStateGameHasStarted == unarchivedGame.state)
+    switch (unarchivedGame.state)
     {
-      DDLogWarn(@"%@: Computer vs. computer game is in state %d, i.e. not paused", [self shortDescription], unarchivedGame.state);
-      [unarchivedGame pause];
+      case GoGameStateGameIsPaused:
+      case GoGameStateGameHasEnded:
+      {
+        break;
+      }
+      default:
+      {
+        DDLogWarn(@"%@: Computer vs. computer game is in state %d, i.e. not paused and not ended", [self shortDescription], unarchivedGame.state);
+        [unarchivedGame pause];
+        break;
+      }
     }
   }
   // It is quite possible that the user suspended the app while the computer

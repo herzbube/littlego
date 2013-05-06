@@ -718,7 +718,6 @@
           break;
         switch (game.state)
         {
-          case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
             enabled = YES;
@@ -753,7 +752,6 @@
           break;
         switch (game.state)
         {
-          case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
           {
             GoBoardPosition* boardPosition = game.boardPosition;
@@ -809,7 +807,6 @@
       {
         switch (game.state)
         {
-          case GoGameStateGameHasNotYetStarted:
           case GoGameStateGameHasStarted:
             enabled = YES;
             break;

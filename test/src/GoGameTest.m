@@ -57,7 +57,7 @@
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
   STAssertNil(m_game.firstMove, nil);
   STAssertNil(m_game.lastMove, nil);
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, @"game state test failed");
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   STAssertFalse(m_game.isComputerThinking, nil);
   STAssertFalse(m_game.document.isDirty, nil);
@@ -118,9 +118,18 @@
 
   STAssertThrowsSpecificNamed(m_game.handicapPoints = nil,
                               NSException, NSInvalidArgumentException, @"point list is nil");
-  m_game.state = GoGameStateGameHasStarted;
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
   STAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
-                              NSException, NSInternalInconsistencyException, @"handicap set after start");
+                              NSException, NSInternalInconsistencyException, @"handicap set after first move");
+  // Can set handicap if there are no moves
+  [m_game.moveModel discardLastMove];
+  m_game.handicapPoints = handicapPoints;
+  [m_game resign];
+  STAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
+                              NSException, NSInternalInconsistencyException, @"handicap set after game has ended");
+  // Can set handicap if game has not ended
+  [m_game revertStateFromEndedToInProgress];
+  m_game.handicapPoints = handicapPoints;
 }
 
 // -----------------------------------------------------------------------------
@@ -193,9 +202,10 @@
 // -----------------------------------------------------------------------------
 - (void) testState
 {
-  // There's no point in setting the state property ourselves because the
-  // implementation does not check for correctness of the state machine
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  // There's no point in setting the state property directly because the
+  // implementation does not check for correctness of the state machine, so
+  // instead we manipulate the state indirectly by invoking other methods
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   [m_game.moveModel discardLastMove];
@@ -230,7 +240,7 @@
 // -----------------------------------------------------------------------------
 - (void) testPlay
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertFalse(m_game.document.isDirty, nil);
 
   GoPoint* point1 = [m_game.board pointAtVertex:@"T19"];
@@ -274,7 +284,7 @@
 // -----------------------------------------------------------------------------
 - (void) testPass
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertFalse(m_game.document.isDirty, nil);
 
   // Can start game with a pass
@@ -311,7 +321,7 @@
 // -----------------------------------------------------------------------------
 - (void) testResign
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertFalse(m_game.document.isDirty, nil);
 
   // Can start game with resign
@@ -346,7 +356,7 @@
 // -----------------------------------------------------------------------------
 - (void) testContinue
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertThrowsSpecificNamed([m_game continue],
                               NSException, NSInternalInconsistencyException, @"continue before game start");
   [m_game pass];
@@ -481,7 +491,7 @@
 // -----------------------------------------------------------------------------
 - (void) testIsComputerPlayersTurn
 {
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertFalse([m_game isComputerPlayersTurn], nil);
   [m_game pass];
   STAssertFalse([m_game isComputerPlayersTurn], nil);
@@ -501,7 +511,7 @@
 - (void) testRevertStateFromEndedToInProgress
 {
   STAssertEquals(GoGameTypeHumanVsHuman, m_game.type, nil);
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   [m_game pass];
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   [m_game pass];
@@ -514,7 +524,7 @@
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
-  STAssertEquals(GoGameStateGameHasNotYetStarted, m_game.state, nil);
+  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
   STAssertFalse(m_game.document.isDirty, nil);
   [m_game resign];
   STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);

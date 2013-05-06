@@ -321,7 +321,6 @@
     {
       switch (game.state)
       {
-        case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
         case GoGameStateGameHasStarted:
         case GoGameStateGameIsPaused:          // although game is paused, computer may still be thinking
         {
@@ -350,7 +349,6 @@
       {
         switch (game.state)
         {
-          case GoGameStateGameHasNotYetStarted:  // game state is set to started only after the GTP response is received
           case GoGameStateGameHasStarted:
           {
             GoMove* move = game.boardPosition.currentMove;

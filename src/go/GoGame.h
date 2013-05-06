@@ -79,8 +79,10 @@
 /// Setting this property causes a black stone to be set on the GoPoint objects
 /// in the specified list.
 ///
-/// Raises an @e NSInternalInconsistencyException if this property is set while
-/// this GoGame object is not in state #GoGameStateGameHasNotYetStarted.
+/// Raises an @e NSInternalInconsistencyException if this property is set when
+/// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
+/// in that state but already has moves. Summing it up, this property can be set
+/// only at the start of the game.
 ///
 /// Raises @e NSInvalidArgumentException if this property is set with a nil
 /// value.
@@ -100,16 +102,16 @@
 /// @brief The model object that stores the moves of the game.
 @property(nonatomic, retain) GoMoveModel* moveModel;
 /// @brief The GoMove object that represents the first move of the game. nil if
-/// the game is still in state #GoGameStateGameHasNotYetStarted.
+/// no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
-/// not have to obtain the desired GoMove ojbect from @e moveModel.
+/// not have to obtain the desired GoMove object from @e moveModel.
 @property(nonatomic, assign, readonly) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
-/// the game is still in state #GoGameStateGameHasNotYetStarted.
+/// no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
-/// not have to obtain the desired GoMove ojbect from @e moveModel.
+/// not have to obtain the desired GoMove object from @e moveModel.
 @property(nonatomic, assign, readonly) GoMove* lastMove;
 /// @brief The state of the game.
 @property(nonatomic, assign) enum GoGameState state;
