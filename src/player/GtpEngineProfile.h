@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,20 @@
 ///   then that Player object is re-associated with the default profile
 ///
 ///
+/// @par Active profile
+///
+/// The active GTP engine profile is the one with whose settings the GTP is
+/// currently configured.
+///
+/// A profile becomes active when its applyProfile() method is invoked. If
+/// another profile is already active, applyProfile() deactivates that profile.
+/// Only one profile at a time can be active.
+///
+/// When the application launches there is a brief span of time during which
+/// the GTP engine is not yet configured, and during which there is no active
+/// profile.
+///
+///
 /// @par Playing strength
 ///
 /// The value of the @e playingStrength property of a GtpEngineProfile denotes
@@ -58,6 +72,28 @@
 - (bool) isDefaultProfile;
 - (void) resetToDefaultValues;
 
+// -----------------------------------------------------------------------------
+/// @name Properties that are not user defaults
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is true if this is the active profile. See class documentation for
+/// details.
+@property(nonatomic, assign, readonly, getter=isActiveProfile) bool activeProfile;
+/// @brief Is true if this is the active profile and one or more of this
+/// profile's GTP properties were changed since the last time that applyProfile
+/// was invoked.
+///
+/// This flag is always false if this is not the active profile.
+@property(nonatomic, assign, readonly) bool hasUnappliedChanges;
+/// @brief The playing strength of this profile. See class documentation for
+/// details. Assigning a value outside the range of pre-defined playing
+/// strengths results in an exception being raised.
+@property(nonatomic, assign) int playingStrength;
+//@}
+// -----------------------------------------------------------------------------
+/// @name Simple user defaults properties
+// -----------------------------------------------------------------------------
+//@{
 /// @brief The profile's UUID. This is a technical identifier guaranteed to be
 /// unique. This identifier is never displayed in the GUI.
 @property(nonatomic, retain, readonly) NSString* uuid;
@@ -72,10 +108,11 @@
 /// This property is named "profileDescription" instead of just "description"
 /// to prevent a conflict with the description() debugging aid.
 @property(nonatomic, retain) NSString* profileDescription;
-/// @brief The playing strength of this profile. See class documentation for
-/// details. Assigning a value outside the range of pre-defined playing
-/// strengths results in an exception being raised.
-@property(nonatomic, assign) int playingStrength;
+//@}
+// -----------------------------------------------------------------------------
+/// @name User defaults properties applicable to the GTP engine
+// -----------------------------------------------------------------------------
+//@{
 /// @brief The maximum amount of memory in MB that the Fuego GTP engine is
 /// allowed to consume.
 @property(nonatomic, assign) int fuegoMaxMemory;
@@ -95,5 +132,6 @@
 /// @brief Maximum number of games that Fuego is allowed to play before it must
 /// decide on a best move.
 @property(nonatomic, assign) unsigned long long fuegoMaxGames;
+//@}
 
 @end

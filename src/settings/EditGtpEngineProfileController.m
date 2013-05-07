@@ -140,6 +140,16 @@ enum ProfileNotesSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillDisappear:(BOOL)animated
+{
+  [super viewWillDisappear:animated];
+  if (self.profile.isActiveProfile && self.profile.hasUnappliedChanges)
+    [self.profile applyProfile];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
 /// be removed if deployment target is set to iOS 6.
 // -----------------------------------------------------------------------------

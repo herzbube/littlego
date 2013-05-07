@@ -143,4 +143,18 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the active profile object. See the class documentation of
+/// GtpEngineProfile for details.
+// -----------------------------------------------------------------------------
+- (GtpEngineProfile*) activeProfile
+{
+  for (GtpEngineProfile* profile in self.profileList)
+  {
+    if (profile.isActiveProfile)
+      return profile;
+  }
+  return nil;
+}
+
 @end

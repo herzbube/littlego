@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,43 +62,35 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the GtpEngineProfile object that is active for the game that
-/// is currently in progress.
+/// @brief Applies settings to the GTP engine that are obtained from the current
+/// game's computer player in the form of a GtpEngineProfile object.
 ///
 /// The following rules are observed:
-/// - Computer vs. human game: Returns the profile of the computer player
-/// - Human vs. human game: Returns the default profile
-/// - Computer vs. computer game: Returns the profile of the black computer
+/// - Computer vs. human game: Applies the settings obtained from the computer
 ///   player
+/// - Computer vs. computer game: Applies the settings obtained from the black
+///   computer player
+/// - Human vs. human game: There is no computer player. As a fallback the
+///   settings from the default GTP engine profile are applied.
 // -----------------------------------------------------------------------------
-+ (GtpEngineProfile*) activeProfile
++ (void) setupComputerPlayer
 {
+  GtpEngineProfile* profileToActivate = nil;
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeHumanVsHuman == game.type)
-    return [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
+    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
   else
   {
     Player* blackPlayer = game.playerBlack.player;
     if (! blackPlayer.isHuman)
-      return [blackPlayer gtpEngineProfile];
+      profileToActivate = [blackPlayer gtpEngineProfile];
     else
-      return [game.playerWhite.player gtpEngineProfile];
+      profileToActivate = [game.playerWhite.player gtpEngineProfile];
   }
-}
 
-// -----------------------------------------------------------------------------
-/// @brief Configures the GTP engine with settings obtained from the current
-/// game's computer player.
-///
-/// Prefers the black computer player if both players are computer players.
-/// If neither player is a computer player, the settings obtained from the
-/// default GTP engine profile are applied.
-// -----------------------------------------------------------------------------
-+ (void) setupComputerPlayer
-{
-  GtpEngineProfile* profile = [GtpUtilities activeProfile];
-  if (profile)
-    [profile applyProfile];
+  // Invoking applyProfile makes the profile the active profile
+  if (profileToActivate)
+    [profileToActivate applyProfile];
   else
     DDLogError(@"GtpUtilities::setupComputerPlayer(): Unable to determine profile with computer player settings");
 }
@@ -123,11 +115,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Restores the GTP engine's "pondering" state to the state prescribed
-/// by the active GTP engine profile (see activeProfile:()).
+/// by the active GTP engine profile.
 // -----------------------------------------------------------------------------
 + (void) restorePondering
 {
-  GtpEngineProfile* profile = [GtpUtilities activeProfile];
+  GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
   if (! profile)
     DDLogError(@"GtpUtilities::restorePondering(): Unable to determine profile with computer player settings");
   else if (profile.fuegoPondering)

@@ -17,10 +17,11 @@
 
 // Project includes
 #import "GtpEngineProfile.h"
+#import "GtpEngineProfileModel.h"
 #import "../utility/NSStringAdditions.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpUtilities.h"
-
+#import "../main/ApplicationDelegate.h"
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GtpEngineProfile.
@@ -28,6 +29,8 @@
 @interface GtpEngineProfile()
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
+@property(nonatomic, assign, readwrite, getter=isActiveProfile) bool activeProfile;
+@property(nonatomic, assign, readwrite) bool hasUnappliedChanges;
 @property(nonatomic, retain, readwrite) NSString* uuid;
 //@}
 @end
@@ -65,7 +68,9 @@
   self = [super init];
   if (! self)
     return nil;
-  else if (! dictionary)
+  self.activeProfile = false;
+  self.hasUnappliedChanges = false;
+  if (! dictionary)
   {
     self.uuid = [NSString UUIDString];
     self.name = @"";
@@ -88,7 +93,6 @@
   assert([self.uuid length] > 0);
   if ([self.uuid length] <= 0)
     DDLogError(@"%@: UUID length <= 0", self);
-
   return self;
 }
 
@@ -117,7 +121,6 @@
   return [NSString stringWithFormat:@"GtpEngineProfile(%p): name = %@, uuid = %@", self, _name, _uuid];
 }
 
-
 // -----------------------------------------------------------------------------
 /// @brief Returns this GtpEngineProfile object's user defaults attributes as a
 /// dictionary suitable for storage in the user defaults system.
@@ -139,7 +142,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Applies the settings in this profile to the GTP engine.
+/// @brief Applies the settings in this profile to the GTP engine and activates
+/// this profile if it is not yet active. Also clears the hasUnappliedChanges
+/// property.
+///
+/// If a different profile is active when this method is invoked, that profile
+/// is deactivated first.
+///
+/// This method returns control to the caller before all GTP commands have been
+/// processed.
 // -----------------------------------------------------------------------------
 - (void) applyProfile
 {
@@ -171,6 +182,21 @@
   commandString = [NSString stringWithFormat:@"uct_param_player max_games %llu", self.fuegoMaxGames];
   command = [GtpCommand command:commandString];
   [command submit];
+
+  self.hasUnappliedChanges = false;
+  if (! self.isActiveProfile)
+  {
+    GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+    GtpEngineProfile* activeProfile = [model activeProfile];
+    if (activeProfile)
+    {
+      assert(activeProfile != self);
+      if (activeProfile == self)
+        DDLogError(@"%@: GtpEngineProfileModel thinks this is the active profile, but the isActiveProfile flag is false", [self description]);
+      activeProfile.activeProfile = false;
+    }
+    self.activeProfile = true;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -300,6 +326,90 @@
   self.fuegoReuseSubtree = fuegoReuseSubtreeDefault;
   self.fuegoMaxThinkingTime = fuegoMaxThinkingTimeDefault;
   self.fuegoMaxGames = fuegoMaxGamesDefault;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoMaxMemory:(int)newValue
+{
+  if (_fuegoMaxMemory == newValue)
+    return;
+  _fuegoMaxMemory = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoThreadCount:(int)newValue
+{
+  if (_fuegoThreadCount == newValue)
+    return;
+  _fuegoThreadCount = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoPondering:(bool)newValue
+{
+  if (_fuegoPondering == newValue)
+    return;
+  _fuegoPondering = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoMaxPonderTime:(unsigned int)newValue
+{
+  if (_fuegoMaxPonderTime == newValue)
+    return;
+  _fuegoMaxPonderTime = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoReuseSubtree:(bool)newValue
+{
+  if (_fuegoReuseSubtree == newValue)
+    return;
+  _fuegoReuseSubtree = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoMaxThinkingTime:(unsigned int)newValue
+{
+  if (_fuegoMaxThinkingTime == newValue)
+    return;
+  _fuegoMaxThinkingTime = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoMaxGames:(unsigned long long)newValue
+{
+  if (_fuegoMaxGames == newValue)
+    return;
+  _fuegoMaxGames = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
 }
 
 @end

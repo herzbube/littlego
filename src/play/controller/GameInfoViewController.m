@@ -28,6 +28,7 @@
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
 #import "../../utility/NSStringAdditions.h"
@@ -671,7 +672,7 @@ enum BoardPositionSectionItem
         case ActiveProfileItem:
         {
           cell.textLabel.text = @"Active profile";
-          GtpEngineProfile* profile = [GtpUtilities activeProfile];
+          GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
           assert(profile);
           if (profile)
             cell.detailTextLabel.text = profile.name;

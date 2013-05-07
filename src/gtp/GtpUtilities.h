@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // -----------------------------------------------------------------------------
-
-
-@class GtpEngineProfile;
 
 
 // -----------------------------------------------------------------------------
@@ -32,7 +29,6 @@
 }
 
 + (void) submitCommand:(NSString*)commandString target:(id)aTarget selector:(SEL)aSelector waitUntilDone:(bool)wait;
-+ (GtpEngineProfile*) activeProfile;
 + (void) setupComputerPlayer;
 + (void) startPondering;
 + (void) stopPondering;
