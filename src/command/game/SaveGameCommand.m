@@ -17,7 +17,9 @@
 
 // Project includes
 #import "SaveGameCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../archive/ArchiveViewModel.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../gtp/GtpCommand.h"
@@ -60,6 +62,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  GoGame* game = [GoGame sharedGame];
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   NSError* error;
 
@@ -74,11 +77,24 @@
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
   [fileManager changeCurrentDirectoryPath:temporaryDirectory];
   DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], temporaryDirectory);
+
+  bool temporarilyResyncGTPEngine = false;
+  if (! game.boardPosition.isLastPosition)
+  {
+    temporarilyResyncGTPEngine = true;
+    SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
+    command.syncMovesUpToCurrentBoardPosition = false;
+    [command submit];
+  }
+
   // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfTemporaryFileName];
   GtpCommand* command = [GtpCommand command:commandString];
   command.waitUntilDone = true;
   [command submit];
+
+  if (temporarilyResyncGTPEngine)
+    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
   // Switch back as soon as possible; from now on operations use the full path
   // to the temporary file
@@ -107,7 +123,7 @@
     return false;
   }
 
-  [[GoGame sharedGame].document save:self.gameName];
+  [game.document save:self.gameName];
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;

@@ -21,10 +21,19 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The SyncGTPEngineCommand class is responsible for synchronizing the
-/// state of the GTP engine with the current board position.
+/// state of the GTP engine with the state of the current GoGame.
+///
+/// By default SyncGTPEngineCommand synchronizes the GTP engine with the moves
+/// up to the current board position. Handicap is always synchronized, even if
+/// board position 0 is synchronized.
+///
+/// Optionally SyncGTPEngineCommand may be configured so that it synchronizes
+/// the GTP engine with all moves of the entire game.
 // -----------------------------------------------------------------------------
 @interface SyncGTPEngineCommand : CommandBase
 {
 }
+
+@property(nonatomic, assign) bool syncMovesUpToCurrentBoardPosition;
 
 @end

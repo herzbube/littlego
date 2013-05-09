@@ -17,7 +17,9 @@
 
 // Project includes
 #import "GenerateDiagnosticsInformationFileCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../diagnostics/BugReportUtilities.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../gtp/GtpCommand.h"
@@ -231,11 +233,23 @@
   NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
   [fileManager changeCurrentDirectoryPath:self.diagnosticsInformationFolderPath];
 
+  bool temporarilyResyncGTPEngine = false;
+  if (! [GoGame sharedGame].boardPosition.isLastPosition)
+  {
+    temporarilyResyncGTPEngine = true;
+    SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
+    command.syncMovesUpToCurrentBoardPosition = false;
+    [command submit];
+  }
+
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", bugReportCurrentGameFileName];
   GtpCommand* gtpCommand = [GtpCommand command:commandString];
   gtpCommand.waitUntilDone = true;
   [gtpCommand submit];
   bool success = gtpCommand.response.status;
+
+  if (temporarilyResyncGTPEngine)
+    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
 
