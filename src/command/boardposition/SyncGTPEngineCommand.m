@@ -30,6 +30,22 @@
 
 @implementation SyncGTPEngineCommand
 
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a SyncGTPEngineCommand object.
+///
+/// @note This is the designated initializer of SyncGTPEngineCommand.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+  self.syncMovesUpToCurrentBoardPosition = true;
+  return self;
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
@@ -88,9 +104,12 @@
 - (bool) syncGTPEngineMoves
 {
   GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  GoMove* moveForCurrentBoardPosition = boardPosition.currentMove;
-  if (! moveForCurrentBoardPosition)
+  GoMove* syncUpToThisMove = nil;
+  if (self.syncMovesUpToCurrentBoardPosition)
+    syncUpToThisMove = game.boardPosition.currentMove;
+  else
+    syncUpToThisMove = game.lastMove;
+  if (! syncUpToThisMove)
     return true;
   NSString* commandString = @"gogui-play_sequence";
   GoMove* move = game.moveModel.firstMove;
@@ -113,7 +132,7 @@
         assert(0);
         return false;
     }
-    if (move == moveForCurrentBoardPosition)
+    if (move == syncUpToThisMove)
       break;
     move = move.next;
   }

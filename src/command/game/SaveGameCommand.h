@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
 /// command. If a game with the same name already exists, it is overwritten. If
 /// an error occurs, SaveGameCommand displays an alert view.
+///
+/// SaveGameCommand makes sure that the resulting .sgf file includes all moves
+/// of the game. If the user currently views an old board position,
+/// SaveGameCommand temporarily re-synchronizes the GTP engine with the full
+/// game, then after the archive has been created it synchronizes the GTP
+/// engine back to the current board position.
 ///
 /// SaveGameCommand executes synchronously.
 // -----------------------------------------------------------------------------
