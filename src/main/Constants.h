@@ -178,7 +178,8 @@ enum AlertViewType
   AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
   AlertViewTypeActionWillDiscardAllFutureMoves,
   AlertViewTypeHandleDocumentInteractionSucceeded,
-  AlertViewTypeHandleDocumentInteractionFailed
+  AlertViewTypeHandleDocumentInteractionFailed,
+  AlertViewTypeMaxMemoryConfirmation
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -406,7 +407,6 @@ extern const int maximumPlayingStrength;
 extern const int customPlayingStrength;
 extern const int defaultPlayingStrength;
 extern const int fuegoMaxMemoryMinimum;
-extern const int fuegoMaxMemoryMaximum;
 extern const int fuegoMaxMemoryDefault;
 extern const int fuegoThreadCountMinimum;
 extern const int fuegoThreadCountMaximum;

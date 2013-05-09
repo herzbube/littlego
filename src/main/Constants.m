@@ -81,7 +81,6 @@ const int maximumPlayingStrength = 5;
 const int customPlayingStrength = 0;
 const int defaultPlayingStrength = 3;
 const int fuegoMaxMemoryMinimum = 16;
-const int fuegoMaxMemoryMaximum = 512;
 const int fuegoMaxMemoryDefault = 32;
 const int fuegoThreadCountMinimum = 1;
 const int fuegoThreadCountMaximum = 8;

@@ -330,6 +330,7 @@
 		CDD961011662A8E300B54E09 /* render-readme.rb in Resources */ = {isa = PBXBuildFile; fileRef = CDD961001662A8E300B54E09 /* render-readme.rb */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
+		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
@@ -754,6 +755,8 @@
 		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
+		CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaxMemoryController.h; sourceTree = "<group>"; };
+		CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaxMemoryController.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
 		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
 		CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerProfileSettingsController.h; sourceTree = "<group>"; };
@@ -1196,6 +1199,8 @@
 				CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
+				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
 				CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */,
 				CDDD525E14840A530027476B /* PlayViewSettingsController.h */,
@@ -2133,6 +2138,7 @@
 				CD35921E1735A757000E2963 /* PlayViewController.m in Sources */,
 				CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
+				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

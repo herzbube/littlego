@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "MaxMemoryController.h"
 #import "../ui/ItemPickerController.h"
 
 // Forward declarations
@@ -53,7 +54,7 @@
 /// work, the delegate must implement the protocol
 /// EditGtpEngineProfileSettingsDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileSettingsController : UITableViewController <ItemPickerDelegate, UIActionSheetDelegate>
+@interface EditGtpEngineProfileSettingsController : UITableViewController <MaxMemoryControllerDelegate, ItemPickerDelegate, UIActionSheetDelegate>
 {
 }
 

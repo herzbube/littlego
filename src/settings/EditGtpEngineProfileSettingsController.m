@@ -213,21 +213,6 @@ enum MaxGamesCategory
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
-{
-  switch (section)
-  {
-    case MaxMemorySection:
-      return @"WARNING: Setting this value too high WILL crash the app! Read more about this under 'Help > Players & Profiles > Maximum memory'";
-    default:
-      break;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = nil;
@@ -235,13 +220,10 @@ enum MaxGamesCategory
   {
     case MaxMemorySection:
     {
-      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxMemoryDidChange:)];
-      sliderCell.descriptionLabel.text = @"Max. memory (MB)";
-      sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;
-      sliderCell.slider.maximumValue = fuegoMaxMemoryMaximum;
-      sliderCell.value = self.profile.fuegoMaxMemory;
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      cell.textLabel.text = @"Maximum memory";
+      cell.detailTextLabel.text = [NSString stringWithFormat:@"%d MB", self.profile.fuegoMaxMemory];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     case ThreadsSection:
@@ -361,11 +343,6 @@ enum MaxGamesCategory
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
-    case MaxMemorySection:
-    {
-      height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
     case ThreadsSection:
     {
       height = [TableViewSliderCell rowHeightInTableView:tableView];
@@ -398,7 +375,18 @@ enum MaxGamesCategory
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-  if (PlayoutLimitsSection == indexPath.section)
+  if (MaxMemorySection == indexPath.section)
+  {
+    MaxMemoryController* modalController = [[[MaxMemoryController alloc] init] autorelease];
+    modalController.delegate = self;
+    modalController.maxMemory = self.profile.fuegoMaxMemory;
+    UINavigationController* navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:modalController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentViewController:navigationController animated:YES completion:nil];
+    [navigationController release];
+  }
+  else if (PlayoutLimitsSection == indexPath.section)
   {
     if (FuegoMaxGamesItem == indexPath.row)
     {
@@ -435,6 +423,24 @@ enum MaxGamesCategory
     [actionSheet showInView:[tableView cellForRowAtIndexPath:indexPath]];
     [actionSheet release];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MaxMemoryController protocol method.
+// -----------------------------------------------------------------------------
+- (void) didEndEditing:(MaxMemoryController*)maxMemoryController didCancel:(bool)didCancel;
+{
+  if (! didCancel)
+  {
+    self.profile.fuegoMaxMemory = maxMemoryController.maxMemory;
+    NSUInteger sectionIndex = MaxMemorySection;
+    NSUInteger rowIndex = FuegoMaxMemoryItem;
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+    NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+    [self.tableView reloadRowsAtIndexPaths:indexPaths
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -508,17 +514,6 @@ enum MaxGamesCategory
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.profile.fuegoReuseSubtree = accessoryView.on;
-
-  [self.delegate didChangeProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing Fuego's maximum amount of memory.
-// -----------------------------------------------------------------------------
-- (void) maxMemoryDidChange:(id)sender
-{
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.profile.fuegoMaxMemory = sliderCell.value;
 
   [self.delegate didChangeProfile:self];
 }
