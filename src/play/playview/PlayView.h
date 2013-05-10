@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "PlayViewIntersection.h"
+
 // Forward declarations
 @class GoPoint;
 
@@ -95,9 +98,9 @@
 }
 
 - (void) delayedUpdate;
-- (GoPoint*) crossHairPointNear:(CGPoint)coordinates;
+- (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
-- (GoPoint*) pointNear:(CGPoint)coordinates;
+- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 
 /// @name Cross-hair point properties
 //@{

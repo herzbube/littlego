@@ -111,11 +111,13 @@
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* deadStonePoint = [self.playView pointNear:tappingLocation];
-  if (! deadStonePoint || ! [deadStonePoint hasStone])
+  PlayViewIntersection intersection = [self.playView intersectionNear:tappingLocation];
+  if (PlayViewIntersectionIsNullIntersection(intersection))
+    return;
+  if (! [intersection.point hasStone])
     return;
   GoGame* game = [GoGame sharedGame];
-  [game.score toggleDeadStoneStateOfGroup:deadStonePoint.region];
+  [game.score toggleDeadStoneStateOfGroup:intersection.point.region];
   [game.score calculateWaitUntilDone:false];
 }
 

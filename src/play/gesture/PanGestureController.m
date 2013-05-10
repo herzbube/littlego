@@ -124,7 +124,8 @@
   // 3. Stone placement can be cancelled by placing in an invalid location
   // 4. Invalid locations are: Another stone is already placed on the point;
   //    placing the stone would be suicide; the point is guarded by a Ko; the
-  //    point is outside the board
+  //    point is outside the board; the point is not on the visible area of the
+  //    board (if the board is zoomed)
   // 5. While panning/dragging, provide continuous feedback on the current
   //    stone location
   //    - Display a stone of the correct color at the current location
@@ -141,25 +142,32 @@
   //    user can see the stone location
 
   CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
-  GoPoint* crossHairPoint = [self.playView crossHairPointNear:panningLocation];
+  PlayViewIntersection crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
 
-  // TODO If the move is not legal, determine the reason (another stone is
-  // already placed on the point; suicide move; guarded by Ko rule)
   bool isLegalMove = false;
-  if (crossHairPoint)
-    isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairPoint];
+  if (! PlayViewIntersectionIsNullIntersection(crossHairIntersection))
+  {
+    CGRect visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];
+    // Don't use panningLocation for this check because the cross-hair might
+    // be offset due to the user preference "stoneDistanceFromFingertip"
+    bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
+    if (isCrossHairInVisibleRect)
+      isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairIntersection.point];
+    else
+      crossHairIntersection = PlayViewIntersectionNull;
+  }
 
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
     {
-      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
+      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove];
       break;
     }
     case UIGestureRecognizerStateChanged:
     {
-      [self.playView moveCrossHairTo:crossHairPoint isLegalMove:isLegalMove];
+      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove];
       break;
     }
     case UIGestureRecognizerStateEnded:
@@ -167,7 +175,7 @@
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       if (isLegalMove)
       {
-        DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairPoint] autorelease];
+        DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
         [self.delegate panGestureController:self playOrAlertWithCommand:command];
       }
       break;
@@ -175,7 +183,7 @@
     case UIGestureRecognizerStateCancelled:
     {
       // Occurs, for instance, if an alert is displayed while a gesture is
-      // being handled.
+      // being handled, or if the gesture recognizer was disabled.
       [self.playView moveCrossHairTo:nil isLegalMove:true];
       break;
     }

@@ -331,6 +331,7 @@
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
+		CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
 		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
@@ -422,6 +423,7 @@
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
+		CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -757,6 +759,8 @@
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
 		CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaxMemoryController.h; sourceTree = "<group>"; };
 		CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaxMemoryController.m; sourceTree = "<group>"; };
+		CDDCD0A7173D111400359DE7 /* PlayViewIntersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewIntersection.h; sourceTree = "<group>"; };
+		CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewIntersection.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
 		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
 		CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerProfileSettingsController.h; sourceTree = "<group>"; };
@@ -1267,6 +1271,8 @@
 				CD3591FB1735A757000E2963 /* PlayView.m */,
 				CD3591FC1735A757000E2963 /* PlayViewController.h */,
 				CD3591FD1735A757000E2963 /* PlayViewController.m */,
+				CDDCD0A7173D111400359DE7 /* PlayViewIntersection.h */,
+				CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */,
 				CD3591FE1735A757000E2963 /* PlayViewMetrics.h */,
 				CD3591FF1735A757000E2963 /* PlayViewMetrics.m */,
 				CD3592001735A757000E2963 /* ScrollViewController.h */,
@@ -2139,6 +2145,7 @@
 				CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
+				CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2278,6 +2285,7 @@
 				CD35921F1735A757000E2963 /* PlayViewController.m in Sources */,
 				CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CD3592231735A757000E2963 /* ScrollViewController.m in Sources */,
+				CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

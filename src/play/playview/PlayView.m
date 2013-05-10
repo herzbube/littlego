@@ -496,23 +496,21 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a GoPoint object for the intersection that is closest to the
-/// view coordinates @a coordinates. Returns nil if there is no "closest"
-/// intersection.
+/// @brief Returns a PlayViewIntersection object for the intersection that is
+/// closest to the view coordinates @a coordinates. Returns
+/// PlayViewIntersectionNull if there is no "closest" intersection.
 ///
 /// Determining "closest" works like this:
 /// - If the user has turned this on in the preferences, @a coordinates are
 ///   adjusted so that the intersection is not directly under the user's
 ///   fingertip
-/// - Otherwise the same rules as for pointNear:() apply - see that method's
-///   documentation.
+/// - Otherwise the same rules as for PlayViewMetrics::intersectionNear:()
+///   apply - see that method's documentation.
 // -----------------------------------------------------------------------------
-- (GoPoint*) crossHairPointNear:(CGPoint)coordinates
+- (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates
 {
-  // Adjust so that the cross-hair is not directly under the user's fingertip,
-  // but one or more point distances above
   coordinates.y -= self.crossHairPointDistanceFromFinger;
-  return [_playViewMetrics pointNear:coordinates];
+  return [_playViewMetrics intersectionNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -535,15 +533,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a GoPoint object for the intersection that is closest to the
-/// view coordinates @a coordinates. Returns nil if there is no "closest"
-/// intersection.
+/// @brief Returns a PlayViewIntersection object for the intersection that is
+/// closest to the view coordinates @a coordinates. Returns
+/// PlayViewIntersectionNull if there is no "closest" intersection.
 ///
-/// @see PlayViewMetrics::pointNear:() for details.
+/// @see PlayViewMetrics::intersectionNear:() for details.
 // -----------------------------------------------------------------------------
-- (GoPoint*) pointNear:(CGPoint)coordinates
+- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates
 {
-  return [_playViewMetrics pointNear:coordinates];
+  return [_playViewMetrics intersectionNear:coordinates];
 }
 
 @end

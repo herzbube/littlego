@@ -20,6 +20,7 @@
 #import "PlayView.h"
 #import "PlayViewController.h"
 #import "../gesture/DoubleTapGestureController.h"
+#import "../gesture/PanGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
@@ -138,6 +139,7 @@
 
   self.currentAbsoluteZoomScale = 1.0f;
 
+  self.playViewController.panGestureController.scrollView = self.scrollView;
   self.doubleTapGestureController.scrollView = self.scrollView;
   self.twoFingerTapGestureController.scrollView = self.scrollView;
 }
@@ -149,6 +151,7 @@
 - (void) viewWillUnload
 {
   [super viewWillUnload];
+  self.playViewController.panGestureController.scrollView = nil;
   self.doubleTapGestureController.scrollView = nil;
   self.twoFingerTapGestureController.scrollView = nil;
   self.scrollView = nil;

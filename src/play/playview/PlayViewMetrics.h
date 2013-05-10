@@ -15,9 +15,14 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "PlayViewIntersection.h"
+
+// Forward declarations
 @class PlayViewModel;
 @class GoPoint;
 @class GoVertex;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewMetrics class is responsible for calculating the
@@ -136,7 +141,7 @@
 //@{
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
-- (GoPoint*) pointNear:(CGPoint)coordinates;
+- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 //@}
 
 /// @name Layer creation functions

@@ -51,6 +51,7 @@
 }
 
 @property(nonatomic, assign) PlayView* playView;
+@property(nonatomic, assign) UIView* scrollView;
 @property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
 
 @end
