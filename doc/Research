@@ -624,6 +624,47 @@ Copy & paste templates:
   loadsgf /Users/patrick/Documents/go-games/19x19/pw6-gokifu-20110915-Choi_Cheolhan-Kim_Kiyoung.sgf
 
 
+Fuego resigning mechanics
+-------------------------
+- The resigning behaviour is modified by these two GTP commands:
+  - uct_param_player resign_min_games <xxx>
+  - uct_param_player resign_threshold <xxx>
+- resign_min_games
+  - From the source code docs: "Minimum number of simulations to check for
+    resign."
+  - This comment allows some interpretation, so additional source code is
+    required
+  - Result: The number of playouts must be greater than (>) resign_min_games
+    for resignation to become possible
+  - Consequence: If the "max_games" parameter falls below resign_min_games,
+    resignation becomes impossible because the required number of playouts can
+    never be reached
+- resign_threshold
+  - From the source code docs: "Threshold for position value to resign."
+  - This comment allows some interpretation, so additional source code is
+    required
+  - Result: A search yields a "best move". The quality of the move is valued
+    between 0 and 1. A higher value means that the move is better. The quality
+    of the best move must be smaller than (<) resign_threshold for resignation
+    to become possible.
+- The computer resigns the game only if the conditions for both resign_min_games
+  and resign_threshold are met
+- Experiment: Setting resign_threshold to 1 causes Fuego to resign immediately
+  once it no longer plays moves from the opening book
+- Default values
+  - The default value for resign_threshold is automatically adjusted when the
+    board size changes:
+    - Board size < 15 : The default value is 0.05
+    - Board size >= 15 : The default value is 0.08
+    The source comment for this is
+      // Need higher resign threshold, because GoUctGlobalSearch uses
+      // length modification on large board
+  - At the time of writing, the default value for resign_min_games is always
+    5000 (board size has no influence)
+- resign_min_games, and possibly resign_threshold also, have an influence on
+  the "early_pass" behaviour of the UCT player
+
+
 Redesigning the drawing mechanism in PlayView
 ---------------------------------------------
 During development of version 0.8 I decided to revise the implementation of how

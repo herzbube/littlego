@@ -475,7 +475,7 @@ enum MaxGamesCategory
 {
   if (actionSheet.cancelButtonIndex != buttonIndex)
   {
-    [self.profile resetToDefaultValues];
+    [self.profile resetPlayingStrengthPropertiesToDefaultValues];
     [self.delegate didChangeProfile:self];
     [self.tableView reloadData];
   }

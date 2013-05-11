@@ -20,6 +20,7 @@
 #import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
+#import "../player/GtpEngineProfile.h"
 #import "../utility/NSStringAdditions.h"
 
 
@@ -426,6 +427,47 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     NSMutableDictionary* boardPositionDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardPositionDictionary];
     [boardPositionDictionaryUpgrade removeObjectForKey:boardPositionLastViewedKey];
     [userDefaults setObject:boardPositionDictionaryUpgrade forKey:boardPositionKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 7.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion7:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Every GTP engine profile now has a number of additional keys
+  id profileListArray = [userDefaults objectForKey:gtpEngineProfileListKey];
+  if (profileListArray)  // is nil if the key is not present
+  {
+    NSMutableArray* profileListArrayUpgrade = [NSMutableArray array];
+    for (NSDictionary* profileDictionary in profileListArray)
+    {
+      NSMutableDictionary* profileDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:profileDictionary];
+      [profileDictionaryUpgrade setValue:[NSNumber numberWithBool:autoSelectFuegoResignMinGamesDefault] forKey:autoSelectFuegoResignMinGamesKey];
+      unsigned long long fuegoResignMinGames;
+      if (autoSelectFuegoResignMinGamesDefault)
+      {
+        unsigned long long fuegoMaxGames  = [[profileDictionaryUpgrade valueForKey:fuegoMaxGamesKey] unsignedLongLongValue];
+        fuegoResignMinGames = [GtpEngineProfile fuegoResignMinGamesForMaxGames:fuegoMaxGames];
+      }
+      else
+      {
+        fuegoResignMinGames = fuegoResignMinGamesDefault;
+      }
+      [profileDictionaryUpgrade setValue:[NSNumber numberWithUnsignedLongLong:fuegoResignMinGames] forKey:fuegoResignMinGamesKey];
+      NSMutableArray* fuegoResignThreshold = [NSMutableArray array];
+      for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
+      {
+        NSNumber* resignThresholdDefault = [NSNumber numberWithFloat:fuegoResignThresholdDefault[arrayIndex]];
+        [fuegoResignThreshold addObject:resignThresholdDefault];
+      }
+      [profileDictionaryUpgrade setValue:fuegoResignThreshold forKey:fuegoResignThresholdKey];
+      [profileListArrayUpgrade addObject:profileDictionaryUpgrade];
+    }
+    [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
 }
 

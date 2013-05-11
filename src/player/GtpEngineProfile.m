@@ -18,10 +18,13 @@
 // Project includes
 #import "GtpEngineProfile.h"
 #import "GtpEngineProfileModel.h"
-#import "../utility/NSStringAdditions.h"
+#import "../go/GoBoard.h"
+#import "../go/GoGame.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpUtilities.h"
 #import "../main/ApplicationDelegate.h"
+#import "../utility/NSStringAdditions.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GtpEngineProfile.
@@ -75,13 +78,15 @@
     self.uuid = [NSString UUIDString];
     self.name = @"";
     self.profileDescription = @"";
-    [self resetToDefaultValues];
+    _fuegoResignThreshold = [[NSMutableArray arrayWithCapacity:arraySizeFuegoResignThresholdDefault] retain];
+    [self resetPlayingStrengthPropertiesToDefaultValues];
+    [self resetResignBehaviourPropertiesToDefaultValues];
   }
   else
   {
-    self.uuid = (NSString*)[dictionary valueForKey:gtpEngineProfileUUIDKey];
-    self.name = (NSString*)[dictionary valueForKey:gtpEngineProfileNameKey];
-    self.profileDescription = (NSString*)[dictionary valueForKey:gtpEngineProfileDescriptionKey];
+    self.uuid = [dictionary valueForKey:gtpEngineProfileUUIDKey];
+    self.name = [dictionary valueForKey:gtpEngineProfileNameKey];
+    self.profileDescription = [dictionary valueForKey:gtpEngineProfileDescriptionKey];
     self.fuegoMaxMemory = [[dictionary valueForKey:fuegoMaxMemoryKey] intValue];
     self.fuegoThreadCount = [[dictionary valueForKey:fuegoThreadCountKey] intValue];
     self.fuegoPondering = [[dictionary valueForKey:fuegoPonderingKey] boolValue];
@@ -89,6 +94,9 @@
     self.fuegoReuseSubtree = [[dictionary valueForKey:fuegoReuseSubtreeKey] boolValue];
     self.fuegoMaxThinkingTime = [[dictionary valueForKey:fuegoMaxThinkingTimeKey] unsignedIntValue];
     self.fuegoMaxGames = [[dictionary valueForKey:fuegoMaxGamesKey] unsignedLongLongValue];
+    self.autoSelectFuegoResignMinGames = [[dictionary valueForKey:autoSelectFuegoResignMinGamesKey] boolValue];
+    self.fuegoResignMinGames = [[dictionary valueForKey:fuegoResignMinGamesKey] unsignedLongLongValue];
+    _fuegoResignThreshold = [[NSMutableArray arrayWithArray:[dictionary valueForKey:fuegoResignThresholdKey]] retain];
   }
   assert([self.uuid length] > 0);
   if ([self.uuid length] <= 0)
@@ -104,6 +112,7 @@
   self.uuid = nil;
   self.name = nil;
   self.profileDescription = nil;
+  [_fuegoResignThreshold release];
   [super dealloc];
 }
 
@@ -138,6 +147,9 @@
   [dictionary setValue:[NSNumber numberWithBool:self.fuegoReuseSubtree] forKey:fuegoReuseSubtreeKey];
   [dictionary setValue:[NSNumber numberWithUnsignedInt:self.fuegoMaxThinkingTime] forKey:fuegoMaxThinkingTimeKey];
   [dictionary setValue:[NSNumber numberWithUnsignedLongLong:self.fuegoMaxGames] forKey:fuegoMaxGamesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.autoSelectFuegoResignMinGames] forKey:autoSelectFuegoResignMinGamesKey];
+  [dictionary setValue:[NSNumber numberWithUnsignedLongLong:self.fuegoResignMinGames] forKey:fuegoResignMinGamesKey];
+  [dictionary setValue:_fuegoResignThreshold forKey:fuegoResignThresholdKey];
   return dictionary;
 }
 
@@ -180,6 +192,13 @@
   command = [GtpCommand command:commandString];
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_player max_games %llu", self.fuegoMaxGames];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  commandString = [NSString stringWithFormat:@"uct_param_player resign_min_games %llu", self.fuegoResignMinGames];
+  command = [GtpCommand command:commandString];
+  [command submit];
+  float resignThreshold = [self resignThresholdForBoardSize:[GoGame sharedGame].board.size];
+  commandString = [NSString stringWithFormat:@"uct_param_player resign_threshold %f", resignThreshold];
   command = [GtpCommand command:commandString];
   [command submit];
 
@@ -274,7 +293,7 @@
   //   fuegoMaxThinkingTime will become the limiting factor much faster than
   //   on fast devices with more number crunching power
 
-  [self resetToDefaultValues];
+  [self resetPlayingStrengthPropertiesToDefaultValues];
 
   // Don't rely on defaults for those parameters that make up playing strength,
   // because defaults might change. Instead, explicitly set those values that
@@ -314,10 +333,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Resets the profile's GTP settings to their default values. Does not
-/// modify the profile's UUID, name and description.
+/// @brief Resets those properties to their default values that are related to
+/// playing strength.
 // -----------------------------------------------------------------------------
-- (void) resetToDefaultValues
+- (void) resetPlayingStrengthPropertiesToDefaultValues
 {
   self.fuegoMaxMemory = fuegoMaxMemoryDefault;
   self.fuegoThreadCount = fuegoThreadCountDefault;
@@ -326,6 +345,25 @@
   self.fuegoReuseSubtree = fuegoReuseSubtreeDefault;
   self.fuegoMaxThinkingTime = fuegoMaxThinkingTimeDefault;
   self.fuegoMaxGames = fuegoMaxGamesDefault;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resets those properties to their default values that are related to
+/// the computer player's resign behaviour.
+// -----------------------------------------------------------------------------
+- (void) resetResignBehaviourPropertiesToDefaultValues
+{
+  self.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
+  if (autoSelectFuegoResignMinGamesDefault)
+    self.fuegoResignMinGames = [GtpEngineProfile fuegoResignMinGamesForMaxGames:self.fuegoMaxGames];
+  else
+    self.fuegoResignMinGames = fuegoResignMinGamesDefault;
+  for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
+  {
+    NSNumber* resignThresholdDefault = [NSNumber numberWithFloat:fuegoResignThresholdDefault[arrayIndex]];
+    [(NSMutableArray*)_fuegoResignThreshold replaceObjectAtIndex:arrayIndex
+                                                      withObject:resignThresholdDefault];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -410,6 +448,72 @@
   _fuegoMaxGames = newValue;
   if (self.isActiveProfile)
     self.hasUnappliedChanges = true;
+  if (self.autoSelectFuegoResignMinGames)
+    self.fuegoResignMinGames = [GtpEngineProfile fuegoResignMinGamesForMaxGames:_fuegoMaxGames];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a @e fuegoResignMinGames property value that is appropriate
+/// for @a maxGames according to the @e fuegoResignMinGames auto-selection
+/// rules.
+///
+/// @see Property @e autoSelectFuegoResignMinGames.
+// -----------------------------------------------------------------------------
++ (unsigned long long) fuegoResignMinGamesForMaxGames:(unsigned long long)maxGames
+{
+  if (maxGames > fuegoResignMinGamesDefault)
+    return fuegoResignMinGamesDefault;
+  else if (maxGames > 100)
+    return (maxGames - 50);
+  else
+    return (maxGames - 1);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setFuegoResignMinGames:(unsigned long long)newValue
+{
+  if (_fuegoResignMinGames == newValue)
+    return;
+  _fuegoResignMinGames = newValue;
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience accessor to read values from the property
+/// @e fuegoResignThreshold.
+// -----------------------------------------------------------------------------
+- (float) resignThresholdForBoardSize:(enum GoBoardSize)boardSize
+{
+  int arrayIndex = [self resignThresholdIndexForBoardSize:boardSize];
+  NSNumber* resignThreshold = [_fuegoResignThreshold objectAtIndex:arrayIndex];
+  return [resignThreshold floatValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience accessor to write values to the property
+/// @e fuegoResignThreshold.
+// -----------------------------------------------------------------------------
+- (void) setResignThreshold:(float)newValue forBoardSize:(enum GoBoardSize)boardSize
+{
+  float oldValue = [self resignThresholdForBoardSize:boardSize];
+  if (oldValue == newValue)
+    return;
+  int arrayIndex = [self resignThresholdIndexForBoardSize:boardSize];
+  [(NSMutableArray*)_fuegoResignThreshold replaceObjectAtIndex:arrayIndex
+                                                    withObject:[NSNumber numberWithFloat:newValue]];
+  if (self.isActiveProfile)
+    self.hasUnappliedChanges = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (int) resignThresholdIndexForBoardSize:(enum GoBoardSize)boardSize
+{
+  return (boardSize - GoBoardSizeMin) / 2;
 }
 
 @end

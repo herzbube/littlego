@@ -70,7 +70,12 @@
 - (NSDictionary*) asDictionary;
 - (void) applyProfile;
 - (bool) isDefaultProfile;
-- (void) resetToDefaultValues;
+- (void) resetPlayingStrengthPropertiesToDefaultValues;
+- (void) resetResignBehaviourPropertiesToDefaultValues;
+- (float) resignThresholdForBoardSize:(enum GoBoardSize)boardSize;
+- (void) setResignThreshold:(float)threshold forBoardSize:(enum GoBoardSize)boardSize;
++ (unsigned long long) fuegoResignMinGamesForMaxGames:(unsigned long long)maxGames;
+
 
 // -----------------------------------------------------------------------------
 /// @name Properties that are not user defaults
@@ -108,6 +113,14 @@
 /// This property is named "profileDescription" instead of just "description"
 /// to prevent a conflict with the description() debugging aid.
 @property(nonatomic, retain) NSString* profileDescription;
+/// @brief The value of this flag decides whether @e fuegoResignMinGames is
+/// automatically calculated (flag is true), or must be manually selected by
+/// the user (flag is false).
+///
+/// This flag is true by default. Automatic calculation of
+/// @e fuegoResignMinGames ensures that @e fuegoResignMinGames is never >=
+/// @e fuegoMaxGames, i.e. it ensures that Fuego will always be able to resign.
+@property(nonatomic, assign) bool autoSelectFuegoResignMinGames;
 //@}
 // -----------------------------------------------------------------------------
 /// @name User defaults properties applicable to the GTP engine
@@ -132,6 +145,27 @@
 /// @brief Maximum number of games that Fuego is allowed to play before it must
 /// decide on a best move.
 @property(nonatomic, assign) unsigned long long fuegoMaxGames;
+/// @brief Minimum number of games that Fuego must play before it is allowed to
+/// make a decision about resigning.
+///
+/// Fuego will never resign if this is >= @e fuegoMaxGames, because in that
+/// case it will never calculate more than @e fuegoResignMinGames games. If
+/// @e autoSelectFuegoResignMinGames is true, this scenario will never occur
+/// because @e fuegoResignMinGames is automatically calculated to ensure that
+/// it will stay below @e fuegoMaxGames.
+@property(nonatomic, assign) unsigned long long fuegoResignMinGames;
+/// @brief Fuego resigns if the quality of the best move it could find is below
+/// this threshold. The condition for fuegoResignMinGames must also be met.
+///
+/// This property stores separate thresholds for each possible board size.
+/// The array contains NSNumber objects with float values inside. The object
+/// at index position 0 represents the threshold for the smallest board
+/// (#GoBoardSize7).
+///
+/// Use the convenience accessor methods resignThresholdForBoardSize:() and
+/// setResignThreshold:forBoardSize:() instead of accessing this property
+/// directly.
+@property(nonatomic, retain, readonly) NSArray* fuegoResignThreshold;
 //@}
 
 @end

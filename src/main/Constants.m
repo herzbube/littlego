@@ -103,6 +103,10 @@ const unsigned long long fuegoMaxGamesPlayingStrength1 = 500;    // start with 5
 const unsigned long long fuegoMaxGamesPlayingStrength2 = 5000;
 const unsigned long long fuegoMaxGamesPlayingStrength3 = 10000;  // on fast CPUs this still imposes a noticable
                                                                  // limit (measurement made on a MacBook)
+const bool autoSelectFuegoResignMinGamesDefault = true;
+const unsigned long long fuegoResignMinGamesDefault = 5000;
+const int arraySizeFuegoResignThresholdDefault = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+const float fuegoResignThresholdDefault[arraySizeFuegoResignThresholdDefault] = {0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.08};
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Archive view constants
@@ -235,6 +239,9 @@ NSString* fuegoMaxPonderTimeKey = @"FuegoMaxPonderTime";
 NSString* fuegoReuseSubtreeKey = @"FuegoReuseSubtree";
 NSString* fuegoMaxThinkingTimeKey = @"FuegoMaxThinkingTime";
 NSString* fuegoMaxGamesKey = @"FuegoMaxGames";
+NSString* autoSelectFuegoResignMinGamesKey = @"AutoSelectFuegoResignMinGames";
+NSString* fuegoResignMinGamesKey = @"FuegoResignMinGames";
+NSString* fuegoResignThresholdKey = @"FuegoResignThreshold";
 // Archive view settings
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>6</integer>
+	<integer>7</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>PlayView</key>
@@ -159,6 +159,20 @@
 			<integer>10</integer>
 			<key>FuegoMaxGames</key>
 			<integer>-1</integer>
+			<key>AutoSelectFuegoResignMinGames</key>
+			<true/>
+			<key>FuegoResignMinGames</key>
+			<integer>5000</integer>
+			<key>FuegoResignThreshold</key>
+			<array>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.08</string>
+				<string>0.08</string>
+				<string>0.08</string>
+			</array>
 		</dict>
 		<dict>
 			<key>UUID</key>
@@ -181,6 +195,20 @@
 			<integer>10</integer>
 			<key>FuegoMaxGames</key>
 			<integer>500</integer>
+			<key>AutoSelectFuegoResignMinGames</key>
+			<true/>
+			<key>FuegoResignMinGames</key>
+			<integer>450</integer>
+			<key>FuegoResignThreshold</key>
+			<array>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.08</string>
+				<string>0.08</string>
+				<string>0.08</string>
+			</array>
 		</dict>
 		<dict>
 			<key>UUID</key>
@@ -203,6 +231,20 @@
 			<integer>10</integer>
 			<key>FuegoMaxGames</key>
 			<integer>-1</integer>
+			<key>AutoSelectFuegoResignMinGames</key>
+			<true/>
+			<key>FuegoResignMinGames</key>
+			<integer>5000</integer>
+			<key>FuegoResignThreshold</key>
+			<array>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.05</string>
+				<string>0.08</string>
+				<string>0.08</string>
+				<string>0.08</string>
+			</array>
 		</dict>
 	</array>
 	<key>StarPoints</key>

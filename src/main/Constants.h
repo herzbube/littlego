@@ -425,6 +425,10 @@ extern const unsigned long long fuegoMaxGamesDefault;
 extern const unsigned long long fuegoMaxGamesPlayingStrength1;
 extern const unsigned long long fuegoMaxGamesPlayingStrength2;
 extern const unsigned long long fuegoMaxGamesPlayingStrength3;
+extern const bool autoSelectFuegoResignMinGamesDefault;
+extern const unsigned long long fuegoResignMinGamesDefault;
+extern const int arraySizeFuegoResignThresholdDefault;
+extern const float fuegoResignThresholdDefault[];
 /// @brief The hardcoded UUID of the default GTP engine profile. This profile
 /// is the fallback profile if no other profile is available or appropriate.
 /// The user cannot delete this profile.
@@ -607,6 +611,9 @@ extern NSString* fuegoMaxPonderTimeKey;
 extern NSString* fuegoReuseSubtreeKey;
 extern NSString* fuegoMaxThinkingTimeKey;
 extern NSString* fuegoMaxGamesKey;
+extern NSString* autoSelectFuegoResignMinGamesKey;
+extern NSString* fuegoResignMinGamesKey;
+extern NSString* fuegoResignThresholdKey;
 // Archive view settings
 extern NSString* archiveViewKey;
 extern NSString* sortCriteriaKey;
