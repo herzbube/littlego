@@ -461,7 +461,7 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
       NSMutableArray* fuegoResignThreshold = [NSMutableArray array];
       for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
       {
-        NSNumber* resignThresholdDefault = [NSNumber numberWithFloat:fuegoResignThresholdDefault[arrayIndex]];
+        NSNumber* resignThresholdDefault = [NSNumber numberWithInt:fuegoResignThresholdDefault[arrayIndex]];
         [fuegoResignThreshold addObject:resignThresholdDefault];
       }
       [profileDictionaryUpgrade setValue:fuegoResignThreshold forKey:fuegoResignThresholdKey];

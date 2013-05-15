@@ -33,6 +33,7 @@ enum EditGtpEngineProfileTableViewSection
 {
   ProfileNameSection,
   PlayingStrengthSection,
+  ResignBehaviourSection,
   ProfileNotesSection,
   MaxSection
 };
@@ -52,8 +53,18 @@ enum ProfileNameSectionItem
 enum PlayingStrengthSectionItem
 {
   PlayingStrengthItem,
-  AdvancedConfigurationItem,
+  PlayingStrengthAdvancedConfigurationItem,
   MaxPlayingStrengthSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ResignBehaviourSection.
+// -----------------------------------------------------------------------------
+enum ResignBehaviourSectionItem
+{
+  ResignBehaviourItem,
+  ResignBehaviourAdvancedConfigurationItem,
+  MaxResignBehaviourSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -181,6 +192,8 @@ enum ProfileNotesSectionItem
       return MaxProfileNameSectionItem;
     case PlayingStrengthSection:
       return MaxPlayingStrengthSectionItem;
+    case ResignBehaviourSection:
+      return MaxResignBehaviourSectionItem;
     case ProfileNotesSection:
       return MaxProfileNotesSectionItem;
     default:
@@ -201,6 +214,8 @@ enum ProfileNotesSectionItem
       return @"Profile name";
     case PlayingStrengthSection:
       return @"Playing strength";
+    case ResignBehaviourSection:
+      return @"Resign behaviour";
     case ProfileNotesSection:
       return @"Profile notes";
     default:
@@ -217,7 +232,10 @@ enum ProfileNotesSectionItem
   switch (section)
   {
     case PlayingStrengthSection:
-      return @"Changes become active only after a new game with a player who uses this profile is started.";
+      return @"The advanced configuration screen lets you adjust many low-level settings. Documentation for each setting is available under 'Help > Players & Profiles'.";
+      break;
+    case ResignBehaviourSection:
+      return @"The advanced configuration screen lets you adjust the resign behaviour in complete detail. Documentation is available under 'Help > Players & Profiles'.";
       break;
     default:
       break;
@@ -266,7 +284,42 @@ enum ProfileNotesSectionItem
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
-        case AdvancedConfigurationItem:
+        case PlayingStrengthAdvancedConfigurationItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = @"Advanced configuration";
+          // Necessary because other cells with DefaultCellType use a different
+          // text color
+          cell.textLabel.textColor = [UIColor blackColor];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
+    case ResignBehaviourSection:
+    {
+      switch (indexPath.row)
+      {
+        case ResignBehaviourItem:
+        {
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Resign behaviour";
+          if (customResignBehaviour == self.profile.resignBehaviour)
+            cell.detailTextLabel.text = @"Custom";
+          else
+          {
+            cell.detailTextLabel.text = [self resignBehaviourName:self.profile.resignBehaviour];
+          }
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        case ResignBehaviourAdvancedConfigurationItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
           cell.textLabel.text = @"Advanced configuration";
@@ -365,7 +418,7 @@ enum ProfileNotesSectionItem
       case PlayingStrengthItem:
       {
         NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-        for (int playingStrength = minimumPlayingStrength; playingStrength < maximumPlayingStrength + 1; ++playingStrength)
+        for (int playingStrength = minimumPlayingStrength; playingStrength <= maximumPlayingStrength; ++playingStrength)
         {
           NSString* playingStrengthString = [NSString stringWithFormat:@"%d", playingStrength];
           [itemList addObject:playingStrengthString];
@@ -375,10 +428,11 @@ enum ProfileNotesSectionItem
           indexOfDefaultPlayingStrength = -1;
         else
           indexOfDefaultPlayingStrength = self.profile.playingStrength - minimumPlayingStrength;
-        UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                   title:@"Playing strength"
-                                                                      indexOfDefaultItem:indexOfDefaultPlayingStrength
-                                                                                delegate:self];
+        ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                       title:@"Playing strength"
+                                                                          indexOfDefaultItem:indexOfDefaultPlayingStrength
+                                                                                    delegate:self];
+        modalController.context = [NSNumber numberWithInt:PlayingStrengthSection];
         UINavigationController* navigationController = [[UINavigationController alloc]
                                                         initWithRootViewController:modalController];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -386,11 +440,55 @@ enum ProfileNotesSectionItem
         [navigationController release];
         break;
       }
-      case AdvancedConfigurationItem:
+      case PlayingStrengthAdvancedConfigurationItem:
       {
         EditGtpEngineProfileSettingsController* editProfileSettingsController = [[EditGtpEngineProfileSettingsController controllerForProfile:self.profile withDelegate:self] retain];
         [self.navigationController pushViewController:editProfileSettingsController animated:YES];
         [editProfileSettingsController release];
+        break;
+      }
+      default:
+      {
+        assert(0);
+        break;
+      }
+    }
+  }
+  else if (ResignBehaviourSection == indexPath.section)
+  {
+    switch (indexPath.row)
+    {
+      case ResignBehaviourItem:
+      {
+        NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+        for (int resignBehaviour = minimumResignBehaviour; resignBehaviour <= maximumResignBehaviour; ++resignBehaviour)
+        {
+          NSString* resignBehaviourString = [self resignBehaviourName:resignBehaviour];
+          [itemList addObject:resignBehaviourString];
+        }
+        int indexOfDefaultResignBehaviour;
+        if (customResignBehaviour == self.profile.resignBehaviour)
+          indexOfDefaultResignBehaviour = -1;
+        else
+          indexOfDefaultResignBehaviour = self.profile.resignBehaviour - minimumResignBehaviour;
+        ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                       title:@"Resign behaviour"
+                                                                          indexOfDefaultItem:indexOfDefaultResignBehaviour
+                                                                                    delegate:self];
+        modalController.context = [NSNumber numberWithInt:ResignBehaviourSection];
+        UINavigationController* navigationController = [[UINavigationController alloc]
+                                                        initWithRootViewController:modalController];
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        [self presentViewController:navigationController animated:YES completion:nil];
+        [navigationController release];
+        break;
+      }
+      case ResignBehaviourAdvancedConfigurationItem:
+      {
+        EditResignBehaviourSettingsController* editResignBehaviourSettingsController = [[[EditResignBehaviourSettingsController alloc] init] autorelease];
+        editResignBehaviourSettingsController.profile = self.profile;
+        editResignBehaviourSettingsController.delegate = self;
+        [self.navigationController pushViewController:editResignBehaviourSettingsController animated:YES];
         break;
       }
       default:
@@ -482,10 +580,18 @@ enum ProfileNotesSectionItem
   {
     if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
     {
-      self.profile.playingStrength = (minimumPlayingStrength + controller.indexOfSelectedItem);
-
-      NSUInteger sectionIndex = PlayingStrengthSection;
-      NSUInteger rowIndex = PlayingStrengthItem;
+      NSUInteger sectionIndex = [controller.context intValue];
+      NSUInteger rowIndex;
+      if (PlayingStrengthSection == sectionIndex)
+      {
+        self.profile.playingStrength = (minimumPlayingStrength + controller.indexOfSelectedItem);
+        rowIndex = PlayingStrengthItem;
+      }
+      else
+      {
+        self.profile.resignBehaviour = (minimumResignBehaviour + controller.indexOfSelectedItem);
+        rowIndex = ResignBehaviourItem;
+      }
       NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
       NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
       [self.tableView reloadRowsAtIndexPaths:indexPaths
@@ -502,6 +608,19 @@ enum ProfileNotesSectionItem
 {
   NSUInteger sectionIndex = PlayingStrengthSection;
   NSUInteger rowIndex = PlayingStrengthItem;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+  NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditResignBehaviourSettingsController protocol method.
+// -----------------------------------------------------------------------------
+- (void) didChangeResignBehaviour:(EditResignBehaviourSettingsController*)editResignBehaviourSettingsController
+{
+  NSUInteger sectionIndex = ResignBehaviourSection;
+  NSUInteger rowIndex = ResignBehaviourItem;
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
   NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
   [self.tableView reloadRowsAtIndexPaths:indexPaths
@@ -527,6 +646,41 @@ enum ProfileNotesSectionItem
 - (bool) isProfileValid
 {
   return (self.profile.name.length > 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a resignBehaviour that is
+/// suitable for displaying in the UI.
+///
+/// Raises an @e NSInvalidArgumentException if @a resignBehaviour is not
+/// recognized.
+// -----------------------------------------------------------------------------
+- (NSString*) resignBehaviourName:(int)resignBehaviour
+{
+  switch (resignBehaviour)
+  {
+    case 0:
+      return @"Custom";
+    case 1:
+      return @"Pushover";
+    case 2:
+      return @"Resign quickly";
+    case 3:
+      return @"Normal";
+    case 4:
+      return @"Stubborn";
+    case 5:
+      return @"Never resign";
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid resign behaviour: %d", resignBehaviour];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

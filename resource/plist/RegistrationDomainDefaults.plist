@@ -165,13 +165,13 @@
 			<integer>5000</integer>
 			<key>FuegoResignThreshold</key>
 			<array>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.08</string>
-				<string>0.08</string>
-				<string>0.08</string>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>8</integer>
+				<integer>8</integer>
+				<integer>8</integer>
 			</array>
 		</dict>
 		<dict>
@@ -201,13 +201,13 @@
 			<integer>450</integer>
 			<key>FuegoResignThreshold</key>
 			<array>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.08</string>
-				<string>0.08</string>
-				<string>0.08</string>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>8</integer>
+				<integer>8</integer>
+				<integer>8</integer>
 			</array>
 		</dict>
 		<dict>
@@ -237,13 +237,13 @@
 			<integer>5000</integer>
 			<key>FuegoResignThreshold</key>
 			<array>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.05</string>
-				<string>0.08</string>
-				<string>0.08</string>
-				<string>0.08</string>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>8</integer>
+				<integer>8</integer>
+				<real>0.08</real>
 			</array>
 		</dict>
 	</array>

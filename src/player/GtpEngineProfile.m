@@ -79,6 +79,9 @@
     self.name = @"";
     self.profileDescription = @"";
     _fuegoResignThreshold = [[NSMutableArray arrayWithCapacity:arraySizeFuegoResignThresholdDefault] retain];
+    self.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
+    if (! self.autoSelectFuegoResignMinGames)
+      self.fuegoResignMinGames = fuegoResignMinGamesDefault;
     [self resetPlayingStrengthPropertiesToDefaultValues];
     [self resetResignBehaviourPropertiesToDefaultValues];
   }
@@ -197,8 +200,8 @@
   commandString = [NSString stringWithFormat:@"uct_param_player resign_min_games %llu", self.fuegoResignMinGames];
   command = [GtpCommand command:commandString];
   [command submit];
-  float resignThreshold = [self resignThresholdForBoardSize:[GoGame sharedGame].board.size];
-  commandString = [NSString stringWithFormat:@"uct_param_player resign_threshold %f", resignThreshold];
+  int resignThreshold = [self resignThresholdForBoardSize:[GoGame sharedGame].board.size];
+  commandString = [NSString stringWithFormat:@"uct_param_player resign_threshold %f", resignThreshold / 100.0];
   command = [GtpCommand command:commandString];
   [command submit];
 
@@ -348,21 +351,92 @@
 }
 
 // -----------------------------------------------------------------------------
+// See property documentation. This property is not synthesized.
+// -----------------------------------------------------------------------------
+- (int) resignBehaviour
+{
+  int resignBehaviour = customResignBehaviour;
+  for (int resignBehaviourLoop = minimumResignBehaviour; resignBehaviourLoop <= maximumResignBehaviour; ++resignBehaviourLoop)
+  {
+    float resignThresholdBias = [self resignThresholdBiasForResignBehaviour:resignBehaviourLoop];
+    bool resignBehaviourFound = true;
+    for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
+    {
+      int resignThresholdDefault = fuegoResignThresholdDefault[arrayIndex];
+      int resignThresholdBiased = resignThresholdDefault * resignThresholdBias;
+      enum GoBoardSize boardSize = [self boardSizeForResignThresholdIndex:arrayIndex];
+      int resignThreshold = [self resignThresholdForBoardSize:boardSize];
+      if (resignThreshold != resignThresholdBiased)
+      {
+        resignBehaviourFound = false;
+        break;
+      }
+    }
+    if (resignBehaviourFound)
+    {
+      resignBehaviour = resignBehaviourLoop;
+      break;
+    }
+  }
+  return resignBehaviour;
+}
+
+// -----------------------------------------------------------------------------
+// See property documentation. This property is not synthesized.
+// -----------------------------------------------------------------------------
+- (void) setResignBehaviour:(int)resignBehaviour
+{
+  float resignThresholdBias = [self resignThresholdBiasForResignBehaviour:resignBehaviour];
+  [self resetResignBehaviourPropertiesToDefaultValues];
+  for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
+  {
+    int resignThresholdDefault = fuegoResignThresholdDefault[arrayIndex];
+    int resignThresholdBiased = resignThresholdDefault * resignThresholdBias;
+    enum GoBoardSize boardSize = [self boardSizeForResignThresholdIndex:arrayIndex];
+    [self setResignThreshold:resignThresholdBiased forBoardSize:boardSize];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (float) resignThresholdBiasForResignBehaviour:(int)resignBehaviour
+{
+  switch (resignBehaviour)
+  {
+    case 1:
+      return 2.0;
+    case 2:
+      return 1.5;
+    case 3:
+      return 1.0;
+    case 4:
+      return 0.5;
+    case 5:
+      return 0.0;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Resign behaviour %d is invalid", resignBehaviour];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Resets those properties to their default values that are related to
 /// the computer player's resign behaviour.
 // -----------------------------------------------------------------------------
 - (void) resetResignBehaviourPropertiesToDefaultValues
 {
-  self.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
-  if (autoSelectFuegoResignMinGamesDefault)
-    self.fuegoResignMinGames = [GtpEngineProfile fuegoResignMinGamesForMaxGames:self.fuegoMaxGames];
-  else
-    self.fuegoResignMinGames = fuegoResignMinGamesDefault;
   for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
   {
-    NSNumber* resignThresholdDefault = [NSNumber numberWithFloat:fuegoResignThresholdDefault[arrayIndex]];
-    [(NSMutableArray*)_fuegoResignThreshold replaceObjectAtIndex:arrayIndex
-                                                      withObject:resignThresholdDefault];
+    int resignThresholdDefault = fuegoResignThresholdDefault[arrayIndex];
+    enum GoBoardSize boardSize = [self boardSizeForResignThresholdIndex:arrayIndex];
+    [self setResignThreshold:resignThresholdDefault forBoardSize:boardSize];
   }
 }
 
@@ -472,6 +546,18 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
+- (void) setAutoSelectFuegoResignMinGames:(bool)newValue
+{
+  if (_autoSelectFuegoResignMinGames == newValue)
+    return;
+  _autoSelectFuegoResignMinGames = newValue;
+  if (_autoSelectFuegoResignMinGames)
+    self.fuegoResignMinGames = [GtpEngineProfile fuegoResignMinGamesForMaxGames:_fuegoMaxGames];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) setFuegoResignMinGames:(unsigned long long)newValue
 {
   if (_fuegoResignMinGames == newValue)
@@ -485,25 +571,25 @@
 /// @brief Convenience accessor to read values from the property
 /// @e fuegoResignThreshold.
 // -----------------------------------------------------------------------------
-- (float) resignThresholdForBoardSize:(enum GoBoardSize)boardSize
+- (int) resignThresholdForBoardSize:(enum GoBoardSize)boardSize
 {
   int arrayIndex = [self resignThresholdIndexForBoardSize:boardSize];
   NSNumber* resignThreshold = [_fuegoResignThreshold objectAtIndex:arrayIndex];
-  return [resignThreshold floatValue];
+  return [resignThreshold intValue];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience accessor to write values to the property
 /// @e fuegoResignThreshold.
 // -----------------------------------------------------------------------------
-- (void) setResignThreshold:(float)newValue forBoardSize:(enum GoBoardSize)boardSize
+- (void) setResignThreshold:(int)newValue forBoardSize:(enum GoBoardSize)boardSize
 {
-  float oldValue = [self resignThresholdForBoardSize:boardSize];
+  int oldValue = [self resignThresholdForBoardSize:boardSize];
   if (oldValue == newValue)
     return;
   int arrayIndex = [self resignThresholdIndexForBoardSize:boardSize];
   [(NSMutableArray*)_fuegoResignThreshold replaceObjectAtIndex:arrayIndex
-                                                    withObject:[NSNumber numberWithFloat:newValue]];
+                                                    withObject:[NSNumber numberWithInt:newValue]];
   if (self.isActiveProfile)
     self.hasUnappliedChanges = true;
 }
@@ -514,6 +600,14 @@
 - (int) resignThresholdIndexForBoardSize:(enum GoBoardSize)boardSize
 {
   return (boardSize - GoBoardSizeMin) / 2;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (enum GoBoardSize) boardSizeForResignThresholdIndex:(int)index
+{
+  return (GoBoardSizeMin + 2 * index);
 }
 
 @end

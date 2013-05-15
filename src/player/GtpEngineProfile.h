@@ -15,7 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------------
 /// @brief The GtpEngineProfile class collects settings that define the
 /// behaviour of the GTP engine.
@@ -60,6 +59,24 @@
 ///
 /// When querying the property, the value #customPlayingStrength indicates an
 /// unknown (i.e. not pre-defined) combination of profile settings.
+///
+///
+/// @par Resign behaviour
+///
+/// The value of the @e resignBehaviour property of a GtpEngineProfile denotes
+/// how quickly a computer player that uses the profile will resign. Higher
+/// values indicate that the computer player will play more stubborn, i.e. it
+/// is less likely that the computer player will resign. The highest value
+/// (#maximumResignBehaviour) indicates that the computer player will never
+/// resign.
+///
+/// Each resign behaviour represents a bias used to modify the default resign
+/// threshold values for each board size. The bias is a simple multiplier.
+/// Resign behaviours do not modify @e fuegoResignMinGames, they let this
+/// property be auto-managed by setting autoSelectFuegoResignMinGames to true.
+///
+/// When querying the property, the value #customResignBehaviour indicates an
+/// unknown (i.e. not pre-defined) resign behaviour.
 // -----------------------------------------------------------------------------
 @interface GtpEngineProfile : NSObject
 {
@@ -72,8 +89,9 @@
 - (bool) isDefaultProfile;
 - (void) resetPlayingStrengthPropertiesToDefaultValues;
 - (void) resetResignBehaviourPropertiesToDefaultValues;
-- (float) resignThresholdForBoardSize:(enum GoBoardSize)boardSize;
-- (void) setResignThreshold:(float)threshold forBoardSize:(enum GoBoardSize)boardSize;
+- (int) resignThresholdForBoardSize:(enum GoBoardSize)boardSize;
+- (void) setResignThreshold:(int)threshold forBoardSize:(enum GoBoardSize)boardSize;
+
 + (unsigned long long) fuegoResignMinGamesForMaxGames:(unsigned long long)maxGames;
 
 
@@ -94,6 +112,10 @@
 /// details. Assigning a value outside the range of pre-defined playing
 /// strengths results in an exception being raised.
 @property(nonatomic, assign) int playingStrength;
+/// @brief The resign behaviour of this profile. See class documentation for
+/// details. Assigning a value outside the range of pre-defined resign
+/// behaviours results in an exception being raised.
+@property(nonatomic, assign) int resignBehaviour;
 //@}
 // -----------------------------------------------------------------------------
 /// @name Simple user defaults properties
@@ -158,7 +180,8 @@
 /// this threshold. The condition for fuegoResignMinGames must also be met.
 ///
 /// This property stores separate thresholds for each possible board size.
-/// The array contains NSNumber objects with float values inside. The object
+/// The array contains NSNumber objects with integer values inside. Each integer
+/// is in the range between 0 and 100 and represents a percentage. The object
 /// at index position 0 represents the threshold for the smallest board
 /// (#GoBoardSize7).
 ///

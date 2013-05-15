@@ -17,6 +17,7 @@
 
 // Project includes
 #import "EditGtpEngineProfileSettingsController.h"
+#import "EditResignBehaviourSettingsController.h"
 #import "../ui/EditTextController.h"
 #import "../ui/ItemPickerController.h"
 
@@ -71,7 +72,11 @@
 /// can be informed when the user makes any changes. For this to work, the
 /// delegate must implement the protocol EditGtpEngineProfileDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate, EditTextDelegate, ItemPickerDelegate, EditGtpEngineProfileSettingsDelegate>
+@interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate,
+                                                                   EditTextDelegate,
+                                                                   ItemPickerDelegate,
+                                                                   EditGtpEngineProfileSettingsDelegate,
+                                                                   EditResignBehaviourSettingsDelegate>
 {
 }
 

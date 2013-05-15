@@ -406,6 +406,10 @@ extern const int minimumPlayingStrength;
 extern const int maximumPlayingStrength;
 extern const int customPlayingStrength;
 extern const int defaultPlayingStrength;
+extern const int minimumResignBehaviour;
+extern const int maximumResignBehaviour;
+extern const int customResignBehaviour;
+extern const int defaultResignBehaviour;
 extern const int fuegoMaxMemoryMinimum;
 extern const int fuegoMaxMemoryDefault;
 extern const int fuegoThreadCountMinimum;
@@ -428,7 +432,7 @@ extern const unsigned long long fuegoMaxGamesPlayingStrength3;
 extern const bool autoSelectFuegoResignMinGamesDefault;
 extern const unsigned long long fuegoResignMinGamesDefault;
 extern const int arraySizeFuegoResignThresholdDefault;
-extern const float fuegoResignThresholdDefault[];
+extern const int fuegoResignThresholdDefault[];
 /// @brief The hardcoded UUID of the default GTP engine profile. This profile
 /// is the fallback profile if no other profile is available or appropriate.
 /// The user cannot delete this profile.

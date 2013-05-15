@@ -80,6 +80,10 @@ const int minimumPlayingStrength = 1;
 const int maximumPlayingStrength = 5;
 const int customPlayingStrength = 0;
 const int defaultPlayingStrength = 3;
+const int minimumResignBehaviour = 1;
+const int maximumResignBehaviour = 5;
+const int customResignBehaviour = 0;
+const int defaultResignBehaviour = 3;
 const int fuegoMaxMemoryMinimum = 16;
 const int fuegoMaxMemoryDefault = 32;
 const int fuegoThreadCountMinimum = 1;
@@ -106,7 +110,7 @@ const unsigned long long fuegoMaxGamesPlayingStrength3 = 10000;  // on fast CPUs
 const bool autoSelectFuegoResignMinGamesDefault = true;
 const unsigned long long fuegoResignMinGamesDefault = 5000;
 const int arraySizeFuegoResignThresholdDefault = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
-const float fuegoResignThresholdDefault[arraySizeFuegoResignThresholdDefault] = {0.05, 0.05, 0.05, 0.05, 0.08, 0.08, 0.08};
+const int fuegoResignThresholdDefault[arraySizeFuegoResignThresholdDefault] = {5, 5, 5, 5, 8, 8, 8};
 NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Archive view constants

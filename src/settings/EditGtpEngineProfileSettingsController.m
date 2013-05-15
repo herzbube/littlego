@@ -390,10 +390,17 @@ enum MaxGamesCategory
   {
     if (FuegoMaxGamesItem == indexPath.row)
     {
+      NSNumberFormatter* formatter = [[[NSNumberFormatter alloc] init] autorelease];
+      formatter.numberStyle = NSNumberFormatterDecimalStyle;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       for (int maxGamesCategoryIndex = 0; maxGamesCategoryIndex < MaxMaxGamesCategory; ++maxGamesCategoryIndex)
       {
-        NSString* maxGamesCategory = [self maxGamesCategoryName:maxGamesCategoryIndex];
+        unsigned long long maxGames = [self maxGames:maxGamesCategoryIndex];
+        NSString* maxGamesCategory;
+        if (UnlimitedMaxGamesCategory == maxGamesCategoryIndex)
+          maxGamesCategory = @"Unlimited";
+        else
+          maxGamesCategory = [formatter stringFromNumber:[NSNumber numberWithUnsignedLongLong:maxGames]];
         [itemList addObject:maxGamesCategory];
       }
       int indexOfDefaultMaxGamesCategory = [self maxGamesCategory:self.profile.fuegoMaxGames];
@@ -549,53 +556,6 @@ enum MaxGamesCategory
   self.profile.fuegoMaxThinkingTime = sliderCell.value;
 
   [self.delegate didChangeProfile:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of @a maxGamesCategory that is
-/// suitable for displaying in the UI.
-///
-/// Raises an @e NSInvalidArgumentException if @a maxGamesCategory is not
-/// recognized.
-// -----------------------------------------------------------------------------
-- (NSString*) maxGamesCategoryName:(enum MaxGamesCategory)maxGamesCategory
-{
-  switch (maxGamesCategory)
-  {
-    case Game1MaxGamesCategory:
-      return @"1";
-    case Game10MaxGamesCategory:
-      return @"10";
-    case Game100MaxGamesCategory:
-      return @"100";
-    case Game500MaxGamesCategory:
-      return @"500";
-    case Game1000MaxGamesCategory:
-      return @"1000";
-    case Game2000MaxGamesCategory:
-      return @"2000";
-    case Game5000MaxGamesCategory:
-      return @"5000";
-    case Game10000MaxGamesCategory:
-      return @"10'000";
-    case Game15000MaxGamesCategory:
-      return @"15'000";
-    case Game20000MaxGamesCategory:
-      return @"20'000";
-    case Game50000MaxGamesCategory:
-      return @"50'000";
-    case UnlimitedMaxGamesCategory:
-      return @"Unlimited";
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid 'max. games' category: %d", maxGamesCategory];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------

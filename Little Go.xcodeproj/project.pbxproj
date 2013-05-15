@@ -67,6 +67,7 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
+		CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
 		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
 		CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB79142FF82100A3F869 /* GtpLogItem.m */; };
@@ -424,6 +425,7 @@
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
+		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -494,6 +496,8 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
+		CD0AF18E17401C56003BFC21 /* SliderInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderInputController.h; sourceTree = "<group>"; };
+		CD0AF18F17401C56003BFC21 /* SliderInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderInputController.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
 		CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiagnosticsViewController.m; sourceTree = "<group>"; };
 		CD0CCB75142FF6ED00A3F869 /* GtpLogModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogModel.h; sourceTree = "<group>"; };
@@ -888,6 +892,8 @@
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
 		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
 		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
+		CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditResignBehaviourSettingsController.h; sourceTree = "<group>"; };
+		CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditResignBehaviourSettingsController.m; sourceTree = "<group>"; };
 		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1203,6 +1209,8 @@
 				CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
+				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
 				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
 				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
@@ -1705,6 +1713,8 @@
 				CDC4E979167B996C00AFDB51 /* ItemScrollView.m */,
 				CD05B568142EA31700214BBE /* MBProgressHUD.h */,
 				CD05B569142EA31700214BBE /* MBProgressHUD.m */,
+				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
+				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
 				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
@@ -2146,6 +2156,8 @@
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */,
+				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
+				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
