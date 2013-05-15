@@ -30,7 +30,7 @@
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
 @property(nonatomic, retain, readwrite) UISlider* slider;
-@property(nonatomic, retain, readwrite) id delegate;
+@property(nonatomic, assign, readwrite) id delegate;
 @property(nonatomic, assign, readwrite) SEL delegateActionValueDidChange;
 @property(nonatomic, assign, readwrite) SEL delegateActionSliderValueDidChange;
 //@}
@@ -88,6 +88,7 @@
   self.descriptionLabel = nil;
   self.valueLabel = nil;
   self.slider = nil;
+  self.delegate = nil;
   [super dealloc];
 }
 

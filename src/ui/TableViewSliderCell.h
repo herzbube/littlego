@@ -72,7 +72,7 @@ enum SliderCellSubViewTag
 @property(nonatomic, assign) bool valueLabelHidden;
 /// @brief Delegate object that will be informed when the cell's integer
 /// value changes.
-@property(nonatomic, retain, readonly) id delegate;
+@property(nonatomic, assign, readonly) id delegate;
 /// @brief Is invoked when the cell's integer value changes, regardless of the
 /// source of the change.
 @property(nonatomic, assign, readonly) SEL delegateActionValueDidChange;
