@@ -870,14 +870,123 @@ Additional measurements
 - Memory usage with the maximum setup on other devices
   - iPhone 4S (retina display): 115.20 MB
   - iPad 2nd generation (normal display): 103.36
+- Memory usage on iPhone 3GS after coordinate labels were implemented
+  - When the labels are not visible at zoom scale 1.0, memory usage is about the
+    same as before
+  - When zoomed in to the maximum zoom scale 3.0, an additional 1 MB of memory
+    is used
+- Memory usage on iPhone 3GS, with coordinate labels at maximum zoom scale 3.0,
+  but without the wooden background image
+  - When Fuego does not use any memory: An additional 2 MB of memory is used.
+  - When Fuego is pondering and has 32 MB memory at its disposition: The app
+    uses 11 MB of memory less.
 
 Conclusions
-- The board size is not relevant
+- The board size is not relevant, but the view size is
 - It also doesn't matter much whether or not any stones are on the board
 - Zooming in to the maximum zoom scale (3.0) is relatively cheap (~ 2-3 MB)
 - Having a retina display is also less expensive than expected: A mere
-  additional ~5 MB when compared to the normal display
+  additional ~5 MB when compared to the normal display.
 - The most expensive operation is panning at high zoom scales (~ 22-23 MB at
   zoom scale 3.0). Memory usage drops dramatically when panning at medium zoom
   scales, but is still significant (~ 5 MB at zoom scale 1.5, ~ 12 MB at zoom
   scale 2.25).
+- The iPhone 3GS behaves somewhat erratically: Once the app crashed when it
+  merely used 89 MB of memory, the second time everything worked well even when
+  the app used a generous 110 MB. It can probably be said that the iPhone 3GS,
+  and with it all the other devices that only have 256 MB RAM (iPad 1st
+  generation, iPod Touch 3rd and 4th generation) are a bit overtaxed when the
+  app's memory consumption suddenly jumps up by 25-40 MB. Newer devices,
+  however, should be fine since they all have 512 MB RAM or more (cf. [1]).
+- The numbers regarding the wooden background image contradict each other.
+  Another measurement should be made where it is possible to dynamically turn
+  on/off the background image, i.e. without having to recompile the app.
+
+[1] http://en.wikipedia.org/wiki/List_of_iOS_devices
+
+
+Application launch times when restoring from NSCoding archive
+-------------------------------------------------------------
+The following measurements were taken with the "Time Profiler" instrument for
+a release build on an iPhone 3GS and an iPad 2. For each measurement, 3 values
+were recorded:
+
+1. GtpEngine startup: How much time did it take for the GtpEngine main loop to
+   start up. This includes how much time it takes for Fuego to set up its
+   internals. Because the GtpEngine main loop runs in a secondary thread, this
+   time cannot be simply added to the other times to get at the full application
+   launch time as perceived by the user. There is a certain amount of
+   parallelism involved, which mainly depends on the capabilities of the
+   device's processor.
+2. UIApplication launch: How much time did it take for iOS to complete the
+   launch cycle of the UIApplication main object. This number excludes the
+   GtpEngine startup time (runs in parallel) and the SetupApplicationCommand
+   execution time (runs after the UIApplication launch). Significant portions
+   of the UIApplication launch time are:
+   1) Loading of the main .nib file
+   2) Some initial GUI stuff that I cannot identify any closer but which seems
+      to have to do with a CoreAnimation transaction
+   3) Creating the status bar
+   4) Running the app delegate method application:didFinishLaunchingWithOptions:
+   5) Running the app delegate method applicationDidBecomeActive:
+3. SetupApplicationCommand: How long did it take for this command to execute.
+   The significant part is, of course, RestoreGameCommand, whose respective
+   significant portions are:
+   1) Decoding the NSCoding archive
+   2) Executing NewGameCommand
+
+                                |               iPhone 3GS                     |               iPad 2
+                                |  GtpEngine  UIApplication  SetupApplication  |  GtpEngine  UIApplication  SetupApplication
+                                |  startup    launch         Command           |  startup    launch         Command
+--------------------------------+----------------------------------------------+--------------------------------------------
+Measurement 1                   |  2924 ms    1179 ms        62 ms             |  1312 ms    340 ms         27 ms
+(19x19 game, only 1 move,       |                                              |
+Fuego with playing strength 1)  |                                              |
+                                |                                              |
+Measurement 2                   |  3256 ms    1169 ms        157 ms            |  1540 ms    733 ms         69 ms
+(ear-reddening game,            |                                              |
+Fuego with playing strength 1)  |                                              |
+                                |                                              |
+Measurement 3                   |  3308 ms    1171 ms        156 ms            |  1541 ms    714 ms         67 ms
+(ear-reddening game,            |                                              |
+Fuego with playing strength 5)  |                                              |
+                                |                                              |
+Measurement 4                   |  3313 ms     999 ms        158 ms            |  1540 ms    432 ms         68 ms
+(ear-reddening game,            |                                              |
+Fuego with playing strength 1,  |                                              |
+no HUD)                         |                                              |
+
+
+The times for measurement 1 for the iPhone 3GS have been broken down a bit so
+that the impact of certain setup tasks can be gauged:
+
+- UIApplication launch, total time = 1179 ms
+  - Loading of the main .nib file              = 256 ms
+  - Some initial GUI stuff                     = 307 ms
+  - Creating the status bar                    =  95 ms
+  - application:didFinishLaunchingWithOptions: = 155 ms
+    - setupCrashReporting = 79 ms
+    - setupUserDefaults   = 23 ms
+    - setting up the HUD  = 21 ms
+  - applicationDidBecomeActive:                =  17 ms
+    (the main part here is used up by ArchiveViewModel's updateGameList)
+- SetupApplicationCommand, total time = 62 ms
+  - Decoding the NSCoding archive = 29 ms
+  - Executing NewGameCommand      = 13 ms
+  - Other stuff                   = 12 ms
+
+The conclusions:
+- Restoring from an NSCoding archive is a huge leap forward. The time previously
+  spent on loading the backup .sgf file, and restoring the board position
+  (several seconds), has been reduced to a quite insignificant portion of the
+  overall launch time. Even under the worst circumstances (large game in
+  progress, slowest device), decoding the NSCoding archive and executing
+  SetupApplicationCommand now takes less than 160 ms.
+- A major factor contributing to the app launch time is the time it takes for
+  Fuego to set up. There is not much that we can do here, but take comfort in
+  the next observation...
+- Device capabilities dramatically reduce launch time
+
+All in all it can probably be said that the application launch problem has
+been virtually eliminated, and that further time and effort for optimizing
+should therefore be spent in other areas.

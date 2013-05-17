@@ -204,13 +204,13 @@ enum ZoomSectionItem
   switch (section)
   {
     case ViewSection:
-      return @"On the iPhone/iPod, on 15x15 boards or larger you need to zoom in to see coordinate labels.";
+      return @"On the iPhone you may need to zoom in to see coordinate labels.";
     case DisplayMoveNumbersSection:
-      return @"On the iPhone/iPod, on 11x11 boards or larger you need to zoom in to see move numbers.";
+      return @"The lowest setting displays no move numbers, the highest setting displays all move numbers. On the iPhone you may need to zoom in to see move numbers.";
     case StoneDistanceFromFingertipSection:
       return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
     case ZoomSection:
-      return @"Controls how far you can zoom in on the board. Because larger values consume more memory, it is recommended to leave this setting at a medium level for the following devices: iPhone 3GS, iPad 1st generation, iPod Touch 3rd and 4th generation.";
+      return @"Controls how much you can zoom the board. Because zooming costs memory you may want to set a limit that is below the maximum zoom (3x). A limit of 2x zoom is recommended for devices that do not have much RAM (typically older devices such as the iPhone 3GS or the iPad 1st generation).";
     default:
       break;
   }

@@ -20,8 +20,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The ScrollViewController class manages the scroll view that contains
-/// the "Play" view on the "Play" tab.
+/// @brief The ScrollViewController class manages the scroll views that contain
+/// the "Play" view and the coordinate label views on the "Play" tab.
 ///
 /// ScrollViewController is a container view controller. It has the following
 /// responsibilities:
@@ -29,6 +29,8 @@
 /// - Synchronize zooming and scrolling properties of scroll views that contain
 ///   coordinate label views with the corresponding properties of the main
 ///   scroll view
+/// - Monitor the maximum zoom scale user preference and apply the new value
+///   to the "Play" view and coordinate label views
 // -----------------------------------------------------------------------------
 @interface ScrollViewController : UIViewController <UIScrollViewDelegate>
 {

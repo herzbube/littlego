@@ -88,17 +88,17 @@ How do I report a bug?
 ======================
 Please read the manual section "Reporting bugs".
 
-=============================
-Why is touch calibration off?
-=============================
-There is no "calibration" going on - displaying the stone some distance away
-from your finger is simply a feature intended to help with placing the stone on
-devices with small screens, especially when playing on large boards and your
-fingertip covers more than one intersection.
+==============================================================
+Why is the stone not placed where my finger touches the board?
+==============================================================
+Displaying the stone some distance away from your fingertip is a feature
+intended to help with placing the stone on devices with small screens,
+especially when playing on large boards and your fingertip covers more than one
+intersection.
 
-If you feel irritated by this cool feature ☺, you can turn it off: On the
-"Settings" tab, select the "Play view" entry and move the slider
-"Stone distance from fingertip" to the lowest setting.
+If this irritates you, you can turn the feature off: On the "Settings" tab,
+select the "Play view" entry and move the slider "Stone distance from fingertip"
+to the lowest setting.
 
 ===============================
 How do I change the board size?
@@ -121,9 +121,9 @@ section for the full story.
 =====================================================
 The computer is too strong / too weak, what can I do?
 =====================================================
-1. Tap the "Game info" button to find out which profile is active (select the
-   "Game" segment then scroll down to the section titled "Game Information" to
-   find this information).
+1. On the "Play" tab, tap the "Game info" button to find out which profile is
+   active (select the "Game" segment then scroll down to the section titled
+   "Game Information" to find this information).
 1. Go to the Settings tab, select "Players & Profiles", then select the
    appropriate profile.
 1. Tap on "Playing strength", select a new value, then tap "Done".
@@ -135,6 +135,22 @@ manual to learn about the meaning of each setting, especially "Max. memory"
 which is a dangerous setting. You may also be interested in reading the chapter
 "Limiting the computer's playing strength", which appears in the manual after
 the description of the individual profile settings.
+
+=======================================================================================================
+Move numbers/coordinate labels are not displayed even though they are enabled in the Play view settings
+=======================================================================================================
+Little Go automatically calculates the font size that is required to display
+move numbers and coordinate labels. The font size depends on the board size (a
+bigger board means a smaller font) and the amount of space available for drawing
+the board (a smaller screen means a smaller font). If as a result of these
+calculations the font becomes too small, you will no longer be able to read
+move numbers and coordinate labels. Little Go in this case decides that it is
+better to not display those items at all, and to use the space thus gained for
+drawing a board that is slightly larger.
+
+To still see move numbers and coordinate labels you just have to zoom the board
+sufficiently. Once the zoom scale has reached a certain degree, things will
+automatically start to show up.
 
 
 --------------------------------------------------------------------------------
@@ -156,9 +172,9 @@ logging data so that when next time you send the bug report, the log file that
 is included with the report will contain useful information about the steps
 that led up to the problem.
 
-=====================================================
-I can/can't do X - isn't this against the game rules?
-=====================================================
+======================================================
+I can/cannot do X - isn't this against the game rules?
+======================================================
 You may have found a bug. Don't hesitate to email me with a bug report - the
 manual section "Reporting bugs" has all the details how to go about this.
 
@@ -168,15 +184,24 @@ currently in progress, then reloading the game you just saved. Loading a saved
 game is a generally useful strategy to bring Little Go back into a sane state
 whenever the app behaves buggy.
 
-=============
-Memory issues
-=============
-If you experience a sudden crash, a probable cause is that the currently active
-computer player profile has a "Maximum memory" value that is too high. You
-should find out which computer player is currently active (on the "Play" tab
-select the game info toolbar button), then go to that player's profile (under
-"Settings > Players & Profiles") and lower the value for the "Maximum memory"
-setting.
+=============================
+Crash after zooming the board
+=============================
+If the app crashes after you zoom the board it is likely that your device does
+not have enough memory to support both a fully zoomed board AND the computer
+player's memory requirements. You can try to limit your maximum zoom level so
+that you don't accidentally zoom in too much. You can do this by adjusting the
+slider under "Settings > Play view > Maximum zoom".
+
+========================================================
+Crash after increasing a profile's "Max. memory" setting
+========================================================
+If the app crashes after you have increased a profile's "Max. memory" setting,
+it is likely that your device does not have enough memory to support the new
+setting. When the app starts up the next time, you should immediately start a
+new game before the computer player starts to think and grabs more memory than
+your device can provide. Once a new game is started, you should then go back and
+lower the "Max. memory" setting to a safe value.
 
 The profiles that are actively used by players when you first install Little Go
 all have a value of 32 MB. This should be OK even for older devices such as an
@@ -223,26 +248,6 @@ that information is not picked up by Little Go.
 
 For details see GitHub issue #97
 (https://github.com/herzbube/littlego/issues/97).
-
-================================================================
-I'm on iPhone 3G and I lose my game when I press the Home button
-================================================================
-Little Go expects to be suspended (not terminated) when you press the Home
-button, and to be re-activated to the same state, including the game currently
-in progress, when you launch the app again at a later time. This is how things
-normally work on iOS devices that support multitasking.
-
-Some older iOS devices (the iPhone 3G among them), however, do not support
-multitasking. This means that when you press the Home button, Little Go is
-terminated immediately without a chance to save the game currently in progress.
-
-There is little chance that I am going to fix this "problem", because this is
-not a bug, it's just how Little Go has been designed from the start. The
-question remains: How did you get Little Go running on an iOS device without
-multitasking support? If you got it from the App Store, then please let me know
-immediately, because this should not have been possible in the first place:
-Little Go has been published with a minimum requirement of iOS 4.3 to ensure
-multitasking capability.
 
 
 ********************************************************************************
@@ -874,16 +879,32 @@ You can transfer saved games to your computer via file sharing in iTunes:
 Of course you can also do the transfer the other way round. Saved games by the
 way are .sgf files that can be processed by many other applications.
 
+========================================================
+Importing .sgf files from other applications (e.g. Mail)
+========================================================
+If you have an email message with an .sgf file attachment, you can open that
+message in the Mail app on your device, then tap on the file attachment. Mail
+will offer a selection of the applications that can process the file. You should
+see Little Go among those applications; if you select Little Go the file will
+be imported into Little Go's archive.
+
+If you have other applications that are capable of exporting .sgf files (e.g.
+DropBox) you should be able to import those files into Little Go in a similar
+fashion as you did with Mail.
+
 ====================
 Managing the archive
 ====================
 The "Archive" tab lists previously saved games, or games that were transferred
-to the device via file sharing in iTunes. Tap the "edit" toolbar button if you
-want to delete one or more saved games.
+to the device via file sharing in iTunes or via import from an external
+application (e.g. Mail). Tap the "edit" toolbar button if you want to delete
+one or more saved games.
 
 When you tap the entry for a saved game, a detail view for that game is
 displayed. You can rename the game by tapping on its name. To load the game
-tap the "load" toolbar button.
+tap the "load" toolbar button. To export the game file to an external
+application (e.g. Mail, DropBox, another Go application that can import .sgf
+files) tap the "Action" toolbar button.
 
 ====================
 Loading a saved game

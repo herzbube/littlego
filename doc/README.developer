@@ -23,15 +23,12 @@ Quick-start guide on how to build and run Little Go
    This will take substantial time, for instance my 2.33 GHz Core 2 Duo laptop
    requires nearly one hour for building everything.
 6. Launch Xcode by opening "Little Go.xcodeproj"
-7. Change iOS Base SDK and deployment target versions to match your development
-   environment
-8. Make sure that you have a scheme that configures the target "Little Go" to
-   use the build configuration "Debug". See "Xcode schemes" further down if you
-   need more information.
-9. Select that scheme, and one of the iPhone or iPad simulator destinations,
-   from the toolbar's scheme selector
-10. From the menu select Product > Run. The app should now be built in Debug
-    mode and launched inside the simulator.
+7. Make sure that the Xcode project's Base SDK and deployment target versions
+   match the versions you have in your script/build-env.sh file (see step 3).
+8. Select the "Little Go Debug" scheme, and one of the iPhone or iPad simulator
+   destinations, from the toolbar's scheme selector
+9. From the menu select Product > Run. The app should now be built in Debug
+   mode and launched inside the simulator.
 
 
 Folder structure
@@ -178,9 +175,9 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 
 Xcode schemes
 -------------
-Xcode build schemes are not part of the Little Go distribution, nor are they
-committed to the project's version control system. The following is a short
-overview of how I usually configure my schemes:
+Little Go's Xcode build schemes are stored in source control along with the
+Xcode project itself. [1] has the answer how to achieve this. The following is
+a short overview of how I configured those schemes:
 - Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
 - Rename the "Little Go" scheme to "Little Go Debug", and disable the "Archive"
@@ -196,9 +193,10 @@ overview of how I usually configure my schemes:
   actions use the "Distribute_AppStore" build configuration
 - In all schemes, make sure that the checkox "Run" is checked not only for the
   main target, but for the unit test target as well. This ensures that unit
-  tests are build & run every time the main target is built. Note that the same
-  result can also be achieved by a target dependency, which is saved to the
-  Xcode project file and thus placed under version control.
+  tests are built & run every time the main target is built. Note that the same
+  result can also be achieved by a target dependency.
+
+[1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
 
 
 Platform notes
@@ -335,6 +333,9 @@ Architecture and implementation notes
     1) The submitter does not need the result of the command
     2) A later command does not need the GTP engine to be in a particular state
 - Application states and transitions
+  - The following article has a very nice flowchart that shows the general
+    flow of state transitions:
+    http://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
   - When the application starts up (application:didFinishLaunchingWithOptions:),
     it displays the "Play" view. If the application detects that a game was in
     progress the last time it was running, it loads that game so that the user
@@ -711,6 +712,13 @@ method. The required C functions are documented in [25].
 first time. I found this especially useful when it came to understand zooming.
 [27] is also a nice companion tutorial.
 
+An app that knows how to work with one or more document types (.sgf files in the
+case of Little Go) should support Document Interaction so that files of a given
+type can be passed to the app from another app. The concept and how to implement
+support for it is explained in [28]. The Info.plist key CFBundleDocumentTypes
+is documented in [21]. Information about Uniform Type Identifiers (UTI) can be
+found in [29], while [30] lists the System-Declared Uniform Type Identifiers
+
 Unless otherwise noted, the base for all of the following references is the
 "iOS Developer Library", found under this URL:
 https://developer.apple.com/library/ios/navigation/.
@@ -742,6 +750,10 @@ https://developer.apple.com/library/ios/navigation/.
 [25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
 [26] iOS Developer Library > Guides > Scroll View Programming Guide for iOS
 [27 http://www.raywenderlich.com/10518/how-to-use-uiscrollview-to-scroll-and-zoom-content
+[28] iOS Developer Library > Guides > Document Interaction Programming Topics for iOS
+[29] iOS Developer Library > Guides > Uniform Type Identifiers Overview
+[30] iOS Developer Library > Reference > Uniform Type Identifiers Reference
+[29] http://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
 
 
 Compilation command

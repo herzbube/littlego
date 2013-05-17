@@ -7,9 +7,9 @@ Before the release
 ------------------
 - Create a release branch. All remaining work will be done in this branch.
   git checkout -b release-0.9.0 develop
-- Run Xcode's analyze tool and fix all problems that are reported (with the
-  exception of those reported for MBProgressHUD.m)
+- Run Xcode's analyze tool and fix all problems that are reported
 - Make sure that the issues in the bugtracker are up to date
+- Analyze any crash reports that are still outstanding
 - If necessary, add an upgrade method to UserDefaultsUpdater
 - Make sure that the bug report format version and/or the NSCoding version are
   updated if something relevant has changed since the last release. If the
@@ -32,9 +32,6 @@ Before the release
   collection of the most important changes from the ChangeLog.
 - Update the "Troubleshooting" section in the MANUAL file if there are any new
   "known bugs"
-- If the release is made for a major new version, change the release date in
-  the following files:
-  - Roadmap
 - Make sure that the version number is up to date in the following files:
   - README.mediawiki
   - Info.plist (can be changed in Xcode's summary page for the main target)
@@ -48,8 +45,9 @@ Before the release
     to list all files that were touched since the release 0.8.1 and were not
     updated to the current year 2012:
     git diff --name-only 0.8.1 | grep ^src | sort | uniq | xargs grep Copyright 2>/dev/null | grep -v 2012 | cut -d":" -f1
-- In Xcode select the "Little Go Release" scheme, then make a build for the
-  simulator and for all target devices. If there are any warnings, fix them.
+- In Xcode select the "Little Go AdHoc Distribution" scheme (becaues this uses
+  the Release configuration), then make a build for the simulator and for all
+  target devices. If there are any warnings, fix them.
 - Using the same scheme, select Product > Archive to make a distribution build,
   then run that build through the tests described in the TESTING document
 - Commit final changes (check with "git status" that nothing was forgotten)
@@ -134,6 +132,8 @@ Make the release
   - Update the project website
   - Write a release note blog post
 - Add the new version number to the bug tracker so that issues can be reported
+- Change the QuincyKit status of the new version to "Available" and the status
+  of the old version to "Discontinued"
 
 
 After the release

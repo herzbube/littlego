@@ -1,3 +1,8 @@
+IMPORTANT: This document is no longer updated; it remains for historical
+purposes only. The GitHub issue tracker is now the official source for
+milestones, bugs and feature requests.
+
+
 Purpose of this document
 ------------------------
 This document gives a broad view of the plan for future development of the
@@ -11,22 +16,13 @@ up on-the-fly.
 
 The roadmap
 -----------
-Version 1.x
+Version 0.11.0 (April 20 2013)
 - Play view
   - Zoom the board
   - Coordinate labels
   - Display move numbers
-  - Suggest move
-  - Time-based play
-- Settings view
-  - Player statistics (number of games played, possibly strength)
 - Archive view
   - Send .sgf files via email
-- New game properties
-  - Free handicap placement
-- Let users play against each other via network (Bonjour via Wi-Fi)
-  - Stones
-  - Board
 
 Version 0.10.0 (March 1 2013)
 - View board positions for moves played earlier during the game (was: Replay

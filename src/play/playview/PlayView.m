@@ -77,27 +77,16 @@
 @implementation PlayView
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayView object with frame rectangle @a aRect. This
+/// @brief Initializes a PlayView object with frame rectangle @a rect. This
 /// happens at least once during application launch, but may occur again later
 /// on if the view is unloaded and then reloaded due to a memory warning.
 ///
-/// Attempts to set up the view and make it ready for drawing. If this method
-/// is invoked the very first time during application launch, the attempt fails
-/// because the application delegate has not yet created all the objects that
-/// are necessary for the application lifecycle. The delegate will send us a
-/// notification as soon as it has finished its setup task, which will then
-/// trigger the view setup.
-///
-/// If this method is invoked again later during the application's lifetime,
-/// the setup attempt will succeed because all the necessary objects are already
-/// there.
-///
 /// @note This is the designated initializer of PlayView.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)aRect
+- (id) initWithFrame:(CGRect)rect
 {
   // Call designated initializer of superclass (UIView)
-  self = [super initWithFrame:aRect];
+  self = [super initWithFrame:rect];
   if (! self)
     return nil;
 
