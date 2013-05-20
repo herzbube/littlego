@@ -27,6 +27,7 @@
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -333,6 +334,13 @@
   [self.delegate navigationBarController:self
                              makeVisible:true
                   gameInfoViewController:self.gameInfoViewController];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // We are the GameInfoViewController delegate, so we must not be
+    // deallocated when the parent's viewDidUnload is invoked while
+    // GameInfoViewController does its thing.
+    [self retain];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -352,15 +360,12 @@
       DDLogError(@"%@: GoScore object is nil", self);
     self.gameInfoScore = nil;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Can be invoked to programmatically dismiss the view.
-// -----------------------------------------------------------------------------
-- (void) dismissGameInfoViewController
-{
-  if (self.gameInfoViewController)
-    [self.gameInfoViewController dismiss];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // Balance the retain message that we send to this controller before
+    // we display GameInfoViewController
+    [self autorelease];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -376,6 +381,13 @@
   }
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
   [controller showActionSheetFromView:[ApplicationDelegate sharedDelegate].window];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // We are the PlayViewActionSheetController's delegate, so we must not be
+    // deallocated when the parent's viewDidUnload is invoked while
+    // PlayViewActionSheetDelegate does its thing.
+    [self retain];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -393,6 +405,12 @@
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
 {
   [controller release];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // Balance the retain message that we send to this controller before
+    // we display PlayViewActionSheetController
+    [self autorelease];
+  }
 }
 
 // -----------------------------------------------------------------------------

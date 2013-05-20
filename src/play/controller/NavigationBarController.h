@@ -64,7 +64,6 @@
 }
 
 - (id) initWithDelegate:(id<NavigationBarControllerDelegate>)delegate parentViewController:(UIViewController*)parentViewController;
-- (void) dismissGameInfoViewController;
 - (void) setupWithScoringModel:(ScoringModel*)scoringModel
                  navigationBar:(UINavigationBar*)navigationBar
                     statusViewController:(StatusViewController*)statusViewController;
