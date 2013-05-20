@@ -238,6 +238,11 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
@@ -248,6 +253,11 @@
 // -----------------------------------------------------------------------------
 - (void) discardBoardPosition:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   ChangeAndDiscardCommand* command = [[[ChangeAndDiscardCommand alloc] init] autorelease];
   [self.delegate navigationBarController:self discardOrAlertWithCommand:command];
 }
@@ -259,6 +269,11 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlay:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
@@ -354,8 +369,22 @@
 // -----------------------------------------------------------------------------
 - (void) gameActions:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
   [controller showActionSheetFromView:[ApplicationDelegate sharedDelegate].window];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 // -----------------------------------------------------------------------------

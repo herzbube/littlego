@@ -359,9 +359,22 @@
 // -----------------------------------------------------------------------------
 - (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
   int newBoardPosition = boardPositionView.boardPosition;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on item views should currently be ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 @end

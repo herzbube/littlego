@@ -151,23 +151,14 @@
       assert(0);
       return false;
   }
-  GtpCommand* command = [GtpCommand command:commandString
-                             responseTarget:self
-                                   selector:@selector(gtpResponseReceived:)];
+  GtpCommand* command = [GtpCommand command:commandString];
+  command.waitUntilDone = true;
   [command submit];
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Is triggered when the GTP engine responds to the command submitted
-/// in doIt().
-// -----------------------------------------------------------------------------
-- (void) gtpResponseReceived:(GtpResponse*)response
-{
-  if (! response.status)
+  if (! command.response.status)
   {
     assert(0);
-    return;
+    DDLogError(@"%@: GTP engine failed to process command '%@', response was: %@", [self shortDescription], commandString, command.response.parsedResponse);
+    return false;
   }
 
   BackupGameCommand* backupCommand = [[[BackupGameCommand alloc] init] autorelease];
@@ -190,6 +181,8 @@
       break;
     }
   }
+
+  return true;
 }
 
 @end
