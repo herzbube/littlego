@@ -9,16 +9,12 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go feature release 0.11.0. A large number of changes have
-been made, only the most important ones are listed here:
+This is the Little Go bugfix release 0.11.1. The following evil bugs have been squashed:
 
-* Display coordinate labels
-* Display move numbers
-* Zoom the board up to a 3x zoom scale
-* Archived games can now be exported to applications that are capable of processing .sgf files (e.g. Mail, DropBox)
-* Games can now be imported from applications that are capable of exporting .sgf files (e.g. Mail, DropBox)
-* The application now launches much faster
-* Status text and activity indicator are now displayed in the navigation bar at the top of the screen
+* Board position can no longer be changed while other commands are executed (#156). This hard-to-find bug caused numerous crashes (e.g. those described by issues #128 and #129) and other problems, such as the infamous "The computer played an illegal move." alert. Many thanks to Logan Bouia and Carole Wolf for emailing me bug reports that helped me with diagnosing the problem.
+* The entire game is now saved when an old board position is viewed (#150)
+* The app should no longer crash after receiving a memory warning on iOS 5 while the "Game info", "New game" or "Save game" screens are displayed (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that the issue needs fixing by sending an occasional crash report.
+* Fix for a memory leak in TableViewSliderCell (#155)
 
 The [ChangeLog](doc/ChangeLog) document has more details.
 

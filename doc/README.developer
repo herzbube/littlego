@@ -38,8 +38,8 @@ Folder structure
  +-- LICENSE.html      The Apache license in HTML format (for display on the
  |                     device).
  +-- NOTICE            Attribution notices.
- +-- README.mediawiki  Introduction to the project. This file is formatted in
- |                     Mediawiki markup and rendered as the front page on GitHub.
+ +-- README.md         Introduction to the project. This file is formatted in
+ |                     Markdown and rendered as the front page on GitHub.
  +-- 3rdparty          This folder does not exist in a pristine clone of the
  |                     Git repository. It is created when the 3rdparty software
  |                     packages required to run Little Go are downloaded and
