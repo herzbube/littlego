@@ -28,13 +28,18 @@
 /// @brief The EditPlayerDelegate protocol must be implemented by the delegate
 /// of EditPlayerController.
 // -----------------------------------------------------------------------------
-@protocol EditPlayerDelegate
+@protocol EditPlayerDelegate <NSObject>
+@optional
 /// @brief This method is invoked after @a editPlayerController has updated its
 /// player object with new information.
 - (void) didChangePlayer:(EditPlayerController*)editPlayerController;
 /// @brief This method is invoked after @a editPlayerController has created a
 /// new player object.
 - (void) didCreatePlayer:(EditPlayerController*)editPlayerController;
+/// @brief This method is invoked when @a editPlayerController is presented
+/// modally and the user has finished working with @a editPlayerController. The
+/// delegate is responsible for dismissing @a editPlayerController.
+- (void) didEditPlayer:(EditPlayerController*)editPlayerController;
 @end
 
 
@@ -53,7 +58,8 @@
 /// - Edit mode: The player whose attributes are edited already exists. Changes
 ///   cannot be undone, they are immediately written to the Player model object.
 ///
-/// EditPlayerController expects to be displayed by a navigation controller. For
+/// EditPlayerController expects to be displayed by a navigation controller,
+/// either presented modally or pushed on the controller's navigation stack. For
 /// this reason it populates its own navigation item with controls that are
 /// then expected to be displayed in the navigation bar of the parent
 /// navigation controller.

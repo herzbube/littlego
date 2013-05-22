@@ -514,6 +514,7 @@ enum BoardPositionSectionItem
 - (UITableViewCell*) tableView:(UITableView*)tableView gameInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = nil;
+  bool isCellSelectable = false;
   GoGame* game = [GoGame sharedGame];
   switch (indexPath.section)
   {
@@ -632,7 +633,21 @@ enum BoardPositionSectionItem
     }
     case GameInfoSection:
     {
-      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      switch (indexPath.row)
+      {
+        case BlackPlayerItem:
+        case WhitePlayerItem:
+        case ActiveProfileItem:
+          isCellSelectable = true;
+          cell = [TableViewCellFactory cellWithType:Value1CellType
+                                          tableView:tableView
+                             reusableCellIdentifier:@"Value1CellWithDisclosureIndicator"];
+          break;
+        default:
+          cell = [TableViewCellFactory cellWithType:Value1CellType
+                                          tableView:tableView];
+          break;
+      }
       switch (indexPath.row)
       {
         case HandicapItem:
@@ -739,7 +754,15 @@ enum BoardPositionSectionItem
       assert(0);
       break;
   }
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  if (isCellSelectable)
+  {
+    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  }
+  else
+  {
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  }
   return cell;
 }
 
@@ -787,6 +810,55 @@ enum BoardPositionSectionItem
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   return cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  if (GameInfoType != self.playViewModel.infoTypeLastSelected)
+    return;
+  if (GameInfoSection != indexPath.section)
+    return;
+
+  GoGame* game = [GoGame sharedGame];
+  switch (indexPath.row)
+  {
+    case BlackPlayerItem:
+    case WhitePlayerItem:
+    {
+      Player* player;
+      if (BlackPlayerItem == indexPath.row)
+        player = game.playerBlack.player;
+      else
+        player = game.playerWhite.player;
+      EditPlayerController* editPlayerController = [EditPlayerController controllerForPlayer:player withDelegate:self];
+      UINavigationController* navigationController = [[[UINavigationController alloc]
+                                                       initWithRootViewController:editPlayerController] autorelease];
+      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      [self presentViewController:navigationController animated:YES completion:nil];
+      break;
+    }
+    case ActiveProfileItem:
+    {
+      GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
+      if (profile)
+      {
+        EditGtpEngineProfileController* editProfileController = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];
+        UINavigationController* navigationController = [[[UINavigationController alloc]
+                                                         initWithRootViewController:editProfileController] autorelease];
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        [self presentViewController:navigationController animated:YES completion:nil];
+      }
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -992,6 +1064,39 @@ enum BoardPositionSectionItem
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
   self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
   [self.tableView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditPlayerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didEditPlayer:(EditPlayerController*)editPlayerController;
+{
+  GoGame* game = [GoGame sharedGame];
+  NSMutableArray* indexPaths = [NSMutableArray array];
+  if (! editPlayerController.player.isHuman)
+  {
+    // In case the user selected a different profile or changed the profile
+    // name
+    [indexPaths addObject:[NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection]];
+  }
+  if (editPlayerController.player == game.playerBlack.player)
+    [indexPaths addObject:[NSIndexPath indexPathForRow:BlackPlayerItem inSection:GameInfoSection]];
+  else
+    [indexPaths addObject:[NSIndexPath indexPathForRow:WhitePlayerItem inSection:GameInfoSection]];
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationNone];
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+{
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -60,6 +60,10 @@ enum TableViewCellSubViewTag
 {
 }
 
-+ (UITableViewCell*) cellWithType:(enum TableViewCellType)type tableView:(UITableView*)tableView;
++ (UITableViewCell*) cellWithType:(enum TableViewCellType)type
+                        tableView:(UITableView*)tableView;
++ (UITableViewCell*) cellWithType:(enum TableViewCellType)type
+                        tableView:(UITableView*)tableView
+           reusableCellIdentifier:(NSString*)identifier;
 
 @end

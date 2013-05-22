@@ -137,7 +137,18 @@ enum ProfileNotesSectionItem
   if (self.profileExists)
   {
     self.navigationItem.title = @"Edit Profile";
-    self.navigationItem.leftBarButtonItem.enabled = [self isProfileValid];
+    if (self.presentingViewController)
+    {
+      self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Done"
+                                                                                 style:UIBarButtonItemStyleDone
+                                                                                target:self
+                                                                                action:@selector(done:)] autorelease];
+      self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
+    }
+    else
+    {
+      self.navigationItem.leftBarButtonItem.enabled = [self isProfileValid];
+    }
   }
   else
   {
@@ -542,9 +553,14 @@ enum ProfileNotesSectionItem
           self.profile.name = editTextController.text;
           indexPathToReload = [NSIndexPath indexPathForRow:ProfileNameItem inSection:sectionFromContext];
           if (self.profileExists)
-            [self.delegate didChangeProfile:self];
+          {
+            if ([self.delegate respondsToSelector:@selector(didChangeProfile:)])
+              [self.delegate didChangeProfile:self];
+          }
           else
+          {
             self.navigationItem.rightBarButtonItem.enabled = [self isProfileValid];
+          }
           break;
         }
         case ProfileNotesSection:
@@ -636,7 +652,18 @@ enum ProfileNotesSectionItem
   GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
   [model add:self.profile];
 
-  [self.delegate didCreateProfile:self];
+  if ([self.delegate respondsToSelector:@selector(didCreateProfile:)])
+    [self.delegate didCreateProfile:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user taps "done" to dismiss this controller. The
+/// "done" button is shown only if this controller is presented modally.
+// -----------------------------------------------------------------------------
+- (void) done:(id)sender
+{
+  if ([self.delegate respondsToSelector:@selector(didEditProfile:)])
+    [self.delegate didEditProfile:self];
 }
 
 // -----------------------------------------------------------------------------

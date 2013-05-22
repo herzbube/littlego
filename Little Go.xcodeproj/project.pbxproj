@@ -127,6 +127,12 @@
 		CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA116A4969D00A088D5 /* BoardPositionToolbarController.m */; };
 		CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA416A4B97800A088D5 /* UIImageAdditions.m */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
+		CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
+		CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
+		CD2D3AA0174C34A60030EDE4 /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
+		CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
+		CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
+		CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
 		CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
@@ -2296,6 +2302,12 @@
 				CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CD3592231735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */,
+				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
+				CD2D3AA0174C34A60030EDE4 /* EditGtpEngineProfileSettingsController.m in Sources */,
+				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
+				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
+				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

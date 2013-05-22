@@ -126,7 +126,18 @@ enum GtpEngineProfileSectionItem
   if (self.playerExists)
   {
     self.navigationItem.title = @"Edit Player";
-    self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+    if (self.presentingViewController)
+    {
+      self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Done"
+                                                                                 style:UIBarButtonItemStyleDone
+                                                                                target:self
+                                                                                action:@selector(done:)] autorelease];
+      self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+    }
+    else
+    {
+      self.navigationItem.leftBarButtonItem.enabled = [self isPlayerValid];
+    }
   }
   else
   {
@@ -361,9 +372,14 @@ enum GtpEngineProfileSectionItem
     {
       self.player.name = editTextController.text;
       if (self.playerExists)
-        [self.delegate didChangePlayer:self];
+      {
+        if ([self.delegate respondsToSelector:@selector(didChangePlayer:)])
+          [self.delegate didChangePlayer:self];
+      }
       else
+      {
         self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
+      }
       NSIndexPath* indexPathToReload = [NSIndexPath indexPathForRow:PlayerNameItem inSection:PlayerNameSection];
       NSArray* indexPaths = [NSArray arrayWithObject:indexPathToReload];
       [self.tableView reloadRowsAtIndexPaths:indexPaths
@@ -381,8 +397,19 @@ enum GtpEngineProfileSectionItem
 {
   PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
   [model add:self.player];
-  
-  [self.delegate didCreatePlayer:self];
+
+  if ([self.delegate respondsToSelector:@selector(didCreatePlayer:)])
+    [self.delegate didCreatePlayer:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user taps "done" to dismiss this controller. The
+/// "done" button is shown only if this controller is presented modally.
+// -----------------------------------------------------------------------------
+- (void) done:(id)sender
+{
+  if ([self.delegate respondsToSelector:@selector(didEditPlayer:)])
+    [self.delegate didEditPlayer:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -395,7 +422,10 @@ enum GtpEngineProfileSectionItem
   self.player.human = accessoryView.on;
 
   if (self.playerExists)
-    [self.delegate didChangePlayer:self];
+  {
+    if ([self.delegate respondsToSelector:@selector(didChangePlayer:)])
+      [self.delegate didChangePlayer:self];
+  }
 
   // Reloading the section works because it is always there - it just sometimes
   // has zero rows.

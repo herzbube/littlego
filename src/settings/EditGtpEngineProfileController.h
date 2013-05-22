@@ -30,13 +30,19 @@
 /// @brief The EditGtpEngineProfileDelegate protocol must be implemented by the
 /// delegate of EditGtpEngineProfileController.
 // -----------------------------------------------------------------------------
-@protocol EditGtpEngineProfileDelegate
+@protocol EditGtpEngineProfileDelegate <NSObject>
+@optional
 /// @brief This method is invoked after @a editGtpEngineProfileController has
 /// updated its profile object with new information.
 - (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 /// @brief This method is invoked after @a editGtpEngineProfileController has
 /// created a new profile object.
 - (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
+/// @brief This method is invoked when @a editGtpEngineProfileController is
+/// presented modally and the user has finished working with
+/// @a editGtpEngineProfileController. The delegate is responsible for
+/// dismissing @a editGtpEngineProfileController.
+- (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController;
 @end
 
 
@@ -64,7 +70,8 @@
 ///   model object.
 ///
 /// EditGtpEngineProfileController expects to be displayed by a navigation
-/// controller. For this reason it populates its own navigation item with
+/// controller, either presented modally or pushed on the controller's
+/// navigation stack. For this reason it populates its own navigation item with
 /// controls that are then expected to be displayed in the navigation bar of
 /// the parent navigation controller.
 ///

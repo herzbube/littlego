@@ -33,10 +33,15 @@
 /// @brief Factory method that returns an autoreleased UITableViewCell object
 /// for @a tableView, with a style that is appropriate for the requested
 /// @a type.
+///
+/// Invoke this overload if you are satisfied with the default identifier for
+/// cell reuse. The default identifier is the string equivalent of the named
+/// enumeration value @a type. For instance, the default identifier for
+/// #DefaultCellType is "DefaultCellType".
 // -----------------------------------------------------------------------------
-+ (UITableViewCell*) cellWithType:(enum TableViewCellType)type tableView:(UITableView*)tableView
++ (UITableViewCell*) cellWithType:(enum TableViewCellType)type
+                        tableView:(UITableView*)tableView
 {
-  // Check whether we can reuse an existing cell object
   NSString* cellID;
   switch (type)
   {
@@ -62,7 +67,7 @@
       cellID = @"SliderCellType";
       break;
     case GridCellType:
-      cellID = @"Grid1CellType";
+      cellID = @"GridCellType";
       break;
     case ActivityIndicatorCellType:
       cellID = @"ActivityIndicatorCellType";
@@ -78,8 +83,26 @@
       assert(0);
       return nil;
   }
+  return [TableViewCellFactory cellWithType:type
+                                  tableView:tableView
+                     reusableCellIdentifier:cellID];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Factory method that returns an autoreleased UITableViewCell object
+/// for @a tableView, with a style that is appropriate for the requested
+/// @a type.
+///
+/// Invoke this overload if you want to specify a custom @a identifier for
+/// cell reuse.
+// -----------------------------------------------------------------------------
++ (UITableViewCell*) cellWithType:(enum TableViewCellType)type
+                        tableView:(UITableView*)tableView
+           reusableCellIdentifier:(NSString*)identifier;
+
+{
   // UITableView does the caching for us
-  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:identifier];
   if (cell != nil)
     return cell;
 
@@ -88,22 +111,22 @@
   {
     case SliderCellType:
     {
-      cell = [TableViewSliderCell cellWithReuseIdentifier:cellID];
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier];
       break;
     }
     case GridCellType:
     {
-      cell = [TableViewGridCell cellWithReuseIdentifier:cellID];
+      cell = [TableViewGridCell cellWithReuseIdentifier:identifier];
       break;
     }
     case TextFieldCellType:
     {
-      cell = [TableViewTextCell cellWithReuseIdentifier:cellID];
+      cell = [TableViewTextCell cellWithReuseIdentifier:identifier];
       break;
     }
     case SegmentedCellType:
     {
-      cell = [TableViewSegmentedCell cellWithReuseIdentifier:cellID];
+      cell = [TableViewSegmentedCell cellWithReuseIdentifier:identifier];
       break;
     }
     default:
@@ -125,7 +148,7 @@
           break;
       }
       cell = [[[UITableViewCell alloc] initWithStyle:cellStyle
-                                     reuseIdentifier:cellID] autorelease];
+                                     reuseIdentifier:identifier] autorelease];
       break;
     }
   }

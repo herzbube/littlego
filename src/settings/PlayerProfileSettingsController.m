@@ -453,7 +453,7 @@ enum GtpEngineProfilesSectionItem
 /// @brief Displays EditPlayerController to gather information required to
 /// create a new player.
 // -----------------------------------------------------------------------------
-- (void) newPlayer;
+- (void) newPlayer
 {
   EditPlayerController* editPlayerController = [[EditPlayerController controllerWithDelegate:self] retain];
   [self.navigationController pushViewController:editPlayerController animated:YES];
@@ -478,9 +478,11 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) editPlayer:(Player*)player
 {
-  EditPlayerController* editPlayerController = [[EditPlayerController controllerForPlayer:player withDelegate:self] retain];
-  [self.navigationController pushViewController:editPlayerController animated:YES];
-  [editPlayerController release];
+  EditPlayerController* editPlayerController = [EditPlayerController controllerForPlayer:player withDelegate:self];
+  UINavigationController* navigationController = [[[UINavigationController alloc]
+                                                   initWithRootViewController:editPlayerController] autorelease];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -495,10 +497,18 @@ enum GtpEngineProfilesSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief EditPlayerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didEditPlayer:(EditPlayerController*)editPlayerController
+{
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Displays EditGtpEngineProfileController to gather information
 /// required to create a new GtpEngineProfile.
 // -----------------------------------------------------------------------------
-- (void) newProfile;
+- (void) newProfile
 {
   EditGtpEngineProfileController* editProfileController = [[EditGtpEngineProfileController controllerWithDelegate:self] retain];
   [self.navigationController pushViewController:editProfileController animated:YES];
@@ -523,9 +533,11 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) editProfile:(GtpEngineProfile*)profile
 {
-  EditGtpEngineProfileController* editProfileController = [[EditGtpEngineProfileController controllerForProfile:profile withDelegate:self] retain];
-  [self.navigationController pushViewController:editProfileController animated:YES];
-  [editProfileController release];
+  EditGtpEngineProfileController* editProfileController = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];
+  UINavigationController* navigationController = [[[UINavigationController alloc]
+                                                   initWithRootViewController:editProfileController] autorelease];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -537,6 +549,14 @@ enum GtpEngineProfilesSectionItem
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:changedProfileRow inSection:GtpEngineProfilesSection];
   [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+{
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
