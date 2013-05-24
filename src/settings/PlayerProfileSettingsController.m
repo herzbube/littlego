@@ -270,7 +270,7 @@ enum GtpEngineProfilesSectionItem
   if (PlayersSection == section)
     return @"Players that are participating in the current game cannot be deleted.";
   else if (GtpEngineProfilesSection == section)
-    return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default profile cannot be deleted.";
+    return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default and the active profiles cannot be deleted.";
   else
     return nil;
 }
@@ -361,7 +361,9 @@ enum GtpEngineProfilesSectionItem
           NSString* profileUUID = profile.uuid;
           NSString* defaultProfileUUID = [self.gtpEngineProfileModel defaultProfile].uuid;
           // Players that refer to the profile that is about to be deleted,
-          // are set to refer to the default profile instead
+          // are set to refer to the default profile instead. Note that it is
+          // not possible to delete the active profile, so we don't have to
+          // handle a change of the active profile here.
           for (Player* player in self.playerModel.playerList)
           {
             if ([profileUUID isEqualToString:player.gtpEngineProfileUUID])
@@ -475,7 +477,7 @@ enum GtpEngineProfilesSectionItem
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
       {
         GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
-        if ([profile isDefaultProfile])
+        if ([profile isDefaultProfile] || profile.isActiveProfile)
           return UITableViewCellEditingStyleNone;
         else
           return UITableViewCellEditingStyleDelete;
@@ -648,6 +650,24 @@ enum GtpEngineProfilesSectionItem
     GtpEngineProfile* newProfile = self.gtpEngineProfileModel.activeProfile;
     if (newProfile)
       [newProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+    // New active profile must not be delete-able; old active profile can now
+    // be deleted
+    if (self.tableView.editing)
+    {
+      NSMutableArray* indexPathsToReload = [NSMutableArray array];
+      if (oldProfile)
+      {
+        int row = [self.gtpEngineProfileModel.profileList indexOfObject:oldProfile];
+        [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
+      }
+      if (newProfile)
+      {
+        int row = [self.gtpEngineProfileModel.profileList indexOfObject:newProfile];
+        [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
+      }
+      [self.tableView reloadRowsAtIndexPaths:indexPathsToReload
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
   }
   else if ([object isKindOfClass:[GtpEngineProfile class]])
   {
