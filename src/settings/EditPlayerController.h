@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "EditGtpEngineProfileController.h"
 #import "../ui/EditTextController.h"
 #import "../ui/ItemPickerController.h"
 
@@ -68,7 +69,7 @@
 /// informed when the user makes any changes. For this to work, the delegate
 /// must implement the protocol EditPlayerDelegate.
 // -----------------------------------------------------------------------------
-@interface EditPlayerController : UITableViewController <EditTextDelegate, ItemPickerDelegate>
+@interface EditPlayerController : UITableViewController <EditTextDelegate, ItemPickerDelegate, EditGtpEngineProfileDelegate>
 {
 }
 

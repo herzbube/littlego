@@ -63,6 +63,7 @@ enum IsHumanSectionItem
 enum GtpEngineProfileSectionItem
 {
   GtpEngineProfileItem,
+  EditGtpEngineProfileItem,
   MaxGtpEngineProfileSectionItem
 };
 
@@ -198,40 +199,12 @@ enum GtpEngineProfileSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
-{
-  switch (section)
-  {
-    case PlayerNameSection:
-    case IsHumanSection:
-      return nil;
-    case GtpEngineProfileSection:
-      if (self.player.isHuman)
-        return nil;
-      else
-        return @"Profile";
-    default:
-      assert(0);
-      break;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
   if (IsHumanSection == section)
   {
     if (self.player.isPlaying)
       return @"This setting cannot be changed because the player currently participates in a game.";
-  }
-  else if (GtpEngineProfileSection == section)
-  {
-    // Display this notice only if we are not in "create" mode
-    if (self.playerExists && ! self.player.human)
-      return @"If the profile is changed the new settings are applied only after a new game with this player is started.";
   }
   return nil;
 }
@@ -250,7 +223,7 @@ enum GtpEngineProfileSectionItem
       {
         case PlayerNameItem:
         {
-          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
           [UiUtilities setupDefaultTypeCell:cell withText:self.player.name placeHolder:@"Player name"];
           break;
         }
@@ -281,13 +254,28 @@ enum GtpEngineProfileSectionItem
     }
     case GtpEngineProfileSection:
     {
-      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-      cell.textLabel.text = [self.player gtpEngineProfile].name;
-      // Necessary because other cells with DefaultCellType use a different
-      // text color
-      cell.textLabel.textColor = [UIColor blackColor];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      break;
+      switch (indexPath.row)
+      {
+        case GtpEngineProfileItem:
+        {
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Profile";
+          cell.detailTextLabel.text = [self.player gtpEngineProfile].name;
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        case EditGtpEngineProfileItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = @"Display profile settings ...";
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
     }
     default:
     {
@@ -325,26 +313,44 @@ enum GtpEngineProfileSectionItem
     }
     case GtpEngineProfileSection:
     {
-      GtpEngineProfile* defaultProfile = [self.player gtpEngineProfile];
-      GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-      int indexOfDefaultProfile = -1;
-      for (int profileIndex = 0; profileIndex < model.profileCount; ++profileIndex)
+      switch (indexPath.row)
       {
-        GtpEngineProfile* profile = [model.profileList objectAtIndex:profileIndex];
-        [itemList addObject:profile.name];
-        if (profile == defaultProfile)
-          indexOfDefaultProfile = profileIndex;
+        case GtpEngineProfileItem:
+        {
+          GtpEngineProfile* defaultProfile = [self.player gtpEngineProfile];
+          GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+          NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+          int indexOfDefaultProfile = -1;
+          for (int profileIndex = 0; profileIndex < model.profileCount; ++profileIndex)
+          {
+            GtpEngineProfile* profile = [model.profileList objectAtIndex:profileIndex];
+            [itemList addObject:profile.name];
+            if (profile == defaultProfile)
+              indexOfDefaultProfile = profileIndex;
+          }
+          UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                                     title:@"Select profile"
+                                                                        indexOfDefaultItem:indexOfDefaultProfile
+                                                                                  delegate:self];
+          UINavigationController* navigationController = [[UINavigationController alloc]
+                                                          initWithRootViewController:modalController];
+          navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+          [self presentViewController:navigationController animated:YES completion:nil];
+          [navigationController release];
+          break;
+        }
+        case EditGtpEngineProfileItem:
+        {
+          GtpEngineProfile* profile = [self.player gtpEngineProfile];
+          EditGtpEngineProfileController* controller = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];
+          [self.navigationController pushViewController:controller animated:YES];
+          break;
+        }
+        default:
+        {
+          break;
+        }
       }
-      UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                 title:@"Select profile"
-                                                                    indexOfDefaultItem:indexOfDefaultProfile
-                                                                              delegate:self];
-      UINavigationController* navigationController = [[UINavigationController alloc]
-                                                      initWithRootViewController:modalController];
-      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-      [self presentViewController:navigationController animated:YES completion:nil];
-      [navigationController release];
       break;
     }
     default:
@@ -388,6 +394,16 @@ enum GtpEngineProfileSectionItem
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGtpEngineProfileDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+{
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:GtpEngineProfileItem inSection:GtpEngineProfileSection];
+  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 // -----------------------------------------------------------------------------

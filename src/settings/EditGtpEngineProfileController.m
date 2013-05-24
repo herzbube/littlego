@@ -137,8 +137,10 @@ enum ProfileNotesSectionItem
   if (self.profileExists)
   {
     self.navigationItem.title = @"Edit Profile";
-    if (self.presentingViewController)
+    if (self == [self.navigationController.viewControllers objectAtIndex:0])
     {
+      // We are the root view controller of the navigation stack, so we are
+      // presented modally and need to display a button that allows dismissing
       self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Done"
                                                                                  style:UIBarButtonItemStyleDone
                                                                                 target:self
@@ -268,7 +270,7 @@ enum ProfileNotesSectionItem
       {
         case ProfileNameItem:
         {
-          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
           [UiUtilities setupDefaultTypeCell:cell withText:self.profile.name placeHolder:@"Profile name"];
           break;
         }
@@ -299,9 +301,6 @@ enum ProfileNotesSectionItem
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
           cell.textLabel.text = @"Advanced configuration";
-          // Necessary because other cells with DefaultCellType use a different
-          // text color
-          cell.textLabel.textColor = [UIColor blackColor];
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
@@ -334,9 +333,6 @@ enum ProfileNotesSectionItem
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
           cell.textLabel.text = @"Advanced configuration";
-          // Necessary because other cells with DefaultCellType use a different
-          // text color
-          cell.textLabel.textColor = [UIColor blackColor];
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
@@ -354,7 +350,7 @@ enum ProfileNotesSectionItem
       {
         case ProfileNotesItem:
         {
-          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
           [UiUtilities setupDefaultTypeCell:cell withText:self.profile.profileDescription placeHolder:@"Profile notes"];
           break;
         }
