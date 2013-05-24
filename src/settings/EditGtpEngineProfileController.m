@@ -20,6 +20,8 @@
 #import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/GtpEngineProfileModel.h"
+#import "../player/Player.h"
+#import "../player/PlayerModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewTextCell.h"
 #import "../ui/UiUtilities.h"
@@ -35,6 +37,7 @@ enum EditGtpEngineProfileTableViewSection
   PlayingStrengthSection,
   ResignBehaviourSection,
   ProfileNotesSection,
+  PlayerListSection,
   MaxSection
 };
 
@@ -75,6 +78,23 @@ enum ProfileNotesSectionItem
   ProfileNotesItem,
   MaxProfileNotesSectionItem,
 };
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PlayerListSection.
+// -----------------------------------------------------------------------------
+enum PlayerListSectionItem
+{
+  MaxPlayerListSectionItem,
+};
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for
+/// EditGtpEngineProfileSettingsController.
+// -----------------------------------------------------------------------------
+@interface EditGtpEngineProfileController()
+@property(nonatomic, retain) NSArray* playersUsingTheProfile;
+@end
 
 
 @implementation EditGtpEngineProfileController
@@ -133,7 +153,7 @@ enum ProfileNotesSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
+  [self updatePlayersUsingTheProfile];
   if (self.profileExists)
   {
     self.navigationItem.title = @"Edit Profile";
@@ -164,6 +184,24 @@ enum ProfileNotesSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) updatePlayersUsingTheProfile
+{
+  NSMutableArray* playersUsingTheProfile = [NSMutableArray array];
+  if (self.profileExists)
+  {
+    PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+    for (Player* player in model.playerList)
+    {
+      if ([player gtpEngineProfile] == self.profile)
+        [playersUsingTheProfile addObject:player.name];
+    }
+  }
+  self.playersUsingTheProfile = playersUsingTheProfile;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewWillDisappear:(BOOL)animated
@@ -187,10 +225,6 @@ enum ProfileNotesSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  // Because we always display all sections we can reload sections when we
-  // toggle between simple/advanced settings. Because sections go from zero
-  // to one or more rows (or vice vera), we get a nice animation of rows
-  // fading in/out.
   return MaxSection;
 }
 
@@ -209,6 +243,8 @@ enum ProfileNotesSectionItem
       return MaxResignBehaviourSectionItem;
     case ProfileNotesSection:
       return MaxProfileNotesSectionItem;
+    case PlayerListSection:
+      return self.playersUsingTheProfile.count;
     default:
       assert(0);
       break;
@@ -231,6 +267,8 @@ enum ProfileNotesSectionItem
       return @"Resign behaviour";
     case ProfileNotesSection:
       return @"Profile notes";
+    case PlayerListSection:
+      return @"Players using this profile";
     default:
       break;
   }
@@ -246,9 +284,11 @@ enum ProfileNotesSectionItem
   {
     case PlayingStrengthSection:
       return @"The advanced configuration screen lets you adjust many low-level settings. Documentation for each setting is available under 'Help > Players & Profiles'.";
-      break;
     case ResignBehaviourSection:
       return @"The advanced configuration screen lets you adjust the resign behaviour in complete detail. Documentation is available under 'Help > Players & Profiles'.";
+    case PlayerListSection:
+      if (0 == self.playersUsingTheProfile.count)
+        return @"No player uses this profile.";
       break;
     default:
       break;
@@ -360,6 +400,13 @@ enum ProfileNotesSectionItem
           break;
         }
       }
+      break;
+    }
+    case PlayerListSection:
+    {
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"NonSelectableCell"];
+      cell.textLabel.text = [self.playersUsingTheProfile objectAtIndex:indexPath.row];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
     default:
