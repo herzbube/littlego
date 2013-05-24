@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward classes
+@class Player;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The GtpUtilities class is a container for various utility functions
 /// related to the GTP module.
@@ -29,6 +33,7 @@
 }
 
 + (void) submitCommand:(NSString*)commandString target:(id)aTarget selector:(SEL)aSelector waitUntilDone:(bool)wait;
++ (Player*) playerProvidingActiveProfile;
 + (void) setupComputerPlayer;
 + (void) startPondering;
 + (void) stopPondering;

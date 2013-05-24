@@ -17,6 +17,7 @@
 
 // Project includes
 #import "EditPlayerController.h"
+#import "../gtp/GtpUtilities.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
@@ -461,6 +462,9 @@ enum GtpEngineProfileSectionItem
       NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
       [self.tableView reloadRowsAtIndexPaths:indexPaths
                             withRowAnimation:UITableViewRowAnimationNone];
+
+      if ([GtpUtilities playerProvidingActiveProfile] == self.player)
+        [GtpUtilities setupComputerPlayer];
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];

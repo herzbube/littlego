@@ -62,6 +62,34 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the Player object that provides the current game's active
+/// GTP engine profile.
+///
+/// The following rules are observed:
+/// - Computer vs. human game: Returns the computer player
+/// - Computer vs. computer game: Returns the black computer player
+/// - Human vs. human game: Returns nil
+///
+/// @see GtpUtilities::setupComputerPlayer()
+// -----------------------------------------------------------------------------
++ (Player*) playerProvidingActiveProfile
+{
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameTypeHumanVsHuman == game.type)
+  {
+    return nil;
+  }
+  else
+  {
+    Player* blackPlayer = game.playerBlack.player;
+    if (! blackPlayer.isHuman)
+      return blackPlayer;
+    else
+      return game.playerWhite.player;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Applies settings to the GTP engine that are obtained from the current
 /// game's computer player in the form of a GtpEngineProfile object.
 ///
@@ -76,17 +104,11 @@
 + (void) setupComputerPlayer
 {
   GtpEngineProfile* profileToActivate = nil;
-  GoGame* game = [GoGame sharedGame];
-  if (GoGameTypeHumanVsHuman == game.type)
-    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
+  Player* player = [GtpUtilities playerProvidingActiveProfile];
+  if (player)
+    profileToActivate = [player gtpEngineProfile];
   else
-  {
-    Player* blackPlayer = game.playerBlack.player;
-    if (! blackPlayer.isHuman)
-      profileToActivate = [blackPlayer gtpEngineProfile];
-    else
-      profileToActivate = [game.playerWhite.player gtpEngineProfile];
-  }
+    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
 
   // Invoking applyProfile makes the profile the active profile
   if (profileToActivate)
