@@ -283,7 +283,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   // much memory, probably due to an "enthusiastic" maximum memory setting
   // in the current GTP engine profile.
   DDLogWarn(@"ApplicationDelegate received memory warning");
-  GtpEngineProfile* profile = [self.gtpEngineProfileModel activeProfile];
+  GtpEngineProfile* profile = self.gtpEngineProfileModel.activeProfile;
   if (profile)
     DDLogWarn(@"Active GtpEngineProfile is %@, max. memory is %d", profile.name, profile.fuegoMaxMemory);
   else

@@ -687,7 +687,7 @@ enum BoardPositionSectionItem
         case ActiveProfileItem:
         {
           cell.textLabel.text = @"Active profile";
-          GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
+          GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.activeProfile;
           assert(profile);
           if (profile)
             cell.detailTextLabel.text = profile.name;
@@ -843,7 +843,7 @@ enum BoardPositionSectionItem
     }
     case ActiveProfileItem:
     {
-      GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
+      GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.activeProfile;
       if (profile)
       {
         EditGtpEngineProfileController* editProfileController = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];

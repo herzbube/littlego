@@ -37,9 +37,9 @@
 - (void) remove:(GtpEngineProfile*)profile;
 - (GtpEngineProfile*) profileWithUUID:(NSString*)uuid;
 - (GtpEngineProfile*) defaultProfile;
-- (GtpEngineProfile*) activeProfile;
 
 @property(nonatomic, assign) int profileCount;
 @property(nonatomic, retain) NSArray* profileList;
+@property(nonatomic, assign) GtpEngineProfile* activeProfile;
 
 @end

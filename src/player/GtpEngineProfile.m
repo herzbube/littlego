@@ -209,7 +209,7 @@
   if (! self.isActiveProfile)
   {
     GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-    GtpEngineProfile* activeProfile = [model activeProfile];
+    GtpEngineProfile* activeProfile = model.activeProfile;
     if (activeProfile)
     {
       assert(activeProfile != self);
@@ -218,6 +218,7 @@
       activeProfile.activeProfile = false;
     }
     self.activeProfile = true;
+    model.activeProfile = self;
   }
 }
 

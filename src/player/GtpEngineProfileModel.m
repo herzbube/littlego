@@ -33,10 +33,9 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.profileCount = 0;
   self.profileList = [NSMutableArray arrayWithCapacity:self.profileCount];
-
+  self.activeProfile = nil;
   return self;
 }
 
@@ -46,6 +45,7 @@
 - (void) dealloc
 {
   self.profileList = nil;
+  self.activeProfile = nil;
   [super dealloc];
 }
 
@@ -138,20 +138,6 @@
   for (GtpEngineProfile* profile in self.profileList)
   {
     if ([profile isDefaultProfile])
-      return profile;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the active profile object. See the class documentation of
-/// GtpEngineProfile for details.
-// -----------------------------------------------------------------------------
-- (GtpEngineProfile*) activeProfile
-{
-  for (GtpEngineProfile* profile in self.profileList)
-  {
-    if (profile.isActiveProfile)
       return profile;
   }
   return nil;
