@@ -17,6 +17,8 @@
 
 // Project includes
 #import "PlayerProfileSettingsController.h"
+#import "../go/GoGame.h"
+#import "../go/GoPlayer.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
@@ -86,10 +88,54 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeNotificationResponders];
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [self setupKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupKVONotificationResponders
+{
+  [self.gtpEngineProfileModel addObserver:self forKeyPath:@"activeProfile" options:NSKeyValueObservingOptionOld context:NULL];
+  [self.gtpEngineProfileModel.activeProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  GoGame* game = [GoGame sharedGame];
+  [game.playerBlack.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  [game.playerWhite.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeKVONotificationResponders
+{
+  [self.gtpEngineProfileModel removeObserver:self forKeyPath:@"activeProfile"];
+  [self.gtpEngineProfileModel.activeProfile removeObserver:self forKeyPath:@"name"];
+  GoGame* game = [GoGame sharedGame];
+  [game.playerBlack.player removeObserver:self forKeyPath:@"name"];
+  [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
 }
 
 // -----------------------------------------------------------------------------
@@ -109,9 +155,8 @@ enum GtpEngineProfilesSectionItem
   // self.editButtonItem is a standard item provided by UIViewController, which
   // is linked to triggering the view's edit mode
   self.navigationItem.rightBarButtonItem = self.editButtonItem;
-  
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+
+  [self setupNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
@@ -123,7 +168,7 @@ enum GtpEngineProfilesSectionItem
   [super viewDidUnload];
 
   // Undo all of the stuff that is happening in viewDidLoad
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeNotificationResponders];
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.navigationItem.rightBarButtonItem = nil;
@@ -562,8 +607,17 @@ enum GtpEngineProfilesSectionItem
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
+- (void) goGameWillCreate:(NSNotification*)notification
+{
+  [self removeKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
+  [self setupKVONotificationResponders];
   // Here we are dealing with the (forbidden) scenario that the user can delete
   // a player that is associated with a running game. Imagine this:
   // - We have 3 players, A, B and C
@@ -579,6 +633,36 @@ enum GtpEngineProfilesSectionItem
   // is created.
   if (self.tableView.editing)
     [self setEditing:NO animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  if (object == self.gtpEngineProfileModel)
+  {
+    GtpEngineProfile* oldProfile = [change objectForKey:NSKeyValueChangeOldKey];
+    if (oldProfile)
+      [oldProfile removeObserver:self forKeyPath:@"name"];
+    GtpEngineProfile* newProfile = self.gtpEngineProfileModel.activeProfile;
+    if (newProfile)
+      [newProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  }
+  else if ([object isKindOfClass:[GtpEngineProfile class]])
+  {
+    int row = [self.gtpEngineProfileModel.profileList indexOfObject:object];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+  else if ([object isKindOfClass:[Player class]])
+  {
+    int row = [self.playerModel.playerList indexOfObject:object];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:PlayersSection];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 @end

@@ -163,12 +163,42 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeNotificationResponders];
   self.delegate = nil;
   self.playViewModel = nil;
   self.navigationBar = nil;
   self.tableView = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  // KVO observing
+  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  [model addObserver:self forKeyPath:@"activeProfile" options:NSKeyValueObservingOptionOld context:NULL];
+  [model.activeProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  GoGame* game = [GoGame sharedGame];
+  [game.playerBlack.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  [game.playerWhite.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  [model removeObserver:self forKeyPath:@"activeProfile"];
+  [model.activeProfile removeObserver:self forKeyPath:@"name"];
+  GoGame* game = [GoGame sharedGame];
+  [game.playerBlack.player removeObserver:self forKeyPath:@"name"];
+  [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
 }
 
 // -----------------------------------------------------------------------------
@@ -277,8 +307,7 @@ enum BoardPositionSectionItem
 {
   [super viewDidLoad];
   self.title = @"Game Info";
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [self setupNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
@@ -296,7 +325,7 @@ enum BoardPositionSectionItem
   self.tableView = nil;
 
   // Undo all of the stuff that is happening in viewDidLoad
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
@@ -1015,6 +1044,45 @@ enum BoardPositionSectionItem
   // Dismiss the Info view when a new game is started. This typically occurs
   // when a saved game is loaded from the archive.
   [self navigationBar:nil shouldPopItem:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  GtpEngineProfileModel* gtpEngineProfileModel = applicationDelegate.gtpEngineProfileModel;
+  if (object == gtpEngineProfileModel)
+  {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+
+    GtpEngineProfile* oldProfile = [change objectForKey:NSKeyValueChangeOldKey];
+    if (oldProfile)
+      [oldProfile removeObserver:self forKeyPath:@"name"];
+    GtpEngineProfile* newProfile = gtpEngineProfileModel.activeProfile;
+    if (newProfile)
+      [newProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  }
+  else if ([object isKindOfClass:[GtpEngineProfile class]])
+  {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+  else if ([object isKindOfClass:[Player class]])
+  {
+    int row;
+    if (object == [GoGame sharedGame].playerBlack.player)
+      row = BlackPlayerItem;
+    else
+      row = WhitePlayerItem;
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:GameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 // -----------------------------------------------------------------------------
