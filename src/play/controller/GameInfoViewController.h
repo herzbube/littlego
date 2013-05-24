@@ -55,7 +55,6 @@
 }
 
 + (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate;
-- (void) dismiss;
 
 /// @brief This is the delegate that will be informed when the user wants to
 /// dismiss the "Game Info" view.
