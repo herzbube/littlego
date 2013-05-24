@@ -743,8 +743,22 @@
     assert(0);
     return;
   }
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   int newBoardPosition = indexPath.row;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on cells in the list of board positions should
+/// currently be ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 @end

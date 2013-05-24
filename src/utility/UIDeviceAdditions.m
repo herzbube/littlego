@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,23 @@
       currentDeviceSuffix = iPadDeviceSuffix;
   }
   return currentDeviceSuffix;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the major system version number. For instance, if the system
+/// version is 5.1.1 this returns 5.
+// -----------------------------------------------------------------------------
++ (int) systemVersionMajor
+{
+  static int systemVersionMajor = -1;
+  if (-1 == systemVersionMajor)
+  {
+    NSString* systemVersion = [[UIDevice currentDevice] systemVersion];
+    NSArray* systemVersionParts = [systemVersion componentsSeparatedByString:@"."];
+    NSString* systemVersionMajorString = [systemVersionParts objectAtIndex:0];
+    systemVersionMajor = [systemVersionMajorString intValue];
+  }
+  return systemVersionMajor;
 }
 
 @end

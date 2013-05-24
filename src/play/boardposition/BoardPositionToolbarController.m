@@ -500,6 +500,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) rewindToStart:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithFirstBoardPosition] autorelease] submit];
 }
 
@@ -508,6 +513,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) rewind:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] autorelease] submit];
 }
 
@@ -516,6 +526,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) previousBoardPosition:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
 }
 
@@ -524,6 +539,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) nextBoardPosition:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithOffset:1] autorelease] submit];
 }
 
@@ -532,6 +552,11 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) fastForward:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] autorelease] submit];
 }
 
@@ -540,7 +565,21 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) fastForwardToEnd:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   [[[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 // -----------------------------------------------------------------------------

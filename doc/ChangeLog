@@ -1,3 +1,19 @@
+Mon May 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 0.11.1
+- Bugfixes
+  - Board position can no longer be changed while other commands are executed
+    (#156). This hard-to-find bug caused numerous crashes (e.g. those described
+    by issues #128 and #129) and other problems, such as the infamous
+    "The computer played an illegal move." alert. Many thanks to Logan Bouia and
+    Carole Wolf for emailing me bug reports that helped me with diagnosing the
+    problem.
+  - The entire game is now saved when an old board position is viewed (#150)
+  - The app should no longer crash after receiving a memory warning on iOS 5
+    while the "Game info", "New game" or "Save game" screens are displayed
+    (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that
+    the issue needs fixing by sending an occasional crash report.
+  - Fix for a memory leak in TableViewSliderCell (#155)
+
 Sat Apr 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.11.0
 - Features

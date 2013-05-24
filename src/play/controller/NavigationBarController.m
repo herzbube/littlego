@@ -29,6 +29,7 @@
 #import "../../command/game/PauseGameCommand.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -169,8 +170,6 @@
 - (void) viewWillUnload
 {
   [super viewWillUnload];
-  // Dismiss the controller before releasing/deallocating objects
-  [self dismissGameInfoViewController];
   [self removeNotificationResponders];
   [self releaseObjects];
 }
@@ -194,15 +193,6 @@
     // shows that releasing objects here frees between 100-300 KB. Since the
     // user is expected to switch back to the Play tab anyway, this gain is
     // only temporary.
-    //
-    // Furthermore: If we want to release objects here, we need to first
-    // resolve this issue: When the memory warning occurs while the game info
-    // view controller is at the top of the navigation stack, it seems to be
-    // impossible to pop the controller without the application crashing. In
-    // iOS 5 / viewDidUnload(), popping the controller seems to work with
-    //   [self.navigationBarController dismissGameInfoViewController];
-    // (tested only in the simulator), but invoking the same method here
-    // causes a crash.
   }
 }
 
@@ -295,6 +285,11 @@
 // -----------------------------------------------------------------------------
 - (void) pass:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
@@ -305,6 +300,11 @@
 // -----------------------------------------------------------------------------
 - (void) discardBoardPosition:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   ChangeAndDiscardCommand* command = [[[ChangeAndDiscardCommand alloc] init] autorelease];
   [self.delegate navigationBarController:self discardOrAlertWithCommand:command];
 }
@@ -316,6 +316,11 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlay:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
   [self.delegate navigationBarController:self playOrAlertWithCommand:command];
 }
@@ -359,6 +364,13 @@
     [score calculateWaitUntilDone:true];
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
   [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // We are the GameInfoViewController delegate, so we must not be
+    // deallocated when the parent's viewDidUnload is invoked while
+    // GameInfoViewController does its thing.
+    [self retain];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -368,15 +380,12 @@
 {
   [self.navigationController popViewControllerAnimated:YES];
   self.gameInfoViewController = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Can be invoked to programmatically dismiss the view.
-// -----------------------------------------------------------------------------
-- (void) dismissGameInfoViewController
-{
-  if (self.gameInfoViewController)
-    [self.gameInfoViewController dismiss];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // Balance the retain message that we send to this controller before
+    // we display GameInfoViewController
+    [self autorelease];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -385,8 +394,29 @@
 // -----------------------------------------------------------------------------
 - (void) gameActions:(id)sender
 {
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
   [controller showActionSheetFromView:[ApplicationDelegate sharedDelegate].window];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // We are the PlayViewActionSheetController's delegate, so we must not be
+    // deallocated when the parent's viewDidUnload is invoked while
+    // PlayViewActionSheetDelegate does its thing.
+    [self retain];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 // -----------------------------------------------------------------------------
@@ -395,6 +425,12 @@
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
 {
   [controller release];
+  if (5 == [UIDevice systemVersionMajor])
+  {
+    // Balance the retain message that we send to this controller before
+    // we display PlayViewActionSheetController
+    [self autorelease];
+  }
 }
 
 // -----------------------------------------------------------------------------
