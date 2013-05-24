@@ -31,6 +31,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/MainTabBarController.h"
 #import "../../shared/ApplicationStateManager.h"
 
 

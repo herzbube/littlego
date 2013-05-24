@@ -213,6 +213,7 @@
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
 		CD66127F155862F6009C6535 /* appicon-ipad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD66127E155862F6009C6535 /* appicon-ipad@2x.png */; };
+		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD7E92D31532333D00DCD671 /* LaunchImageiPad-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7E92CF1532333D00DCD671 /* LaunchImageiPad-Landscape.png */; };
@@ -2308,6 +2309,7 @@
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
+				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

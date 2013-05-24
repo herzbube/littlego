@@ -29,6 +29,7 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
+#import "MainTabBarController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -83,10 +84,6 @@
 
 
 @implementation ApplicationDelegate
-
-@synthesize window;
-@synthesize tabBarController;
-
 
 // -----------------------------------------------------------------------------
 /// @brief Shared instance of ApplicationDelegate.
@@ -191,7 +188,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupUserDefaults];
   [self setupSound];
   [self setupFuego];
-  [self setupTabBarController];
   [self setupPlayTab];
 
   // Further setup steps are executed in a secondary thread so that we can
@@ -567,9 +563,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
   [self.window makeKeyAndVisible];
-
-  // Disable edit button in the "more" navigation controller
-  self.tabBarController.customizableViewControllers = [NSArray array];
 }
 
 // -----------------------------------------------------------------------------
@@ -630,17 +623,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the application's main tab bar controller and its more
-/// navigation controller to use this ApplicationDelegate object as their
-/// delegate.
-// -----------------------------------------------------------------------------
-- (void) setupTabBarController
-{
-  [self tabBarController].delegate = self;
-  [self tabBarController].moreNavigationController.delegate = self;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Creates and initializes objects that are required to display the
 /// view hierarchy on the Play tab (the tab that is initially visible after
 /// application launch).
@@ -648,82 +630,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) setupPlayTab
 {
   UIViewController* playTabController = [PlayTabController playTabController];
-  UINavigationController* playTabRootController = (UINavigationController*)[self tabController:TabTypePlay];
+  UINavigationController* playTabRootController = (UINavigationController*)[self.tabBarController tabController:TabTypePlay];
   [playTabRootController pushViewController:playTabController animated:NO];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the root controller for the tab identified by @a tabID.
-/// Returns nil if @a tabID is not recognized.
-///
-/// This method returns the correct controller even if the tab is located in
-/// the "More" navigation controller.
-// -----------------------------------------------------------------------------
-- (UIViewController*) tabController:(enum TabType)tabID
-{
-  for (UIViewController* controller in tabBarController.viewControllers)
-  {
-    if (controller.tabBarItem.tag == tabID)
-      return controller;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the main view for the tab identified by @a tabID. Returns
-/// nil if @a tabID is not recognized.
-///
-/// This method returns the correct view even if the tab is located in the
-/// "More" navigation controller.
-// -----------------------------------------------------------------------------
-- (UIView*) tabView:(enum TabType)tabID
-{
-  UIViewController* tabController = [self tabController:tabID];
-  if (tabController)
-    return tabController.view;
-  else
-    return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Activates the tab identified by @a tabID, making it visible to the
-/// user.
-///
-/// This method works correctly even if the tab is located in the "More"
-/// navigation controller.
-// -----------------------------------------------------------------------------
-- (void) activateTab:(enum TabType)tabID
-{
-  UIViewController* tabController = [self tabController:tabID];
-  if (tabController)
-  {
-    tabBarController.selectedViewController = tabController;
-    // The delegate method tabBarController:didSelectViewController:() is not
-    // invoked when the selectedViewController property is changed
-    // programmatically
-    [self writeUserDefaults];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITabBarControllerDelegate method
-///
-/// Writes user defaults in response to the user switching tabs.
-// -----------------------------------------------------------------------------
-- (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
-{
-  [self writeUserDefaults];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UINavigationControllerDelegate method
-///
-/// Writes user defaults in response to the user switching views on the tab
-/// bar controller's more navigation controller.
-// -----------------------------------------------------------------------------
-- (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated
-{
-  [self writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -740,33 +648,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   return [NSString stringWithContentsOfURL:resourceURL
                               usedEncoding:&usedEncoding
                                      error:&error];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps TabType values to resource file names. The name that is returned
-/// can be used with NSBundle to load the resource file's content.
-// -----------------------------------------------------------------------------
-- (NSString*) resourceNameForTabType:(enum TabType)tabType
-{
-  NSString* resourceName = nil;
-  switch (tabType)
-  {
-    case TabTypeManual:
-      resourceName = manualDocumentResource;
-      break;
-    case TabTypeAbout:
-      resourceName = aboutDocumentResource;
-      break;
-    case TabTypeSourceCode:
-      resourceName = sourceCodeDocumentResource;
-      break;
-    case TabTypeCredits:
-      resourceName = creditsDocumentResource;
-      break;
-    default:
-      break;
-  }
-  return resourceName;
 }
 
 // -----------------------------------------------------------------------------

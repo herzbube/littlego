@@ -17,11 +17,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The MainTabBarController class exists so that in iOS 6 the app can
-/// rotate to UIInterfaceOrientationPortraitUpsideDown on the iPhone.
+/// @brief The MainTabBarController class is the application window's root
+/// view controller.
 // -----------------------------------------------------------------------------
-@interface MainTabBarController : UITabBarController
+@interface MainTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationControllerDelegate>
 {
 }
+
+- (UIViewController*) tabController:(enum TabType)tabID;
+- (UIView*) tabView:(enum TabType)tabID;
+- (void) activateTab:(enum TabType)tabID;
+- (NSString*) resourceNameForTabType:(enum TabType)tabType;
 
 @end

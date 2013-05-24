@@ -23,6 +23,7 @@
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/MainTabBarController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -348,7 +349,7 @@ enum GameAttributesSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
   if (didStartNewGame)
   {
-    [[ApplicationDelegate sharedDelegate] activateTab:TabTypePlay];
+    [[ApplicationDelegate sharedDelegate].tabBarController activateTab:TabTypePlay];
     // No animation necessary, the Play tab is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }

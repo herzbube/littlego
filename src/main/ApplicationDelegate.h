@@ -35,6 +35,7 @@
 @class GtpCommandModel;
 @class CrashReportingModel;
 @class LoggingModel;
+@class MainTabBarController;
 
 
 // -----------------------------------------------------------------------------
@@ -49,17 +50,8 @@
 /// class method sharedDelegate().
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate : NSObject <UIApplicationDelegate,
-                                           UITabBarControllerDelegate,
-                                           UINavigationControllerDelegate,
                                            BWQuincyManagerDelegate>
 {
-@private
-  /// @name Outlets
-  /// @brief These variables are outlets and initialized in MainWindow.xib.
-  //@{
-  UIWindow* window;
-  UITabBarController* tabBarController;
-  //@}
 }
 
 + (ApplicationDelegate*) sharedDelegate;
@@ -75,19 +67,14 @@
 - (void) setupSound;
 - (void) setupGUI;
 - (void) setupFuego;
-- (void) setupTabBarController;
 - (void) writeUserDefaults;
-- (UIViewController*) tabController:(enum TabType)tabID;
-- (UIView*) tabView:(enum TabType)tabID;
-- (void) activateTab:(enum TabType)tabID;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
-- (NSString*) resourceNameForTabType:(enum TabType)tabType;
 - (NSString*) logFolder;
 
 /// @brief The main application window.
 @property(nonatomic, retain) IBOutlet UIWindow* window;
 /// @brief The main application controller.
-@property(nonatomic, retain) IBOutlet UITabBarController* tabBarController;
+@property(nonatomic, retain) IBOutlet MainTabBarController* tabBarController;
 /// @brief Indicates how the application was launched.
 ///
 /// This property initially has the value #ApplicationLaunchModeUnknown. At the

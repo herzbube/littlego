@@ -25,6 +25,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/MainTabBarController.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -272,7 +273,8 @@
 {
   DDLogVerbose(@"%@: Making screen shot of Play view", [self shortDescription]);
 
-  UIImage* image = [UiUtilities captureView:[[ApplicationDelegate sharedDelegate] tabView:TabTypePlay]];
+  UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabView:TabTypePlay];
+  UIImage* image = [UiUtilities captureView:tabView];
   NSData* data = UIImagePNGRepresentation(image);
   NSString* screenshotPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportScreenshotFileName];
   BOOL success = [data writeToFile:screenshotPath atomically:YES];

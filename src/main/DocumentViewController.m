@@ -18,6 +18,7 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
+#import "MainTabBarController.h"
 #import "../ui/UiUtilities.h"
 
 
@@ -118,7 +119,7 @@
   else
   {
     NSInteger tabType = self.contextTabBarItem.tag;
-    NSString* resourceNameForTabType = [appDelegate resourceNameForTabType:tabType];
+    NSString* resourceNameForTabType = [appDelegate.tabBarController resourceNameForTabType:tabType];
     NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
     switch (tabType)
     {

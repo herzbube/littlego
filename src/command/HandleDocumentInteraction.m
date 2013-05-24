@@ -19,6 +19,7 @@
 #import "HandleDocumentInteraction.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/MainTabBarController.h"
 #import "../utility/PathUtilities.h"
 
 
@@ -33,7 +34,7 @@
   if (success)
   {
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-    [[ApplicationDelegate sharedDelegate] activateTab:TabTypeArchive];
+    [[ApplicationDelegate sharedDelegate].tabBarController activateTab:TabTypeArchive];
   }
   return success;
 }

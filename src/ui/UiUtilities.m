@@ -115,6 +115,21 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the bitmasked value for portrait orientations on iPhone, and
+/// for all orientations on iPad.
+///
+/// This method implements application-wide orientation support. It can be
+/// invoked by all view controller's supportedInterfaceOrientations().
+// -----------------------------------------------------------------------------
++ (NSUInteger) supportedInterfaceOrientations
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
+  else
+    return UIInterfaceOrientationMaskAll;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Creates a new UITableView with style @a tableViewStyle, configures
 /// @a viewController with the newly created table view, and configures the
 /// table view to use the controller as delegate and data source (if the

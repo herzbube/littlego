@@ -17,8 +17,9 @@
 
 // Project includes
 #import "SectionedDocumentViewController.h"
-#import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
+#import "DocumentViewController.h"
+#import "MainTabBarController.h"
 #import "../utility/DocumentGenerator.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
@@ -54,7 +55,7 @@
     return _documentGenerator;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   NSInteger tabType = self.contextTabBarItem.tag;
-  NSString* resourceName = [appDelegate resourceNameForTabType:tabType];
+  NSString* resourceName = [appDelegate.tabBarController resourceNameForTabType:tabType];
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (tabType)
   {
