@@ -79,6 +79,8 @@
     self.name = @"";
     self.profileDescription = @"";
     _fuegoResignThreshold = [[NSMutableArray arrayWithCapacity:arraySizeFuegoResignThresholdDefault] retain];
+    for (int arrayIndex = 0; arrayIndex < arraySizeFuegoResignThresholdDefault; ++arrayIndex)
+      [(NSMutableArray*)_fuegoResignThreshold addObject:[NSNumber numberWithInt:0]];
     self.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
     if (! self.autoSelectFuegoResignMinGames)
       self.fuegoResignMinGames = fuegoResignMinGamesDefault;
