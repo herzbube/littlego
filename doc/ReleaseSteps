@@ -45,12 +45,22 @@ Before the release
     to list all files that were touched since the release 0.8.1 and were not
     updated to the current year 2013:
     git diff --name-only 0.11.1 | grep ^src | sort | uniq | xargs grep Copyright 2>/dev/null | grep -v 2013 | cut -d":" -f1
-- In Xcode select the "Little Go AdHoc Distribution" scheme (becaues this uses
+- Remove the build directory to make sure that subsequent test and distribution
+  builds are clean.
+    rm -rf DerivedData
+  This is important especially when resources have changed because Xcode has
+  been known to leave old resource files in the build folder, which could lead
+  to unexpected results.
+- In Xcode select the "Little Go AdHoc Distribution" scheme (because this uses
   the Release configuration), then make a build for the simulator and for all
   target devices. If there are any warnings, fix them.
-- Using the same scheme, select Product > Archive to make a distribution build,
-  then run that build through the tests described in the TESTING document
+- Using the same scheme, select Product > Archive to make an ad-hoc distribution
+  build, then run that build through the tests described in the TESTING
+  document.
 - Commit final changes (check with "git status" that nothing was forgotten)
+- Select the "Little Go AppStore Distribution" scheme, then Product > Archive.
+  Follow the instructions in the "Make an AppStore distribution" section below
+  to upload the resulting build to iTunes Connect.
 
 
 Create an archive
@@ -72,8 +82,8 @@ Create an archive
 Make an ad-hoc distribution (beta release)
 ------------------------------------------
 - In Xcode in the Organizer window, select the archived build, then click the
-  "Share..." button
-- From the list of content options, select "iOS App Store Package (.ipa)"
+  "Distribute..." button, followed by "Save for Enterprise or Ad-Hoc Deployment"
+  on the next screen
 - Select a code-signing identity (the default should be OK)
 - Click the "Next" button which will pop up a save dialog
 - Click the checkbox "Save for Enterprise Distribution"; this opens a pane that
@@ -104,12 +114,11 @@ Make an AppStore distribution (production release)
   finished and you return to the app's version information screen, the app
   status should now be "Waiting for Upload".
 - In Xcode in the Organizer window, select the archived build, then click the
-  "Validate..." button
+  "Distribute..." button, followed by "Submit to the iOS App Store" on the next
+  screen
+- Provide the login credentials
 - Select a code-signing identity (the default should be OK)
-- Wait a few moments for the validation result
-- If validation was successful, select "Distribute..." in the Organizer window,
-  followed by "Submit to the iOS App Store" on the next screen
-- The archive is now uploaded
+- The archive is now validated and uploaded
 - After the upload has finished, the app's status in iTunes Connect should now
   have changed to "Upload Received" 
 - Wait for Apple to accept the submission and publish the new version in their
@@ -124,19 +133,15 @@ Make the release
   git merge release-0.9.0
 - Tag and sign the release
   git tag -s -m "tagging release x.y" x.y <commit hash>
+- Merge all changes in the release branch into develop
+  git checkout develop
+  git merge release-0.9.0
 - Update the GitHub repository
   git push
   git push --tags
-- Update the website
-  - Update the "download latest" link on http://www.herzbube.ch/software
-  - Update the project website
-  - Write a release note blog post
-- Add the new version number to the bug tracker so that issues can be reported
+- Remove the release branch, both locally and, if it was pushed, on GitHub
+- Write a release note blog post on the website
+- Close tickets that are not yet closed in the issue tracker
 - Change the QuincyKit status of the new version to "Available" and the status
   of the old version to "Discontinued"
-
-
-After the release
------------------
-- Optional cleanup
-  rm -rf ~/Library/Developer/Xcode/DerivedData/Little_Go-*
+- Cleanup the Trello board
