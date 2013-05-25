@@ -27,6 +27,26 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates the sections presented in the "Archive" table view.
+// -----------------------------------------------------------------------------
+enum ArchiveTableViewSection
+{
+  GamesSection,
+  DeleteAllSection,
+  MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DeleteAllSection.
+// -----------------------------------------------------------------------------
+enum DeleteAllSectionItem
+{
+  DeleteAllItem,
+  MaxDeleteAllSectionItem
+};
+
+
+// -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ArchiveViewController.
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
@@ -110,7 +130,7 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 1;
+  return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -118,9 +138,28 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  [self updateVisibleStateOfPlaceholderView];
-  [self updateVisibleStateOfEditButton];
-  return self.archiveViewModel.gameCount;
+  switch (section)
+  {
+    case GamesSection:
+    {
+      [self updateVisibleStateOfPlaceholderView];
+      [self updateVisibleStateOfEditButton];
+      return self.archiveViewModel.gameCount;
+    }
+    case DeleteAllSection:
+    {
+      if (0 == self.archiveViewModel.gameCount)
+        return 0;
+      else
+        return MaxDeleteAllSectionItem;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
+  return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -128,11 +167,30 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
-  cell.textLabel.text = game.name;
-  cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  UITableViewCell* cell = 0;
+  switch (indexPath.section)
+  {
+    case GamesSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
+      ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
+      cell.textLabel.text = game.name;
+      cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case DeleteAllSection:
+    {
+      cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+      cell.textLabel.text = @"Delete all games";
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
   return cell;
 }
 
@@ -141,6 +199,9 @@
 // -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath
 {
+  if (GamesSection != indexPath.section)
+    return;
+
   assert(editingStyle == UITableViewCellEditingStyleDelete);
   if (editingStyle != UITableViewCellEditingStyleDelete)
   {
@@ -168,7 +229,24 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+  switch (indexPath.section)
+  {
+    case GamesSection:
+    {
+      [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+      break;
+    }
+    case DeleteAllSection:
+    {
+      [self deleteAllGames];
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -256,6 +334,43 @@
   ViewGameController* viewGameController = [[ViewGameController controllerWithGame:game model:self.archiveViewModel] retain];
   [self.navigationController pushViewController:viewGameController animated:YES];
   [viewGameController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initiates the process to delete all games. First displays an alert
+/// that asks the user to confirm that she really wants to do this.
+// -----------------------------------------------------------------------------
+- (void) deleteAllGames
+{
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
+                                                  message:@"Are you sure you want to delete all games?"
+                                                 delegate:self
+                                        cancelButtonTitle:@"No"
+                                        otherButtonTitles:@"Yes", nil];
+  alert.tag = AlertViewTypeDeleteAllGamesConfirmation;
+  [alert show];
+  [alert release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIAlertViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  if (AlertViewButtonTypeYes == buttonIndex)
+  {
+    // Temporarily disable KVO observer mechanism so that no table view update
+    // is triggered while we are deleting games. When we are finished we will
+    // reload all data.
+    [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
+    while (self.archiveViewModel.gameCount > 0)
+    {
+      ArchiveGame* game = [self.archiveViewModel gameAtIndex:0];
+      [[[[DeleteGameCommand alloc] initWithGame:game] autorelease] submit];
+    }
+    [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+    [self.tableView reloadData];
+  }
 }
 
 @end

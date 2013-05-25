@@ -194,7 +194,8 @@ enum AlertViewType
   AlertViewTypeActionWillDiscardAllFutureMoves,
   AlertViewTypeHandleDocumentInteractionSucceeded,
   AlertViewTypeHandleDocumentInteractionFailed,
-  AlertViewTypeMaxMemoryConfirmation
+  AlertViewTypeMaxMemoryConfirmation,
+  AlertViewTypeDeleteAllGamesConfirmation
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
