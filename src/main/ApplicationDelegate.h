@@ -36,6 +36,7 @@
 @class CrashReportingModel;
 @class LoggingModel;
 @class MainTabBarController;
+@class UiSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -131,6 +132,9 @@
 /// @brief Model object that stores attributes that are relevant for the
 /// logging service.
 @property(nonatomic, retain) LoggingModel* loggingModel;
+/// @brief Model object that stores attributes relating to the general user
+/// interface appearance.
+@property(nonatomic, retain) UiSettingsModel* uiSettingsModel;
 
 @end
 

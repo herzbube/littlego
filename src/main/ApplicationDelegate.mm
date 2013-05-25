@@ -59,6 +59,7 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UiSettingsModel.h"
 
 // Library includes
 #include <lumberjack/DDTTYLogger.h>
@@ -144,6 +145,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpCommandModel = nil;
   self.crashReportingModel = nil;
   self.loggingModel = nil;
+  self.uiSettingsModel = nil;
   self.fileLogger = nil;
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
@@ -178,7 +180,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Don't change the following sequence without thoroughly checking the
   // dependencies
   // TODO: Document dependencies
-  [self setupGUI];
   [self setupLogging];
   [self setupApplicationLaunchMode];
   bool setupDocumentInteractionSuccess = [self setupDocumentInteraction:launchOptions];
@@ -188,7 +189,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupUserDefaults];
   [self setupSound];
   [self setupFuego];
-  [self setupPlayTab];
+  [self setupGUI];  // depends on setupUserDefaults
 
   // Further setup steps are executed in a secondary thread so that we can
   // display a progress HUD
@@ -504,6 +505,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.gtpCommandModel = [[[GtpCommandModel alloc] init] autorelease];
   self.crashReportingModel = [[[CrashReportingModel alloc] init] autorelease];
   self.loggingModel = [[[LoggingModel alloc] init] autorelease];
+  self.uiSettingsModel = [[[UiSettingsModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -515,6 +517,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.gtpCommandModel readUserDefaults];
   [self.crashReportingModel readUserDefaults];
   [self.loggingModel readUserDefaults];
+  [self.uiSettingsModel readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -544,6 +547,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.gtpCommandModel writeUserDefaults];
   [self.crashReportingModel writeUserDefaults];
   [self.loggingModel writeUserDefaults];
+  [self.uiSettingsModel writeUserDefaults];
 
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -554,15 +558,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) setupSound
 {
   self.soundHandling = [[[SoundHandling alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up the objects used to manage the GUI.
-// -----------------------------------------------------------------------------
-- (void) setupGUI
-{
-  [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
-  [self.window makeKeyAndVisible];
 }
 
 // -----------------------------------------------------------------------------
@@ -623,15 +618,19 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and initializes objects that are required to display the
-/// view hierarchy on the Play tab (the tab that is initially visible after
-/// application launch).
+/// @brief Sets up the objects used to manage the GUI.
 // -----------------------------------------------------------------------------
-- (void) setupPlayTab
+- (void) setupGUI
 {
+  [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
+
+  [self.tabBarController restoreTabBarControllerAppearanceToUserDefaults];
+
   UIViewController* playTabController = [PlayTabController playTabController];
   UINavigationController* playTabRootController = (UINavigationController*)[self.tabBarController tabController:TabTypePlay];
   [playTabRootController pushViewController:playTabController animated:NO];
+
+  [self.window makeKeyAndVisible];
 }
 
 // -----------------------------------------------------------------------------

@@ -24,6 +24,7 @@
 {
 }
 
+- (void) restoreTabBarControllerAppearanceToUserDefaults;
 - (UIViewController*) tabController:(enum TabType)tabID;
 - (UIView*) tabView:(enum TabType)tabID;
 - (void) activateTab:(enum TabType)tabID;

@@ -35,6 +35,21 @@ extern const float gDisabledViewAlpha;
 /// to scroll and zoom, and on the iPad the swipe gesture of the main
 /// UISplitViewController).
 extern const CFTimeInterval gPlayViewLongPressDelay;
+/// @brief The index of the view controller that should be selected by default
+/// in the application's main tab bar controller.
+extern const int defaultSelectedTabIndex;
+/// @brief The size of the array #defaultTabOrder.
+extern const int arraySizeDefaultTabOrder;
+/// @brief The default order in which view controllers should appear in the
+/// application's main tab bar controller.
+extern const int defaultTabOrder[];
+/// @brief The index of the "more" navigation controller within a parent
+/// UITabBarController.
+///
+/// This index has a constant value which was experimentally determined by
+/// examining the behaviour of UITabBarController. The value is not documented
+/// anywhere in Apple's documentation.
+extern const int indexOfMoreNavigationController;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -653,6 +668,9 @@ extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
+// User interface settings
+extern NSString* selectedTabIndexKey;
+extern NSString* tabOrderKey;
 //@}
 
 // -----------------------------------------------------------------------------

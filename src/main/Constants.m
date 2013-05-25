@@ -19,6 +19,10 @@
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
 const CFTimeInterval gPlayViewLongPressDelay = 0.1;
+const int indexOfMoreNavigationController = 0x7fffffff;
+const int defaultSelectedTabIndex = 0;
+const int arraySizeDefaultTabOrder = 9;
+const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
 
 // Logging constants
 const int ddLogLevel = LOG_LEVEL_VERBOSE;
@@ -280,6 +284,9 @@ NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
+// User interface settings
+NSString* selectedTabIndexKey = @"SelectedTabIndex";
+NSString* tabOrderKey = @"TabOrder";
 
 // Constants for NSCoding
 // General constants

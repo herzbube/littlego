@@ -469,6 +469,10 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     }
     [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
+
+  // New keys for tab bar controller appearance are top-level, so there is no
+  // need to add values for them, they will be picked from the registration
+  // domain defaults.
 }
 
 // -----------------------------------------------------------------------------

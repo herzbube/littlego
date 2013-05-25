@@ -18,13 +18,15 @@
 // Project includes
 #import "MainTabBarController.h"
 #import "ApplicationDelegate.h"
+#import "../ui/UiSettingsModel.h"
 #import "../ui/UiUtilities.h"
 
 
 @implementation MainTabBarController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a MainTabBarController.
+/// @brief Initializes a MainTabBarController. This initializer is required
+/// because MainTabBarController is loaded from a .xib file.
 ///
 /// @note This is the designated initializer of MainTabBarController.
 // -----------------------------------------------------------------------------
@@ -39,10 +41,10 @@
   return self;
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// This implementation exists so that in iOS 6 the app can rotate to
+/// @brief This implementation exists so that in iOS 6 the app can rotate to
 /// UIInterfaceOrientationPortraitUpsideDown on the iPhone.
 // -----------------------------------------------------------------------------
 - (NSUInteger) supportedInterfaceOrientations
@@ -50,35 +52,75 @@
   return [UiUtilities supportedInterfaceOrientations];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillAppear:(BOOL)animated
-{
-  [super viewWillAppear:animated];
-  // Disable edit button in the "more" navigation controller
-  self.customizableViewControllers = [NSArray array];
-}
+#pragma mark - UITabBarControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief UITabBarControllerDelegate method
-///
-/// Writes user defaults in response to the user switching tabs.
+/// @brief Synchronizes user defaults in response to the user switching tabs.
+/// Also writes the index of the selected tab controller to the user defaults.
 // -----------------------------------------------------------------------------
 - (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
 {
-  [[ApplicationDelegate sharedDelegate] writeUserDefaults];
+  [self tabControllerSelectionDidChange];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UINavigationControllerDelegate method
-///
-/// Writes user defaults in response to the user switching views on the tab
-/// bar controller's more navigation controller.
+/// @brief Writes changed tab order to user defaults (without synchronizing).
+// -----------------------------------------------------------------------------
+- (void) tabBarController:(UITabBarController*)tabBarController didEndCustomizingViewControllers:(NSArray*)viewControllers changed:(BOOL)changed
+{
+  if (! changed)
+    return;
+  NSArray* tabOrder = [[tabBarController.viewControllers valueForKey:@"tabBarItem"] valueForKey:@"tag"];
+  [ApplicationDelegate sharedDelegate].uiSettingsModel.tabOrder = tabOrder;
+}
+
+#pragma mark - UINavigationControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief Synchronizes user defaults in response to the user switching views
+/// on the tab bar controller's more navigation controller. Also writes the
+/// index of the selected tab controller to the user defaults.
 // -----------------------------------------------------------------------------
 - (void) navigationController:(UINavigationController*)navigationController didShowViewController:(UIViewController*)viewController animated:(BOOL)animated
 {
-  [[ApplicationDelegate sharedDelegate] writeUserDefaults];
+  [self tabControllerSelectionDidChange];
+}
+
+#pragma mark - MainTabBarController methods
+
+// -----------------------------------------------------------------------------
+/// @brief Restores the tab bar controller's appearance to the values stored in
+/// the user defaults.
+///
+/// This method is intended to be invoked during application launch. It should
+/// be invoked before the tab bar controller's view appears, otherwise the user
+/// will be able to see the appearance change.
+// -----------------------------------------------------------------------------
+- (void) restoreTabBarControllerAppearanceToUserDefaults
+{
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  NSArray* tabOrder = applicationDelegate.uiSettingsModel.tabOrder;
+  int tabOrderCount = tabOrder.count;
+  if (tabOrderCount == self.viewControllers.count)
+  {
+    NSMutableArray* tabControllers = [NSMutableArray array];
+    for (int tabOrderIndex = 0; tabOrderIndex < tabOrderCount; ++tabOrderIndex)
+    {
+      enum TabType tabID = [[tabOrder objectAtIndex:tabOrderIndex] intValue];
+      UIViewController* tabController = [self tabController:tabID];
+      [tabControllers addObject:tabController];
+    }
+    if (! [self.viewControllers isEqualToArray:tabControllers])
+    {
+      self.viewControllers = tabControllers;
+    }
+  }
+
+  int selectedTabIndex = applicationDelegate.uiSettingsModel.selectedTabIndex;
+  if (indexOfMoreNavigationController == selectedTabIndex)
+    self.selectedViewController = self.moreNavigationController;
+  else
+    self.selectedIndex = selectedTabIndex;
 }
 
 // -----------------------------------------------------------------------------
@@ -130,7 +172,7 @@
     // The delegate method tabBarController:didSelectViewController:() is not
     // invoked when the selectedViewController property is changed
     // programmatically
-    [[ApplicationDelegate sharedDelegate] writeUserDefaults];
+    [self tabControllerSelectionDidChange];
   }
 }
 
@@ -159,6 +201,18 @@
       break;
   }
   return resourceName;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Synchronizes user defaults in response to a different tab controller
+/// being selected (either by the user, or programmatically). Also writes the
+/// index of the selected tab controller to the user defaults.
+// -----------------------------------------------------------------------------
+- (void) tabControllerSelectionDidChange
+{
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  applicationDelegate.uiSettingsModel.selectedTabIndex = self.selectedIndex;
+  [applicationDelegate writeUserDefaults];
 }
 
 @end
