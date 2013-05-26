@@ -195,7 +195,9 @@ enum AlertViewType
   AlertViewTypeHandleDocumentInteractionSucceeded,
   AlertViewTypeHandleDocumentInteractionFailed,
   AlertViewTypeMaxMemoryConfirmation,
-  AlertViewTypeDeleteAllGamesConfirmation
+  AlertViewTypeDeleteAllGamesConfirmation,
+  AlertViewTypeResetPlayersProfilesConfirmation,
+  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
@@ -393,6 +395,12 @@ extern NSString* longRunningActionEnds;
 /// GoBoardPosition changes from A to B. Observers can use this notification to
 /// power a progress meter.
 extern NSString* boardPositionChangeProgress;
+/// @brief Is sent to indicate that players and profiles are about to be reset
+/// to their factory defaults. Is sent before #goGameWillCreate.
+extern NSString* playersAndProfilesWillReset;
+/// @brief Is sent to indicate that players and profiles have been reset to
+/// their factory defaults. Is sent after #goGameDidCreate.
+extern NSString* playersAndProfilesDidReset;
 //@}
 
 // -----------------------------------------------------------------------------

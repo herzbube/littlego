@@ -17,7 +17,9 @@
 
 // Project includes
 #import "PlayerProfileSettingsController.h"
+#import "../command/ResetPlayersAndProfilesCommand.h"
 #import "../go/GoGame.h"
+#import "../go/GoGameDocument.h"
 #import "../go/GoPlayer.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfileModel.h"
@@ -36,6 +38,7 @@ enum PlayerProfileTableViewSection
 {
   PlayersSection,
   GtpEngineProfilesSection,
+  ResetToDefaultsSection,
   MaxSection
 };
 
@@ -55,6 +58,15 @@ enum GtpEngineProfilesSectionItem
 {
   AddGtpEngineProfileItem,
   MaxGtpEngineProfilesSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ResetToDefaultsSection.
+// -----------------------------------------------------------------------------
+enum ResetToDefaultsSectionItem
+{
+  ResetToDefaultsItem,
+  MaxResetToDefaultsSectionItem
 };
 
 
@@ -237,6 +249,8 @@ enum GtpEngineProfilesSectionItem
         return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
       else
         return self.gtpEngineProfileModel.profileCount;
+    case ResetToDefaultsSection:
+      return MaxResetToDefaultsSectionItem;
     default:
       assert(0);
       break;
@@ -256,7 +270,6 @@ enum GtpEngineProfilesSectionItem
     case GtpEngineProfilesSection:
       return @"Profiles";
     default:
-      assert(0);
       break;
   }
   return nil;
@@ -307,6 +320,12 @@ enum GtpEngineProfilesSectionItem
         cell.textLabel.text = @"Add profile ...";  // visible only during editing mode
       else
         assert(0);
+      break;
+    }
+    case ResetToDefaultsSection:
+    {
+      cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+      cell.textLabel.text = @"Reset to default values";
       break;
     }
     default:
@@ -440,6 +459,18 @@ enum GtpEngineProfilesSectionItem
         [self newProfile];
       else
         assert(0);
+      break;
+    }
+    case ResetToDefaultsSection:
+    {
+      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
+                                                      message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to this?"
+                                                     delegate:self
+                                            cancelButtonTitle:@"No"
+                                            otherButtonTitles:@"Yes", nil];
+      alert.tag = AlertViewTypeResetPlayersProfilesConfirmation;
+      [alert show];
+      [alert release];
       break;
     }
     default:
@@ -683,6 +714,55 @@ enum GtpEngineProfilesSectionItem
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIAlertViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  if (AlertViewTypeResetPlayersProfilesConfirmation == alertView.tag)
+  {
+    if (AlertViewButtonTypeYes == buttonIndex)
+    {
+      if ([GoGame sharedGame].document.dirty)
+      {
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
+                                                        message:@"The current game has unsaved changes. In order to proceed, the current game must be discarded so that a new game can be started with the restored players and profiles.\n\nAre you sure you want to discard the current game and lose all unsaved changes?"
+                                                       delegate:self
+                                              cancelButtonTitle:@"No"
+                                              otherButtonTitles:@"Yes", nil];
+        alert.tag = AlertViewTypeResetPlayersProfilesDiscardGameConfirmation;
+        [alert show];
+        [alert release];
+      }
+      else
+      {
+        [self resetToDefaults];
+      }
+    }
+  }
+  else if (AlertViewTypeResetPlayersProfilesDiscardGameConfirmation)
+  {
+    if (AlertViewButtonTypeYes == buttonIndex)
+    {
+      [self resetToDefaults];
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resets all players and profiles to their factory defaults. Also
+/// starts a new game.
+// -----------------------------------------------------------------------------
+- (void) resetToDefaults
+{
+  if (self.tableView.editing)
+    [self setEditing:NO animated:YES];
+  [self removeNotificationResponders];
+  [[[[ResetPlayersAndProfilesCommand alloc] init] autorelease] submit];
+  [self setupNotificationResponders];
+  [self.tableView reloadData];
 }
 
 @end

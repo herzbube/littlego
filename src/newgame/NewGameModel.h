@@ -27,6 +27,7 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
+- (void) resetToRegistrationDomainDefaults;
 - (NSString*) blackPlayerUUID;
 - (NSString*) whitePlayerUUID;
 

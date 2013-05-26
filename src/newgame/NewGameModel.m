@@ -108,6 +108,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Discards the current user defaults and re-initializes this model with
+/// registration domain defaults data.
+// -----------------------------------------------------------------------------
+- (void) resetToRegistrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults removeObjectForKey:newGameKey];
+  [self readUserDefaults];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the UUID of the player who is to play black if a new game
 /// were started with this model's current data.
 ///

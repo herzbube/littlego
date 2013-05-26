@@ -33,10 +33,8 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.playerCount = 0;
   self.playerList = [NSMutableArray arrayWithCapacity:self.playerCount];
-
   return self;
 }
 
@@ -84,6 +82,17 @@
   // values.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:userDefaultsPlayerList forKey:playerListKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Discards the current user defaults and re-initializes this model with
+/// registration domain defaults data.
+// -----------------------------------------------------------------------------
+- (void) resetToRegistrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults removeObjectForKey:playerListKey];
+  [self readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

@@ -138,6 +138,10 @@ enum BoardPositionSectionItem
 @property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
+/// @brief Is required so that KVO notification responders are not removed
+/// twice (e.g. the first time when #playersAndProfilesWillReset is received,
+/// the second time when GameInfoViewController is deallocated).
+@property(nonatomic, assign) bool kvoNotificationRespondersAreInstalled;
 @end
 
 
@@ -154,6 +158,7 @@ enum BoardPositionSectionItem
     [controller autorelease];
     controller.delegate = delegate;
     controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    controller.kvoNotificationRespondersAreInstalled = false;
   }
   return controller;
 }
@@ -178,7 +183,18 @@ enum BoardPositionSectionItem
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  // KVO observing
+  [center addObserver:self selector:@selector(playersAndProfilesWillReset:) name:playersAndProfilesWillReset object:nil];
+  [self setupKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupKVONotificationResponders
+{
+  if (self.kvoNotificationRespondersAreInstalled)
+    return;
+  self.kvoNotificationRespondersAreInstalled = true;
   GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
   [model addObserver:self forKeyPath:@"activeProfile" options:NSKeyValueObservingOptionOld context:NULL];
   [model.activeProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
@@ -193,6 +209,17 @@ enum BoardPositionSectionItem
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeKVONotificationResponders
+{
+  if (! self.kvoNotificationRespondersAreInstalled)
+    return;
+  self.kvoNotificationRespondersAreInstalled = false;
   GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
   [model removeObserver:self forKeyPath:@"activeProfile"];
   [model.activeProfile removeObserver:self forKeyPath:@"name"];
@@ -1044,6 +1071,18 @@ enum BoardPositionSectionItem
   // Dismiss the Info view when a new game is started. This typically occurs
   // when a saved game is loaded from the archive.
   [self navigationBar:nil shouldPopItem:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #playersAndProfilesWillReset notification.
+// -----------------------------------------------------------------------------
+- (void) playersAndProfilesWillReset:(NSNotification*)notification
+{
+  // We must immediately stop using KVO on players and profiles objects that
+  // are about to be deallocated. After the reset is complete, we don't need to
+  // re-attach to new players and profiles objects because a new game is started
+  // as part of the reset and we will be dismissed.
+  [self removeKVONotificationResponders];
 }
 
 // -----------------------------------------------------------------------------

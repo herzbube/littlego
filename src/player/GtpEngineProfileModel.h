@@ -32,6 +32,7 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
+- (void) resetToRegistrationDomainDefaults;
 - (NSString*) profileNameAtIndex:(int)index;
 - (void) add:(GtpEngineProfile*)profile;
 - (void) remove:(GtpEngineProfile*)profile;

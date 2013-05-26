@@ -69,6 +69,8 @@ NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
+NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
+NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 
 // Play view settings default values
 const float maximumZoomScaleDefault = 3.0;

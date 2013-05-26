@@ -23,7 +23,7 @@
 /// @brief The ArchiveViewController class is responsible for managing user
 /// interaction on the "Archive" view.
 // -----------------------------------------------------------------------------
-@interface ArchiveViewController : UITableViewController
+@interface ArchiveViewController : UITableViewController <UIAlertViewDelegate>
 {
 }
 

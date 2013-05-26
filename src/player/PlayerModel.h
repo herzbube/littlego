@@ -31,6 +31,7 @@
 - (id) init;
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
+- (void) resetToRegistrationDomainDefaults;
 - (NSString*) playerNameAtIndex:(int)index;
 - (void) add:(Player*)player;
 - (void) remove:(Player*)player;

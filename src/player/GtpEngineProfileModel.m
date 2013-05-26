@@ -54,6 +54,9 @@
 // -----------------------------------------------------------------------------
 - (void) readUserDefaults
 {
+  // Remove the reference before the object being referenced is deallocated
+  self.activeProfile = nil;
+
   NSMutableArray* localProfileList = [NSMutableArray array];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSArray* userDefaultsProfileList = [userDefaults arrayForKey:gtpEngineProfileListKey];
@@ -82,6 +85,17 @@
     [userDefaultsProfileList addObject:[profile asDictionary]];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:userDefaultsProfileList forKey:gtpEngineProfileListKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Discards the current user defaults and re-initializes this model with
+/// registration domain defaults data.
+// -----------------------------------------------------------------------------
+- (void) resetToRegistrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults removeObjectForKey:gtpEngineProfileListKey];
+  [self readUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
