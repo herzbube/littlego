@@ -347,50 +347,44 @@
       }
       else
       {
-        switch (game.state)
+        if (GoGameStateGameHasStarted == game.state ||
+            (GoGameStateGameHasEnded == game.state && ! game.boardPosition.isLastPosition))
         {
-          case GoGameStateGameHasStarted:
+          GoMove* move = game.boardPosition.currentMove;
+          if (GoMoveTypePass == move.type)
           {
-            GoMove* move = game.boardPosition.currentMove;
-            if (GoMoveTypePass == move.type)
+            // TODO fix when GoColor class is added
+            NSString* color;
+            if (move.player.black)
+              color = @"Black";
+            else
+              color = @"White";
+            statusText = [NSString stringWithFormat:@"%@ has passed", color];
+          }
+        }
+        else if (GoGameStateGameHasEnded == game.state)
+        {
+          switch (game.reasonForGameHasEnded)
+          {
+            case GoGameHasEndedReasonTwoPasses:
             {
-              // TODO fix when GoColor class is added
+              statusText = @"Game has ended by two consecutive pass moves";
+              break;
+            }
+            case GoGameHasEndedReasonResigned:
+            {
               NSString* color;
-              if (move.player.black)
+              // TODO fix when GoColor class is added
+              if (game.currentPlayer.black)
                 color = @"Black";
               else
                 color = @"White";
-              statusText = [NSString stringWithFormat:@"%@ has passed", color];
+              statusText = [NSString stringWithFormat:@"%@ resigned", color];
+              break;
             }
-            break;
+            default:
+              break;
           }
-          case GoGameStateGameHasEnded:
-          {
-            switch (game.reasonForGameHasEnded)
-            {
-              case GoGameHasEndedReasonTwoPasses:
-              {
-                statusText = @"Game has ended by two consecutive pass moves";
-                break;
-              }
-              case GoGameHasEndedReasonResigned:
-              {
-                NSString* color;
-                // TODO fix when GoColor class is added
-                if (game.currentPlayer.black)
-                  color = @"Black";
-                else
-                  color = @"White";
-                statusText = [NSString stringWithFormat:@"%@ resigned", color];
-                break;
-              }
-              default:
-                break;
-            }
-            break;
-          }
-          default:
-            break;
         }
       }
     }
