@@ -503,8 +503,11 @@
   {
     if ([ApplicationDelegate sharedDelegate].scoringModel.scoreWhenGameEnds)
     {
-      game.score.territoryScoringEnabled = true;
-      [game.score calculateWaitUntilDone:false];
+      if (GoGameHasEndedReasonTwoPasses == game.reasonForGameHasEnded)
+      {
+        game.score.territoryScoringEnabled = true;
+        [game.score calculateWaitUntilDone:false];
+      }
     }
   }
 }

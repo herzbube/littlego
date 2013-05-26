@@ -146,7 +146,7 @@ enum ScoringSectionItem
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
   if (ScoreWhenGameEndsSection == section)
-    return @"Turn this on to automatically activate scoring mode when the game ends.";
+    return @"Turn this on to automatically activate scoring mode when the game ends by two consecutive pass moves.";
   else if (ScoringSection == section)
     return @"The style to mark inconsistent territory. This is territory where something about the dead or alive state of neighbouring stones is inconsistent, thus making it impossible to determine whether the territory is black, white or neutral. For instance, the territory has neighbouring stones of both colors, but both colors are marked dead.";
   else

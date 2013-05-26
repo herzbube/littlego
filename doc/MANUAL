@@ -757,8 +757,10 @@ To activate "Scoring" mode, go back to the normal board view, tap the "Action"
 toolbar button, then select the "Score" item from the menu that pops up.
 
 "Scoring" mode can be activated at any time during normal game play, and it will
-activate automatically when the game ends for any reason (e.g. two pass moves
-in a sequence).
+activate automatically when the game ends after two consecutive pass moves.
+Automatic activation can be turned off in the user preferences. Automatic
+activation never happens if a player resigns, because in that situation the
+other player automatically wins and the score is not relevant.
 
 While Scoring mode is active you cannot play moves or perform any other actions
 that influence the game state (exceptions are loading a game from the archive,

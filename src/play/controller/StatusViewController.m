@@ -381,7 +381,7 @@
                   color = @"Black";
                 else
                   color = @"White";
-                statusText = [NSString stringWithFormat:@"Game has ended by resigning, %@ resigned", color];
+                statusText = [NSString stringWithFormat:@"%@ resigned", color];
                 break;
               }
               default:
