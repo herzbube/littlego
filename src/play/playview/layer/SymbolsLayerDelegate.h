@@ -18,6 +18,9 @@
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
 
+// Forward declarations
+@class BoardPositionModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The SymbolsLayerDelegate class is responsible for drawing symbols
@@ -27,7 +30,10 @@
 {
 }
 
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel;
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+          playViewModel:(PlayViewModel*)playViewModel
+     boardPositionModel:(BoardPositionModel*)boardPositionmodel;
 
 /// @name PlayViewLayerDelegate methods
 //@{

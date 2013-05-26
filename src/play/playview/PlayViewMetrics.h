@@ -278,4 +278,12 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// label using the current @e coordinateLabelFont. Is CGSizeZero if no suitable
 /// font exists.
 @property(nonatomic, assign) CGSize coordinateLabelMaximumSize;
+/// @brief The font to use for drawing the "next move" label. Is nil if no
+/// suitable font exists for the current metrics (usually because
+/// stoneInnerSquareSize is too small).
+@property(nonatomic, assign) UIFont* nextMoveLabelFont;
+/// @brief The maximum size required for drawing the widest possible "next move"
+/// label using the current @e nextMoveLabelFont. Is CGSizeZero if no suitable
+/// font exists.
+@property(nonatomic, assign) CGSize nextMoveLabelMaximumSize;
 @end

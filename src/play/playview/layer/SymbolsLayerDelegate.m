@@ -18,6 +18,7 @@
 // Project includes
 #import "SymbolsLayerDelegate.h"
 #import "../PlayViewMetrics.h"
+#import "../../model/BoardPositionModel.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -35,8 +36,10 @@
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
+@property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
+@property(nonatomic, assign) CGLayerRef nextMoveLayer;
 @end
 
 
@@ -47,14 +50,19 @@
 ///
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+          playViewModel:(PlayViewModel*)playViewModel
+     boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
   // Call designated initializer of superclass (PlayViewLayerDelegate)
   self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
   if (! self)
     return nil;
+  _boardPositionModel = boardPositionmodel;
   _blackLastMoveLayer = NULL;
   _whiteLastMoveLayer = NULL;
+  _nextMoveLayer = NULL;
   return self;
 }
 
@@ -76,12 +84,17 @@
   if (_blackLastMoveLayer)
   {
     CGLayerRelease(_blackLastMoveLayer);
-    _blackLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    _blackLastMoveLayer = NULL;
   }
   if (_whiteLastMoveLayer)
   {
     CGLayerRelease(_whiteLastMoveLayer);
-    _whiteLastMoveLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    _whiteLastMoveLayer = NULL;
+  }
+  if (_nextMoveLayer)
+  {
+    CGLayerRelease(_nextMoveLayer);
+    _nextMoveLayer = NULL;
   }
 }
 
@@ -110,6 +123,7 @@
     case PVLDEventMoveNumbersPercentageChanged:
     case PVLDEventScoringModeEnabled:   // temporarily disable symbols
     case PVLDEventScoringModeDisabled:  // re-enable symbols
+    case PVLDEventMarkNextMoveChanged:
     {
       self.dirty = true;
       break;
@@ -136,6 +150,8 @@
     _blackLastMoveLayer = CreateLastMoveLayer(context, [UIColor blackColor], self);
   if (! _whiteLastMoveLayer)
     _whiteLastMoveLayer = CreateLastMoveLayer(context, [UIColor whiteColor], self);
+  if (! _nextMoveLayer)
+    _nextMoveLayer = CreateNextMoveLayer(context, self);
 
   if ([self shouldDisplayMoveNumbers])
   {
@@ -155,6 +171,20 @@
       }
     }
   }
+
+  if ([self shouldDisplayNextMoveLabel])
+  {
+    if (! game.boardPosition.isLastPosition)
+    {
+      GoMove* nextMove;
+      if (game.boardPosition.isFirstPosition)
+        nextMove = game.firstMove;
+      else
+        nextMove = game.boardPosition.currentMove.next;
+      if (GoMoveTypePlay == nextMove.type)
+        [self.playViewMetrics drawLayer:_nextMoveLayer withContext:context centeredAtPoint:nextMove.point];
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -168,6 +198,16 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:
+// -----------------------------------------------------------------------------
+- (bool) shouldDisplayNextMoveLabel
+{
+  if (! self.playViewMetrics.nextMoveLabelFont)
+    return false;
+  return self.boardPositionModel.markNextMove;
 }
 
 // -----------------------------------------------------------------------------
@@ -266,6 +306,41 @@ CGLayerRef CreateLastMoveLayer(CGContextRef context, UIColor* symbolColor, Symbo
   CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
   CGContextSetLineWidth(layerContext, delegate.playViewModel.normalLineWidth);
   CGContextStrokePath(layerContext);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a "next move"
+/// symbol.
+///
+/// All sizes are taken from the current values in self.playViewMetrics.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
+// -----------------------------------------------------------------------------
+CGLayerRef CreateNextMoveLayer(CGContextRef context, SymbolsLayerDelegate* delegate)
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = delegate.playViewMetrics.nextMoveLabelMaximumSize;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  UIColor* nextMoveLabelColor = [UIColor whiteColor];
+  NSString* nextMoveLabelText = @"A";
+  UIFont* nextMoveLabelFont = delegate.playViewMetrics.nextMoveLabelFont;
+
+  UIGraphicsPushContext(layerContext);
+  CGContextSetFillColorWithColor(layerContext, nextMoveLabelColor.CGColor);
+  CGContextSetShadowWithColor(layerContext, CGSizeMake(1.0, 1.0), 5.0, [UIColor blackColor].CGColor);
+  [nextMoveLabelText drawInRect:layerRect withFont:nextMoveLabelFont lineBreakMode:UILineBreakModeWordWrap alignment:NSTextAlignmentCenter];
+  UIGraphicsPopContext();
 
   return layer;
 }

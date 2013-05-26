@@ -32,8 +32,18 @@ NSString* discardFutureMovesAlertText = @"Discard future moves alert";
 // -----------------------------------------------------------------------------
 enum MoveHistoryTableViewSection
 {
+  MarkNextMoveSection,
   DiscardFutureMovesAlertSection,
   MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the MarkNextMoveSection.
+// -----------------------------------------------------------------------------
+enum MarkNextMoveSectionItem
+{
+  MarkNextMoveItem,
+  MaxMarkNextMoveSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -116,6 +126,8 @@ enum DiscardFutureMovesAlertSectionItem
 {
   switch (section)
   {
+    case MarkNextMoveSection:
+      return MaxMarkNextMoveSectionItem;
     case DiscardFutureMovesAlertSection:
       return MaxDiscardFutureMovesAlertSectionItem;
     default:
@@ -135,7 +147,6 @@ enum DiscardFutureMovesAlertSectionItem
     case DiscardFutureMovesAlertSection:
       return @"If you make or discard a move while you are looking at a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
     default:
-      assert(0);
       break;
   }
   return nil;
@@ -150,6 +161,15 @@ enum DiscardFutureMovesAlertSectionItem
   UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
   switch (indexPath.section)
   {
+    case MarkNextMoveSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Mark next move";
+      accessoryView.on = self.boardPositionModel.markNextMove;
+      [accessoryView addTarget:self action:@selector(toggleMarkNextMove:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case DiscardFutureMovesAlertSection:
     {
       cell.textLabel.text = discardFutureMovesAlertText;
@@ -173,19 +193,16 @@ enum DiscardFutureMovesAlertSectionItem
 // -----------------------------------------------------------------------------
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  NSString* cellText = nil;
-  switch (indexPath.section)
+  CGFloat height = tableView.rowHeight;
+  if (DiscardFutureMovesAlertSection == indexPath.section)
   {
-    case DiscardFutureMovesAlertSection:
-      cellText = discardFutureMovesAlertText;
-      break;
-    default:
-      return tableView.rowHeight;
+    NSString* cellText = discardFutureMovesAlertText;
+    height = [UiUtilities tableView:tableView
+                heightForCellOfType:SwitchCellType
+                           withText:cellText
+             hasDisclosureIndicator:false];
   }
-  return [UiUtilities tableView:tableView
-            heightForCellOfType:SwitchCellType
-                       withText:cellText
-         hasDisclosureIndicator:false];
+  return height;
 }
 
 // -----------------------------------------------------------------------------
@@ -194,6 +211,16 @@ enum DiscardFutureMovesAlertSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Mark next move" switch. Writes the
+/// new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleMarkNextMove:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.boardPositionModel.markNextMove = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

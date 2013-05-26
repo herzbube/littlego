@@ -25,7 +25,6 @@ enum PlayViewLayerDelegateEvent
   /// orientation changes.
   PVLDEventRectangleChanged,
   PVLDEventGoGameStarted,
-  /// @brief Occurs when a move is played or undone.
   PVLDEventBoardPositionChanged,
   PVLDEventMarkLastMoveChanged,
   /// @brief This event can be treated the same as PVLDEventRectangleChanged
@@ -38,7 +37,8 @@ enum PlayViewLayerDelegateEvent
   PVLDEventCrossHairChanged,
   PVLDEventScoringModeEnabled,
   PVLDEventScoringModeDisabled,
-  PVLDEventScoreCalculationEnds
+  PVLDEventScoreCalculationEnds,
+  PVLDEventMarkNextMoveChanged
 };
 
 

@@ -28,5 +28,6 @@
 - (void) writeUserDefaults;
 
 @property(nonatomic, assign) bool discardFutureMovesAlert;
+@property(nonatomic, assign) bool markNextMove;
 
 @end

@@ -78,6 +78,7 @@ const float moveNumbersPercentageDefault = 0.0;
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;
+const bool markNextMoveDefault = true;
 
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
@@ -282,6 +283,7 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 // Board position settings
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
+NSString* markNextMoveKey = @"MarkNextMove";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings

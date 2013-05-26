@@ -410,6 +410,7 @@ extern const float moveNumbersPercentageDefault;
 // -----------------------------------------------------------------------------
 //@{
 extern const bool discardFutureMovesAlertDefault;
+extern const bool markNextMoveDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -667,6 +668,7 @@ extern NSString* contactEmailCrashDataKey;
 // Board position settings
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
+extern NSString* markNextMoveKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
 // User interface settings

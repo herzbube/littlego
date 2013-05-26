@@ -27,6 +27,7 @@
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
+#import "../model/BoardPositionModel.h"
 #import "../model/PlayViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoard.h"
@@ -59,6 +60,7 @@
 //@}
 /// @name Other privately declared properties
 //@{
+@property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
@@ -91,6 +93,7 @@
     return nil;
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+  self.boardPositionModel = delegate.boardPositionModel;
   self.playViewModel = delegate.playViewModel;
   self.scoringModel = delegate.scoringModel;
   self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
@@ -108,6 +111,7 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
@@ -149,6 +153,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
+  [self.boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
@@ -189,7 +194,8 @@
   [self setupLayerDelegate:layerDelegate withView:self];
   layerDelegate = [[[SymbolsLayerDelegate alloc] initWithMainView:self
                                                        metrics:self.playViewMetrics
-                                                 playViewModel:self.playViewModel] autorelease];
+                                                 playViewModel:self.playViewModel
+                                               boardPositionModel:self.boardPositionModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
   layerDelegate = [[[TerritoryLayerDelegate alloc] initWithMainView:self
                                                          metrics:self.playViewMetrics
@@ -429,6 +435,14 @@
         [self notifyLayerDelegates:PVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedUpdate];
       }
+    }
+  }
+  else if (object == self.boardPositionModel)
+  {
+    if ([keyPath isEqualToString:@"markNextMove"])
+    {
+      [self notifyLayerDelegates:PVLDEventMarkNextMoveChanged eventInfo:nil];
+      [self delayedUpdate];
     }
   }
   else if (object == self.playViewModel)

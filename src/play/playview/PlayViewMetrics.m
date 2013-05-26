@@ -34,6 +34,7 @@
 @property(nonatomic, retain) PlayViewModel* playViewModel;
 @property(nonatomic, retain) FontRange* moveNumberFontRange;
 @property(nonatomic, retain) FontRange* coordinateLabelFontRange;
+@property(nonatomic, retain) FontRange* nextMoveLabelFontRange;
 @end
 
 
@@ -71,6 +72,7 @@
   self.playViewModel = nil;
   self.moveNumberFontRange = nil;
   self.coordinateLabelFontRange = nil;
+  self.nextMoveLabelFontRange = nil;
   [super dealloc];
 }
 
@@ -95,6 +97,10 @@
   self.coordinateLabelFontRange = [[[FontRange alloc] initWithText:widestCoordinateLabel
                                                    minimumFontSize:minimumFontSize
                                                    maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestNextMoveLabel = @"A";
+  self.nextMoveLabelFontRange = [[[FontRange alloc] initWithText:widestNextMoveLabel
+                                                 minimumFontSize:minimumFontSize
+                                                 maximumFontSize:maximumFontSize] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -153,6 +159,8 @@
     self.coordinateLabelInset = 0;
     self.coordinateLabelFont = nil;
     self.coordinateLabelMaximumSize = CGSizeZero;
+    self.nextMoveLabelFont = nil;
+    self.nextMoveLabelMaximumSize = CGSizeZero;
     self.numberOfCells = 0;
     self.cellWidth = 0;
     self.pointDistance = 0;
@@ -356,6 +364,15 @@
     {
       self.moveNumberFont = nil;
       self.moveNumberMaximumSize = CGSizeZero;
+    }
+
+    success = [self.nextMoveLabelFontRange queryForWidth:self.stoneInnerSquareSize.width
+                                                    font:&_nextMoveLabelFont
+                                                textSize:&_nextMoveLabelMaximumSize];
+    if (! success)
+    {
+      self.nextMoveLabelFont = nil;
+      self.nextMoveLabelMaximumSize = CGSizeZero;
     }
   }  // else [if (GoBoardSizeUndefined == newBoardSize)]
 }

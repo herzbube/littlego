@@ -470,6 +470,15 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
 
+  // Add new key to "board position" dictionary
+  id boardPositionDictionary = [userDefaults objectForKey:boardPositionKey];
+  if (boardPositionDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* boardPositionDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardPositionDictionary];
+    [boardPositionDictionaryUpgrade setValue:[NSNumber numberWithBool:markNextMoveDefault] forKey:markNextMoveKey];
+    [userDefaults setObject:boardPositionDictionaryUpgrade forKey:boardPositionKey];
+  }
+
   // New keys for tab bar controller appearance are top-level, so there is no
   // need to add values for them, they will be picked from the registration
   // domain defaults.

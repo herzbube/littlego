@@ -317,6 +317,8 @@
 	<dict>
 		<key>DiscardFutureMovesAlert</key>
 		<true/>
+		<key>MarkNextMove</key>
+		<true/>
 	</dict>
 	<key>CrashReportActivated</key>
 	<true/>
