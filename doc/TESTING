@@ -1,12 +1,63 @@
 Purpose of this document
 ------------------------
-This document contains a script for manual testing of most of the application's
-features. The intent is to execute the script before a new version is released
-to the App Store.
+This document has information about how the project's automated testing
+facilities work. It also contains a script for manual testing of most of the
+application's features. The intent is to execute the script before a new
+version is released to the App Store.
 
 
+Automated Unit tests
+--------------------
+All unit test related files are located in the top-level folder "test".
+
+The Xcode project defines a target "Unit tests" which builds a unit test bundle,
+then immediately runs the tests in its "Run Script" phase.
+
+To make the unit tests build & run automatically every time the main target is
+built, I usually make sure that in all of my Xcode schemes the checkbox "Run" is
+checked not only for the main target, but for the unit test target as well.
+Note that the same result can also be achieved by a target dependency.
+
+Notes about the "Unit test" target:
+- All tests in this target are what Apple calls "logic tests" (see [1]), i.e.
+  unit tests exercise more or less isolated classes. The test source code is
+  built using the iOS Simulator SDK, but the tests are run outside of the
+  simulator as part of the build process.
+- All source code files that are unit tested must be added to the "Unit test"
+  target so that they are built for that target.
+- The build setting "Header Search Path" is set to the value "./src". Since the
+  test sources are completely separated from the normal application sources, I
+  don't want to deal with relative path issues for each #import statement. The
+  application can be seen as third party software from the point of view of the
+  unit test bundle.
+- Because application source files depend on the presence of a prefix header,
+  the "Unit test" target has to have the same "Prefix header" build settings
+  as the main application target.
+- Compiling ApplicationDelegate for the "Unit test" target pulls in Fuego/Boost
+  (via GTP classes) as dependencies. As a consequence, the "Unit test" target
+  must be set up with Header/Library search paths that are the same as in the
+  main application target.
+  - Additionally, the build setting "Symbols hidden by default" must be set to
+    YES to prevent build warnings because of symbol visibility differences
+    between Fuego/Boost libraries and the unit test bundle. For some unknown
+    reason, this build setting is correct by default in the main application
+    target, but incorrect in the "Unit test" target.
+
+A final note about logging: The log file for unit tests run in the simulator
+environment is located in
+~/Library/Application Support/iPhone Simulator/Documents/Logs.
+
+[1] http://developer.apple.com/library/ios/#documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
+
+
+Automated UI tests
+------------------
+TODO
+
+
+Script for manual testing
+-------------------------
 Preconditions
--------------
 - Perform tests on a real device, not in the simulator
 - Remove the app bundle from the device under test so that all preferences and
   saved games are erased
@@ -15,8 +66,6 @@ Preconditions
 - Perform tests while not connected to Xcode
 
 
-The script
-----------
 Basic tab functionality
 - Launch application
 - Briefly activate all tabs

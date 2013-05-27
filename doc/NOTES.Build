@@ -1,0 +1,169 @@
+Purpose of this document
+------------------------
+This document has notes about the project's build process.
+
+
+Xcode build system configuration
+--------------------------------
+Important configuration settings in Xcode (both for the "Little Go" and the
+"Unit tests" targets):
+- IPHONEOS_DEPLOYMENT_TARGET = 5.0
+- ARCHS = armv7
+  - The original value is $(ARCHS_STANDARD_32_BIT)
+  - Xcode 4.5 resolves this to "armv7 armv7s", but the 3rd party software build
+    currently does not support armv7s
+  - armv7s therefore needs to be removed, otherwise a linker error occurs
+  - An interesting article with background information, and also with some
+    reassurance why we don't need armv7s at the moment, can be found here:
+    http://www.galloway.me.uk/2012/09/hacking-up-an-armv7s-library/
+- HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
+- LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
+- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lLumberjack -ltouchzipkit -ObjC
+  - Note 1: The option "-ObjC" is required by ZipKit and QuincyKit (actually
+    QuincyKit specifies -all_load, but -ObjC is sufficient). Without this option
+    ZipKit crashes the app when a ZKFileArchive object is created due to an
+    unrecognized selector being sent to the object. For understanding the issue,
+    read this technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html.
+  - Note 2: If a future version of Fuego requires additional Boost libraries,
+    they must be added here.
+- libz.dylib has been added to the "Build Phases" section "Link Binary with
+  Libraries". This is required to satisfy the dependencies of ZipKit and
+  QuincyKit.
+- GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
+  GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
+  Note: The NDEBUG macro is required even for a debug build because the project
+  links against a release build of Fuego. Because of this NDEBUG becomes useless
+  for distinguishing between debug/release builds, so we need our own project
+  specific macro, in this case named LITTLEGO_NDEBUG.
+- The build configurations "Distribute_AdHoc" and "Distribute_AppStore" are
+  duplicates of the "Release" build configuration, with the single exception of
+  the code-signing identity (found in the "Code Signing" section). Whenever a
+  change is made to one of the three configurations, the other two
+  configurations must be kept in sync!
+
+
+Xcode schemes
+-------------
+Little Go's Xcode build schemes are stored in source control along with the
+Xcode project itself. [1] has the answer how to achieve this. The following is
+a short overview of how I configured those schemes:
+- Let Xcode autocreate schemes. This results in one scheme for each of the
+  project's targets.
+- Rename the "Little Go" scheme to "Little Go Debug", and disable the "Archive"
+  command. Also make sure that all actions except "Profile" use the "Debug"
+  build configuration
+- Duplicate "Little Go Debug", naming the new scheme "Little Go Release". Leave
+  the "Archive" action disabled. Change all actions to use the "Release" build
+  configuration
+- Duplicate "Little Go Debug", naming the new scheme "Little Go AdHoc
+  Distribution". Enable the "Archive" command. Change all actions to use the
+  "Distribute_AdHoc" build configuration.
+- Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
+  actions use the "Distribute_AppStore" build configuration
+- In all schemes, make sure that the checkbox "Run" is checked not only for the
+  main target, but for the unit test target as well. This ensures that unit
+  tests are built & run every time the main target is built. Note that the same
+  result can also be achieved by a target dependency.
+
+[1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
+
+
+Platform notes
+--------------
+- The Xcode project is prepared to build Little Go both for iOS and for the
+  iPhone Simulator.
+- The base SDK is "Latest iOS", which means that the project is set up with a
+  moving target SDK.
+- The deployment target is set to 5.0 so that the application keeps running on
+  iOS 5 devices.
+
+
+Upgrading the iOS SDK
+---------------------
+A few rough notes on what needs to be done when a new iOS SDK is installed on
+the development machine:
+- Delete (or backup) the 3rdparty folder
+- Edit script/build-env.sh: Update the "Base SDK" variables to refer to the new
+  SDK version that was just installed
+- In Terminal.app, run script/get-and-build-3rdparty-software.sh to perform a
+  full rebuild of all 3rdparty software packages
+- If you haven't restarted Xcode, it might be a good idea to do so now
+- In the Xcode project, update the reference to book.dat in the "resource"
+  folder
+- In the Xcode project, rebuild the "Little Go" target
+
+
+Compilation command
+-------------------
+TODO: Update this section for Xcode 4.
+
+The following lines represent the command used by Xcode 3 to compile a single
+.cpp file in Debug configuration for the iPhoneSimulator platform. Every line
+contains one compiler switch or command-line argument.
+
+/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2
+-x c++
+-arch i386
+-fmessage-length=0
+-pipe
+-Wno-trigraphs
+-fpascal-strings
+-fasm-blocks
+-O0
+-Wreturn-type
+-Wunused-variable
+-DNDEBUG
+-isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk
+-fexceptions
+-fvisibility=hidden
+-fvisibility-inlines-hidden
+-mmacosx-version-min=10.6
+-gdwarf-2
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40200
+-iquote "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-generated-files.hmap"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-own-target-headers.hmap"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-all-target-headers.hmap"
+-iquote "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Little Go-project-headers.hmap"
+-F/Users/patrick/Documents/dev/littlego/build/Debug-iphonesimulator
+-I/Users/patrick/Documents/dev/littlego/build/Debug-iphonesimulator/include
+-I3rdparty/install/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk/include
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/DerivedSources/i386"
+"-I/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/DerivedSources"
+-include /var/folders/K+/K+NmKFX-FA4IgmDBY9aGdk+++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/Little_Go_Prefix-gatqaltedfwqgcbkvwvyfnixuhqh/Little_Go_Prefix.pch
+-c /Users/patrick/Documents/dev/littlego/src/MyClass.cpp
+-o "/Users/patrick/Documents/dev/littlego/build/Little Go.build/Debug-iphonesimulator/Little Go.build/Objects-normal/i386/MyClass.o"
+
+Discussion of options not used in 3rdparty builds:
+-x c++
+  The language of the source file. No need to set this, so far I am happy with
+  the default language selection of the compiler.
+-fmessage-length=0
+  Error messages are not line-wrapped. No need to set this, has no influence on
+  the code produced.
+-Wno-trigraphs
+  A warning. No need to set this, has no influence on the code produced.
+-fpascal-strings
+  APPLE ONLY. Allow Pascal-style string literals. No need to set this, this is
+  arcane and as far as I'm concerned have no influence on the code produced.
+-fasm-blocks
+  APPLE ONLY. Allow assembly code within a C/C++ file. No need to set this,
+  this is arcane and as far as I'm concerned have no influence on the code
+  produced.
+-O0
+  Optimization. This is set differently for 3rdparty libraries by design.
+-Wreturn-type
+  A warning. No need to set this, has no influence on the code produced.
+-Wunused-variable
+  A warning. No need to set this, has no influence on the code produced.
+-fexceptions
+  Enable exception handling. No need to set this, is already enabled by default
+  for languages like C++ that support exceptions.
+-mmacosx-version-min=10.6
+  Same as MACOSX_DEPLOYMENT_TARGET.
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40200
+  No need to set this, iOS target version for 3rdparty libraries is defined
+  via IPHONE_DEPLOYMENT_TARGET.
+-iquote /some/include/path
+  Specifies that this include path is searched for includes that were specified
+  with quotes, but not for those specified with angle brackets (<>). No need to
+  set this, has no influence on the code produced.

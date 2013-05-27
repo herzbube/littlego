@@ -1,0 +1,129 @@
+Purpose of this document
+------------------------
+This document simply lists a number of iOS-related programming topics that I
+studied while coding on this project, and where I found the information to
+study each topic.
+
+
+iOS topics covered in this project
+----------------------------------
+Little Go uses declared properties, some of them generated, others added
+manually. Although declared properties are a language feature introduced to
+Objective-C quite some time ago, this is still a new topic for me, which is why
+I mention it here. Details can be found in [1].
+
+The Fuego engine runs in a secondary thread, and communication with the engine
+also occurs within a secondary thread. Basic understanding of how threading and
+run loops work can be found in [2]. Scheduling with NSTimer is covered by [3].
+
+Little Go is quite configurable and has a preference tab to manage all the
+settings. This requires the "User Defaults" system (see [4]).
+
+[5] explains the nib object lifecycle. This information is helpful for proper
+cleanup during application shutdown. This document also contains information
+on how to obtain references to resources embedded in the application bundle
+(e.g. sound or image files).
+
+Rendering a Go board in a UIView involves drawing with the Core Graphics and
+UIKit frameworks. An introduction to drawing is provided by [6], more specific
+information about drawing with Quartz is in [7].
+
+User input is managed by the iOS event handling system. [8] describes how events
+and touches are processed by the system on a fundamental level, and how, on a
+higher level, gesture recognizer classes help with reacting to specific types
+of user input.
+
+[9] and [10] go into detail about the different types of views and view
+controllers, and how they can be combined to make a nice and efficient UI. Worth
+mentioning are the two sections of special interest that cover animations and
+modal view controllers. Table views are such an important topic that an entire
+guide [11] has been written about them. Last but not least, the section "iOS UI
+Element Usage Guidelines" in [12] provides a useful all-in-one-page overview of
+the UI elements and styles available in iOS.
+
+Observing various model objects for user preferences changes can be elegantly
+solved using the Key-Value Observing (KVO) technique, which in turn is based on
+Key-Value Coding (KVC). The two concepts are extensively documented in [13] and
+[14].
+
+Playing short sounds and vibrating the iOS device are covered by [15], while
+[16] has additional in-depth information on Audio processing. Playing a system
+sound requires the use of Core Foundation data types; getting values from iOS
+or Cocoa data types across the boundary into Core Foundation is sometimes as
+simple as casting from one type to the other. [17] has details about this
+so-called system of "Toll-Free Bridged Types".
+
+[18] is a very good starting point for solutions to rather high-level problems.
+Handling documents (including the sync to iTunes) is thoroughly explained in
+the subsecion "Files and the File System".
+
+Tasks that should run while the app is in the background are also explained in
+[18], in section "Executing Code in the Background". To understand blocks,
+which are required for background tasks, a side-trip to [19] and [20] should be
+sufficient.
+
+The finishing touch for an app before it is released to the App Store requires
+a set of application icons, at least one launch image and an Info.plist file
+with that is properly set up. Information on how to get these tasks done can be
+found in section "App-Related Resources" of [18], in section "Custom Icon and
+Image Creation Guidelines" of [12], and in [21].
+
+Archiving an object graph to a file, and restoring the objects from such an
+archive file, is explained in [22].
+
+[23] shows how to use the NSPredicate class to represent logical expressions in
+an object form, and how the clever use of predicates can make your code much
+more expressive.
+
+A handy feature of the Objective-C runtime is called "Associative references":
+It allows to attach an object reference to another object under a certain name,
+and to retrieve the referenced object at a later time, e.g. in a delegate
+method. The required C functions are documented in [25].
+
+[26] is Apple's must-read guide when you start working with scroll views for the
+first time. I found this especially useful when it came to understand zooming.
+[27] is also a nice companion tutorial.
+
+An app that knows how to work with one or more document types (.sgf files in the
+case of Little Go) should support Document Interaction so that files of a given
+type can be passed to the app from another app. The concept and how to implement
+support for it is explained in [28]. The Info.plist key CFBundleDocumentTypes
+is documented in [21]. Information about Uniform Type Identifiers (UTI) can be
+found in [29] and [30], while [31] lists the System-Declared Uniform Type
+Identifiers.
+
+Unless otherwise noted, the base for all of the following references is the
+"iOS Developer Library", found under this URL:
+https://developer.apple.com/library/ios/navigation/.
+
+[1]  iOS Developer Library > Guides > The Objective-C Programming Language > Declared Properties
+[2]  iOS Developer Library > Guides > Threading Programming Guide
+[3]  iOS Developer Library > Guides > Timer Programming Topics
+[4]  iOS Developer Library > Guides > User Defaults Programming Topics
+[5]  iOS Developer Library > Guides > Resource Programming Guide
+[6]  iOS Developer Library > Guides > Drawing and Printing Guide for iOS
+[7]  iOS Developer Library > Guides > Quartz 2D Programming Guide
+[8]  iOS Developer Library > Guides > Event Handling Guide for iOS
+[9]  iOS Developer Library > Guides > View Programming Guide for iOS
+[10] iOS Developer Library > Guides > View Controller Programming Guide for iOS
+[11] iOS Developer Library > Guides > Table View Programming Guide for iOS
+[12] iOS Developer Library > Guides > iOS Human Interface Guidelines (aka "HIG")
+[13] iOS Developer Library > Guides > Key-Value Observing Programming Guide
+[14] iOS Developer Library > Guides > Key-Value Coding Programming Guide
+[15] iOS Developer Library > Reference > System Sound Services Reference
+[16] iOS Developer Library > Guides > Multimedia Programming Guide
+[17] http://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html
+[18] iOS Developer Library > Guides > iOS Application Programming Guide
+[19] iOS Developer Library > Getting Started > A Short Practical Guide to Blocks
+[20] iOS Developer Library > Guides > Blocks Programming Topics
+[21] iOS Developer Library > Reference > Information Property List Key Reference
+[22] iOS Developer Library > Reference > Archives and Serializations Programming Guide
+[23] iOS Developer Library > Guides > Predicate Programming Guide
+[24] iOS Developer Library > Guides > Predicate Programming Guide
+[25] https://developer.apple.com/library/mac/#documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
+[26] iOS Developer Library > Guides > Scroll View Programming Guide for iOS
+[27 http://www.raywenderlich.com/10518/how-to-use-uiscrollview-to-scroll-and-zoom-content
+[28] iOS Developer Library > Guides > Document Interaction Programming Topics for iOS
+[29] iOS Developer Library > Guides > Uniform Type Identifiers Overview
+[30] iOS Developer Library > Reference > Uniform Type Identifiers Reference
+[31] http://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html

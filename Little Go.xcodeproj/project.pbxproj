@@ -676,6 +676,8 @@
 		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		CD6C7DBA17512152009FBEC4 /* UiSettingsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiSettingsModel.h; sourceTree = "<group>"; };
 		CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiSettingsModel.m; sourceTree = "<group>"; };
+		CD6EBE421753FE5200ABB980 /* MediaFiles */ = {isa = PBXFileReference; lastKnownFileType = text; path = MediaFiles; sourceTree = "<group>"; };
+		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
@@ -771,6 +773,15 @@
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
 		CDD7D7E3175257850068CBBA /* ResetPlayersAndProfilesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetPlayersAndProfilesCommand.h; sourceTree = "<group>"; };
 		CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResetPlayersAndProfilesCommand.m; sourceTree = "<group>"; };
+		CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTES.Build.3rdparty; sourceTree = "<group>"; };
+		CDD7D7E81753F4990068CBBA /* CodingGuidelines */ = {isa = PBXFileReference; lastKnownFileType = text; path = CodingGuidelines; sourceTree = "<group>"; };
+		CDD7D7E91753F5F60068CBBA /* NOTES.Build */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.Build; sourceTree = "<group>"; };
+		CDD7D7EA1753F6990068CBBA /* NOTES.Architecture */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.Architecture; sourceTree = "<group>"; };
+		CDD7D7EB1753F6EA0068CBBA /* NOTES.Design */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.Design; sourceTree = "<group>"; };
+		CDD7D7EC1753F8A70068CBBA /* NOTES.Diagnostics */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.Diagnostics; sourceTree = "<group>"; };
+		CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NOTES.Info-plist"; sourceTree = "<group>"; };
+		CDD7D7EF1753FD130068CBBA /* littlego.asta */ = {isa = PBXFileReference; lastKnownFileType = file; path = littlego.asta; sourceTree = "<group>"; };
+		CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Class diagram of packages go + player.jpg"; sourceTree = "<group>"; };
 		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
@@ -1675,7 +1686,18 @@
 			isa = PBXGroup;
 			children = (
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
+				CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */,
+				CDD7D7E81753F4990068CBBA /* CodingGuidelines */,
+				CDD7D7EF1753FD130068CBBA /* littlego.asta */,
 				CD00A34D1487F9CF004E1A0C /* MANUAL */,
+				CD6EBE421753FE5200ABB980 /* MediaFiles */,
+				CDD7D7EA1753F6990068CBBA /* NOTES.Architecture */,
+				CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */,
+				CDD7D7E91753F5F60068CBBA /* NOTES.Build */,
+				CDD7D7EB1753F6EA0068CBBA /* NOTES.Design */,
+				CDD7D7EC1753F8A70068CBBA /* NOTES.Diagnostics */,
+				CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */,
+				CD6EBE43175401C200ABB980 /* ProgrammingTopics */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
 				CDEC288312F477E70069F5B7 /* Research */,

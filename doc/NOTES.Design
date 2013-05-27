@@ -1,0 +1,92 @@
+Purpose of this document
+------------------------
+This document contains design notes on a variety of subjects.
+
+
+.xib design notes
+-----------------
+I find it difficult to remember some specialities about the UI design in the
+various .xib files. The following notes are to .xib files what inline
+documentation is to source code:
+- MainWindow.xib instantiates the main controller object, which is an instance
+  of MainTabBarController. The main controller in turn references and
+  instantiates all child controllers. To see the class of each sub-controller,
+  select the main controller object in the .xib file, then from the menu select
+  View -> as Columns. Navigate to the child controller of your choice and
+  display its properties in the Inspector window. The properties include the
+  controller's class, and the name of the NIB file associated with the
+  controller.
+- Each TabBarItem in MainWindow.xib has a unique numeric value assigned to its
+  "tag" property. A controller class that is responsible for managing several
+  different tabs can query this "tag" property and thus perform different
+  actions depending on which tab is currently selected. The tag values in the
+  .xib must match the values of the enumeration TabType, which is defined in
+  Constants.h.
+
+
+UI elements design notes
+------------------------
+TableViewCell
+- TableViewCellFactory creates a couple of table cell types that are not
+  available from the UIKit
+- For the cell type that has a slider, I did a bit off debugging/inspection of
+  the default UITableViewCell and its subviews; following are the results
+- Size of a UITableViewCell (from its frame rect) = 320x45
+- In a cell with style UITableViewCellStyleValue1 and accessoryType
+  UITableViewCellAccessoryNone
+  - cell.contentView frame rect = 10/0, 300x43
+  - cell.textLabel frame rect = 10/11, 161x21 (text is "Cross-hair distance")
+  - cell.detailTextLabel frame rect = 280/11, 10x21 (text is "2")
+- In a cell with style UITableViewCellStyleValue1 and accessoryType
+  UITableViewCellAccessoryDisclosureIndicator
+  - cell.contentView frame rect = 10/1, 280x43
+  - cell.textLabel frame rect = 10/11, 46x21 (text is "Black")
+  - cell.detailTextLabel frame rect = 163/11, 107x21 (text is "Human player")
+  - the disclosure indicator button is a direct subview of the cell (i.e. it's
+    not part of the content view, and it's not in the accessoryView) with
+    frame rect = 280/1, 30x43
+
+
+Working with .sgf files
+-----------------------
+The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it
+should load or save a game from/to a specified filename. Unfortunately, due to
+limitations of the GTP protocol not just any path/filename can be specified.
+Notably, the path/filename may not contain spaces, hash signs (#) or control
+characters.
+
+The workaround here is to let the GTP engine load from/save to a temporary
+file that is in a well-known location and whose filename/path does not violate
+any of the GTP protocol restrictions. The application performs the necessary
+pre-/post-processing via the NSFileManager API, which has none of the GTP
+protocol limitations.
+
+NSFileManager pre-/post-processing:
+- Load game: Copy the real .sgf file to the well-known temporary file, from
+  where it can then be loaded using the "loadsgf" GTP command. After the game
+  has been loaded, the temporary file is removed.
+- Save game: The "savesgf" GTP command is used to save the game to the
+  well-known temporary file. After the game has been saved, the temporary file
+  is moved to its real location.
+
+This approach allows to keep the .sgf files in the application's documents
+folder (which may contain spaces in its path), where they need to be located
+for iTunes's syncing to work. It also allows to use arbitrary characters in the
+filename, including unicode characters which might otherwise be interpreted as
+control characters when sent over the GTP protocol wire.
+
+Experiment has shown that the application's document folder is at the following
+path locations:
+- iOS Simulator environment
+  /Users/<username>/Library/Application Support/iPhone Simulator/4.2/Applications/03C363CC-7330-40A0-A382-74FEA08E6C29/Documents
+- iPhone device
+  /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
+
+Design note for code that needs to work with files
+- The code should never assume that the current working directory is set to a
+  specific location
+- The code should not change the current working directory, unless absolutely
+  necessary; working with absolute paths often obviates this need
+- If the current working directory must indeed be changed, it should be changed
+  back to the original location after the desired purpose has been achieved
+

@@ -1,0 +1,271 @@
+Purpose of this document
+------------------------
+This document contains architecture notes on a variety of subjects.
+
+
+Memory management
+-----------------
+This project uses manual reference counting using retain/release, i.e. no ARC.
+
+
+Communication with Fuego
+------------------------
+- How it normally works: On PC platforms this is done by running Fuego in a
+  separate process and then attaching an output and an input stream to that
+  process' stdin and stdout.
+- The problem: iOS does not allow to launch other processes, therefore a
+  different solution is required
+- The solution: What works very nicely is to run the Fuego engine in a
+  secondary thread and to let it attach its input/output streams to a pair of
+  named pipes. The Fuego client also runs in a secondary thread and attaches
+  two complementary streams to the same pair of named pipes. Synchronization
+  between the two threads is achieved through the pipes' blocking behaviour.
+- Fuego had to be patched to make this happen. For details, read the section
+  "Changes to the Fuego source code".
+
+
+Thread architecture
+-------------------
+- Main thread: Reacts to user input; submits commands to the command executor
+  and the GTP client; is notified asynchronously by the GTP client after a
+  command has been processed; updates the GUI with information obtained from
+  the response to the command.
+- Command executor secondary thread: Executes instances of Command (see that
+  protocol's documentation for details) and optionally feeds progress updates
+  it receives from the Command into an MBProgressHUD. This secondary thread is
+  implemented by the class CommandProcessor. The thread is created when the
+  first asynchronous command is submitted, and remains alive until the
+  application shuts down.
+- GTP client secondary thread: Reacts to commands submitted by the main
+  thread; sends the commands to the GTP engine via file stream which is
+  attached to a named pipe NP1; wakes up when it receives the response from
+  the GTP engine via file stream which is attached to another named pipe NP2;
+  notifies the main thread of the response.
+- GTP engine secondary thread: Reacts to commands received from the GTP
+  client via file stream which is attached to named pipe NP1; processes the
+  command, then sends the response back to the GTP client via file stream
+  which is attached to a named pipe NP2.
+- Communication between main thread and GTP client secondary thread happens
+  entirely within the GtpClient class; synchronization occurs with the help
+  of the NSObject method performSelector:onThread:withObject:waitUntilDone:().
+- Communication between GTP client and GTP engine secondary threads is routed
+  through named pipes; synchronization occurs via the file streams' blocking
+  read behaviour.
+- Because of file streams' blocking reads, communication between GTP client
+  and GTP engine is essentially synchronous. As a consequence, the main thread
+  will be blocked if it wants to submit a command to the GTP client while the
+  client is still waiting for the response to a previous command. For this
+  reason, all GUI elements that trigger a GTP command should be disabled
+  while a command is being processed.
+- Read the GtpClient class documentation for details about how GtpClient
+  notifies clients of command submission and response receipt.
+
+
+GTP command sequence
+--------------------
+Even though responses for GTP commands are received asynchronously, the commands
+themselves are processed in the order that they are submitted. This means that
+any number of GTP commands can be submitted as fast as possible (i.e. without
+having to wait for the response), as long as
+
+1) The submitter does not need the result of the command
+2) A later command does not need the GTP engine to be in a particular state
+
+
+Application states and transitions
+----------------------------------
+[1] has a very nice flowchart that shows the general flow of application state
+transitions. Little Go does nothing out of the ordinary, the two classes that
+are interesting to study are ApplicationDelegate and ApplicationStateManager.
+
+[1] http://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
+
+
+Preferences
+-----------
+The iOS Application Programming Guide says that "The Settings bundle is
+generally the preferred mechanism for displaying preferences", then goes into
+details about how to use such a Settings bundle. I don't like to separate the
+UI for application preferences from the application, though, and therefore
+chose to implement a dedicated Preferences view inside the application.
+
+
+About the "Play" tab
+--------------------
+- The "Play" tab is the centerpiece of the entire application. It has a large
+  number of UI elements, many of them interacting with each other, and some of
+  them are not visible all the time. To reduce complexity and keep the "Play"
+  tab in its entirety in a maintainable state, it is paramount to have many
+  small model and controller classes with clearly assigned responsibilities.
+- Static design: PlayTabController is the tab's root view controller. There
+  are two subclasses, one for each device-specific view hierarchy. With a few
+  exceptions, the view hierarchy is represented by a corresponding hierarchy
+  of container/child UIViewControllers. Not all controller classes are view
+  controllers, though: There are also a number of controllers that manage
+  gesture recognizing, alert views or action sheets.
+- Dynamic design: When the application launches, the app delegate creates an
+  instance of the appropriate PlayTabController subclass. This starts a
+  first cascade of object creation during which all the controller objects are
+  created and the delegate connections are made. A little bit later iOS
+  accesses for the first time the view of the root PlayTabController. This
+  triggers a second cascade of object creation during which all the view
+  objects are created and notification and KVO observing mechanisms are
+  initialized.
+- View sizing and layouting: Apple makes the following suggestions:
+  1) Container view controllers are responsible for placing and sizing the
+     root views of their child view controllers (frame.origin and frame.size)
+  2) Child view controllers are responsible for placing the subviews they own
+     based on the size given to their root view by their container view
+     controller.
+  3) The autoresizingMask of each view handles how views are resized when
+     some size change occurs, e.g. when the device orientation changes
+  The main question in regard of 2) is: When does a child view controller know
+  the size given to its root view? It definitely cannot know in loadView, so
+  theoretically a child view controller needs to delay creation of its
+  subviews until either viewWillAppear: or viewWillLayoutSubviews is invoked
+  (the root view size is known then). The drawback of this is that these
+  methods are invoked not just once, but many times, so the child view
+  controller would need to take special measures so that it creates its
+  subviews only once. I don't like this, so I have decided to use a slightly
+  different approach: Create subviews in loadView, but where necessary assume
+  an arbitrary initial root view size that is sufficient to place subviews
+  inside the root view. The initial arbitrary sizes are fixed up later when
+  views are laid out according to the selected autoresizingMask. The only
+  drawback of this approach: The container view controller must make sure that
+  when it places the child view controller's root view into a superview, the
+  superview must have a size that is greater or equal to the root view's size,
+  otherwise the size fixup according to autoresizingMask will go wrong.
+
+
+UI design
+---------
+As noted in "About the Play tab", the "Play" tab has a large number of UI
+elements, and these must somehow be fitted onto the small screeen estate
+available on the iPhone. Here I try to outline the thoughts that went into the
+iPhone UI design:
+- The Go board view
+  - The Go board view has the following purposes: 1) Accurately represent
+    board positions (in a game that is actively being played, the current game
+    state is just a special board position). 2) Provide user interaction so
+    that the user can place a stone. 3) Display scoring information (territory
+    markup, dead stones, etc.). 4) Provide user interaction so that the user
+    can mark dead stones during scoring.
+  - Because the Go board is square, but iOS device screens are oblong, the
+    game view cannot take full advantage of all the available screen estate.
+    The game view is responsible for making the most of the current situation,
+    dynamically adjusting to any changes such as device orientation changes.
+  - User preferences modify view appearance (e.g. display labels) and user
+    interaction behaviour.
+- The navigation bar
+  - Navigation bar space is limited, therefore the only buttons that are
+    displayed are those that are actually enabled (e.g. while the computer is
+    thinking most actions are not allowed, so the only button that is
+    displayed is the one that interrupts the computer's thinking). The result
+    is a "nervous" UI, i.e. toolbar buttons are constantly being shown and
+    hidden. I have not yet come up with a UI design that is more "calm".
+  - At the right-most position there is a "Game Actions" button which provides
+    access to an action sheet with additional actions that are not used very
+    often. Only actions related to games as a whole are to be displayed on
+    this action sheet.
+  - At the second-to-right-most position there is a "Game Info" button that
+    provides access to a screen with detailed information about the current
+    game.
+  - The "Game Actions" and "Game Info" buttons remain visible at all times to
+    mitigate the "nervous" UI effect described above.
+  - Most toolbar items do not use the iOS provided icons available from
+    UIBarButtonItem. The reason is that, although the icons' visual appearance
+    might seem appropriate, their semantic meaning is not!
+- The status view
+  - A status view is used to display information about the current game state
+    to the user.
+  - The status view currently is situated in the center of the navigation bar.
+    Previous versions of the app had the status view situated in a single line
+    below the board view, but this was redesigned because it took away some of
+    the already precious space from the board view.
+  - The status line uses a very small font to make room for the list of board
+    positions.
+- The activity indicator
+  - An activity indicator is needed to let the user know when the Go engine
+    is busy so that he knows why some UI elements are disabled.
+  - Currently the indicator is located in the navigation bar, next to the
+    status view. Although there is not a lot of space in the navigation bar,
+    this works surprisingly well, because whenever the activity indicator
+    becomes visible it trades space with one or more other buttons that become
+    hidden in its stead.
+- The list of board positions
+  - This view exists because the toolbar buttons to go back/forward one board
+    position make it hard to access board positions that are far away from
+    the current board position.
+  - A freely scrollable view is more sexy than one that uses paging.
+  - Due to size constraints, the additional navigation buttons displayed on
+    the iPad do not exist on the iPhone.
+
+
+Exceptions
+----------
+Exceptions should not be used in Cocoa or iOS applications in the same liberal
+way as someone coming from Java or C++ might expect (see [1]).
+
+In this project, exceptions are occasionally raised, in situations where
+something weird and totally unexpected happened. Most of the time this indicates
+a programming error of some sort which should be fixed immediately. Instead of
+trying to recover from these weird and totally unexpected situations, the policy
+is to fail early. The drawback is that end users will see a crash if an
+exception-triggering bug makes it into production. This is a price I am willing
+to pay, also there is now a crash reporting service in place which vastly
+improves chances that I get notified about the problem.
+
+[1] http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Exceptions/Exceptions.html
+
+
+Strategy for saving data / preventing data loss
+-----------------------------------------------
+There are three types of data that need to be saved:
+- Preferences data. This data is saved by the ApplicationDelegate method
+  writeUserDefaults.
+- The game in progress. This data is saved in BackupGameCommand. The data is
+  saved both as an NSCoding archive, and as an .sgf file. Saving to .sgf is
+  delegated to the Fuego engine via the GTP "savesgf" command.
+- Other application state data: This data is saved by BackupGameCommand as an
+  NSCoding archive only.
+
+Before 0.9.0 the strategy simply was to save data when the application is
+suspended (applicationDidEnterBackground), and to restore it when the
+application did launch (application:didFinishLaunchingWithOptions:()). This
+strategy is sufficient for the normal application lifecycle, but has one severe
+weakness: It assumes that the application never crashes!
+
+From 0.9.0 onwards, the strategy was changed to cope with crashes that might
+occur at - almost - any time. It goes like this:
+
+- The game in progress is saved every time a move is played or discarded. Data
+  from the previous backup operation is overwritten. This gives maximum
+  protection against crashes (assuming that there is no crash during the
+  game-saving routine itself), for the price of additional file activity and
+  processing power. I have not measured the impact with Instruments, but for
+  the moment I assume that the processing power used for the backup should be
+  neglible in comparison to Fuego's consumption. Another matter are the flash
+  drive write cycles wasted for each backup. However, if 100-150 KB of data
+  saved after each move, or discard of a move, seem too much, then let's look at
+  the other end of the balance: The game moves are the user's most precious
+  data, and risking to lose that simply is not appropriate. So let's not worry
+  about write cycles and hope that the flash drive manufacturers and Apple
+  have done their job and optimized disk activity to death.
+- Preferences data is saved only when the user switches tabs, or when the
+  application is suspended for any reason. This is not as thorough as saving
+  the game in progress, but it should be sufficient. It would have been a larger
+  effort to introduce events for each and every preference and application state
+  change, so I have decided to go for the optimization with the tab changes and
+  application suspension - events which are simple to detect. I am also assuming
+  that 1) losing a bit of preferences in case of a crash is not as grave as
+  losing the game in progress (imagine you lose a game of several hours), and
+  2) that changing preferences is a relatively well-tested process that is not
+  likely to trigger a crash, so saving data can wait until the user switches
+  tabs to do other, potentially more dangerous things.
+
+With the introduction of board positions in 0.10.0, it has become essential that
+the game in progress is backed up as outlined above. Whenever the board
+position changes, the state in Fuego is sync'ed with the new board position.
+If the user goes back in the move history, it is therefore vital that NO
+"savesgf" GTP command is sent at this point because this would overwrite the
+actual game state with the older board position.

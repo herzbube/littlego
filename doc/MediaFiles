@@ -1,0 +1,115 @@
+Purpose of this document
+------------------------
+I have no artistic fibre in me, and I am just terrible at being creative and
+producing any kind of media files. Therefore I like to keep an account of how I
+got the stuff into the shape it is now, just in case I need to make changes in
+the future.
+
+
+wood-on-wood-12.aiff
+--------------------
+- Record various wood-on-wood sounds with an iPhone. Obviously the environment
+  has to be sufficiently quiet to get a clean recording - 2am should be about
+  the right time for doing this, after all the noisy neighbours have gone to
+  bed :-) As there is still a bit of ambient noise, the recording should contain
+  a few seconds of only noise. This will help later on during sound editing.
+- Sync with iTunes, then convert the recordings to .aiff (also in iTunes).
+- Start editing the sound files with Audacity. The first thing to do is to
+  listen to all the recordings and select one with an effect that sounds nice
+  and crisp.
+- Sound editing consists of two steps only: Noise removal, and trimming to the
+  correct level. Noise removal first requires that a stretch of the recording
+  is selected that consists of only noise. Next select the "Noise Removal" tool
+  (found in the Audacity's "Effects" menu) and click the "Get Noise Profile"
+  button. After the dialog has closed, select the entire recording then reopen
+  the tool a second time. The values should now be correctly adjusted to the
+  noise level in the recording, so that you can simply click the "OK" button.
+  After the tool has applied its effect, you can playback the recording to
+  confirm that the noise has really been eliminiated.
+- Select the portion of the recording that you want to use as the media file.
+  Select "File > Export Selection", in the following dialog click the "Clear"
+  button to remove the metadata stored by the iPhone in the recording, then
+  save under "AIFF (Apple) signed 16 bit PCM". This is one of the few formats
+  that the System Sound Services function AudioServicesPlaySystemSound() is
+  capable of playing.
+
+
+Icon files
+----------
+- The canonical source for information about icons are Apple's Human Interface
+  Guidelines (HIG) [1]. The following notes replicate much of the information
+  found there.
+- A pure white foreground color painted on transparent background works best
+  for images that are loaded into a UIBarButtonItem or a UITabBarItem. The
+  reason for this is that according to the HIG, images used in toolbar,
+  navigation bar and tab bar items are used as "template" images only, i.e. iOS
+  uses them as a mask to create the actual icon displayed to the user.
+- For UIBarButtonItem, the main image should be 40x40 pixels because the size of
+  toolbar and navigation bar images is 20x20 points. On a retina display, this
+  corresponds to 40x40 pixels. For regular displays, the image can be scaled
+  down to 20x20 pixels.
+- For UITabBarItem, the size is 60x60 for high resolutions, and 30x30 for low
+  resolutions.
+- To make use of iOS automatic clever image selection, save the images under
+  the following names:
+    foo.png    - normal image
+    foo@2x.png - retina display image
+- Whenever you need to load an image just use the normal image name and iOS will
+  check behind the scenes if there is a retina display image available when it
+  could use one.
+- To create the actual images I use either the Gimp or Inkscape. The .xcf and
+  .svg files are currently not part of the project.
+
+[1] http://developer.apple.com/iphone/library/documentation/UserExperience/Conceptual/MobileHIG/IconsImages/IconsImages.html
+
+
+stone-black.png, stone-white.png, stone-crosshair.png
+-----------------------------------------------------
+- The original source for these files is the file stones.svg, which in turn
+  is a modified copy from the "Dragon Go Client" iOS app project [1]. The app
+  author Justin Weiss gave permission to use the artwork in an email in
+  August 2012.
+- What is the minimum size that we need for stone images?
+  - The smallest board size is 7x7
+  - The largest retina screen resolution on any iOS device currently is
+    2048x1536
+  - The board is square so we need to take the smaller dimension 1536 and
+    subtract maybe 100 for margins...
+  - 1436 / 7 is about 205, so let's round this up to (at least) 220x220 for the
+    retina image, and 110x110 for the normal image
+- The workflow to get the .png files is this:
+  - Open the original stones.svg from the DGS project in Inkscape
+  - The original stones.svg contains artwork for a black and a white stone.
+    The artwork at the time of writing is sized 294x294, i.e. sufficient for
+    the minimum size that we need for stone images
+  - Make a copy of the objects that make up the black stone. This is our basis
+    for creating the third piece that we need to draw the blue cross-hair stone
+  - Make sure that the objects that make up the three stones are all aligned in
+    exactly the same way. This is important so that the images later on can all
+    be treated in the same way (e.g. they all have the same center).
+  - Adjust colors for the cross-hair stone
+    - Select the object in the stone layer
+      - Display "Fill and Stroke" settings
+      - Duplicate the gradient, then edit the gradient
+      - Gradient stop 1: In the RGB color settings change the value for blue
+        to 255
+      - Gradient stop 2: Change the value for blue to 200
+    - Repeat the steps for the object in the highlight layer (including the
+      exact same values for blue)
+  - Repeat the following steps three times to get the three stone image files
+    - Select all objects that together make up a stone
+    - Select the function "File > Export Bitmap"
+    - Make sure that the export area is set to "Selection"
+    - The bitmap size should have been automatically set to 294x294. Also make
+      sure that 90dpi is selected.
+    - Export to the appropriately named .png
+- Additional notes
+  - When the images obtained in this way are drawn to the screen, they are
+    scaled to different sizes for different boards and different devices.
+    As a result the scaled version of an image sometimes is not properly
+    centered on an intersection. The Play view drawing routines compensate for
+    this with a translation of the CTM. The values used for translation have
+    been experimentally determined and are hardcoded.
+
+[1] https://github.com/justinweiss/dragongoclient
+

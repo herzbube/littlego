@@ -1,0 +1,157 @@
+Purpose of this document
+------------------------
+This document has details about the 3rdparty software being used by this
+project, and how that software is built.
+
+
+3rdparty software build
+-----------------------
+Before the first Xcode build of the project is possible, 3rdparty software must
+be downloaded and built. Hopefully, the following convenience script does all
+this for you if you run it on the command line from the project root folder
+like this:
+
+  ./script/get-and-build-3rdparty-software.sh
+
+A short overview of what the script does:
+- Invoke build-software.sh for each 3rdparty software package, in the correct
+  order of dependencies
+- build-software.sh first invokes build-env.sh to obtain general build settings;
+  build-env.sh reflects the Xcode build environment such as base SDK, or
+  deployment target. If the Xcode build environment changes, build-env.sh also
+  needs to be modified
+- build-software.sh then invokes the package-specific build script (e.g.
+  build-fuego.sh) to obtain information specific to that package. Besides build
+  settings this also includes the location where the package sources can be
+  downloaded
+- build-software.sh then proceeds with a number of fixed steps: download and
+  extract the package sources, execute pre-build steps (e.g. apply patches,
+  run "configure"), run the actual build (e.g. run "make"), execute post-build
+  steps, and finally install the built software
+- All this occurs within the project top-level folder "3rdparty", which is
+  automatically created by the build scripts
+
+
+Boost build/installation issues
+-------------------------------
+No issues, build works out of the box.
+
+
+Fuego build/installation issues
+-------------------------------
+Build
+- The build script needs to specify the configure flag --with-boost-libdir,
+  otherwise configure aborts with a linker error.
+- The configure.ac script does not work with newer versions of Autoconf/Automake
+  (this is relevant because autoreconf is run by the Fuego build script).
+  Patch 6 fixes these problems.
+
+Installation
+- "make install" only copies the executables (fuego, fuego_test), but not the
+  libraries nor the headers. The build script for Fuego applies a patch that
+  modifies a number of Makefile.am files. The changes made are to rename the
+  "noinst_LIBRARIES" property to "lib_LIBRARIES", and to rename the
+  "noinst_HEADERS" property to "pkginclude_HEADERS". Notes:
+  - Libraries are installed under
+      <prefix>/lib
+  - Headers are installed under
+      <prefix>/include/fuego
+    because "pkginclude" is used instead of "include"
+  - I would have preferred to keep sub-folders, e.g.
+      <prefix>/include/fuego/gtpengine
+    In theory, to make this work it should be possible to use
+    "nobase_pkginclude_HEADERS". In practice, however, this does not work, the
+    "nobase" prefix has no effect. The reason for this is unknown. I have tried
+    the following combinations, but could not get it to work as desired:
+      pkginclude_HEADERS     -> installs into include/fuego/*
+      nobase_include_HEADERS -> installs into include/*
+      nobase_dist_HEADERS    -> installs into include/*
+- In addition, the build script creates and installs a single unified library
+  that contains all the object files within Fuego's separate library files.
+
+
+CocoaLumberjack build/installation issues
+-----------------------------------------
+Building CocoaLumberjack's premade Xcode project with Xcode 4.6 results in
+otool complaining with the following warning:
+
+  -dynamic not specified the following flags are invalid: -ObjC
+
+The warning can be ignored because -ObjC is irrelevant for the static library
+build of CocoaLumberjack (otool itself already says it: -ObjC is only for
+dynamic, or shared library builds). The article at [1] has a good explanation
+of the issue. I assume that the CocoaLumberjack author eventually will fix the
+premade Xcode project in a future release.
+
+[1] http://www.cocoanetics.com/2013/02/xcode-4-6-libtool-issues/
+
+
+ZipKit build/installation issues
+--------------------------------
+No issues, build works out of the box.
+
+
+QuincyKit build/installation issues
+-----------------------------------
+QuincyKit comes pre-built, so no build is necessary.
+
+Installation
+- QuincyKit does not consist of the usual header + library files that can be
+  installed into split locations (include/lib) within platform-specific folders
+  (Developer/Platforms/iPhoneOS.platform/...). Instead, QuincyKit includes a
+  framework (CrashReporter.framework) and a bundle (Quincy.bundle) which need to
+  be added to the Xcode project as a whole, and regardless of which platform
+  the project is built for.
+- For this reason, the necessary QuincyKit files are copied into the folder
+  3rdparty/install/quincykit, and the Xcode project references the files
+  from there
+
+
+Changes to the Fuego source code
+--------------------------------
+1) FuegoUtil::FuegoMain()
+- Create a new function FuegoUtil::FuegoMain(int argc, char** argv) in
+  FuegoUtil.cpp and FuegoUtil.h
+- Move the implementation in main(int argc, char** argv) from FuegoMain.cpp to
+  this new function in FuegoUtil.cpp
+- Also move the other support functions from FuegoMain.cpp to FuegoUtil.cpp
+- Invoke FuegoUtil::FuegoMain() from main()
+
+2) Add 2 new command line options "--input-pipe /path/to/pipe" and
+   "--output-pipe /path/to/pipe"
+- Basic option support requires modification to ParseOptions() and introduction
+  of two new global variables
+- Actual usage of the specified pipes requires modification to FuegoMain().
+- Additional option support to check for mutually exclusive options
+  (--input-file and --input-pipe) requires addition of a new function
+  MutuallyExclusiveOptions() which is invoked from ParseOptions()
+
+3) Remove usage of exit() in Help()
+- ParseOptions() must be modified to return a value that indicates to its
+  caller (FuegoMain()) whether the program should continue running or whether
+  it should be terminated
+
+4) Add 2 new GTP commands "list_moves" and "list_handicap"
+- These commands are used to discover the move history and the list of handicap
+  stones after Fuego has been instructed over GTP to load an .sgf file (with
+  the "loadsgf" GTP command)
+- This change allows Little to fully delegate all .sgf file handling to Fuego
+
+
+Fuego Patches
+-------------
+The changes to the Fuego build system (Makefile.am files) and source code
+are captured in a series of patch files that are stored in the top-level folder
+"patch". The patches must be applied incrementally, in the order indicated by
+the patch file name. Each file name starts with a numerical prefix to make the
+order explicit.
+
+Patches are automatically applied during the 3rdparty software build (cf.
+section "3rdparty software build" in this file).
+
+Patches are created like this:
+  diff -ruN fuego-1.0-original fuego-1.0-new >fuego.patch
+
+Patches are applied like this:
+  cd fuego-1.0
+  patch -p1 <fuego.patch

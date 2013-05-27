@@ -1,0 +1,87 @@
+Purpose of this document
+------------------------
+This document contains notes about various aspects of the project configuration
+file Info.plist.
+
+
+The version number
+------------------
+The application's version number is stored in the bundle's Info.plist file.
+According to Apple's "Information Property List Key Reference" (available at
+[1]), there are two keys that are relevant for versioning:
+- CFBundleShortVersionString: A string consisting of three period-separated
+  integers. This key refers to the so-called "release version number".
+  Apparently it is possible to localize this string, but why one would want to
+  do this is beyond me (also the specification "three period-separated integers"
+  in my opinion does not leave any room for localization). Xcode 4 displays the
+  value of this key on the "Summary" page of each target, as the field labeled
+  "Version".
+- CFBundleVersion: A monotonically increased string consisting of of one or
+  more period-separated integers. This refers to the so-called "build version
+  number". Xcode 4 displays the value of this key on the "Summary" page of each
+  target, as the field labeled "Build".
+
+Although I don't have a use for CFBundleVersion, and the Xcode user guide
+(section "Building and Running Your Code") does not even mention it, the App
+Store validation process forces me to add this key to Info.plist.
+
+[1] developer.apple.com/library/mac/#documentation/General/Reference/InfoPlistKeyReference/
+[2] http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/Xcode4UserGuide/Building/Building.html
+
+
+Application icons
+-----------------
+Application icons are specified using the CFBundleIcons key in the bundle's
+Info.plist file. Other icon-related keys are not necessary because the app no
+longer supports iOS versions prior to 5.0.
+
+I tried (but failed!) to add the app icons by manually editing Info.plist and
+adding just the base icon name without the .png file extension. Two motivations
+for this:
+- Take advantage of the system's automatic detection mechanism to find the
+  retina display icon by adding the suffix "@2x"
+- Allow the icon files to reside in the "resource" subfolder, together with the
+  rest of the icons. The files need to be at the app bundle's root folder only
+  when the app bundle is built and deployed.
+
+Unfortunately this did not quite work as expected:
+- In Xcode on the main target's summary page, no icons are displayed. Although
+  a bit unfortunate, I could live with this mis-behaviour.
+- Much more of a problem is that sometimes Xcode incorrectly deploys the app
+  bundle to the retina display iOS simulator, and also my retina display test
+  device. The simulator and the real device would sometimes display the normal
+  resolution icon, and sometimes the correct high resolution icon.
+- I spent only a limited amount of time testing this. Tests were of a
+  "try & error" nature and included: Completely remove the app bundle from the
+  device, re-deploy the bundle, restart Xcode.
+- In the end I did not manage to pin down an exact mechanism for when it works
+  and when it doesn't.
+
+For the moment I have therefore decided not to try and fight the system, but
+instead follow a path with reproducible results, even if I am not very happy
+about the consequences. This means:
+- Icons need to be added in Xcode 4 on the main target's summary page
+- There are two placeholders: one for the normal and one for the retina display
+  icon. The icons can be added by dragging the image files onto these
+  placeholders.
+- When a file is dragged onto its placeholder, Xcode will insist on placing a
+  copy of the file into the project's top-level folder
+- This means that it is not possible to keep the icon files in the "resource"
+  folder, together with the other bundle resources
+- Another consequence is that Xcode adds explicit filenames to Info.plist, i.e.
+  it is not possible to take advantage of the system's automatic detection
+  mechanism to find the retina display icon (suffix "@2x").
+
+
+Launch images
+-------------
+Launch images are specified using various keys in the bundle's Info.plist
+file. Unlike with application icons, I had no trouble specifying just the base
+image name and let iOS do the rest for me. Specifically:
+- Use the key "UILaunchImageFile" and set the base name to "LaunchImage"
+- iOS will automatically tack on the file extension ".png", and it will also
+  automatically find the retina display image by adding the suffix "@2x".
+
+Note that in Xcode 4 the launch images do not show up on the main target's
+summary page. Apparently Xcode does not support iOS' automatic way of finding
+alternative images.

@@ -1,0 +1,108 @@
+Purpose of this document
+------------------------
+This document has notes on how to process bug and crash reports submitted by
+users.
+
+
+How to use the diagnostics information file sent as part of a bug report email
+------------------------------------------------------------------------------
+Preparation work
+- Make sure to get the sources for the exact version of Little Go that the user
+  had when he generated the diagnostics information file
+- Make a debug build & run that build in the simulator version that most closely
+  matches the user's device.
+- Stop the app. This first run was just to make sure that the app bundle is
+  installed in the simulator
+- Locate the app bundle folder in the Finder. For instance, on my system with
+  Xcode 4.2 and using the current 4.3 simulator the folder is located here:
+  /Users/patrick/Library/Application Support/iPhone Simulator/4.3.2/Applications/5A454C1C-1339-494A-8CDD-9DBF1FCB85D6/Little Go.app
+- Place a copy of the diagnostics information file into the
+  "Library/Application Support" folder which is located parallel to the
+  simulator app bundle
+
+Run the debug build you made earlier in the preparation phase. The following
+things will happen:
+- The application delegate detects the presence of the diagnostics information
+  file and performs the following special startup sequence
+- RestoreBugReportUserDefaultsCommand is executed to restore user defaults
+  that were extracted from the diagnostics information file
+- User defaults are then loaded in the usual way
+- RestoreBugReportApplicationState is executed instead of RestoreGameCommand;
+  more stuff is extracted from the diagnostics information file to bring the
+  application back to the exact state it was in when diagnostics information
+  file was generated
+
+Once the application has launched you are ready to test & debug.
+
+
+Crash Reporting
+---------------
+Little Go currently uses QuincyKit [1] for crash reporting. QuincyKit is free
+and open source, but the deciding factor has been that it allows me to send
+crash reports to my own server. If you are creating a clone of Little Go, make
+sure to change the submission URL that appears in ApplicationDelegate.mm to a
+server that you control.
+
+Bugsense [2] is the alternative that should be considered should there ever be a
+need to replace QuincyKit. Although the Bugsense library itself is not open
+source, they are friendly to open source projects and offer them their Plus
+package (which normally costs a hefty fee) for free.
+
+QuincyKit integration into the Little Go app (= the client) has been very easy
+and is described in [3]. Setting up the QuincyKit server is also described in
+[3] and pretty much a no-brainer. The default setup, however, leaves the admin
+web interface completely unprotected against anonymous access from the Internet.
+On [4] I have outlined how to protect the admin interface via HTTP
+authentication.
+
+Symbolication of a crash report is described in [3]. For easy reference I am
+reproducing the steps here:
+- From the extracted QuincyKit package, copy the content of the "server/local"
+  folder to your dev machine
+- If necessary, make the symbolication script executable:
+    chmod + x symbolicatecrash.pl
+- Copy the crash log file to the dev machine
+- The following command symbolicates the crash log file and prints the result
+  to stdout
+    symbolicatecrash.pl /path/to/crashlogfile
+- For this to work, the following packages must be present somewhere on the dev
+  machine:
+    Little Go.app
+    Little Go.app.dSYM
+  Obviously, the packages must match the build that the crash log file comes
+  from. The symbolication script tries to find the packages by peeking into the
+  Spotlight index and looking up the appropriate packages by UUID. If you have
+  an archived build hanging around on the machine, the script will find it and
+  use the packages from inside the archive.
+- You can also specify the folder that contains the necessary packages:
+    symbolicatecrash.pl /path/to/crashlogfile /path/to/packagefiles
+  I have never had to use this, so I don't know how this works.
+
+Once you have local symbolication up and running, you can add remote
+symbolication by doing the following:
+- Modify serverconfig.php so that it contains the necessary details to access
+  the QuincyKit server that receives crash log files from clients. NOTE: I was
+  unable to get this to work with HTTPS access.
+- Try whether this works by running
+    php symbolicate.php
+  Apparently this prints some error message which can be ignored.
+- Log in to the QuincyKit server admin web interface. If everything was set up
+  correctly, you should see that the crash log files on the server are now
+  symbolicated.
+
+Once remote symbolication works, you can take it one step further and add
+automation to the process:
+- Modify symbolicate.sh and com.crashreportsender.symbolicator.plist so that
+  they contain the proper paths
+- Make the shell script executable:
+    chmod + x symbolicate.sh
+- Start automation for the current user:
+  cp com.crashreportsender.symbolicator.plist User/Library/LaunchAgents
+  launchctl load com.crashreportsender.symbolicator.plist
+- Remote symbolication should now run every 15 minutes. If you want a different
+  interval you can change this in the .plist. file.
+
+[1] http://quincykit.net/
+[2] http://www.bugsense.com/pricing
+[3] https://github.com/TheRealKerni/QuincyKit
+[4] http://wiki.herzbube.ch/index.php/QuincyKit
