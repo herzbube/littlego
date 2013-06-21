@@ -29,39 +29,6 @@
 @implementation GtpUtilities
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and submits a GTP command using @a commandString.
-///
-/// If @a wait is true, the command is executed synchronously. This method does
-/// not return, instead it waits until the response for the command has been
-/// received, then it invokes @a aSelector on @a aTarget with the response
-/// object as the single argument.
-///
-/// If @a wait is false, the command is executed asynchronously and this method
-/// returns immediately. When the response for the command has been received,
-/// @a selector will be invoked on @a aTarget.
-// -----------------------------------------------------------------------------
-+ (void) submitCommand:(NSString*)commandString target:(id)aTarget selector:(SEL)aSelector waitUntilDone:(bool)wait
-{
-  GtpCommand* command;
-  if (wait)
-  {
-    command = [GtpCommand command:commandString];
-    command.waitUntilDone = true;
-  }
-  else
-  {
-    command = [GtpCommand command:commandString
-                   responseTarget:aTarget
-                         selector:aSelector];
-  }
-  [command submit];
-  if (wait)
-  {
-    [aTarget performSelector:aSelector withObject:command.response];
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns the Player object that provides the current game's active
 /// GTP engine profile.
 ///

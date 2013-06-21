@@ -33,8 +33,7 @@
 /// The sequence of operations performed by LoadGameCommand is this:
 /// - Submit the "loadsgf" GTP command to the GTP engine
 /// - Query the GTP engine for the information that was stored in the .sgf file
-///   and that is needed to start a new game
-/// - Store the information in NewGameModel
+///   and that is needed to start a new game (e.g. board size)
 /// - Start a new game by executing a NewGameCommand instance
 /// - Query the GTP engine for other information that was stored in the .sgf
 ///   file (handicap, komi, moves)

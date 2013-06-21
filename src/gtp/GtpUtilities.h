@@ -32,7 +32,6 @@
 {
 }
 
-+ (void) submitCommand:(NSString*)commandString target:(id)aTarget selector:(SEL)aSelector waitUntilDone:(bool)wait;
 + (Player*) playerProvidingActiveProfile;
 + (void) setupComputerPlayer;
 + (void) startPondering;

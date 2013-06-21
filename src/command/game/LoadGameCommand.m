@@ -30,6 +30,7 @@
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
@@ -119,109 +120,167 @@ static const int maxStepsForReplayMoves = 10;
   }
   DDLogVerbose(@"%@: Loading .sgf file %@", [self shortDescription], self.filePath);
 
+  bool runToCompletion = false;
+  NSString* errorMessage = @"Internal error";
   @try
   {
     [[LongRunningActionCounter sharedCounter] increment];
-
-    NSString* message;
-    if (self.restoreMode)
-      message = @"Restoring game...";
-    else
-      message = @"Loading game...";
-    [self.asynchronousCommandDelegate asynchronousCommand:self
-                                              didProgress:0.0
-                                          nextStepMessage:message];
-
+    [self setupProgressHUD];
     [GtpUtilities stopPondering];
-
-    // Need to work with temporary file whose name is known and guaranteed to not
-    // contain any characters that are prohibited by GTP
-    NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    if (! [fileManager fileExistsAtPath:self.filePath])
-    {
-      [self handleCommandFailed:@"Internal error: .sgf file not found"];
-      return false;
-    }
-    NSError* error;
-    BOOL success = [PathUtilities copyItemAtPath:self.filePath overwritePath:sgfTemporaryFilePath error:&error];
+    bool success = [self doGtpStuff:&errorMessage];
     if (! success)
-    {
-      [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to copy .sgf file, reason: %@", [error localizedDescription]]];
       return false;
+    @try
+    {
+      [[ApplicationStateManager sharedManager] beginSavePoint];
+      [self increaseProgressAndNotifyDelegate];
+      [self setupGoGame];
+      runToCompletion = true;
+      return true;
     }
-
-    m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
-    [fileManager changeCurrentDirectoryPath:temporaryDirectory];
-    // Use the file *NAME* without the path
-    NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
-    [GtpUtilities submitCommand:commandString
-                         target:self
-                       selector:@selector(loadsgfCommandResponseReceived:)
-                  waitUntilDone:true];
-
-    return true;
+    @finally
+    {
+      [[ApplicationStateManager sharedManager] applicationStateDidChange];
+      [[ApplicationStateManager sharedManager] commitSavePoint];
+    }
   }
   @finally
   {
+    if (! runToCompletion)
+      [self handleCommandFailed:errorMessage];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
+
+  // We should never get here - unless an exception occurs, all paths in the
+  // @try block above should return either true or false
+  assert(0);
+  return false;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for the "loadsgf" GTP command
-/// was received.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) loadsgfCommandResponseReceived:(GtpResponse*)response
+- (void) setupProgressHUD
 {
-  [self increaseProgressAndNotifyDelegate];
+  NSString* message;
+  if (self.restoreMode)
+    message = @"Restoring game...";
+  else
+    message = @"Loading game...";
+  [self.asynchronousCommandDelegate asynchronousCommand:self
+                                            didProgress:0.0
+                                        nextStepMessage:message];
+}
 
-  // Get rid of the temporary file
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
+- (bool) doGtpStuff:(NSString**)errorMessage
+{
+  bool success = [self copyArchiveToTempFile:errorMessage];
+  if (! success)
+    return false;
+  success = [self loadSgf:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self removeTempFile:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForBoardSize:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForKomi:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForHandicap:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForMoves:errorMessage];
+  if (! success)
+    return false;
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
+- (bool) copyArchiveToTempFile:(NSString**)errorMessage
+{
+  // Need to work with temporary file whose name is known and guaranteed to not
+  // contain any characters that are prohibited by GTP
+  NSString* temporaryDirectory = NSTemporaryDirectory();
+  NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if (! [fileManager fileExistsAtPath:self.filePath])
+  {
+    *errorMessage = @"Internal error: .sgf file not found";
+    return false;
+  }
+  NSError* error;
+  BOOL success = [PathUtilities copyItemAtPath:self.filePath overwritePath:sgfTemporaryFilePath error:&error];
+  if (! success)
+  {
+    *errorMessage = [NSString stringWithFormat:@"Internal error: Failed to copy .sgf file, reason: %@", [error localizedDescription]];
+    return false;
+  }
+  m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
+  [fileManager changeCurrentDirectoryPath:temporaryDirectory];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
+- (bool) loadSgf:(NSString**)errorMessage
+{
+  // Use the file *NAME* without the path
+  NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
+  GtpCommand* command = [GtpCommand command:commandString];
+  command.waitUntilDone = true;
+  [command submit];
+  if (! command.response.status)
+  {
+    *errorMessage = @"The game could not be loaded. Is the game file in .sgf format?";
+    return false;
+  }
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
+- (bool) removeTempFile:(NSString**)errorMessage
+{
   NSError* error;
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:&error];
   [fileManager changeCurrentDirectoryPath:m_oldCurrentDirectory];
   if (! success)
   {
-    [self handleCommandFailed:[NSString stringWithFormat:@"Internal error: Failed to remove temporary file after load, reason: %@", [error localizedDescription]]];
-    assert(0);
-    return;
+    *errorMessage = [NSString stringWithFormat:@"Internal error: Failed to remove temporary file after load, reason: %@", [error localizedDescription]];
+    return false;
   }
-
-  // Was GTP command successful? Failure is possible if the file we attempted
-  // to load was not an .sgf file.
-  if (! response.status)
-  {
-    // This is the most probable error scenario, so no "Internal error"
-    [self handleCommandFailed:@"The game could not be loaded. Is the game file in .sgf format?"];
-    return;
-  }
-
-  // Submit the next GTP command
-  NSString* commandString = @"go_point_numbers";
-  [GtpUtilities submitCommand:commandString
-                       target:self
-                     selector:@selector(gopointnumbersCommandResponseReceived:)
-                waitUntilDone:true];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for the "go_point_numbers" GTP
-/// command was received.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) gopointnumbersCommandResponseReceived:(GtpResponse*)response
+- (bool) askGtpEngineForBoardSize:(NSString**)errorMessage
 {
-  [self increaseProgressAndNotifyDelegate];
-
-  // Was GTP command successful?
-  if (! response.status)
+  GtpCommand* command = [GtpCommand command:@"go_point_numbers"];
+  command.waitUntilDone = true;
+  [command submit];
+  if (! command.response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect board size of the game to be loaded"];
-    assert(0);
-    return;
+    *errorMessage = @"Internal error: Failed to detect board size of the game to be loaded";
+    return false;
   }
-
   // Command and response are expected to look like this for a 19x19 board:
   //
   // go_point_numbers
@@ -233,149 +292,97 @@ static const int maxStepsForReplayMoves = 10;
   // So what we do here is simply count the lines to get the size of the board.
   // Not terribly sophisticated, but I have not found a better, or more
   // reliable way to query for board size.
-  NSArray* responseLines = [response.parsedResponse componentsSeparatedByString:@"\n"];
+  NSArray* responseLines = [command.response.parsedResponse componentsSeparatedByString:@"\n"];
   m_boardSize = responseLines.count;
-
-  // Submit the next GTP command
-  NSString* commandString = @"get_komi";
-  [GtpUtilities submitCommand:commandString
-                       target:self
-                     selector:@selector(getkomiCommandResponseReceived:)
-                waitUntilDone:true];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for the "get_komi" GTP command
-/// was received.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) getkomiCommandResponseReceived:(GtpResponse*)response
+- (bool) askGtpEngineForKomi:(NSString**)errorMessage
 {
-  [self increaseProgressAndNotifyDelegate];
-
-  // Was GTP command successful?
-  if (! response.status)
+  GtpCommand* command = [GtpCommand command:@"get_komi"];
+  command.waitUntilDone = true;
+  [command submit];
+  if (! command.response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect komi of the game to be loaded"];
-    assert(0);
-    return;
+    *errorMessage = @"Internal error: Failed to detect komi of the game to be loaded";
+    return false;
   }
-
-  m_komi = [response.parsedResponse copy];
-
-  // Submit the next GTP command
-  NSString* commandString = @"list_handicap";
-  [GtpUtilities submitCommand:commandString
-                       target:self
-                     selector:@selector(listhandicapCommandResponseReceived:)
-                waitUntilDone:true];
+  m_komi = [command.response.parsedResponse copy];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for the "list_handicap" GTP
-/// command was received.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) listhandicapCommandResponseReceived:(GtpResponse*)response
+- (bool) askGtpEngineForHandicap:(NSString**)errorMessage
 {
-  [self increaseProgressAndNotifyDelegate];
-
-  // Was GTP command successful?
-  if (! response.status)
+  GtpCommand* command = [GtpCommand command:@"list_handicap"];
+  command.waitUntilDone = true;
+  [command submit];
+  if (! command.response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect handicap of the game to be loaded"];
-    assert(0);
-    return;
+    *errorMessage = @"Internal error: Failed to detect handicap of the game to be loaded";
+    return false;
   }
-
-  m_handicap = [response.parsedResponse copy];
-
-  // Submit the next GTP command
-  NSString* commandString = @"list_moves";
-  [GtpUtilities submitCommand:commandString
-                       target:self
-                     selector:@selector(listmovesCommandResponseReceived:)
-                waitUntilDone:true];
+  m_handicap = [command.response.parsedResponse copy];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handle the event that the response for the "list_moves" GTP command
-/// was received.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) listmovesCommandResponseReceived:(GtpResponse*)response
+- (bool) askGtpEngineForMoves:(NSString**)errorMessage
 {
-  [self increaseProgressAndNotifyDelegate];
-
-  // Was GTP command successful?
-  if (! response.status)
+  GtpCommand* command = [GtpCommand command:@"list_moves"];
+  command.waitUntilDone = true;
+  [command submit];
+  if (! command.response.status)
   {
-    [self handleCommandFailed:@"Internal error: Failed to detect moves of the game to be loaded"];
-    assert(0);
-    return;
+    *errorMessage = @"Internal error: Failed to detect moves of the game to be loaded";
+    return false;
   }
-
-  m_moves = [response.parsedResponse copy];
-
-  [self handleCommandSucceeded];
+  m_moves = [command.response.parsedResponse copy];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Performs all steps required to handle successful command execution.
+/// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (void) handleCommandSucceeded
+- (void) setupGoGame
 {
-  @try
+  // The following sequence must always be run in its entirety. If an error
+  // occurs it is handled right at the source and is never escalated to this
+  // method. In practice, this can only happen when setupMoves:() encounters
+  // illegal moves. If an error occurs, handleCommandFailed:() is invoked
+  // behind our back to set up a new clean game. All game characteristics that
+  // have been set up to then are discarded.
+  [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
+  [self setupHandicap:m_handicap];
+  [self setupKomi:m_komi];
+  [self setupMoves:m_moves];
+  if (self.restoreMode)
   {
-    [[ApplicationStateManager sharedManager] beginSavePoint];
+    // Can't invoke notifyGoGameDocument 1) because we are not loading from the
+    // archive so we don't have an archive game name; and 2) because we don't
+    // know whether the restored game has previously been saved, so we also
+    // cannot save the document dirty flag. The consequences: The document dirty
+    // flag remains set (which will cause a warning when the next new game is
+    // started), and the document name remains uninitialized (which will make
+    // it appear to anybody who evaluates the document name as if the game has
+    // has never been saved before).
 
-    [self increaseProgressAndNotifyDelegate];
-    [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
-    [self setupHandicap:m_handicap];
-    [self setupKomi:m_komi];
-    [self setupMoves:m_moves];
-    if (self.restoreMode)
-    {
-      // Can't invoke notifyGoGameDocument 1) because we are not loading from the
-      // archive so we don't have an archive game name; and 2) because we don't
-      // know whether the restored game has previously been saved, so we also
-      // cannot save the document dirty flag. The consequences: The document dirty
-      // flag remains set (which will cause a warning when the next new game is
-      // started), and the document name remains uninitialized (which will make
-      // it appear to anybody who evaluates the document name as if the game has
-      // has never been saved before).
-
-      // No need to create a backup, we already have the one we are restoring from
-    }
-    else
-    {
-      [self notifyGoGameDocument];
-      [[[[BackupGameCommand alloc] init] autorelease] submit];
-    }
-    [GtpUtilities setupComputerPlayer];
-    [self triggerComputerPlayer];
+    // No need to create a backup, we already have the one we are restoring from
   }
-  @finally
+  else
   {
-    [[ApplicationStateManager sharedManager] applicationStateDidChange];
-    [[ApplicationStateManager sharedManager] commitSavePoint];
+    [self notifyGoGameDocument];
+    [[[[BackupGameCommand alloc] init] autorelease] submit];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Performs all steps required to handle failed command execution.
-///
-/// Failure may occur during any of the steps in this command. An alert with
-/// @a message is displayed to notify the user of the problem. In addition, the
-/// message is written to the application log.
-// -----------------------------------------------------------------------------
-- (void) handleCommandFailed:(NSString*)message
-{
-  // Start a new game anyway, with the goal to bring the app into a controlled
-  // state that matches the state of the GTP engine.
-  [self startNewGameForSuccessfulCommand:false boardSize:gDefaultBoardSize];
-
-  // Alert must be shown on main thread, otherwise there is the possibility of
-  // a crash (it's real, I've seen the crash reports!)
-  [self performSelectorOnMainThread:@selector(showAlert:) withObject:message waitUntilDone:YES];
-  DDLogError(@"%@", message);
+  [GtpUtilities setupComputerPlayer];
+  [self triggerComputerPlayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -681,6 +688,25 @@ static const int maxStepsForReplayMoves = 10;
 {
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs all steps required to handle failed command execution.
+///
+/// Failure may occur during any of the steps in this command. An alert with
+/// @a message is displayed to notify the user of the problem. In addition, the
+/// message is written to the application log.
+// -----------------------------------------------------------------------------
+- (void) handleCommandFailed:(NSString*)message
+{
+  // Start a new game anyway, with the goal to bring the app into a controlled
+  // state that matches the state of the GTP engine.
+  [self startNewGameForSuccessfulCommand:false boardSize:gDefaultBoardSize];
+
+  // Alert must be shown on main thread, otherwise there is the possibility of
+  // a crash (it's real, I've seen the crash reports!)
+  [self performSelectorOnMainThread:@selector(showAlert:) withObject:message waitUntilDone:YES];
+  DDLogError(@"%@", message);
 }
 
 @end
