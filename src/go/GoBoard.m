@@ -30,7 +30,6 @@
 #import "GoVertex.h"
 #import "../main/ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
-#import "../gtp/GtpCommand.h"
 
 
 // -----------------------------------------------------------------------------
