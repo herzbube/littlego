@@ -19,6 +19,7 @@
 #import "PlayMoveCommand.h"
 #import "ComputerPlayMoveCommand.h"
 #import "../backup/BackupGameCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -108,43 +109,6 @@
   // Must get this before updating the game model
   NSString* colorForMove = self.game.currentPlayer.colorString;
 
-  @try
-  {
-    [[ApplicationStateManager sharedManager] beginSavePoint];
-
-    // Update game model now, don't wait until we get the response to the GTP
-    // command (as most of the other commands do). If we update the game model
-    // now, the play view only needs to be updated once, which is good! If we
-    // wait with the model update until after we receive the GTP response, the
-    // play view will be updated twice:
-    // - Once immediately after this method returns, which causes the cross-hair
-    //   point to disappear
-    // - A second time after a slight delay, when the GTP response arrives and
-    //   we perform the model update
-    // The delay looks very bad: It appears as if the stone that was just set by
-    // the user's finger goes away for a moment (first update: the cross-hair
-    // point is removed) and then reappears after a moment (second update: the
-    // actual stone is set due to the model update).
-    switch (self.moveType)
-    {
-      case GoMoveTypePlay:
-        [self.game play:self.point];
-        break;
-      case GoMoveTypePass:
-        [self.game pass];
-        break;
-      default:
-        DDLogError(@"%@: Unexpected move type %d", [self shortDescription], self.moveType);
-        assert(0);
-        return false;
-    }
-  }
-  @finally
-  {
-    [[ApplicationStateManager sharedManager] applicationStateDidChange];
-    [[ApplicationStateManager sharedManager] commitSavePoint];
-  }
-
   NSString* commandString = @"play ";
   commandString = [commandString stringByAppendingString:colorForMove];
   commandString = [commandString stringByAppendingString:@" "];
@@ -169,6 +133,45 @@
     assert(0);
     DDLogError(@"%@: GTP engine failed to process command '%@', response was: %@", [self shortDescription], commandString, command.response.parsedResponse);
     return false;
+  }
+
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+
+    switch (self.moveType)
+    {
+      case GoMoveTypePlay:
+      {
+        [self.game play:self.point];
+        break;
+      }
+      case GoMoveTypePass:
+      {
+        [self.game pass];
+        break;
+      }
+      default:
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Unexpected move type %d", self.moveType];
+        DDLogError(@"%@: %@", [self shortDescription], errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"%@: Exception name: %@. Exception reason: %@.", [self shortDescription], [exception name], [exception reason]);
+    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    return false;
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+    [[ApplicationStateManager sharedManager] commitSavePoint];
   }
 
   [[[[BackupGameCommand alloc] init] autorelease] submit];
