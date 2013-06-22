@@ -150,12 +150,8 @@
 - (void) setupGtpBoard
 {
   GoBoard* board = [GoGame sharedGame].board;
-  GtpCommand* command = [GtpCommand command:@"clear_board"];
-  command.waitUntilDone = false;
-  [command submit];
-  command = [GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]];
-  command.waitUntilDone = false;
-  [command submit];
+  [[GtpCommand command:@"clear_board"] submit];
+  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]] submit];
 }
 
 // -----------------------------------------------------------------------------
