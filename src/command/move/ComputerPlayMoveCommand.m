@@ -99,10 +99,9 @@
   // gives the UI the time to update (e.g. status view, activity indicator).
   NSString* commandString = @"genmove ";
   commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
-  GtpCommand* command = [GtpCommand command:commandString
-                             responseTarget:self
-                                   selector:@selector(gtpResponseReceived:)];
-  command.waitUntilDone = false;
+  GtpCommand* command = [GtpCommand asynchronousCommand:commandString
+                                         responseTarget:self
+                                               selector:@selector(gtpResponseReceived:)];
   [command submit];
 
   // Thinking state must change after any of the other things; this order is

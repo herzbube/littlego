@@ -40,15 +40,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpCommand instance that wraps
-/// the command string @a command and performs @a selector on @a target when
-/// the GTP response to this command is received.
+/// the command string @a command, is executed asynchronously, and performs
+/// @a selector on @a target when the GTP response to this command is received.
 // -----------------------------------------------------------------------------
-+ (GtpCommand*) command:(NSString*)command responseTarget:(id)target selector:(SEL)selector
++ (GtpCommand*) asynchronousCommand:(NSString*)command responseTarget:(id)target selector:(SEL)selector
 {
   GtpCommand* cmd = [[GtpCommand alloc] init];
   if (cmd)
   {
     cmd.command = command;
+    cmd.waitUntilDone = false;
     cmd.responseTarget = target;
     cmd.responseTargetSelector = selector;
     [cmd autorelease];

@@ -42,7 +42,7 @@
 }
 
 + (GtpCommand*) command:(NSString*)command;
-+ (GtpCommand*) command:(NSString*)command responseTarget:(id)target selector:(SEL)selector;
++ (GtpCommand*) asynchronousCommand:(NSString*)command responseTarget:(id)target selector:(SEL)selector;
 - (void) submit;
 
 /// @brief The GTP command string, including arguments.
