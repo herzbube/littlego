@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "RestoreBugReportApplicationState.h"
+#import "RestoreBugReportApplicationStateCommand.h"
 #import "../../diagnostics/BugReportUtilities.h"
 #import "../../go/GoGame.h"
 #import "../../gtp/GtpCommand.h"
@@ -26,20 +26,20 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// RestoreBugReportApplicationState.
+/// RestoreBugReportApplicationStateCommand.
 // -----------------------------------------------------------------------------
-@interface RestoreBugReportApplicationState()
+@interface RestoreBugReportApplicationStateCommand()
 @property(nonatomic, retain) GoGame* unarchivedGame;
 @end
 
 
-@implementation RestoreBugReportApplicationState
+@implementation RestoreBugReportApplicationStateCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a RestoreBugReportApplicationState object.
+/// @brief Initializes a RestoreBugReportApplicationStateCommand object.
 ///
 /// @note This is the designated initializer of
-/// RestoreBugReportApplicationState.
+/// RestoreBugReportApplicationStateCommand.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -52,8 +52,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this RestoreBugReportApplicationState
-/// object.
+/// @brief Deallocates memory allocated by this
+/// RestoreBugReportApplicationStateCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "EditGtpEngineProfileSettingsController.h"
+#import "EditPlayingStrengthSettingsController.h"
 #import "../player/GtpEngineProfile.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
@@ -24,10 +24,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Profile Settings" table
-/// view.
+/// @brief Enumerates the sections presented in the "Playing strength settings"
+/// table view.
 // -----------------------------------------------------------------------------
-enum EditGtpEngineProfileTableViewSection
+enum EditPlayingStrengthSettingsTableViewSection
 {
   MaxMemorySection,
   ThreadsSection,
@@ -118,23 +118,23 @@ enum MaxGamesCategory
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// EditGtpEngineProfileSettingsController.
+/// EditPlayingStrengthSettingsController.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileSettingsController()
+@interface EditPlayingStrengthSettingsController()
 @property(nonatomic, retain) UISwitch* reuseSubtreeSwitch;
 @end
 
 
-@implementation EditGtpEngineProfileSettingsController
+@implementation EditPlayingStrengthSettingsController
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an
-/// EditGtpEngineProfileSettingsController instance of grouped style that is
-/// used to edit @a profile.
+/// EditPlayingStrengthSettingsController instance of grouped style that is
+/// used to edit the playing strength attributes of @a profile.
 // -----------------------------------------------------------------------------
-+ (EditGtpEngineProfileSettingsController*) controllerForProfile:(GtpEngineProfile*)profile withDelegate:(id<EditGtpEngineProfileSettingsDelegate>)delegate
++ (EditPlayingStrengthSettingsController*) controllerForProfile:(GtpEngineProfile*)profile withDelegate:(id<EditPlayingStrengthSettingsDelegate>)delegate
 {
-  EditGtpEngineProfileSettingsController* controller = [[EditGtpEngineProfileSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
+  EditPlayingStrengthSettingsController* controller = [[EditPlayingStrengthSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
@@ -146,7 +146,7 @@ enum MaxGamesCategory
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this
-/// EditGtpEngineProfileSettingsController object.
+/// EditPlayingStrengthSettingsController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -164,7 +164,7 @@ enum MaxGamesCategory
 {
   [super viewDidLoad];
 
-  self.navigationItem.title = @"Advanced Profile Settings";
+  self.navigationItem.title = @"Playing strength";
 }
 
 // -----------------------------------------------------------------------------

@@ -90,7 +90,7 @@ enum PlayerListSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// EditGtpEngineProfileSettingsController.
+/// EditGtpEngineProfileController.
 // -----------------------------------------------------------------------------
 @interface EditGtpEngineProfileController()
 @property(nonatomic, retain) NSArray* playersUsingTheProfile;
@@ -496,9 +496,9 @@ enum PlayerListSectionItem
       }
       case PlayingStrengthAdvancedConfigurationItem:
       {
-        EditGtpEngineProfileSettingsController* editProfileSettingsController = [[EditGtpEngineProfileSettingsController controllerForProfile:self.profile withDelegate:self] retain];
-        [self.navigationController pushViewController:editProfileSettingsController animated:YES];
-        [editProfileSettingsController release];
+        EditPlayingStrengthSettingsController* editPlayingStrengthSettingsController = [[EditPlayingStrengthSettingsController controllerForProfile:self.profile withDelegate:self] retain];
+        [self.navigationController pushViewController:editPlayingStrengthSettingsController animated:YES];
+        [editPlayingStrengthSettingsController release];
         break;
       }
       default:
@@ -661,9 +661,9 @@ enum PlayerListSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileSettingsDelegate protocol method.
+/// @brief EditPlayingStrengthSettingsDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didChangeProfile:(EditGtpEngineProfileSettingsController*)editGtpEngineProfileSettingsController
+- (void) didChangeProfile:(EditPlayingStrengthSettingsController*)editPlayingStrengthSettingsController
 {
   NSUInteger sectionIndex = PlayingStrengthSection;
   NSUInteger rowIndex = PlayingStrengthItem;

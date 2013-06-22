@@ -20,18 +20,18 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The HandleDocumentInteraction class is responsible for importing an
-/// .sgf file that was passed into the application via the system's document
-/// interaction mechanism.
+/// @brief The HandleDocumentInteractionCommand class is responsible for
+/// importing an .sgf file that was passed into the application via the
+/// system's document interaction mechanism.
 ///
 /// The URL referring to .sgf file is the value of the ApplicationDelegate
 /// property @e documentInteractionURL.
 ///
-/// HandleDocumentInteraction displays an alert to the user informing her under
-/// which name the imported .sgf file can be found in the archive. Command
-/// execution returns while the alert is still displayed.
+/// HandleDocumentInteractionCommand displays an alert to the user informing
+/// her under which name the imported .sgf file can be found in the archive.
+/// Command execution returns while the alert is still displayed.
 // -----------------------------------------------------------------------------
-@interface HandleDocumentInteraction : CommandBase
+@interface HandleDocumentInteractionCommand : CommandBase
 {
 }
 

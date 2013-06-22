@@ -20,24 +20,24 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The RestoreBugReportApplicationState class is responsible for
+/// @brief The RestoreBugReportApplicationStateCommand class is responsible for
 /// restoring the application state from the information contained in a bug
 /// report diagnostics information package.
 ///
-/// RestoreBugReportApplicationState performs the following operations to bring
-/// the application into the same state that existed when the diagnostics
-/// information package was generated:
+/// RestoreBugReportApplicationStateCommand performs the following operations
+/// to bring the application into the same state that existed when the
+/// diagnostics information package was generated:
 /// - Unarchive in-memory objects from the appropriate dump file that is part
 ///   of the diagnostics information package
 /// - Enable scoring mode if necessary
 /// - Load the .sgf file that corresponds to the current game into the GTP
 ///   engine
 ///
-/// To achieve its task, RestoreBugReportApplicationState looks for the
+/// To achieve its task, RestoreBugReportApplicationStateCommand looks for the
 /// diagnostics information package in a pre-determined folder (cf.
 /// BugReportUtilities).
 // -----------------------------------------------------------------------------
-@interface RestoreBugReportApplicationState : CommandBase
+@interface RestoreBugReportApplicationStateCommand : CommandBase
 {
 }
 

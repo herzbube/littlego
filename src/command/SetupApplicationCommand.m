@@ -17,9 +17,9 @@
 
 // Project includes
 #import "SetupApplicationCommand.h"
-#import "HandleDocumentInteraction.h"
+#import "HandleDocumentInteractionCommand.h"
 #import "LoadOpeningBookCommand.h"
-#import "diagnostics/RestoreBugReportApplicationState.h"
+#import "diagnostics/RestoreBugReportApplicationStateCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
@@ -91,7 +91,7 @@
     ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
     if (ApplicationLaunchModeDiagnostics == delegate.applicationLaunchMode)
     {
-      RestoreBugReportApplicationState* command = [[[RestoreBugReportApplicationState alloc] init] autorelease];
+      RestoreBugReportApplicationStateCommand* command = [[[RestoreBugReportApplicationStateCommand alloc] init] autorelease];
       bool success = [command submit];
       if (! success)
       {
@@ -109,7 +109,7 @@
       if (delegate.documentInteractionURL)
       {
         // Control returns while an alert is still being displayed
-        [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
+        [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
       }
     }
   }

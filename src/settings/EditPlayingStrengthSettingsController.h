@@ -20,49 +20,49 @@
 #import "../ui/ItemPickerController.h"
 
 // Forward declarations
-@class EditGtpEngineProfileSettingsController;
+@class EditPlayingStrengthSettingsController;
 @class GtpEngineProfile;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The EditGtpEngineProfileSettingsDelegate protocol must be implemented
-/// by the delegate of EditGtpEngineProfileSettingsController.
+/// @brief The EditPlayingStrengthSettingsDelegate protocol must be implemented
+/// by the delegate of EditPlayingStrengthSettingsController.
 // -----------------------------------------------------------------------------
-@protocol EditGtpEngineProfileSettingsDelegate
-/// @brief This method is invoked after @a editGtpEngineProfileSettingsController
+@protocol EditPlayingStrengthSettingsDelegate
+/// @brief This method is invoked after @a EditPlayingStrengthSettingsController
 /// has updated its profile object with new information.
-- (void) didChangeProfile:(EditGtpEngineProfileSettingsController*)editGtpEngineProfileSettingsController;
+- (void) didChangeProfile:(EditPlayingStrengthSettingsController*)editPlayingStrengthSettingsController;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The EditGtpEngineProfileSettingsController class is responsible for
-/// managing user interaction on the "Profile Settings" view.
+/// @brief The EditPlayingStrengthSettingsController class is responsible for
+/// managing user interaction on the "Playing strength" preferences view.
 ///
-/// The "Profile Settings" view allows the advanced user to edit individual
-/// settings associated with a GtpEngineProfile object. The view is a generic
-/// UITableView whose input elements are created dynamically by
-/// EditGtpEngineProfileSettingsController.
+/// The "Playing strength" preferences view allows the advanced user to edit
+/// individual, playing-strength related preferences associated with a
+/// GtpEngineProfile object. The view is a generic UITableView whose input
+/// elements are created dynamically by EditPlayingStrengthSettingsController.
 ///
-/// EditGtpEngineProfileSettingsController expects to be displayed by a
+/// EditPlayingStrengthSettingsController expects to be displayed by a
 /// navigation controller. For this reason it populates its own navigation item
 /// with controls that are then expected to be displayed in the navigation bar
 /// of the parent navigation controller.
 ///
-/// EditGtpEngineProfileSettingsController expects to be configured with a
+/// EditPlayingStrengthSettingsController expects to be configured with a
 /// delegate that can be informed when the user makes any changes. For this to
 /// work, the delegate must implement the protocol
-/// EditGtpEngineProfileSettingsDelegate.
+/// EditPlayingStrengthSettingsDelegate.
 // -----------------------------------------------------------------------------
-@interface EditGtpEngineProfileSettingsController : UITableViewController <MaxMemoryControllerDelegate, ItemPickerDelegate, UIActionSheetDelegate>
+@interface EditPlayingStrengthSettingsController : UITableViewController <MaxMemoryControllerDelegate, ItemPickerDelegate, UIActionSheetDelegate>
 {
 }
 
-+ (EditGtpEngineProfileSettingsController*) controllerForProfile:(GtpEngineProfile*)profile withDelegate:(id<EditGtpEngineProfileSettingsDelegate>)delegate;
++ (EditPlayingStrengthSettingsController*) controllerForProfile:(GtpEngineProfile*)profile withDelegate:(id<EditPlayingStrengthSettingsDelegate>)delegate;
 
 /// @brief This is the delegate that will be informed when the user makes any
 /// changes.
-@property(nonatomic, assign) id<EditGtpEngineProfileSettingsDelegate> delegate;
+@property(nonatomic, assign) id<EditPlayingStrengthSettingsDelegate> delegate;
 /// @brief The model object
 @property(nonatomic, retain) GtpEngineProfile* profile;
 

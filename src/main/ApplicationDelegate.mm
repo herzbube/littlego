@@ -49,7 +49,7 @@
 #import "../diagnostics/GtpLogModel.h"
 #import "../diagnostics/LoggingModel.h"
 #import "../command/CommandProcessor.h"
-#import "../command/HandleDocumentInteraction.h"
+#import "../command/HandleDocumentInteractionCommand.h"
 #import "../command/SetupApplicationCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
@@ -311,7 +311,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   }
   self.documentInteractionURL = url;
   // Control returns before the .sgf file is actually loaded
-  [[[[HandleDocumentInteraction alloc] init] autorelease] submit];
+  [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
   return YES;
 }
 

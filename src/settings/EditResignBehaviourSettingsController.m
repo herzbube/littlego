@@ -25,10 +25,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Resign Behaviour" table
-/// view.
+/// @brief Enumerates the sections presented in the "Resign behaviour settings"
+/// table view.
 // -----------------------------------------------------------------------------
-enum EditGtpEngineProfileTableViewSection
+enum EditResignBehaviourSettingsTableViewSection
 {
   ResignThresholdSection,
   ResignMinGamesSection,

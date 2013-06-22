@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "EditGtpEngineProfileSettingsController.h"
+#import "EditPlayingStrengthSettingsController.h"
 #import "EditResignBehaviourSettingsController.h"
 #import "../ui/EditTextController.h"
 #import "../ui/ItemPickerController.h"
@@ -52,10 +52,11 @@
 ///
 /// The "Edit/New Profile" view allows the user to edit basic information
 /// associated with a GtpEngineProfile object. The user can adjust the profile's
-/// playing strength either by selecting one of several pre-defined combinations
-/// of settings, or by tweaking individual settings. In the latter case, editing
-/// of those settings is delegated to EditGtpEngineProfileSettingsController
-/// (isn't that a nice name?).
+/// playing strength and resign behaviour either by selecting one of several
+/// pre-defined combinations of settings, or by tweaking individual settings.
+/// In the latter case, editing of those settings is delegated to
+/// EditPlayingStrengthSettingsController and
+/// EditResignBehaviourSettingsController, respectively.
 ///
 /// The view managed by EditGtpEngineProfileController is a generic UITableView
 /// whose input elements are created dynamically by
@@ -82,7 +83,7 @@
 @interface EditGtpEngineProfileController : UITableViewController <UITextFieldDelegate,
                                                                    EditTextDelegate,
                                                                    ItemPickerDelegate,
-                                                                   EditGtpEngineProfileSettingsDelegate,
+                                                                   EditPlayingStrengthSettingsDelegate,
                                                                    EditResignBehaviourSettingsDelegate>
 {
 }

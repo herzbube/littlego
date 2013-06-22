@@ -16,14 +16,14 @@
 
 
 // Project includes
-#import "HandleDocumentInteraction.h"
+#import "HandleDocumentInteractionCommand.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../main/MainTabBarController.h"
 #import "../utility/PathUtilities.h"
 
 
-@implementation HandleDocumentInteraction
+@implementation HandleDocumentInteractionCommand
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
@@ -69,7 +69,7 @@
                                                    delegate:nil
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeHandleDocumentInteractionSucceeded;
+    alert.tag = AlertViewTypeHandleDocumentInteractionCommandSucceeded;
     [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
     [alert release];
     return true;
@@ -87,7 +87,7 @@
                                                    delegate:nil
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeHandleDocumentInteractionFailed;
+    alert.tag = AlertViewTypeHandleDocumentInteractionCommandFailed;
     [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
     [alert release];
     return false;

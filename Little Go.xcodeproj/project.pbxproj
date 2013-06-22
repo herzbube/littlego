@@ -105,8 +105,8 @@
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
 		CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
-		CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */; };
-		CD1DB60F170244CF00C2E648 /* HandleDocumentInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */; };
+		CD1DB60E1702436B00C2E648 /* HandleDocumentInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */; };
+		CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */; };
 		CD1DB610170257C000C2E648 /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
 		CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
 		CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
@@ -129,7 +129,7 @@
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
 		CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
 		CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
-		CD2D3AA0174C34A60030EDE4 /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
+		CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 		CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
 		CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
@@ -199,10 +199,10 @@
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48AD9815A7281C004A7096 /* MessageUI.framework */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
-		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
 		CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
-		CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */; };
+		CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
@@ -323,7 +323,7 @@
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
-		CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */; };
+		CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBF979E13EC750C00476748 /* AudioToolbox.framework */; };
@@ -558,8 +558,8 @@
 		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
-		CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteraction.h; sourceTree = "<group>"; };
-		CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteraction.m; sourceTree = "<group>"; };
+		CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteractionCommand.h; sourceTree = "<group>"; };
+		CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteractionCommand.m; sourceTree = "<group>"; };
 		CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
 		CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
 		CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
@@ -656,8 +656,8 @@
 		CD3D5147147436C70098D8E0 /* makedist.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = makedist.sh; sourceTree = "<group>"; };
 		CD48AD9815A7281C004A7096 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
-		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationState.h; sourceTree = "<group>"; };
-		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationState.m; sourceTree = "<group>"; };
+		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
+		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
 		CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportUserDefaultsCommand.h; sourceTree = "<group>"; };
 		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
 		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
@@ -751,8 +751,8 @@
 		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
-		CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileSettingsController.h; sourceTree = "<group>"; };
-		CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileSettingsController.m; sourceTree = "<group>"; };
+		CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayingStrengthSettingsController.h; sourceTree = "<group>"; };
+		CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayingStrengthSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
 		CDBB035A133537C8007C1C3E /* GoBoardRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegion.m; sourceTree = "<group>"; };
 		CDBB0399133573CC007C1C3E /* GoVertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertex.h; sourceTree = "<group>"; };
@@ -1229,10 +1229,10 @@
 				CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
-				CDB684FC161591760038AADE /* EditGtpEngineProfileSettingsController.h */,
-				CDB684FD161591760038AADE /* EditGtpEngineProfileSettingsController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
 				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */,
+				CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */,
 				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
 				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
 				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
@@ -1470,8 +1470,8 @@
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
 				CDD48FBE1414038000188B6A /* CommandProcessor.h */,
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
-				CD1DB60C1702436700C2E648 /* HandleDocumentInteraction.h */,
-				CD1DB60D1702436800C2E648 /* HandleDocumentInteraction.m */,
+				CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */,
+				CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */,
 				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
 				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
@@ -1815,8 +1815,8 @@
 			children = (
 				CDFA32A315A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.h */,
 				CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */,
-				CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationState.h */,
-				CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationState.m */,
+				CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */,
+				CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */,
 				CD48AD9F15A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.h */,
 				CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */,
 			);
@@ -2123,10 +2123,10 @@
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
-				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
-				CDB684FE161591760038AADE /* EditGtpEngineProfileSettingsController.m in Sources */,
+				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
 				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
 				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
@@ -2158,7 +2158,7 @@
 				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
-				CD1DB60E1702436B00C2E648 /* HandleDocumentInteraction.m in Sources */,
+				CD1DB60E1702436B00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
@@ -2257,7 +2257,7 @@
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
-				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationState.m in Sources */,
+				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
@@ -2275,7 +2275,7 @@
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
-				CD1DB60F170244CF00C2E648 /* HandleDocumentInteraction.m in Sources */,
+				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
@@ -2340,7 +2340,7 @@
 				CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
-				CD2D3AA0174C34A60030EDE4 /* EditGtpEngineProfileSettingsController.m in Sources */,
+				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
