@@ -45,7 +45,6 @@
 
   NSString* commandString = [NSString stringWithFormat:@"book_load %@", bookFileName];
   GtpCommand* command = [GtpCommand command:commandString];
-  command.waitUntilDone = true;
   [command submit];
 
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];

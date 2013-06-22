@@ -260,12 +260,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Displays EditTextController to allow the user to add a new GTP
-/// command to the list of canned commands.
+/// @brief Submits a GTP command using the text entered by the user as the
+/// command text.
 // -----------------------------------------------------------------------------
 - (void) submitCommand:(id)sender
 {
-  [[GtpCommand command:self.textField.text] submit];
+  GtpCommand* command = [GtpCommand command:self.textField.text];
+  command.waitUntilDone = false;
+  [command submit];
   [self.navigationController popViewControllerAnimated:YES];
 }
 

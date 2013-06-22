@@ -132,7 +132,6 @@
 
   NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", bugReportCurrentGameFileName];
   GtpCommand* gtpCommand = [GtpCommand command:commandString];
-  gtpCommand.waitUntilDone = true;
   [gtpCommand submit];
   bool success = gtpCommand.response.status;
 

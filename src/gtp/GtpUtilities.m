@@ -89,8 +89,9 @@
 // -----------------------------------------------------------------------------
 + (void) startPondering
 {
-  NSString* commandString = @"uct_param_player ponder 1";
-  [[GtpCommand command:commandString] submit];
+  GtpCommand* command = [GtpCommand command:@"uct_param_player ponder 1"];
+  command.waitUntilDone = false;
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -98,8 +99,9 @@
 // -----------------------------------------------------------------------------
 + (void) stopPondering
 {
-  NSString* commandString = @"uct_param_player ponder 0";
-  [[GtpCommand command:commandString] submit];
+  GtpCommand* command = [GtpCommand command:@"uct_param_player ponder 0"];
+  command.waitUntilDone = false;
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------

@@ -126,7 +126,6 @@
       return false;
   }
   GtpCommand* command = [GtpCommand command:commandString];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {

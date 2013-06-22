@@ -371,7 +371,6 @@
                withObject:askGtpEngineForDeadStonesStarts
             waitUntilDone:YES];
     GtpCommand* command = [GtpCommand command:@"final_status_list dead"];
-    command.waitUntilDone = true;
     [command submit];
     if (command.response.status)
     {

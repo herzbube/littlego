@@ -76,7 +76,6 @@
 - (bool) syncGTPEngineClearBoard
 {
   GtpCommand* commandClearBoard = [GtpCommand command:@"clear_board"];
-  commandClearBoard.waitUntilDone = true;
   [commandClearBoard submit];
   assert(commandClearBoard.response.status);
   return commandClearBoard.response.status;
@@ -92,7 +91,6 @@
   if (0 == handicap)
     return true;
   GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", handicap]];
-  commandFixedHandicap.waitUntilDone = true;
   [commandFixedHandicap submit];
   assert(commandFixedHandicap.response.status);
   return commandFixedHandicap.response.status;
@@ -137,7 +135,6 @@
     move = move.next;
   }
   GtpCommand* commandSetup = [GtpCommand command:commandString];
-  commandSetup.waitUntilDone = true;
   [commandSetup submit];
   assert(commandSetup.response.status);
   return commandSetup.response.status;

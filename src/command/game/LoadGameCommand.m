@@ -241,7 +241,6 @@ static const int maxStepsForReplayMoves = 10;
   // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
   GtpCommand* command = [GtpCommand command:commandString];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {
@@ -274,7 +273,6 @@ static const int maxStepsForReplayMoves = 10;
 - (bool) askGtpEngineForBoardSize:(NSString**)errorMessage
 {
   GtpCommand* command = [GtpCommand command:@"go_point_numbers"];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {
@@ -303,7 +301,6 @@ static const int maxStepsForReplayMoves = 10;
 - (bool) askGtpEngineForKomi:(NSString**)errorMessage
 {
   GtpCommand* command = [GtpCommand command:@"get_komi"];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {
@@ -320,7 +317,6 @@ static const int maxStepsForReplayMoves = 10;
 - (bool) askGtpEngineForHandicap:(NSString**)errorMessage
 {
   GtpCommand* command = [GtpCommand command:@"list_handicap"];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {
@@ -337,7 +333,6 @@ static const int maxStepsForReplayMoves = 10;
 - (bool) askGtpEngineForMoves:(NSString**)errorMessage
 {
   GtpCommand* command = [GtpCommand command:@"list_moves"];
-  command.waitUntilDone = true;
   [command submit];
   if (! command.response.status)
   {

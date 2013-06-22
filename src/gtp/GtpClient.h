@@ -32,11 +32,11 @@
 /// spawns a new secondary thread, then blocks and waits for GTP commands to be
 /// submitted via submit:(). submit:() is usually (but not necessarily) invoked
 /// in the main thread's context. If the command's @e waitUntilDone property is
-/// false (the default), submit:() returns immediately, while the command is
-/// processed and passed on to the GtpEngine asynchronously in the secondary
-/// thread's context. If the command's @e waitUntilDone property is true,
-/// submit:() blocks and waits until after the command has been processed and
-/// its answer was received.
+/// false, submit:() returns immediately, while the command is processed and
+/// passed on to the GtpEngine asynchronously in the secondary thread's context.
+/// If the command's @e waitUntilDone property is true, submit:() blocks and
+/// waits until after the command has been processed and its answer was
+/// received.
 ///
 /// @note As a convenience, GtpCommand is capable of submitting itself so that
 /// clients do not have to concern themselves with where to obtain an instance

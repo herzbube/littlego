@@ -31,7 +31,7 @@
 /// GtpClient, thus clients do not have to concern themselves with where to
 /// obtain a GtpClient instance.
 ///
-/// GtpCommand can be executed synchronously or asynchronously (the default).
+/// GtpCommand can be executed synchronously (the default) or asynchronously.
 /// In the latter case, a target object and selector may be specified that
 /// are invoked when the response to the command has been received. This
 /// callback always occurs in the context of the thread that the command was
@@ -52,8 +52,8 @@
 /// @brief True if execution should wait for the GTP response (i.e. command
 /// execution is synchronous).
 ///
-/// The default for this property is false (i.e. command execution is
-/// asynchronous).
+/// The default for this property is true (i.e. command execution is
+/// synchronous).
 ///
 /// If this property is true, @e responseTarget and @e responseTargetSelector
 /// are ignored.

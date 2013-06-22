@@ -102,6 +102,7 @@
   GtpCommand* command = [GtpCommand command:commandString
                              responseTarget:self
                                    selector:@selector(gtpResponseReceived:)];
+  command.waitUntilDone = false;
   [command submit];
 
   // Thinking state must change after any of the other things; this order is

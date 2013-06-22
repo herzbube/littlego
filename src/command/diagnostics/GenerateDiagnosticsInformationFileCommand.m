@@ -245,7 +245,6 @@
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", bugReportCurrentGameFileName];
   GtpCommand* gtpCommand = [GtpCommand command:commandString];
-  gtpCommand.waitUntilDone = true;
   [gtpCommand submit];
   bool success = gtpCommand.response.status;
 
@@ -400,7 +399,6 @@
 - (NSString*) boardAsSeenByGtpEngine
 {
   GtpCommand* gtpCommand = [GtpCommand command:@"showboard"];
-  gtpCommand.waitUntilDone = true;
   [gtpCommand submit];
   bool success = gtpCommand.response.status;
   if (! success)

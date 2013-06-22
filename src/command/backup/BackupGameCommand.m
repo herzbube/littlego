@@ -38,9 +38,7 @@
   DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolderPath);
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
-  GtpCommand* command = [GtpCommand command:commandString];
-  command.waitUntilDone = true;
-  [command submit];
+  [[GtpCommand command:commandString] submit];
 
   // Switch back to the original directory
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];

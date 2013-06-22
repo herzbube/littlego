@@ -70,7 +70,7 @@
 
   self.command = nil;
   self.submittingThread = nil;
-  self.waitUntilDone = false;
+  self.waitUntilDone = true;
   self.response = nil;
   self.responseTarget = nil;
   self.responseTargetSelector = nil;

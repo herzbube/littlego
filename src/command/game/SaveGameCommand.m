@@ -90,7 +90,6 @@
   // Use the file *NAME* without the path
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfTemporaryFileName];
   GtpCommand* command = [GtpCommand command:commandString];
-  command.waitUntilDone = true;
   [command submit];
 
   if (temporarilyResyncGTPEngine)

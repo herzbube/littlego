@@ -167,7 +167,9 @@
 /// is deactivated first.
 ///
 /// This method returns control to the caller before all GTP commands have been
-/// processed.
+/// processed. This is so that the UI is not blocked if another lengthy GTP
+/// command (e.g. "genmove") is already being executed at the time that the
+/// profile settings are changed
 // -----------------------------------------------------------------------------
 - (void) applyProfile
 {
@@ -179,12 +181,15 @@
   long long fuegoMaxMemoryInBytes = self.fuegoMaxMemory * 1000000;
   commandString = [NSString stringWithFormat:@"uct_max_memory %lld", fuegoMaxMemoryInBytes];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_search number_threads %d", self.fuegoThreadCount];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_player reuse_subtree %d", (self.fuegoReuseSubtree ? 1 : 0)];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   if (self.fuegoPondering)
     [GtpUtilities startPondering];
@@ -192,19 +197,24 @@
     [GtpUtilities stopPondering];
   commandString = [NSString stringWithFormat:@"uct_param_player max_ponder_time %u", self.fuegoMaxPonderTime];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   commandString = [NSString stringWithFormat:@"go_param timelimit %u", self.fuegoMaxThinkingTime];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_player max_games %llu", self.fuegoMaxGames];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   commandString = [NSString stringWithFormat:@"uct_param_player resign_min_games %llu", self.fuegoResignMinGames];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
   int resignThreshold = [self resignThresholdForBoardSize:[GoGame sharedGame].board.size];
   commandString = [NSString stringWithFormat:@"uct_param_player resign_threshold %f", resignThreshold / 100.0];
   command = [GtpCommand command:commandString];
+  command.waitUntilDone = false;
   [command submit];
 
   self.hasUnappliedChanges = false;

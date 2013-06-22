@@ -150,8 +150,12 @@
 - (void) setupGtpBoard
 {
   GoBoard* board = [GoGame sharedGame].board;
-  [[GtpCommand command:@"clear_board"] submit];
-  [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]] submit];
+  GtpCommand* command = [GtpCommand command:@"clear_board"];
+  command.waitUntilDone = false;
+  [command submit];
+  command = [GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]];
+  command.waitUntilDone = false;
+  [command submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -169,7 +173,6 @@
   if (handicap >= 2)
   {
     GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", handicap]];
-    commandFixedHandicap.waitUntilDone = true;
     [commandFixedHandicap submit];
     assert(commandFixedHandicap.response.status);
   }
@@ -177,7 +180,6 @@
   // There is no universal default value for komi, so to be on the sure side we
   // always have to setup komi.
   GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
-  commandKomi.waitUntilDone = true;
   [commandKomi submit];
   assert(commandKomi.response.status);
 }
