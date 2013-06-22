@@ -167,10 +167,13 @@ enum PlayCommandType
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
+  bool shouldDiscardBoardPositions;
   if (boardPosition.isLastPosition)
-    return false;
+    shouldDiscardBoardPositions =  false;
   else
-    return true;
+    shouldDiscardBoardPositions = true;
+  DDLogVerbose(@"%@: shouldDiscardBoardPositions = %d", [self shortDescription], shouldDiscardBoardPositions);
+  return shouldDiscardBoardPositions;
 }
 
 // -----------------------------------------------------------------------------
@@ -188,6 +191,7 @@ enum PlayCommandType
   }
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
+  DDLogInfo(@"%@: Index position of first move to discard = %d", [self shortDescription], indexOfFirstMoveToDiscard);
   GoMoveModel* moveModel = game.moveModel;
   [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
   return true;
@@ -198,6 +202,7 @@ enum PlayCommandType
 // -----------------------------------------------------------------------------
 - (bool) playCommand
 {
+  DDLogVerbose(@"%@: Play command type = %d", [self shortDescription], self.playCommandType);
   CommandBase* command = nil;
   switch (self.playCommandType)
   {

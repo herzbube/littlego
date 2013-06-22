@@ -68,7 +68,6 @@
 // System includes
 #include <string>
 #include <vector>
-#include <iostream>  // for cout
 #include <sys/stat.h>  // for mkfifo
 
 
@@ -581,36 +580,39 @@ static ApplicationDelegate* sharedDelegate = nil;
   for (; it != pipeList.end(); ++it)
   {
     std::string pipePath = *it;
-    std::cout << "Creating input pipe " << pipePath << std::endl;
+    DDLogVerbose(@"%@: Creating input pipe %s", self, pipePath.c_str());
     // TODO: Check if pipes already exist, and/or clean them up when the
     // application shuts down
     int status = mkfifo(pipePath.c_str(), pipeMode);
     if (status == 0)
-      std::cout << "Success!" << std::endl;
+    {
+      DDLogVerbose(@"%@: Success!", self);
+    }
     else
     {
-      std::cout << "Failure! Reason = ";
+      NSString* error;
       switch (errno)
       {
         case EACCES:
-          std::cout << "EACCES" << std::endl;
+          error = @"EACCES";
           break;
         case EEXIST:
-          std::cout << "EEXIST" << std::endl;
+          error = @"EEXIST";
           break;
         case ELOOP:
-          std::cout << "ELOOP" << std::endl;
+          error = @"ELOOP";
           break;
         case ENOENT:
-          std::cout << "ENOENT" << std::endl;
+          error = @"ENOENT";
           break;
         case EROFS:
-          std::cout << "EROFS" << std::endl;
+          error = @"EROFS";
           break;
         default:
-          std::cout << "Some other result: " << status << std::endl;
+          error = [NSString stringWithFormat:@"Some other result: %d", status];
           break;
       }
+      DDLogVerbose(@"%@: Failure! Reason = %@", self, error);
     }
   }
   self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath];

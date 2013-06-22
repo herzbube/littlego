@@ -128,13 +128,15 @@
     newGame.playerWhite = [GoPlayer defaultWhitePlayer];
     newGame.type = newGameModel.gameType;
   }
-  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@, playerWhite = %@, type = %d",
+  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d",
                [self shortDescription],
                newGame.board,
                newGame.komi,
                newGame.handicapPoints,
                newGame.playerBlack,
+               newGame.playerBlack.player.uuid,
                newGame.playerWhite,
+               newGame.playerWhite.player.uuid,
                newGame.type);
 
   // Send this only after GoGame and its dependents have been fully configured.

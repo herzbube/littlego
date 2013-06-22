@@ -109,6 +109,7 @@ enum ActionType
 // -----------------------------------------------------------------------------
 - (void) alertOrAction:(enum ActionType)actionType withCommand:(CommandBase*)command
 {
+  DDLogVerbose(@"%@: Displaying alert for action type %d", self, actionType);
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   if (boardPosition.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)

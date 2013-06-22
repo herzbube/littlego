@@ -91,10 +91,10 @@
     NSDictionary* statisticsDictionary = (NSDictionary*)[dictionary valueForKey:statisticsKey];
     self.statistics = [[[PlayerStatistics alloc] initWithDictionary:statisticsDictionary] autorelease];
   }
+  DDLogVerbose(@"%@: UUID = %@, name = %@", self, self.uuid, self.name);
   assert([self.uuid length] > 0);
   if ([self.uuid length] <= 0)
     DDLogError(@"%@: UUID length <= 0", self);
-
   return self;
 }
 
