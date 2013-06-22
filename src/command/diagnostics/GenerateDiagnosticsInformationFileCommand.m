@@ -239,7 +239,7 @@
   {
     temporarilyResyncGTPEngine = true;
     SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
-    command.syncMovesUpToCurrentBoardPosition = false;
+    command.syncMoveType = SyncMovesOfEntireGame;
     [command submit];
   }
 

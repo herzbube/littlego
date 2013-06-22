@@ -42,7 +42,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.syncMovesUpToCurrentBoardPosition = true;
+  self.syncMoveType = SyncMovesUpToCurrentBoardPosition;
   return self;
 }
 
@@ -105,7 +105,7 @@
 {
   GoGame* game = [GoGame sharedGame];
   GoMove* syncUpToThisMove = nil;
-  if (self.syncMovesUpToCurrentBoardPosition)
+  if (SyncMovesUpToCurrentBoardPosition == self.syncMoveType)
     syncUpToThisMove = game.boardPosition.currentMove;
   else
     syncUpToThisMove = game.lastMove;

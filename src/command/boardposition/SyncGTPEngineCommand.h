@@ -19,6 +19,15 @@
 #import "CommandBase.h"
 
 
+/// @brief Enumerates the different ways how SyncGTPEngineCommand can
+/// synchronize moves.
+enum SyncMoveType
+{
+  SyncMovesUpToCurrentBoardPosition,
+  SyncMovesOfEntireGame
+};
+
+
 // -----------------------------------------------------------------------------
 /// @brief The SyncGTPEngineCommand class is responsible for synchronizing the
 /// state of the GTP engine with the state of the current GoGame.
@@ -34,6 +43,6 @@
 {
 }
 
-@property(nonatomic, assign) bool syncMovesUpToCurrentBoardPosition;
+@property(nonatomic, assign) enum SyncMoveType syncMoveType;
 
 @end
