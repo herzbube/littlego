@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +16,20 @@
 
 
 // Project includes
-#import "CommandBase.h"
+#import "../CommandBase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The CleanBackupCommand class is responsible for removing the backup
-/// file created by BackupGameCommand.
+/// @brief The RestoreGameFromSgfCommand class is responsible for restoring a
+/// game during application startup from an .sgf file that was previously
+/// created by BackupGameToSgfCommand.
+///
+/// RestoreGameFromSgfCommand fails if no backup .sgf file exists.
+///
+/// @see BackupGameToSgfCommand.
+/// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------
-@interface CleanBackupCommand : CommandBase
+@interface RestoreGameFromSgfCommand : CommandBase
 {
 }
 

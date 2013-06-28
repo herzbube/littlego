@@ -53,12 +53,12 @@
 		CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC781425470B00214BBE /* RenameGameCommand.m */; };
 		CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC7A1425470B00214BBE /* SaveGameCommand.m */; };
 		CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC761425470B00214BBE /* NewGameCommand.m */; };
-		CD05B11C142A606400214BBE /* BackupGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B117142A606400214BBE /* BackupGameCommand.m */; };
-		CD05B11D142A606400214BBE /* CleanBackupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B119142A606400214BBE /* CleanBackupCommand.m */; };
-		CD05B121142A60A700214BBE /* RestoreGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B120142A60A700214BBE /* RestoreGameCommand.m */; };
-		CD05B136142A745500214BBE /* BackupGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B117142A606400214BBE /* BackupGameCommand.m */; };
-		CD05B137142A746100214BBE /* CleanBackupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B119142A606400214BBE /* CleanBackupCommand.m */; };
-		CD05B138142A746800214BBE /* RestoreGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B120142A60A700214BBE /* RestoreGameCommand.m */; };
+		CD05B11C142A606400214BBE /* BackupGameToSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B117142A606400214BBE /* BackupGameToSgfCommand.m */; };
+		CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B119142A606400214BBE /* CleanBackupSgfCommand.m */; };
+		CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */; };
+		CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B117142A606400214BBE /* BackupGameToSgfCommand.m */; };
+		CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B119142A606400214BBE /* CleanBackupSgfCommand.m */; };
+		CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */; };
 		CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
 		CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
 		CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
@@ -492,12 +492,12 @@
 		CD05AC781425470B00214BBE /* RenameGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenameGameCommand.m; sourceTree = "<group>"; };
 		CD05AC791425470B00214BBE /* SaveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveGameCommand.h; sourceTree = "<group>"; };
 		CD05AC7A1425470B00214BBE /* SaveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveGameCommand.m; sourceTree = "<group>"; };
-		CD05B116142A606400214BBE /* BackupGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupGameCommand.h; sourceTree = "<group>"; };
-		CD05B117142A606400214BBE /* BackupGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupGameCommand.m; sourceTree = "<group>"; };
-		CD05B118142A606400214BBE /* CleanBackupCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanBackupCommand.h; sourceTree = "<group>"; };
-		CD05B119142A606400214BBE /* CleanBackupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanBackupCommand.m; sourceTree = "<group>"; };
-		CD05B11F142A60A700214BBE /* RestoreGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreGameCommand.h; sourceTree = "<group>"; };
-		CD05B120142A60A700214BBE /* RestoreGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreGameCommand.m; sourceTree = "<group>"; };
+		CD05B116142A606400214BBE /* BackupGameToSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupGameToSgfCommand.h; sourceTree = "<group>"; };
+		CD05B117142A606400214BBE /* BackupGameToSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupGameToSgfCommand.m; sourceTree = "<group>"; };
+		CD05B118142A606400214BBE /* CleanBackupSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CleanBackupSgfCommand.h; sourceTree = "<group>"; };
+		CD05B119142A606400214BBE /* CleanBackupSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CleanBackupSgfCommand.m; sourceTree = "<group>"; };
+		CD05B11F142A60A700214BBE /* RestoreGameFromSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreGameFromSgfCommand.h; sourceTree = "<group>"; };
+		CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreGameFromSgfCommand.m; sourceTree = "<group>"; };
 		CD05B20E142BC4AF00214BBE /* GtpUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpUtilities.h; sourceTree = "<group>"; };
 		CD05B20F142BC4AF00214BBE /* GtpUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpUtilities.m; sourceTree = "<group>"; };
 		CD05B568142EA31700214BBE /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -1094,12 +1094,12 @@
 		CD05B115142A606400214BBE /* backup */ = {
 			isa = PBXGroup;
 			children = (
-				CD05B116142A606400214BBE /* BackupGameCommand.h */,
-				CD05B117142A606400214BBE /* BackupGameCommand.m */,
-				CD05B118142A606400214BBE /* CleanBackupCommand.h */,
-				CD05B119142A606400214BBE /* CleanBackupCommand.m */,
-				CD05B11F142A60A700214BBE /* RestoreGameCommand.h */,
-				CD05B120142A60A700214BBE /* RestoreGameCommand.m */,
+				CD05B116142A606400214BBE /* BackupGameToSgfCommand.h */,
+				CD05B117142A606400214BBE /* BackupGameToSgfCommand.m */,
+				CD05B118142A606400214BBE /* CleanBackupSgfCommand.h */,
+				CD05B119142A606400214BBE /* CleanBackupSgfCommand.m */,
+				CD05B11F142A60A700214BBE /* RestoreGameFromSgfCommand.h */,
+				CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */,
 			);
 			path = backup;
 			sourceTree = "<group>";
@@ -2084,9 +2084,9 @@
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
 				CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */,
-				CD05B11C142A606400214BBE /* BackupGameCommand.m in Sources */,
-				CD05B11D142A606400214BBE /* CleanBackupCommand.m in Sources */,
-				CD05B121142A60A700214BBE /* RestoreGameCommand.m in Sources */,
+				CD05B11C142A606400214BBE /* BackupGameToSgfCommand.m in Sources */,
+				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
+				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
@@ -2235,9 +2235,9 @@
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
-				CD05B136142A745500214BBE /* BackupGameCommand.m in Sources */,
-				CD05B137142A746100214BBE /* CleanBackupCommand.m in Sources */,
-				CD05B138142A746800214BBE /* RestoreGameCommand.m in Sources */,
+				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
+				CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */,
+				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */,

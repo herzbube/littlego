@@ -22,8 +22,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../archive/ArchiveViewModel.h"
-#import "../../command/backup/BackupGameCommand.h"
-#import "../../command/backup/CleanBackupCommand.h"
+#import "../../command/backup/BackupGameToSgfCommand.h"
+#import "../../command/backup/CleanBackupSgfCommand.h"
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -250,7 +250,7 @@ enum ActionSheetButton
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -271,7 +271,7 @@ enum ActionSheetButton
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 
@@ -356,7 +356,7 @@ enum ActionSheetButton
 {
   if (didStartNewGame)
   {
-    [[[[CleanBackupCommand alloc] init] autorelease] submit];
+    [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
     [[[[NewGameCommand alloc] init] autorelease] submit];
   }
   [self.modalMaster dismissViewControllerAnimated:YES completion:nil];

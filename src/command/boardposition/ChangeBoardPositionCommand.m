@@ -19,7 +19,6 @@
 #import "ChangeBoardPositionCommand.h"
 #import "SyncGTPEngineCommand.h"
 #import "../AsynchronousCommand.h"
-#import "../backup/BackupGameCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"

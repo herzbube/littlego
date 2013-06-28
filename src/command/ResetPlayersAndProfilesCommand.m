@@ -17,7 +17,7 @@
 
 // Project includes
 #import "ResetPlayersAndProfilesCommand.h"
-#import "backup/CleanBackupCommand.h"
+#import "backup/CleanBackupSgfCommand.h"
 #import "game/NewGameCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
@@ -71,7 +71,7 @@
 // -----------------------------------------------------------------------------
 - (void) startNewGame
 {
-  [[[[CleanBackupCommand alloc] init] autorelease] submit];
+  [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
   [[[[NewGameCommand alloc] init] autorelease] submit];
 }
 

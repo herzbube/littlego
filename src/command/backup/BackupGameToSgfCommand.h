@@ -20,15 +20,26 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The RestoreGameCommand class is responsible for restoring the moves
-/// from a backed up .sgf file during application startup.
+/// @brief The BackupGameToSgfCommand class is responsible for saving the
+/// current game to an .sgf file so that the most important aspects of the game
+/// can be restored when the application re-launches after a crash or after it
+/// was killed while suspended.
 ///
-/// RestoreGameCommand fails if no backup .sgf file exists.
+/// BackupGameToSgfCommand stores the .sgf file in a fixed location in the
+/// application's library folder. Because the file is not in the shared document
+/// folder, it is visible/accessible neither in iTunes, nor on the in-app tab
+/// "Archive".
 ///
-/// @see BackupGameCommand.
+/// BackupGameToSgfCommand delegates the .sgf saving task to the GTP engine via
+/// the "savesgf" GTP command. The .sgf file is overwritten if it already
+/// exists.
+///
+/// BackupGameToSgfCommand executes synchronously.
+///
+/// @see RestoreGameFromSgfCommand.
 /// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------
-@interface RestoreGameCommand : CommandBase
+@interface BackupGameToSgfCommand : CommandBase
 {
 }
 

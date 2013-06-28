@@ -16,34 +16,33 @@
 
 
 // Project includes
-#import "BackupGameCommand.h"
-#import "../../gtp/GtpCommand.h"
+#import "CleanBackupSgfCommand.h"
 #import "../../utility/PathUtilities.h"
 
 
-@implementation BackupGameCommand
+@implementation CleanBackupSgfCommand
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSString* backupFolderPath = [PathUtilities backupFolderPath];
-
-  // Secretly and heinously change the working directory so that the .sgf
-  // file goes to a directory that the user cannot look into
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:backupFolderPath];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolderPath);
-
-  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
-  [[GtpCommand command:commandString] submit];
-
-  // Switch back to the original directory
-  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
-
+  BOOL fileExists;
+  NSString* sgfBackupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
+                                                               fileExists:&fileExists];
+  if (fileExists)
+  {
+    BOOL result = [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
+    DDLogVerbose(@"%@: Removed .sgf file %@, result = %d", [self shortDescription], sgfBackupFilePath, result);
+  }
+  NSString* archiveBackupFilePath = [PathUtilities filePathForBackupFileNamed:archiveBackupFileName
+                                                                   fileExists:&fileExists];
+  if (fileExists)
+  {
+    BOOL result = [fileManager removeItemAtPath:archiveBackupFilePath error:nil];
+    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveBackupFilePath, result);
+  }
   return true;
 }
 

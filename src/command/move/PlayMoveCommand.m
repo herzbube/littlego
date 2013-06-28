@@ -18,7 +18,7 @@
 // Project includes
 #import "PlayMoveCommand.h"
 #import "ComputerPlayMoveCommand.h"
-#import "../backup/BackupGameCommand.h"
+#import "../backup/BackupGameToSgfCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
@@ -173,7 +173,7 @@
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
 
-  [[[[BackupGameCommand alloc] init] autorelease] submit];
+  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
 
   // Let computer continue playing if the game state allows it and it is
   // actually a computer player's turn

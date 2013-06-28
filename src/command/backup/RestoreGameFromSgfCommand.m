@@ -16,30 +16,27 @@
 
 
 // Project includes
-#import "../CommandBase.h"
+#import "RestoreGameFromSgfCommand.h"
+#import "../game/LoadGameCommand.h"
+#import "../../utility/PathUtilities.h"
 
 
+@implementation RestoreGameFromSgfCommand
+
 // -----------------------------------------------------------------------------
-/// @brief The BackupGameCommand class is responsible for saving the current
-/// game to an .sgf file so that the raw game moves can be restored when the
-/// application re-launches after a crash or after it was killed while
-/// suspended.
-///
-/// BackupGameCommand stores the .sgf file in a fixed location in the
-/// application's library folder. Because the file is not in the shared document
-/// folder, it is visible/accessible neither in iTunes, nor on the in-app tab
-/// "Archive".
-///
-/// BackupGameCommand delegates the .sgf saving task to the GTP engine via the
-/// "savesgf" GTP command. The .sgf file is overwritten if it already exists.
-///
-/// BackupGameCommand executes synchronously.
-///
-/// @see RestoreGameCommand.
-/// @see ApplicationStateManager.
+/// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
-@interface BackupGameCommand : CommandBase
+- (bool) doIt
 {
+  BOOL fileExists;
+  NSString* backupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
+                                                            fileExists:&fileExists];
+  if (! fileExists)
+    return false;
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
+  loadCommand.restoreMode = true;
+  bool success = [loadCommand submit];
+  return success;
 }
 
 @end

@@ -20,7 +20,7 @@
 #import "../command/CommandProcessor.h"
 #import "../command/applicationstate/RestoreApplicationStateCommand.h"
 #import "../command/applicationstate/SaveApplicationStateCommand.h"
-#import "../command/backup//RestoreGameCommand.h"
+#import "../command/backup//RestoreGameFromSgfCommand.h"
 #import "../command/game/NewGameCommand.h"
 
 
@@ -247,7 +247,7 @@ static ApplicationStateManager* sharedManager = nil;
   bool success = [[[[RestoreApplicationStateCommand alloc] init] autorelease] submit];
   if (! success)
   {
-    success = [[[[RestoreGameCommand alloc] init] autorelease] submit];
+    success = [[[[RestoreGameFromSgfCommand alloc] init] autorelease] submit];
     if (! success)
       [[[[NewGameCommand alloc] init] autorelease] submit];
   }

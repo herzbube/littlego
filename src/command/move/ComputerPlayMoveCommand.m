@@ -17,8 +17,8 @@
 
 // Project includes
 #import "ComputerPlayMoveCommand.h"
-#import "../backup/BackupGameCommand.h"
-#import "../backup/CleanBackupCommand.h"
+#import "../backup/BackupGameToSgfCommand.h"
+#import "../backup/CleanBackupSgfCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../game/SaveGameCommand.h"
 #import "../../archive/ArchiveViewModel.h"
@@ -158,7 +158,7 @@
       }
     }
 
-    [[[[BackupGameCommand alloc] init] autorelease] submit];
+    [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
 
     bool computerGoesOnPlaying = false;
     switch (self.game.state)
@@ -358,7 +358,7 @@
 // -----------------------------------------------------------------------------
 - (void) startNewGame
 {
-  [[[[CleanBackupCommand alloc] init] autorelease] submit];
+  [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
   [[[[NewGameCommand alloc] init] autorelease] submit];
 }
 

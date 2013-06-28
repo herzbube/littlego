@@ -16,33 +16,34 @@
 
 
 // Project includes
-#import "CleanBackupCommand.h"
+#import "BackupGameToSgfCommand.h"
+#import "../../gtp/GtpCommand.h"
 #import "../../utility/PathUtilities.h"
 
 
-@implementation CleanBackupCommand
+@implementation BackupGameToSgfCommand
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  NSString* backupFolderPath = [PathUtilities backupFolderPath];
+
+  // Secretly and heinously change the working directory so that the .sgf
+  // file goes to a directory that the user cannot look into
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL fileExists;
-  NSString* sgfBackupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
-                                                               fileExists:&fileExists];
-  if (fileExists)
-  {
-    BOOL result = [fileManager removeItemAtPath:sgfBackupFilePath error:nil];
-    DDLogVerbose(@"%@: Removed .sgf file %@, result = %d", [self shortDescription], sgfBackupFilePath, result);
-  }
-  NSString* archiveBackupFilePath = [PathUtilities filePathForBackupFileNamed:archiveBackupFileName
-                                                                   fileExists:&fileExists];
-  if (fileExists)
-  {
-    BOOL result = [fileManager removeItemAtPath:archiveBackupFilePath error:nil];
-    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveBackupFilePath, result);
-  }
+  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
+  [fileManager changeCurrentDirectoryPath:backupFolderPath];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolderPath);
+
+  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
+  [[GtpCommand command:commandString] submit];
+
+  // Switch back to the original directory
+  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
+  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
+
   return true;
 }
 

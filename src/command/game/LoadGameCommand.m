@@ -18,8 +18,8 @@
 // Project includes
 #import "LoadGameCommand.h"
 #import "NewGameCommand.h"
-#import "../backup/BackupGameCommand.h"
-#import "../backup/CleanBackupCommand.h"
+#import "../backup/BackupGameToSgfCommand.h"
+#import "../backup/CleanBackupSgfCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../go/GoBoard.h"
@@ -374,7 +374,7 @@ static const int maxStepsForReplayMoves = 10;
   else
   {
     [self notifyGoGameDocument];
-    [[[[BackupGameCommand alloc] init] autorelease] submit];
+    [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }
   [GtpUtilities setupComputerPlayer];
   [self triggerComputerPlayer];
@@ -399,7 +399,7 @@ static const int maxStepsForReplayMoves = 10;
   {
     // Delete the current backup, a new backup with the moves from the archive
     // we are currently loading will be made later on
-    [[[[CleanBackupCommand alloc] init] autorelease] submit];
+    [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
   }
   NewGameCommand* command = [[[NewGameCommand alloc] init] autorelease];
   // If command was successful, the board was already set up by the "loadsgf"

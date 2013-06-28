@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,27 +16,15 @@
 
 
 // Project includes
-#import "RestoreGameCommand.h"
-#import "../game/LoadGameCommand.h"
-#import "../../utility/PathUtilities.h"
+#import "CommandBase.h"
 
-
-@implementation RestoreGameCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Executes this command. See the class documentation for details.
+/// @brief The CleanBackupSgfCommand class is responsible for removing the
+/// backup file created by BackupGameToSgfCommand.
 // -----------------------------------------------------------------------------
-- (bool) doIt
+@interface CleanBackupSgfCommand : CommandBase
 {
-  BOOL fileExists;
-  NSString* backupFilePath = [PathUtilities filePathForBackupFileNamed:sgfBackupFileName
-                                                            fileExists:&fileExists];
-  if (! fileExists)
-    return false;
-  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
-  loadCommand.restoreMode = true;
-  bool success = [loadCommand submit];
-  return success;
 }
 
 @end

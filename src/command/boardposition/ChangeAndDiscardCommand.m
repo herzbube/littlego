@@ -18,7 +18,7 @@
 // Project includes
 #import "ChangeAndDiscardCommand.h"
 #import "ChangeBoardPositionCommand.h"
-#import "../backup/BackupGameCommand.h"
+#import "../backup/BackupGameToSgfCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveModel.h"
@@ -136,7 +136,7 @@
 // -----------------------------------------------------------------------------
 - (bool) backupGame
 {
-  return [[[[BackupGameCommand alloc] init] autorelease] submit];
+  return [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
 }
 
 @end
