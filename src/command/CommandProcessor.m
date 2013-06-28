@@ -287,4 +287,12 @@ static CommandProcessor* sharedProcessor = nil;
     self.progressHUD.labelText = message;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (bool) currentThreadIsCommandProcessorThread
+{
+  return ([NSThread currentThread] == self.thread);
+}
+
 @end

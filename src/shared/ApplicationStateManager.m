@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ApplicationStateManager.h"
+#import "../command/CommandProcessor.h"
 #import "../command/applicationstate/RestoreApplicationStateCommand.h"
 #import "../command/applicationstate/SaveApplicationStateCommand.h"
 #import "../command/backup//RestoreGameCommand.h"
@@ -229,9 +230,19 @@ static ApplicationStateManager* sharedManager = nil;
 /// different NSCoding version makes the backup NSCoding archive useless because
 /// it is incompatible with the new app version. The .sgf file, on the other
 /// hand, is expected to remain readable at all times.
+///
+/// Raises an @e NSGenericException if this method is not invoked in the context
+/// of the command processor secondary thread. Reason: This method expects to
+/// run from start to end fully synchronously. This happens only if this method
+/// is invoked in the context of the command processor secondary thread, i.e. if
+/// if it is executed by an asynchronous command. Why: This method indirectly
+/// executes LoadGameCommand, which is an asynchronous command, and asynchronous
+/// commands happen to run synchronously only if they are executed by another
+/// asynchronous command.
 // -----------------------------------------------------------------------------
 - (void) restoreApplicationState
 {
+  [self throwIfCurrentThreadIsNotCommandProcessorThread];
   self.applicationStateRestoreInProgress = true;
   bool success = [[[[RestoreApplicationStateCommand alloc] init] autorelease] submit];
   if (! success)
@@ -241,6 +252,22 @@ static ApplicationStateManager* sharedManager = nil;
       [[[[NewGameCommand alloc] init] autorelease] submit];
   }
   self.applicationStateRestoreInProgress = false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) throwIfCurrentThreadIsNotCommandProcessorThread
+{
+  if (! [CommandProcessor sharedProcessor].currentThreadIsCommandProcessorThread)
+  {
+    NSString* errorMessage = @"restoreApplicationState must be invoked in the context of the CommandProcessor secondary thread";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
 }
 
 // -----------------------------------------------------------------------------

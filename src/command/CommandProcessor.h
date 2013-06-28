@@ -67,5 +67,8 @@
 /// @brief Set this property to true to trigger termination of the secondary
 /// thread used for asynchronous command execution.
 @property(assign, getter=shouldExit, setter=exit:) bool shouldExit;
+/// @brief Is true if the code querying this property is running in the context
+/// of this CommandProcessor's secondary thread.
+@property(assign, readonly) bool currentThreadIsCommandProcessorThread;
 
 @end
