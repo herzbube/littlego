@@ -119,78 +119,66 @@
 {
   if (! response.status)
   {
+    DDLogError(@"%@: Aborting due to failed GTP command", [self shortDescription]);
     assert(0);
     return;
   }
-
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-
-    NSString* responseString = [response.parsedResponse lowercaseString];
-    if ([responseString isEqualToString:@"pass"])
-      [self.game pass];
-    else if ([responseString isEqualToString:@"resign"])
-      [self.game resign];
-    else
-    {
-      GoPoint* point = [self.game.board pointAtVertex:responseString];
-      if (point)
-      {
-        // TODO: Remove this check, and handleComputerPlayedIllegalMove1/2
-        // methods, as soon as issue 90 on GitHub has been fixed.
-        if ([self.game isLegalMove:point])
-        {
-          [self.game play:point];
-        }
-        else
-        {
-          self.illegalMove = point;
-          [self handleComputerPlayedIllegalMove1];
-          return;
-        }
-      }
-      else
-      {
-        DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
-        assert(0);
-        return;
-      }
-    }
-
-    [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
-
-    bool computerGoesOnPlaying = false;
-    switch (self.game.state)
-    {
-      case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
-      case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
-        break;
-      default:
-        if ([self.game isComputerPlayersTurn])
-          computerGoesOnPlaying = true;
-        break;
-    }
-
-    if (computerGoesOnPlaying)
-    {
-      // Invoking another ComputerPlayMoveCommand does not result in an infinite
-      // series of commands during computer vs. coputer games because the next
-      // ComputerPlayMoveCommand will not wait for its GTP command to complete.
-      [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
-    }
-    else
-    {
-      // Thinking state must change after any of the other things; this order is
-      // important for observer notifications.
-      self.game.computerThinks = false;
-    }
+    bool success = [self playMoveInsideResponse:response];
+    if (! success)
+      return;
+    [self continuePlayingIfNecessary];
   }
   @finally
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Instructs GoGame to play the move that is inside @a response. Returns
+/// true on success, false on failure (e.g. if move was illegal).
+///
+/// This is a private helper for gtpResponseReceived.
+// -----------------------------------------------------------------------------
+- (bool) playMoveInsideResponse:(GtpResponse*)response
+{
+  NSString* responseString = [response.parsedResponse lowercaseString];
+  if ([responseString isEqualToString:@"pass"])
+    [self.game pass];
+  else if ([responseString isEqualToString:@"resign"])
+    [self.game resign];
+  else
+  {
+    GoPoint* point = [self.game.board pointAtVertex:responseString];
+    if (point)
+    {
+      // TODO: Remove this check, and handleComputerPlayedIllegalMove1/2
+      // methods, as soon as issue 90 on GitHub has been fixed.
+      if ([self.game isLegalMove:point])
+      {
+        [self.game play:point];
+      }
+      else
+      {
+        self.illegalMove = point;
+        [self handleComputerPlayedIllegalMove1];
+        return false;
+      }
+    }
+    else
+    {
+      DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
+      assert(0);
+      return false;
+    }
+  }
+
+  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -360,6 +348,31 @@
 {
   [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
   [[[[NewGameCommand alloc] init] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Lets the computer continue playing if it is still its turn, otherwise
+/// updates the "computer is thinking" state in GoGame.
+///
+/// This is a private helper for gtpResponseReceived.
+// -----------------------------------------------------------------------------
+- (void) continuePlayingIfNecessary
+{
+  bool computerGoesOnPlaying = false;
+  switch (self.game.state)
+  {
+    case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
+    case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
+      break;
+    default:
+      if ([self.game isComputerPlayersTurn])
+        computerGoesOnPlaying = true;
+      break;
+  }
+  if (computerGoesOnPlaying)
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+  else
+    self.game.computerThinks = false;
 }
 
 @end
