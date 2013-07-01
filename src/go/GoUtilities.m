@@ -121,8 +121,9 @@
 // -----------------------------------------------------------------------------
 + (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize
 {
-  static const int maxHandicaps[GoBoardSizeMax + 1] = {4, 9, 9, 9, 9, 9, 9};
-  static const int edgeDistances[GoBoardSizeMax + 1] = {3, 3, 3, 4, 4, 4, 4};
+  static const int numberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+  static const int maxHandicaps[numberOfBoardSizes] = {4, 9, 9, 9, 9, 9, 9};
+  static const int edgeDistances[numberOfBoardSizes] = {3, 3, 3, 4, 4, 4, 4};
 
   NSMutableArray* handicapVertices = [NSMutableArray arrayWithCapacity:0];
   if (0 == handicap)
