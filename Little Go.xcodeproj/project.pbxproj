@@ -259,6 +259,8 @@
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
+		CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */; };
+		CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */; };
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
@@ -699,6 +701,8 @@
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
+		CD8EAAB81787232900D92BA3 /* VersionInfoUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionInfoUtilities.h; sourceTree = "<group>"; };
+		CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionInfoUtilities.m; sourceTree = "<group>"; };
 		CD8EFD021466DA7200A700B1 /* GoScore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoScore.h; sourceTree = "<group>"; };
 		CD8EFD031466DA7200A700B1 /* GoScore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoScore.m; sourceTree = "<group>"; };
 		CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubmitGtpCommandViewController.h; sourceTree = "<group>"; };
@@ -1641,6 +1645,8 @@
 				CD252DA416A4B97800A088D5 /* UIImageAdditions.m */,
 				CDB457AA147DB2010043EDE4 /* UserDefaultsUpdater.h */,
 				CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */,
+				CD8EAAB81787232900D92BA3 /* VersionInfoUtilities.h */,
+				CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */,
 			);
 			path = utility;
 			sourceTree = "<group>";
@@ -2198,6 +2204,7 @@
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
+				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2346,6 +2353,7 @@
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
+				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

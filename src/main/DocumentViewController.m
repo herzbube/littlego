@@ -20,6 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "MainTabBarController.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/VersionInfoUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -192,15 +193,14 @@
 // -----------------------------------------------------------------------------
 - (void) showAboutDocument:(NSString*)documentContent
 {
-  NSString* bundleName = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-  NSString* bundleVersion = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-  NSString* copyright = [[ApplicationDelegate sharedDelegate].resourceBundle objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
-  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%bundleName%"
-                                                               withString:bundleName];
-  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%bundleVersion%"
-                                                               withString:bundleVersion];
-  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%copyright%"
-                                                               withString:copyright];
+  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%applicationName%"
+                                                               withString:[VersionInfoUtilities applicationName]];
+  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%applicationVersion%"
+                                                               withString:[VersionInfoUtilities applicationVersion]];
+  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%applicationCopyright%"
+                                                               withString:[VersionInfoUtilities applicationCopyright]];
+  documentContent = [documentContent stringByReplacingOccurrencesOfString:@"%buildDate%"
+                                                               withString:[VersionInfoUtilities buildDateTimeString]];
   [self.webView loadHTMLString:documentContent baseURL:nil];
 }
 
