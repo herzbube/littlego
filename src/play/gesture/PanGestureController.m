@@ -261,8 +261,18 @@
 {
   if (object == [GoGame sharedGame].boardPosition)
   {
+    [self cancelPanningInProgress];
     [self updatePanningEnabled];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Cancels a panning gesture that is currently in progress.
+// -----------------------------------------------------------------------------
+- (void) cancelPanningInProgress
+{
+  self.longPressRecognizer.enabled = NO;
+  self.longPressRecognizer.enabled = YES;
 }
 
 // -----------------------------------------------------------------------------
