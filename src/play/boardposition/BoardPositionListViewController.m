@@ -22,6 +22,7 @@
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -117,6 +118,8 @@
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -178,6 +181,24 @@
 /// @brief Responds to the #computerPlayerThinkingStops notification.
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStops:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
@@ -317,6 +338,8 @@
   if (! game)
     self.boardPositionListView.tappingEnabled = false;
   else if (game.isComputerThinking)
+    self.boardPositionListView.tappingEnabled = false;
+  else if (game.score.scoringInProgress)
     self.boardPositionListView.tappingEnabled = false;
   else
     self.boardPositionListView.tappingEnabled = true;

@@ -23,6 +23,7 @@
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoScore.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIElementMetrics.h"
 
@@ -332,6 +333,8 @@ enum NavigationDirection
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -380,6 +383,24 @@ enum NavigationDirection
 /// #computerPlayerThinkingStops notifications.
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -467,7 +488,7 @@ enum NavigationDirection
   self.buttonStatesNeedUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  if (game.isComputerThinking)
+  if (game.isComputerThinking || game.score.scoringInProgress)
   {
     for (UIBarButtonItem* item in self.navigationBarButtonItems)
       item.enabled = NO;

@@ -24,6 +24,7 @@
 #import "../../go/GoMoveModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiElementMetrics.h"
@@ -259,6 +260,8 @@
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
+  [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -330,6 +333,24 @@
 /// @brief Responds to the #computerPlayerThinkingStops notification.
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStops:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationStarts notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationStarts:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
@@ -509,14 +530,15 @@
   if (! self.tappingEnabledNeedsUpdate)
     return;
   self.tappingEnabledNeedsUpdate = false;
-  if ([GoGame sharedGame].isComputerThinking)
+  GoGame* game = [GoGame sharedGame];
+  if (game.isComputerThinking || game.score.scoringInProgress)
     self.tappingEnabled = false;
   else
     self.tappingEnabled = true;
   // Must update manually because the delegate method
   // tableView:shouldHighlightRowAtIndexPath:() is available only in iOS 6 and
   // later
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoBoardPosition* boardPosition = game.boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
   NSArray* indexPathsForVisibleRows = [self.boardPositionListTableView indexPathsForVisibleRows];
   for (NSIndexPath* indexPath in indexPathsForVisibleRows)
