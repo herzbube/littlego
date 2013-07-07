@@ -67,8 +67,11 @@
 {
   self.playView = [[[PlayView alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.playView;
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   self.view.backgroundColor = [UIColor clearColor];
+  // Note that we do NOT set an autoresizingMask! Because of complications in
+  // regard to zooming, it is the job of the parent view controller to perform
+  // any resize operations on the Play view. See documentation of the parent
+  // view controller for details.
 
   self.panGestureController.playView = self.playView;
   self.tapGestureController.playView = self.playView;

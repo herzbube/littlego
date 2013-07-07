@@ -31,6 +31,8 @@
 ///   scroll view
 /// - Monitor the maximum zoom scale user preference and apply the new value
 ///   to the "Play" view and coordinate label views
+/// - Resize the Play view when a view layout change occurs outside of zooming.
+///   See the documentation of viewWillLayoutSubviews() for details.
 // -----------------------------------------------------------------------------
 @interface ScrollViewController : UIViewController <UIScrollViewDelegate>
 {
