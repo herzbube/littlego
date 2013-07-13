@@ -416,6 +416,13 @@
 /// that this GoBoardRegion has fragmented into smaller, non-adjacent sets of
 /// GoPoint objects.
 ///
+/// It may help to understand the implementation if one keeps in mind that this
+/// method is invoked only for the following scenarios:
+/// - When a stone is placed either by regular play, or when a board position
+///   is set up, a single empty region may fragment into multiple empty regions
+/// - When a stone is removed by undoing a move, a single stone group may
+///   fragment into multiple stone groups
+///
 /// @note When this method is invoked, @a removedPoint must already have been
 /// removed from this GoBoardRegion.
 ///
@@ -476,15 +483,34 @@
 ///
 /// @note This is a private backend helper method for
 /// splitRegionAfterRemovingPoint:().
+///
+/// @note When a game is loaded from .sgf, this is the single-most
+/// time-consuming method. Example for the current implementation: When the
+/// "Ear-reddening game" (325 moves) is loaded on an iPhone 3GS, the total load
+/// time is ~3500ms. Roughly half of that time, or ~1700ms, is taken up by
+/// executing this method. This has been determined using the "Time Profiler"
+/// instrument and the ad-hoc distribution build. Optimization efforts that
+/// have been made so far:
+/// - Replacing recursion by a stack-based implementation significantly slows
+///   the implementation (by ~75%)
+/// - Assigning point.neighbours to a local variable and using that variable in
+///   the for-loop has no noticeable benefit
+/// - The order of the 2 checks inside the for-loop is important. The current
+///   order is significantly faster than if the order were reversed. The same
+///   instrumentation as above shows that on an iPhone 3GS the current order of
+///   checks makes this method ~15% faster (1678ms instead of 1956ms for the
+///   reversed order of checks).
 // -----------------------------------------------------------------------------
 - (void) fillSubRegion:(NSMutableArray*)subRegion containingPoint:(GoPoint*)point
 {
   [subRegion addObject:point];
   for (GoPoint* neighbour in point.neighbours)
   {
-    if ([subRegion containsObject:neighbour])
-      continue;
+    // The order of the following 2 checks is important!!! See method docs for
+    // optimization notes.
     if (neighbour.region != self)
+      continue;
+    if ([subRegion containsObject:neighbour])
       continue;
     [self fillSubRegion:subRegion containingPoint:neighbour];
   }
@@ -574,32 +600,15 @@
     }
   }
 
-  // Bulk-remove subRegion. Note that mainRegion may be deallocated by this
-  // operation, so we don't use it after the method invocation returns.
-  [mainRegion removeSubRegion:subRegion];
-
+  // Bulk-remove subRegion. We directly access the _points member of the
+  // mainRegion instance for efficiency reasons
+  [(NSMutableArray*)mainRegion->_points removeObjectsInArray:subRegion];
   // Bulk-add subRegion
   [(NSMutableArray*)_points addObjectsFromArray:subRegion];
+  // Update region references. Note that mainRegion may be deallocated by this
+  // operation, so we must not use it after the loop completes.
   for (GoPoint* point in subRegion)
     point.region = self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Removes GoPoint objects in @a subRegion from this GoBoardRegion
-/// without applying any region-fragmentation logic to this GoBoardRegion.
-///
-/// The GoBoardRegion reference of all GoPoint objects in @a subRegion is
-/// updated to nil. If this GoBoardRegion does not contain any other points
-/// than those in @a subRegion, this GoBoardRegion is deallocated.
-///
-/// @note This is a private backend helper method for
-/// moveSubRegion:fromMainRegion:().
-// -----------------------------------------------------------------------------
-- (void) removeSubRegion:(NSArray*)subRegion
-{
-  [(NSMutableArray*)_points removeObjectsInArray:subRegion];
-  for (GoPoint* point in subRegion)
-    point.region = nil;
 }
 
 // -----------------------------------------------------------------------------
