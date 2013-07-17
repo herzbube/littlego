@@ -29,6 +29,7 @@
 
 - (void) testInitialState;
 - (void) testDefaultBlackWhitePlayer;
+- (void) testInvalidDefaultBlackWhitePlayer;
 - (void) testBlackWhitePlayer;
 
 @end

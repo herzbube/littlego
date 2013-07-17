@@ -40,23 +40,33 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color black and refers to the "New Game" default black player.
+///
+/// Returns nil if no default black player exists.
 // -----------------------------------------------------------------------------
 + (GoPlayer*) defaultBlackPlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel blackPlayerUUID]];
-  return [GoPlayer blackPlayer:player];
+  if (player)
+    return [GoPlayer blackPlayer:player];
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoPlayer instance which takes the
 /// color white and refers to the "New Game" default white player.
+///
+/// Returns nil if no default white player exists.
 // -----------------------------------------------------------------------------
 + (GoPlayer*) defaultWhitePlayer
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel whitePlayerUUID]];
-  return [GoPlayer whitePlayer:player];
+  if (player)
+    return [GoPlayer whitePlayer:player];
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------

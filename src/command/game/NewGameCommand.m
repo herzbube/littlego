@@ -27,6 +27,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
+#import "../../player/PlayerModel.h"
 #import "../../newgame/NewGameModel.h"
 
 
@@ -125,7 +126,17 @@
     newGame.komi = newGameModel.komi;
     newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
     newGame.playerBlack = [GoPlayer defaultBlackPlayer];
+    if (! newGame.playerBlack)
+    {
+      [self createEmergencyPlayerUsingColor:GoColorBlack];
+      newGame.playerBlack = [GoPlayer defaultBlackPlayer];
+    }
     newGame.playerWhite = [GoPlayer defaultWhitePlayer];
+    if (! newGame.playerWhite)
+    {
+      [self createEmergencyPlayerUsingColor:GoColorWhite];
+      newGame.playerWhite = [GoPlayer defaultWhitePlayer];
+    }
     newGame.type = newGameModel.gameType;
   }
   DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d",
@@ -143,6 +154,98 @@
   // Receivers will probably want to know stuff like the board size and what
   // game type this is.
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameDidCreate object:newGame];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new Player object that matches the characteristics in
+/// NewGameModel for color @a color.
+///
+/// This is a private helper for newGame().
+///
+/// This method is designed to be invoked as an emergency (e.g. during
+/// application launch) when the user preferences in NewGameModel refer to a
+/// Player that does not exist in the user preferences in PlayerModel. This
+/// method fixes the inconsistency in the user preferences data by creating a
+/// new Player object.
+///
+/// When this method returns, the caller can expect that invoking either
+/// GoPlayer::defaultBlackPlayer() or GoPlayer::defaultWhitePlayer() (which it
+/// is depends on @a color) will return a valid GoPlayer object.
+// -----------------------------------------------------------------------------
+- (void) createEmergencyPlayerUsingColor:(enum GoColor)color
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  NewGameModel* newGameModel = appDelegate.theNewGameModel;
+  PlayerModel* playerModel = appDelegate.playerModel;
+
+  NSString* playerUUID = nil;
+  bool playerIsBlack;
+  switch (color)
+  {
+    case GoColorBlack:
+    {
+      playerUUID = [newGameModel blackPlayerUUID];
+      playerIsBlack = true;
+      break;
+    }
+    case GoColorWhite:
+    {
+      playerUUID = [newGameModel whitePlayerUUID];
+      playerIsBlack = false;
+      break;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Illegal GoColor value %d", color];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  Player* newPlayer = [[[Player alloc] initWithUUID:playerUUID] autorelease];
+  bool newPlayerIsHuman;
+  switch (newGameModel.gameType)
+  {
+    case GoGameTypeHumanVsHuman:
+    {
+      newPlayerIsHuman = true;
+      break;
+    }
+    case GoGameTypeComputerVsComputer:
+    {
+      newPlayerIsHuman = false;
+      break;
+    }
+    case GoGameTypeComputerVsHuman:
+    {
+      if (newGameModel.computerPlaysWhite)
+        newPlayerIsHuman = playerIsBlack;
+      else
+        newPlayerIsHuman = !playerIsBlack;
+      break;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Illegal GoGameType value %d", newGameModel.gameType];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  newPlayer.human = newPlayerIsHuman;
+  newPlayer.name = @"Auto-created player";
+  [playerModel add:newPlayer];
+
+  NSString* errorMessage = [NSString stringWithFormat:@"Auto-created new Player object, UUID = %@, name = %@, human = %d",
+                            newPlayer.uuid,
+                            newPlayer.name,
+                            newPlayer.human];
+  DDLogError(@"%@: %@", [self shortDescription], errorMessage);
 }
 
 // -----------------------------------------------------------------------------

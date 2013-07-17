@@ -21,6 +21,8 @@
 // Application includes
 #import <go/GoGame.h>
 #import <go/GoPlayer.h>
+#import <main/ApplicationDelegate.h>
+#import <newgame/NewGameModel.h>
 #import <player/Player.h>
 
 
@@ -61,6 +63,23 @@
   STAssertEquals(m_game.playerWhite.player, defaultWhitePlayer.player, nil);
   STAssertFalse(defaultWhitePlayer.isBlack, nil);
   STAssertTrue([defaultWhitePlayer.colorString isEqualToString:@"W"], nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the defaultBlackPlayer() and defaultWhitePlayer()
+/// convenience constructors when the default black/white player UUIDs in
+/// NewGameModel refer to Player objects that do not exist.
+// -----------------------------------------------------------------------------
+- (void) testInvalidDefaultBlackWhitePlayer
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  newGameModel.gameType = GoGameTypeHumanVsHuman;
+  newGameModel.humanBlackPlayerUUID = @"invalid_black";
+  newGameModel.humanWhitePlayerUUID = @"invalid_white";
+  GoPlayer* defaultBlackPlayer = [GoPlayer defaultBlackPlayer];
+  STAssertNil(defaultBlackPlayer, nil);
+  GoPlayer* defaultWhitePlayer = [GoPlayer defaultWhitePlayer];
+  STAssertNil(defaultWhitePlayer, nil);
 }
 
 // -----------------------------------------------------------------------------

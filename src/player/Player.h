@@ -44,6 +44,7 @@
 }
 
 - (id) init;
+- (id) initWithUUID:(NSString*)uuid;
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 - (NSDictionary*) asDictionary;
 - (GtpEngineProfile*) gtpEngineProfile;

@@ -40,12 +40,25 @@
 @implementation Player
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a Player object with user defaults data.
+/// @brief Initializes a Player object with a randomly generated UUID.
 // -----------------------------------------------------------------------------
 - (id) init
 {
   // Invoke designated initializer
   return [self initWithDictionary:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a Player object with UUID @a uuid.
+// -----------------------------------------------------------------------------
+- (id) initWithUUID:(NSString*)uuid
+{
+  // Invoke designated initializer
+  Player* player = [self initWithDictionary:nil];
+  // Replace randomly generated UUID
+  if (player)
+    player.uuid = uuid;
+  return player;
 }
 
 // -----------------------------------------------------------------------------

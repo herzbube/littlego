@@ -152,6 +152,19 @@ To still see move numbers and coordinate labels you just have to zoom the board
 sufficiently. Once the zoom scale has reached a certain degree, things will
 automatically start to show up.
 
+=================================
+What is an "Auto-created player"?
+=================================
+When Little Go launches, it automatically starts a game with those two players
+that it remembers were playing last time when the app was active. If for any
+reason one or both of those players no longer exist, Little Go will try to
+recover by automatically creating one or two new players. Players created in
+this way get the name "Auto-created player" to give you a hint what happened.
+
+In practice, you should never see an auto-created player. However, if you *do*
+see one, and you know how you managed to convince Little Go to create it, please
+let me know so that I can fix the problem.
+
 
 --------------------------------------------------------------------------------
 Troubleshooting
