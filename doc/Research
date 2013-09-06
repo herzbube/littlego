@@ -446,14 +446,26 @@ Interrupting long-running GTP commands
   - Answer: From looking at the implementation of SgUctSearch::SearchOnePly() in
     SgUctSearch.cpp, it would appear that the best move so far is selected.
 
+Ko rules
+- The GTP command "go_param_rules ko_rule" can be used to set one of three
+  different ko rules
+  - simple: The simple ko rule where only repetition of the position two moves
+    ago is forbidden.
+  - pos_superko: Positional superko
+  - superko: Situational superko (the source code documentation has the
+    information that this is indeed situational superko)
+- The default is positional superko
+- Resources that explain what a superko is, and what the difference is between
+  situational and positional superko
+  - http://senseis.xmp.net/?Superko
+  - http://en.wikipedia.org/wiki/Rules_of_Go#Repetition
+
 Other useful stuff
 - The "go_point_info" GTP command allows to query Fuego about various properties
   of the specified point. One of the properties is whether the point would be a
   legal move for either black or white
 - The "is_legal" GTP command allows to query Fuego whether it would be legal for
   the specified player to play on the specified point
-
-
 
 
 Details on Fuego's smartgame module

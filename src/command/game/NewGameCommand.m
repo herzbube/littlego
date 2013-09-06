@@ -77,6 +77,7 @@
 - (bool) doIt
 {
   [self newGame];
+  [self setupGtpRules];
   if (self.shouldSetupGtpBoard)
     [self setupGtpBoard];
   if (self.shouldSetupGtpHandicapAndKomi)
@@ -246,6 +247,15 @@
                             newPlayer.name,
                             newPlayer.human];
   DDLogError(@"%@: %@", [self shortDescription], errorMessage);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the GTP engine with a number of rules how to play the
+/// game.
+// -----------------------------------------------------------------------------
+- (void) setupGtpRules
+{
+  [[GtpCommand command:@"go_param_rules ko_rule simple"] submit];
 }
 
 // -----------------------------------------------------------------------------
