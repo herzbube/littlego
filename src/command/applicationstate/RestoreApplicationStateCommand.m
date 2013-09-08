@@ -46,7 +46,19 @@
   }
 
   NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
-  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+  NSKeyedUnarchiver* unarchiver;
+  @try
+  {
+    unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"%@: Restoring not possible, NSKeyedUnarchiver's initForReadingWithData raises exception, exception name = %@, reason = %@", [self shortDescription], exception.name, exception.reason);
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    BOOL result = [fileManager removeItemAtPath:archiveFilePath error:nil];
+    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveFilePath, result);
+    return false;
+  }
   GoGame* unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
   [unarchiver finishDecoding];
   [unarchiver release];
