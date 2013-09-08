@@ -52,7 +52,7 @@
   [unarchiver release];
   if (! unarchivedGame)
   {
-    DDLogVerbose(@"%@: Restoring not possible, NSCoding archive not compatible", [self shortDescription]);
+    DDLogError(@"%@: Restoring not possible, NSCoding archive not compatible", [self shortDescription]);
     NSFileManager* fileManager = [NSFileManager defaultManager];
     BOOL result = [fileManager removeItemAtPath:archiveFilePath error:nil];
     DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveFilePath, result);
@@ -66,7 +66,12 @@
   command.shouldTriggerComputerPlayer = false;
   [command submit];
 
-  [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  bool success = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  if (! success)
+  {
+    DDLogError(@"%@: Restoring not possible, cannot sync GTP engine", [self shortDescription]);
+    return false;
+  }
 
   if (GoGameTypeComputerVsComputer == unarchivedGame.type)
   {
