@@ -203,6 +203,16 @@ static CommandProcessor* sharedProcessor = nil;
   // submitAsynchronousCommand:()
   [command autorelease];
   [self executeCommand:command];
+  [self performSelectorOnMainThread:@selector(hideProgressHUDOnMainThread) withObject:nil waitUntilDone:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method for executeCommandAsynchronously that must run
+/// in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) hideProgressHUDOnMainThread
+{
+  // UI operations must occur on the main thread
   [self.progressHUD removeFromSuperview];
   self.progressHUD = nil;
 }
@@ -282,9 +292,27 @@ static CommandProcessor* sharedProcessor = nil;
 // -----------------------------------------------------------------------------
 - (void) asynchronousCommand:(id<AsynchronousCommand>)command didProgress:(float)progress nextStepMessage:(NSString*)message
 {
-  self.progressHUD.progress = progress;
+  NSNumber* progressAsNSNumber = [NSNumber numberWithFloat:progress];
+  NSArray* progressInfo;
   if (message)
-    self.progressHUD.labelText = message;
+    progressInfo = [NSArray arrayWithObjects:progressAsNSNumber, message, nil];
+  else
+    progressInfo = [NSArray arrayWithObjects:progressAsNSNumber, nil];
+  [self performSelectorOnMainThread:@selector(updateProgressHUDOnMainThread:) withObject:progressInfo waitUntilDone:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method for
+/// asynchronousCommand:didProgress:nextStepMessage: that must run in the
+/// context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) updateProgressHUDOnMainThread:(NSArray*)progressInfo
+{
+  // UI operations must occur on the main thread
+  NSNumber* progressAsNSNumber = [progressInfo objectAtIndex:0];
+  self.progressHUD.progress = [progressAsNSNumber floatValue];
+  if (progressInfo.count > 1)
+    self.progressHUD.labelText = (NSString*)[progressInfo objectAtIndex:1];
 }
 
 // -----------------------------------------------------------------------------
