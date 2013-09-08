@@ -197,7 +197,9 @@ enum AlertViewType
   AlertViewTypeMaxMemoryConfirmation,
   AlertViewTypeDeleteAllGamesConfirmation,
   AlertViewTypeResetPlayersProfilesConfirmation,
-  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation
+  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation,
+  AlertViewTypePlayMoveRejectedLoggingEnabled,
+  AlertViewTypePlayMoveRejectedLoggingDisabled
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in

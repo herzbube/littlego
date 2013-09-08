@@ -184,7 +184,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Is invoked when the GTP engine plays a move that Little Go thinks
 /// is illegal. Part 1: Offers the user a chance to submit a bug report before
-/// the app crashes.
+/// the app crashes, or to enable logging if logging is currently turned off.
 ///
 /// This method has been added to gather information in order to fix issue 90
 /// on GitHub. This method can be removed as soon the issue has been fixed.

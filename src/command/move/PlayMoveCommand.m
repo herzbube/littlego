@@ -20,13 +20,24 @@
 #import "ComputerPlayMoveCommand.h"
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
+#import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../main/MainTabBarController.h"
 #import "../../shared/ApplicationStateManager.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for PlayMoveCommand.
+// -----------------------------------------------------------------------------
+@interface PlayMoveCommand()
+@property(nonatomic, retain) NSString* failedGtpResponse;
+@end
 
 
 @implementation PlayMoveCommand
@@ -87,6 +98,7 @@
   self.game = sharedGame;
   self.moveType = aMoveType;
   self.point = nil;
+  self.failedGtpResponse = nil;
 
   return self;
 }
@@ -98,6 +110,7 @@
 {
   self.game = nil;
   self.point = nil;
+  self.failedGtpResponse = nil;
   [super dealloc];
 }
 
@@ -131,6 +144,8 @@
   {
     assert(0);
     DDLogError(@"%@: GTP engine failed to process command '%@', response was: %@", [self shortDescription], commandString, command.response.parsedResponse);
+    self.failedGtpResponse = command.response.parsedResponse;
+    [self handleGtpEngineRejectedCommand];
     return false;
   }
 
@@ -193,6 +208,112 @@
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Is invoked when the GTP engine rejects the play move made by this
+/// command. Offers the user a chance to submit a bug report, or to enable
+/// logging if logging is currently turned off.
+// -----------------------------------------------------------------------------
+- (void) handleGtpEngineRejectedCommand
+{
+  NSString* message = @"Your move was rejected by Fuego. The reason given was:\n\n";
+  message = [message stringByAppendingString:self.failedGtpResponse];
+  message = [message stringByAppendingString:@"\n\nThis is almost certainly a bug in Little Go. "];
+  enum AlertViewType alertViewType;
+  bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
+  if (loggingEnabled)
+  {
+    message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can fix the bug?"];
+    alertViewType = AlertViewTypePlayMoveRejectedLoggingEnabled;
+  }
+  else
+  {
+    message = [message stringByAppendingString:@"You should enable logging now so that you can report the bug when it occurs the next time.\n\nWould you like to enable logging now?"];
+    alertViewType = AlertViewTypePlayMoveRejectedLoggingDisabled;
+  }
+  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Unexpected error"
+                                                  message:message
+                                                 delegate:self
+                                        cancelButtonTitle:@"No"
+                                        otherButtonTitles:@"Yes", nil];
+  alert.tag = alertViewType;
+  [alert show];
+  [alert release];
+
+  [self retain];  // must survive until the delegate method is invoked
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to the user dismissing an alert view for which this controller
+/// is the delegate.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  [self autorelease];  // balance retain that is sent before an alert is shown
+
+  switch (alertView.tag)
+  {
+    case AlertViewTypePlayMoveRejectedLoggingDisabled:
+    {
+      switch (buttonIndex)
+      {
+        case AlertViewButtonTypeYes:
+          [self enableLogging];
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+    case AlertViewTypePlayMoveRejectedLoggingEnabled:
+    {
+      switch (buttonIndex)
+      {
+        case AlertViewButtonTypeYes:
+          [self sendBugReport];
+          break;
+        default:
+          break;
+      }
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables logging.
+// -----------------------------------------------------------------------------
+- (void) enableLogging
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  appDelegate.loggingModel.loggingEnabled = true;
+  [appDelegate setupLogging];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers the sending of a bug report.
+// -----------------------------------------------------------------------------
+- (void) sendBugReport
+{
+  // Use the view controller that is currently selected - this may not
+  // always be the Play view controller, e.g. if the user has switched to
+  // another tab while the computer was thinking
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  UIViewController* modalViewControllerParent = appDelegate.tabBarController.selectedViewController;
+  SendBugReportController* controller = [SendBugReportController controller];
+  controller.delegate = self;
+  controller.bugReportDescription = [NSString stringWithFormat:@"Fuego rejected the move %@ played by me. The reason given was: %@.", self.point.vertex.string, self.failedGtpResponse];
+  [controller sendBugReport:modalViewControllerParent];
+  [self retain];  // must survive until the delegate method is invoked
+}
+
+// -----------------------------------------------------------------------------
+/// @brief SendBugReportControllerDelegate method
+// -----------------------------------------------------------------------------
+- (void) sendBugReportDidFinish:(SendBugReportController*)sendBugReportController
+{
+  [self autorelease];  // balance retain that is sent before bug report controller runs
 }
 
 @end

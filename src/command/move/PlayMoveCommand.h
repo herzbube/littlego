@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../CommandBase.h"
+#import "../../diagnostics/SendBugReportController.h"
 
 // Forward declarations
 @class GoGame;
@@ -33,7 +34,7 @@
 ///
 /// The computer player is triggered if it is now its turn to move.
 // -----------------------------------------------------------------------------
-@interface PlayMoveCommand : CommandBase
+@interface PlayMoveCommand : CommandBase <SendBugReportControllerDelegate>
 {
 }
 
