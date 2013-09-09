@@ -382,8 +382,8 @@
   self.gameInfoViewController = nil;
   if (5 == [UIDevice systemVersionMajor])
   {
-    // Balance the retain message that we send to this controller before
-    // we display GameInfoViewController
+    // Balance the retain message that we sent to this controller before
+    // we displayed GameInfoViewController
     [self autorelease];
   }
 }

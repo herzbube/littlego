@@ -28,7 +28,7 @@ things will happen:
   that were extracted from the diagnostics information file
 - User defaults are then loaded in the usual way
 - RestoreBugReportApplicationStateCommand is executed instead of
-  RestoreGameCommand; more stuff is extracted from the diagnostics information
+  RestoreGameFromSgfCommand; more stuff is extracted from the diagnostics information
   file to bring the application back to the exact state it was in when
   diagnostics information file was generated
 

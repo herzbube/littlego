@@ -124,10 +124,11 @@ The computer is too strong / too weak, what can I do?
 1. On the "Play" tab, tap the "Game info" button to find out which profile is
    active (select the "Game" segment then scroll down to the section titled
    "Game Information" to find this information).
-1. Go to the Settings tab, select "Players & Profiles", then select the
-   appropriate profile.
+1. Tap the "Active profile" entry. This will take you directly to a screen
+   where you can edit the profile's settings.
 1. Tap on "Playing strength", select a new value, then tap "Done".
-1. Start a new game for the new playing strength to take effect.
+1. Tap "Done" to dismiss the "edit profile" screen. The new playing strength
+   will immediately take effect.
 
 In step 3, you can instead tap "Advanced configuration" if you want to tweak
 individual profile settings. Consult the "Players & Profiles" section of the
@@ -173,17 +174,17 @@ Troubleshooting
 ====================================
 Computer player making illegal moves
 ====================================
-There is a known issue (#90 on GitHub) where Little Go sometimes thinks that
-the computer player (i.e. Fuego) has made a move that is illegal. Until the root
-cause of the problem has been identified and fixed, when this condition occurs
-you will be asked to submit a bug report (please do!), the game in progress is
-automatically saved to the archive and a new game is started to bring the app
-back into a stable state.
+It is possible that Little Go and the computer player (i.e. Fuego) disagree on
+when a move is legal. Usually this happens when Little Go and Fuego get out of
+sync, most often due to some bug in Little Go. If such a situation occurs,
+Little Go will ask you to submit a bug report, or to enable the collecting of
+logging data (so that when the problem occurs the next time, the bug report can
+be sent with useful information about the steps that led up to the problem).
 
-If you frequently experience this problem, please enable the collecting of
-logging data so that when next time you send the bug report, the log file that
-is included with the report will contain useful information about the steps
-that led up to the problem.
+Regardless of whether you agree to Little Go's suggestions, the game in progress
+will then be automatically saved to the archive and a new game will be started
+to bring the app back into a stable state. To continue playing you can try to
+load the saved game from the archive.
 
 ======================================================
 I can/cannot do X - isn't this against the game rules?
@@ -205,20 +206,6 @@ not have enough memory to support both a fully zoomed board AND the computer
 player's memory requirements. You can try to limit your maximum zoom level so
 that you don't accidentally zoom in too much. You can do this by adjusting the
 slider under "Settings > Play view > Maximum zoom".
-
-========================================================
-Crash after increasing a profile's "Max. memory" setting
-========================================================
-If the app crashes after you have increased a profile's "Max. memory" setting,
-it is likely that your device does not have enough memory to support the new
-setting. When the app starts up the next time, you should immediately start a
-new game before the computer player starts to think and grabs more memory than
-your device can provide. Once a new game is started, you should then go back and
-lower the "Max. memory" setting to a safe value.
-
-The profiles that are actively used by players when you first install Little Go
-all have a value of 32 MB. This should be OK even for older devices such as an
-iPhone 3GS.
 
 ===================================================
 I cannot load a game, the "load" button is disabled
@@ -284,8 +271,9 @@ Start Guide" section.
 
 The computer player built into Little Go is powered by the open source software
 library Fuego (http://fuego.sourceforge.net/), which is a pretty nasty
-opponent ☺ if you tune up its number-crunching power. The "Players & Profiles"
-help section tells you more about how to make Fuego stronger or weaker.
+opponent ☺ on smaller boards, and can also be challenging on larger boards if
+you tune up its number-crunching power. The "Players & Profiles" help section
+tells you more about how to make Fuego stronger or weaker.
 
 When a game is over you will usually want to know who has won. Little Go is not
 very smart about calculating the score - it relies quite heavily on your help
@@ -497,11 +485,11 @@ values for handicap and komi.
 =======================
 List of board positions
 =======================
-On the iPhone you can tap the area that shows the "current board position"
+On the iPhone you can tap the small area that shows the "current board position"
 information display. This will hide the navigation buttons and instead show a
-scrollable list of board positions. Tap the area again to switch back to the
-navigation buttons. On the iPad the list of board positions is always visible
-just below the "current board position" area.
+scrollable list of board positions. Tap the small "current board position" area
+again to switch back to the navigation buttons. On the iPad the list of board
+positions is always visible just below the "current board position" area.
 
 When you tap a list entry, the board displays the corresponding board position,
 just as if you had navigated to it using one of the navigation buttons.
@@ -513,13 +501,21 @@ When you view an old board position and it is your turn to play, you can make
 a move just as you would during regular game play. Making that move, however,
 will discard all future moves after the board position you are looking at. You
 will see an alert when this happens, giving you the opportunity to abort and
-keep keep those future moves. The alert can be disabled in the user preferences
+keep those future moves. The alert can be disabled in the user preferences
 under "Settings > Board position".
 
 When you view an old board position and it is the computer's turn to play, you
 can tap the "Computer play" button to let the computer make a move. Unless you
 have disabled it, the same alert about future moves being discarded will be
 displayed.
+
+===============
+Game variations
+===============
+You might be used to game variations from other, more sophisticated
+applications. Little Go currently has no support for game variations, which is
+why you must discard future moves when you want to play while you view an old
+board position.
 
 ==============================================
 Discarding while viewing an old board position
@@ -535,7 +531,8 @@ Scoring while viewing an old board position
 When you look at the score in the "Game info" view, it will be based on the
 board position you are currently viewing. When you are in scoring mode and
 you navigate to a different board position, the scoring information is updated
-automatically to reflect the new board position.
+automatically to reflect the new board position; at the same time, any decisions
+made on which stones are dead are forgotten.
 
 See the "Scoring" help section if you need more information about scoring.
 
@@ -560,9 +557,9 @@ weak or a strong profile with a computer player, you define whether it will be
 a weak or a strong opponent.
 
 To become active, a profile must be associated with a computer player, and that
-player must participate in a game. If you make changes to a profile, those
-changes will take effect only after you start a new game with a computer player
-which uses the profile.
+player must participate in a game. If you make changes to the active profile,
+those changes will immediately take effect when you dismiss the "edit profile"
+screen.
 
 Only one profile can be active at any given time.
 
@@ -584,10 +581,9 @@ You can also think of this from a different angle: Changing the settings of the
 default profile will have an influence on the quality of the moves generated by
 tapping the "Computer play" button in human vs. human games.
 
-
-==============================================
-Simple vs. advanced configuration of a profile
-==============================================
+=====================================================
+Simple vs. advanced configuration of playing strength
+=====================================================
 The simplest way to change the settings of a profile is to select from a number
 of playing strengths when you are on the Edit Profile screen. Playing strength 1
 is the weakest, playing strength 2 is slightly better, and so on. Each playing
@@ -601,6 +597,23 @@ changing things, however, it is probably a good idea to first read through the
 next sections so that you better understand what you can accomplish by
 manipulating the different settings.
 
+================
+Resign behaviour
+================
+A profile also has a resign behaviour which defines how quickly a computer
+player using the profile will resign the game. The simple configuration lets you
+choose from five predefined resign behaviours, while the advanced configuration
+allows you to define a threshold percentage for each board size.
+
+Here are a couple of ideas on what you can do with specific resign behaviours:
+- If the computer player is allowed to resign normally, it will often resign
+  immediately when it is faced with an overwhelming handicap (e.g. handicap 6
+  on a 9x9 board). Setting the resign behaviour to "Never resign", however,
+  allows beginners to play with a large handicap on small boards.
+- Strong players who can beat the computer but who like to play out the game to
+  the very end can set the resign behaviour to "Stubborn" or even to
+  "Never resign" to get the most out of a game.
+
 ==============
 Maximum memory
 ==============
@@ -613,10 +626,20 @@ will play. There are a few things that you need to be aware of, though:
   that also run on the device. If iOS (the operating system running on your
   device) finds that Little Go behaves badly and uses up too much memory, it
   will terminate Little Go after a short delay so that the other applications
-  can continue running. To make a long story short: If you increase the maximum
-  memory setting, be extra careful to set a value that is not too high! If you
-  don't know how much memory your device has you can consult the ever useful
-  Wikipedia: http://en.wikipedia.org/wiki/List_of_iOS_devices.
+  can continue running. To minimize the chance that this happens, Little Go
+  limits the amount of memory you can assign here to a fraction of the amount
+  of physical memory that the device has. The fraction increases with the
+  amount of physical memory. Thresholds have been set like this:
+- <= 256 MB: The upper limit is 1/4 of the device's physical memory. This is
+  probably a bit too aggressive: On an iPhone 3GS, which has 256 MB memory,
+  setting "Maximum memory" to the upper limit of 64 MB crashes the app if you
+  also use zoom. Still, you have the freedom to not use zoom in favor of giving
+  more memory to the computer.
+- 257-512 MB: The upper limit is 1/2 of the device's physical memory. This
+  should be fine, even you use zoom.
+- >= 512 MB: The upper limit is 2/3 of the device's physical memory. This is
+  probably a bit too conservative, but better be safe than sorry, and it's
+  still an improvement over the old hard-coded upper limit of 512 MB.
 - More threads (see below) usually need more memory to be effective
 - Faster processors need more memory because they can calculate more than slower
   processors in the same amount of time
@@ -635,7 +658,9 @@ is taking up too much time switching between threads when instead it could make
 better use of this time in a single thread of straightforward calculations.
 
 Note that the iPhone 4S is the first iOS device that has a processor with 2
-cores, so on older devices you should leave the number of threads set to 1.
+cores, so on older devices you should leave the number of threads set to 1. If
+you don't know how many processor cores your device has, you can consult this
+Wikipedia page: http://en.wikipedia.org/wiki/List_of_iOS_devices.
 
 =========
 Pondering
@@ -744,6 +769,61 @@ to.
   "maximum games".
 - Playing strength 5, in addition, enables pondering, with pondering time set to
   the default 5 minutes.
+
+================
+Resign threshold
+================
+This setting defines how quickly the computer will resign the game. The computer
+player resigns if the quality of the best move it can find is below the resign
+threshold. Lower thresholds make the computer less likely to resign. A threshold
+of 0% guarantees that the computer will never resign.
+
+Because the computer internally calculates percentages for the quality of its
+moves, the resign threshold is also expressed in % so that the two values can
+be compared to each other.
+
+Each board size has its own resign threshold, because on larger boards the
+computer engine making the calculations (Fuego) tends to generate slightly
+higher values for "best move quality". The predefined resign behaviours
+distinguish two board size ranges: 7x7 up to 13x13, and 15x15 up to 19x19.
+
+==============================
+Resign minimum number of games
+==============================
+This setting defines the minimum number of playout games that the computer must
+calculate before it is allowed to use the resign threshold to make a decision
+about resigning. The idea is that a low number of playout games is less likely
+to result in high quality moves, thus the computer would resign much too
+quickly when it would be allowed to decide on only a few playout games.
+
+An important consideration for this setting is that the computer will
+<em>never</em> resign if it has a value that is greater than the value of the
+playing strength setting "Maximum games", because in that case the computer will
+never calculate more than "Resign minimum number of games".
+
+To prevent this from accidentally happening, "Resign minimum number of games" is
+automatically calculated by default. This mechanism makes sure that whenever the
+value for "Maximum games" changes, the value for
+"Resign minimum number of games" is automatically adjusted to stay below
+"Maximum games". Although you can disable this feature, it is recommended that
+you leave auto-calculation turned on.
+
+============================
+Predefined resign behaviours
+============================
+This section lists the thresholds (in %) for each board size that the predefined
+resign behaviours resolve to.
+
+<pre>
+&nbsp;                               Board size</br>
+Behaviour              7   9   11  13  15  17  19<br/>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
+Pushover (x2)          10  10  10  10  16  16  16<br/>
+Resign quickly (x1.5)  7.5 7.5 7.5 7.5 12  12  12<br/>
+Normal (x1.0)          5   5   5   5   8   8   8<br/>
+Stubborn (x0.5)        2.5 2.5 2.5 2.5 4   4   4<br/>
+Never resign (x0.0)    0   0   0   0   0   0   0<br/>
+</pre>
 
 
 --------------------------------------------------------------------------------
@@ -913,7 +993,9 @@ Managing the archive
 The "Archive" tab lists previously saved games, or games that were transferred
 to the device via file sharing in iTunes or via import from an external
 application (e.g. Mail). Tap the "edit" toolbar button if you want to delete
-one or more saved games.
+one or more saved games. At the bottom of the screen (scroll down if you have
+many saved games) there is a button that allows you to delete all saved games in
+one fell swoop.
 
 When you tap the entry for a saved game, a detail view for that game is
 displayed. You can rename the game by tapping on its name. To load the game

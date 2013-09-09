@@ -199,7 +199,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications from GoMoveModel.
+/// @brief Responds to KVO notifications from GoMoveModel. If the response
+/// includes changes to numberOfBoardPositions and/or currentBoardPosition, the
+/// appropriate KVO notifications are also generated.
 ///
 /// @note The following details are rather deep implementation notes made to
 /// understand the maybe not-so-obvious interaction between the Play view
@@ -218,16 +220,11 @@
 ///   move is made, the Play view should update itself to display the board
 ///   position after the new move.
 /// - If the current board position refers to any other move in GoMoveModel,
-///   nothing happens and #goMoveModelChanged is ignored. This covers the
-///   scenario where a new move is made while viewing a board position in the
-///   middle of the game. In this scenario, #goMoveModelChanged is sent for the
-///   first time (and can be ignored) when all future moves after the current
-///   board position are discarded. #goMoveModelChanged will be sent a second
-///   time later on, when the new move is actually made. On this occasion
-///   where the board position will be a
+///   nothing happens and the KVO notification is ignored. This covers the
+///   scenarios where 1) a new move is made while viewing a board position in
+///   the middle of the game; and 2) all moves after the current board position
+///   are discarded.
 ///
-/// KVO notifications are sent if the current board position is changed in any
-/// way.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
@@ -250,8 +247,8 @@
   }
   else
   {
-    // Scenario "move is made while viewing a board position in the middle of
-    // the game" (see method docs)
+    // Scenario "a new move is made while viewing a board position in the
+    // middle of the game" (see method docs)
     return;
   }
 

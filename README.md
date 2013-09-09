@@ -9,12 +9,17 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go bugfix release 0.11.1. The following evil bugs have been squashed:
+This is the Little Go feature release 0.12.0. A selection of the most important changes are:
 
-* Board position can no longer be changed while other commands are executed (#156). This hard-to-find bug caused numerous crashes (e.g. those described by issues #128 and #129) and other problems, such as the infamous "The computer played an illegal move." alert. Many thanks to Logan Bouia and Carole Wolf for emailing me bug reports that helped me with diagnosing the problem.
-* The entire game is now saved when an old board position is viewed (#150)
-* The app should no longer crash after receiving a memory warning on iOS 5 while the "Game info", "New game" or "Save game" screens are displayed (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that the issue needs fixing by sending an occasional crash report.
-* Fix for a memory leak in TableViewSliderCell (#155)
+* It is now possible to configure the computer player with a threshold how quickly it will resign a game (#133). For instance, it is now possible to tell the computer player to never resign so that the game can be played out to the very end. This also allows beginners to play with a large handicap on a small board (up until now the computer player would always resign immediately when faced with an overwhelming handicap). The resignation behaviour setting can be found towards the bottom on the "edit profile" screen.
+* When an old board position is viewed, the intersection where the next stone will be placed is now marked with the letter "A" (#101). This can be disabled in the "Board position" settings.
+* Changes to the active profile are now immediately applied to the GTP engine (#123). For instance, it is now possible to change the playing strength or the resign behaviour of the computer player without starting a new game.
+* Loading a game from the archive is now about 10% faster (#166)
+* The user interface for changing the dangerous "Max. memory" profile setting is now vastly improved (#153). The maximum value that can be selected for the setting is now limited to a fraction of the device's physical memory, and the amount of physical memory that the device has is also displayed.
+* The GTP engine is configured to no longer recognize positional superko (#171). This is a temporary solution to bring the GTP engine's rules into sync with Little Go's rules. Little Go currently does not recognize superko, so this sync'ing fixes the problem that Little Go lets the user make a superko move which is then rejected by the GTP engine. Many thanks to Brid Griffin for emailing me a bug report that helped me with diagnosing this problem! Note that Little Go will officially support superko in 1.0.
+* On the iPad, the board size is now correct after the device is rotated while the board is zoomed (#162)
+* Dragging a stone outside the zoomed in board section no longer places the stone (#143)
+
 
 The [ChangeLog](doc/ChangeLog) document has more details.
 

@@ -220,52 +220,32 @@ improves chances that I get notified about the problem.
 
 Strategy for saving data / preventing data loss
 -----------------------------------------------
-There are three types of data that need to be saved:
-- Preferences data. This data is saved by the ApplicationDelegate method
-  writeUserDefaults.
-- The game in progress. This data is saved in BackupGameCommand. The data is
-  saved both as an NSCoding archive, and as an .sgf file. Saving to .sgf is
-  delegated to the Fuego engine via the GTP "savesgf" command.
-- Other application state data: This data is saved by BackupGameCommand as an
-  NSCoding archive only.
+A simplistic strategy is to save data when the application is suspended
+(applicationDidEnterBackground), and to restore the data after the application
+did launch (application:didFinishLaunchingWithOptions:()). Although it is
+basically sound, this strategy has one severe weakness: It assumes that the
+application never crashes!
 
-Before 0.9.0 the strategy simply was to save data when the application is
-suspended (applicationDidEnterBackground), and to restore it when the
-application did launch (application:didFinishLaunchingWithOptions:()). This
-strategy is sufficient for the normal application lifecycle, but has one severe
-weakness: It assumes that the application never crashes!
+Little Go uses a strategy that is more elaborate, but in order to do so it
+distinguishes between two types of data that need to be saved:
+- The game in progress. The game's moves are the user's most precious data, so
+  the application tries very hard to never lose this data.
+- Application state and user preferences: This data is slightly less important.
+  The user would certainly be annoyed if she lost some of this data, but it
+  would not be a total disaster. Accordingly, the application tries a little bit
+  less hard to not lose this data.
 
-From 0.9.0 onwards, the strategy was changed to cope with crashes that might
-occur at - almost - any time. It goes like this:
+So how does the strategy work in detail?
+- The game in progress is saved immediately every time a move is played or
+  discarded. Data from the previous backup operation is overwritten. This gives
+  maximum protection against crashes (assuming that there is no crash during the
+  game-saving routine itself), for the price of additional file activity (i.e.
+  flash drive write cycles) and processing power.
+- User preferences: This data is saved only when the user switches tabs, or when
+  the application is suspended for any reason.
+- Other application state (e.g. the board position that the user currently
+  views): This data is saved only when the application is suspended for any
+  reason.
 
-- The game in progress is saved every time a move is played or discarded. Data
-  from the previous backup operation is overwritten. This gives maximum
-  protection against crashes (assuming that there is no crash during the
-  game-saving routine itself), for the price of additional file activity and
-  processing power. I have not measured the impact with Instruments, but for
-  the moment I assume that the processing power used for the backup should be
-  neglible in comparison to Fuego's consumption. Another matter are the flash
-  drive write cycles wasted for each backup. However, if 100-150 KB of data
-  saved after each move, or discard of a move, seem too much, then let's look at
-  the other end of the balance: The game moves are the user's most precious
-  data, and risking to lose that simply is not appropriate. So let's not worry
-  about write cycles and hope that the flash drive manufacturers and Apple
-  have done their job and optimized disk activity to death.
-- Preferences data is saved only when the user switches tabs, or when the
-  application is suspended for any reason. This is not as thorough as saving
-  the game in progress, but it should be sufficient. It would have been a larger
-  effort to introduce events for each and every preference and application state
-  change, so I have decided to go for the optimization with the tab changes and
-  application suspension - events which are simple to detect. I am also assuming
-  that 1) losing a bit of preferences in case of a crash is not as grave as
-  losing the game in progress (imagine you lose a game of several hours), and
-  2) that changing preferences is a relatively well-tested process that is not
-  likely to trigger a crash, so saving data can wait until the user switches
-  tabs to do other, potentially more dangerous things.
-
-With the introduction of board positions in 0.10.0, it has become essential that
-the game in progress is backed up as outlined above. Whenever the board
-position changes, the state in Fuego is sync'ed with the new board position.
-If the user goes back in the move history, it is therefore vital that NO
-"savesgf" GTP command is sent at this point because this would overwrite the
-actual game state with the older board position.
+The implementation for all of this can be found in ApplicationStateManager and
+MainTabBarController.
