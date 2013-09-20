@@ -121,27 +121,29 @@ Make an AppStore distribution (production release)
 - The archive is now validated and uploaded
 - After the upload has finished, the app's status in iTunes Connect should now
   have changed to "Upload Received" 
-- Wait for Apple to accept the submission and publish the new version in their
-  App Store
+- Wait for Apple to review the submission
 
 
 Make the release
 ----------------
-- Once the release is official, merge all changes in the release branch into
-  master
-  git checkout master
-  git merge release-0.9.0
-- Tag and sign the release
-  git tag -s -m "tagging release x.y" x.y <commit hash>
+- After Apple has completed the review process, the release can now be viewed
+  as official and the remaining steps can be performed
 - Merge all changes in the release branch into develop
   git checkout develop
   git merge release-0.9.0
+- Merge all changes in the release branch into master
+  git checkout master
+  git merge develop
+- Tag and sign the release
+  git tag -s -m "tagging release x.y" x.y <commit hash>
 - Update the GitHub repository
   git push
   git push --tags
 - Remove the release branch, both locally and, if it was pushed, on GitHub
 - Write a release note blog post on the website
-- Close tickets that are not yet closed in the issue tracker
+- Close tickets that are not yet closed in the issue tracker, then close the
+  milestone
 - Change the QuincyKit status of the new version to "Available" and the status
   of the old version to "Discontinued"
 - Cleanup the Trello board
+- Release the new version to the App Store
