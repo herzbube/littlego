@@ -1,0 +1,12 @@
+diff -ruN fuego-uec-cup-2013-original/smartgame/SgHash.h fuego-uec-cup-2013-new/smartgame/SgHash.h
+--- fuego-uec-cup-2013-original/smartgame/SgHash.h	2012-06-25 21:45:48.000000000 +0200
++++ fuego-uec-cup-2013-new/smartgame/SgHash.h	2013-09-21 00:20:31.000000000 +0200
+@@ -273,7 +273,7 @@
+ }
+ 
+ template<int N>
+-std::ostream& operator>>(std::istream& in, const SgHash<N>& hash)
++std::istream& operator>>(std::istream& in, const SgHash<N>& hash)
+ {
+     std::string str;
+     in >> str;

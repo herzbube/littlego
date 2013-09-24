@@ -42,9 +42,6 @@ Fuego build/installation issues
 Build
 - The build script needs to specify the configure flag --with-boost-libdir,
   otherwise configure aborts with a linker error.
-- The configure.ac script does not work with newer versions of Autoconf/Automake
-  (this is relevant because autoreconf is run by the Fuego build script).
-  Patch 6 fixes these problems.
 
 Installation
 - "make install" only copies the executables (fuego, fuego_test), but not the
@@ -116,6 +113,7 @@ Changes to the Fuego source code
   this new function in FuegoUtil.cpp
 - Also move the other support functions from FuegoMain.cpp to FuegoUtil.cpp
 - Invoke FuegoUtil::FuegoMain() from main()
+- These changes are in file 02-fuego-mainfunction.patch
 
 2) Add 2 new command line options "--input-pipe /path/to/pipe" and
    "--output-pipe /path/to/pipe"
@@ -125,17 +123,43 @@ Changes to the Fuego source code
 - Additional option support to check for mutually exclusive options
   (--input-file and --input-pipe) requires addition of a new function
   MutuallyExclusiveOptions() which is invoked from ParseOptions()
+- These changes are in file 02-fuego-mainfunction.patch
 
 3) Remove usage of exit() in Help()
 - ParseOptions() must be modified to return a value that indicates to its
   caller (FuegoMain()) whether the program should continue running or whether
   it should be terminated
+- This change is in file 02-fuego-mainfunction.patch
 
 4) Add 2 new GTP commands "list_moves" and "list_handicap"
 - These commands are used to discover the move history and the list of handicap
   stones after Fuego has been instructed over GTP to load an .sgf file (with
   the "loadsgf" GTP command)
 - This change allows Little to fully delegate all .sgf file handling to Fuego
+- These changes are in file 03-fuego-gtpcommands.patch
+
+5) Source code changes to fix some errors reported by the clang compiler (clang
+   is stricter than the llvm-gc compiler used in older versions of Xcode)
+- These changes are in file 04-fuego-clang-compilererrors.patch
+
+6) Source code changes to fix some errors reported by clang when -std=c++11 is
+   used.
+- The first type of changes fixes some type name clashes that occur because both
+  "using std" and "using boost" appear in the same .cpp file.
+  - This is a problem because the new C++11 standard library contains some types
+    with the same names as types that also exist in Boost. The affected types
+    are "mutex" and "shared_ptr".
+  - The fix consists of removing all offending "using" statements and instead
+    use fully qualified type names (e.g. boost::mutex)
+- The second change fixes a compiler error that occurs because a GCC specific
+  header file is used in SgProcess.h:
+    #include <ext/stdio_filebuf.h> // GCC specific
+  - The C++11 standard does not allow such specifics
+  - Luckily SgProcess.h is only included in SgProcess.cpp, and no symbols from
+    SgProcess.cpp are used anywhere in Fuego
+  - The fix therefore consists of simply removing SgProcess.cpp from
+    smartgame/Makefile.am
+- These changes are in file 05-fuego-c++c11-compilererrors.patch
 
 
 Fuego Patches
@@ -155,3 +179,53 @@ Patches are created like this:
 Patches are applied like this:
   cd fuego-1.0
   patch -p1 <fuego.patch
+
+
+Testing the patched version of Fuego on the Mac OS X command line
+-----------------------------------------------------------------
+The behaviour of the patched Fuego can be observed and tested on the command
+line as follows.
+
+Preconditions
+- Install the Xcode command line tools
+- Install Boost system-wide (e.g. through MacPorts). If you want to install
+  it locally, just for the Fuego build, then you are certainly clever enough
+  to figure out how to modify the build instructions below :-)
+- Install the Autotools system-wide (e.g. through MacPorts)
+
+Preparation
+- Create a new empty folder "fuego". From now on, everything will happen inside
+  this folder.
+- Place a copy of the Fuego tar ball with the original sources into the "fuego"
+  folder.
+- Place a copy of the Fuego patches to test into the "fuego" folder.
+- Create communication FIFO pipes that will later be used during the tests.
+- The commands for these preparation steps look like this:
+    mkdir fuego
+    cd fuego
+    cp /path/to/littlego/3rdparty/src/fuego/fuego-1.1.tar.gz .
+    cp -R /path/to/littlego/patches/fuego patches
+    mkfifo input.pipe
+    mkfifo output.pipe
+
+These are the commands to build/install Fuego:
+  cd fuego
+  tar xfz fuego-1.1.tar.gz
+  cd fuego-1.1
+  for PATCH_FILE in ../patches/*; do patch --forward -p1 <"$PATCH_FILE"; done
+  autoreconf -i
+  ./configure --prefix=$(pwd)/../fuego-install
+  make
+  make install
+  
+These are the commands to setup the test. You need 3 terminal windows for this.
+- Launch Fuego in terminal window 1
+    ./fuego-install/bin/fuego --input-pipe input.pipe --output-pipe output.pipe
+- Execute this command in terminal window 2
+    cat output.pipe
+- Execute this command in terminal window 3
+    cat >input.pipe
+
+GTP commands can now be typed into terminal window 3 in order to control Fuego.
+Fuego's output in response to the commands can be observed in terminal window 2.
+To get rid of everything, simply remove the top-level "fuego" folder.

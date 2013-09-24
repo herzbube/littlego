@@ -1,7 +1,7 @@
-diff -ruN fuego-1.1-original/go/GoGtpEngine.cpp fuego-1.1-new/go/GoGtpEngine.cpp
---- fuego-1.1-original/go/GoGtpEngine.cpp	2011-03-05 12:09:01.000000000 +0100
-+++ fuego-1.1-new/go/GoGtpEngine.cpp	2011-09-14 23:04:43.000000000 +0200
-@@ -126,6 +126,8 @@
+diff -ruN fuego-uec-cup-2013-original/go/GoGtpEngine.cpp fuego-uec-cup-2013-new/go/GoGtpEngine.cpp
+--- fuego-uec-cup-2013-original/go/GoGtpEngine.cpp	2013-03-03 23:20:29.000000000 +0100
++++ fuego-uec-cup-2013-new/go/GoGtpEngine.cpp	2013-09-21 00:03:11.000000000 +0200
+@@ -127,6 +127,8 @@
      Register("kgs-genmove_cleanup", &GoGtpEngine::CmdGenMoveCleanup, this);
      Register("kgs-time_settings", &GoGtpEngine::CmdKgsTimeSettings, this);
      Register("komi", &GoGtpEngine::CmdKomi, this);
@@ -10,7 +10,7 @@ diff -ruN fuego-1.1-original/go/GoGtpEngine.cpp fuego-1.1-new/go/GoGtpEngine.cpp
      Register("list_stones", &GoGtpEngine::CmdListStones, this);
      Register("loadsgf", &GoGtpEngine::CmdLoadSgf, this);
      Register("play", &GoGtpEngine::CmdPlay, this);
-@@ -614,6 +616,66 @@
+@@ -629,6 +631,66 @@
      }
  }
  
@@ -77,9 +77,9 @@ diff -ruN fuego-1.1-original/go/GoGtpEngine.cpp fuego-1.1-new/go/GoGtpEngine.cpp
  /** List stones on board.
      Mainly useful for regression tests to verify the board position.
      For compatibility with GNU Go's list_stones command, the points are
-diff -ruN fuego-1.1-original/go/GoGtpEngine.h fuego-1.1-new/go/GoGtpEngine.h
---- fuego-1.1-original/go/GoGtpEngine.h	2011-03-05 12:09:01.000000000 +0100
-+++ fuego-1.1-new/go/GoGtpEngine.h	2011-09-14 22:26:14.000000000 +0200
+diff -ruN fuego-uec-cup-2013-original/go/GoGtpEngine.h fuego-uec-cup-2013-new/go/GoGtpEngine.h
+--- fuego-uec-cup-2013-original/go/GoGtpEngine.h	2011-03-05 12:08:45.000000000 +0100
++++ fuego-uec-cup-2013-new/go/GoGtpEngine.h	2013-09-21 00:04:47.000000000 +0200
 @@ -60,6 +60,8 @@
          - @link CmdGenMoveCleanup() @c kgs-genmove_cleanup @endlink
          - @link CmdKgsTimeSettings() @c kgs-time_settings @endlink
@@ -98,9 +98,9 @@ diff -ruN fuego-1.1-original/go/GoGtpEngine.h fuego-1.1-new/go/GoGtpEngine.h
      virtual void CmdListStones(GtpCommand&);
      virtual void CmdLoadSgf(GtpCommand&);
      virtual void CmdName(GtpCommand&);
-diff -ruN fuego-1.1-original/go/GoNodeUtil.cpp fuego-1.1-new/go/GoNodeUtil.cpp
---- fuego-1.1-original/go/GoNodeUtil.cpp	2011-01-23 19:35:06.000000000 +0100
-+++ fuego-1.1-new/go/GoNodeUtil.cpp	2011-09-14 21:59:38.000000000 +0200
+diff -ruN fuego-uec-cup-2013-original/go/GoNodeUtil.cpp fuego-uec-cup-2013-new/go/GoNodeUtil.cpp
+--- fuego-uec-cup-2013-original/go/GoNodeUtil.cpp	2011-01-01 11:43:04.000000000 +0100
++++ fuego-uec-cup-2013-new/go/GoNodeUtil.cpp	2013-09-21 00:09:14.000000000 +0200
 @@ -48,14 +48,23 @@
  
  int GoNodeUtil::GetHandicap(const SgNode* node)
@@ -131,9 +131,9 @@ diff -ruN fuego-1.1-original/go/GoNodeUtil.cpp fuego-1.1-new/go/GoNodeUtil.cpp
 +
  //----------------------------------------------------------------------------
  
-diff -ruN fuego-1.1-original/go/GoNodeUtil.h fuego-1.1-new/go/GoNodeUtil.h
---- fuego-1.1-original/go/GoNodeUtil.h	2011-01-23 19:35:06.000000000 +0100
-+++ fuego-1.1-new/go/GoNodeUtil.h	2011-09-14 20:21:00.000000000 +0200
+diff -ruN fuego-uec-cup-2013-original/go/GoNodeUtil.h fuego-uec-cup-2013-new/go/GoNodeUtil.h
+--- fuego-uec-cup-2013-original/go/GoNodeUtil.h	2011-01-01 11:43:04.000000000 +0100
++++ fuego-uec-cup-2013-new/go/GoNodeUtil.h	2013-09-21 00:10:45.000000000 +0200
 @@ -34,6 +34,9 @@
      /** Find handicap that is valid for this node.
          Search parent nodes until a node with a handicap property is found. */

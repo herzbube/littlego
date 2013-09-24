@@ -1,7 +1,7 @@
-diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/FuegoMain.cpp
---- fuego-1.0-original/fuegomain/FuegoMain.cpp	2011-01-14 17:34:48.000000000 +0100
-+++ fuego-1.0-new/fuegomain/FuegoMain.cpp	2011-03-24 21:09:57.000000000 +0100
-@@ -3,201 +3,9 @@
+diff -ruN fuego-uec-cup-2013-original/fuegomain/FuegoMain.cpp fuego-uec-cup-2013-new/fuegomain/FuegoMain.cpp
+--- fuego-uec-cup-2013-original/fuegomain/FuegoMain.cpp	2012-06-26 20:48:48.000000000 +0200
++++ fuego-uec-cup-2013-new/fuegomain/FuegoMain.cpp	2013-09-20 23:14:52.000000000 +0200
+@@ -3,225 +3,9 @@
      Main function for Fuego */
  //----------------------------------------------------------------------------
  
@@ -11,6 +11,7 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -#include <boost/foreach.hpp>
 -#include <boost/format.hpp>
 -#include <boost/filesystem/path.hpp>
+-#include <boost/filesystem.hpp>
 -#include <boost/program_options/options_description.hpp>
 -#include <boost/program_options/cmdline.hpp>
 -#include <boost/program_options/variables_map.hpp>
@@ -22,10 +23,12 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -#include "SgDebug.h"
 -#include "SgException.h"
 -#include "SgInit.h"
+-#include "SgPlatform.h"
 -
--using namespace std;
 -using boost::filesystem::path;
--using boost::format;
+-using std::ostream;
+-using std::string;
+-using std::vector;
 -namespace po = boost::program_options;
 -
 -//----------------------------------------------------------------------------
@@ -35,9 +38,11 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -/** @name Settings from command line options */
 -// @{
 -
--bool g_noHandicap = false;
--
+-/** Do not use opening book */
 -bool g_noBook = false;
+-
+-/** Do not allow handicap games */
+-bool g_noHandicap = false;
 -
 -bool g_quiet = false;
 -
@@ -46,8 +51,6 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -int g_maxGames;
 -
 -string g_config;
--
--path g_programDir;
 -
 -const char* g_programPath;
 -
@@ -64,7 +67,25 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -{
 -    if (programPath == 0)
 -        return "";
--    return path(programPath, boost::filesystem::native).branch_path();
+-    # if defined(BOOST_FILESYSTEM_VERSION)
+-        SG_ASSERT (  BOOST_FILESYSTEM_VERSION == 2
+-                  || BOOST_FILESYSTEM_VERSION == 3);
+-    #endif
+-
+-    #if (defined(BOOST_FILESYSTEM_VERSION) && (BOOST_FILESYSTEM_VERSION == 3))
+-        return path(programPath).branch_path();
+-    #else
+-        return path(programPath, boost::filesystem::native).branch_path();
+-    #endif	
+-}
+-
+-path GetTopSourceDir()
+-{
+-    #ifdef ABS_TOP_SRCDIR
+-        return path(ABS_TOP_SRCDIR);
+-    #else
+-        return "";
+-    #endif
 -}
 -
 -void Help(po::options_description& desc, ostream& out)
@@ -110,10 +131,10 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -    }
 -    catch (...)
 -    {
--        Help(normalOptions, cerr);
+-        Help(normalOptions, std::cerr);
 -    }
 -    if (vm.count("help"))
--        Help(normalOptions, cout);
+-        Help(normalOptions, std::cout);
 -    if (vm.count("nobook"))
 -        g_noBook = true;
 -    if (vm.count("nohandicap"))
@@ -126,7 +147,7 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -{
 -    SgDebug() <<
 -        "Fuego " << FuegoMainUtil::Version() << "\n"
--        "Copyright (C) 2009-2011 by the authors of the Fuego project.\n"
+-        "Copyright (C) 2009-2012 by the authors of the Fuego project.\n"
 -        "This program comes with ABSOLUTELY NO WARRANTY. This is\n"
 -        "free software and you are welcome to redistribute it under\n"
 -        "certain conditions. Type `fuego-license' for details.\n\n";
@@ -141,7 +162,8 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -    if (argc > 0 && argv != 0)
 -    {
 -        g_programPath = argv[0];
--        g_programDir = GetProgramDir(argv[0]);
+-        SgPlatform::SetProgramDir(GetProgramDir(argv[0]));
+-        SgPlatform::SetTopSourceDir(GetTopSourceDir());
 -        try
 -        {
 -            ParseOptions(argc, argv);
@@ -165,26 +187,28 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -        if (g_maxGames >= 0)
 -            engine.SetMaxClearBoard(g_maxGames);
 -        if (! g_noBook)
--            FuegoMainUtil::LoadBook(engine.Book(), g_programDir);
+-            FuegoMainUtil::LoadBook(engine.Book(), 
+-            					    SgPlatform::GetProgramDir());
 -        if (g_config != "")
 -            engine.ExecuteFile(g_config);
 -        if (! g_inputFiles.empty())
 -        {
--            for(size_t i = 0; i < g_inputFiles.size(); i++)
+-            for (size_t i = 0; i < g_inputFiles.size(); i++)
 -            {
 -                string file = g_inputFiles[i];
--                ifstream fin(file.c_str());
+-                std::ifstream fin(file.c_str());
 -                if (! fin)
--                    throw SgException(format("Error file '%1%'") % file);
+-                    throw SgException(boost::format("Error file '%1%'") 
+-                    				  % file);
 -                GtpInputStream in(fin);
--                GtpOutputStream out(cout);
+-                GtpOutputStream out(std::cout);
 -                engine.MainLoop(in, out);
 -            }
 -        }
 -        else
 -        {
--            GtpInputStream in(cin);
--            GtpOutputStream out(cout);
+-            GtpInputStream in(std::cin);
+-            GtpOutputStream out(std::cout);
 -            engine.MainLoop(in, out);
 -        }
 -    }
@@ -204,46 +228,55 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMain.cpp fuego-1.0-new/fuegomain/Fue
 -
 -//----------------------------------------------------------------------------
 -
-diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain/FuegoMainUtil.cpp
---- fuego-1.0-original/fuegomain/FuegoMainUtil.cpp	2011-01-14 17:34:48.000000000 +0100
-+++ fuego-1.0-new/fuegomain/FuegoMainUtil.cpp	2011-03-24 21:20:15.000000000 +0100
-@@ -8,11 +8,26 @@
+diff -ruN fuego-uec-cup-2013-original/fuegomain/FuegoMainUtil.cpp fuego-uec-cup-2013-new/fuegomain/FuegoMainUtil.cpp
+--- fuego-uec-cup-2013-original/fuegomain/FuegoMainUtil.cpp	2013-02-28 08:17:43.000000000 +0100
++++ fuego-uec-cup-2013-new/fuegomain/FuegoMainUtil.cpp	2013-09-21 00:29:45.000000000 +0200
+@@ -6,14 +6,33 @@
+ #include "SgSystem.h"
+ #include "FuegoMainUtil.h"
  
- #include <fstream>
- #include <sstream>
 +#include <iostream>
 +#include <boost/foreach.hpp>
 +#include <boost/format.hpp>
 +#include <boost/filesystem/path.hpp>
+ #include <boost/filesystem.hpp>
 +#include <boost/program_options/options_description.hpp>
 +#include <boost/program_options/cmdline.hpp>
 +#include <boost/program_options/variables_map.hpp>
 +#include <boost/program_options/parsers.hpp>
 +#include <boost/utility.hpp>
+ #include <fstream>
+ #include <sstream>
 +#include "FuegoMainEngine.h"
  #include "GoBook.h"
- #include "SgDebug.h"
 +#include "GoInit.h"
+ #include "SgDebug.h"
 +#include "SgException.h"
 +#include "SgInit.h"
++#include "SgPlatform.h"
+ #include "SgStringUtil.h"
  
- using namespace std;
++using boost::filesystem::path;
++using std::ostream;
++using std::string;
++using std::vector;
  using namespace boost::filesystem;
-+using boost::format;
 +namespace po = boost::program_options;
  
  //----------------------------------------------------------------------------
  
-@@ -43,6 +58,110 @@
+@@ -42,6 +61,168 @@
      return true;
  }
  
 +/** @name Settings from command line options */
 +// @{
 +
-+bool g_noHandicap = false;
-+
++/** Do not use opening book */
 +bool g_noBook = false;
++
++/** Do not allow handicap games */
++bool g_noHandicap = false;
 +
 +bool g_quiet = false;
 +
@@ -252,8 +285,6 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +int g_maxGames;
 +
 +string g_config;
-+
-+path g_programDir;
 +
 +const char* g_programPath;
 +
@@ -274,39 +305,86 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +{
 +    if (programPath == 0)
 +        return "";
-+    return path(programPath, boost::filesystem::native).branch_path();
++    # if defined(BOOST_FILESYSTEM_VERSION)
++        SG_ASSERT (  BOOST_FILESYSTEM_VERSION == 2
++                  || BOOST_FILESYSTEM_VERSION == 3);
++    #endif
++
++    #if (defined(BOOST_FILESYSTEM_VERSION) && (BOOST_FILESYSTEM_VERSION == 3))
++        return path(programPath).branch_path();
++    #else
++        return path(programPath, boost::filesystem::native).branch_path();
++    #endif	
++}
++
++/** Check that @a option1 and @a option2 are not specified at the same time. */
++void MutuallyExclusiveOptions(const po::variables_map& vm,
++                              const char* option1, const char* option2)
++{
++    if (0 == vm.count(option1) || 0 == vm.count(option2))
++        return;
++    if (vm[option1].defaulted() || vm[option2].defaulted())
++        return;
++    if (g_inputPipe.empty() || g_inputFiles.empty())
++        return;
++    string errorMessage = "Options '" + string(option1)
++                          + "' and '" + string(option2)
++                          + "' cannot be specified at the same time.";
++    SgDebug() << errorMessage << std::endl;
++    throw std::exception();
++}
++
++path GetTopSourceDir()
++{
++    #ifdef ABS_TOP_SRCDIR
++        return path(ABS_TOP_SRCDIR);
++    #else
++        return "";
++    #endif
 +}
 +
 +void Help(po::options_description& desc, ostream& out)
 +{
 +    out << "Usage: fuego [options] [input files]\n" << desc << "\n";
-+    exit(0);
 +}
 +
-+void ParseOptions(int argc, char** argv)
++/** Returns normally if no error occurred. Returns true if program should
++    continue running, false if program should be terminated (e.g.
++    because help was requested). In the latter case, exit code 0 should
++    be used.
++
++    Throws an exception of undefined type if any error occurs. The
++    program should be terminated in response using an exit code != 0. */
++bool ParseOptions(int argc, char** argv)
 +{
 +    po::options_description normalOptions("Options");
 +    normalOptions.add_options()
-+        ("config",
++        ("config", 
 +         po::value<std::string>(&g_config)->default_value(""),
 +         "execuate GTP commands from file before starting main command loop")
 +        ("help", "Displays this help and exit")
-+        ("maxgames",
++        ("maxgames", 
 +         po::value<int>(&g_maxGames)->default_value(-1),
 +         "make clear_board fail after n invocations")
 +        ("nobook", "don't automatically load opening book")
 +        ("nohandicap", "don't support handicap commands")
 +        ("quiet", "don't print debug messages")
-+        ("srand",
++        ("srand", 
 +         po::value<int>(&g_srand)->default_value(0),
 +         "set random seed (-1:none, 0:time(0))")
-+        ("size",
++        ("size", 
 +         po::value<int>(&g_fixedBoardSize)->default_value(0),
 +         "initial (and fixed) board size");
 +    po::options_description hiddenOptions;
 +    hiddenOptions.add_options()
 +        ("input-file", po::value<vector<string> >(&g_inputFiles),
 +         "input file");
++    hiddenOptions.add_options()
++        ("input-pipe", po::value<string>(&g_inputPipe)->default_value(""),
++         "input pipe");
++    hiddenOptions.add_options()
++        ("output-pipe", po::value<string>(&g_outputPipe)->default_value(""),
++         "output pipe");
 +    po::options_description allOptions;
 +    allOptions.add(normalOptions).add(hiddenOptions);
 +    po::positional_options_description positionalOptions;
@@ -317,26 +395,37 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +        po::store(po::command_line_parser(argc, argv).options(allOptions).
 +                                     positional(positionalOptions).run(), vm);
 +        po::notify(vm);
++        MutuallyExclusiveOptions(vm, "input-file", "input-pipe");
++    }
++    catch (const std::exception& e)
++    {
++        SgDebug() << e.what() << '\n';
++        throw;
 +    }
 +    catch (...)
 +    {
-+        Help(normalOptions, cerr);
++        Help(normalOptions, std::cerr);
++        throw;
 +    }
 +    if (vm.count("help"))
-+        Help(normalOptions, cout);
++    {
++        Help(normalOptions, std::cout);
++        return false;
++    }
 +    if (vm.count("nobook"))
 +        g_noBook = true;
 +    if (vm.count("nohandicap"))
 +        g_noHandicap = true;
 +    if (vm.count("quiet"))
 +        g_quiet = true;
++    return true;
 +}
 +
 +void PrintStartupMessage()
 +{
 +    SgDebug() <<
 +        "Fuego " << FuegoMainUtil::Version() << "\n"
-+        "Copyright (C) 2009-2011 by the authors of the Fuego project.\n"
++        "Copyright (C) 2009-2012 by the authors of the Fuego project.\n"
 +        "This program comes with ABSOLUTELY NO WARRANTY. This is\n"
 +        "free software and you are welcome to redistribute it under\n"
 +        "certain conditions. Type `fuego-license' for details.\n\n";
@@ -345,7 +434,7 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
  } // namespace
  
  //----------------------------------------------------------------------------
-@@ -81,4 +200,69 @@
+@@ -80,4 +261,99 @@
      return s.str();
  }
  
@@ -354,14 +443,21 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +    if (argc > 0 && argv != 0)
 +    {
 +        g_programPath = argv[0];
-+        g_programDir = GetProgramDir(argv[0]);
++        SgPlatform::SetProgramDir(GetProgramDir(argv[0]));
++        SgPlatform::SetTopSourceDir(GetTopSourceDir());
 +        try
 +        {
-+            ParseOptions(argc, argv);
++            bool okAndContinue = ParseOptions(argc, argv);
++            if (! okAndContinue)
++                return 0;
 +        }
 +        catch (const SgException& e)
 +        {
 +            SgDebug() << e.what() << "\n";
++            return 1;
++        }
++        catch (...)
++        {
 +            return 1;
 +        }
 +    }
@@ -378,26 +474,49 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +        if (g_maxGames >= 0)
 +            engine.SetMaxClearBoard(g_maxGames);
 +        if (! g_noBook)
-+            FuegoMainUtil::LoadBook(engine.Book(), g_programDir);
++            FuegoMainUtil::LoadBook(engine.Book(), 
++            					    SgPlatform::GetProgramDir());
 +        if (g_config != "")
 +            engine.ExecuteFile(g_config);
++
++        std::istream* pInputStream = &std::cin;
++        std::ifstream inputPipeStream;
++        if (! g_inputPipe.empty())
++        {
++          inputPipeStream.open(g_inputPipe.c_str());
++          if (! inputPipeStream)
++            throw SgException(boost::format("Error input pipe '%1%'") % g_inputPipe);
++          pInputStream = &inputPipeStream;
++        }
++        std::ostream* pOutputStream = &std::cout;
++        std::ofstream outputPipeStream;
++        if (! g_outputPipe.empty())
++        {
++          outputPipeStream.open(g_outputPipe.c_str());
++          if (! outputPipeStream)
++            throw SgException(boost::format("Error output pipe '%1%'") % g_outputPipe);
++          pOutputStream = &outputPipeStream;
++        }
++
 +        if (! g_inputFiles.empty())
 +        {
-+            for(size_t i = 0; i < g_inputFiles.size(); i++)
++            for (size_t i = 0; i < g_inputFiles.size(); i++)
 +            {
 +                string file = g_inputFiles[i];
-+                ifstream fin(file.c_str());
++                std::ifstream fin(file.c_str());
 +                if (! fin)
-+                    throw SgException(format("Error file '%1%'") % file);
-+                GtpInputStream in(fin);
-+                GtpOutputStream out(cout);
++                    throw SgException(boost::format("Error file '%1%'") 
++                    				  % file);
++                pInputStream = &fin;
++                GtpInputStream in(*pInputStream);
++                GtpOutputStream out(*pOutputStream);
 +                engine.MainLoop(in, out);
 +            }
 +        }
 +        else
 +        {
-+            GtpInputStream in(cin);
-+            GtpOutputStream out(cout);
++            GtpInputStream in(*pInputStream);
++            GtpOutputStream out(*pOutputStream);
 +            engine.MainLoop(in, out);
 +        }
 +    }
@@ -415,10 +534,10 @@ diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.cpp fuego-1.0-new/fuegomain
 +}
 +
  //----------------------------------------------------------------------------
-diff -ruN fuego-1.0-original/fuegomain/FuegoMainUtil.h fuego-1.0-new/fuegomain/FuegoMainUtil.h
---- fuego-1.0-original/fuegomain/FuegoMainUtil.h	2011-01-14 17:34:48.000000000 +0100
-+++ fuego-1.0-new/fuegomain/FuegoMainUtil.h	2011-03-24 21:10:45.000000000 +0100
-@@ -32,6 +32,10 @@
+diff -ruN fuego-uec-cup-2013-original/fuegomain/FuegoMainUtil.h fuego-uec-cup-2013-new/fuegomain/FuegoMainUtil.h
+--- fuego-uec-cup-2013-original/fuegomain/FuegoMainUtil.h	2013-02-28 07:47:06.000000000 +0100
++++ fuego-uec-cup-2013-new/fuegomain/FuegoMainUtil.h	2013-09-20 23:19:58.000000000 +0200
+@@ -34,6 +34,10 @@
          If SVNREV is defined, ( SVNREV ) is added.
          If compiled in debug mode, " (dbg)" is added. */
      std::string Version();

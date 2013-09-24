@@ -11,10 +11,10 @@
 # =========================================================================
 
 # Variables for downloading/extracting the source archive
-FUEGO_VERSION="1.1"
+FUEGO_VERSION="uec-cup-2013"
 ARCHIVE_FILE="fuego-$FUEGO_VERSION.tar.gz"
 ARCHIVE_URL="$ARCHIVE_BASEURL/$ARCHIVE_FILE"
-ARCHIVE_CHECKSUM="c61d18293670c3cde8cc8b7b28ae037a85a4b8018827f2a0f93e34b165bc16ce"
+ARCHIVE_CHECKSUM="43097a2d904110bac2a220d45ffe79e1f40b305fa514b348e1860d53664d3e94"
 
 # Compiler flags
 FUEGO_COMMON_CPPFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden"

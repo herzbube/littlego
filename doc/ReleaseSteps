@@ -15,6 +15,10 @@ Before the release
   updated if something relevant has changed since the last release. If the
   NSCoding version changes, the bug report format version MUST also be changed.
   Vice versa this is not always the case.
+- If a new Xcode and/or iOS version were used to build the project, make sure
+  that the Xcode and iOS base SDK versions are updated in the following files:
+  - README.developer
+  - NOTES.Build
 - Make sure that the third party software version numbers in About.html are
   up to date
 - Make sure that the TTY logger is disabled in ApplicationDelegate setupLogging

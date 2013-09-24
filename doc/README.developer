@@ -9,25 +9,22 @@ or years :-)
 Quick-start guide on how to build and run Little Go
 ---------------------------------------------------
 1. Unpack the source tar ball or clone the Git repository (since you are
-   reading this document you probably have done this already)
-2. Install the latest version of Xcode if you haven't done so already
-3. Edit script/build-env.sh to match your development environment. Most
-   important are the "Base SDK" variables which must refer to an iOS SDK that
-   you have installed on your development machine. Usually, the version of Xcode
-   that you have installed also determines which iOS SDK version is installed.
-4. Launch Terminal.app and execute these commands:
+   reading this document you probably have done this already).
+2. Install Xcode 4.6 if you haven't done so already. The current build should
+   work out of the box for Xcode 4.6 and the iOS base SDK 6.1. If you want to
+   build with a different setup you will probably encounter errors. Consult
+   NOTES.build and NOTES.Build.3rdparty in this case, but mostly you will be on
+   your own.
+3. Launch Terminal.app and execute these commands:
      cd /path/to/littlego
      ./script/get-and-build-3rdparty-software.sh
-5. Wait until the script has downloaded and built all 3rdparty software packages
-   (see the file "NOTES.build.3rdparty" for more details). This will take
-   substantial time, for instance my 2.33 GHz Core 2 Duo laptop requires nearly
-   one hour for building everything.
-6. Launch Xcode by opening "Little Go.xcodeproj"
-7. Make sure that the Xcode project's Base SDK and deployment target versions
-   match the versions you have in your script/build-env.sh file (see step 3).
-8. Select the "Little Go Debug" scheme, and one of the iPhone or iPad simulator
+4. Wait until the script has downloaded and built all 3rdparty software packages
+   (see the file "NOTES.build.3rdparty" for more details). This may take
+   substantial time.
+5. Launch Xcode by opening "Little Go.xcodeproj"
+6. Select the "Little Go Debug" scheme, and one of the iPhone or iPad simulator
    destinations, from the toolbar's scheme selector
-9. From the menu select Product > Run. The app should now be built in Debug
+7. From the menu select Product > Run. The app should now be built in Debug
    mode and launched inside the simulator.
 
 

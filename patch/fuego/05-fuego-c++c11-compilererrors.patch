@@ -1,0 +1,160 @@
+diff -ruN fuego-uec-cup-2013-original/gtpengine/GtpEngine.cpp fuego-uec-cup-2013-new/gtpengine/GtpEngine.cpp
+--- fuego-uec-cup-2013-original/gtpengine/GtpEngine.cpp	2012-08-26 19:54:42.000000000 +0200
++++ fuego-uec-cup-2013-new/gtpengine/GtpEngine.cpp	2013-09-21 16:18:13.000000000 +0200
+@@ -19,7 +19,6 @@
+ 
+ using boost::barrier;
+ using boost::condition;
+-using boost::mutex;
+ using boost::thread;
+ using boost::xtime;
+ using boost::xtime_get;
+@@ -118,9 +117,9 @@
+ /** Utility functions for Boost.Thread. */
+ namespace {
+ 
+-void Notify(mutex& aMutex, condition& aCondition)
++void Notify(boost::mutex& aMutex, condition& aCondition)
+ {
+-    mutex::scoped_lock lock(aMutex);
++    boost::mutex::scoped_lock lock(aMutex);
+     aCondition.notify_all();
+ }
+ 
+@@ -167,15 +166,15 @@
+ 
+     barrier m_threadReady;
+ 
+-    mutex m_startPonderMutex;
++    boost::mutex m_startPonderMutex;
+ 
+-    mutex m_ponderFinishedMutex;
++    boost::mutex m_ponderFinishedMutex;
+ 
+     condition m_startPonder;
+ 
+     condition m_ponderFinished;
+ 
+-    mutex::scoped_lock m_ponderFinishedLock;
++    boost::mutex::scoped_lock m_ponderFinishedLock;
+ 
+     /** The thread to run the ponder function.
+         Order dependency: must be constructed as the last member, because the
+@@ -190,7 +189,7 @@
+ 
+ void PonderThread::Function::operator()()
+ {
+-    mutex::scoped_lock lock(m_ponderThread.m_startPonderMutex);
++    boost::mutex::scoped_lock lock(m_ponderThread.m_startPonderMutex);
+     m_ponderThread.m_threadReady.wait();
+     while (true)
+     {
+@@ -281,15 +280,15 @@
+ 
+     barrier m_threadReady;
+ 
+-    mutex m_waitCommandMutex;
++    boost::mutex m_waitCommandMutex;
+ 
+     condition m_waitCommand;
+ 
+-    mutex m_commandReceivedMutex;
++    boost::mutex m_commandReceivedMutex;
+ 
+     condition m_commandReceived;
+ 
+-    mutex::scoped_lock m_commandReceivedLock;
++    boost::mutex::scoped_lock m_commandReceivedLock;
+ 
+     /** The thread to run the read command function.
+         Order dependency: must be constructed as the last member, because the
+@@ -304,7 +303,7 @@
+ 
+ void ReadThread::Function::operator()()
+ {
+-    mutex::scoped_lock lock(m_readThread.m_waitCommandMutex);
++    boost::mutex::scoped_lock lock(m_readThread.m_waitCommandMutex);
+     m_readThread.m_threadReady.wait();
+     GtpEngine& engine = m_readThread.m_engine;
+     GtpInputStream& in = m_readThread.m_in;
+diff -ruN fuego-uec-cup-2013-original/smartgame/Makefile.am fuego-uec-cup-2013-new/smartgame/Makefile.am
+--- fuego-uec-cup-2013-original/smartgame/Makefile.am	2012-07-17 08:19:47.000000000 +0200
++++ fuego-uec-cup-2013-new/smartgame/Makefile.am	2013-09-21 16:34:29.000000000 +0200
+@@ -27,7 +27,6 @@
+ SgPointSet.cpp \
+ SgPointSetUtil.cpp \
+ SgProbCut.cpp \
+-SgProcess.cpp \
+ SgProp.cpp \
+ SgRandom.cpp \
+ SgRect.cpp \
+@@ -94,7 +93,6 @@
+ SgPointSet.h \
+ SgPointSetUtil.h \
+ SgProbCut.h \
+-SgProcess.h \
+ SgProp.h \
+ SgRandom.h \
+ SgRect.h \
+diff -ruN fuego-uec-cup-2013-original/smartgame/SgUctSearch.cpp fuego-uec-cup-2013-new/smartgame/SgUctSearch.cpp
+--- fuego-uec-cup-2013-original/smartgame/SgUctSearch.cpp	2013-02-21 23:35:27.000000000 +0100
++++ fuego-uec-cup-2013-new/smartgame/SgUctSearch.cpp	2013-09-21 16:46:07.000000000 +0200
+@@ -20,8 +20,6 @@
+ using boost::barrier;
+ using boost::condition;
+ using boost::format;
+-using boost::mutex;
+-using boost::shared_ptr;
+ using boost::io::ios_all_saver;
+ using std::vector;
+ using std::setprecision;
+@@ -81,9 +79,9 @@
+     return nodesPerTree;
+ }
+ 
+-void Notify(mutex& aMutex, condition& aCondition)
++void Notify(boost::mutex& aMutex, condition& aCondition)
+ {
+-    mutex::scoped_lock lock(aMutex);
++    boost::mutex::scoped_lock lock(aMutex);
+     aCondition.notify_all();
+ }
+ 
+@@ -194,7 +192,7 @@
+     if (DEBUG_THREADS)
+         SgDebug() << "SgUctSearch::Thread: starting thread "
+                   << m_state->m_threadId << '\n';
+-    mutex::scoped_lock lock(m_startPlayMutex);
++    boost::mutex::scoped_lock lock(m_startPlayMutex);
+     m_threadReady.wait();
+     while (true)
+     {
+@@ -434,7 +432,7 @@
+     {
+         std::auto_ptr<SgUctThreadState>
+         state(m_threadStateFactory->Create(i, *this));
+-        shared_ptr<Thread> thread(new Thread(*this, state));
++        boost::shared_ptr<Thread> thread(new Thread(*this, state));
+         m_threads.push_back(thread);
+     }
+     m_tree.CreateAllocators(m_numberThreads);
+diff -ruN fuego-uec-cup-2013-original/smartgame/SgUctTree.cpp fuego-uec-cup-2013-new/smartgame/SgUctTree.cpp
+--- fuego-uec-cup-2013-original/smartgame/SgUctTree.cpp	2012-06-25 21:45:48.000000000 +0200
++++ fuego-uec-cup-2013-new/smartgame/SgUctTree.cpp	2013-09-21 16:45:56.000000000 +0200
+@@ -12,7 +12,6 @@
+ 
+ using namespace std;
+ using boost::format;
+-using boost::shared_ptr;
+ 
+ //----------------------------------------------------------------------------
+ 
+@@ -453,7 +452,7 @@
+     if (m_current->HasChildren())
+     {
+         SgUctChildIterator* it = new SgUctChildIterator(m_tree, *m_current);
+-        m_stack.push(shared_ptr<SgUctChildIterator>(it));
++        m_stack.push(boost::shared_ptr<SgUctChildIterator>(it));
+         m_current = &(**it);
+         return;
+     }

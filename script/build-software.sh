@@ -48,7 +48,7 @@
 # |   - POST_BUILD_STEPS_SOFTWARE
 # |   - INSTALL_STEPS_SOFTWARE
 # | - The script must not change the working directory (unless it cd's back to
-# |   the original directory before passing control back to caller)
+# |   the original directory before passing control back to the caller)
 # | - The script must build the software for only those platforms that have
 # |   been enabled in build-env.sh. The variables to look out for are named
 # |   <platform>_BUILD_ENABLED (e.g. IPHONEOS_BUILD_ENABLED).

@@ -1,6 +1,6 @@
-diff -ruN fuego-1.0-original/fuegomain/Makefile.am fuego-1.0-new/fuegomain/Makefile.am
---- fuego-1.0-original/fuegomain/Makefile.am	2011-01-14 17:34:48.000000000 +0100
-+++ fuego-1.0-new/fuegomain/Makefile.am	2011-03-24 20:59:47.000000000 +0100
+diff -ruN fuego-uec-cup-2013-original/fuegomain/Makefile.am fuego-uec-cup-2013-new/fuegomain/Makefile.am
+--- fuego-uec-cup-2013-original/fuegomain/Makefile.am	2010-04-15 00:22:08.000000000 +0200
++++ fuego-uec-cup-2013-new/fuegomain/Makefile.am	2013-09-20 22:57:34.000000000 +0200
 @@ -5,7 +5,7 @@
  FuegoMainEngine.cpp \
  FuegoMainUtil.cpp
@@ -29,9 +29,9 @@ diff -ruN fuego-1.0-original/fuegomain/Makefile.am fuego-1.0-new/fuegomain/Makef
 +-I@top_srcdir@/smartgame \
 +-I@top_srcdir@/go \
 +-I@top_srcdir@/gouct
-diff -ruN fuego-1.0-original/go/Makefile.am fuego-1.0-new/go/Makefile.am
---- fuego-1.0-original/go/Makefile.am   2011-01-14 20:30:35.000000000 +0100
-+++ fuego-1.0-new/go/Makefile.am        2011-03-24 20:58:07.000000000 +0100
+diff -ruN fuego-uec-cup-2013-original/go/Makefile.am fuego-uec-cup-2013-new/go/Makefile.am
+--- fuego-uec-cup-2013-original/go/Makefile.am	2010-12-16 14:16:51.000000000 +0100
++++ fuego-uec-cup-2013-new/go/Makefile.am	2013-09-20 22:59:43.000000000 +0200
 @@ -1,4 +1,4 @@
 -noinst_LIBRARIES = libfuego_go.a
 +lib_LIBRARIES = libfuego_go.a
@@ -47,27 +47,27 @@ diff -ruN fuego-1.0-original/go/Makefile.am fuego-1.0-new/go/Makefile.am
  GoAssertBoardRestored.h \
  GoAutoBook.h \
  GoBensonSolver.h \
-diff -ruN fuego-1.0-original/gouct/Makefile.am fuego-1.0-new/gouct/Makefile.am
---- fuego-1.0-original/gouct/Makefile.am        2011-01-14 17:34:33.000000000 +0100
-+++ fuego-1.0-new/gouct/Makefile.am     2011-03-24 20:58:11.000000000 +0100
+diff -ruN fuego-uec-cup-2013-original/gouct/Makefile.am fuego-uec-cup-2013-new/gouct/Makefile.am
+--- fuego-uec-cup-2013-original/gouct/Makefile.am	2012-07-01 19:49:09.000000000 +0200
++++ fuego-uec-cup-2013-new/gouct/Makefile.am	2013-09-20 23:03:34.000000000 +0200
 @@ -1,4 +1,4 @@
 -noinst_LIBRARIES = libfuego_gouct.a
 +lib_LIBRARIES = libfuego_gouct.a
  
  libfuego_gouct_a_SOURCES = \
- GoUctBoard.cpp \
-@@ -13,7 +13,7 @@
+ GoUctAdditiveKnowledge.cpp \
+@@ -19,7 +19,7 @@
  GoUctSearch.cpp \
  GoUctUtil.cpp
  
 -noinst_HEADERS = \
 +pkginclude_HEADERS = \
- GoUctBoard.h \
- GoUctBookBuilder.h \
- GoUctBookBuilderCommands.h \
-diff -ruN fuego-1.0-original/gtpengine/Makefile.am fuego-1.0-new/gtpengine/Makefile.am
---- fuego-1.0-original/gtpengine/Makefile.am    2010-05-01 16:50:01.000000000 +0200
-+++ fuego-1.0-new/gtpengine/Makefile.am 2011-03-24 20:58:17.000000000 +0100
+ GoUctAdditiveKnowledge.h \
+ GoUctAdditiveKnowledgeFuego.h \
+ GoUctAdditiveKnowledgeGreenpeep.h \
+diff -ruN fuego-uec-cup-2013-original/gtpengine/Makefile.am fuego-uec-cup-2013-new/gtpengine/Makefile.am
+--- fuego-uec-cup-2013-original/gtpengine/Makefile.am	2009-10-02 20:39:03.000000000 +0200
++++ fuego-uec-cup-2013-new/gtpengine/Makefile.am	2013-09-20 23:04:58.000000000 +0200
 @@ -1,11 +1,11 @@
 -noinst_LIBRARIES = libfuego_gtpengine.a
 +lib_LIBRARIES = libfuego_gtpengine.a
@@ -82,9 +82,9 @@ diff -ruN fuego-1.0-original/gtpengine/Makefile.am fuego-1.0-new/gtpengine/Makef
  GtpEngine.h \
  GtpInputStream.h \
  GtpOutputStream.h
-diff -ruN fuego-1.0-original/simpleplayers/Makefile.am fuego-1.0-new/simpleplayers/Makefile.am
---- fuego-1.0-original/simpleplayers/Makefile.am        2010-05-01 16:50:02.000000000 +0200
-+++ fuego-1.0-new/simpleplayers/Makefile.am     2011-03-24 20:58:20.000000000 +0100
+diff -ruN fuego-uec-cup-2013-original/simpleplayers/Makefile.am fuego-uec-cup-2013-new/simpleplayers/Makefile.am
+--- fuego-uec-cup-2013-original/simpleplayers/Makefile.am	2008-10-03 23:09:03.000000000 +0200
++++ fuego-uec-cup-2013-new/simpleplayers/Makefile.am	2013-09-20 23:08:18.000000000 +0200
 @@ -1,4 +1,4 @@
 -noinst_LIBRARIES = libfuego_simpleplayers.a
 +lib_LIBRARIES = libfuego_simpleplayers.a
@@ -100,21 +100,21 @@ diff -ruN fuego-1.0-original/simpleplayers/Makefile.am fuego-1.0-new/simpleplaye
  SpAveragePlayer.h \
  SpCapturePlayer.h \
  SpDumbTacticalPlayer.h \
-diff -ruN fuego-1.0-original/smartgame/Makefile.am fuego-1.0-new/smartgame/Makefile.am
---- fuego-1.0-original/smartgame/Makefile.am    2011-01-21 11:30:14.000000000 +0100
-+++ fuego-1.0-new/smartgame/Makefile.am 2011-03-24 20:58:25.000000000 +0100
+diff -ruN fuego-uec-cup-2013-original/smartgame/Makefile.am fuego-uec-cup-2013-new/smartgame/Makefile.am
+--- fuego-uec-cup-2013-original/smartgame/Makefile.am	2012-07-17 08:19:47.000000000 +0200
++++ fuego-uec-cup-2013-new/smartgame/Makefile.am	2013-09-20 23:09:05.000000000 +0200
 @@ -1,4 +1,4 @@
 -noinst_LIBRARIES = libfuego_smartgame.a
 +lib_LIBRARIES = libfuego_smartgame.a
  
  libfuego_smartgame_a_SOURCES = \
  SgBoardConst.cpp \
-@@ -50,7 +50,7 @@
+@@ -51,7 +51,7 @@
  SgVectorUtil.cpp \
  SgWrite.cpp
  
 -noinst_HEADERS = \
 +pkginclude_HEADERS = \
+ SgAdditiveKnowledge.h \
  SgArray.h \
  SgArrayList.h \
- SgBookBuilder.h \

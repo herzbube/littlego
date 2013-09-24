@@ -11,7 +11,7 @@
 # =========================================================================
 
 # General Boost variables
-BOOST_VERSION="1_45_0"
+BOOST_VERSION="1_54_0"
 # Build at least those libs that are required by dependencies
 BOOST_LIBS="thread signals filesystem regex program_options system test date_time"
 BOOST_LIBS_COMMA="$(echo $BOOST_LIBS | sed -e 's/ /,/g')"
@@ -19,7 +19,7 @@ BOOST_LIBS_COMMA="$(echo $BOOST_LIBS | sed -e 's/ /,/g')"
 # Variables for downloading/extracting the source archive
 ARCHIVE_FILE="boost_$BOOST_VERSION.tar.bz2"
 ARCHIVE_URL="$ARCHIVE_BASEURL/$ARCHIVE_FILE"
-ARCHIVE_CHECKSUM="55ed3ec51d5687e8224c988e22bef215dacce04e037d9f689569a80c4377a6d5"
+ARCHIVE_CHECKSUM="047e927de336af106a24bceba30069980c191529fd76b8dff8eb9a328b48ae1d"
 
 # Compiler flags
 BOOST_COMMON_CPPFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -DBOOST_AC_USE_PTHREADS -DBOOST_SP_USE_PTHREADS"
@@ -116,33 +116,40 @@ WRITE_BJAM_USERCONFIG()
   #    any string; this will be used to form part of the build directory
   #    hierarchy
   # - The next field specifies the compiler executable to run; apparently it is
-  #   possible to specify additional flags here
+  #   possible to also specify additional flags here
   # - The next field specifies compiler options, the syntax is
-  #   <option-name>option-value
+  #   <option-name>option-value; apparently it is possible to also specify
+  #   additional options here that have an influence on how the tool "darwin"
+  #   works.
+  #   - The <root> option instructs the tool "darwin" where to look when it
+  #     validates the value of the <macosx-version> feature. Without <root>, or
+  #     with <root> pointing to the wrong folder, the build will fail with an
+  #     error message like this:
+  #       error: "iphone-6.1" is not a known value of feature <macosx-version>
   # - The last field specifies conditions
   if test "$IPHONEOS_BUILD_ENABLED" = "1"; then
     cat >> "$BJAM_USERCONFIG_FILE" <<EOF
-using darwin : gcc~$IPHONEOS_PREFIX
-   : $IPHONEOS_CC $IPHONEOS_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONEOS_CPPFLAGS $BOOST_IPHONEOS_CPPFLAGS
-   : <striper>
+using darwin : ${IPHONEOS_BASESDK_VERSION}~iphone
+   : $IPHONEOS_CXX $IPHONEOS_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONEOS_CPPFLAGS $BOOST_IPHONEOS_CPPFLAGS
+   : <striper> <root>$IPHONEOS_PLATFORMDIR/Developer
    : <architecture>arm <target-os>iphone
    ;
 EOF
   fi
   if test "$IPHONE_SIMULATOR_BUILD_ENABLED" = "1"; then
     cat >> "$BJAM_USERCONFIG_FILE" <<EOF
-using darwin : gcc~$IPHONE_SIMULATOR_PREFIX
-   : $IPHONE_SIMULATOR_CC $IPHONE_SIMULATOR_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONESIMULATOR_CPPFLAGS $BOOST_IPHONE_SIMULATOR_CPPFLAGS
-   : <striper>
+using darwin : ${IPHONE_SIMULATOR_BASESDK_VERSION}~iphonesim
+   : $IPHONE_SIMULATOR_CXX $IPHONE_SIMULATOR_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $IPHONE_SIMULATOR_CPPFLAGS $BOOST_IPHONE_SIMULATOR_CPPFLAGS
+   : <striper> <root>$IPHONE_SIMULATOR_PLATFORMDIR/Developer
    : <architecture>x86 <target-os>iphone
    ;
 EOF
   fi
   if test "$MACOSX_BUILD_ENABLED" = "1"; then
     cat >> "$BJAM_USERCONFIG_FILE" <<EOF
-using darwin : gcc~$MACOSX_PREFIX
-   : $MACOSX_CC $MACOSX_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $MACOSX_CPPFLAGS $BOOST_MACOSX_CPPFLAGS
-   : <striper>
+using darwin : ${MACOSX_BASESDK_VERSION}~macosx
+   : $MACOSX_CXX $MACOSX_ARCH_CPPFLAGS $COMMON_CPPFLAGS $BOOST_COMMON_CPPFLAGS $MACOSX_CPPFLAGS $BOOST_MACOSX_CPPFLAGS
+   : <striper> <root>$MACOSX_PLATFORMDIR/Developer
    : <target-os>darwin
    ;
 EOF
