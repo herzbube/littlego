@@ -6,10 +6,9 @@ Little Go.xcodeproj/*.mode1v3
 Little Go.xcodeproj/project.xcworkspace
 Little Go.xcodeproj/xcuserdata
 # Other files
-3rdparty/
+3rdparty/install/
 doxygen/html
 dist/
 crash/
 bugreport/
 .DS_Store
-
