@@ -216,6 +216,12 @@
 		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
+		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
+		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
+		CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
+		CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
+		CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
+		CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD7E92D31532333D00DCD671 /* LaunchImageiPad-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7E92CF1532333D00DCD671 /* LaunchImageiPad-Landscape.png */; };
@@ -245,8 +251,6 @@
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */; };
-		CD899E3B1643476B00329154 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0286401640B4A800CF23A1 /* CrashReporter.framework */; };
-		CD899E3C1643476E00329154 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0286401640B4A800CF23A1 /* CrashReporter.framework */; };
 		CD899E3D1643477300329154 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD02862E1640AEE100CF23A1 /* Quincy.bundle */; };
 		CD899E3E1643477300329154 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD02862E1640AEE100CF23A1 /* Quincy.bundle */; };
 		CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD02862B1640AEE100CF23A1 /* BWQuincyManager.m */; };
@@ -678,6 +682,9 @@
 		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		CD6C7DBA17512152009FBEC4 /* UiSettingsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiSettingsModel.h; sourceTree = "<group>"; };
 		CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiSettingsModel.m; sourceTree = "<group>"; };
+		CD6E846D17FF99D000643576 /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = 3rdparty/install/boost.framework; sourceTree = "<group>"; };
+		CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "fuego-on-ios.framework"; path = "3rdparty/install/fuego-on-ios.framework"; sourceTree = "<group>"; };
+		CD6E847117FF9A0200643576 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CrashReporter.framework; path = 3rdparty/install/quincykit/CrashReporter.framework; sourceTree = "<group>"; };
 		CD6EBE421753FE5200ABB980 /* MediaFiles */ = {isa = PBXFileReference; lastKnownFileType = text; path = MediaFiles; sourceTree = "<group>"; };
 		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
@@ -849,7 +856,6 @@
 		CDE302851360BDA3005235F2 /* PlayerModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerModel.m; sourceTree = "<group>"; };
 		CDE302861360BDA3005235F2 /* PlayerStatistics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerStatistics.h; sourceTree = "<group>"; };
 		CDE302871360BDA3005235F2 /* PlayerStatistics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerStatistics.m; sourceTree = "<group>"; };
-		CDE3F584131147D800EC16CC /* build-boost.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-boost.sh"; sourceTree = "<group>"; };
 		CDE3F585131147D800EC16CC /* build-fuego.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-fuego.sh"; sourceTree = "<group>"; };
 		CDE3F58E13117E3100EC16CC /* build-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-software.sh"; sourceTree = "<group>"; };
 		CDE3F58F13117EFE00EC16CC /* build-env.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-env.sh"; sourceTree = "<group>"; };
@@ -938,7 +944,9 @@
 				CDBF979F13EC750C00476748 /* AudioToolbox.framework in Frameworks */,
 				CD48AD9915A7281C004A7096 /* MessageUI.framework in Frameworks */,
 				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
-				CD899E3B1643476B00329154 /* CrashReporter.framework in Frameworks */,
+				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
+				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
+				CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -952,7 +960,9 @@
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 				CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */,
-				CD899E3C1643476E00329154 /* CrashReporter.framework in Frameworks */,
+				CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */,
+				CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */,
+				CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1003,6 +1013,9 @@
 				CD02863E1640B3CE00CF23A1 /* SystemConfiguration.framework */,
 				CD48AD9815A7281C004A7096 /* MessageUI.framework */,
 				CDFA329A159FA0F400439B4E /* libz.dylib */,
+				CD6E846D17FF99D000643576 /* boost.framework */,
+				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
+				CD6E847117FF9A0200643576 /* CrashReporter.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1731,7 +1744,6 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
-				CDE3F584131147D800EC16CC /* build-boost.sh */,
 				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
@@ -2365,28 +2377,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
-				OTHER_LDFLAGS = (
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2397,29 +2392,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
-				OTHER_LDFLAGS = (
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2431,10 +2406,24 @@
 				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/3rdparty/install\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
+				OTHER_LDFLAGS = (
+					"-lLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2444,11 +2433,28 @@
 			buildSettings = {
 				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/3rdparty/install\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = (
+					"-lLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -2478,11 +2484,28 @@
 			buildSettings = {
 				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/3rdparty/install\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = (
+					"-lLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
+				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
@@ -2493,29 +2516,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
-				OTHER_LDFLAGS = (
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -2540,21 +2543,15 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"./3rdparty/install$(SDKROOT)/include",
+					"$(inherited)",
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2562,14 +2559,7 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -2586,20 +2576,17 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+					"$(inherited)",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"./3rdparty/install$(SDKROOT)/include",
+					"$(inherited)",
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2607,14 +2594,7 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -2630,21 +2610,15 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"./3rdparty/install$(SDKROOT)/include",
+					"$(inherited)",
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2652,14 +2626,7 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -2676,21 +2643,15 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"./3rdparty/install$(SDKROOT)/include",
+					"$(inherited)",
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2698,14 +2659,7 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
@@ -2718,11 +2672,28 @@
 			buildSettings = {
 				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/3rdparty/install\"",
+					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					LITTLEGO_NDEBUG,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = (
+					"-lLumberjack",
+					"-ltouchzipkit",
+					"-ObjC",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Distribute_AdHoc;
@@ -2732,29 +2703,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					LITTLEGO_NDEBUG,
-				);
-				HEADER_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/include";
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				LIBRARY_SEARCH_PATHS = "./3rdparty/install$(SDKROOT)/lib";
-				OTHER_LDFLAGS = (
-					"-lfuego",
-					"-lboost_system",
-					"-lboost_thread",
-					"-lboost_filesystem",
-					"-lboost_program_options",
-					"-lLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
 				PRODUCT_NAME = "Little Go";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

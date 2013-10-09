@@ -42,9 +42,7 @@
 # |   it is not invoked. Unless specified otherwise, a function will be invoked
 # |   without arguments and must return 0 for success, and 1 for failure.
 # |   - PRE_BUILD_STEPS_SOFTWARE
-# |   - BUILD_STEPS_SOFTWARE. Arguments are:
-# |     * 0|1 = Whether or not to clean the results of a previous build
-# |     * 0|1 = Whether or not the build should be quiet
+# |   - BUILD_STEPS_SOFTWARE
 # |   - POST_BUILD_STEPS_SOFTWARE
 # |   - INSTALL_STEPS_SOFTWARE
 # | - The script must not change the working directory (unless it cd's back to
@@ -81,9 +79,6 @@ PRINT_USAGE()
   cat << EOF
 $USAGE_LINE
  -h: Print this usage text
- -d: Download only
- -b: Build only
- -c: Clean previous build
  -q: Quiet build
  <software>: Name of the 3rdparty software to build
 
@@ -139,306 +134,6 @@ FUNCTION_EXISTS()
 }
 
 # +------------------------------------------------------------------------
-# | Fetch a single file from the given URL.
-# +------------------------------------------------------------------------
-# | Arguments:
-# |  * URL to download
-# |  * Name of the file to store (must be an absolute path)
-# +------------------------------------------------------------------------
-# | Return values:
-# |  * 0: No error
-# |  * 1: Error
-# +------------------------------------------------------------------------
-FETCH_FILE()
-{
-  typeset FILE_URL="$1"
-  typeset FILE_PATH="$2"
-
-  if test -z "$FILE_URL"; then
-    echo "URL for download not specified"
-    return 1
-  fi
-  if test -z "$FILE_PATH"; then
-    echo "File name for download not specified"
-    return 1
-  fi
-  case "$FILE_PATH" in
-    /*) ;;
-    *)
-      echo "Specified file name for download $FILE_PATH must be an absolute path"
-      return 1
-      ;;
-  esac
-
-  echo "Downloading file $(basename $FILE_PATH)... "
-
-  if test -f "$FILE_PATH"; then
-    echo "Download skipped, file already exists"
-    return 0
-  fi
-
-  type curl >/dev/null 2>&1
-  if test $? -ne 0; then
-    echo "Download failed, curl command not found"
-    return 1
-  fi
-
-  curl --fail "${FILE_URL}" >"$FILE_PATH"
-  if test $? -eq 0; then
-    return 0
-  else
-    echo "Download failed"
-    if test ! -s "$FILE_PATH"; then
-      rm -f "$FILE_PATH"
-    fi
-    return 1
-  fi
-}
-
-# +------------------------------------------------------------------------
-# | Checks whether the checksum of the specified file is correct.
-# +------------------------------------------------------------------------
-# | Arguments:
-# |  * Name of the file to check (must be an absolute path)
-# |  * Expected (correct) SHA-256 checksum
-# +------------------------------------------------------------------------
-# | Return values:
-# |  * 0: No error and checksum matches
-# |  * 1: Error or checksum does not match
-# +------------------------------------------------------------------------
-CHECK_CHECKSUM()
-{
-  typeset FILE_PATH="$1"
-  typeset CHECKSUM_EXPECTED="$2"
-
-  if test -z "$FILE_PATH"; then
-    echo "File name for checking checksum not specified"
-    return 1
-  fi
-  case "$FILE_PATH" in
-    /*) ;;
-    *)
-      echo "Specified file $FILE_PATH must be an absolute path"
-      return 1
-      ;;
-  esac
-  if test -z "$CHECKSUM_EXPECTED"; then
-    echo "Expected checksum for checking checksum not specified"
-    return 1
-  fi
-
-  echo "Checking checksum of $(basename $FILE_PATH)... "
-
-  if test ! -f "$FILE_PATH"; then
-    echo "Checking checksum failed, file not found"
-    return 1
-  fi
-
-  type shasum >/dev/null 2>&1
-  if test $? -ne 0; then
-    echo "Checking checksum failed, shasum command not found"
-    return 1
-  fi
-
-  CHECKSUM_REAL="$(shasum -a 256 "$FILE_PATH" 2>/dev/null | cut -d" " -f1)"
-  if test $? -ne 0; then
-    echo "Checking checksum failed, error while calculating checksum"
-    return 1
-  fi
-  if test "$CHECKSUM_REAL" = "$CHECKSUM_EXPECTED"; then
-    echo "Checksum ok"
-  else
-    echo "Checksum did not match"
-    return 1
-  fi
-
-  return 0
-}
-
-# +------------------------------------------------------------------------
-# | Downloads a file and checks whether its checksum is correct.
-# +------------------------------------------------------------------------
-# | Arguments:
-# |  * URL to download
-# |  * Name of the file to store and check (must be an absolute path)
-# |  * Expected (correct) SHA-256 checksum
-# +------------------------------------------------------------------------
-# | Return values:
-# |  * 0: No error and checksum matches
-# |  * 1: Error or checksum does not match
-# +------------------------------------------------------------------------
-DOWNLOAD_FILE()
-{
-  # Delegate argument checking to sub-functions
-  typeset FILE_URL="$1"
-  typeset FILE_PATH="$2"
-  typeset CHECKSUM_EXPECTED="$3"
-
-  FETCH_FILE "$FILE_URL" "$FILE_PATH"
-  if test $? -ne 0; then
-    return 1
-  fi
-  CHECK_CHECKSUM "$FILE_PATH" "$CHECKSUM_EXPECTED"
-  if test $? -ne 0; then
-    return 1
-  fi
-
-  return 0
-}
-
-# +------------------------------------------------------------------------
-# | Extracts the content from the specified archive.
-# |
-# | This function has side effects:
-# | - It changes the current working directory (sloppy programming)
-# | - It sets the global environment variable SRC_DIR, to indicate the
-# |   directory that the archive contents have been extracted to. SRC_DIR will
-# |   be a sub-directory of the base directory specified as an argument to this
-# |   function. SRC_DIR is specified as an absolute path.
-# |
-# | Note: It is expected that the archive expands into a single root directory.
-# | This is customary for tarballs, but may be a problem with .zip files that
-# | are sometimes not created with this convention.
-# +------------------------------------------------------------------------
-# | Arguments:
-# |  * Name of the archive file to extract (must be an absolute path)
-# |  * Base directory where the archive contents should be extracted (must be
-# |    an absolute path); the content will be extracted to a sub-directory of
-# |    this
-# +------------------------------------------------------------------------
-# | Return values:
-# |  * 0: No error
-# |  * 1: Error
-# +------------------------------------------------------------------------
-EXTRACT_ARCHIVE_CONTENT()
-{
-  typeset ARCHIVE_FILE_PATH="$1"
-  typeset SRC_BASEDIR="$2"
-  typeset ARCHIVE_FILE_NAME="$(basename $ARCHIVE_FILE_PATH)"
-
-  echo "Extracting content of archive $ARCHIVE_FILE_NAME..."
-
-  case "$ARCHIVE_FILE_PATH" in
-    /*) ;;
-    *)
-      echo "Archive must be an absolute path"
-      return 1
-      ;;
-  esac
-  if test ! -f "$ARCHIVE_FILE_PATH"; then
-    echo "Cannot extract archive, file not found"
-    return 1
-  fi
-
-  # Determine the tool with which to extract the archive content
-  typeset EXTRACT_TOOL
-  typeset EXTRACT_TOOL_ARGUMENTS
-  case "$ARCHIVE_FILE_NAME" in
-    *.tar.gz|*.tgz)
-      EXTRACT_TOOL=tar
-      EXTRACT_TOOL_ARGUMENTS="xfz"
-      ;;
-    *.tar.bz2|*.tbz)
-      EXTRACT_TOOL=tar
-      EXTRACT_TOOL_ARGUMENTS="xfj"
-      ;;
-    *.zip)
-      EXTRACT_TOOL=unzip
-      EXTRACT_TOOL_ARGUMENTS=""
-      ;;
-    *)
-      echo "Cannot extract archive, unknown archive file type"
-      return 1
-      ;;
-  esac
-
-  # Because SRC_DIR will be an absolute path, we also require SRC_BASEDIR to
-  # be an absolute path.
-  case "$SRC_BASEDIR" in
-    /*) ;;
-    *)
-      echo "Base directory $SRC_BASEDIR for archive extraction must be an absolute path"
-      return 1
-      ;;
-  esac
-
-  # Check if a directory exists with the same name as the archive file name,
-  # minus file suffix. If so, we boldly assume that the archive has already
-  # been extracted before, and use the directory we just found as the source
-  # directory
-  typeset ARCHIVE_FILE_BASENAME="$(echo "$ARCHIVE_FILE_NAME" | sed -Ee 's/(.tar.gz|.tgz|.tar.bz2|.tbz|.zip)//')"
-  if test -d "$SRC_BASEDIR/$ARCHIVE_FILE_BASENAME"; then
-    SRC_DIR="$SRC_BASEDIR/$ARCHIVE_FILE_BASENAME"
-    echo "It appears that the archive content was previously extracted; using this content instead of extracting again"
-    return 0
-  fi
-
-  # Create temporary directory where archive content is extracted
-  typeset EXTRACT_DIR="$SRC_BASEDIR/$ARCHIVE_FILE_NAME.$$"
-  if test -d "$EXTRACT_DIR"; then
-    echo "Temporary directory $EXTRACT_DIR for archive extraction already exists"
-    return 1
-  fi
-  mkdir -p "$EXTRACT_DIR"
-  if test $? -ne 0; then
-    echo "Could not create temporary directory $EXTRACT_DIR for archive extraction"
-    return 1
-  fi
-
-  # Extract archive content
-  cd "$EXTRACT_DIR" >/dev/null 2>&1
-  $EXTRACT_TOOL $EXTRACT_TOOL_ARGUMENTS "$ARCHIVE_FILE_PATH"
-  if test $? -ne 0; then
-    echo "Extracting archive failed; partial results may exist in $EXTRACT_DIR"
-    return 1
-  fi
-
-  # Verify that the archive expands into a single root directory
-  typeset NR_OF_RESULTS="$(ls -1 | grep -Fv '^.$' | grep -Fv '^..$' | wc -l)"
-  if test "$NR_OF_RESULTS" -eq 0; then
-    echo "Cannot find content extracted from archive, should be in $EXTRACT_DIR"
-    return 1
-  elif test "$NR_OF_RESULTS" -gt 1; then
-    echo "Cannot handle content of archive, expands into more than a single directory; content was extracted to $EXTRACT_DIR"
-    return 1
-  fi
-  typeset RESULT_DIRNAME="$(ls -1 | grep -Fv '^.$' | grep -Fv '^..$')"
-  if test ! -d "$RESULT_DIRNAME"; then
-    echo "Cannot handle content of archive, expands into something that is not a directory; content was extracted to $EXTRACT_DIR"
-    return 1
-  fi
-
-  # Move extracted content to final destination, then cleanup
-  SRC_DIR="$SRC_BASEDIR/$RESULT_DIRNAME"   # NO typeset! THIS VAR MUST BE GLOBAL
-  if test ! -d "$SRC_DIR"; then
-    mv "$RESULT_DIRNAME" "$SRC_DIR"
-    if test $? -ne 0; then
-      echo "Cannot move content of archive to $SRC_DIR; content was extracted to $EXTRACT_DIR"
-      return 1
-    fi
-  else
-    # No error if final location of archive content already exists.
-    #
-    # The reasoning here is that we assume that the archive expands into a root
-    # directory that includes the software version number (e.g. foobar-0.7.9),
-    # which means that we can be reasonably sure that the content of the
-    # already existing SRC_DIR matches the content of the archive that we just
-    # extracted.
-    #
-    # As a consequence, the subsequent build will take place in a directory that
-    # may already contain stuff from a previous build. If this is actually the
-    # case, we expect the user to request a clean step before the actual build.
-    #
-    # Note that the hint we give to the user is slightly misleading - in fact
-    # we *DID* extract again, but we are simply throwing away the results of
-    # that. Does the user really need to know the difference?
-    echo "It appears that the archive content was previously extracted; using this content instead of extracting again"
-  fi
-  rm -rf "$EXTRACT_DIR"
-  return 0
-}
-
-# +------------------------------------------------------------------------
 # | Performs pre-build steps.
 # |
 # | This function expects that the current working directory is the root
@@ -487,7 +182,6 @@ PRE_BUILD_STEPS()
 # | directory of the extracted source archive.
 # +------------------------------------------------------------------------
 # | Arguments:
-# |  * 0|1 = Whether or not to clean the results of a previous build
 # |  * 0|1 = Whether or not the build should be quiet
 # |  * Build log file (must be an absolute path)
 # +------------------------------------------------------------------------
@@ -497,9 +191,8 @@ PRE_BUILD_STEPS()
 # +------------------------------------------------------------------------
 BUILD_STEPS()
 {
-  typeset CLEAN_BUILD="$1"
-  typeset QUIET_BUILD="$2"
-  typeset BUILDLOG_PATH="$3"
+  typeset QUIET_BUILD="$1"
+  typeset BUILDLOG_PATH="$2"
 
   SOFTWARE_FUNCTION_NAME="BUILD_STEPS_SOFTWARE"
   FUNCTION_EXISTS "$SOFTWARE_FUNCTION_NAME"
@@ -507,10 +200,10 @@ BUILD_STEPS()
     echo "Building the software..."
     typeset EXIT_CODE
     if test "$QUIET_BUILD" = "1"; then
-      $SOFTWARE_FUNCTION_NAME "$CLEAN_BUILD" >>"$BUILDLOG_PATH" 2>&1
+      $SOFTWARE_FUNCTION_NAME >>"$BUILDLOG_PATH" 2>&1
       EXIT_CODE=$?
     else
-      ($SOFTWARE_FUNCTION_NAME "$CLEAN_BUILD" 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
+      ($SOFTWARE_FUNCTION_NAME 2>&1; echo $? >"$EXITCODE_FILE") | tee -a "$BUILDLOG_PATH"
       EXIT_CODE=$(cat "$EXITCODE_FILE")
       rm -f "$EXITCODE_FILE"
     fi
@@ -623,16 +316,15 @@ case "$SCRIPT_DIR" in
   /*) ;;
   *)  SCRIPT_DIR="$(pwd)/$SCRIPT_DIR" ;;
 esac
-USAGE_LINE="$SCRIPT_NAME [-h] [-d|-b] [-cq] <software>"
+USAGE_LINE="$SCRIPT_NAME [-h] [-q] <software>"
 
 # Remaining variables and resources
 BUILD_BASEDIR="$SCRIPT_DIR/../3rdparty"
-ARCHIVE_BASEURL="http://www.herzbube.ch/software/3rdparty"
 BUILDENV_SCRIPT="$SCRIPT_DIR/build-env.sh"
 PATCH_BASEDIR="$SCRIPT_DIR/../patch"
 EXITCODE_FILE="/tmp/$SCRIPT_NAME.exitcode.$$"
-OPTSOK=hdbcq
-unset DOWNLOAD_ONLY BUILD_ONLY CLEAN_BUILD QUIET_BUILD
+OPTSOK=hq
+unset QUIET_BUILD
 
 # +------------------------------------------------------------------------
 # | Argument processing
@@ -644,15 +336,6 @@ do
     h)
       PRINT_USAGE
       exit 0
-      ;;
-    d)
-      DOWNLOAD_ONLY=1
-      ;;
-    b)
-      BUILD_ONLY=1
-      ;;
-    c)
-      CLEAN_BUILD=1
       ;;
     q)
       QUIET_BUILD=1
@@ -682,24 +365,8 @@ if test ! -f "$BUILDSOFTWARE_SCRIPT"; then
   exit 1
 fi
 
-if test -z "$CLEAN_BUILD"; then
-  CLEAN_BUILD=0
-fi
-
 if test -z "$QUIET_BUILD"; then
   QUIET_BUILD=0
-fi
-
-if test -n "$DOWNLOAD_ONLY" -a -n "$BUILD_ONLY"; then
-  echo "-d and -b cannot be used at the same time"
-  echo "$USAGE_LINE"
-  exit 1
-fi
-
-if test -n "$DOWNLOAD_ONLY" -a "$CLEAN_BUILD" -eq 1; then
-  echo "-d and -c cannot be used at the same time"
-  echo "$USAGE_LINE"
-  exit 1
 fi
 
 # +------------------------------------------------------------------------
@@ -715,7 +382,7 @@ fi
 . "$BUILDSOFTWARE_SCRIPT"
 
 # Create directories defined by BUILDENV_SCRIPT
-for DIR_TO_CREATE in "$DOWNLOAD_DIR" "$SRC_BASEDIR" "$PREFIX_BASEDIR"; do
+for DIR_TO_CREATE in "$PREFIX_BASEDIR"; do
   if test -z "$DIR_TO_CREATE"; then
     echo "$BUILDENV_SCRIPT did not specify one of several essential directories"
     exit 1
@@ -729,64 +396,47 @@ for DIR_TO_CREATE in "$DOWNLOAD_DIR" "$SRC_BASEDIR" "$PREFIX_BASEDIR"; do
   fi
 done
 
-# Download the source archive and check whether the file's checksum is correct
-if test -z "$BUILD_ONLY"; then
-  DOWNLOAD_FILE "$ARCHIVE_URL" "$DOWNLOAD_DIR/$ARCHIVE_FILE" "$ARCHIVE_CHECKSUM"
-  if test $? -ne 0; then
+# Validate SRC_DIR and change directory to it so that subsequent steps don't
+# have to care about this.
+case "$SRC_DIR" in
+  /*) ;;
+  *)
+    echo "Source file directory $SRC_DIR must be an absolute path"
     exit 1
-  fi
+    ;;
+esac
+if test ! -d "$SRC_DIR"; then
+  echo "Source file directory $SRC_DIR does not exist"
+  exit 1
 fi
+cd "$SRC_DIR" >/dev/null 2>&1
+if test $? -ne 0; then
+  echo "Cannot change directory to source file directory $SRC_DIR"
+  exit 1
+fi
+BUILDLOG_PATH="$SRC_DIR/build.log"
+rm -f "$BUILDLOG_PATH"
 
-if test -z "$DOWNLOAD_ONLY"; then
-  # Extract sources
-  # (the function sets SRC_DIR as a side effect)
-  EXTRACT_ARCHIVE_CONTENT "$DOWNLOAD_DIR/$ARCHIVE_FILE" "$SRC_BASEDIR"
-  if test $? -ne 0; then
-    exit 1
-  fi
-
-  # Validate SRC_DIR and change directory to it so that subsequent steps don't
-  # have to care about this.
-  case "$SRC_DIR" in
-    /*) ;;
-    *)
-      echo "Source file directory $SRC_DIR must be an absolute path"
-      exit 1
-      ;;
-  esac
-  if test ! -d "$SRC_DIR"; then
-    echo "Source file directory $SRC_DIR does not exist"
-    exit 1
-  fi
-  cd "$SRC_DIR" >/dev/null 2>&1
-  if test $? -ne 0; then
-    echo "Cannot change directory to source file directory $SRC_DIR"
-    exit 1
-  fi
-  BUILDLOG_PATH="$SRC_DIR/build.log"
-  rm -f "$BUILDLOG_PATH"
-
-  # Perform build and installation in multiple, well-defined steps
-  PRE_BUILD_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
-  if test $? -ne 0; then
-    echo "Build failed."
-    exit 1
-  fi
-  BUILD_STEPS "$CLEAN_BUILD" "$QUIET_BUILD" "$BUILDLOG_PATH"
-  if test $? -ne 0; then
-    echo "Build failed."
-    exit 1
-  fi
-  POST_BUILD_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
-  if test $? -ne 0; then
-    echo "Build failed."
-    exit 1
-  fi
-  INSTALL_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
-  if test $? -ne 0; then
-    echo "Build failed."
-    exit 1
-  fi
+# Perform build and installation in multiple, well-defined steps
+PRE_BUILD_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
+if test $? -ne 0; then
+  echo "Pre-build steps failed."
+  exit 1
+fi
+BUILD_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
+if test $? -ne 0; then
+  echo "Build failed."
+  exit 1
+fi
+POST_BUILD_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
+if test $? -ne 0; then
+  echo "Post-build steps failed."
+  exit 1
+fi
+INSTALL_STEPS "$QUIET_BUILD" "$BUILDLOG_PATH"
+if test $? -ne 0; then
+  echo "Install steps failed."
+  exit 1
 fi
 
 exit 0

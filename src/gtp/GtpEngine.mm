@@ -19,7 +19,7 @@
 #include "GtpEngine.h"
 
 // Fuego
-#include <fuego/FuegoMainUtil.h>
+#include <fuego-on-ios/FuegoMainUtil.h>
 
 
 @implementation GtpEngine

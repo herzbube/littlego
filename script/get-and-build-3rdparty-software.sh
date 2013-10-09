@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # =========================================================================
-# | Retrieves all 3rdparty software packages from the Internet and builds
-# | the packages so that the project can then be built on top of them.
+# | Builds all 3rdparty software packages so that the project can then be
+# | built on top of them.
 # =========================================================================
 
 # Basic information about this script
@@ -10,7 +10,7 @@ SCRIPT_NAME="$(basename $0)"
 SCRIPT_DIR="$(pwd)/$(dirname $0)"
 
 # Other variables
-SOFTWARE_PACKAGES="boost fuego cocoalumberjack zipkit quincykit"
+SOFTWARE_PACKAGES="fuego cocoalumberjack zipkit quincykit"
 BUILD_SCRIPT="$SCRIPT_DIR/build-software.sh"
 
 if test $# -ne 0; then
@@ -28,7 +28,7 @@ if test ! -x "$BUILD_SCRIPT"; then
 fi
 
 for SOFTWARE_PACKAGE in $SOFTWARE_PACKAGES; do
-  $BUILD_SCRIPT -qc $SOFTWARE_PACKAGE
+  $BUILD_SCRIPT -q $SOFTWARE_PACKAGE
   if test $? -ne 0; then
     echo "Build failed for software package "$SOFTWARE_PACKAGE""
     exit 1
