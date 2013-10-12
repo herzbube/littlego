@@ -7,10 +7,21 @@ project, and how that software is built.
 3rdparty software build
 -----------------------
 Before the first Xcode build of the project is possible, 3rdparty software must
-be downloaded and built. Hopefully, the following convenience script does all
-this for you if you run it on the command line from the project root folder
-like this:
+be downloaded and built. Currently all 3rdparty software projects are integrated
+as Git submodules. After you have cloned the Little Go repository from GitHub
+the submodules must first be initialized like this:
 
+  cd /path/to/littlego
+  git submodule update --init --recursive
+
+This step basically performs a clone of each Git repository that is represented
+by a Git submodule. This may take a while, especially the Boost sub-submodule is
+quite a hefty download of 350+ MB.
+
+The next step is to build the various 3rdparty software. The following
+convenience script should do this for you:
+
+  cd /path/to/littlego
   ./script/get-and-build-3rdparty-software.sh
 
 A short overview of what the script does:
@@ -21,50 +32,30 @@ A short overview of what the script does:
   deployment target. If the Xcode build environment changes, build-env.sh also
   needs to be modified
 - build-software.sh then invokes the package-specific build script (e.g.
-  build-fuego.sh) to obtain information specific to that package. Besides build
-  settings this also includes the location where the package sources can be
-  downloaded
-- build-software.sh then proceeds with a number of fixed steps: download and
-  extract the package sources, execute pre-build steps (e.g. apply patches,
-  run "configure"), run the actual build (e.g. run "make"), execute post-build
-  steps, and finally install the built software
-- All this occurs within the project top-level folder "3rdparty", which is
-  automatically created by the build scripts
+  build-fuego.sh) to obtain information specific to that package (e.g. build
+  settings)
+- build-software.sh then proceeds with a number of fixed steps: execute
+  pre-build steps (e.g. clean previous build results, apply patches), run the
+  actual build (e.g. run "xcodebuild"), execute post-build steps, and finally
+  install the built software
+- All this occurs within the project top-level folder "3rdparty"
 
 
 Boost build/installation issues
 -------------------------------
-No issues, build works out of the box.
+No issues, build works out of the box. Any issues have been worked out before
+in the Fuego on iOS project that is included as a Git submodule.
 
+The Boost build results in this framework bundle:
+  3rdparty/install/boost.framework
 
 Fuego build/installation issues
 -------------------------------
-Build
-- The build script needs to specify the configure flag --with-boost-libdir,
-  otherwise configure aborts with a linker error.
+No issues, build works out of the box. Any issues have been worked out before
+in the Fuego on iOS project that is included as a Git submodule.
 
-Installation
-- "make install" only copies the executables (fuego, fuego_test), but not the
-  libraries nor the headers. The build script for Fuego applies a patch that
-  modifies a number of Makefile.am files. The changes made are to rename the
-  "noinst_LIBRARIES" property to "lib_LIBRARIES", and to rename the
-  "noinst_HEADERS" property to "pkginclude_HEADERS". Notes:
-  - Libraries are installed under
-      <prefix>/lib
-  - Headers are installed under
-      <prefix>/include/fuego
-    because "pkginclude" is used instead of "include"
-  - I would have preferred to keep sub-folders, e.g.
-      <prefix>/include/fuego/gtpengine
-    In theory, to make this work it should be possible to use
-    "nobase_pkginclude_HEADERS". In practice, however, this does not work, the
-    "nobase" prefix has no effect. The reason for this is unknown. I have tried
-    the following combinations, but could not get it to work as desired:
-      pkginclude_HEADERS     -> installs into include/fuego/*
-      nobase_include_HEADERS -> installs into include/*
-      nobase_dist_HEADERS    -> installs into include/*
-- In addition, the build script creates and installs a single unified library
-  that contains all the object files within Fuego's separate library files.
+The Fuego build results in this framework bundle:
+  3rdparty/install/fuego-on-ios.framework
 
 
 CocoaLumberjack build/installation issues
@@ -104,128 +95,42 @@ Installation
   from there
 
 
-Changes to the Fuego source code
---------------------------------
-1) FuegoUtil::FuegoMain()
-- Create a new function FuegoUtil::FuegoMain(int argc, char** argv) in
-  FuegoUtil.cpp and FuegoUtil.h
-- Move the implementation in main(int argc, char** argv) from FuegoMain.cpp to
-  this new function in FuegoUtil.cpp
-- Also move the other support functions from FuegoMain.cpp to FuegoUtil.cpp
-- Invoke FuegoUtil::FuegoMain() from main()
-- These changes are in file 02-fuego-mainfunction.patch
-
-2) Add 2 new command line options "--input-pipe /path/to/pipe" and
-   "--output-pipe /path/to/pipe"
-- Basic option support requires modification to ParseOptions() and introduction
-  of two new global variables
-- Actual usage of the specified pipes requires modification to FuegoMain().
-- Additional option support to check for mutually exclusive options
-  (--input-file and --input-pipe) requires addition of a new function
-  MutuallyExclusiveOptions() which is invoked from ParseOptions()
-- These changes are in file 02-fuego-mainfunction.patch
-
-3) Remove usage of exit() in Help()
-- ParseOptions() must be modified to return a value that indicates to its
-  caller (FuegoMain()) whether the program should continue running or whether
-  it should be terminated
-- This change is in file 02-fuego-mainfunction.patch
-
-4) Add 2 new GTP commands "list_moves" and "list_handicap"
-- These commands are used to discover the move history and the list of handicap
-  stones after Fuego has been instructed over GTP to load an .sgf file (with
-  the "loadsgf" GTP command)
-- This change allows Little to fully delegate all .sgf file handling to Fuego
-- These changes are in file 03-fuego-gtpcommands.patch
-
-5) Source code changes to fix some errors reported by the clang compiler (clang
-   is stricter than the llvm-gc compiler used in older versions of Xcode)
-- These changes are in file 04-fuego-clang-compilererrors.patch
-
-6) Source code changes to fix some errors reported by clang when -std=c++11 is
-   used.
-- The first type of changes fixes some type name clashes that occur because both
-  "using std" and "using boost" appear in the same .cpp file.
-  - This is a problem because the new C++11 standard library contains some types
-    with the same names as types that also exist in Boost. The affected types
-    are "mutex" and "shared_ptr".
-  - The fix consists of removing all offending "using" statements and instead
-    use fully qualified type names (e.g. boost::mutex)
-- The second change fixes a compiler error that occurs because a GCC specific
-  header file is used in SgProcess.h:
-    #include <ext/stdio_filebuf.h> // GCC specific
-  - The C++11 standard does not allow such specifics
-  - Luckily SgProcess.h is only included in SgProcess.cpp, and no symbols from
-    SgProcess.cpp are used anywhere in Fuego
-  - The fix therefore consists of simply removing SgProcess.cpp from
-    smartgame/Makefile.am
-- These changes are in file 05-fuego-c++c11-compilererrors.patch
-
-
-Fuego Patches
--------------
-The changes to the Fuego build system (Makefile.am files) and source code
-are captured in a series of patch files that are stored in the top-level folder
-"patch". The patches must be applied incrementally, in the order indicated by
-the patch file name. Each file name starts with a numerical prefix to make the
-order explicit.
-
-Patches are automatically applied during the 3rdparty software build (cf.
-section "3rdparty software build" in this file).
-
-Patches are created like this:
-  diff -ruN fuego-1.0-original fuego-1.0-new >fuego.patch
-
-Patches are applied like this:
-  cd fuego-1.0
-  patch -p1 <fuego.patch
-
-
 Testing the patched version of Fuego on the Mac OS X command line
 -----------------------------------------------------------------
-The behaviour of the patched Fuego can be observed and tested on the command
-line as follows.
+Little Go integrates Fuego via the "fuego-for-littlego" branch of the Fuego on
+iOS project. This branch has a few modifications of the original Fuego source
+code that one might wish to test on the Mac OS X command line, i.e. with a
+Mac OS X build of Fuego. The following instructions should help you along to
+create such a build.
 
 Preconditions
 - Install the Xcode command line tools
-- Install Boost system-wide (e.g. through MacPorts). If you want to install
-  it locally, just for the Fuego build, then you are certainly clever enough
-  to figure out how to modify the build instructions below :-)
+- Install Boost system-wide (e.g. through MacPorts)
 - Install the Autotools system-wide (e.g. through MacPorts)
 
-Preparation
-- Create a new empty folder "fuego". From now on, everything will happen inside
-  this folder.
-- Place a copy of the Fuego tar ball with the original sources into the "fuego"
-  folder.
-- Place a copy of the Fuego patches to test into the "fuego" folder.
-- Create communication FIFO pipes that will later be used during the tests.
-- The commands for these preparation steps look like this:
-    mkdir fuego
-    cd fuego
-    cp /path/to/littlego/3rdparty/src/fuego/fuego-1.1.tar.gz .
-    cp -R /path/to/littlego/patches/fuego patches
-    mkfifo input.pipe
-    mkfifo output.pipe
-
 These are the commands to build/install Fuego:
-  cd fuego
-  tar xfz fuego-1.1.tar.gz
-  cd fuego-1.1
-  for PATCH_FILE in ../patches/*; do patch --forward -p1 <"$PATCH_FILE"; done
+  cd /path/to/littlego/3rdparty/src/fuego-on-ios
   autoreconf -i
-  ./configure --prefix=$(pwd)/../fuego-install
+  ./configure --prefix=$(pwd)/../../install/fuego-macosx
   make
   make install
-  
+
+Create communication FIFO pipes:
+  cd /path/to/littlego/3rdparty/install/fuego-macosx
+  mkfifo input.pipe
+  mkfifo output.pipe
+
 These are the commands to setup the test. You need 3 terminal windows for this.
 - Launch Fuego in terminal window 1
-    ./fuego-install/bin/fuego --input-pipe input.pipe --output-pipe output.pipe
+    cd /path/to/littlego/3rdparty/install/fuego-macosx
+    ./bin/fuego --input-pipe input.pipe --output-pipe output.pipe
 - Execute this command in terminal window 2
+    cd /path/to/littlego/3rdparty/install/fuego-macosx
     cat output.pipe
 - Execute this command in terminal window 3
+    cd /path/to/littlego/3rdparty/install/fuego-macosx
     cat >input.pipe
 
 GTP commands can now be typed into terminal window 3 in order to control Fuego.
 Fuego's output in response to the commands can be observed in terminal window 2.
-To get rid of everything, simply remove the top-level "fuego" folder.
+To get rid of everything, simply remove the "fuego-macosx" folder.
