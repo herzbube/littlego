@@ -71,6 +71,9 @@
 /// @brief Denotes whether a stone has been placed on the intersection that the
 /// GoPoint represents, and which color the stone has.
 @property(nonatomic, assign) enum GoColor stoneState;
+/// @brief The score assigned to this point by the most recent territory
+/// statistics evaluation.
+@property(nonatomic, assign) float territoryStatisticsScore;
 /// @brief The region that the GoPoint belongs to. Is never nil.
 ///
 /// You should never need to change this property by yourself. Instead invoke

@@ -66,6 +66,8 @@
 		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
+		CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */; };
+		CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */; };
 		CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
 		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
@@ -510,6 +512,8 @@
 		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
+		CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfluenceLayerDelegate.h; sourceTree = "<group>"; };
+		CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfluenceLayerDelegate.m; sourceTree = "<group>"; };
 		CD0AF18E17401C56003BFC21 /* SliderInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderInputController.h; sourceTree = "<group>"; };
 		CD0AF18F17401C56003BFC21 /* SliderInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderInputController.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
@@ -1343,6 +1347,8 @@
 				CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */,
 				CD3591ED1735A757000E2963 /* GridLayerDelegate.h */,
 				CD3591EE1735A757000E2963 /* GridLayerDelegate.m */,
+				CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */,
+				CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */,
 				CD3591EF1735A757000E2963 /* PlayViewLayerDelegate.h */,
 				CD3591F01735A757000E2963 /* PlayViewLayerDelegateBase.h */,
 				CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */,
@@ -2217,6 +2223,7 @@
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
+				CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2366,6 +2373,7 @@
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
+				CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

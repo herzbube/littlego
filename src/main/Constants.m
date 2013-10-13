@@ -18,6 +18,8 @@
 // GUI constants
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
+const float gInfluenceColorAlphaBlack = 0.3;
+const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gPlayViewLongPressDelay = 0.1;
 const int indexOfMoreNavigationController = 0x7fffffff;
 const int defaultSelectedTabIndex = 0;
@@ -295,7 +297,7 @@ NSString* tabOrderKey = @"TabOrder";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 4;
+const int nscodingVersion = 5;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // Top-level object keys
 NSString* nsCodingGoGameKey = @"GoGame";
@@ -360,6 +362,7 @@ NSString* goPointNextKey = @"Next";
 NSString* goPointPreviousKey = @"Previous";
 NSString* goPointIsStarPointKey = @"IsStarPoint";
 NSString* goPointStoneStateKey = @"StoneState";
+NSString* goPointTerritoryStatisticsScoreKey = @"TerritoryStatisticsScore";
 NSString* goPointRegionKey = @"Region";
 NSString* goPointIsLeftValidKey = @"IsLeftValid";
 NSString* goPointIsRightValidKey = @"IsRightValid";

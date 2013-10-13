@@ -91,6 +91,7 @@
   self.board = aBoard;
   self.starPoint = false;
   self.stoneState = GoColorNone;
+  self.territoryStatisticsScore = 0.0f;
   _left = nil;
   _right = nil;
   _above = nil;
@@ -132,6 +133,7 @@
   _previous = [decoder decodeObjectForKey:goPointPreviousKey];
   self.starPoint = [decoder decodeBoolForKey:goPointIsStarPointKey];
   self.stoneState = [decoder decodeIntForKey:goPointStoneStateKey];
+  self.territoryStatisticsScore = [decoder decodeFloatForKey:goPointTerritoryStatisticsScoreKey];
   self.region = [decoder decodeObjectForKey:goPointRegionKey];
   self.isLeftValid = [decoder decodeBoolForKey:goPointIsLeftValidKey];
   self.isRightValid = [decoder decodeBoolForKey:goPointIsRightValidKey];
@@ -358,6 +360,7 @@
   [encoder encodeObject:self.previous forKey:goPointPreviousKey];
   [encoder encodeBool:self.isStarPoint forKey:goPointIsStarPointKey];
   [encoder encodeInt:self.stoneState forKey:goPointStoneStateKey];
+  [encoder encodeFloat:self.territoryStatisticsScore forKey:goPointTerritoryStatisticsScoreKey];
   [encoder encodeObject:self.region forKey:goPointRegionKey];
   [encoder encodeBool:self.isLeftValid forKey:goPointIsLeftValidKey];
   [encoder encodeBool:self.isRightValid forKey:goPointIsRightValidKey];

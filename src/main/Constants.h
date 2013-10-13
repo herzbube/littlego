@@ -30,6 +30,10 @@ extern const float gHalfPixel;
 /// This is based on
 /// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
 extern const float gDisabledViewAlpha;
+/// @brief The alpha value used to draw black influence rectangles.
+extern const float gInfluenceColorAlphaBlack;
+/// @brief The alpha value used to draw white influence rectangles.
+extern const float gInfluenceColorAlphaWhite;
 /// @brief The long press gesture recognizer on the PlayView must use a small
 /// delay so as not to interfere with other gestures (notably the gestures used
 /// to scroll and zoom, and on the iPad the swipe gesture of the main
@@ -757,6 +761,7 @@ extern NSString* goPointNextKey;
 extern NSString* goPointPreviousKey;
 extern NSString* goPointIsStarPointKey;
 extern NSString* goPointStoneStateKey;
+extern NSString* goPointTerritoryStatisticsScoreKey;
 extern NSString* goPointRegionKey;
 extern NSString* goPointIsLeftValidKey;
 extern NSString* goPointIsRightValidKey;

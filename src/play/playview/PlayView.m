@@ -27,6 +27,7 @@
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
+#import "layer/InfluenceLayerDelegate.h"
 #import "../model/BoardPositionModel.h"
 #import "../model/PlayViewModel.h"
 #import "../model/ScoringModel.h"
@@ -192,6 +193,10 @@
                                                               metrics:self.playViewMetrics
                                                                 model:self.playViewModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
+  layerDelegate = [[[InfluenceLayerDelegate alloc] initWithMainView:self
+                                                                      metrics:self.playViewMetrics
+                                                                        model:self.playViewModel] autorelease];
+  [self setupLayerDelegate:layerDelegate withView:self];
   layerDelegate = [[[SymbolsLayerDelegate alloc] initWithMainView:self
                                                        metrics:self.playViewMetrics
                                                  playViewModel:self.playViewModel
@@ -207,6 +212,7 @@
                                                     playViewModel:self.playViewModel
                                                      scoringModel:self.scoringModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
+
 
   self.coordinateLabelsLetterView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
