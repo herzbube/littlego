@@ -485,6 +485,24 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 8.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion8:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Add new key to "Play view" dictionary
+  id playViewDictionary = [userDefaults objectForKey:playViewKey];
+  if (playViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithBool:displayPlayerInfluenceDefault] forKey:displayPlayerInfluenceKey];
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Upgrades @a dictionary so that after the upgrade it contains
 /// device-specific keys that match the device-agnostic @a key for all
 /// supported devices.

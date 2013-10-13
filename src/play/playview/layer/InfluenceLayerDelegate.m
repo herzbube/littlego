@@ -64,6 +64,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  if (! self.playViewModel.displayPlayerInfluence)
+    return;
   DDLogVerbose(@"InfluenceLayerDelegate is drawing");
 
   GoGame* game = [GoGame sharedGame];

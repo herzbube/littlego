@@ -27,6 +27,7 @@
 static const float sliderValueFactorForMaximumZoomScale = 10.0;
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
 static const float sliderValueFactorForStoneDistanceFromFingertip = 100.0;
+NSString* displayPlayerInfluenceText = @"Display player influence";
 
 
 // -----------------------------------------------------------------------------
@@ -38,6 +39,7 @@ enum PlayViewTableViewSection
   FeedbackSection,
   ViewSection,
   DisplayMoveNumbersSection,
+  DisplayPlayerInfluenceSection,
   StoneDistanceFromFingertipSection,
   ZoomSection,
   MaxSection
@@ -70,6 +72,15 @@ enum DisplayMoveNumbersSectionItem
 {
   MoveNumbersPercentageItem,
   MaxDisplayMoveNumbersSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DisplayPlayerInfluenceSection.
+// -----------------------------------------------------------------------------
+enum DisplayPlayerInfluenceSectionItem
+{
+  DisplayPlayerInfluenceItem,
+  MaxDisplayPlayerInfluenceSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -168,6 +179,8 @@ enum ZoomSectionItem
       return MaxViewSectionItem;
     case DisplayMoveNumbersSection:
       return MaxDisplayMoveNumbersSectionItem;
+    case DisplayPlayerInfluenceSection:
+      return MaxDisplayPlayerInfluenceSectionItem;
     case StoneDistanceFromFingertipSection:
       return MaxStoneDistanceFromFingertipSectionItem;
     case ZoomSection:
@@ -207,6 +220,8 @@ enum ZoomSectionItem
       return @"On the iPhone you may need to zoom in to see coordinate labels.";
     case DisplayMoveNumbersSection:
       return @"The lowest setting displays no move numbers, the highest setting displays all move numbers. On the iPhone you may need to zoom in to see move numbers.";
+    case DisplayPlayerInfluenceSection:
+      return @"After turning this on, you will see player influence as soon as the computer player has made its next move, or you have selected 'Update player influence' from the actions menu on the Play tab.";
     case StoneDistanceFromFingertipSection:
       return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
     case ZoomSection:
@@ -293,6 +308,17 @@ enum ZoomSectionItem
       }
       break;
     }
+    case DisplayPlayerInfluenceSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = displayPlayerInfluenceText;
+      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+      cell.textLabel.numberOfLines = 0;
+      accessoryView.on = self.playViewModel.displayPlayerInfluence;
+      [accessoryView addTarget:self action:@selector(toggleDisplayPlayerInfluence:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case StoneDistanceFromFingertipSection:
     {
       switch (indexPath.row)
@@ -374,6 +400,15 @@ enum ZoomSectionItem
         default:
           break;
       }
+      break;
+    }
+    case DisplayPlayerInfluenceSection:
+    {
+      NSString* cellText = displayPlayerInfluenceText;
+      height = [UiUtilities tableView:tableView
+                  heightForCellOfType:SwitchCellType
+                             withText:cellText
+               hasDisclosureIndicator:false];
       break;
     }
     case StoneDistanceFromFingertipSection:
@@ -463,6 +498,15 @@ enum ZoomSectionItem
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
   self.playViewModel.moveNumbersPercentage = (1.0 * sliderCell.value / sliderValueFactorForMoveNumbersPercentage);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Display player influence" switch.
+// -----------------------------------------------------------------------------
+- (void) toggleDisplayPlayerInfluence:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.playViewModel.displayPlayerInfluence = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

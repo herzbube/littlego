@@ -79,6 +79,7 @@ const float maximumZoomScaleDefault = 3.0;
 const float maximumZoomScaleMaximum = 3.0;
 const float stoneDistanceFromFingertipDefault = 0.5;
 const float moveNumbersPercentageDefault = 0.0;
+const bool displayPlayerInfluenceDefault = false;
 
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;
@@ -201,6 +202,7 @@ NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplica
 NSString* playViewKey = @"PlayView";
 NSString* markLastMoveKey = @"MarkLastMove";
 NSString* displayCoordinatesKey = @"DisplayCoordinates";
+NSString* displayPlayerInfluenceKey = @"DisplayPlayerInfluence";
 NSString* moveNumbersPercentageKey = @"MoveNumbersPercentage";
 NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";

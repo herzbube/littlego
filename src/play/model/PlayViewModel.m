@@ -37,6 +37,7 @@
 
   self.markLastMove = false;
   self.displayCoordinates = false;
+  self.displayPlayerInfluence = displayPlayerInfluenceDefault;
   self.moveNumbersPercentage = 0.0;
   self.playSound = false;
   self.vibrate = false;
@@ -78,6 +79,7 @@
   NSDictionary* dictionary = [userDefaults dictionaryForKey:playViewKey];
   self.markLastMove = [[dictionary valueForKey:markLastMoveKey] boolValue];
   self.displayCoordinates = [[dictionary valueForKey:displayCoordinatesKey] boolValue];
+  self.displayPlayerInfluence = [[dictionary valueForKey:displayPlayerInfluenceKey] boolValue];
   self.moveNumbersPercentage = [[dictionary valueForKey:moveNumbersPercentageKey] floatValue];
   self.playSound = [[dictionary valueForKey:playSoundKey] boolValue];
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
@@ -112,6 +114,7 @@
   // Note: Use NSNumber to represent int and bool values as an object.
   [dictionary setValue:[NSNumber numberWithBool:self.markLastMove] forKey:markLastMoveKey];
   [dictionary setValue:[NSNumber numberWithBool:self.displayCoordinates] forKey:displayCoordinatesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.displayPlayerInfluence] forKey:displayPlayerInfluenceKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.moveNumbersPercentage] forKey:moveNumbersPercentageKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playSound] forKey:playSoundKey];
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];

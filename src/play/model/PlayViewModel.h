@@ -29,6 +29,7 @@
 
 @property(nonatomic, assign) bool markLastMove;
 @property(nonatomic, assign) bool displayCoordinates;
+@property(nonatomic, assign) bool displayPlayerInfluence;
 @property(nonatomic, assign) float moveNumbersPercentage;
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
