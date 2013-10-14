@@ -677,6 +677,38 @@ Fuego resigning mechanics
   the "early_pass" behaviour of the UCT player
 
 
+Fuego territory statistics
+--------------------------
+Cf. http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+- First, switch on the collection of territory statistics in Fuego with the
+  following GTP command:
+  uct_param_globalsearch territory_statistics 1
+- Data collection starts when the next search is made. This happens when
+  - A move is made
+  - Pondering is on and Fuego searches in the background
+  - A search is triggered purely for the purpose of data collection, for
+    instance with this GTP command:
+    reg_genmove B
+  No search is made when a move from the opening book is selected.
+- Statistics can be obtained from Fuego with this GTP command:
+    uct_stat_territory
+- The command fails if no statistics are available. The command succeeds even if
+  the statistics do not reflect the current board position. Two common examples
+  where this happens is when one of the GTP commands "clear_board" or
+  "gogui-play_sequence" is sent: The statistics in this case will reflect the
+  board position before the board-changing GTP command was sent.
+- The result of "uct_stat_territory" is a 2D matrix of decimal values. The
+  matrix dimensions correspond to the dimensions of the Go board. Each matrix
+  element (i.e. each decimal value) corresponds to an intersection on the board.
+- A decimal value represents the percentage of playouts that ended up with
+  the corresponding intersection being territory for one of the two colors:
+  - A positive value means that the intersection ended up as black territory
+    more frequently than it ended up as white territory
+  - A negative value means that the intersection ended up as white territory
+    more frequently than it ended up as black territory
+- Decimal values range from -1.0 (always white) to +1.0 (always black)
+
+
 Redesigning the drawing mechanism in PlayView
 ---------------------------------------------
 During development of version 0.8 I decided to revise the implementation of how

@@ -9,15 +9,16 @@ A3  Troubleshooting
 B   The Manual
 B1  Introduction
 B2  How to play
-B3  Viewing previous board positions
-B4  Players & Profiles
-B5  Scoring
-B6  Preferences
-B7  The archive
-B8  GTP engine
-B9  Go rules
-B10 Sending crash reports
-B11 Reporting bugs
+B3  Board positions
+B4  Player influence
+B5  Players & Profiles
+B6  Scoring
+B7  Preferences
+B8  The archive
+B9  GTP engine
+B10 Go rules
+B11 Sending crash reports
+B12 Reporting bugs
 
 Note to editors: This file is parsed and displayed in game under the "Help" tab.
 For this to work, the content of this file must follow certain guidelines that
@@ -75,7 +76,7 @@ buttons are explained from left to right.
 - "Game info" button: Tap this to call up the "Game info" view where you can see
   all sorts of interesting things about the game in progress (e.g. the score).
 - "Action" button: Tapping this displays a menu with these additional functions:
-  Switch to scoring mode (to get territory scores), resign the game (or undo
+  Switch to scoring mode, update player influence, resign the game (or undo
   the decision to resign), save the game, and start a new game.
 
 
@@ -136,6 +137,13 @@ manual to learn about the meaning of each setting, especially "Max. memory"
 which is a dangerous setting. You may also be interested in reading the chapter
 "Limiting the computer's playing strength", which appears in the manual after
 the description of the individual profile settings.
+
+=========================================================================
+Player influence is not displayed, or is completely wrong, what can I do?
+=========================================================================
+Tap the "Action" button and select "Update player influence" from the menu.
+Also read the "Player influence" section of this manual to learn important
+background information.
 
 =======================================================================================================
 Move numbers/coordinate labels are not displayed even though they are enabled in the Play view settings
@@ -426,6 +434,7 @@ would end right now. Note that you need to activate "Scoring" mode if you want
 the table to display territory scores. See the "Scoring" help section for more
 information.
 
+
 --------------------------------------------------------------------------------
 Board positions
 --------------------------------------------------------------------------------
@@ -535,6 +544,86 @@ automatically to reflect the new board position; at the same time, any decisions
 made on which stones are dead are forgotten.
 
 See the "Scoring" help section if you need more information about scoring.
+
+
+--------------------------------------------------------------------------------
+Player influence
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+On the "Settings" tab you will find a switch labelled "Display player influence"
+under the "Play view" entry. If you turn this setting on, most intersections on
+the board will start to show black and white squares of varying size. The color
+of the square indicates which player has more influence on that intersection,
+while the size of the square indicates the degree of influence that player has
+(the larger the square the more influence a player has). By looking at the
+influence squares on the entire board you can quickly estimate which parts of
+the board will end up being owned by which player.
+
+<strong>Important:</strong> Player influence is not objective - it is determined
+by what the computer player "sees" or "thinks". Therefore, if you play against a
+weak computer player, the player influence being displayed may well be
+inaccurate, simply because the computer player in its weakness has missed a
+particularly good move. Even with a strong computer player, you should always
+take player influence with a grain of salt. Read the "Technical background"
+section further down to learn more.
+
+===============================
+Calculation of player influence
+===============================
+Player influence will not be visible immediately after you turn it on. The
+reason for this is that the computer has not yet collected any of the statistics
+data that is required to display player influence. Player influence will become
+visible only after the computer player makes its next move (either its own move,
+or when it plays on your behalf).
+
+Once the initial player influence is visible, it will be updated every time that
+the computer player makes a move. On the other hand, player influence will
+<em>never</em> be updated if the computer player does not make a move. The
+consequence is that you will see outdated/inaccurate player influence in the
+following situations:
+- When you play against the computer, player influence is not updated
+  immediately after you make your own move. Player influence is updated only
+  after the computer has finished calculating its answering move.
+- When you play against a human opponent, player influence is never updated
+  unless one of you lets the computer make a move on your behalf.
+- When you view old board positions, player influence is never updated because
+  the computer never makes calculations while you jump back and forth in the
+  game's move history.
+
+You can <em>force</em> player influence to be re-calculated by tapping the
+"Action" toolbar button and selecting the "Update player influence" menu entry.
+The calculation will take a while to complete, during that time you will not be
+able to play. The menu entry is not shown when player influence cannot be
+re-calculated (e.g. during scoring mode).
+
+====================
+Technical background
+====================
+The computer's method to calculate its best move is to play out a huge amount of
+hypothetical games in the background, and to evaluate the outcome of each of
+these playouts. A by-product, so to speak, of each playout is the information
+whether at the end of the hypothetical game an intersection remains neutral, or
+belongs to the area owned by black or white.
+
+By summing up the results of all playouts, it is therefore possible to say for
+any given intersection whether it was owned by black more often than by white,
+or vice versa, or whether there was a tie. The color of the player who owned
+an intersection more often determines the color of the influence square. The
+<em>size</em> of the influence square is determined by comparing the percentage
+of playouts won by either black or white.
+
+The accuracy of these playout statistics is governed by how many playout games
+the computer is allowed to calculate. Few playout games means low accuracy
+because a particularly strong move and all the playout games descending from it
+may easily be overlooked. At the same, few playout games also means a weak
+computer player. In effect, there is a direct relationship between computer
+player strength and the accuracy of playout statistics / player influence.
+
+Read the "Players & profiles" section of this manual for more details about how
+to adjust the computer player's playing strength.
 
 
 --------------------------------------------------------------------------------
@@ -1243,7 +1332,7 @@ final outcome of a situation in doubt will be, so you will spend a lot of time
 in the end game on playouts. This is perfectly OK because you will learn from
 the experience. Once you get more experienced, though, less situations will have
 to be played out, making the end game less time consuming (and possible less
-tedious for your more experience opponent).
+tedious for your more experienced opponent).
 
 =========
 Etiquette
