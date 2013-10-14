@@ -316,6 +316,26 @@ static CommandProcessor* sharedProcessor = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief AsynchronousCommandDelegate method
+// -----------------------------------------------------------------------------
+- (void) asynchronousCommand:(id<AsynchronousCommand>)command setProgressHUDMode:(MBProgressHUDMode)mode
+{
+  NSNumber* modeAsNSNumber = [NSNumber numberWithInt:mode];
+  [self performSelectorOnMainThread:@selector(updateProgressHUDModeOnMainThread:) withObject:modeAsNSNumber waitUntilDone:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method for
+/// asynchronousCommand:didProgress:setProgressHUDMode: that must run in the
+/// context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) updateProgressHUDModeOnMainThread:(NSNumber*)modeAsNSNumber
+{
+  // UI operations must occur on the main thread
+  self.progressHUD.mode = [modeAsNSNumber intValue];
+}
+
+// -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (bool) currentThreadIsCommandProcessorThread

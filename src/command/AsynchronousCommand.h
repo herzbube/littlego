@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../ui/MBProgressHUD.h"
+
 // Forward declarations
 @protocol AsynchronousCommandDelegate;
 
@@ -44,4 +47,9 @@
 /// progress HUD. This allows the command to set an initial message that remains
 /// the same for the entire command execution.
 - (void) asynchronousCommand:(id<AsynchronousCommand>)command didProgress:(float)progress nextStepMessage:(NSString*)message;
+
+/// @brief May be invoked by @a command if the progress HUD should be displayed
+/// with @a mode. If this is not invoked, the progress HUD will be displayed
+/// using MBProgressHUDModeAnnularDeterminate.
+- (void) asynchronousCommand:(id<AsynchronousCommand>)command setProgressHUDMode:(MBProgressHUDMode)mode;
 @end
