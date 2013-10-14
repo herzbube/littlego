@@ -38,7 +38,8 @@ enum PlayViewLayerDelegateEvent
   PVLDEventScoringModeEnabled,
   PVLDEventScoringModeDisabled,
   PVLDEventScoreCalculationEnds,
-  PVLDEventMarkNextMoveChanged
+  PVLDEventMarkNextMoveChanged,
+  PVLDEventTerritoryStatisticsChanged
 };
 
 

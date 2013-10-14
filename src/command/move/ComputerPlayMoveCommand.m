@@ -21,6 +21,7 @@
 #import "../backup/CleanBackupSgfCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../game/SaveGameCommand.h"
+#import "../playerinfluence/UpdateTerritoryStatisticsCommand.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoBoard.h"
@@ -129,6 +130,13 @@
     bool success = [self playMoveInsideResponse:response];
     if (! success)
       return;
+    // Don't check command execution result, it is irrelevant for us whether the
+    // command succeeds or not. There is a known case where the command fails:
+    // If statistics collection was enabled while the "genmove" command above
+    // was still running. In that case, UpdateTerritoryStatisticsCommand will
+    // try to acquire statistics data, but will fail because the GTP engine has
+    // not yet collected any data.
+    [[[UpdateTerritoryStatisticsCommand alloc] init] submit];
     [self continuePlayingIfNecessary];
   }
   @finally

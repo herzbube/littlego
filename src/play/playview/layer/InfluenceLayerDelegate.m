@@ -22,6 +22,7 @@
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
+#import "../../../go/GoScore.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -47,7 +48,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventBoardPositionChanged:
+    case PVLDEventTerritoryStatisticsChanged:
     {
       self.dirty = true;
       break;
@@ -66,9 +67,11 @@
 {
   if (! self.playViewModel.displayPlayerInfluence)
     return;
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.territoryScoringEnabled)
+    return;
   DDLogVerbose(@"InfluenceLayerDelegate is drawing");
 
-  GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])

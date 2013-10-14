@@ -68,6 +68,12 @@
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */; };
 		CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */; };
+		CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072709180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m */; };
+		CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072709180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m */; };
+		CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */; };
+		CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */; };
+		CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */; };
+		CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */; };
 		CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
 		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
@@ -514,6 +520,12 @@
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
 		CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfluenceLayerDelegate.h; sourceTree = "<group>"; };
 		CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfluenceLayerDelegate.m; sourceTree = "<group>"; };
+		CD072708180B292E0083B138 /* GenerateTerritoryStatisticsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenerateTerritoryStatisticsCommand.h; sourceTree = "<group>"; };
+		CD072709180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerateTerritoryStatisticsCommand.m; sourceTree = "<group>"; };
+		CD07270A180B292E0083B138 /* ToggleTerritoryStatisticsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToggleTerritoryStatisticsCommand.h; sourceTree = "<group>"; };
+		CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleTerritoryStatisticsCommand.m; sourceTree = "<group>"; };
+		CD072712180B29E50083B138 /* UpdateTerritoryStatisticsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateTerritoryStatisticsCommand.h; sourceTree = "<group>"; };
+		CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateTerritoryStatisticsCommand.m; sourceTree = "<group>"; };
 		CD0AF18E17401C56003BFC21 /* SliderInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderInputController.h; sourceTree = "<group>"; };
 		CD0AF18F17401C56003BFC21 /* SliderInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderInputController.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
@@ -1125,6 +1137,19 @@
 			path = backup;
 			sourceTree = "<group>";
 		};
+		CD072705180B292E0083B138 /* playerinfluence */ = {
+			isa = PBXGroup;
+			children = (
+				CD072708180B292E0083B138 /* GenerateTerritoryStatisticsCommand.h */,
+				CD072709180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m */,
+				CD07270A180B292E0083B138 /* ToggleTerritoryStatisticsCommand.h */,
+				CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */,
+				CD072712180B29E50083B138 /* UpdateTerritoryStatisticsCommand.h */,
+				CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */,
+			);
+			path = playerinfluence;
+			sourceTree = "<group>";
+		};
 		CD0FE8FD169A122400053671 /* boardposition */ = {
 			isa = PBXGroup;
 			children = (
@@ -1487,6 +1512,7 @@
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
 				CD05A8C91422803B00214BBE /* move */,
+				CD072705180B292E0083B138 /* playerinfluence */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
 				CDD48FA71413E00E00188B6A /* Command.h */,
 				CDD48FAE1413E95500188B6A /* CommandBase.h */,
@@ -2224,6 +2250,9 @@
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */,
+				CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
+				CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
+				CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2374,6 +2403,9 @@
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */,
+				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
+				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
+				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

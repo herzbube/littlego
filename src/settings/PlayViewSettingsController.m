@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayViewSettingsController.h"
+#import "../command/playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
@@ -507,6 +508,7 @@ enum ZoomSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.playViewModel.displayPlayerInfluence = accessoryView.on;
+  [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
 }
 
 // -----------------------------------------------------------------------------

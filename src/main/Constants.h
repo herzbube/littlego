@@ -407,6 +407,9 @@ extern NSString* playersAndProfilesWillReset;
 /// @brief Is sent to indicate that players and profiles have been reset to
 /// their factory defaults. Is sent after #goGameDidCreate.
 extern NSString* playersAndProfilesDidReset;
+/// @brief Is sent to indicate that territory statistics in GoPoint object have
+/// been updated.
+extern NSString* territoryStatisticsChanged;
 //@}
 
 // -----------------------------------------------------------------------------

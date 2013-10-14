@@ -26,6 +26,8 @@
 #import "../../command/backup/CleanBackupSgfCommand.h"
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
+#import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
+#import "../../play/model/PlayViewModel.h"
 #import "../../shared/ApplicationStateManager.h"
 
 
@@ -39,6 +41,7 @@
 enum ActionSheetButton
 {
   ScoreButton,
+  UpdatePlayerInfluenceButton,
   ResignButton,
   UndoResignButton,
   SaveGameButton,
@@ -118,11 +121,24 @@ enum ActionSheetButton
     switch (iterButtonIndex)
     {
       case ScoreButton:
+      {
         if (game.score.territoryScoringEnabled)
           continue;
         title = @"Score";
         break;
+      }
+      case UpdatePlayerInfluenceButton:
+      {
+        PlayViewModel* model = [ApplicationDelegate sharedDelegate].playViewModel;
+        if (! model.displayPlayerInfluence)
+          continue;
+        if (game.score.territoryScoringEnabled)
+          continue;
+        title = @"Update player influence";
+        break;
+      }
       case ResignButton:
+      {
         if (GoGameTypeComputerVsComputer == game.type)
           continue;
         if (GoGameStateGameHasEnded == game.state)
@@ -138,7 +154,9 @@ enum ActionSheetButton
           continue;
         title = @"Resign";
         break;
+      }
       case UndoResignButton:
+      {
         if (GoGameStateGameHasEnded != game.state)
           continue;
         if (GoGameHasEndedReasonResigned != game.reasonForGameHasEnded)
@@ -150,16 +168,23 @@ enum ActionSheetButton
           continue;
         title = @"Undo resign";
         break;
+      }
       case SaveGameButton:
+      {
         title = @"Save game";
         break;
+      }
       case NewGameButton:
+      {
         title = @"New game";
         break;
+      }
       default:
+      {
         DDLogError(@"%@: Showing action sheet with unexpected button type %d", self, iterButtonIndex);
         assert(0);
         break;
+      }
     }
     NSInteger buttonIndex = [actionSheet addButtonWithTitle:title];
     [self.buttonIndexes setObject:[NSNumber numberWithInt:iterButtonIndex]
@@ -203,6 +228,9 @@ enum ActionSheetButton
     case ScoreButton:
       [self score];
       break;
+    case UpdatePlayerInfluenceButton:
+      [self updatePlayerInfluence];
+      break;
     case ResignButton:
       [self resign];
       break;
@@ -231,6 +259,17 @@ enum ActionSheetButton
   GoScore* score = [GoGame sharedGame].score;
   score.territoryScoringEnabled = ! score.territoryScoringEnabled;
   [score calculateWaitUntilDone:false];
+  [self.delegate playViewActionSheetControllerDidFinish:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Update player influence" action sheet
+/// button. Triggers a long-running GTP command at the end of which the new
+/// player influence values are drawn.
+// -----------------------------------------------------------------------------
+- (void) updatePlayerInfluence
+{
+  [[[[GenerateTerritoryStatisticsCommand alloc] init] autorelease] submit];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }
 

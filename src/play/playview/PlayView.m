@@ -152,6 +152,7 @@
   [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -415,6 +416,15 @@
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoreCalculationEnds eventInfo:nil];
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
+- (void) territoryStatisticsChanged:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:PVLDEventTerritoryStatisticsChanged eventInfo:nil];
   [self delayedUpdate];
 }
 

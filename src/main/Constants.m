@@ -73,6 +73,7 @@ NSString* longRunningActionEnds = @"LongRunningActionEnds";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
 NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
+NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 
 // Play view settings default values
 const float maximumZoomScaleDefault = 3.0;
