@@ -669,7 +669,10 @@
       case GoGameTypeComputerVsComputer:
       {
         if (GoGameStateGameIsPaused == game.state)
-          [leftBarButtonItems addObject:self.continueButton];
+        {
+          if (GoGameComputerIsThinkingReasonPlayerInfluence != game.reasonForComputerIsThinking)
+            [leftBarButtonItems addObject:self.continueButton];
+        }
         else
         {
           if (GoGameStateGameHasEnded != game.state)
