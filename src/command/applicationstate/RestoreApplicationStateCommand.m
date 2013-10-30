@@ -19,6 +19,7 @@
 #import "RestoreApplicationStateCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/NewGameCommand.h"
+#import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoBoardRegion.h"
@@ -110,6 +111,8 @@
     DDLogInfo(@"%@: Computer vs. computer game, turning off 'computer is thinking' state", [self shortDescription]);
     unarchivedGame.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   }
+
+  [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
 
   return true;
 }
