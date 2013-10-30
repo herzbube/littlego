@@ -324,11 +324,28 @@
         case GoGameStateGameHasStarted:
         case GoGameStateGameIsPaused:          // although game is paused, computer may still be thinking
         {
-          NSString* playerName = game.currentPlayer.player.name;
-          if (game.isComputerPlayersTurn)
-            statusText = [playerName stringByAppendingString:@" is thinking..."];
-          else
-            statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
+          switch (game.reasonForComputerIsThinking)
+          {
+            case GoGameComputerIsThinkingReasonComputerPlay:
+            {
+              NSString* playerName = game.currentPlayer.player.name;
+              if (game.isComputerPlayersTurn)
+                statusText = [playerName stringByAppendingString:@" is thinking..."];
+              else
+                statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
+              break;
+            }
+            case GoGameComputerIsThinkingReasonPlayerInfluence:
+            {
+              statusText = @"Updating player influence...";
+              break;
+            }
+            default:
+            {
+              assert(0);
+              break;
+            }
+          }
           break;
         }
         default:
