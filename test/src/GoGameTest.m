@@ -60,6 +60,7 @@
   STAssertEquals(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
   STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
   STAssertFalse(m_game.isComputerThinking, nil);
+  STAssertEquals(GoGameComputerIsThinkingReasonIsNotThinking, m_game.reasonForComputerIsThinking, nil);
   STAssertFalse(m_game.document.isDirty, nil);
 }
 

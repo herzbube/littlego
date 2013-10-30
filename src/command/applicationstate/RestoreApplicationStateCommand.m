@@ -108,7 +108,7 @@
   if (unarchivedGame.isComputerThinking)
   {
     DDLogInfo(@"%@: Computer vs. computer game, turning off 'computer is thinking' state", [self shortDescription]);
-    unarchivedGame.computerThinks = false;
+    unarchivedGame.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   }
 
   return true;

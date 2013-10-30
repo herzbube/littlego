@@ -63,7 +63,7 @@
   _moveModel = [[GoMoveModel alloc] initWithGame:self];
   _state = GoGameStateGameHasStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
-  _computerThinks = false;
+  _reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
   // GoMoveModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
@@ -94,7 +94,7 @@
   _moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
   _state = [decoder decodeIntForKey:goGameStateKey];
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
-  _computerThinks = [decoder decodeBoolForKey:goGameIsComputerThinkingKey];
+  _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
   _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
@@ -482,16 +482,24 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setComputerThinks:(bool)newValue
+- (bool) isComputerThinking
 {
-  if (_computerThinks == newValue)
+  return (GoGameComputerIsThinkingReasonIsNotThinking != _reasonForComputerIsThinking);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setReasonForComputerIsThinking:(enum GoGameComputerIsThinkingReason)newValue
+{
+  if (_reasonForComputerIsThinking == newValue)
     return;
-  _computerThinks = newValue;
+  _reasonForComputerIsThinking = newValue;
   NSString* notificationName;
-  if (newValue)
-    notificationName = computerPlayerThinkingStarts;
-  else
+  if (GoGameComputerIsThinkingReasonIsNotThinking == newValue)
     notificationName = computerPlayerThinkingStops;
+  else
+    notificationName = computerPlayerThinkingStarts;
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
 }
 
@@ -559,7 +567,7 @@
   [encoder encodeObject:self.moveModel forKey:goGameMoveModelKey];
   [encoder encodeInt:self.state forKey:goGameStateKey];
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
-  [encoder encodeBool:self.isComputerThinking forKey:goGameIsComputerThinkingKey];
+  [encoder encodeInt:self.reasonForComputerIsThinking forKey:goGameReasonForComputerIsThinking];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];

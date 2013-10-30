@@ -107,7 +107,7 @@
 
   // Thinking state must change after any of the other things; this order is
   // important for observer notifications
-  self.game.computerThinks = true;
+  self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonComputerPlay;
 
   return true;
 }
@@ -380,7 +380,7 @@
   if (computerGoesOnPlaying)
     [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
   else
-    self.game.computerThinks = false;
+    self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
 }
 
 @end

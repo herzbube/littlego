@@ -40,7 +40,7 @@
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];
   [command submit];
-  game.computerThinks = true;
+  game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonPlayerInfluence;
   return true;
 }
 
@@ -57,7 +57,7 @@
     return;
   }
   [[[UpdateTerritoryStatisticsCommand alloc] init] submit];
-  [GoGame sharedGame].computerThinks = false;
+  [GoGame sharedGame].reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
 }
 
 @end

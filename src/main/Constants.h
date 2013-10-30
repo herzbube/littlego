@@ -122,6 +122,15 @@ enum GoGameResult
   GoGameResultTie           ///< @brief The game is a tie.
 };
 
+/// @brief Enumerates the possible reasons why a GoGame's isComputerThinking
+/// property is true.
+enum GoGameComputerIsThinkingReason
+{
+  GoGameComputerIsThinkingReasonIsNotThinking,   ///< @brief The isComputerThinking property is currently false.
+  GoGameComputerIsThinkingReasonComputerPlay,    ///< @brief The computer is thinking about a game move.
+  GoGameComputerIsThinkingReasonPlayerInfluence  ///< @brief The computer is calculating player influence.
+};
+
 /// @brief Enumerates the possible directions one can take to get from one
 /// GoPoint to another neighbouring GoPoint.
 enum GoBoardDirection
@@ -715,7 +724,7 @@ extern NSString* goGamePlayerWhiteKey;
 extern NSString* goGameMoveModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
-extern NSString* goGameIsComputerThinkingKey;
+extern NSString* goGameReasonForComputerIsThinking;
 extern NSString* goGameBoardPositionKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;

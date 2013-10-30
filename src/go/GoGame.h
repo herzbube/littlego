@@ -118,8 +118,10 @@
 /// @brief The reason why the game has reached the state #GoGameStateGameHasEnded.
 @property(nonatomic, assign) enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
-/// its next move.
-@property(nonatomic, assign, getter=isComputerThinking) bool computerThinks;
+/// something (typically its next move).
+@property(nonatomic, assign, readonly, getter=isComputerThinking) bool computerThinks;
+/// @brief The reason why the computer is busy.
+@property(nonatomic, assign) enum GoGameComputerIsThinkingReason reasonForComputerIsThinking;
 /// @brief The model object that defines defines which position of the Go board
 /// is currently described by the GoPoint and GoBoardRegion objects attached to
 /// this GoGame.
