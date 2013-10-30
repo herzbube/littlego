@@ -343,7 +343,6 @@ NSString* goBoardVertexDictKey = @"VertexDict";
 NSString* goBoardStarPointsKey = @"StarPoints";
 // GoBoardRegion keys
 NSString* goBoardRegionPointsKey = @"Points";
-NSString* goBoardRegionRandomColorKey = @"RandomColor";
 NSString* goBoardRegionScoringModeKey = @"ScoringMode";
 NSString* goBoardRegionTerritoryColorKey = @"TerritoryColor";
 NSString* goBoardRegionTerritoryInconsistencyFoundKey = @"TerritoryInconsistencyFound";

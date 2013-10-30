@@ -120,16 +120,44 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.points = [decoder decodeObjectForKey:goBoardRegionPointsKey];
-  self.randomColor = [decoder decodeObjectForKey:goBoardRegionRandomColorKey];
-  _scoringMode = [decoder decodeBoolForKey:goBoardRegionScoringModeKey];  // don't use self, otherwise we trigger the setter!
-  self.territoryColor = [decoder decodeIntForKey:goBoardRegionTerritoryColorKey];
-  self.territoryInconsistencyFound = [decoder decodeBoolForKey:goBoardRegionTerritoryInconsistencyFoundKey];
-  self.deadStoneGroup = [decoder decodeBoolForKey:goBoardRegionDeadStoneGroupKey];
-  self.cachedSize = [decoder decodeIntForKey:goBoardRegionCachedSizeKey];
-  self.cachedIsStoneGroup = [decoder decodeBoolForKey:goBoardRegionCachedIsStoneGroupKey];
-  self.cachedColor = [decoder decodeIntForKey:goBoardRegionCachedColorKey];
-  self.cachedLiberties = [decoder decodeIntForKey:goBoardRegionCachedLibertiesKey];
-  self.cachedAdjacentRegions = [decoder decodeObjectForKey:goBoardRegionCachedAdjacentRegionsKey];
+  self.randomColor = [UIColor randomColor];
+  // Don't use self.scoringMode, otherwise we trigger the setter!
+  if ([decoder containsValueForKey:goBoardRegionScoringModeKey])
+    _scoringMode = true;
+  else
+    _scoringMode = false;
+  if ([decoder containsValueForKey:goBoardRegionTerritoryColorKey])
+    self.territoryColor = [decoder decodeIntForKey:goBoardRegionTerritoryColorKey];
+  else
+    self.territoryColor = GoColorNone;
+  if ([decoder containsValueForKey:goBoardRegionTerritoryInconsistencyFoundKey])
+    self.territoryInconsistencyFound = true;
+  else
+    self.territoryInconsistencyFound = false;
+  if ([decoder containsValueForKey:goBoardRegionDeadStoneGroupKey])
+    self.deadStoneGroup = true;
+  else
+    self.deadStoneGroup = false;
+  if ([decoder containsValueForKey:goBoardRegionCachedSizeKey])
+    self.cachedSize = [decoder decodeIntForKey:goBoardRegionCachedSizeKey];
+  else
+    self.cachedSize = -1;
+  if ([decoder containsValueForKey:goBoardRegionCachedIsStoneGroupKey])
+    self.cachedIsStoneGroup = true;
+  else
+    self.cachedIsStoneGroup = false;
+  if ([decoder containsValueForKey:goBoardRegionCachedColorKey])
+    self.cachedColor = [decoder decodeIntForKey:goBoardRegionCachedColorKey];
+  else
+    self.cachedColor = GoColorNone;
+  if ([decoder containsValueForKey:goBoardRegionCachedLibertiesKey])
+    self.cachedLiberties = [decoder decodeIntForKey:goBoardRegionCachedLibertiesKey];
+  else
+    self.cachedLiberties = -1;
+  if ([decoder containsValueForKey:goBoardRegionCachedAdjacentRegionsKey])
+    self.cachedAdjacentRegions = [decoder decodeObjectForKey:goBoardRegionCachedAdjacentRegionsKey];
+  else
+    self.cachedAdjacentRegions = nil;
 
   return self;
 }
@@ -666,16 +694,24 @@
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.points forKey:goBoardRegionPointsKey];
-  [encoder encodeObject:self.randomColor forKey:goBoardRegionRandomColorKey];
-  [encoder encodeBool:self.scoringMode forKey:goBoardRegionScoringModeKey];
-  [encoder encodeInt:self.territoryColor forKey:goBoardRegionTerritoryColorKey];
-  [encoder encodeBool:self.territoryInconsistencyFound forKey:goBoardRegionTerritoryInconsistencyFoundKey];
-  [encoder encodeBool:self.deadStoneGroup forKey:goBoardRegionDeadStoneGroupKey];
-  [encoder encodeInt:self.cachedSize forKey:goBoardRegionCachedSizeKey];
-  [encoder encodeBool:self.cachedIsStoneGroup forKey:goBoardRegionCachedIsStoneGroupKey];
-  [encoder encodeInt:self.cachedColor forKey:goBoardRegionCachedColorKey];
-  [encoder encodeInt:self.cachedLiberties forKey:goBoardRegionCachedLibertiesKey];
-  [encoder encodeObject:self.cachedAdjacentRegions forKey:goBoardRegionCachedAdjacentRegionsKey];
+  if (self.scoringMode)
+    [encoder encodeBool:self.scoringMode forKey:goBoardRegionScoringModeKey];
+  if (self.territoryColor != GoColorNone)
+    [encoder encodeInt:self.territoryColor forKey:goBoardRegionTerritoryColorKey];
+  if (self.territoryInconsistencyFound)
+    [encoder encodeBool:self.territoryInconsistencyFound forKey:goBoardRegionTerritoryInconsistencyFoundKey];
+  if (self.deadStoneGroup)
+    [encoder encodeBool:self.deadStoneGroup forKey:goBoardRegionDeadStoneGroupKey];
+  if (self.cachedSize != -1)
+    [encoder encodeInt:self.cachedSize forKey:goBoardRegionCachedSizeKey];
+  if (self.cachedIsStoneGroup)
+    [encoder encodeBool:self.cachedIsStoneGroup forKey:goBoardRegionCachedIsStoneGroupKey];
+  if (self.cachedColor != GoColorNone)
+    [encoder encodeInt:self.cachedColor forKey:goBoardRegionCachedColorKey];
+  if (self.cachedLiberties != -1)
+    [encoder encodeInt:self.cachedLiberties forKey:goBoardRegionCachedLibertiesKey];
+  if (self.cachedAdjacentRegions)
+    [encoder encodeObject:self.cachedAdjacentRegions forKey:goBoardRegionCachedAdjacentRegionsKey];
 }
 
 @end

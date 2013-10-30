@@ -753,7 +753,6 @@ extern NSString* goBoardVertexDictKey;
 extern NSString* goBoardStarPointsKey;
 // GoBoardRegion keys
 extern NSString* goBoardRegionPointsKey;
-extern NSString* goBoardRegionRandomColorKey;
 extern NSString* goBoardRegionScoringModeKey;
 extern NSString* goBoardRegionTerritoryColorKey;
 extern NSString* goBoardRegionTerritoryInconsistencyFoundKey;

@@ -131,16 +131,43 @@
   _neighbours = [[decoder decodeObjectForKey:goPointNeighboursKey] retain];
   _next = [decoder decodeObjectForKey:goPointNextKey];
   _previous = [decoder decodeObjectForKey:goPointPreviousKey];
-  self.starPoint = [decoder decodeBoolForKey:goPointIsStarPointKey];
-  self.stoneState = [decoder decodeIntForKey:goPointStoneStateKey];
-  self.territoryStatisticsScore = [decoder decodeFloatForKey:goPointTerritoryStatisticsScoreKey];
+  if ([decoder containsValueForKey:goPointIsStarPointKey])
+    self.starPoint = true;
+  else
+    self.starPoint = false;
+  if ([decoder containsValueForKey:goPointStoneStateKey])
+    self.stoneState = [decoder decodeIntForKey:goPointStoneStateKey];
+  else
+    self.stoneState = GoColorNone;
+  if ([decoder containsValueForKey:goPointTerritoryStatisticsScoreKey])
+    self.territoryStatisticsScore = [decoder decodeFloatForKey:goPointTerritoryStatisticsScoreKey];
+  else
+    self.territoryStatisticsScore = 0.0f;
   self.region = [decoder decodeObjectForKey:goPointRegionKey];
-  self.isLeftValid = [decoder decodeBoolForKey:goPointIsLeftValidKey];
-  self.isRightValid = [decoder decodeBoolForKey:goPointIsRightValidKey];
-  self.isAboveValid = [decoder decodeBoolForKey:goPointIsAboveValidKey];
-  self.isBelowValid = [decoder decodeBoolForKey:goPointIsBelowValidKey];
-  self.isNextValid = [decoder decodeBoolForKey:goPointIsNextValidKey];
-  self.isPreviousValid = [decoder decodeBoolForKey:goPointIsPreviousValidKey];
+  if ([decoder containsValueForKey:goPointIsLeftValidKey])
+    self.isLeftValid = true;
+  else
+    self.isLeftValid = false;
+  if ([decoder containsValueForKey:goPointIsRightValidKey])
+    self.isRightValid = true;
+  else
+    self.isRightValid = false;
+  if ([decoder containsValueForKey:goPointIsAboveValidKey])
+    self.isAboveValid = true;
+  else
+    self.isAboveValid = false;
+  if ([decoder containsValueForKey:goPointIsBelowValidKey])
+    self.isBelowValid = true;
+  else
+    self.isBelowValid = false;
+  if ([decoder containsValueForKey:goPointIsNextValidKey])
+    self.isNextValid = true;
+  else
+    self.isNextValid = false;
+  if ([decoder containsValueForKey:goPointIsPreviousValidKey])
+    self.isPreviousValid = true;
+  else
+    self.isPreviousValid = false;
 
   return self;
 }
@@ -358,16 +385,25 @@
   [encoder encodeObject:self.neighbours forKey:goPointNeighboursKey];
   [encoder encodeObject:self.next forKey:goPointNextKey];
   [encoder encodeObject:self.previous forKey:goPointPreviousKey];
-  [encoder encodeBool:self.isStarPoint forKey:goPointIsStarPointKey];
-  [encoder encodeInt:self.stoneState forKey:goPointStoneStateKey];
-  [encoder encodeFloat:self.territoryStatisticsScore forKey:goPointTerritoryStatisticsScoreKey];
+  if (self.isStarPoint)
+    [encoder encodeBool:self.isStarPoint forKey:goPointIsStarPointKey];
+  if (self.stoneState != GoColorNone)
+    [encoder encodeInt:self.stoneState forKey:goPointStoneStateKey];
+  if (self.territoryStatisticsScore != 0.0f)
+    [encoder encodeFloat:self.territoryStatisticsScore forKey:goPointTerritoryStatisticsScoreKey];
   [encoder encodeObject:self.region forKey:goPointRegionKey];
-  [encoder encodeBool:self.isLeftValid forKey:goPointIsLeftValidKey];
-  [encoder encodeBool:self.isRightValid forKey:goPointIsRightValidKey];
-  [encoder encodeBool:self.isAboveValid forKey:goPointIsAboveValidKey];
-  [encoder encodeBool:self.isBelowValid forKey:goPointIsBelowValidKey];
-  [encoder encodeBool:self.isNextValid forKey:goPointIsNextValidKey];
-  [encoder encodeBool:self.isPreviousValid forKey:goPointIsPreviousValidKey];
+  if (! self.isLeftValid)
+    [encoder encodeBool:self.isLeftValid forKey:goPointIsLeftValidKey];
+  if (! self.isRightValid)
+    [encoder encodeBool:self.isRightValid forKey:goPointIsRightValidKey];
+  if (! self.isAboveValid)
+    [encoder encodeBool:self.isAboveValid forKey:goPointIsAboveValidKey];
+  if (! self.isBelowValid)
+    [encoder encodeBool:self.isBelowValid forKey:goPointIsBelowValidKey];
+  if (! self.isNextValid)
+    [encoder encodeBool:self.isNextValid forKey:goPointIsNextValidKey];
+  if (! self.isPreviousValid)
+    [encoder encodeBool:self.isPreviousValid forKey:goPointIsPreviousValidKey];
 }
 
 @end
