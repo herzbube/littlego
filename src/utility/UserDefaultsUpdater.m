@@ -500,6 +500,15 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithBool:displayPlayerInfluenceDefault] forKey:displayPlayerInfluenceKey];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
+
+  // Add new key to "New game" dictionary
+  id newGameDictionary = [userDefaults objectForKey:newGameKey];
+  if (newGameDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* newGameDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:newGameDictionary];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoKoRuleDefault] forKey:koRuleKey];
+    [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

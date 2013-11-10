@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class NSString;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The NSStringAdditions category enhances NSString by adding a number
-/// of useful class methods.
+/// @brief The GoGameRules class defines the rules that are in effect for a
+/// game.
 ///
-/// @ingroup utility
+/// @ingroup go
 // -----------------------------------------------------------------------------
-@interface NSString(NSStringAdditions)
-+ (NSString*) UUIDString;
-- (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow;
-+ (NSString*) stringWithKomi:(double)komi numericZeroValue:(bool)numericZeroValue;
-+ (NSString*) stringWithFractionValue:(double)value;
-- (NSString*) stringByAppendingDeviceSuffix;
-+ (NSString*) stringWithKoRule:(enum GoKoRule)koRule;
+@interface GoGameRules : NSObject <NSCoding>
+{
+}
+
+/// @brief The ko rule in effect for the game.
+@property(nonatomic, assign) enum GoKoRule koRule;
+
 @end

@@ -232,6 +232,7 @@ NSString* computerPlayerSelfPlayKey = @"ComputerPlayerSelfPlay";
 NSString* boardSizeKey = @"BoardSize";
 NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
+NSString* koRuleKey = @"KoRule";
 // Players
 NSString* playerListKey = @"PlayerList";
 NSString* playerUUIDKey = @"UUID";
@@ -316,6 +317,7 @@ NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameReasonForComputerIsThinking = @"ReasonForComputerIsThinking";
 NSString* goGameBoardPositionKey = @"BoardPosition";
+NSString* goGameRulesKey = @"Rules";
 NSString* goGameDocumentKey = @"Document";
 NSString* goGameScoreKey = @"Score";
 // GoPlayer keys
@@ -404,3 +406,5 @@ NSString* gtpLogItemRawResponseStringKey = @"RawResponseString";
 // GoGameDocument keys
 NSString* goGameDocumentDirtyKey = @"Dirty";
 NSString* goGameDocumentDocumentNameKey = @"DocumentName";
+// GoGameRules keys
+NSString* goGameRulesKoRuleKey = @"KoRule";

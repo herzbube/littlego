@@ -19,6 +19,7 @@
 @class GoBoard;
 @class GoBoardPosition;
 @class GoGameDocument;
+@class GoGameRules;
 @class GoMove;
 @class GoMoveModel;
 @class GoPlayer;
@@ -126,6 +127,8 @@
 /// is currently described by the GoPoint and GoBoardRegion objects attached to
 /// this GoGame.
 @property(nonatomic, retain) GoBoardPosition* boardPosition;
+/// @brief Defines the rules that are in effect for this GoGame.
+@property(nonatomic, retain) GoGameRules* rules;
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;

@@ -21,6 +21,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameRules.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -98,6 +99,7 @@ enum GameInfoSectionItem
   HandicapItem,
   BoardSizeItem,
   KomiItem,
+  KoRuleItem,
   BlackPlayerItem,
   WhitePlayerItem,
   ActiveProfileItem,
@@ -726,6 +728,12 @@ enum BoardPositionSectionItem
         {
           cell.textLabel.text = @"Komi";
           cell.detailTextLabel.text = [NSString stringWithKomi:game.komi numericZeroValue:false];
+          break;
+        }
+        case KoRuleItem:
+        {
+          cell.textLabel.text = @"Ko rule";
+          cell.detailTextLabel.text = [NSString stringWithKoRule:game.rules.koRule];
           break;
         }
         case BlackPlayerItem:

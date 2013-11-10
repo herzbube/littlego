@@ -20,6 +20,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGameDocument.h"
+#import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoMoveModel.h"
 #import "GoPlayer.h"
@@ -56,6 +57,7 @@
   // (e.g. notificatins are triggered, but also other stuff)
   _type = GoGameTypeUnknown;
   _board = nil;
+  _rules = nil;
   _handicapPoints = [[NSArray array] retain];
   _komi = 0;
   _playerBlack = nil;
@@ -67,6 +69,7 @@
   // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
   // GoMoveModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
+  _rules = [[GoGameRules alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
   return self;
@@ -96,6 +99,7 @@
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
   _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
+  _rules = [[decoder decodeObjectForKey:goGameRulesKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
 
@@ -122,6 +126,7 @@
   // requires GoMoveModel to still be around
   self.boardPosition = nil;
   self.moveModel = nil;
+  self.rules = nil;
   self.document = nil;
   self.score = nil;
   [super dealloc];
@@ -569,6 +574,7 @@
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeInt:self.reasonForComputerIsThinking forKey:goGameReasonForComputerIsThinking];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
+  [encoder encodeObject:self.rules forKey:goGameRulesKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
 }

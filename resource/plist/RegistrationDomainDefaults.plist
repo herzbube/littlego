@@ -73,6 +73,8 @@
 		<integer>0</integer>
 		<key>Komi</key>
 		<real>6.5</real>
+		<key>KoRule</key>
+		<integer>0</integer>
 	</dict>
 	<key>PlayerList</key>
 	<array>

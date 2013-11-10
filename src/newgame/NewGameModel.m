@@ -44,6 +44,7 @@
   self.boardSize = gDefaultBoardSize;
   self.handicap = gDefaultHandicap;
   self.komi = gDefaultKomi;
+  self.koRule = GoKoRuleDefault;
 
   return self;
 }
@@ -79,6 +80,7 @@
   self.boardSize = [[dictionary valueForKey:boardSizeKey] intValue];
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
   self.komi = [[dictionary valueForKey:komiKey] doubleValue];
+  self.koRule = [[dictionary valueForKey:koRuleKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -103,6 +105,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.boardSize] forKey:boardSizeKey];
   [dictionary setValue:[NSNumber numberWithInt:self.handicap] forKey:handicapKey];
   [dictionary setValue:[NSNumber numberWithDouble:self.komi] forKey:komiKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.koRule] forKey:koRuleKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
 }

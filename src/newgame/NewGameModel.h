@@ -55,5 +55,6 @@
 @property(nonatomic, assign) enum GoBoardSize boardSize;
 @property(nonatomic, assign) int handicap;
 @property(nonatomic, assign) double komi;
+@property(nonatomic, assign) enum GoKoRule koRule;
 
 @end

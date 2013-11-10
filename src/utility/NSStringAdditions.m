@@ -183,4 +183,22 @@
   return [self stringByAppendingString:[UIDevice currentDeviceSuffix]];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a koRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithKoRule:(enum GoKoRule)koRule
+{
+  switch (koRule)
+  {
+    case GoKoRuleSimple:
+      return @"Simple";
+    case GoKoRuleSuperkoPositional:
+      return @"Positional superko";
+    case GoKoRuleSuperkoSituational:
+      return @"Situational superko";
+    default:
+      return @"Unknown";
+  }
+}
+
 @end

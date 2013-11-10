@@ -183,6 +183,16 @@ enum GoBoardSize
   GoBoardSizeUndefined = 0
 };
 
+/// @brief Enumerates the possible ko rules.
+enum GoKoRule
+{
+  GoKoRuleSimple,              ///< @brief The traditional simple ko rule.
+  GoKoRuleSuperkoPositional,   ///< @brief Positional superko, i.e. a board position may not be repeated over the entire game span.
+  GoKoRuleSuperkoSituational,  ///< @brief Situtational superko, i.e. a player may not repeat his/her own board positions over the entire game span.
+  GoKoRuleMax = GoKoRuleSuperkoSituational,
+  GoKoRuleDefault = GoKoRuleSimple
+};
+
 /// @brief Enumerates the types of alert views used across the application.
 ///
 /// Enumeration values are used as UIView tags so that an alert view delegate
@@ -637,6 +647,7 @@ extern NSString* computerPlayerSelfPlayKey;
 extern NSString* boardSizeKey;
 extern NSString* handicapKey;
 extern NSString* komiKey;
+extern NSString* koRuleKey;
 // Players
 extern NSString* playerListKey;
 extern NSString* playerUUIDKey;
@@ -726,6 +737,7 @@ extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameReasonForComputerIsThinking;
 extern NSString* goGameBoardPositionKey;
+extern NSString* goGameRulesKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
 // GoPlayer keys
@@ -814,4 +826,6 @@ extern NSString* gtpLogItemRawResponseStringKey;
 // GoGameDocument keys
 extern NSString* goGameDocumentDirtyKey;
 extern NSString* goGameDocumentDocumentNameKey;
+// GoGameRules keys
+extern NSString* goGameRulesKoRuleKey;
 //@}

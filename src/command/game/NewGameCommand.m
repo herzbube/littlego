@@ -24,6 +24,7 @@
 #import "../../gtp/GtpUtilities.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameRules.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
@@ -139,8 +140,9 @@
       newGame.playerWhite = [GoPlayer defaultWhitePlayer];
     }
     newGame.type = newGameModel.gameType;
+    newGame.rules.koRule = newGameModel.koRule;
   }
-  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d",
+  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d, ko rule = %d",
                [self shortDescription],
                newGame.board,
                newGame.komi,
@@ -149,7 +151,8 @@
                newGame.playerBlack.player.uuid,
                newGame.playerWhite,
                newGame.playerWhite.player.uuid,
-               newGame.type);
+               newGame.type,
+               newGame.rules.koRule);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what
@@ -255,7 +258,31 @@
 // -----------------------------------------------------------------------------
 - (void) setupGtpRules
 {
-  [[GtpCommand command:@"go_param_rules ko_rule simple"] submit];
+  enum GoKoRule koRule = [GoGame sharedGame].rules.koRule;
+  NSString* gtpKoRuleName;
+  switch (koRule)
+  {
+    case GoKoRuleSimple:
+      gtpKoRuleName = @"simple";
+      break;
+    case GoKoRuleSuperkoPositional:
+      gtpKoRuleName = @"pos_superko";
+      break;
+    case GoKoRuleSuperkoSituational:
+      gtpKoRuleName = @"superko";
+      break;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Illegal GoKoRule value %d", koRule];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  NSString* commandString = [NSString stringWithFormat:@"go_param_rules ko_rule %@", gtpKoRuleName];
+  [[GtpCommand command:commandString] submit];
 }
 
 // -----------------------------------------------------------------------------
