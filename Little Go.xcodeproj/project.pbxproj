@@ -344,6 +344,8 @@
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC4E979167B996C00AFDB51 /* ItemScrollView.m */; };
+		CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
+		CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -789,6 +791,8 @@
 		CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupApplicationCommand.m; sourceTree = "<group>"; };
 		CDC4E978167B996C00AFDB51 /* ItemScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemScrollView.h; sourceTree = "<group>"; };
 		CDC4E979167B996C00AFDB51 /* ItemScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemScrollView.m; sourceTree = "<group>"; };
+		CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTable.h; sourceTree = "<group>"; };
+		CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoZobristTable.mm; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
@@ -1215,6 +1219,8 @@
 				CD05AB951425169500214BBE /* GoUtilities.m */,
 				CDBB0399133573CC007C1C3E /* GoVertex.h */,
 				CDBB039A133573CC007C1C3E /* GoVertex.m */,
+				CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */,
+				CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */,
 			);
 			path = go;
 			sourceTree = "<group>";
@@ -2253,6 +2259,7 @@
 				CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
 				CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
+				CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2406,6 +2413,7 @@
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
 				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
+				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

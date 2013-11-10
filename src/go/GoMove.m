@@ -17,10 +17,12 @@
 
 // Project includes
 #import "GoMove.h"
+#import "GoBoard.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoUtilities.h"
+#import "GoZobristTable.h"
 
 
 // -----------------------------------------------------------------------------
@@ -115,6 +117,7 @@
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
   self.moveNumber = 1;
+  self.zobristHash = 0;
 
   return self;
 }
@@ -227,7 +230,11 @@
 {
   // Nothing to do for pass moves
   if (GoMoveTypePass == self.type)
+  {
+    if (self.previous)
+      self.zobristHash = self.previous.zobristHash;
     return;
+  }
 
   if (! self.point)
   {
@@ -294,6 +301,8 @@
       }
     }
   }
+
+  self.zobristHash = [self.point.board.zobristTable hashForMove:self];
 }
 
 // -----------------------------------------------------------------------------

@@ -28,6 +28,7 @@
 #import "GoBoardRegion.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
+#import "GoZobristTable.h"
 #import "../main/ApplicationDelegate.h"
 #import "../newgame/NewGameModel.h"
 
@@ -40,6 +41,7 @@
 //@{
 @property(nonatomic, assign, readwrite) enum GoBoardSize size;
 @property(nonatomic, retain, readwrite) NSArray* starPoints;
+@property(nonatomic, retain, readwrite) GoZobristTable* zobristTable;
 //@}
 @end
 
@@ -147,6 +149,7 @@
   self.size = boardSize;
   m_vertexDict = [[NSMutableDictionary dictionary] retain];
   self.starPoints = nil;
+  self.zobristTable = [[[GoZobristTable alloc] initWithBoardSize:self.size] autorelease];
 
   [self setupBoard];
 
@@ -167,6 +170,7 @@
   self.size = [decoder decodeIntForKey:goBoardSizeKey];
   m_vertexDict = [[decoder decodeObjectForKey:goBoardVertexDictKey] retain];
   self.starPoints = [decoder decodeObjectForKey:goBoardStarPointsKey];
+  self.zobristTable = [[[GoZobristTable alloc] initWithBoardSize:self.size] autorelease];
 
   return self;
 }
@@ -184,6 +188,7 @@
     point.region = nil;
   [m_vertexDict release];
   self.starPoints = nil;
+  self.zobristTable = nil;
   [super dealloc];
 }
 

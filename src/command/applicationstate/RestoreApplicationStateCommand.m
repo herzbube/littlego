@@ -21,12 +21,9 @@
 #import "../game/NewGameCommand.h"
 #import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../../go/GoBoard.h"
-#import "../../go/GoBoardPosition.h"
-#import "../../go/GoBoardRegion.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../play/model/ScoringModel.h"
+#import "../../go/GoMove.h"
+#import "../../go/GoZobristTable.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -72,6 +69,8 @@
     return false;
   }
 
+  [self calculateZobristHashes:unarchivedGame];
+
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // Computer player must not be triggered before the GTP engine has been
   // sync'ed (it is irrelevant that we are not going to trigger the computer
@@ -115,6 +114,16 @@
   [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// Private helper
+// -----------------------------------------------------------------------------
+- (void) calculateZobristHashes:(GoGame*)unarchivedGame
+{
+  GoZobristTable* zobristTable = unarchivedGame.board.zobristTable;
+  for (GoMove* move = unarchivedGame.firstMove; move != nil; move = move.next)
+    move.zobristHash = [zobristTable hashForMove:move];
 }
 
 @end

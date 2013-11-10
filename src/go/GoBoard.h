@@ -15,9 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
-
 // Forward declarations
 @class GoPoint;
+@class GoZobristTable;
 
 
 // -----------------------------------------------------------------------------
@@ -57,5 +57,8 @@
 /// @brief A list of all GoBoardRegion objects on this board. The list has no
 /// particular order.
 @property(nonatomic, assign, readonly) NSArray* regions;
+/// @brief Zobrist table used for calculating Zobrist hashes. Zobrist hashes
+/// are used to detect superko.
+@property(nonatomic, retain, readonly) GoZobristTable* zobristTable;
 
 @end

@@ -87,5 +87,8 @@
 /// @brief The move number of this GoMove object. The first move of the game
 /// has move number 1.
 @property(nonatomic, assign, readonly) int moveNumber;
+/// @brief Zobrist hash that identifies the board position created by this move.
+/// Zobrist hashes are used to detect superko.
+@property(nonatomic, assign) long long zobristHash;
 
 @end
