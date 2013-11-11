@@ -42,8 +42,7 @@ enum NewGameTableViewSection
   BoardSizeSection,  // doubles as KoRuleSection in "load game" mode
   MaxSectionLoadGame,
   // Sections from here on are not displayed in "load game" mode
-  HandicapSection = MaxSectionLoadGame,
-  KomiSection,
+  HandicapKomiSection = MaxSectionLoadGame,
   KoRuleSection,
   MaxSection
 };
@@ -88,21 +87,13 @@ enum BoardSizeSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the HandicapSection.
+/// @brief Enumerates items in the HandicapKomiSection.
 // -----------------------------------------------------------------------------
-enum HandicapSectionItem
+enum HandicapKomiSectionItem
 {
   HandicapItem,
-  MaxHandicapSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the KomiSection.
-// -----------------------------------------------------------------------------
-enum KomiSectionItem
-{
   KomiItem,
-  MaxKomiSectionItem
+  MaxHandicapKomiSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -325,10 +316,8 @@ enum KoRuleSectionItem
         return MaxBoardSizeSectionItem;
       else
         return MaxKoRuleSectionItem;
-    case HandicapSection:
-      return MaxHandicapSectionItem;
-    case KomiSection:
-      return MaxKomiSectionItem;
+    case HandicapKomiSection:
+      return MaxHandicapKomiSectionItem;
     default:
       assert(0);
       break;
@@ -478,29 +467,27 @@ enum KoRuleSectionItem
       }
       break;
     }
-    case HandicapSection:
+    case HandicapKomiSection:
     {
       switch (indexPath.row)
       {
         case HandicapItem:
+        {
           cell.textLabel.text = @"Handicap";
           cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.theNewGameModel.handicap];
-        default:
-          assert(0);
           break;
-      }
-      break;
-    }
-    case KomiSection:
-    {
-      switch (indexPath.row)
-      {
+        }
         case KomiItem:
+        {
           cell.textLabel.text = @"Komi";
           cell.detailTextLabel.text = [NSString stringWithKomi:self.theNewGameModel.komi numericZeroValue:false];
+          break;
+        }
         default:
+        {
           assert(0);
           break;
+        }
       }
       break;
     }
@@ -580,18 +567,20 @@ enum KoRuleSectionItem
       modalController = itemPickerController;
       break;
     }
-    case HandicapSection:
+    case HandicapKomiSection:
     {
-      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.theNewGameModel.boardSize];
-      modalController = [HandicapSelectionController controllerWithDelegate:self
-                                                            defaultHandicap:self.theNewGameModel.handicap
-                                                            maximumHandicap:maximumHandicap];
-      break;
-    }
-    case KomiSection:
-    {
-      modalController = [KomiSelectionController controllerWithDelegate:self
-                                                            defaultKomi:self.theNewGameModel.komi];
+      if (HandicapItem == indexPath.row)
+      {
+        int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.theNewGameModel.boardSize];
+        modalController = [HandicapSelectionController controllerWithDelegate:self
+                                                              defaultHandicap:self.theNewGameModel.handicap
+                                                              maximumHandicap:maximumHandicap];
+      }
+      else
+      {
+        modalController = [KomiSelectionController controllerWithDelegate:self
+                                                              defaultKomi:self.theNewGameModel.komi];
+      }
       break;
     }
     default:
@@ -639,7 +628,7 @@ enum KoRuleSectionItem
         if (self.theNewGameModel.handicap > maximumHandicap)
         {
           self.theNewGameModel.handicap = maximumHandicap;
-          indexSetRange.length = HandicapSection - indexSetRange.location + 1;
+          indexSetRange.length = HandicapKomiSection - indexSetRange.location + 1;
         }
 
         self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
@@ -669,7 +658,7 @@ enum KoRuleSectionItem
     {
       self.theNewGameModel.handicap = controller.handicap;
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapSection];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
@@ -687,7 +676,7 @@ enum KoRuleSectionItem
     {
       self.theNewGameModel.komi = controller.komi;
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:KomiSection];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
