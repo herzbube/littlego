@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoGame.h"
+#import "GoBoard.h"
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGameDocument.h"
@@ -27,6 +28,7 @@
 #import "GoPoint.h"
 #import "GoScore.h"
 #import "GoUtilities.h"
+#import "GoZobristTable.h"
 #import "../player/Player.h"
 #import "../main/ApplicationDelegate.h"
 
@@ -397,68 +399,49 @@
   // of the response.
   // -> it's better to implement this in our own terms
   if ([point hasStone])
+  {
     return false;
+  }
+  // Point is an empty intersection, possibly with other empty intersections as
+  // neighbours
   else if ([point liberties] > 0)
-    return true;
+  {
+    return ![self isKoMove:point checkSuperkoOnly:true];
+  }
+  // Point is an empty intersection that is surrounded by stones
   else
   {
     bool nextMoveIsBlack = self.boardPosition.currentPlayer.isBlack;
-    bool isKoStillPossible = true;
+    enum GoColor nextMoveColor = (nextMoveIsBlack ? GoColorBlack : GoColorWhite);
+    enum GoColor nextMoveOpponentColor = (nextMoveIsBlack ? GoColorWhite : GoColorBlack);
 
-    // Pass 1: Examine friendly colored neighbours
-    NSArray* neighbours = point.neighbours;
-    for (GoPoint* neighbour in neighbours)
+    // Pass 1: Check if we can connect to a friendly colored stone group
+    // without killing it
+    NSArray* neighbourRegionsFriendly = [point neighbourRegionsWithColor:nextMoveColor];
+    for (GoBoardRegion* neighbourRegion in neighbourRegionsFriendly)
     {
-      if ([neighbour blackStone] != nextMoveIsBlack)
-        continue;
-      // If we are connecting to a stone group with more than just one
-      // liberty, we are *NOT* killing it, so the move is not a suicide and
-      // therefore legal
-      if ([neighbour liberties] > 1)
-        return true;
-      else
+      // If the friendly stone group has more than one liberty, we are sure that
+      // we are not killing it. The only thing that can still make the move
+      // illegal is a ko (but since we are connecting, a simple ko is not
+      // possible here).
+      if ([neighbourRegion liberties] > 1)
       {
-        // A Ko situation is not possible since one of our neighbours is a
-        // friendly colored stone
-        isKoStillPossible = false;
+        return ![self isKoMove:point checkSuperkoOnly:true];
       }
     }
 
-    // Pass 2: Examine opposite colored neighbours
-    for (GoPoint* neighbour in neighbours)
+    // Pass 2: Check if we can capture opposing stone groups
+    NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:nextMoveOpponentColor];
+    for (GoBoardRegion* neighbourRegion in neighbourRegionsOpponent)
     {
-      if ([neighbour blackStone] == nextMoveIsBlack)
-        continue;
-      // Can we capture the stone (or the group to which it belongs)? If not
-      // then we can immediately examine the next neighbour.
-      if ([neighbour liberties] > 1)
-        continue;
-      // Yes, we can capture the group. Now the only thing that can still make
-      // the move illegal is a Ko. First check if a previous part of the logic
-      // has already found that a Ko is no longer possible.
-      if (! isKoStillPossible)
-        return true;  // Ko is no longer possible, so the move is legal
-      // A Ko is still possible. Next we check if the group we would like to
-      // capture is larger than 1 stone. If it is it can't be a Ko, so the move
-      // is legal.
-      GoBoardRegion* neighbourRegion = neighbour.region;
-      if ([neighbourRegion size] > 1)
-        return true;
-      // The group we would like to capture is just one stone. If that stone
-      // was not placed in the previous move it can't be Ko and the move is
-      // legal.
-      GoPoint* lastMovePoint = self.lastMove.point;
-      if (! lastMovePoint || ! [lastMovePoint isEqualToPoint:neighbour])
-        return true;
-      // The stone we would like to capture was placed in the previous move. If
-      // that move captured a) a single stone, and b) that stone was located on
-      // the point that we are currently examining, then we finally know that
-      // it is Ko and that the move is illegal.
-      NSArray* lastMoveCapturedStones = self.lastMove.capturedStones;
-      if (1 == lastMoveCapturedStones.count && [lastMoveCapturedStones containsObject:point])
-        return false;
-      else
-        return true;
+      // If the opposing stone group has only one liberty left we can capture
+      // it. The only thing that can still make the move illegal is a ko.
+      if ([neighbourRegion liberties] == 1)
+      {
+        // A simple Ko situation is possible only if we are NOT connecting
+        bool isSimpleKoStillPossible = (0 == neighbourRegionsFriendly.count);
+        return ![self isKoMove:point checkSuperkoOnly:!isSimpleKoStillPossible];
+      }
     }
 
     // If we arrive here, no opposing stones can be captured and there are no
@@ -466,6 +449,83 @@
     // -> the move is a suicide and therefore illegal
     return false;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// Private helper
+// -----------------------------------------------------------------------------
+- (bool) isKoMove:(GoPoint*)point checkSuperkoOnly:(bool)checkSuperkoOnly
+{
+  enum GoKoRule koRule = self.rules.koRule;
+  if (checkSuperkoOnly && GoKoRuleSimple == koRule)
+    return false;
+
+  GoMove* lastMove = self.lastMove;
+  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point];
+  switch (koRule)
+  {
+    case GoKoRuleSimple:
+    {
+      GoMove* previousMoveOfSamePlayer;
+      if (lastMove)
+        previousMoveOfSamePlayer = lastMove.previous;
+      if (! previousMoveOfSamePlayer)
+        return false;
+      return (zobristHashOfHypotheticalMove == previousMoveOfSamePlayer.zobristHash);
+    }
+    case GoKoRuleSuperkoPositional:
+    case GoKoRuleSuperkoSituational:
+    {
+      GoPlayer* currentPlayer = self.currentPlayer;
+      for (GoMove* move = lastMove; move != nil; move = move.previous)
+      {
+        if (GoKoRuleSuperkoSituational == koRule && move.player != currentPlayer)
+            continue;
+        if (zobristHashOfHypotheticalMove == move.zobristHash)
+          return true;
+      }
+      return false;
+    }
+    default:
+    {
+      NSString* errorMessage = @"Unrecognized ko rule";
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// Private helper
+// -----------------------------------------------------------------------------
+- (long long) zobristHashOfHypotheticalMoveAtPoint:(GoPoint*)point
+{
+  GoPlayer* currentPlayer = self.currentPlayer;
+  bool nextMoveIsBlack = currentPlayer.isBlack;
+  enum GoColor nextMoveOpponentColor = (nextMoveIsBlack ? GoColorWhite : GoColorBlack);
+  NSArray* stonesWithOneLiberty = [self stonesWithColor:nextMoveOpponentColor withSingleLibertyAt:point];
+  return [self.board.zobristTable hashForStonePlayedBy:currentPlayer
+                                               atPoint:point
+                                       capturingStones:stonesWithOneLiberty
+                                             afterMove:self.lastMove];
+}
+
+// -----------------------------------------------------------------------------
+/// Private helper
+// -----------------------------------------------------------------------------
+- (NSArray*) stonesWithColor:(enum GoColor)color withSingleLibertyAt:(GoPoint*)point
+{
+  NSMutableArray* stonesWithSingleLiberty = [NSMutableArray arrayWithCapacity:0];
+  NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:color];
+  for (GoBoardRegion* neighbourRegion in neighbourRegionsOpponent)
+  {
+    if ([neighbourRegion liberties] == 1)
+      [stonesWithSingleLiberty addObjectsFromArray:neighbourRegion.points];
+  }
+  return stonesWithSingleLiberty;
 }
 
 // -----------------------------------------------------------------------------

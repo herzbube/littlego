@@ -18,6 +18,8 @@
 // Forward declarations
 @class GoBoard;
 @class GoMove;
+@class GoPlayer;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
@@ -49,5 +51,9 @@
 
 - (long long) hashForBoard:(GoBoard*)board;
 - (long long) hashForMove:(GoMove*)move;
+- (long long) hashForStonePlayedBy:(GoPlayer*)player
+                           atPoint:(GoPoint*)point
+                   capturingStones:(NSArray*)capturedStones
+                         afterMove:(GoMove*)move;
 
 @end

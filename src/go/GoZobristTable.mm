@@ -151,8 +151,12 @@
 /// @brief Generates the Zobrist hash for @a move.
 ///
 /// The hash is calculated incrementally from the previous move:
-/// - Any stones that were captured by @a move are removed from the hash
-/// - The stone that was added by @a move is added to the hash
+/// - Any stones that are captured by @a move are removed from the hash of the
+///   previous move
+/// - The stone that was added by @a move is added to the hash of the previous
+///   move
+///
+/// If there is no previous move the calculation starts with 0.
 ///
 /// If @a move is a pass move, the resulting hash is the same as for the
 /// previous move.
@@ -160,27 +164,58 @@
 - (long long) hashForMove:(GoMove*)move
 {
   long long hash;
-  GoMove* previousMove = move.previous;
-  if (previousMove)
-    hash = previousMove.zobristHash;
-  else
-    hash = 0;
   if (GoMoveTypePlay == move.type)
   {
-    [self throwIfTableSizeDoesNotMatchSizeOfBoard:move.point.board];
-    GoPlayer* player = move.player;
-    NSArray* capturedStones = move.capturedStones;
-    if (capturedStones)
-    {
-      for (GoPoint* capturedStone in move.capturedStones)
-      {
-        int indexCaptured = [self indexForStoneAt:capturedStone capturedBy:player];
-        hash ^= _zobristTable[indexCaptured];
-      }
-    }
-    int indexPlayed = [self indexForStoneAt:move.point playedBy:player];
-    hash ^= _zobristTable[indexPlayed];
+    hash = [self hashForStonePlayedBy:move.player
+                              atPoint:move.point
+                      capturingStones:move.capturedStones
+                            afterMove:move.previous];
   }
+  else
+  {
+    GoMove* previousMove = move.previous;
+    if (previousMove)
+      hash = previousMove.zobristHash;
+    else
+      hash = 0;
+  }
+  return hash;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the Zobrist hash for a hypothetical move played by
+/// @a player on the intersection @a point, after the previous move @a move.
+/// The move would capture the stones in @a capturedStones (array of GoPoint
+/// objects).
+///
+/// The hash is calculated incrementally from the Zobrist hash of the previous
+/// move @a move:
+/// - Stones that are captured are removed from the hash
+/// - The stone that was added is added to the hash
+///
+/// If @a move is nil the calculation starts with 0.
+// -----------------------------------------------------------------------------
+- (long long) hashForStonePlayedBy:(GoPlayer*)player
+                           atPoint:(GoPoint*)point
+                   capturingStones:(NSArray*)capturedStones
+                         afterMove:(GoMove*)move
+{
+  long long hash;
+  if (move)
+    hash = move.zobristHash;
+  else
+    hash = 0;
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:point.board];
+  if (capturedStones)
+  {
+    for (GoPoint* capturedStone in capturedStones)
+    {
+      int indexCaptured = [self indexForStoneAt:capturedStone capturedBy:player];
+      hash ^= _zobristTable[indexCaptured];
+    }
+  }
+  int indexPlayed = [self indexForStoneAt:point playedBy:player];
+  hash ^= _zobristTable[indexPlayed];
   return hash;
 }
 

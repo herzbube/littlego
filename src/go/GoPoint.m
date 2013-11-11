@@ -369,6 +369,28 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Collects the GoBoardRegion from those neighbours (@e neighbours
+/// property) of this GoPoint object whose stoneState matches @a color, then
+/// returns an array with those GoBoardRegion objects.
+///
+/// The array that is returned contains no duplicates.
+// -----------------------------------------------------------------------------
+- (NSArray*) neighbourRegionsWithColor:(enum GoColor)color
+{
+  NSMutableArray* neighbourRegions = [NSMutableArray arrayWithCapacity:0];
+  for (GoPoint* neighbour in self.neighbours)
+  {
+    if (neighbour.stoneState != color)
+      continue;
+    GoBoardRegion* neighbourRegion = neighbour.region;
+    if ([neighbourRegions containsObject:neighbourRegion])
+      continue;
+    [neighbourRegions addObject:neighbourRegion];
+  }
+  return neighbourRegions;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief NSCoding protocol method.
 // -----------------------------------------------------------------------------
 - (void) encodeWithCoder:(NSCoder*)encoder
