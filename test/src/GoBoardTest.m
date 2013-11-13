@@ -36,6 +36,7 @@
 {
   enum GoBoardSize expectedBoardSize = GoBoardSize19;
   [self checkBoardState:m_game.board expectedBoardSize:expectedBoardSize];
+  STAssertNotNil(m_game.board.zobristTable, nil);
 }
 
 // -----------------------------------------------------------------------------

@@ -33,5 +33,6 @@
 - (void) testDoIt;
 - (void) testUndo;
 - (void) testMoveNumber;
+- (void) testZobristHash;
 
 @end

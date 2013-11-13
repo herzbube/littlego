@@ -20,34 +20,19 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoGameTest class contains unit tests that exercise the GoGame
-/// class.
+/// @brief The GoZobristTableTest class contains unit tests that exercise the
+/// GoZobristTable class.
 // -----------------------------------------------------------------------------
-@interface GoGameTest : BaseTestCase
+@interface GoZobristTableTest : BaseTestCase
 {
 }
 
-- (void) testSharedGame;
 - (void) testInitialState;
-- (void) testType;
-- (void) testBoard;
-- (void) testHandicapPoints;
-- (void) testCurrentPlayer;
-- (void) testFirstMove;
-- (void) testLastMove;
-- (void) testState;
-- (void) testReasonForGameHasEnded;
-- (void) testPlay;
-- (void) testPass;
-- (void) testResign;
-- (void) testPause;
-- (void) testContinue;
-- (void) testIsLegalMove;
-- (void) testIsLegalMovePositionalSuperko;
-- (void) testIsLegalMoveSituationalSuperko;
-- (void) testIsComputerPlayersTurn;
-- (void) testRevertStateFromEndedToInProgress;
-- (void) testDiscardCausesRegionToFragment;
-- (void) testIssue2;
+- (void) testHashForBoard;
+- (void) testHashForMove;
+- (void) testHashForStone;
+- (void) testHashForLastMoveEqualsHashForBoard;
+- (void) testHashAfterPass;
+- (void) testHashAfterUndoAndRedo;
 
 @end

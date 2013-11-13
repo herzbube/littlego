@@ -29,6 +29,7 @@
 #import <go/GoUtilities.h>
 #import <main/ApplicationDelegate.h>
 #import <command/game/NewGameCommand.h>
+#import <newGame/NewGameModel.h>
 
 
 @implementation GoGameTest
@@ -373,7 +374,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalMove() method.
+/// @brief Exercises the isLegalMove() method (including simple ko scenarios).
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMove
 {
@@ -485,6 +486,94 @@
 
   STAssertThrowsSpecificNamed([m_game isLegalMove:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalMove() method (only positional superko
+/// scenarios).
+// -----------------------------------------------------------------------------
+- (void) testIsLegalMovePositionalSuperko
+{
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.koRule = GoKoRuleSuperkoPositional;
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self playUntilAlmostPositionalSuperko];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
+  STAssertFalse([m_game isLegalMove:point1], nil);
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self playUntilAlmostSituationalSuperko];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  STAssertFalse([m_game isLegalMove:point2], nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalMove() method (only situational superko
+/// scenarios).
+// -----------------------------------------------------------------------------
+- (void) testIsLegalMoveSituationalSuperko
+{
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.koRule = GoKoRuleSuperkoSituational;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+
+  [self playUntilAlmostPositionalSuperko];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
+  // Positional superko does not trigger situational superko
+  STAssertTrue([m_game isLegalMove:point1], nil);
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self playUntilAlmostSituationalSuperko];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  STAssertFalse([m_game isLegalMove:point2], nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testIsLegalMovePositionalSuperko() and
+/// testIsLegalMoveSituationalSuperko().
+// -----------------------------------------------------------------------------
+- (void) playUntilAlmostPositionalSuperko
+{
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];  // move 1
+  [m_game play:[m_game.board pointAtVertex:@"A2"]];  // move 2
+  [m_game play:[m_game.board pointAtVertex:@"C2"]];  // move 3
+  [m_game play:[m_game.board pointAtVertex:@"B2"]];  // move 4
+  [m_game play:[m_game.board pointAtVertex:@"D1"]];  // move 5
+  // White does NOT pass, i.e. white contributes to the board position.
+  [m_game play:[m_game.board pointAtVertex:@"D2"]];  // move 6
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];  // move 7
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];  // move 8, capture A1+A2
+  // Black's next move at B1 captures C1 and recreates the board position after
+  // move 6. This triggers positional superko. This does NOT trigger situational
+  // superko because it was white - not black - who created the board position
+  // in move 6.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testIsLegalMovePositionalSuperko() and
+/// testIsLegalMoveSituationalSuperko().
+// -----------------------------------------------------------------------------
+- (void) playUntilAlmostSituationalSuperko
+{
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];  // move 1
+  [m_game play:[m_game.board pointAtVertex:@"A2"]];  // move 2
+  [m_game play:[m_game.board pointAtVertex:@"C2"]];  // move 3
+  [m_game play:[m_game.board pointAtVertex:@"B2"]];  // move 4
+  [m_game play:[m_game.board pointAtVertex:@"D1"]];  // move 5
+  // White passes, i.e. white does NOT contribute to the board position
+  [m_game pass];                                     // move 6
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];  // move 7
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];  // move 8, capture A1+A2
+  // Black's next move at B1 captures C1 and recreates the board position after
+  // move 5. This triggers situational superko because it was also black who
+  // created the board position in move 5. This also triggers positional superko
+  // because positional superko is less strict than situational superko and does
+  // not care who creates board positions.
 }
 
 // -----------------------------------------------------------------------------

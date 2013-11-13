@@ -277,4 +277,82 @@
   STAssertTrue([pointFromBoard isEqualToPoint:point], nil);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the neighbourRegionsWithColor() method.
+// -----------------------------------------------------------------------------
+- (void) testNeighbourRegionsWithColor
+{
+  GoBoard* board = m_game.board;
+  GoPoint* point = [board pointAtVertex:@"B2"];
+  GoBoardRegion* mainRegion = point.region;
+
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:1
+                         expectedNumberOfRegionsBlack:0
+                         expectedNumberOfRegionsWhite:0];
+  NSArray* neighbourRegionsEmpty = [point neighbourRegionsWithColor:GoColorNone];
+  STAssertEqualObjects(mainRegion, [neighbourRegionsEmpty objectAtIndex:0], nil);
+  [m_game play:point.left];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:1
+                         expectedNumberOfRegionsBlack:1
+                         expectedNumberOfRegionsWhite:0];
+  [m_game play:point.right];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:1
+                         expectedNumberOfRegionsBlack:1
+                         expectedNumberOfRegionsWhite:1];
+  [m_game play:point.above];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:1
+                         expectedNumberOfRegionsBlack:2
+                         expectedNumberOfRegionsWhite:1];
+  [m_game play:point.below];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:0
+                         expectedNumberOfRegionsBlack:2
+                         expectedNumberOfRegionsWhite:2];
+  [m_game play:point.left.above];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:0
+                         expectedNumberOfRegionsBlack:1
+                         expectedNumberOfRegionsWhite:2];
+  [m_game play:point.right.below];
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:0
+                         expectedNumberOfRegionsBlack:1
+                         expectedNumberOfRegionsWhite:1];
+  point = point.left;
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:2
+                         expectedNumberOfRegionsBlack:1
+                         expectedNumberOfRegionsWhite:0];
+  NSArray* neighbourRegionsBlack = [point neighbourRegionsWithColor:GoColorBlack];
+  STAssertEqualObjects(point.region, [neighbourRegionsBlack objectAtIndex:0], nil);
+  point = point.right.right.below;
+  [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
+                         expectedNumberOfRegionsEmpty:1
+                         expectedNumberOfRegionsBlack:0
+                         expectedNumberOfRegionsWhite:1];
+  NSArray* neighbourRegionsWhite = [point neighbourRegionsWithColor:GoColorWhite];
+  STAssertEqualObjects(point.region, [neighbourRegionsWhite objectAtIndex:0], nil);
+
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testNeighbourRegionsWithColor().
+// -----------------------------------------------------------------------------
+- (void) verifyExpectedNumberOfNeighbourRegionsOfPoint:(GoPoint*)point
+                          expectedNumberOfRegionsEmpty:(NSUInteger)expectedNumberOfRegionsEmpty
+                          expectedNumberOfRegionsBlack:(NSUInteger)expectedNumberOfRegionsBlack
+                          expectedNumberOfRegionsWhite:(NSUInteger)expectedNumberOfRegionsWhite
+{
+  NSArray* neighbourRegionsEmpty = [point neighbourRegionsWithColor:GoColorNone];
+  STAssertEquals(neighbourRegionsEmpty.count, expectedNumberOfRegionsEmpty, nil);
+  NSArray* neighbourRegionsBlack = [point neighbourRegionsWithColor:GoColorBlack];
+  STAssertEquals(neighbourRegionsBlack.count, expectedNumberOfRegionsBlack, nil);
+  NSArray* neighbourRegionsWhite = [point neighbourRegionsWithColor:GoColorWhite];
+  STAssertEquals(neighbourRegionsWhite.count, expectedNumberOfRegionsWhite, nil);
+}
+
 @end

@@ -34,5 +34,6 @@
 - (void) testStoneState;
 - (void) testLiberties;
 - (void) testIsEqualToPoint;
+- (void) testNeighbourRegionsWithColor;
 
 @end

@@ -20,34 +20,14 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoGameTest class contains unit tests that exercise the GoGame
-/// class.
+/// @brief The GoGameRulesTest class contains unit tests that exercise the
+/// GoGameRules class.
 // -----------------------------------------------------------------------------
-@interface GoGameTest : BaseTestCase
+@interface GoGameRulesTest : BaseTestCase
 {
 }
 
-- (void) testSharedGame;
 - (void) testInitialState;
-- (void) testType;
-- (void) testBoard;
-- (void) testHandicapPoints;
-- (void) testCurrentPlayer;
-- (void) testFirstMove;
-- (void) testLastMove;
-- (void) testState;
-- (void) testReasonForGameHasEnded;
-- (void) testPlay;
-- (void) testPass;
-- (void) testResign;
-- (void) testPause;
-- (void) testContinue;
-- (void) testIsLegalMove;
-- (void) testIsLegalMovePositionalSuperko;
-- (void) testIsLegalMoveSituationalSuperko;
-- (void) testIsComputerPlayersTurn;
-- (void) testRevertStateFromEndedToInProgress;
-- (void) testDiscardCausesRegionToFragment;
-- (void) testIssue2;
+- (void) testNonDefaultKoRule;
 
 @end

@@ -348,6 +348,8 @@
 		CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDC97A8E18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
 		CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
+		CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */; };
+		CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -797,6 +799,10 @@
 		CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoZobristTable.mm; sourceTree = "<group>"; };
 		CDC97A8C18301CC000755EB2 /* GoGameRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameRules.h; sourceTree = "<group>"; };
 		CDC97A8D18301CC100755EB2 /* GoGameRules.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameRules.m; sourceTree = "<group>"; };
+		CDC97A901832E2E700755EB2 /* GoGameRulesTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameRulesTest.h; sourceTree = "<group>"; };
+		CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameRulesTest.m; sourceTree = "<group>"; };
+		CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTableTest.h; sourceTree = "<group>"; };
+		CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoZobristTableTest.m; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
@@ -1471,6 +1477,8 @@
 				CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */,
 				CD85B58E1401C137001715B8 /* GoGameTest.h */,
 				CD85B58F1401C137001715B8 /* GoGameTest.m */,
+				CDC97A901832E2E700755EB2 /* GoGameRulesTest.h */,
+				CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */,
 				CD15A482168D044400D4472A /* GoMoveModelTest.h */,
 				CD15A483168D044400D4472A /* GoMoveModelTest.m */,
 				CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */,
@@ -1481,6 +1489,8 @@
 				CD99EC6214B10747007B3B67 /* GoPointTest.m */,
 				CDA596111401741800B250D8 /* GoVertexTest.h */,
 				CDA596121401741800B250D8 /* GoVertexTest.m */,
+				CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */,
+				CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -2422,6 +2432,8 @@
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
+				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
+				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

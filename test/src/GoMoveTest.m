@@ -395,4 +395,26 @@
   STAssertEquals(expectedMoveNumber, move2.moveNumber, nil);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e zobristHash property
+// -----------------------------------------------------------------------------
+- (void) testZobristHash
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+  GoMove* movePrevious = nil;
+  GoMove* move1 = [GoMove move:moveType by:player after:movePrevious];
+  move1.point = [m_game.board pointAtVertex:@"A1"];
+  [move1 doIt];
+  moveType = GoMoveTypePass;
+  player = m_game.playerWhite;
+  movePrevious = move1;
+  GoMove* move2 = [GoMove move:moveType by:player after:movePrevious];
+  [move2 doIt];
+
+  STAssertTrue(move1.zobristHash != 0, nil);
+  STAssertTrue(move2.zobristHash != 0, nil);
+  STAssertEquals(move1.zobristHash, move2.zobristHash, nil);
+}
+
 @end
