@@ -142,6 +142,7 @@
 {
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
+  self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
   self.crossHairPointDistanceFromFinger = 0;
 
   self.updatesWereDelayed = false;
@@ -536,7 +537,7 @@
 /// @brief Moves the cross-hair to the intersection identified by @a point,
 /// specifying whether an actual play move at the intersection would be legal.
 // -----------------------------------------------------------------------------
-- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
 {
   if (_crossHairPoint == point && _crossHairPointIsLegalMove == isLegalMove)
     return;
@@ -545,6 +546,7 @@
   // self.crossHairPoint get both changes at once. Don't use self to update the
   // property because we don't want observers to monitor the property via KVO.
   _crossHairPointIsLegalMove = isLegalMove;
+  _crossHairPointIsIllegalReason = illegalReason;
   self.crossHairPoint = point;
 
   [self notifyLayerDelegates:PVLDEventCrossHairChanged eventInfo:point];

@@ -378,20 +378,24 @@
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMove
 {
+  enum GoMoveIsIllegalReason illegalReason;
+
   // Unoccupied point is legal for both players
   GoPoint* point1 = [m_game.board pointAtVertex:@"T1"];
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
   [m_game pass];
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
 
   // Play it with black
   [m_game.moveModel discardLastMove];
   [m_game play:point1];
 
   // Point occupied by black is not legal for either player
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
   [m_game pass];
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
 
   // Play stone with white
   [m_game.moveModel discardLastMove];
@@ -399,19 +403,22 @@
   [m_game play:point2];
 
   // Point occupied by white is not legal for either player
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
   [m_game pass];
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
 
   // Play capturing stone stone with white
   GoPoint* point3 = [m_game.board pointAtVertex:@"T2"];
   [m_game play:point3];
 
   // Original point not legal for black, is suicide
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuicide, nil);
   // But legal for white, just a fill
   [m_game pass];
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
 
   // Counter-attack by black to create Ko situation
   [m_game.moveModel discardLastMove];
@@ -423,11 +430,12 @@
   [m_game pass];
 
   // Original point now legal for black, is no longer suicide
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
   [m_game play:point1];
 
   // Not legal for white because of Ko
-  STAssertFalse([m_game isLegalMove:point2], nil);
+  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSimpleKo, nil);
 
   // White passes, black plays somewhere else
   [m_game pass];
@@ -435,10 +443,11 @@
   [m_game play:point6];
 
   // Again legal for white because Ko has gone
-  STAssertTrue([m_game isLegalMove:point2], nil);
+  STAssertTrue([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
   [m_game play:point2];
   // Not legal for black, again because of Ko
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSimpleKo, nil);
 
   // Black passes, white connects
   [m_game pass];
@@ -456,10 +465,10 @@
   [m_game play:point7];
   // Is legal for black, captures C1
   GoPoint* point8 = [m_game.board pointAtVertex:@"B1"];
-  STAssertTrue([m_game isLegalMove:point8], nil);
+  STAssertTrue([m_game isLegalMove:point8 isIllegalReason:&illegalReason], nil);
   [m_game play:point8];
   // Is legal for white, captures back A1 and B1 (no Ko!)
-  STAssertTrue([m_game isLegalMove:point7], nil);
+  STAssertTrue([m_game isLegalMove:point7 isIllegalReason:&illegalReason], nil);
   [m_game play:point7];
 
   // Setup situation that resembles Ko, but is not, because it's not a
@@ -481,10 +490,10 @@
   [m_game play:[m_game.board pointAtVertex:@"R18"]];
   // Is legal for black, recaptures white stone on R18
   GoPoint* point9 = [m_game.board pointAtVertex:@"S18"];
-  STAssertTrue([m_game isLegalMove:point9], nil);
+  STAssertTrue([m_game isLegalMove:point9 isIllegalReason:&illegalReason], nil);
   [m_game play:point9];
 
-  STAssertThrowsSpecificNamed([m_game isLegalMove:nil],
+  STAssertThrowsSpecificNamed([m_game isLegalMove:nil isIllegalReason:&illegalReason],
                               NSException, NSInvalidArgumentException, @"point is nil");
 }
 
@@ -496,18 +505,21 @@
 {
   NewGameModel* newGameModel = m_delegate.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
+  enum GoMoveIsIllegalReason illegalReason;
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [self playUntilAlmostPositionalSuperko];
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point1], nil);
+  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [self playUntilAlmostSituationalSuperko];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point2], nil);
+  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -520,17 +532,19 @@
   newGameModel.koRule = GoKoRuleSuperkoSituational;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
+  enum GoMoveIsIllegalReason illegalReason;
 
   [self playUntilAlmostPositionalSuperko];
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
   // Positional superko does not trigger situational superko
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [self playUntilAlmostSituationalSuperko];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point2], nil);
+  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
+  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
 }
 
 // -----------------------------------------------------------------------------
@@ -746,7 +760,8 @@
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   // Black captures a single white stone that was played in the previous move
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
-  STAssertTrue([m_game isLegalMove:point1], nil);
+  enum GoMoveIsIllegalReason illegalReason;
+  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
   [m_game play:point1];
 }
 

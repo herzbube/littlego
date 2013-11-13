@@ -29,6 +29,7 @@
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -312,7 +313,27 @@
   {
     statusText = self.playView.crossHairPoint.vertex.string;
     if (! self.playView.crossHairPointIsLegalMove)
-      statusText = [statusText stringByAppendingString:@" - You can't play there"];
+    {
+      enum GoMoveIsIllegalReason isIllegalReason = self.playView.crossHairPointIsIllegalReason;
+      switch (isIllegalReason)
+      {
+        case GoMoveIsIllegalReasonSuicide:
+        case GoMoveIsIllegalReasonSimpleKo:
+        case GoMoveIsIllegalReasonSuperko:
+        case GoMoveIsIllegalReasonUnknown:
+        {
+          NSString* isIllegalReason = [NSString stringWithMoveIsIllegalReason:self.playView.crossHairPointIsIllegalReason];
+          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
+          statusText = [statusText stringByAppendingString:isIllegalReason];
+          break;
+        }
+        default:
+        {
+          // No special message if intersection is occupied, that's too basic
+          break;
+        }
+      }
+    }
   }
   else
   {

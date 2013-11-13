@@ -32,4 +32,5 @@
 + (NSString*) stringWithFractionValue:(double)value;
 - (NSString*) stringByAppendingDeviceSuffix;
 + (NSString*) stringWithKoRule:(enum GoKoRule)koRule;
++ (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason;
 @end

@@ -199,7 +199,8 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (! [self isLegalMove:aPoint])
+  enum GoMoveIsIllegalReason illegalReason;
+  if (! [self isLegalMove:aPoint isIllegalReason:&illegalReason])
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal move: %@", aPoint.vertex];
     DDLogError(@"%@: %@", self, errorMessage);
@@ -377,9 +378,13 @@
 /// @a point would be legal for the current player in the current board
 /// position. This includes checking for suicide moves and Ko situations.
 ///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
 /// Raises @e NSInvalidArgumentException if @a aPoint is nil.
 // -----------------------------------------------------------------------------
-- (bool) isLegalMove:(GoPoint*)point
+- (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason
 {
   if (! point)
   {
@@ -400,13 +405,18 @@
   // -> it's better to implement this in our own terms
   if ([point hasStone])
   {
+    *reason = GoMoveIsIllegalReasonIntersectionOccupied;
     return false;
   }
   // Point is an empty intersection, possibly with other empty intersections as
   // neighbours
   else if ([point liberties] > 0)
   {
-    return ![self isKoMove:point checkSuperkoOnly:true];
+    bool isSuperko;
+    bool isKoMove = [self isKoMove:point checkSuperkoOnly:true isSuperko:&isSuperko];
+    if (isKoMove)
+      *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
+    return !isKoMove;
   }
   // Point is an empty intersection that is surrounded by stones
   else
@@ -426,7 +436,11 @@
       // possible here).
       if ([neighbourRegion liberties] > 1)
       {
-        return ![self isKoMove:point checkSuperkoOnly:true];
+        bool isSuperko;
+        bool isKoMove = [self isKoMove:point checkSuperkoOnly:true isSuperko:&isSuperko];
+        if (isKoMove)
+          *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
+        return !isKoMove;
       }
     }
 
@@ -440,13 +454,18 @@
       {
         // A simple Ko situation is possible only if we are NOT connecting
         bool isSimpleKoStillPossible = (0 == neighbourRegionsFriendly.count);
-        return ![self isKoMove:point checkSuperkoOnly:!isSimpleKoStillPossible];
+        bool isSuperko;
+        bool isKoMove = [self isKoMove:point checkSuperkoOnly:!isSimpleKoStillPossible isSuperko:&isSuperko];
+        if (isKoMove)
+          *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
+        return !isKoMove;
       }
     }
 
     // If we arrive here, no opposing stones can be captured and there are no
     // friendly groups with sufficient liberties to connect to
     // -> the move is a suicide and therefore illegal
+    *reason = GoMoveIsIllegalReasonSuicide;
     return false;
   }
 }
@@ -454,35 +473,52 @@
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (bool) isKoMove:(GoPoint*)point checkSuperkoOnly:(bool)checkSuperkoOnly
+- (bool) isKoMove:(GoPoint*)point checkSuperkoOnly:(bool)checkSuperkoOnly isSuperko:(bool*)isSuperko
 {
   enum GoKoRule koRule = self.rules.koRule;
   if (checkSuperkoOnly && GoKoRuleSimple == koRule)
     return false;
-
+  // The algorithm below for finding ko can kick in only if we have at least
+  // two moves. The earliest possible Ko needs even more moves, but optimizing
+  // the algorithm is not worth the trouble.
   GoMove* lastMove = self.lastMove;
+  if (! lastMove)
+    return false;
+  GoMove* previousMoveOfSamePlayer = lastMove.previous;
+  if (! previousMoveOfSamePlayer)
+    return false;
+
+  // Even if we use one of the superko rules, we still want to check for simple
+  // ko first so that we can distinguish between simple ko and superko.
   long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point];
+  bool isSimpleKo = (zobristHashOfHypotheticalMove == previousMoveOfSamePlayer.zobristHash);
+  if (isSimpleKo)
+  {
+    *isSuperko = false;
+    return true;
+  }
+
   switch (koRule)
   {
     case GoKoRuleSimple:
     {
-      GoMove* previousMoveOfSamePlayer;
-      if (lastMove)
-        previousMoveOfSamePlayer = lastMove.previous;
-      if (! previousMoveOfSamePlayer)
-        return false;
-      return (zobristHashOfHypotheticalMove == previousMoveOfSamePlayer.zobristHash);
+      // Simple Ko has already been checked above, so there's nothing else we
+      // need to do here
+      return false;
     }
     case GoKoRuleSuperkoPositional:
     case GoKoRuleSuperkoSituational:
     {
       GoPlayer* currentPlayer = self.currentPlayer;
-      for (GoMove* move = lastMove; move != nil; move = move.previous)
+      for (GoMove* move = previousMoveOfSamePlayer.previous; move != nil; move = move.previous)
       {
         if (GoKoRuleSuperkoSituational == koRule && move.player != currentPlayer)
             continue;
         if (zobristHashOfHypotheticalMove == move.zobristHash)
+        {
+          *isSuperko = true;
           return true;
+        }
       }
       return false;
     }

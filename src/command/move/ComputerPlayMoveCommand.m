@@ -164,16 +164,15 @@
     GoPoint* point = [self.game.board pointAtVertex:responseString];
     if (point)
     {
-      // TODO: Remove this check, and handleComputerPlayedIllegalMove1/2
-      // methods, as soon as issue 90 on GitHub has been fixed.
-      if ([self.game isLegalMove:point])
+      enum GoMoveIsIllegalReason illegalReason;
+      if ([self.game isLegalMove:point isIllegalReason:&illegalReason])
       {
         [self.game play:point];
       }
       else
       {
         self.illegalMove = point;
-        [self handleComputerPlayedIllegalMove1];
+        [self handleComputerPlayedIllegalMove1:illegalReason];
         return false;
       }
     }
@@ -197,7 +196,7 @@
 /// This method has been added to gather information in order to fix issue 90
 /// on GitHub. This method can be removed as soon the issue has been fixed.
 // -----------------------------------------------------------------------------
-- (void) handleComputerPlayedIllegalMove1
+- (void) handleComputerPlayedIllegalMove1:(enum GoMoveIsIllegalReason)illegalReason
 {
   NSString* message = @"The computer played an illegal move. This is almost certainly a bug in Little Go. ";
   enum AlertViewType alertViewType;

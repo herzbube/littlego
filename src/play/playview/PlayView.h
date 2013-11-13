@@ -99,7 +99,7 @@
 
 - (void) delayedUpdate;
 - (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
-- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove;
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 
 /// @name Cross-hair point properties
@@ -115,6 +115,11 @@
 ///
 /// This property cannot be monitored via KVO.
 @property(nonatomic, assign) bool crossHairPointIsLegalMove;
+/// @brief If crossHairPointIsLegalMove is false, this contains the reason why
+/// the move is illegal.
+///
+/// This property cannot be monitored via KVO.
+@property(nonatomic, assign) enum GoMoveIsIllegalReason crossHairPointIsIllegalReason;
 //@}
 /// @brief Scroll view that contains coordinateLabelsLetterView.
 @property(nonatomic, retain, readonly) UIScrollView* coordinateLabelsLetterViewScrollView;

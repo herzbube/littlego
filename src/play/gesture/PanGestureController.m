@@ -145,6 +145,7 @@
   PlayViewIntersection crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
 
   bool isLegalMove = false;
+  enum GoMoveIsIllegalReason illegalReason;
   if (! PlayViewIntersectionIsNullIntersection(crossHairIntersection))
   {
     CGRect visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];
@@ -152,7 +153,7 @@
     // be offset due to the user preference "stoneDistanceFromFingertip"
     bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
     if (isCrossHairInVisibleRect)
-      isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairIntersection.point];
+      isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairIntersection.point isIllegalReason:&illegalReason];
     else
       crossHairIntersection = PlayViewIntersectionNull;
   }
@@ -162,17 +163,17 @@
   {
     case UIGestureRecognizerStateBegan:
     {
-      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove];
+      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateChanged:
     {
-      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove];
+      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateEnded:
     {
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
+      [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       if (isLegalMove)
       {
         DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
@@ -184,7 +185,7 @@
     {
       // Occurs, for instance, if an alert is displayed while a gesture is
       // being handled, or if the gesture recognizer was disabled.
-      [self.playView moveCrossHairTo:nil isLegalMove:true];
+      [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       break;
     }
     default:

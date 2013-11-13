@@ -36,6 +36,7 @@
 #import "../../newgame/NewGameModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../utility/NSStringAdditions.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -595,10 +596,12 @@ static const int maxStepsForReplayMoves = 10;
         GoPoint* point = [board pointAtVertex:vertexString];
         
         // Sanitary check 2: Is the move legal?
-        if (! [game isLegalMove:point])
+        enum GoMoveIsIllegalReason illegalReason;
+        if (! [game isLegalMove:point isIllegalReason:&illegalReason])
         {
-          NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@.";
-          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, [vertexString uppercaseString]];
+          NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
+          NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
+          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, [vertexString uppercaseString], illegalReasonString];
           [self handleCommandFailed:errorMessage];
           return;
         }

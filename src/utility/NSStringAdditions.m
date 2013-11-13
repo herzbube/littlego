@@ -201,4 +201,24 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a reason.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason
+{
+  switch (reason)
+  {
+    case GoMoveIsIllegalReasonIntersectionOccupied:
+      return @"Intersection is occupied";
+    case GoMoveIsIllegalReasonSuicide:
+      return @"Suicide";
+    case GoMoveIsIllegalReasonSimpleKo:
+      return @"Ko";
+    case GoMoveIsIllegalReasonSuperko:
+      return @"Superko";
+    default:
+      return @"Unknown";
+  }
+}
+
 @end

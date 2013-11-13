@@ -67,7 +67,7 @@
 - (void) resign;
 - (void) pause;
 - (void) continue;
-- (bool) isLegalMove:(GoPoint*)point;
+- (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isComputerPlayersTurn;
 - (void) revertStateFromEndedToInProgress;
 
