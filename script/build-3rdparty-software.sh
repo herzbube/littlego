@@ -33,4 +33,5 @@ for SOFTWARE_PACKAGE in $SOFTWARE_PACKAGES; do
     echo "Build failed for software package "$SOFTWARE_PACKAGE""
     exit 1
   fi
+  echo ""
 done
