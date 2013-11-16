@@ -2492,7 +2492,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Debug;
 		};
@@ -2523,7 +2523,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Release;
 		};
@@ -2575,7 +2575,7 @@
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AppStore;
 		};
@@ -2762,7 +2762,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AdHoc;
 		};
