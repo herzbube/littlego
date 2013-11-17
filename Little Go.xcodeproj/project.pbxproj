@@ -1922,7 +1922,6 @@
 				CDA595AA1401383E00B250D8 /* Resources */,
 				CDA595AB1401383E00B250D8 /* Sources */,
 				CDA595AC1401383E00B250D8 /* Frameworks */,
-				CDA595AD1401383E00B250D8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2094,19 +2093,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/opt/local/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
-		};
-		CDA595AD1401383E00B250D8 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
