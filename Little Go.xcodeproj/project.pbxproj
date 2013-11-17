@@ -227,8 +227,6 @@
 		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
 		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
-		CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
-		CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
@@ -990,8 +988,6 @@
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 				CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */,
-				CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */,
-				CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */,
 				CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2601,6 +2597,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2636,6 +2636,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2668,6 +2672,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2701,6 +2709,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
