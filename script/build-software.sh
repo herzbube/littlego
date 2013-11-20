@@ -373,6 +373,8 @@ fi
 # | Main program processing
 # +------------------------------------------------------------------------
 
+echo "Building $SOFTWARE_NAME ..."
+
 # Define build environment
 if test ! -f "$BUILDENV_SCRIPT"; then
   echo "Unable to define build environment (missing script $BUILDENV_SCRIPT)"

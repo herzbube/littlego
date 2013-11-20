@@ -22,7 +22,7 @@ The next step is to build the various 3rdparty software. The following
 convenience script should do this for you:
 
   cd /path/to/littlego
-  ./script/get-and-build-3rdparty-software.sh
+  ./script/build-3rdparty-software.sh
 
 A short overview of what the script does:
 - Invoke build-software.sh for each 3rdparty software package, in the correct

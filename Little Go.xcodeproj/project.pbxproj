@@ -227,8 +227,6 @@
 		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
 		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
-		CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
-		CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
@@ -900,7 +898,7 @@
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
 		CDEC288412F477E70069F5B7 /* Roadmap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Roadmap; sourceTree = "<group>"; };
-		CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "get-and-build-3rdparty-software.sh"; sourceTree = "<group>"; };
+		CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-3rdparty-software.sh"; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
 		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
@@ -990,8 +988,6 @@
 				CDF8B79414DDD7B300940D3E /* QuartzCore.framework in Frameworks */,
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 				CD899E3A1643459500329154 /* SystemConfiguration.framework in Frameworks */,
-				CD6E847317FF9A1F00643576 /* boost.framework in Frameworks */,
-				CD6E847417FF9A2B00643576 /* fuego-on-ios.framework in Frameworks */,
 				CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1804,7 +1800,7 @@
 				CD02860B1640986B00CF23A1 /* build-quincykit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDFA329015990C8400439B4E /* build-zipkit.sh */,
-				CDEC28B212F55F270069F5B7 /* get-and-build-3rdparty-software.sh */,
+				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDD961001662A8E300B54E09 /* render-readme.rb */,
 			);
@@ -1922,7 +1918,6 @@
 				CDA595AA1401383E00B250D8 /* Resources */,
 				CDA595AB1401383E00B250D8 /* Sources */,
 				CDA595AC1401383E00B250D8 /* Frameworks */,
-				CDA595AD1401383E00B250D8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2094,19 +2089,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/opt/local/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
-		};
-		CDA595AD1401383E00B250D8 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2492,7 +2474,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Debug;
 		};
@@ -2523,7 +2505,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Release;
 		};
@@ -2575,7 +2557,7 @@
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AppStore;
 		};
@@ -2615,6 +2597,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2650,6 +2636,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2682,6 +2672,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2715,6 +2709,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UNITTESTS,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					./src,
@@ -2762,7 +2760,7 @@
 					"-ltouchzipkit",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AdHoc;
 		};

@@ -19,7 +19,12 @@
 #include "GtpEngine.h"
 
 // Fuego
+#ifndef LITTLEGO_UNITTESTS
 #include <fuego-on-ios/FuegoMainUtil.h>
+#endif
+
+// System includes
+#include <exception>
 
 
 @implementation GtpEngine
@@ -112,9 +117,11 @@
 
   try
   {
+#ifndef LITTLEGO_UNITTESTS
     // No need to create an autorelease pool, no Objective-C stuff is happening
     // in here...
     FuegoMainUtil::FuegoMain(argc, argv);
+#endif
   }
   catch(std::exception& e)
   {
