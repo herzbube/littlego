@@ -7,7 +7,7 @@ Xcode version
 -------------
 The current build should work out of the box for
 
-  Xcode 4.6
+  Xcode 5.0.2
   iOS base SDK 6.1
 
 If you want to build with a different setup you will probably encounter errors.
@@ -29,6 +29,21 @@ list of configurations that have worked in the past:
   development of 0.10.0; the configuration can be found in commit
   2038191682762f8bd815b5ec8580b2d75fcea7f4
 - Xcode 4.6, iOS base SDK 6.1, available since 0.10.0
+- Xcode 5.0.2, iOS base SDK 6.1, available since 1.0.0
+
+
+Setting up Xcode 5.0.2 with iOS base SDK 6.1
+--------------------------------------------
+1. Log in as a user with administrator privileges
+2. Install both Xcode 5.0.2 and 4.6.3. You will work with Xcode 5.0.2, you need
+   Xcode 4.6.3 solely as a source for the iOS 6.1 SDK.
+3. Launch Terminal.app and execute these commands (adjust paths if your Xcode
+   app bundles are named differently):
+     sudo xcode-select -s /Applications/Xcode-5.0.2.app
+     cd /Applications/Xcode-5.0.2.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs
+     sudo cp -Rp /Applications/Xcode-4.6.3.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk .
+4. Launch Xcode 5.0.2 and install the iOS 6.1 simulator
+   (Preferences > Downloads).
 
 
 Xcode build system configuration
@@ -77,21 +92,20 @@ Xcode project itself. [1] has the answer how to achieve this. The following is
 a short overview of how I configured those schemes:
 - Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
-- Rename the "Little Go" scheme to "Little Go Debug", and disable the "Archive"
-  command. Also make sure that all actions except "Profile" use the "Debug"
-  build configuration
+- Rename the "Little Go" scheme to "Little Go Debug", add the unit test target
+  to the scheme, and disable the "Archive" command. Also make sure that all
+  actions except "Profile" use the "Debug" build configuration.
 - Duplicate "Little Go Debug", naming the new scheme "Little Go Release". Leave
   the "Archive" action disabled. Change all actions to use the "Release" build
-  configuration
+  configuration.
 - Duplicate "Little Go Debug", naming the new scheme "Little Go AdHoc
   Distribution". Enable the "Archive" command. Change all actions to use the
   "Distribute_AdHoc" build configuration.
 - Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
-  actions use the "Distribute_AppStore" build configuration
-- In all schemes, make sure that the checkbox "Run" is checked not only for the
-  main target, but for the unit test target as well. This ensures that unit
-  tests are built & run every time the main target is built. Note that the same
-  result can also be achieved by a target dependency.
+  actions use the "Distribute_AppStore" build configuration.
+- In all schemes, make sure that the checkbox "Test" is checked only for the
+  unit test target (but not for the main target). This allows to run the test
+  action (Command + U) for the main target.
 
 [1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
 
@@ -113,11 +127,9 @@ the development machine:
 - Delete (or backup) the 3rdparty folder
 - Edit script/build-env.sh: Update the "Base SDK" variables to refer to the new
   SDK version that was just installed
-- In Terminal.app, run script/get-and-build-3rdparty-software.sh to perform a
-  full rebuild of all 3rdparty software packages
+- In Terminal.app, run script/build-3rdparty-software.sh to perform a full
+  rebuild of all 3rdparty software packages
 - If you haven't restarted Xcode, it might be a good idea to do so now
-- In the Xcode project, update the reference to book.dat in the "resource"
-  folder
 - In the Xcode project, rebuild the "Little Go" target
 
 
