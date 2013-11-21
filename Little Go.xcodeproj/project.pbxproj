@@ -348,6 +348,7 @@
 		CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
 		CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */; };
 		CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */; };
+		CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -410,6 +411,7 @@
 		CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
 		CDE6A52B16AB03FE00932B05 /* delete-to-left.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE6A52916AB03FE00932B05 /* delete-to-left.png */; };
 		CDE6A52D16AB5D2A00932B05 /* delete-to-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE6A52A16AB03FE00932B05 /* delete-to-left@2x.png */; };
+		CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -801,6 +803,8 @@
 		CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameRulesTest.m; sourceTree = "<group>"; };
 		CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTableTest.h; sourceTree = "<group>"; };
 		CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoZobristTableTest.m; sourceTree = "<group>"; };
+		CDCBA6CE183D8801003697E2 /* TouchSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchSettingsController.h; sourceTree = "<group>"; };
+		CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchSettingsController.m; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
@@ -893,6 +897,8 @@
 		CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeAndDiscardCommand.m; sourceTree = "<group>"; };
 		CDE6A52916AB03FE00932B05 /* delete-to-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete-to-left.png"; sourceTree = "<group>"; };
 		CDE6A52A16AB03FE00932B05 /* delete-to-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "delete-to-left@2x.png"; sourceTree = "<group>"; };
+		CDE6C547183D820300186E89 /* SoundSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSettingsController.h; sourceTree = "<group>"; };
+		CDE6C548183D820300186E89 /* SoundSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundSettingsController.m; sourceTree = "<group>"; };
 		CDEC287C12F477E70069F5B7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		CDEC288112F477E70069F5B7 /* README.developer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.developer; sourceTree = "<group>"; };
 		CDEC288212F477E70069F5B7 /* ReleaseSteps */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReleaseSteps; sourceTree = "<group>"; };
@@ -1305,6 +1311,10 @@
 				CDDD526114840A540027476B /* ScoringSettingsController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
 				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
+				CDE6C547183D820300186E89 /* SoundSettingsController.h */,
+				CDE6C548183D820300186E89 /* SoundSettingsController.m */,
+				CDCBA6CE183D8801003697E2 /* TouchSettingsController.h */,
+				CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */,
 			);
 			path = settings;
 			sourceTree = "<group>";
@@ -2130,6 +2140,7 @@
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
+				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
@@ -2144,6 +2155,7 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
+				CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,

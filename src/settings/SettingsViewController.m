@@ -21,6 +21,8 @@
 #import "PlayerProfileSettingsController.h"
 #import "PlayViewSettingsController.h"
 #import "ScoringSettingsController.h"
+#import "SoundSettingsController.h"
+#import "TouchSettingsController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -30,20 +32,40 @@
 // -----------------------------------------------------------------------------
 enum SettingsTableViewSection
 {
-  SettingsSection,
+  ViewSettingsSection,
+  TouchAndSoundSettingsSection,
+  PlayersProfilesSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the SettingsSection.
+/// @brief Enumerates items in the ViewSettingsSection.
 // -----------------------------------------------------------------------------
-enum SettingsSectionItem
+enum ViewSettingsSectionItem
 {
   PlayViewSettingsItem,
   BoardPositionSettingsItem,
   ScoringSettingsItem,
+  MaxViewSettingsSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the TouchAndSoundSettingsSection.
+// -----------------------------------------------------------------------------
+enum TouchAndSoundSettingsSectionItem
+{
+  TouchInteractionItem,
+  SoundVibrationItem,
+  MaxTouchAndSoundSettingsSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PlayersProfilesSection.
+// -----------------------------------------------------------------------------
+enum PlayersProfilesSectionItem
+{
   PlayersProfilesSettingsItem,
-  MaxSettingsSectionItem
+  MaxPlayersProfilesSectionItem
 };
 
 
@@ -96,8 +118,12 @@ enum SettingsSectionItem
 {
   switch (section)
   {
-    case SettingsSection:
-      return MaxSettingsSectionItem;
+    case ViewSettingsSection:
+      return MaxViewSettingsSectionItem;
+    case TouchAndSoundSettingsSection:
+      return MaxTouchAndSoundSettingsSectionItem;
+    case PlayersProfilesSection:
+      return MaxPlayersProfilesSectionItem;
     default:
       assert(0);
       break;
@@ -114,13 +140,13 @@ enum SettingsSectionItem
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   switch (indexPath.section)
   {
-    case SettingsSection:
+    case ViewSettingsSection:
     {
       switch (indexPath.row)
       {
         case PlayViewSettingsItem:
         {
-          cell.textLabel.text = @"Play view";
+          cell.textLabel.text = @"Display";
           break;
         }
         case BoardPositionSettingsItem:
@@ -133,17 +159,29 @@ enum SettingsSectionItem
           cell.textLabel.text = @"Scoring";
           break;
         }
-        case PlayersProfilesSettingsItem:
+      }
+      break;
+    }
+    case TouchAndSoundSettingsSection:
+    {
+      switch (indexPath.row)
+      {
+        case TouchInteractionItem:
         {
-          cell.textLabel.text = @"Players & Profiles";
+          cell.textLabel.text = @"Touch interaction";
           break;
         }
-        default:
+        case SoundVibrationItem:
         {
-          assert(0);
+          cell.textLabel.text = @"Sound & Vibration";
           break;
         }
       }
+      break;
+    }
+    case PlayersProfilesSection:
+    {
+      cell.textLabel.text = @"Players & Profiles";
       break;
     }
     default:
@@ -165,7 +203,7 @@ enum SettingsSectionItem
   UIViewController* controller = nil;
   switch (indexPath.section)
   {
-    case SettingsSection:
+    case ViewSettingsSection:
     {
       switch (indexPath.row)
       {
@@ -184,16 +222,29 @@ enum SettingsSectionItem
           controller = [ScoringSettingsController controller];
           break;
         }
-        case PlayersProfilesSettingsItem:
+      }
+      break;
+    }
+    case TouchAndSoundSettingsSection:
+    {
+      switch (indexPath.row)
+      {
+        case TouchInteractionItem:
         {
-          controller = [PlayerProfileSettingsController controller];
+          controller = [TouchSettingsController controller];
           break;
         }
-        default:
+        case SoundVibrationItem:
         {
+          controller = [SoundSettingsController controller];
           break;
         }
       }
+      break;
+    }
+    case PlayersProfilesSection:
+    {
+      controller = [PlayerProfileSettingsController controller];
       break;
     }
     default:

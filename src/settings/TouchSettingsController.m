@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 
 // Project includes
-#import "PlayViewSettingsController.h"
-#import "../command/playerinfluence/ToggleTerritoryStatisticsCommand.h"
+#import "TouchSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
@@ -25,77 +24,64 @@
 #import "../ui/UiUtilities.h"
 
 // Constants
-static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
-NSString* displayPlayerInfluenceText = @"Display player influence";
+static const float sliderValueFactorForMaximumZoomScale = 10.0;
+static const float sliderValueFactorForStoneDistanceFromFingertip = 100.0;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Play View" user preferences
-/// table view.
+/// @brief Enumerates the sections presented in the "Touch interaction" user
+/// preferences table view.
 // -----------------------------------------------------------------------------
-enum PlayViewTableViewSection
+enum TouchInteractionTableViewSection
 {
-  ViewSection,
-  DisplayMoveNumbersSection,
-  DisplayPlayerInfluenceSection,
+  StoneDistanceFromFingertipSection,
+  ZoomSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ViewSection.
+/// @brief Enumerates items in the StoneDistanceFromFingertipSection.
 // -----------------------------------------------------------------------------
-enum ViewSectionItem
+enum StoneDistanceFromFingertipSectionItem
 {
-  MarkLastMoveItem,
-  DisplayCoordinatesItem,
-  MaxViewSectionItem
+  StoneDistanceFromFingertipItem,
+  MaxStoneDistanceFromFingertipSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the DisplayMoveNumbersSection.
+/// @brief Enumerates items in the ZoomSection.
 // -----------------------------------------------------------------------------
-enum DisplayMoveNumbersSectionItem
+enum ZoomSectionItem
 {
-  MoveNumbersPercentageItem,
-  MaxDisplayMoveNumbersSectionItem
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the DisplayPlayerInfluenceSection.
-// -----------------------------------------------------------------------------
-enum DisplayPlayerInfluenceSectionItem
-{
-  DisplayPlayerInfluenceItem,
-  MaxDisplayPlayerInfluenceSectionItem
+  MaxZoomScaleItem,
+  MaxZoomSectionItem
 };
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for
-/// PlayViewSettingsController.
+/// @brief Class extension with private properties for TouchSettingsController.
 // -----------------------------------------------------------------------------
-@interface PlayViewSettingsController()
+@interface TouchSettingsController()
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @end
 
 
-@implementation PlayViewSettingsController
+@implementation TouchSettingsController
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a PlayViewSettingsController
-/// instance of grouped style.
+/// @brief Convenience constructor. Creates a TouchSettingsController instance
+/// of grouped style.
 // -----------------------------------------------------------------------------
-+ (PlayViewSettingsController*) controller
++ (TouchSettingsController*) controller
 {
-  PlayViewSettingsController* controller = [[PlayViewSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
+  TouchSettingsController* controller = [[TouchSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
     [controller autorelease];
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayViewSettingsController
-/// object.
+/// @brief Deallocates memory allocated by this TouchSettingsController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -112,7 +98,7 @@ enum DisplayPlayerInfluenceSectionItem
   [super viewDidLoad];
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   self.playViewModel = delegate.playViewModel;
-  self.title = @"Display settings";
+  self.title = @"Touch interaction";
 }
 
 // -----------------------------------------------------------------------------
@@ -139,12 +125,10 @@ enum DisplayPlayerInfluenceSectionItem
 {
   switch (section)
   {
-    case ViewSection:
-      return MaxViewSectionItem;
-    case DisplayMoveNumbersSection:
-      return MaxDisplayMoveNumbersSectionItem;
-    case DisplayPlayerInfluenceSection:
-      return MaxDisplayPlayerInfluenceSectionItem;
+    case StoneDistanceFromFingertipSection:
+      return MaxStoneDistanceFromFingertipSectionItem;
+    case ZoomSection:
+      return MaxZoomSectionItem;
     default:
       assert(0);
       break;
@@ -159,12 +143,10 @@ enum DisplayPlayerInfluenceSectionItem
 {
   switch (section)
   {
-    case ViewSection:
-      return @"On the iPhone you may need to zoom in to see coordinate labels.";
-    case DisplayMoveNumbersSection:
-      return @"The lowest setting displays no move numbers, the highest setting displays all move numbers. On the iPhone you may need to zoom in to see move numbers.";
-    case DisplayPlayerInfluenceSection:
-      return @"After turning this on, you will see player influence as soon as the computer player has made its next move, or you have selected 'Update player influence' from the actions menu on the Play tab.";
+    case StoneDistanceFromFingertipSection:
+      return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
+    case ZoomSection:
+      return @"Controls how much you can zoom the board. Because zooming costs memory you may want to set a limit that is below the maximum zoom (3x). A limit of 2x zoom is recommended for devices that do not have much RAM (typically older devices such as the iPhone 3GS or the iPad 1st generation).";
     default:
       break;
   }
@@ -179,61 +161,57 @@ enum DisplayPlayerInfluenceSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case ViewSection:
+    case StoneDistanceFromFingertipSection:
     {
       switch (indexPath.row)
       {
-        case MarkLastMoveItem:
-        {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          cell.textLabel.text = @"Mark last move";
-          accessoryView.on = self.playViewModel.markLastMove;
-          [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
-          break;
-        }
-        case DisplayCoordinatesItem:
-        {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          cell.textLabel.text = @"Display coordinates";
-          accessoryView.on = self.playViewModel.displayCoordinates;
-          [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
-          break;
-        }
-      }
-      break;
-    }
-    case DisplayMoveNumbersSection:
-    {
-      switch (indexPath.row)
-      {
-        case MoveNumbersPercentageItem:
+        case StoneDistanceFromFingertipItem:
         {
           cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           sliderCell.valueLabelHidden = true;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(moveNumbersPercentageDidChange:)];
-          sliderCell.descriptionLabel.text = @"Display move numbers";
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(stoneDistanceFromFingertipDidChange:)];
+          sliderCell.descriptionLabel.text = @"Stone distance from fingertip";
           sliderCell.slider.minimumValue = 0;
           sliderCell.slider.maximumValue = (1.0
-                                            * sliderValueFactorForMoveNumbersPercentage);
-          sliderCell.value = (self.playViewModel.moveNumbersPercentage
-                              * sliderValueFactorForMoveNumbersPercentage);
+                                            * sliderValueFactorForStoneDistanceFromFingertip);
+          sliderCell.value = (self.playViewModel.stoneDistanceFromFingertip
+                              * sliderValueFactorForStoneDistanceFromFingertip);
+          break;
+        }
+        default:
+        {
+          assert(0);
           break;
         }
       }
       break;
     }
-    case DisplayPlayerInfluenceSection:
+    case ZoomSection:
     {
-      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-      cell.textLabel.text = displayPlayerInfluenceText;
-      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-      cell.textLabel.numberOfLines = 0;
-      accessoryView.on = self.playViewModel.displayPlayerInfluence;
-      [accessoryView addTarget:self action:@selector(toggleDisplayPlayerInfluence:) forControlEvents:UIControlEventValueChanged];
+      switch (indexPath.row)
+      {
+        case MaxZoomScaleItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+          sliderCell.valueLabelHidden = true;
+          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxZoomScaleDidChange:)];
+          sliderCell.descriptionLabel.text = @"Maximum zoom";
+          sliderCell.slider.minimumValue = (1.0
+                                            * sliderValueFactorForMaximumZoomScale);
+          sliderCell.slider.maximumValue = (maximumZoomScaleMaximum
+                                            * sliderValueFactorForMaximumZoomScale);
+          sliderCell.value = (self.playViewModel.maximumZoomScale
+                              * sliderValueFactorForMaximumZoomScale);
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
       break;
     }
     default:
@@ -254,11 +232,11 @@ enum DisplayPlayerInfluenceSectionItem
   CGFloat height = tableView.rowHeight;
   switch (indexPath.section)
   {
-    case DisplayMoveNumbersSection:
+    case StoneDistanceFromFingertipSection:
     {
       switch (indexPath.row)
       {
-        case MoveNumbersPercentageItem:
+        case StoneDistanceFromFingertipItem:
           height = [TableViewSliderCell rowHeightInTableView:tableView];
           break;
         default:
@@ -266,13 +244,16 @@ enum DisplayPlayerInfluenceSectionItem
       }
       break;
     }
-    case DisplayPlayerInfluenceSection:
+    case ZoomSection:
     {
-      NSString* cellText = displayPlayerInfluenceText;
-      height = [UiUtilities tableView:tableView
-                  heightForCellOfType:SwitchCellType
-                             withText:cellText
-               hasDisclosureIndicator:false];
+      switch (indexPath.row)
+      {
+        case MaxZoomScaleItem:
+          height = [TableViewSliderCell rowHeightInTableView:tableView];
+          break;
+        default:
+          break;
+      }
       break;
     }
     default:
@@ -292,42 +273,22 @@ enum DisplayPlayerInfluenceSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Mark last move" switch. Writes the
-/// new value to the appropriate model.
+/// @brief Reacts to the user changing the "stone distance from fingertip"
+/// setting.
 // -----------------------------------------------------------------------------
-- (void) toggleMarkLastMove:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.markLastMove = accessoryView.on;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Display coordinates" switch. Writes
-/// the new value to the appropriate model.
-// -----------------------------------------------------------------------------
-- (void) toggleDisplayCoordinates:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.displayCoordinates = accessoryView.on;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing the "display move numbers" setting.
-// -----------------------------------------------------------------------------
-- (void) moveNumbersPercentageDidChange:(id)sender
+- (void) stoneDistanceFromFingertipDidChange:(id)sender
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.playViewModel.moveNumbersPercentage = (1.0 * sliderCell.value / sliderValueFactorForMoveNumbersPercentage);
+  self.playViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Display player influence" switch.
+/// @brief Reacts to the user changing the "maximum zoom scale" setting.
 // -----------------------------------------------------------------------------
-- (void) toggleDisplayPlayerInfluence:(id)sender
+- (void) maxZoomScaleDidChange:(id)sender
 {
-  UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.displayPlayerInfluence = accessoryView.on;
-  [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
+  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
+  self.playViewModel.maximumZoomScale = (1.0 * sliderCell.value / sliderValueFactorForMaximumZoomScale);
 }
 
 @end
