@@ -425,9 +425,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up a number of folders in the application bundle. Depending on
-/// the folder's purpose, it is either created if it does not exist, or deleted
-/// if it does exist.
+/// @brief Sets up a number of folders in the application bundle.
 // -----------------------------------------------------------------------------
 - (void) setupFolders
 {
@@ -435,14 +433,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   [PathUtilities createFolder:archiveFolderPath removeIfExists:false];
   NSString* backupFolderPath = [PathUtilities backupFolderPath];
   [PathUtilities createFolder:backupFolderPath removeIfExists:false];
-  // Must not remove the Inbox folder if the application is launched because of
-  // document interaction. Removal in this case is delayed to the next app
-  // launch without document interaction.
-  if (! self.documentInteractionURL)
-  {
-    NSString* inboxFolderPath = [PathUtilities inboxFolderPath];
-    [PathUtilities deleteItemIfExists:inboxFolderPath];
-  }
 }
 
 // -----------------------------------------------------------------------------

@@ -67,10 +67,11 @@
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (! [fileManager fileExistsAtPath:path])
     return;
-  BOOL success = [fileManager removeItemAtPath:path error:nil];
+  NSError* error;
+  BOOL success = [fileManager removeItemAtPath:path error:&error];
   if (! success)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Unable to remove file or folder %@", path];
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to remove file or folder %@, reason: %@", path, [error localizedDescription]];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
@@ -217,6 +218,11 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns the full path to the Inbox folder, i.e. the folder used by
 /// the document interaction system to pass files into the app.
+///
+/// Starting with iOS 7, the system apparently protects the Inbox folder from
+/// tampering (possibly in the same way as it protects the general app bundle
+/// structure from being modified). For instance, it is not possible the Inbox
+/// folder once it has been created.
 // -----------------------------------------------------------------------------
 + (NSString*) inboxFolderPath
 {
