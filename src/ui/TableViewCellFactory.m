@@ -21,6 +21,7 @@
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
 #import "TableViewTextCell.h"
+#import "TableViewVariableHeightCell.h"
 #import "UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
@@ -78,6 +79,9 @@
     case SegmentedCellType:
       cellID = @"SegmentedCellType";
       break;
+    case VariableHeightCellType:
+      cellID = @"VariableHeightCellType";
+      break;
     default:
       DDLogError(@"%@: Unexpected cell type %d", self, type);
       assert(0);
@@ -127,6 +131,11 @@
     case SegmentedCellType:
     {
       cell = [TableViewSegmentedCell cellWithReuseIdentifier:identifier];
+      break;
+    }
+    case VariableHeightCellType:
+    {
+      cell = [TableViewVariableHeightCell cellWithReuseIdentifier:identifier];
       break;
     }
     default:

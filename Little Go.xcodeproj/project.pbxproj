@@ -349,6 +349,8 @@
 		CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */; };
 		CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */; };
 		CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
+		CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
+		CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -805,6 +807,8 @@
 		CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoZobristTableTest.m; sourceTree = "<group>"; };
 		CDCBA6CE183D8801003697E2 /* TouchSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchSettingsController.h; sourceTree = "<group>"; };
 		CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchSettingsController.m; sourceTree = "<group>"; };
+		CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewVariableHeightCell.h; sourceTree = "<group>"; };
+		CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewVariableHeightCell.m; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
@@ -1840,6 +1844,8 @@
 				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
 				CD899E561645FFE300329154 /* TableViewTextCell.h */,
 				CD899E571645FFE400329154 /* TableViewTextCell.m */,
+				CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */,
+				CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */,
 				CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */,
 				CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */,
 				CD6C7DBA17512152009FBEC4 /* UiSettingsModel.h */,
@@ -2163,6 +2169,7 @@
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
+				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
@@ -2380,6 +2387,7 @@
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 				CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
+				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
