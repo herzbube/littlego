@@ -20,10 +20,12 @@
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/ScoringModel.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiUtilities.h"
 
 // Constants
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
+NSString* inconsistentTerritoryMarkupTypeText = @"Inconsistent territory markup type";
 
 
 // -----------------------------------------------------------------------------
@@ -199,9 +201,10 @@ enum ScoringSectionItem
         }
         case InconsistentTerritoryMarkupTypeItem:
         {
-          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-          cell.textLabel.text = @"Inconsistent territory";
+          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+          cell.textLabel.text = inconsistentTerritoryMarkupTypeText;
           cell.detailTextLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
         default:
@@ -227,19 +230,27 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  NSString* cellText;
   switch (indexPath.row)
   {
     case MarkDeadStonesIntelligentlyItem:
-      cellText = markDeadStonesIntelligentlyText;
-      break;
+    {
+      return [UiUtilities tableView:tableView
+                heightForCellOfType:SwitchCellType
+                           withText:markDeadStonesIntelligentlyText
+             hasDisclosureIndicator:false];
+    }
+    case InconsistentTerritoryMarkupTypeItem:
+    {
+      NSString* detailText = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
+      return [TableViewVariableHeightCell heightForRowWithText:inconsistentTerritoryMarkupTypeText
+                                                    detailText:detailText
+                                        hasDisclosureIndicator:true];
+    }
     default:
+    {
       return tableView.rowHeight;
+    }
   }
-  return [UiUtilities tableView:tableView
-            heightForCellOfType:SwitchCellType
-                       withText:cellText
-         hasDisclosureIndicator:false];
 }
 
 // -----------------------------------------------------------------------------
