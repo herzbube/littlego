@@ -35,7 +35,9 @@ NSString* inconsistentTerritoryMarkupTypeText = @"Inconsistent territory markup 
 enum ScoringTableViewSection
 {
   ScoreWhenGameEndsSection,
-  ScoringSection,
+  AskGtpEngineForDeadStonesItemSection,
+  MarkDeadStonesIntelligentlySection,
+  InconsistentTerritoryMarkupTypeSection,
   MaxSection
 };
 
@@ -49,14 +51,30 @@ enum ScoreWhenGameEndsSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ScoringSection.
+/// @brief Enumerates items in the AskGtpEngineForDeadStonesItemSection.
 // -----------------------------------------------------------------------------
-enum ScoringSectionItem
+enum AskGtpEngineForDeadStonesItemSectionItem
 {
   AskGtpEngineForDeadStonesItem,
+  MaxAskGtpEngineForDeadStonesItemSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the MarkDeadStonesIntelligentlySection.
+// -----------------------------------------------------------------------------
+enum MarkDeadStonesIntelligentlySectionItem
+{
   MarkDeadStonesIntelligentlyItem,
+  MaxMarkDeadStonesIntelligentlySectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the InconsistentTerritoryMarkupTypeSection.
+// -----------------------------------------------------------------------------
+enum InconsistentTerritoryMarkupTypeSectionItem
+{
   InconsistentTerritoryMarkupTypeItem,
-  MaxScoringSectionItem
+  MaxInconsistentTerritoryMarkupTypeSectionItem
 };
 
 
@@ -133,8 +151,12 @@ enum ScoringSectionItem
   {
     case ScoreWhenGameEndsSection:
       return MaxScoreWhenGameEndsSectionItem;
-    case ScoringSection:
-      return MaxScoringSectionItem;
+    case AskGtpEngineForDeadStonesItemSection:
+      return MaxAskGtpEngineForDeadStonesItemSectionItem;
+    case MarkDeadStonesIntelligentlySection:
+      return MaxMarkDeadStonesIntelligentlySectionItem;
+    case InconsistentTerritoryMarkupTypeSection:
+      return MaxInconsistentTerritoryMarkupTypeSectionItem;
     default:
       assert(0);
       break;
@@ -147,12 +169,19 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  if (ScoreWhenGameEndsSection == section)
-    return @"Turn this on to automatically activate scoring mode when the game ends by two consecutive pass moves.";
-  else if (ScoringSection == section)
-    return @"The style to mark inconsistent territory. This is territory where something about the dead or alive state of neighbouring stones is inconsistent, thus making it impossible to determine whether the territory is black, white or neutral. For instance, the territory has neighbouring stones of both colors, but both colors are marked dead.";
-  else
-    return nil;
+  switch (section)
+  {
+    case ScoreWhenGameEndsSection:
+      return @"Turn this on to automatically activate scoring mode when the game ends by two consecutive pass moves.";
+    case AskGtpEngineForDeadStonesItemSection:
+      return @"When scoring mode is activated the app suggests an initial set of dead stones. The process of finding these dead stones takes a moment, so you may wish to turn this option off.";
+    case MarkDeadStonesIntelligentlySection:
+      return @"If turned on, whenever you toggle the dead/alive status of a stone group, all adjacent stone groups of the same color are automatically toggled to the same dead/alive status. This can greatly speed up the scoring process.";
+    case InconsistentTerritoryMarkupTypeSection:
+      return @"The style to mark inconsistent territory. This is territory where something about the dead or alive state of neighbouring stones is inconsistent, thus making it impossible to determine whether the territory is black, white or neutral. For instance, the territory has neighbouring stones of both colors, but both colors are marked dead.";
+    default:
+      return nil;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -173,46 +202,34 @@ enum ScoringSectionItem
       [accessoryView addTarget:self action:@selector(toggleScoreWhenGameEnds:) forControlEvents:UIControlEventValueChanged];
       break;
     }
-    case ScoringSection:
+    case AskGtpEngineForDeadStonesItemSection:
     {
-      switch (indexPath.row)
-      {
-        case AskGtpEngineForDeadStonesItem:
-        case MarkDeadStonesIntelligentlyItem:
-        {
-          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-          accessoryView.enabled = YES;
-          if (AskGtpEngineForDeadStonesItem == indexPath.row)
-          {
-            cell.textLabel.text = @"Find dead stones";
-            accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
-            [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
-          }
-          else
-          {
-            cell.textLabel.text = markDeadStonesIntelligentlyText;
-            cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-            cell.textLabel.numberOfLines = 0;
-            accessoryView.on = self.scoringModel.markDeadStonesIntelligently;
-            [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
-          }
-          break;
-        }
-        case InconsistentTerritoryMarkupTypeItem:
-        {
-          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
-          cell.textLabel.text = inconsistentTerritoryMarkupTypeText;
-          cell.detailTextLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.enabled = YES;
+      cell.textLabel.text = @"Find dead stones";
+      accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
+      [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case MarkDeadStonesIntelligentlySection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.enabled = YES;
+      cell.textLabel.text = markDeadStonesIntelligentlyText;
+      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+      cell.textLabel.numberOfLines = 0;
+      accessoryView.on = self.scoringModel.markDeadStonesIntelligently;
+      [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case InconsistentTerritoryMarkupTypeSection:
+    {
+      cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+      cell.textLabel.text = inconsistentTerritoryMarkupTypeText;
+      cell.detailTextLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     default:
@@ -230,16 +247,16 @@ enum ScoringSectionItem
 // -----------------------------------------------------------------------------
 - (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  switch (indexPath.row)
+  switch (indexPath.section)
   {
-    case MarkDeadStonesIntelligentlyItem:
+    case MarkDeadStonesIntelligentlySection:
     {
       return [UiUtilities tableView:tableView
                 heightForCellOfType:SwitchCellType
                            withText:markDeadStonesIntelligentlyText
              hasDisclosureIndicator:false];
     }
-    case InconsistentTerritoryMarkupTypeItem:
+    case InconsistentTerritoryMarkupTypeSection:
     {
       NSString* detailText = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
       return [TableViewVariableHeightCell heightForRowWithText:inconsistentTerritoryMarkupTypeText
@@ -262,10 +279,9 @@ enum ScoringSectionItem
 
   switch (indexPath.section)
   {
-    case ScoringSection:
+    case InconsistentTerritoryMarkupTypeSection:
     {
-      if (InconsistentTerritoryMarkupTypeItem == indexPath.row)
-        [self pickInconsistentTerritoryMarkupType];
+      [self pickInconsistentTerritoryMarkupType];
       break;
     }
     default:
@@ -337,7 +353,7 @@ enum ScoringSectionItem
     if (self.scoringModel.inconsistentTerritoryMarkupType != controller.indexOfSelectedItem)
     {
       self.scoringModel.inconsistentTerritoryMarkupType = controller.indexOfSelectedItem;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:InconsistentTerritoryMarkupTypeItem inSection:ScoringSection];
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:InconsistentTerritoryMarkupTypeItem inSection:InconsistentTerritoryMarkupTypeSection];
       [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                             withRowAnimation:UITableViewRowAnimationNone];
     }

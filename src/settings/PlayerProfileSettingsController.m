@@ -205,23 +205,12 @@ enum ResetToDefaultsSectionItem
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated
 {
   // Invoke super implementation, as per API documentation
-  [super setEditing:editing animated:animated];
-
-  NSIndexPath* indexPathAddPlayerRow = [NSIndexPath indexPathForRow:self.playerModel.playerCount
-                                                          inSection:PlayersSection];
-  NSIndexPath* indexPathAddProfileRow = [NSIndexPath indexPathForRow:self.gtpEngineProfileModel.profileCount
-                                                           inSection:GtpEngineProfilesSection];
-  NSArray* indexPaths = [NSArray arrayWithObjects:indexPathAddPlayerRow, indexPathAddProfileRow, nil];
-  if (editing)
-  {
-    [self.tableView insertRowsAtIndexPaths:indexPaths
-                          withRowAnimation:UITableViewRowAnimationBottom];
-  }
-  else
-  {
-    [self.tableView deleteRowsAtIndexPaths:indexPaths
-                          withRowAnimation:UITableViewRowAnimationBottom];
-  }
+  [super setEditing:editing animated:YES];
+  // Update footer titles. I have not found a more graceful way how to do this
+  // than to reload the entire sections.
+  NSRange indexSetRange = NSMakeRange(PlayersSection, 2);
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
+  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
 }
 
 // -----------------------------------------------------------------------------
@@ -240,15 +229,9 @@ enum ResetToDefaultsSectionItem
   switch (section)
   {
     case PlayersSection:
-      if (self.tableView.editing)
-        return MaxPlayersSectionItem + self.playerModel.playerCount;
-      else
-        return self.playerModel.playerCount;
+      return MaxPlayersSectionItem + self.playerModel.playerCount;
     case GtpEngineProfilesSection:
-      if (self.tableView.editing)
-        return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
-      else
-        return self.gtpEngineProfileModel.profileCount;
+      return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
     case ResetToDefaultsSection:
       return MaxResetToDefaultsSectionItem;
     default:
@@ -280,12 +263,27 @@ enum ResetToDefaultsSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  if (PlayersSection == section)
-    return @"Players that are participating in the current game cannot be deleted.";
-  else if (GtpEngineProfilesSection == section)
-    return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength. The default and the active profiles cannot be deleted.";
-  else
-    return nil;
+  switch (section)
+  {
+    case PlayersSection:
+    {
+      if (self.tableView.editing)
+        return @"Players that are participating in the current game cannot be deleted.";
+      break;
+    }
+    case GtpEngineProfilesSection:
+    {
+      if (self.tableView.editing)
+        return @"The default and the active profiles (may be the same) cannot be deleted.";
+      else
+        return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength.";
+    }
+    default:
+    {
+      break;
+    }
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -299,15 +297,22 @@ enum ResetToDefaultsSectionItem
     case PlayersSection:
     {
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       // TODO add icon to player entries to distinguish human from computer
       // players
       if (indexPath.row < self.playerModel.playerCount)
+      {
         cell.textLabel.text = [self.playerModel playerNameAtIndex:indexPath.row];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
       else if (indexPath.row == self.playerModel.playerCount)
-        cell.textLabel.text = @"Add player ...";  // visible only during editing mode
+      {
+        cell.textLabel.text = @"Add new player";
+        cell.accessoryType = UITableViewCellAccessoryNone;
+      }
       else
+      {
         assert(0);
+      }
       break;
     }
     case GtpEngineProfilesSection:
@@ -315,11 +320,19 @@ enum ResetToDefaultsSectionItem
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
+      {
         cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:indexPath.row];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
       else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
-        cell.textLabel.text = @"Add profile ...";  // visible only during editing mode
+      {
+        cell.textLabel.text = @"Add new profile";
+        cell.accessoryType = UITableViewCellAccessoryNone;
+      }
       else
+      {
         assert(0);
+      }
       break;
     }
     case ResetToDefaultsSection:

@@ -282,10 +282,6 @@ enum PlayerListSectionItem
 {
   switch (section)
   {
-    case PlayingStrengthSection:
-      return @"The advanced configuration screen lets you adjust many low-level settings. Documentation for each setting is available under 'Help > Players & Profiles'.";
-    case ResignBehaviourSection:
-      return @"The advanced configuration screen lets you adjust the resign behaviour in complete detail. Documentation is available under 'Help > Players & Profiles'.";
     case PlayerListSection:
       if (0 == self.playersUsingTheProfile.count)
         return @"No player uses this profile.";
