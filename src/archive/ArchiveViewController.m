@@ -250,6 +250,20 @@ enum DeleteAllSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (UITableViewCellEditingStyle) tableView:(UITableView*)tableView editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  switch (indexPath.section)
+  {
+    case DeleteAllSection:
+      return UITableViewCellEditingStyleNone;
+    default:
+      return UITableViewCellEditingStyleDelete;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
