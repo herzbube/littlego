@@ -54,6 +54,87 @@ extern const int defaultTabOrder[];
 /// examining the behaviour of UITabBarController. The value is not documented
 /// anywhere in Apple's documentation.
 extern const int indexOfMoreNavigationController;
+
+/// @brief How should Play view mark up inconcistent territory during scoring?
+enum InconsistentTerritoryMarkupType
+{
+  InconsistentTerritoryMarkupTypeDotSymbol,  ///< @brief Mark up territory using a dot symbol
+  InconsistentTerritoryMarkupTypeFillColor,  ///< @brief Mark up territory by filling it with a color
+  InconsistentTerritoryMarkupTypeNeutral     ///< @brief Don't mark up territory
+};
+
+/// @brief Enumerates all existing tabs in the GUI.
+///
+/// Values in this enumeration must match the "tag" property values of each
+/// TabBarItem in MainWindow.xib.
+enum TabType
+{
+  TabTypePlay,
+  TabTypeSettings,
+  TabTypeArchive,
+  TabTypeDiagnostics,
+  TabTypeManual,
+  TabTypeAbout,
+  TabTypeSourceCode,
+  TabTypeLicenses,
+  TabTypeCredits
+};
+
+/// @brief Enumerates the types of alert views used across the application.
+///
+/// Enumeration values are used as UIView tags so that an alert view delegate
+/// that manages several alert views knows how to distinguish between them.
+enum AlertViewType
+{
+  AlertViewTypeGameHasEnded,
+  AlertViewTypeNewGame,
+  AlertViewTypeSaveGame,
+  AlertViewTypeRenameGame,
+  AlertViewTypeLoadGameFailed,
+  AlertViewTypeSaveGameFailed,
+  AlertViewTypeUndoMoveFailed,
+  AlertViewTypeAddToCannedCommands,
+  AlertViewTypeMemoryWarning,
+  AlertViewTypeCannotSendEmail,
+  AlertViewTypeDiagnosticsInformationFileGenerated,
+  AlertViewTypeDiagnosticsInformationFileNotGenerated,
+  AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled,
+  AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled,
+  AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
+  AlertViewTypeActionWillDiscardAllFutureMoves,
+  AlertViewTypeHandleDocumentInteractionCommandSucceeded,
+  AlertViewTypeHandleDocumentInteractionCommandFailed,
+  AlertViewTypeMaxMemoryConfirmation,
+  AlertViewTypeDeleteAllGamesConfirmation,
+  AlertViewTypeResetPlayersProfilesConfirmation,
+  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation,
+  AlertViewTypePlayMoveRejectedLoggingEnabled,
+  AlertViewTypePlayMoveRejectedLoggingDisabled
+};
+
+/// @brief Enumerates the types of buttons used by the various alert views in
+/// #AlertViewType.
+enum AlertViewButtonType
+{
+  AlertViewButtonTypeOk = 0,  ///< @brief Used as the single button in a simple alert view
+  AlertViewButtonTypeNo = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
+  AlertViewButtonTypeYes = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
+};
+
+/// @brief Enumerates the supported sort criteria on the Archive view.
+enum ArchiveSortCriteria
+{
+  ArchiveSortCriteriaFileName,
+  ArchiveSortCriteriaFileDate
+};
+
+/// @brief Enumerates the types of information that the Info view can display.
+enum InfoType
+{
+  ScoreInfoType,
+  GameInfoType,
+  BoardInfoType
+};
 //@}
 
 // -----------------------------------------------------------------------------
@@ -68,6 +149,10 @@ extern const int indexOfMoreNavigationController;
 extern const int ddLogLevel;
 //@}
 
+// -----------------------------------------------------------------------------
+/// @name Go constants
+// -----------------------------------------------------------------------------
+//@{
 /// @brief Enumerates possible types of GoMove objects.
 enum GoMoveType
 {
@@ -154,31 +239,6 @@ enum GoBoardDirection
   GoBoardDirectionPrevious  ///< @brief Same as #GoBoardDirectionNext, but for iterating backwards.
 };
 
-/// @brief How should Play view mark up inconcistent territory during scoring?
-enum InconsistentTerritoryMarkupType
-{
-  InconsistentTerritoryMarkupTypeDotSymbol,  ///< @brief Mark up territory using a dot symbol
-  InconsistentTerritoryMarkupTypeFillColor,  ///< @brief Mark up territory by filling it with a color
-  InconsistentTerritoryMarkupTypeNeutral     ///< @brief Don't mark up territory
-};
-
-/// @brief Enumerates all existing tabs in the GUI.
-///
-/// Values in this enumeration must match the "tag" property values of each
-/// TabBarItem in MainWindow.xib.
-enum TabType
-{
-  TabTypePlay,
-  TabTypeSettings,
-  TabTypeArchive,
-  TabTypeDiagnostics,
-  TabTypeManual,
-  TabTypeAbout,
-  TabTypeSourceCode,
-  TabTypeLicenses,
-  TabTypeCredits
-};
-
 /// @brief Enumerates the supported board sizes.
 enum GoBoardSize
 {
@@ -204,54 +264,18 @@ enum GoKoRule
   GoKoRuleDefault = GoKoRuleSimple
 };
 
-/// @brief Enumerates the types of alert views used across the application.
-///
-/// Enumeration values are used as UIView tags so that an alert view delegate
-/// that manages several alert views knows how to distinguish between them.
-enum AlertViewType
-{
-  AlertViewTypeGameHasEnded,
-  AlertViewTypeNewGame,
-  AlertViewTypeSaveGame,
-  AlertViewTypeRenameGame,
-  AlertViewTypeLoadGameFailed,
-  AlertViewTypeSaveGameFailed,
-  AlertViewTypeUndoMoveFailed,
-  AlertViewTypeAddToCannedCommands,
-  AlertViewTypeMemoryWarning,
-  AlertViewTypeCannotSendEmail,
-  AlertViewTypeDiagnosticsInformationFileGenerated,
-  AlertViewTypeDiagnosticsInformationFileNotGenerated,
-  AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled,
-  AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled,
-  AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
-  AlertViewTypeActionWillDiscardAllFutureMoves,
-  AlertViewTypeHandleDocumentInteractionCommandSucceeded,
-  AlertViewTypeHandleDocumentInteractionCommandFailed,
-  AlertViewTypeMaxMemoryConfirmation,
-  AlertViewTypeDeleteAllGamesConfirmation,
-  AlertViewTypeResetPlayersProfilesConfirmation,
-  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation,
-  AlertViewTypePlayMoveRejectedLoggingEnabled,
-  AlertViewTypePlayMoveRejectedLoggingDisabled
-};
+extern const enum GoGameType gDefaultGameType;
+extern const enum GoBoardSize gDefaultBoardSize;
+extern const int gNumberOfBoardSizes;
+extern const bool gDefaultComputerPlaysWhite;
+extern const int gDefaultHandicap;
+extern const double gDefaultKomi;
+//@}
 
-/// @brief Enumerates the types of buttons used by the various alert views in
-/// #AlertViewType.
-enum AlertViewButtonType
-{
-  AlertViewButtonTypeOk = 0,  ///< @brief Used as the single button in a simple alert view
-  AlertViewButtonTypeNo = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
-  AlertViewButtonTypeYes = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
-};
-
-/// @brief Enumerates the supported sort criteria on the Archive view.
-enum ArchiveSortCriteria
-{
-  ArchiveSortCriteriaFileName,
-  ArchiveSortCriteriaFileDate
-};
-
+// -----------------------------------------------------------------------------
+/// @name Application constants
+// -----------------------------------------------------------------------------
+//@{
 /// @brief Enumerates different ways how the application can be launched.
 enum ApplicationLaunchMode
 {
@@ -261,25 +285,6 @@ enum ApplicationLaunchMode
   ApplicationLaunchModeDiagnostics  ///< @brief The application was launched to diagnose a bug report. This
                                     ///  mode is available only in the simulator.
 };
-
-/// @brief Enumerates the types of information that the Info view can display.
-enum InfoType
-{
-  ScoreInfoType,
-  GameInfoType,
-  BoardInfoType
-};
-
-// -----------------------------------------------------------------------------
-/// @name Go constants
-// -----------------------------------------------------------------------------
-//@{
-extern const enum GoGameType gDefaultGameType;
-extern const enum GoBoardSize gDefaultBoardSize;
-extern const int gNumberOfBoardSizes;
-extern const bool gDefaultComputerPlaysWhite;
-extern const int gDefaultHandicap;
-extern const double gDefaultKomi;
 //@}
 
 // -----------------------------------------------------------------------------
