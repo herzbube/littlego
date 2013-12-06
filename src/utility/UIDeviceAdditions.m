@@ -72,4 +72,14 @@
   return systemVersionMajor;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the amount of physical memory in Megabytes that is available
+/// on this device.
+// -----------------------------------------------------------------------------
++ (int) physicalMemoryMegabytes
+{
+  unsigned long long physicalMemoryBytes = [NSProcessInfo processInfo].physicalMemory;
+  return (physicalMemoryBytes / 1024 / 1024);
+}
+
 @end

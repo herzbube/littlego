@@ -29,4 +29,5 @@
 + (NSArray*) deviceSuffixes;
 + (NSString*) currentDeviceSuffix;
 + (int) systemVersionMajor;
++ (int) physicalMemoryMegabytes;
 @end

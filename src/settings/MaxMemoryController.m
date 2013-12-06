@@ -20,6 +20,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -76,7 +77,7 @@ enum PhysicalMemorySectionItem
     return nil;
   self.delegate = nil;
   self.maxMemory = 0;
-  self.physicalMemory = ([NSProcessInfo processInfo].physicalMemory / 1024 / 1024);
+  self.physicalMemory = [UIDevice physicalMemoryMegabytes];
   if (self.physicalMemory <= 256)
     self.maxMemoryLimit = self.physicalMemory / 4;
   else if (self.physicalMemory <= 512)
