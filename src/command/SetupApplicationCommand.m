@@ -18,8 +18,8 @@
 // Project includes
 #import "SetupApplicationCommand.h"
 #import "HandleDocumentInteractionCommand.h"
-#import "LoadOpeningBookCommand.h"
 #import "diagnostics/RestoreBugReportApplicationStateCommand.h"
+#import "gtp/LoadOpeningBookCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"

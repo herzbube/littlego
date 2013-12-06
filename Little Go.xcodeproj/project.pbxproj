@@ -1505,6 +1505,17 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		CDAA57E0184FE9BE0049A90D /* gtp */ = {
+			isa = PBXGroup;
+			children = (
+				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
+				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
+				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
+				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
+			);
+			path = gtp;
+			sourceTree = "<group>";
+		};
 		CDAB5EC613E4835900C4A4AA /* newgame */ = {
 			isa = PBXGroup;
 			children = (
@@ -1543,6 +1554,7 @@
 				CDF630A7168F50BA003C8BEF /* boardposition */,
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
+				CDAA57E0184FE9BE0049A90D /* gtp */,
 				CD05A8C91422803B00214BBE /* move */,
 				CD072705180B292E0083B138 /* playerinfluence */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
@@ -1553,10 +1565,6 @@
 				CDD48FBF1414038000188B6A /* CommandProcessor.m */,
 				CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */,
 				CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */,
-				CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */,
-				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
-				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
-				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
 				CDD7D7E3175257850068CBBA /* ResetPlayersAndProfilesCommand.h */,
 				CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */,
 				CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */,

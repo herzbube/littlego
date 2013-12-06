@@ -17,9 +17,9 @@
 
 // Project includes
 #import "InterruptComputerCommand.h"
-#import "../go/GoGame.h"
-#import "../gtp/GtpClient.h"
-#import "../main/ApplicationDelegate.h"
+#import "../../go/GoGame.h"
+#import "../../gtp/GtpClient.h"
+#import "../../main/ApplicationDelegate.h"
 
 
 @implementation InterruptComputerCommand
