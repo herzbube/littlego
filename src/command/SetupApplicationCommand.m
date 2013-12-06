@@ -20,6 +20,7 @@
 #import "HandleDocumentInteractionCommand.h"
 #import "diagnostics/RestoreBugReportApplicationStateCommand.h"
 #import "gtp/LoadOpeningBookCommand.h"
+#import "gtp/SetAdditiveKnowledgeTypeCommand.h"
 #import "../main/ApplicationDelegate.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
@@ -51,7 +52,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.totalSteps = 1;
+  self.totalSteps = 2;
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
   return self;
@@ -82,6 +83,9 @@
     // engine is probably still in the process of setting itself up, so there
     // will be a delay in executing the command.
     [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
+    [self increaseProgressAndNotifyDelegate];
+
+    [[[[SetAdditiveKnowledgeTypeCommand alloc] init] autorelease] submit];
     [self increaseProgressAndNotifyDelegate];
 
     // At this point the progress in self.asynchronousCommandDelegate is at

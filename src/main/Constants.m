@@ -260,6 +260,8 @@ NSString* fuegoMaxGamesKey = @"FuegoMaxGames";
 NSString* autoSelectFuegoResignMinGamesKey = @"AutoSelectFuegoResignMinGames";
 NSString* fuegoResignMinGamesKey = @"FuegoResignMinGames";
 NSString* fuegoResignThresholdKey = @"FuegoResignThreshold";
+// GTP engine configuration not related to profiles
+NSString* additiveKnowledgeMemoryThresholdKey = @"AdditiveKnowledgeMemoryThreshold";
 // Archive view settings
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";

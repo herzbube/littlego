@@ -319,6 +319,7 @@
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
+		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
 		CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FC152B6C62003B2BBF /* 42-info.png */; };
@@ -766,6 +767,8 @@
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
 		CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveTest.h; sourceTree = "<group>"; };
 		CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveTest.m; sourceTree = "<group>"; };
+		CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetAdditiveKnowledgeTypeCommand.h; sourceTree = "<group>"; };
+		CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SetAdditiveKnowledgeTypeCommand.mm; sourceTree = "<group>"; };
 		CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameModel.h; sourceTree = "<group>"; };
 		CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
 		CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameController.h; sourceTree = "<group>"; };
@@ -1512,6 +1515,8 @@
 				CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */,
 				CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */,
 				CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */,
+				CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */,
+				CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */,
 			);
 			path = gtp;
 			sourceTree = "<group>";
@@ -2272,6 +2277,7 @@
 				CD35921C1735A757000E2963 /* PlayView.m in Sources */,
 				CD35921E1735A757000E2963 /* PlayViewController.m in Sources */,
 				CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */,
+				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */,

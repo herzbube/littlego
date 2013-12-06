@@ -346,5 +346,7 @@
 		<integer>7</integer>
 		<integer>8</integer>
 	</array>
+	<key>AdditiveKnowledgeMemoryThreshold</key>
+	<integer>384</integer>
 </dict>
 </plist>

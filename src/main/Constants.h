@@ -507,6 +507,16 @@ extern const int fuegoResignThresholdDefault[];
 /// is the fallback profile if no other profile is available or appropriate.
 /// The user cannot delete this profile.
 extern NSString* defaultGtpEngineProfileUUID;
+
+/// @brief Enumerates the types of additive knowledge known by the GTP engine.
+///
+/// The numeric values of the enumeration members are directly used as the
+/// numeric parameter of the GTP command "uct_param_policy knowledge_type".
+enum AdditiveKnowledgeType
+{
+  AdditiveKnowledgeTypeGreenpeep,
+  AdditiveKnowledgeTypeRulebased
+};
 //@}
 
 // -----------------------------------------------------------------------------
@@ -691,6 +701,8 @@ extern NSString* fuegoMaxGamesKey;
 extern NSString* autoSelectFuegoResignMinGamesKey;
 extern NSString* fuegoResignMinGamesKey;
 extern NSString* fuegoResignThresholdKey;
+// GTP engine configuration not related to profiles
+extern NSString* additiveKnowledgeMemoryThresholdKey;
 // Archive view settings
 extern NSString* archiveViewKey;
 extern NSString* sortCriteriaKey;
