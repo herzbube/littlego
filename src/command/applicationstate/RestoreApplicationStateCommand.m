@@ -111,7 +111,7 @@
     unarchivedGame.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   }
 
-  [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
+  [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
 
   return true;
 }

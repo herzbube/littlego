@@ -136,7 +136,7 @@
     // was still running. In that case, UpdateTerritoryStatisticsCommand will
     // try to acquire statistics data, but will fail because the GTP engine has
     // not yet collected any data.
-    [[[UpdateTerritoryStatisticsCommand alloc] init] submit];
+    [[[[UpdateTerritoryStatisticsCommand alloc] init] autorelease] submit];
     [self continuePlayingIfNecessary];
   }
   @finally

@@ -145,7 +145,7 @@
   PlayViewIntersection crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
 
   bool isLegalMove = false;
-  enum GoMoveIsIllegalReason illegalReason;
+  enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
   if (! PlayViewIntersectionIsNullIntersection(crossHairIntersection))
   {
     CGRect visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];

@@ -327,7 +327,7 @@ enum DisplayPlayerInfluenceSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.playViewModel.displayPlayerInfluence = accessoryView.on;
-  [[[ToggleTerritoryStatisticsCommand alloc] init] submit];
+  [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
 }
 
 @end

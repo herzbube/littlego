@@ -56,7 +56,7 @@
     assert(0);
     return;
   }
-  [[[UpdateTerritoryStatisticsCommand alloc] init] submit];
+  [[[[UpdateTerritoryStatisticsCommand alloc] init] autorelease] submit];
   [GoGame sharedGame].reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
 }
 
