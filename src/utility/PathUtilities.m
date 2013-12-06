@@ -41,13 +41,14 @@
     [PathUtilities deleteItemIfExists:path];
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSError* error;
   BOOL success = [fileManager createDirectoryAtPath:path
                         withIntermediateDirectories:YES
                                          attributes:nil
-                                              error:nil];
+                                              error:&error];
   if (! success)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Unable to create folder %@", path];
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to create folder %@, reason: %@", path, [error description]];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
@@ -71,7 +72,7 @@
   BOOL success = [fileManager removeItemAtPath:path error:&error];
   if (! success)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Unable to remove file or folder %@, reason: %@", path, [error localizedDescription]];
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to remove file or folder %@, reason: %@", path, [error description]];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
