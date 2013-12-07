@@ -359,23 +359,10 @@ NSString* goBoardRegionCachedAdjacentRegionsKey = @"CachedAdjacentRegions";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";
-NSString* goPointLeftKey = @"Left";
-NSString* goPointRightKey = @"Right";
-NSString* goPointAboveKey = @"Above";
-NSString* goPointBelowKey = @"Below";
-NSString* goPointNeighboursKey = @"Neighbours";
-NSString* goPointNextKey = @"Next";
-NSString* goPointPreviousKey = @"Previous";
 NSString* goPointIsStarPointKey = @"IsStarPoint";
 NSString* goPointStoneStateKey = @"StoneState";
 NSString* goPointTerritoryStatisticsScoreKey = @"TerritoryStatisticsScore";
 NSString* goPointRegionKey = @"Region";
-NSString* goPointIsLeftValidKey = @"IsLeftValid";
-NSString* goPointIsRightValidKey = @"IsRightValid";
-NSString* goPointIsAboveValidKey = @"IsAboveValid";
-NSString* goPointIsBelowValidKey = @"IsBelowValid";
-NSString* goPointIsNextValidKey = @"IsNextValid";
-NSString* goPointIsPreviousValidKey = @"IsPreviousValid";
 // GoScore keys
 NSString* goScoreTerritoryScoringEnabledKey = @"TerritoryScoringEnabled";
 NSString* goScoreScoringInProgressKey = @"ScoringInProgress";

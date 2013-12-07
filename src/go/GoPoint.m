@@ -124,13 +124,6 @@
   // GoVertex
   self.vertex = [GoVertex vertexFromString:[decoder decodeObjectForKey:goPointVertexKey]];
   self.board = [decoder decodeObjectForKey:goPointBoardKey];
-  _left = [decoder decodeObjectForKey:goPointLeftKey];
-  _right = [decoder decodeObjectForKey:goPointRightKey];
-  _above = [decoder decodeObjectForKey:goPointAboveKey];
-  _below = [decoder decodeObjectForKey:goPointBelowKey];
-  _neighbours = [[decoder decodeObjectForKey:goPointNeighboursKey] retain];
-  _next = [decoder decodeObjectForKey:goPointNextKey];
-  _previous = [decoder decodeObjectForKey:goPointPreviousKey];
   if ([decoder containsValueForKey:goPointIsStarPointKey])
     self.starPoint = true;
   else
@@ -144,30 +137,20 @@
   else
     self.territoryStatisticsScore = 0.0f;
   self.region = [decoder decodeObjectForKey:goPointRegionKey];
-  if ([decoder containsValueForKey:goPointIsLeftValidKey])
-    self.isLeftValid = true;
-  else
-    self.isLeftValid = false;
-  if ([decoder containsValueForKey:goPointIsRightValidKey])
-    self.isRightValid = true;
-  else
-    self.isRightValid = false;
-  if ([decoder containsValueForKey:goPointIsAboveValidKey])
-    self.isAboveValid = true;
-  else
-    self.isAboveValid = false;
-  if ([decoder containsValueForKey:goPointIsBelowValidKey])
-    self.isBelowValid = true;
-  else
-    self.isBelowValid = false;
-  if ([decoder containsValueForKey:goPointIsNextValidKey])
-    self.isNextValid = true;
-  else
-    self.isNextValid = false;
-  if ([decoder containsValueForKey:goPointIsPreviousValidKey])
-    self.isPreviousValid = true;
-  else
-    self.isPreviousValid = false;
+
+  _left = nil;
+  _right = nil;
+  _above = nil;
+  _below = nil;
+  _next = nil;
+  _previous = nil;
+  _neighbours = nil;
+  _isLeftValid = false;
+  _isRightValid = false;
+  _isAboveValid = false;
+  _isBelowValid = false;
+  _isNextValid = false;
+  _isPreviousValid = false;
 
   return self;
 }
@@ -417,13 +400,6 @@
   // the NSCoding archive.
   [encoder encodeObject:self.vertex.string forKey:goPointVertexKey];
   [encoder encodeObject:self.board forKey:goPointBoardKey];
-  [encoder encodeObject:self.left forKey:goPointLeftKey];
-  [encoder encodeObject:self.right forKey:goPointRightKey];
-  [encoder encodeObject:self.above forKey:goPointAboveKey];
-  [encoder encodeObject:self.below forKey:goPointBelowKey];
-  [encoder encodeObject:self.neighbours forKey:goPointNeighboursKey];
-  [encoder encodeObject:self.next forKey:goPointNextKey];
-  [encoder encodeObject:self.previous forKey:goPointPreviousKey];
   if (self.isStarPoint)
     [encoder encodeBool:self.isStarPoint forKey:goPointIsStarPointKey];
   if (self.stoneState != GoColorNone)
@@ -431,18 +407,6 @@
   if (self.territoryStatisticsScore != 0.0f)
     [encoder encodeFloat:self.territoryStatisticsScore forKey:goPointTerritoryStatisticsScoreKey];
   [encoder encodeObject:self.region forKey:goPointRegionKey];
-  if (! self.isLeftValid)
-    [encoder encodeBool:self.isLeftValid forKey:goPointIsLeftValidKey];
-  if (! self.isRightValid)
-    [encoder encodeBool:self.isRightValid forKey:goPointIsRightValidKey];
-  if (! self.isAboveValid)
-    [encoder encodeBool:self.isAboveValid forKey:goPointIsAboveValidKey];
-  if (! self.isBelowValid)
-    [encoder encodeBool:self.isBelowValid forKey:goPointIsBelowValidKey];
-  if (! self.isNextValid)
-    [encoder encodeBool:self.isNextValid forKey:goPointIsNextValidKey];
-  if (! self.isPreviousValid)
-    [encoder encodeBool:self.isPreviousValid forKey:goPointIsPreviousValidKey];
 }
 
 @end
