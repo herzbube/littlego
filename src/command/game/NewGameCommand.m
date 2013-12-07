@@ -258,6 +258,15 @@
 // -----------------------------------------------------------------------------
 - (void) setupGtpRules
 {
+  [self setupKoRule];
+  [self setupScoringSystem];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the GTP engine with the ko rule to use.
+// -----------------------------------------------------------------------------
+- (void) setupKoRule
+{
   enum GoKoRule koRule = [GoGame sharedGame].rules.koRule;
   NSString* gtpKoRuleName;
   switch (koRule)
@@ -282,6 +291,35 @@
     }
   }
   NSString* commandString = [NSString stringWithFormat:@"go_param_rules ko_rule %@", gtpKoRuleName];
+  [[GtpCommand command:commandString] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the GTP engine with the scoring system to use.
+// -----------------------------------------------------------------------------
+- (void) setupScoringSystem
+{
+  enum GoScoringSystem scoringSystem = [GoGame sharedGame].rules.scoringSystem;
+  int japaneseScoring;
+  switch (scoringSystem)
+  {
+    case GoScoringSystemAreaScoring:
+      japaneseScoring = 0;
+      break;
+    case GoScoringSystemTerritoryScoring:
+      japaneseScoring = 1;
+      break;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Illegal GoScoringSystem value %d", scoringSystem];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  NSString* commandString = [NSString stringWithFormat:@"go_param_rules japanese_scoring %d", japaneseScoring];
   [[GtpCommand command:commandString] submit];
 }
 
