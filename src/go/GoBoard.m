@@ -180,12 +180,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  // Break the retain cycle between GoPoint and GoBoardRegion
-  // TODO Change design so that there is no retain cycle. Currently this would
-  // mean to mark up the property GoPoint.region with "assign" instead of
-  // "retain", but then nobody retains GoBoardRegion...
+  // Trigger the breaking of retain cycles in all GoPoint objects
+  // TODO: Obviously, it would be nicer if we didn't have any retain cycles to
+  // worry about...
   for (GoPoint* point in [m_vertexDict allValues])
-    point.region = nil;
+    [point prepareForDealloc];
   [m_vertexDict release];
   self.starPoints = nil;
   self.zobristTable = nil;

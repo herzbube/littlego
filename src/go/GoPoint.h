@@ -54,6 +54,7 @@
 - (int) liberties;
 - (bool) isEqualToPoint:(GoPoint*)point;
 - (NSArray*) neighbourRegionsWithColor:(enum GoColor)color;
+- (void) prepareForDealloc;
 
 /// @brief Identifies the location of the intersection that the GoPoint
 /// represents.

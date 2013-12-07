@@ -184,6 +184,23 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Prepares this GoPoint object for deallocation. This method breaks all
+/// retain cycles, making it possible to deallocate GoPoint objects in the first
+/// place.
+// -----------------------------------------------------------------------------
+- (void) prepareForDealloc
+{
+  // TODO Change design so that there is no retain cycle. Currently this would
+  // mean to mark up the property GoPoint.region with "assign" instead of
+  // "retain", but then nobody retains GoBoardRegion...
+  self.region = nil;
+  // GoPoint objects reference each other via their _neighbours arrays.
+  // Unfortunately it is not possible to tell NSArray/NSMutableArray not to
+  // retain their objects.
+  [(NSMutableArray*)_neighbours removeAllObjects];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a description for this GoPoint object.
 ///
 /// This method is invoked when GoPoint needs to be represented as a string,
