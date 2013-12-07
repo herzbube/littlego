@@ -32,7 +32,6 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.gameType = gDefaultGameType;
   self.gameTypeLastSelected = gDefaultGameType;
   self.humanPlayerUUID = @"";
@@ -45,7 +44,7 @@
   self.handicap = gDefaultHandicap;
   self.komi = gDefaultKomi;
   self.koRule = GoKoRuleDefault;
-
+  self.scoringSystem = GoScoringSystemDefault;
   return self;
 }
 
@@ -81,6 +80,7 @@
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
   self.komi = [[dictionary valueForKey:komiKey] doubleValue];
   self.koRule = [[dictionary valueForKey:koRuleKey] intValue];
+  self.scoringSystem = [[dictionary valueForKey:scoringSystemKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -106,6 +106,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.handicap] forKey:handicapKey];
   [dictionary setValue:[NSNumber numberWithDouble:self.komi] forKey:komiKey];
   [dictionary setValue:[NSNumber numberWithInt:self.koRule] forKey:koRuleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.scoringSystem] forKey:scoringSystemKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
 }

@@ -233,6 +233,7 @@ NSString* boardSizeKey = @"BoardSize";
 NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
 NSString* koRuleKey = @"KoRule";
+NSString* scoringSystemKey = @"ScoringSystem";
 // Players
 NSString* playerListKey = @"PlayerList";
 NSString* playerUUIDKey = @"UUID";
@@ -397,3 +398,4 @@ NSString* goGameDocumentDirtyKey = @"Dirty";
 NSString* goGameDocumentDocumentNameKey = @"DocumentName";
 // GoGameRules keys
 NSString* goGameRulesKoRuleKey = @"KoRule";
+NSString* goGameRulesScoringSystemKey = @"GoGameRulesScoringSystem";

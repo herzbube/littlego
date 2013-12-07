@@ -27,5 +27,7 @@
 
 /// @brief The ko rule in effect for the game.
 @property(nonatomic, assign) enum GoKoRule koRule;
+/// @brief The scoring system in effect for the game.
+@property(nonatomic, assign) enum GoScoringSystem scoringSystem;
 
 @end

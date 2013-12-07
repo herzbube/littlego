@@ -56,5 +56,6 @@
 @property(nonatomic, assign) int handicap;
 @property(nonatomic, assign) double komi;
 @property(nonatomic, assign) enum GoKoRule koRule;
+@property(nonatomic, assign) enum GoScoringSystem scoringSystem;
 
 @end

@@ -33,6 +33,7 @@
   if (! self)
     return nil;
   self.koRule = GoKoRuleDefault;
+  self.scoringSystem = GoScoringSystemDefault;
   return self;
 }
 
@@ -47,6 +48,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   self.koRule = [decoder decodeIntForKey:goGameRulesKoRuleKey];
+  self.scoringSystem = [decoder decodeIntForKey:goGameRulesScoringSystemKey];
   return self;
 }
 
@@ -57,6 +59,7 @@
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeInt:self.koRule forKey:goGameRulesKoRuleKey];
+  [encoder encodeInt:self.scoringSystem forKey:goGameRulesScoringSystemKey];
 }
 
 @end

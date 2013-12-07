@@ -264,6 +264,15 @@ enum GoKoRule
   GoKoRuleDefault = GoKoRuleSimple
 };
 
+/// @brief Enumerates the possible scoring systems.
+enum GoScoringSystem
+{
+  GoScoringSystemAreaScoring,
+  GoScoringSystemTerritoryScoring,
+  GoScoringSystemMax = GoScoringSystemTerritoryScoring,
+  GoScoringSystemDefault = GoScoringSystemAreaScoring
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -674,6 +683,7 @@ extern NSString* boardSizeKey;
 extern NSString* handicapKey;
 extern NSString* komiKey;
 extern NSString* koRuleKey;
+extern NSString* scoringSystemKey;
 // Players
 extern NSString* playerListKey;
 extern NSString* playerUUIDKey;
@@ -843,4 +853,5 @@ extern NSString* goGameDocumentDirtyKey;
 extern NSString* goGameDocumentDocumentNameKey;
 // GoGameRules keys
 extern NSString* goGameRulesKoRuleKey;
+extern NSString* goGameRulesScoringSystemKey;
 //@}

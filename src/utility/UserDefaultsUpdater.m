@@ -507,6 +507,7 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
   {
     NSMutableDictionary* newGameDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:newGameDictionary];
     [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoKoRuleDefault] forKey:koRuleKey];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoScoringSystemDefault] forKey:scoringSystemKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
 }
