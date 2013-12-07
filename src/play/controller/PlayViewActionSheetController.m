@@ -122,7 +122,7 @@ enum ActionSheetButton
     {
       case ScoreButton:
       {
-        if (game.score.territoryScoringEnabled)
+        if (game.score.scoringEnabled)
           continue;
         title = @"Score";
         break;
@@ -132,7 +132,7 @@ enum ActionSheetButton
         PlayViewModel* model = [ApplicationDelegate sharedDelegate].playViewModel;
         if (! model.displayPlayerInfluence)
           continue;
-        if (game.score.territoryScoringEnabled)
+        if (game.score.scoringEnabled)
           continue;
         title = @"Update player influence";
         break;
@@ -143,7 +143,7 @@ enum ActionSheetButton
           continue;
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        if (game.score.territoryScoringEnabled)
+        if (game.score.scoringEnabled)
           continue;
         if (game.boardPosition.isComputerPlayersTurn)
           continue;
@@ -257,7 +257,7 @@ enum ActionSheetButton
 - (void) score
 {
   GoScore* score = [GoGame sharedGame].score;
-  score.territoryScoringEnabled = ! score.territoryScoringEnabled;
+  score.scoringEnabled = ! score.scoringEnabled;
   [score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }

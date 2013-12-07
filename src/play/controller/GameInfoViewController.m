@@ -490,7 +490,7 @@ enum BoardPositionSectionItem
       if (! [GoGame sharedGame].boardPosition.isLastPosition)
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
       NSString* titlePartTwo = nil;
-      if (! [GoGame sharedGame].score.territoryScoringEnabled)
+      if (! [GoGame sharedGame].score.scoringEnabled)
         titlePartTwo = @"Dead stones and territory scores are not available because you are not in scoring mode.";
       if (titlePartOne && titlePartTwo)
         return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
@@ -1007,14 +1007,14 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          if (score.territoryScoringEnabled)
+          if (score.scoringEnabled)
             return [NSString stringWithFormat:@"%d", score.deadWhite];
           else
             return @"n/a";
         case TitleColumn:
           return @"Dead";
         case WhitePlayerColumn:
-          if (score.territoryScoringEnabled)
+          if (score.scoringEnabled)
             return [NSString stringWithFormat:@"%d", score.deadBlack];
           else
             return @"n/a";
@@ -1029,14 +1029,14 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          if (score.territoryScoringEnabled)
+          if (score.scoringEnabled)
             return [NSString stringWithFormat:@"%d", score.territoryBlack];
           else
             return @"n/a";
         case TitleColumn:
           return @"Territory";
         case WhitePlayerColumn:
-          if (score.territoryScoringEnabled)
+          if (score.scoringEnabled)
             return [NSString stringWithFormat:@"%d", score.territoryWhite];
           else
             return @"n/a";

@@ -152,7 +152,7 @@ enum TerritoryLayerType
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.territoryScoringEnabled)
+  if (! game.score.scoringEnabled)
     return;
   DDLogVerbose(@"TerritoryLayerDelegate is drawing");
 

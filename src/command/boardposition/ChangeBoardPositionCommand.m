@@ -155,14 +155,14 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    if (game.score.territoryScoringEnabled)
+    if (game.score.scoringEnabled)
       [game.score willChangeBoardPosition];  // disable GoBoardRegion caching
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
     [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
 
-    if (game.score.territoryScoringEnabled)
+    if (game.score.scoringEnabled)
     {
       [game.score didChangeBoardPosition];  // re-enable GoBoardRegion caching
       [game.score calculateWaitUntilDone:false];

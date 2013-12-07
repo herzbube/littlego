@@ -47,28 +47,26 @@
 /// information is available. Both notifications are delivered in the context
 /// of the main thread.
 ///
-/// By default GoScore does not collect territory scoring information because
-/// this is a potentially time-consuming operation. A controller may enable
-/// the collection of territory scoring information by setting the
-/// @e territoryScoringEnabled property to true. In this case the controller
-/// should invoke calculateWaitUntilDone:() with argument false so that the
-/// time-consuming operation is performed in a secondary thread.
+/// By default GoScore does not collect scoring information because this is a
+/// potentially time-consuming operation. A controller may enable the collection
+/// of scoring information by setting the @e scoringEnabled property to true. In
+/// this case the controller should invoke calculateWaitUntilDone:() with
+/// argument false so that the time-consuming operation is performed in a
+/// secondary thread.
 ///
 /// GoScore posts notifications to the default NSNotificationCenter when
-/// territory scoring is enabled (#goScoreTerritoryScoringEnabled) or disabled
-/// (#goScoreTerritoryScoringDisabled).
-///
-/// @note GoScore currently only supports territory scoring without handling for
-/// counting eyes in seki.
+/// scoring is enabled (#goScoreScoringEnabled) or disabled
+/// (#goScoreScoringDisabled).
 ///
 ///
-/// @par Territory scoring overview
+/// @par Scoring overview
 ///
-/// The territory score can only be calculated after the status of all stones on
-/// the board has been determined to be either dead or alive. Neither Little Go
-/// nor the GTP engine are "clever" enough to find out which stone groups are
-/// truly dead. This means that the user must help out by interactively marking
-/// stones as dead or alive.
+/// Score calculation depends on the scoring system in effect for the current
+/// game. The score can only be calculated after the status of all stones on the
+/// board has been determined to be either dead or alive. Neither Little Go nor
+/// the GTP engine are "clever" enough to find out which stone groups are truly
+/// dead. This means that the user must help out by interactively marking stones
+/// as dead or alive.
 ///
 /// An updated score is calculated every time that the user marks a stone group
 /// as dead or alive. This is the sequence of events:
@@ -150,7 +148,7 @@
 ///     can be considered to be surrounded.
 ///   - If all adjacent stone groups are alive and have differents colors, the
 ///     empty region does not belong to any territory. This might indicate a
-///     seki, but probably it's just a neutral region.
+///     seki, but probably it's just dame (a neutral region).
 ///   - If at least one adjacent stone group is dead, the empty region belongs
 ///     to the opposing color's territory.
 ///   - In the last case, updateTerritoryColor() makes a final check to see
@@ -175,7 +173,7 @@
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is true if territory scoring is enabled on this GoScore object.
+/// @brief Is true if scoring is enabled on this GoScore object.
 ///
 /// Setting this property to true puts all GoBoardRegion objects that currently
 /// exist into scoring mode (see the GoBoardRegion class documentation for
@@ -186,7 +184,7 @@
 ///
 /// Setting this property to false puts all GoBoardRegion objects that currently
 /// exist into normal mode, i.e. "not scoring" mode.
-@property(nonatomic, assign) bool territoryScoringEnabled;
+@property(nonatomic, assign) bool scoringEnabled;
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 @property(nonatomic, assign) bool askGtpEngineForDeadStonesInProgress; ///< @brief Is true if the GTP engine is currently being queried for dead stones.
 //@}

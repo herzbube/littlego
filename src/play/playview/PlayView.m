@@ -150,8 +150,8 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -394,18 +394,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
+/// @brief Responds to the #goScoreScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
+- (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeEnabled eventInfo:nil];
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
+/// @brief Responds to the #goScoreScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
+- (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeDisabled eventInfo:nil];
   [self delayedUpdate];
@@ -447,7 +447,7 @@
   {
     if ([keyPath isEqualToString:@"inconsistentTerritoryMarkupType"])
     {
-      if ([GoGame sharedGame].score.territoryScoringEnabled)
+      if ([GoGame sharedGame].score.scoringEnabled)
       {
         [self notifyLayerDelegates:PVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedUpdate];

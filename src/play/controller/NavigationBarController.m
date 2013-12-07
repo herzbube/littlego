@@ -257,8 +257,8 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -360,7 +360,7 @@
 - (void) gameInfo:(id)sender
 {
   GoScore* score = [GoGame sharedGame].score;
-  if (! score.territoryScoringEnabled)
+  if (! score.scoringEnabled)
     [score calculateWaitUntilDone:true];
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
   [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
@@ -460,7 +460,7 @@
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  [GoGame sharedGame].score.territoryScoringEnabled = false;  // triggers notification to which this controller reacts
+  [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this controller reacts
 }
 
 // -----------------------------------------------------------------------------
@@ -473,7 +473,7 @@
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   // Disable scoring mode while the old GoGame is still around
-  oldGame.score.territoryScoringEnabled = false;
+  oldGame.score.scoringEnabled = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -505,7 +505,7 @@
     {
       if (GoGameHasEndedReasonTwoPasses == game.reasonForGameHasEnded)
       {
-        game.score.territoryScoringEnabled = true;
+        game.score.scoringEnabled = true;
         [game.score calculateWaitUntilDone:false];
       }
     }
@@ -524,9 +524,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
+/// @brief Responds to the #goScoreScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
+- (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
@@ -534,9 +534,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
+/// @brief Responds to the #goScoreScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
+- (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
   self.navigationBarNeedsPopulation = true;
@@ -657,7 +657,7 @@
   NSMutableArray* leftBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     [leftBarButtonItems addObject:self.doneButton];
     [leftBarButtonItems addObject:self.discardBoardPositionButton];
@@ -748,7 +748,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.territoryScoringEnabled)
+  if (! game.score.scoringEnabled)
   {
     switch (game.type)
     {
@@ -782,7 +782,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.territoryScoringEnabled)
+  if (! game.score.scoringEnabled)
   {
     switch (game.type)
     {
@@ -821,7 +821,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -841,7 +841,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.territoryScoringEnabled)
+  if (! game.score.scoringEnabled)
   {
     switch (game.type)
     {
@@ -871,7 +871,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.territoryScoringEnabled)
+  if (! game.score.scoringEnabled)
   {
     switch (game.type)
     {
@@ -901,7 +901,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (game.score.scoringInProgress)
       enabled = YES;
@@ -921,7 +921,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -940,7 +940,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -989,7 +989,7 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;

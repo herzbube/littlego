@@ -142,7 +142,7 @@
 {
   // Completely disable symbols while scoring mode is enabled
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
     return;
   DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 

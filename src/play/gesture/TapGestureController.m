@@ -82,8 +82,8 @@
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 }
@@ -140,17 +140,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
+/// @brief Responds to the #goScoreScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
+- (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   [self updateTappingEnabled];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
+/// @brief Responds to the #goScoreScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
+- (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [self updateTappingEnabled];
 }
@@ -177,7 +177,7 @@
 - (void) updateTappingEnabled
 {
   GoScore* score = [GoGame sharedGame].score;
-  if (score.territoryScoringEnabled)
+  if (score.scoringEnabled)
     self.tappingEnabled = ! score.scoringInProgress;
   else
     self.tappingEnabled = false;

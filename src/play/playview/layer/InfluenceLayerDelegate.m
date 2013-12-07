@@ -68,7 +68,7 @@
   if (! self.playViewModel.displayPlayerInfluence)
     return;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
     return;
   DDLogVerbose(@"InfluenceLayerDelegate is drawing");
 

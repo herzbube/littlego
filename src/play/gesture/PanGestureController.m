@@ -90,8 +90,8 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringEnabled:) name:goScoreTerritoryScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
@@ -240,17 +240,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringEnabled notification.
+/// @brief Responds to the #goScoreScoringEnabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringEnabled:(NSNotification*)notification
+- (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   [self updatePanningEnabled];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
+/// @brief Responds to the #goScoreScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
+- (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [self updatePanningEnabled];
 }
@@ -288,7 +288,7 @@
     return;
   }
 
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     self.panningEnabled = false;
     return;

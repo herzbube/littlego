@@ -160,7 +160,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreTerritoryScoringDisabled:) name:goScoreTerritoryScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
@@ -242,7 +242,7 @@
 
   GoGame* game = [GoGame sharedGame];
   bool activityIndicatorShouldAnimate = false;
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (game.score.askGtpEngineForDeadStonesInProgress)
       activityIndicatorShouldAnimate = true;
@@ -376,7 +376,7 @@
     else
     {
       GoScore* score = [GoGame sharedGame].score;
-      if (score.territoryScoringEnabled)
+      if (score.scoringEnabled)
       {
         if (score.scoringInProgress)
           statusText = @"Scoring in progress...";
@@ -477,9 +477,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreTerritoryScoringDisabled notification.
+/// @brief Responds to the #goScoreScoringDisabled notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreTerritoryScoringDisabled:(NSNotification*)notification
+- (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   // Need this to remove score summary message
   self.statusLabelNeedsUpdate = true;

@@ -61,8 +61,8 @@ NSString* archiveContentChanged = @"ArchiveContentChanged";
 NSString* gtpLogContentChanged = @"GtpLogContentChanged";
 NSString* gtpLogItemChanged = @"GtpLogItemChanged";
 // Scoring related notifications
-NSString* goScoreTerritoryScoringEnabled = @"GoScoreTerritoryScoringEnabled";
-NSString* goScoreTerritoryScoringDisabled = @"GoScoreTerritoryScoringDisabled";
+NSString* goScoreScoringEnabled = @"GoScoreScoringEnabled";
+NSString* goScoreScoringDisabled = @"GoScoreScoringDisabled";
 NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
 NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
@@ -365,7 +365,7 @@ NSString* goPointStoneStateKey = @"StoneState";
 NSString* goPointTerritoryStatisticsScoreKey = @"TerritoryStatisticsScore";
 NSString* goPointRegionKey = @"Region";
 // GoScore keys
-NSString* goScoreTerritoryScoringEnabledKey = @"TerritoryScoringEnabled";
+NSString* goScoreScoringEnabledKey = @"ScoringEnabled";
 NSString* goScoreScoringInProgressKey = @"ScoringInProgress";
 NSString* goScoreAskGtpEngineForDeadStonesInProgressKey = @"AskGtpEngineForDeadStonesInProgress";
 NSString* goScoreKomiKey = @"Komi";

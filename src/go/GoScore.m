@@ -56,7 +56,7 @@
   if (! self)
     return nil;
 
-  _territoryScoringEnabled = false;              // don't use self to avoid triggering a notification
+  _scoringEnabled = false;                       // don't use self to avoid triggering a notification
   _scoringInProgress = false;                    // ditto
   _askGtpEngineForDeadStonesInProgress = false;  // ditto
   _game = game;
@@ -79,7 +79,7 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  _territoryScoringEnabled = [decoder decodeBoolForKey:goScoreTerritoryScoringEnabledKey];
+  _scoringEnabled = [decoder decodeBoolForKey:goScoreScoringEnabledKey];
   _scoringInProgress = [decoder decodeBoolForKey:goScoreScoringInProgressKey];
   _askGtpEngineForDeadStonesInProgress = [decoder decodeBoolForKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
   _komi = [decoder decodeDoubleForKey:goScoreKomiKey];
@@ -142,22 +142,22 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setTerritoryScoringEnabled:(bool)newState
+- (void) setScoringEnabled:(bool)newState
 {
-  if (_territoryScoringEnabled == newState)
+  if (_scoringEnabled == newState)
     return;
-  _territoryScoringEnabled = newState;
+  _scoringEnabled = newState;
   NSString* notificationName;
   if (newState)
   {
     [self initializeRegions];
     self.didAskGtpEngineForDeadStones = false;
-    notificationName = goScoreTerritoryScoringEnabled;
+    notificationName = goScoreScoringEnabled;
   }
   else
   {
     [self uninitializeRegions];
-    notificationName = goScoreTerritoryScoringDisabled;
+    notificationName = goScoreScoringDisabled;
   }
   [self performSelector:@selector(postNotificationOnMainThread:)
                onThread:[NSThread mainThread]
@@ -166,7 +166,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setTerritoryScoringEnabled.
+/// @brief Private helper for setScoringEnabled.
 // -----------------------------------------------------------------------------
 - (void) initializeRegions
 {
@@ -182,7 +182,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setTerritoryScoringEnabled.
+/// @brief Private helper for setScoringEnabled.
 // -----------------------------------------------------------------------------
 - (void) uninitializeRegions
 {
@@ -197,13 +197,13 @@
 /// Invocation of this method must be balanced by also invoking
 /// didChangeBoardPosition.
 ///
-/// If territory scoring is currently enabled, this GoScore temporarily
-/// un-initializes GoGame and its associated objects so that the territory
-/// scoring mode does not interfere with the board position change.
+/// If scoring is currently enabled, this GoScore temporarily un-initializes
+/// GoGame and its associated objects so that the scoring mode does not
+/// interfere with the board position change.
 // -----------------------------------------------------------------------------
 - (void) willChangeBoardPosition
 {
-  if (! self.territoryScoringEnabled)
+  if (! self.scoringEnabled)
     return;
   [self uninitializeRegions];
 }
@@ -213,13 +213,13 @@
 /// completed. This method must be invoked to balance a previous invocation of
 /// willChangeBoardPosition.
 ///
-/// If territory scoring is currently enabled, this GoScore re-initializes
-/// GoGame and its associated objects for territory scoring mode so that a new
-/// score can be calculated for the new board position.
+/// If scoring is currently enabled, this GoScore re-initializes GoGame and its
+/// associated objects for scoring mode so that a new score can be calculated
+/// for the new board position.
 // -----------------------------------------------------------------------------
 - (void) didChangeBoardPosition
 {
-  if (! self.territoryScoringEnabled)
+  if (! self.scoringEnabled)
     return;
   [self initializeRegions];
   self.didAskGtpEngineForDeadStones = false;
@@ -277,7 +277,7 @@
     self.lastCalculationHadError = false;
     [self resetValues];
 
-    if (self.territoryScoringEnabled)
+    if (self.scoringEnabled)
     {
       [self askGtpEngineForDeadStones];
       bool success = [self updateTerritoryColor];
@@ -462,7 +462,7 @@
 // -----------------------------------------------------------------------------
 - (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup
 {
-  if (! self.territoryScoringEnabled)
+  if (! self.scoringEnabled)
     return;
   if (self.scoringInProgress)
     return;
@@ -771,8 +771,8 @@
     move = move.previous;
   }
 
-  // Territory & dead stones (for current board position)
-  if (self.territoryScoringEnabled)
+  // Area, territory & dead stones (for current board position)
+  if (self.scoringEnabled)
   {
     NSArray* allRegions = self.game.board.regions;
     for (GoBoardRegion* region in allRegions)
@@ -832,7 +832,7 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeBool:self.territoryScoringEnabled forKey:goScoreTerritoryScoringEnabledKey];
+  [encoder encodeBool:self.scoringEnabled forKey:goScoreScoringEnabledKey];
   [encoder encodeBool:self.scoringInProgress forKey:goScoreScoringInProgressKey];
   [encoder encodeBool:self.askGtpEngineForDeadStonesInProgress forKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
   [encoder encodeDouble:self.komi forKey:goScoreKomiKey];

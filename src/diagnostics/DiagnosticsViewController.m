@@ -562,7 +562,7 @@ enum BugReportSectionItem
         break;
     }
   }
-  if (game.score.territoryScoringEnabled)
+  if (game.score.scoringEnabled)
   {
     if (game.score.scoringInProgress)
       return true;

@@ -78,8 +78,8 @@
 @property(nonatomic, assign) bool scoringMode;
 /// @brief During scoring denotes which territory this GoBoardRegion belongs to.
 @property(nonatomic, assign) enum GoColor territoryColor;
-/// @brief Flag is true if the territory scoring algorithm detected an
-/// inconsistency and was unable to assign a territory color to this region.
+/// @brief Flag is true if the scoring algorithm detected an inconsistency and
+/// was unable to assign a territory color to this region.
 ///
 /// If this flag is true, the property @e territoryColor has value #GoColorNone.
 /// However, it cannot be concluded from this that the region is truly neutral.

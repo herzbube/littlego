@@ -408,10 +408,10 @@ extern NSString* gtpLogItemChanged;
 /// @name Scoring related notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that territory scoring mode has been enabled.
-extern NSString* goScoreTerritoryScoringEnabled;
-/// @brief Is sent to indicate that territory scoring mode has been disabled.
-extern NSString* goScoreTerritoryScoringDisabled;
+/// @brief Is sent to indicate that scoring mode has been enabled.
+extern NSString* goScoreScoringEnabled;
+/// @brief Is sent to indicate that scoring mode has been disabled.
+extern NSString* goScoreScoringDisabled;
 /// @brief Is sent to indicate that the calculation of a new score is about to
 /// start.
 ///
@@ -820,7 +820,7 @@ extern NSString* goPointStoneStateKey;
 extern NSString* goPointTerritoryStatisticsScoreKey;
 extern NSString* goPointRegionKey;
 // GoScore keys
-extern NSString* goScoreTerritoryScoringEnabledKey;
+extern NSString* goScoreScoringEnabledKey;
 extern NSString* goScoreScoringInProgressKey;
 extern NSString* goScoreAskGtpEngineForDeadStonesInProgressKey;
 extern NSString* goScoreKomiKey;
