@@ -338,7 +338,7 @@ enum ResetToDefaultsSectionItem
     case ResetToDefaultsSection:
     {
       cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
-      cell.textLabel.text = @"Reset to default values";
+      cell.textLabel.text = @"Reset to default players & profiles";
       break;
     }
     default:
