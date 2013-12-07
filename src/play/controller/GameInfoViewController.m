@@ -1051,7 +1051,7 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", score.totalScoreBlack];
+          return [NSString stringWithFractionValue:score.totalScoreBlack];
         case TitleColumn:
           return @"Score";
         case WhitePlayerColumn:

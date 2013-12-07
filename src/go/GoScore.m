@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
@@ -89,7 +90,11 @@
   _deadWhite = [decoder decodeIntForKey:goScoreDeadWhiteKey];
   _territoryBlack = [decoder decodeIntForKey:goScoreTerritoryBlackKey];
   _territoryWhite = [decoder decodeIntForKey:goScoreTerritoryWhiteKey];
-  _totalScoreBlack = [decoder decodeIntForKey:goScoreTotalScoreBlackKey];
+  _aliveBlack = [decoder decodeIntForKey:goScoreAliveBlackKey];
+  _aliveWhite = [decoder decodeIntForKey:goScoreAliveWhiteKey];
+  _handicapCompensationBlack = [decoder decodeDoubleForKey:goScoreHandicapCompensationBlackKey];
+  _handicapCompensationWhite = [decoder decodeDoubleForKey:goScoreHandicapCompensationWhiteKey];
+  _totalScoreBlack = [decoder decodeDoubleForKey:goScoreTotalScoreBlackKey];
   _totalScoreWhite = [decoder decodeDoubleForKey:goScoreTotalScoreWhiteKey];
   _result = [decoder decodeIntForKey:goScoreResultKey];
   _numberOfMoves = [decoder decodeIntForKey:goScoreNumberOfMovesKey];
@@ -129,6 +134,10 @@
   self.deadWhite = 0;
   self.territoryBlack = 0;
   self.territoryWhite = 0;
+  self.aliveBlack = 0;
+  self.aliveWhite = 0;
+  self.handicapCompensationBlack = 0;
+  self.handicapCompensationWhite = 0;
   self.totalScoreBlack = 0;
   self.totalScoreWhite = 0;
   self.result = GoGameResultNone;
@@ -778,8 +787,11 @@
     for (GoBoardRegion* region in allRegions)
     {
       int regionSize = [region size];
+      bool regionIsStoneGroup = [region isStoneGroup];
+      bool regionIsDeadStoneGroup = region.deadStoneGroup;
+
       // Territory: We only count dead stones and empty intersections
-      if (region.deadStoneGroup || ! [region isStoneGroup])
+      if (regionIsDeadStoneGroup || ! regionIsStoneGroup)
       {
         switch (region.territoryColor)
         {
@@ -794,8 +806,24 @@
         }
       }
 
+      // Alive stones
+      if (regionIsStoneGroup && ! regionIsDeadStoneGroup)
+      {
+        switch (region.territoryColor)
+        {
+          case GoColorBlack:
+            self.aliveBlack += regionSize;
+            break;
+          case GoColorWhite:
+            self.aliveWhite += regionSize;
+            break;
+          default:
+            break;
+        }
+      }
+
       // Dead stones
-      if (region.deadStoneGroup)
+      if (regionIsDeadStoneGroup)
       {
         switch ([region color])
         {
@@ -810,11 +838,34 @@
         }
       }
     }
+
+    int numberOfHandicapStones = self.game.handicapPoints.count;
+    if (numberOfHandicapStones > 0)
+    {
+      self.handicapCompensationWhite = numberOfHandicapStones;
+    }
   }
 
   // Total score
-  self.totalScoreBlack = self.capturedByBlack + self.deadWhite + self.territoryBlack;
-  self.totalScoreWhite = self.komi + self.capturedByWhite + self.deadBlack + self.territoryWhite;
+  switch (self.game.rules.scoringSystem)
+  {
+    case GoScoringSystemAreaScoring:
+    {
+      self.totalScoreBlack = self.aliveBlack + self.territoryBlack + self.handicapCompensationBlack;
+      self.totalScoreBlack = self.komi + self.aliveWhite + self.territoryWhite + self.handicapCompensationWhite;
+      break;
+    }
+    case GoScoringSystemTerritoryScoring:
+    {
+      self.totalScoreBlack = self.capturedByBlack + self.deadWhite + self.territoryBlack;
+      self.totalScoreWhite = self.komi + self.capturedByWhite + self.deadBlack + self.territoryWhite;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 
   // Final result
   if (self.totalScoreBlack > self.totalScoreWhite)
@@ -842,7 +893,11 @@
   [encoder encodeInt:self.deadWhite forKey:goScoreDeadWhiteKey];
   [encoder encodeInt:self.territoryBlack forKey:goScoreTerritoryBlackKey];
   [encoder encodeInt:self.territoryWhite forKey:goScoreTerritoryWhiteKey];
-  [encoder encodeInt:self.totalScoreBlack forKey:goScoreTotalScoreBlackKey];
+  [encoder encodeInt:self.aliveBlack forKey:goScoreAliveBlackKey];
+  [encoder encodeInt:self.aliveWhite forKey:goScoreAliveWhiteKey];
+  [encoder encodeDouble:self.handicapCompensationBlack forKey:goScoreHandicapCompensationBlackKey];
+  [encoder encodeDouble:self.handicapCompensationWhite forKey:goScoreHandicapCompensationWhiteKey];
+  [encoder encodeDouble:self.totalScoreBlack forKey:goScoreTotalScoreBlackKey];
   [encoder encodeDouble:self.totalScoreWhite forKey:goScoreTotalScoreWhiteKey];
   [encoder encodeInt:self.result forKey:goScoreResultKey];
   [encoder encodeInt:self.numberOfMoves forKey:goScoreNumberOfMovesKey];
