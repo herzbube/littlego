@@ -217,6 +217,7 @@
 		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CD4B2598169A536F0023DE40 /* BoardPositionViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4B2597169A536F0023DE40 /* BoardPositionViewMetrics.m */; };
 		CD55576616702DBC003B957B /* TableViewSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55576516702DBC003B957B /* TableViewSegmentedCell.m */; };
+		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -2440,6 +2441,7 @@
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
+				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */,
