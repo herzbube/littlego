@@ -202,6 +202,22 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a scoringSystem.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithScoringSystem:(enum GoScoringSystem)scoringSystem
+{
+  switch (scoringSystem)
+  {
+    case GoScoringSystemAreaScoring:
+      return @"Area scoring";
+    case GoScoringSystemTerritoryScoring:
+      return @"Territory scoring";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that describes @a reason.
 // -----------------------------------------------------------------------------
 + (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason

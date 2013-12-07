@@ -39,11 +39,11 @@ enum NewGameTableViewSection
 {
   GameTypeSection,
   PlayersSection,
-  BoardSizeSection,  // doubles as KoRuleSection in "load game" mode
+  BoardSizeSection,  // doubles as GameRulesSection in "load game" mode
   MaxSectionLoadGame,
   // Sections from here on are not displayed in "load game" mode
   HandicapKomiSection = MaxSectionLoadGame,
-  KoRuleSection,
+  GameRulesSection,
   MaxSection
 };
 
@@ -97,12 +97,13 @@ enum HandicapKomiSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the KoRuleSection.
+/// @brief Enumerates items in the GameRulesSection.
 // -----------------------------------------------------------------------------
-enum KoRuleSectionItem
+enum GameRulesSectionItem
 {
   KoRuleItem,
-  MaxKoRuleSectionItem
+  ScoringSystemItem,
+  MaxGameRulesSectionItem
 };
 
 
@@ -311,11 +312,11 @@ enum KoRuleSectionItem
       }
     }
     case BoardSizeSection:
-    case KoRuleSection:
-      if (! self.loadGame && section != KoRuleSection)
+    case GameRulesSection:
+      if (! self.loadGame && section != GameRulesSection)
         return MaxBoardSizeSectionItem;
       else
-        return MaxKoRuleSectionItem;
+        return MaxGameRulesSectionItem;
     case HandicapKomiSection:
       return MaxHandicapKomiSectionItem;
     default:
@@ -453,17 +454,35 @@ enum KoRuleSectionItem
       break;
     }
     case BoardSizeSection:
-    case KoRuleSection:
+    case GameRulesSection:
     {
-      if (! self.loadGame && indexPath.section != KoRuleSection)
+      if (! self.loadGame && indexPath.section != GameRulesSection)
       {
         cell.textLabel.text = @"Board size";
         cell.detailTextLabel.text = [GoBoard stringForSize:self.theNewGameModel.boardSize];
       }
       else
       {
-        cell.textLabel.text = @"Ko rule";
-        cell.detailTextLabel.text = [NSString stringWithKoRule:self.theNewGameModel.koRule];
+        switch (indexPath.row)
+        {
+          case KoRuleItem:
+          {
+            cell.textLabel.text = @"Ko rule";
+            cell.detailTextLabel.text = [NSString stringWithKoRule:self.theNewGameModel.koRule];
+            break;
+          }
+          case ScoringSystemItem:
+          {
+            cell.textLabel.text = @"Scoring system";
+            cell.detailTextLabel.text = [NSString stringWithScoringSystem:self.theNewGameModel.scoringSystem];
+            break;
+          }
+          default:
+          {
+            assert(0);
+            break;
+          }
+        }
       }
       break;
     }
@@ -532,12 +551,12 @@ enum KoRuleSectionItem
       break;
     }
     case BoardSizeSection:
-    case KoRuleSection:
+    case GameRulesSection:
     {
       NSString* title;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
-      if (! self.loadGame && indexPath.section != KoRuleSection)
+      if (! self.loadGame && indexPath.section != GameRulesSection)
       {
         title = @"Board size";
         for (int boardSizeIndex = 0; boardSizeIndex < gNumberOfBoardSizes; ++boardSizeIndex)
@@ -549,14 +568,29 @@ enum KoRuleSectionItem
       }
       else
       {
-        title = @"Ko rule";
-        enum GoKoRule defaultKoRule = self.theNewGameModel.koRule;
-        for (int koRule = 0; koRule <= GoKoRuleMax; ++koRule)
+        if (KoRuleItem == indexPath.row)
         {
-          NSString* koRuleString = [NSString stringWithKoRule:koRule];
-          [itemList addObject:koRuleString];
-          if (koRule == defaultKoRule)
-            indexOfDefaultItem = koRule;
+          title = @"Ko rule";
+          enum GoKoRule defaultKoRule = self.theNewGameModel.koRule;
+          for (int koRule = 0; koRule <= GoKoRuleMax; ++koRule)
+          {
+            NSString* koRuleString = [NSString stringWithKoRule:koRule];
+            [itemList addObject:koRuleString];
+            if (koRule == defaultKoRule)
+              indexOfDefaultItem = koRule;
+          }
+        }
+        else
+        {
+          title = @"Scoring system";
+          enum GoScoringSystem defaultScoringSystem = self.theNewGameModel.scoringSystem;
+          for (int scoringSystem = 0; scoringSystem <= GoScoringSystemMax; ++scoringSystem)
+          {
+            NSString* scoringSystemString = [NSString stringWithScoringSystem:scoringSystem];
+            [itemList addObject:scoringSystemString];
+            if (scoringSystem == defaultScoringSystem)
+              indexOfDefaultItem = scoringSystem;
+          }
         }
       }
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
@@ -615,9 +649,9 @@ enum KoRuleSectionItem
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
     else if (BoardSizeSection == indexPathContext.section ||
-             KoRuleSection == indexPathContext.section)
+             GameRulesSection == indexPathContext.section)
     {
-      if (! self.loadGame && indexPathContext.section != KoRuleSection)
+      if (! self.loadGame && indexPathContext.section != GameRulesSection)
       {
         self.theNewGameModel.boardSize = GoBoardSizeMin + (controller.indexOfSelectedItem * 2);
         NSRange indexSetRange = NSMakeRange(BoardSizeSection, 1);
@@ -637,7 +671,10 @@ enum KoRuleSectionItem
       }
       else
       {
-        self.theNewGameModel.koRule = controller.indexOfSelectedItem;
+        if (KoRuleItem == indexPathContext.row)
+          self.theNewGameModel.koRule = controller.indexOfSelectedItem;
+        else
+          self.theNewGameModel.scoringSystem = controller.indexOfSelectedItem;
         self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
         NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexPathContext.section];
         [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
