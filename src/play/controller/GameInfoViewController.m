@@ -116,6 +116,8 @@ enum MoveStatisticsSectionItem
   StonesPlayedByWhiteItem,
   PassMovesPlayedByBlackItem,
   PassMovesPlayedByWhiteItem,
+  StonesCapturedByBlackItem,
+  StonesCapturedByWhiteItem,
   MaxMoveStatisticsSectionItem
 };
 
@@ -804,6 +806,18 @@ enum BoardPositionSectionItem
         {
           cell.textLabel.text = @"Pass moves played by white";
           cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.passesPlayedByWhite];
+          break;
+        }
+        case StonesCapturedByBlackItem:
+        {
+          cell.textLabel.text = @"Stones captured by black";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.capturedByBlack];
+          break;
+        }
+        case StonesCapturedByWhiteItem:
+        {
+          cell.textLabel.text = @"Stones captured by white";
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", score.capturedByWhite];
           break;
         }
         default:
