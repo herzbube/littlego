@@ -61,8 +61,10 @@ enum ScoreSectionItem
 {
   HeadingItem,
   KomiScoreItem,
-  CapturedItem,
-  DeadItem,
+  HandicapCompensationItem,  // area scoring
+  AliveItem,                 // area scoring
+  CapturedItem = HandicapCompensationItem,  // territory scoring
+  DeadItem,                                 // territory scoring
   TerritoryItem,
   TotalScoreItem,
   ResultItem,
@@ -968,7 +970,9 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) gridCell:(TableViewGridCell*)gridCell textForColumn:(NSInteger)column
 {
-  GoScore* score = [GoGame sharedGame].score;
+  GoGame* game = [GoGame sharedGame];
+  GoGameRules* rules = game.rules;
+  GoScore* score = game.score;
   switch (gridCell.tag)
   {
     case HeadingItem:
@@ -1000,41 +1004,83 @@ enum BoardPositionSectionItem
       }
       break;
     }
-    case CapturedItem:
+    case CapturedItem:  // HandicapCompensationItem in area scoring
     {
-      switch (column)
+      if (GoScoringSystemAreaScoring == rules.scoringSystem)
       {
-        case BlackPlayerColumn:
-          return [NSString stringWithFormat:@"%d", score.capturedByBlack];
-        case TitleColumn:
-          return @"Captured";
-        case WhitePlayerColumn:
-          return [NSString stringWithFormat:@"%d", score.capturedByWhite];
-        default:
-          assert(0);
-          break;
+        switch (column)
+        {
+          case BlackPlayerColumn:
+            return @"-";
+          case TitleColumn:
+            return @"Handicap";
+          case WhitePlayerColumn:
+            return [NSString stringWithFractionValue:score.handicapCompensationWhite];
+          default:
+            assert(0);
+            break;
+        }
+      }
+      else
+      {
+        switch (column)
+        {
+          case BlackPlayerColumn:
+            return [NSString stringWithFormat:@"%d", score.capturedByBlack];
+          case TitleColumn:
+            return @"Captured";
+          case WhitePlayerColumn:
+            return [NSString stringWithFormat:@"%d", score.capturedByWhite];
+          default:
+            assert(0);
+            break;
+        }
       }
       break;
     }
-    case DeadItem:
+    case DeadItem:  // AliveItem in area scoring
     {
-      switch (column)
+      if (GoScoringSystemAreaScoring == rules.scoringSystem)
       {
-        case BlackPlayerColumn:
-          if (score.scoringEnabled)
-            return [NSString stringWithFormat:@"%d", score.deadWhite];
-          else
-            return @"n/a";
-        case TitleColumn:
-          return @"Dead";
-        case WhitePlayerColumn:
-          if (score.scoringEnabled)
-            return [NSString stringWithFormat:@"%d", score.deadBlack];
-          else
-            return @"n/a";
-        default:
-          assert(0);
-          break;
+        switch (column)
+        {
+          case BlackPlayerColumn:
+            if (score.scoringEnabled)
+              return [NSString stringWithFormat:@"%d", score.aliveBlack];
+            else
+              return @"n/a";
+          case TitleColumn:
+            return @"Stones";
+          case WhitePlayerColumn:
+            if (score.scoringEnabled)
+              return [NSString stringWithFormat:@"%d", score.aliveWhite];
+            else
+              return @"n/a";
+          default:
+            assert(0);
+            break;
+        }
+      }
+      else
+      {
+        switch (column)
+        {
+          case BlackPlayerColumn:
+            if (score.scoringEnabled)
+              return [NSString stringWithFormat:@"%d", score.deadWhite];
+            else
+              return @"n/a";
+          case TitleColumn:
+            return @"Dead";
+          case WhitePlayerColumn:
+            if (score.scoringEnabled)
+              return [NSString stringWithFormat:@"%d", score.deadBlack];
+            else
+              return @"n/a";
+          default:
+            assert(0);
+            break;
+        }
       }
       break;
     }
