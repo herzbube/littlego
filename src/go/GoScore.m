@@ -852,7 +852,7 @@
     case GoScoringSystemAreaScoring:
     {
       self.totalScoreBlack = self.aliveBlack + self.territoryBlack + self.handicapCompensationBlack;
-      self.totalScoreBlack = self.komi + self.aliveWhite + self.territoryWhite + self.handicapCompensationWhite;
+      self.totalScoreWhite = self.komi + self.aliveWhite + self.territoryWhite + self.handicapCompensationWhite;
       break;
     }
     case GoScoringSystemTerritoryScoring:

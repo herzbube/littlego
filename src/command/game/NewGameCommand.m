@@ -141,8 +141,9 @@
     }
     newGame.type = newGameModel.gameType;
     newGame.rules.koRule = newGameModel.koRule;
+    newGame.rules.scoringSystem = newGameModel.scoringSystem;
   }
-  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d, ko rule = %d",
+  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d, ko rule = %d, scoring = %d",
                [self shortDescription],
                newGame.board,
                newGame.komi,
@@ -152,7 +153,8 @@
                newGame.playerWhite,
                newGame.playerWhite.player.uuid,
                newGame.type,
-               newGame.rules.koRule);
+               newGame.rules.koRule,
+               newGame.rules.scoringSystem);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what

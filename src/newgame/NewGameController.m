@@ -678,12 +678,15 @@ enum GameRulesSectionItem
         else
         {
           self.theNewGameModel.scoringSystem = controller.indexOfSelectedItem;
-          if (GoScoringSystemAreaScoring == self.theNewGameModel.scoringSystem)
-            self.theNewGameModel.komi = gDefaultKomiAreaScoring;
-          else
-            self.theNewGameModel.komi = gDefaultKomiTerritoryScoring;
-          NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
-          [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+          if (! self.loadGame)
+          {
+            if (GoScoringSystemAreaScoring == self.theNewGameModel.scoringSystem)
+              self.theNewGameModel.komi = gDefaultKomiAreaScoring;
+            else
+              self.theNewGameModel.komi = gDefaultKomiTerritoryScoring;
+            NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
+            [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+          }
         }
         self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
         NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexPathContext.section];
