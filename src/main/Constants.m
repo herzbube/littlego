@@ -35,7 +35,8 @@ const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
 const int gNumberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
 const bool gDefaultComputerPlaysWhite = true;
 const int gDefaultHandicap = 0;
-const double gDefaultKomi = 6.5;
+const double gDefaultKomiAreaScoring = 7.5;
+const double gDefaultKomiTerritoryScoring = 6.5;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";

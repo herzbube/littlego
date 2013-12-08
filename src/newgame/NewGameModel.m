@@ -42,7 +42,10 @@
   self.computerPlayerSelfPlayUUID = @"";
   self.boardSize = gDefaultBoardSize;
   self.handicap = gDefaultHandicap;
-  self.komi = gDefaultKomi;
+  if (GoScoringSystemDefault == GoScoringSystemAreaScoring)
+    self.komi = gDefaultKomiAreaScoring;
+  else
+    self.komi = gDefaultKomiTerritoryScoring;
   self.koRule = GoKoRuleDefault;
   self.scoringSystem = GoScoringSystemDefault;
   return self;

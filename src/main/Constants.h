@@ -278,7 +278,8 @@ extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
 extern const bool gDefaultComputerPlaysWhite;
 extern const int gDefaultHandicap;
-extern const double gDefaultKomi;
+extern const double gDefaultKomiAreaScoring;
+extern const double gDefaultKomiTerritoryScoring;
 //@}
 
 // -----------------------------------------------------------------------------

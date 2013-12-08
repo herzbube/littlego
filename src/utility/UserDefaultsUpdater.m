@@ -506,8 +506,14 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
   if (newGameDictionary)  // is nil if the key is not present
   {
     NSMutableDictionary* newGameDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:newGameDictionary];
-    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoKoRuleDefault] forKey:koRuleKey];
-    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoScoringSystemDefault] forKey:scoringSystemKey];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoKoRuleSimple] forKey:koRuleKey];
+    [newGameDictionaryUpgrade setValue:[NSNumber numberWithInt:GoScoringSystemAreaScoring] forKey:scoringSystemKey];
+    // We are switching the default scoring system from territory to area
+    // scoring, so if the user still has the default komi for territory scoring,
+    // we switch komi as well
+    double komi = [[newGameDictionaryUpgrade valueForKey:komiKey] doubleValue];
+    if (gDefaultKomiTerritoryScoring == komi)
+      [newGameDictionaryUpgrade setValue:[NSNumber numberWithDouble:gDefaultKomiAreaScoring] forKey:komiKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
 }
