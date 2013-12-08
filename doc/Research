@@ -709,6 +709,93 @@ Cf. http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
 - Decimal values range from -1.0 (always white) to +1.0 (always black)
 
 
+Scoring and counting
+--------------------
+The difference between scoring and counting
+- The terms "scoring" and "counting" are often used interchangeably (e.g.
+  "chinese scoring", "chinese counting") when in fact the two are different
+  things.
+- The scoring system in use determines *what* counts. For instance, do captured
+  stones count? Do occupied intersections count?
+- The counting method in use determines *how* the count is made. For instance,
+  with territory scoring you can either add captured stones to the score of the
+  capturing player, or you can subtract captured stones from the score of the
+  player who owns the stones.
+- The scoring system has an influence on how the game is played and is part of
+  the game rules.
+- Using different counting methods may yield different scores, but the winning
+  player always remains the same.
+
+Glossary
+- Territory = Empty intersections surrounded by the stones of a color
+- Area = Intersections occupied by the stones of a color
+
+Territory scoring
+- The basic rules of this scoring system are
+  - Remove dead stones from the board, adding them to the already captured
+    stones
+  - Start the score with your territory (excluding territory surrounded in Seki)
+  - Subtract the number of your stones that were captured by the opponent (this
+    includes the dead stones that were initially removed from the board)
+  - Add Komi (for white only)
+- The basic rules allow negative scores, so there are variations how to count
+  captured stones
+  - Japanese counting (http://senseis.xmp.net/?JapaneseCounting): Subtract only
+    as many captured stones until you reach zero. Any surplus captured stones
+    are then added to the opponent's score. For the white player, Komi is added
+    *after* handling captured stones.
+  - Little Go: Instead of subtracting captured stones from the owning player's
+    score, simply add them to the opponent's score. This makes sure that no
+    negative scores can occur, but it will result in overall higher scores.
+- Handicap has no effect on the score under Territory scoring rules
+- Komi for non-handicap games is 6.5
+
+Area scoring
+- The basic rules of this scoring system are
+  - Remove dead stones from the board, giving them back to the owning player
+  - Start the score with your territory (including territory surrounded in Seki)
+  - Add the number of stones of your color on the board
+  - Add Komi (for white only)
+  - Add compensation for handicap stones (for white only)
+- There are a few variations how to count handicap
+  - The basic goal always is to compensate white for the area occupied by the
+    handicap stones
+  - Chinese counting: For a handicap with n stones, black subtracts n/2 from his
+    score, white adds n/2 to his score.
+  - AGA (American Go Association) counting: For a handicap with n stones, white
+    adds n-1 to his score.
+- Komi for non-handicap games is 7.5
+
+Links & resources
+- http://senseis.xmp.net/?Scoring
+  - Has basic rules for the two scoring systems
+- http://senseis.xmp.net/?TerritoryAndAreaScoring
+  - Compares the two scoring systems
+  - Mentions the n/2 handicap compensation in reference to the Chinese counting
+    method
+  - Also mentions the AGA handicap compensation system
+- http://senseis.xmp.net/?ChineseCounting
+  - The counting method most often used for area scoring
+  - Mentions handicap compensation in a rather ambiguous way
+- http://senseis.xmp.net/?JapaneseCounting
+  - The counting method most often used for territory scoring
+- http://senseis.xmp.net/?Komi
+  - Explains which Komi should be used for the different scoring systems
+- http://www.britgo.org/rules/compare.html
+  - Good comparison of different Go rulesets, including some clarification
+    regarding the handling of handicap compensation
+
+GTP commands involved in scoring
+- go_param_rules japanese_scoring
+  - This is the main command that distinguishes between area scoring (parameter
+    value = 0) and territory scoring (parameter value = 1)
+- go_param_rules capture_dead
+  - The meaning of this parameter is not yet fully understood
+- uct_param_player early_pass
+  - The meaning of this parameter is not yet fully understood
+
+
+
 Redesigning the drawing mechanism in PlayView
 ---------------------------------------------
 During development of version 0.8 I decided to revise the implementation of how
@@ -844,10 +931,10 @@ CrossHairChanged                         Cross-hair           A set of rectangle
 GoGameDidCreate                          All layers           Entire layers (a new game might include a board size change)
 playViewBoardPositionChanged             Stones               1-n rectangles, for a stone being placed + stones being captured/replaced
                                          Symbols              Update last move marker
-GoScoreTerritoryScoringEnabled           Symbols              Hide layer
+GoScoreScoringEnabled                    Symbols              Hide layer
                                          Territory            Show layer
                                          Dead Stones          Show layer
-GoScoreTerritoryScoringDisabled          Symbols              Show layer
+GoScoreScoringDisabled                   Symbols              Show layer
                                          Territory            Hide layer
                                          Dead Stones          Hide layer
 GoScoreCalculationEnds                   Territory            Update entire layer
