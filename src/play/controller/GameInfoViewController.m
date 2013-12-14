@@ -102,6 +102,7 @@ enum GameInfoSectionItem
   BoardSizeItem,
   KomiItem,
   KoRuleItem,
+  ScoringSystemItem,
   BlackPlayerItem,
   WhitePlayerItem,
   ActiveProfileItem,
@@ -490,12 +491,19 @@ enum BoardPositionSectionItem
   {
     case ScoreInfoType:
     {
+      GoGame* game = [GoGame sharedGame];
       NSString* titlePartOne = nil;
-      if (! [GoGame sharedGame].boardPosition.isLastPosition)
+      if (! game.boardPosition.isLastPosition)
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
       NSString* titlePartTwo = nil;
-      if (! [GoGame sharedGame].score.scoringEnabled)
-        titlePartTwo = @"Dead stones and territory scores are not available because you are not in scoring mode.";
+      if (! game.score.scoringEnabled)
+      {
+        if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
+          titlePartTwo = @"Stone count";
+        else
+          titlePartTwo = @"Dead stone count";
+        titlePartTwo = [titlePartTwo stringByAppendingString:@" and territory score are not available because you are not in scoring mode."];
+      }
       if (titlePartOne && titlePartTwo)
         return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
       else if (titlePartOne)
@@ -738,6 +746,12 @@ enum BoardPositionSectionItem
         {
           cell.textLabel.text = @"Ko rule";
           cell.detailTextLabel.text = [NSString stringWithKoRule:game.rules.koRule];
+          break;
+        }
+        case ScoringSystemItem:
+        {
+          cell.textLabel.text = @"Scoring system";
+          cell.detailTextLabel.text = [NSString stringWithScoringSystem:game.rules.scoringSystem];
           break;
         }
         case BlackPlayerItem:
