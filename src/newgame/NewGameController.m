@@ -678,12 +678,9 @@ enum GameRulesSectionItem
         else
         {
           self.theNewGameModel.scoringSystem = controller.indexOfSelectedItem;
-          if (! self.loadGame)
+          if (! self.loadGame && 0 == self.theNewGameModel.handicap)
           {
-            if (GoScoringSystemAreaScoring == self.theNewGameModel.scoringSystem)
-              self.theNewGameModel.komi = gDefaultKomiAreaScoring;
-            else
-              self.theNewGameModel.komi = gDefaultKomiTerritoryScoring;
+            [self autoAdjustKomiAccordingToScoringSystem];
             NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
             [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
           }
@@ -707,6 +704,10 @@ enum GameRulesSectionItem
     if (self.theNewGameModel.handicap != controller.handicap)
     {
       self.theNewGameModel.handicap = controller.handicap;
+      if (self.theNewGameModel.handicap > 0)
+        self.theNewGameModel.komi = 0.5;
+      else
+        [self autoAdjustKomiAccordingToScoringSystem];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
       NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
@@ -1020,6 +1021,17 @@ enum GameRulesSectionItem
 - (void) toggleComputerPlaysWhite:(id)sender
 {
   self.theNewGameModel.computerPlaysWhite = (! self.theNewGameModel.computerPlaysWhite);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper
+// -----------------------------------------------------------------------------
+- (void) autoAdjustKomiAccordingToScoringSystem
+{
+  if (GoScoringSystemAreaScoring == self.theNewGameModel.scoringSystem)
+    self.theNewGameModel.komi = gDefaultKomiAreaScoring;
+  else
+    self.theNewGameModel.komi = gDefaultKomiTerritoryScoring;
 }
 
 // -----------------------------------------------------------------------------
