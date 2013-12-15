@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,19 +36,22 @@
 {
   STAssertNotNil(m_game.rules, nil);
   STAssertEquals(m_game.rules.koRule, GoKoRuleSimple, nil);
+  STAssertEquals(m_game.rules.scoringSystem, GoScoringSystemAreaScoring, nil);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks that the GoGameRules object takes its ko rule from the
-/// setting in NewGameModel.
+/// @brief Checks that the GoGameRules object takes its rules from the settings
+/// in NewGameModel.
 // -----------------------------------------------------------------------------
-- (void) testNonDefaultKoRule
+- (void) testNonDefaultRules
 {
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
+  newGameModel.scoringSystem = GoScoringSystemTerritoryScoring;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   STAssertEquals(m_game.rules.koRule, GoKoRuleSuperkoPositional, nil);
+  STAssertEquals(m_game.rules.scoringSystem, GoScoringSystemTerritoryScoring, nil);
 }
 
 @end

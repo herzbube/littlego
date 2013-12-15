@@ -790,10 +790,26 @@ GTP commands involved in scoring
   - This is the main command that distinguishes between area scoring (parameter
     value = 0) and territory scoring (parameter value = 1)
 - go_param_rules capture_dead
-  - The meaning of this parameter is not yet fully understood
+  - Somewhere in the Fuego source code the parameter is documented like this:
+      "Whether it necessary to capture dead stones. With some rules all
+      un-captured stones count as alive."
+  - The rules for neither area nor territory scoring mandate that un-captured
+    stones count as alive
+  - Therefore the capture_dead parameter must be set to 0 (= turned off)
+  - 0 is already the default value, so no GTP command must be sent
 - uct_param_player early_pass
-  - The meaning of this parameter is not yet fully understood
+  - The meaning of this parameter is not fully understood
+  - According to this fuego-devel post [1], early_pass = 1 may be helpful when
+    territory scoring is active
+  - This Fuego wiki page [2] also mentions early_pass, however the main purpose
+    of the parameter supposedly is "to annoy human opponents less with
+    meaningless moves in the end game."
+  - Since I can't see the exact meaning of the parameter in connection to the
+    scoring system, I just stick to its intended meaning and leave it at its
+    default value 1 (= turned on)
 
+[1] https://sourceforge.net/mailarchive/message.php?msg_id=31365068
+[2] https://sourceforge.net/apps/trac/fuego/attachment/wiki/JapaneseRules/%5Bfuego-devel%5D%20Supported%20Go%20rules.txt
 
 
 Redesigning the drawing mechanism in PlayView
