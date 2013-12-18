@@ -17,6 +17,7 @@
 
 // Project includes
 #import "StatusViewController.h"
+#import "../model/ScoringModel.h"
 #import "../playview/PlayView.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -25,6 +26,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../player/Player.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiElementMetrics.h"
@@ -167,6 +169,7 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [[ApplicationDelegate sharedDelegate].scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -176,6 +179,7 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [[ApplicationDelegate sharedDelegate].scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
 }
 
 // -----------------------------------------------------------------------------
@@ -381,7 +385,13 @@
         if (score.scoringInProgress)
           statusText = @"Scoring in progress...";
         else
-          statusText = [NSString stringWithFormat:@"%@ - Tap to mark dead stones", [[GoGame sharedGame].score resultString]];
+        {
+          statusText = [[GoGame sharedGame].score resultString];
+          if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+            statusText = [statusText stringByAppendingString:@" - Tap to mark dead stones"];
+          else
+            statusText = [statusText stringByAppendingString:@" - Tap to mark stones in seki"];
+        }
       }
       else
       {
