@@ -273,6 +273,22 @@ enum GoScoringSystem
   GoScoringSystemDefault = GoScoringSystemAreaScoring
 };
 
+/// @brief Enumerates the states that a stone group can have during scoring.
+enum GoStoneGroupState
+{
+  GoStoneGroupStateUndefined,
+  GoStoneGroupStateAlive,
+  GoStoneGroupStateDead,
+  GoStoneGroupStateSeki
+};
+
+/// @brief Enumerates the modes the user can choose to mark stone groups.
+enum GoScoreMarkMode
+{
+  GoScoreMarkModeDead,   ///< @brief Stone groups are marked as dead / alive.
+  GoScoreMarkModeSeki    ///< @brief Stone groups are marked as in seki / not in seki
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -739,6 +755,9 @@ extern NSString* inconsistentTerritoryDotSymbolColorKey;
 extern NSString* inconsistentTerritoryDotSymbolPercentageKey;
 extern NSString* inconsistentTerritoryFillColorKey;
 extern NSString* inconsistentTerritoryFillColorAlphaKey;
+extern NSString* scoreMarkModeKey;
+extern NSString* blackSekiSymbolColorKey;
+extern NSString* whiteSekiSymbolColorKey;
 // Crash reporting settings
 extern NSString* collectCrashDataKey;
 extern NSString* automaticReportCrashDataKey;
@@ -807,7 +826,7 @@ extern NSString* goBoardRegionPointsKey;
 extern NSString* goBoardRegionScoringModeKey;
 extern NSString* goBoardRegionTerritoryColorKey;
 extern NSString* goBoardRegionTerritoryInconsistencyFoundKey;
-extern NSString* goBoardRegionDeadStoneGroupKey;
+extern NSString* goBoardRegionStoneGroupStateKey;
 extern NSString* goBoardRegionCachedSizeKey;
 extern NSString* goBoardRegionCachedIsStoneGroupKey;
 extern NSString* goBoardRegionCachedColorKey;
@@ -824,6 +843,7 @@ extern NSString* goPointRegionKey;
 extern NSString* goScoreScoringEnabledKey;
 extern NSString* goScoreScoringInProgressKey;
 extern NSString* goScoreAskGtpEngineForDeadStonesInProgressKey;
+extern NSString* goScoreMarkModeKey;
 extern NSString* goScoreKomiKey;
 extern NSString* goScoreCapturedByBlackKey;
 extern NSString* goScoreCapturedByWhiteKey;

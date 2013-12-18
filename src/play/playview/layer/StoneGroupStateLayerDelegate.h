@@ -23,10 +23,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DeadStonesLayerDelegate class is responsible for marking up dead
-/// stones while scoring is in progress.
+/// @brief The StoneGroupStateLayerDelegate class is responsible for marking up
+/// stones according to their GoBoardRegion's @e stoneGroupState property.
+/// StoneGroupStateLayerDelegate is drawing only while scoring is in progress.
 // -----------------------------------------------------------------------------
-@interface DeadStonesLayerDelegate : PlayViewLayerDelegateBase
+@interface StoneGroupStateLayerDelegate : PlayViewLayerDelegateBase
 {
 }
 

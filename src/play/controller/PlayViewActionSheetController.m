@@ -28,6 +28,7 @@
 #import "../../command/game/NewGameCommand.h"
 #import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
 #import "../../play/model/PlayViewModel.h"
+#import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
 
 
@@ -41,6 +42,7 @@
 enum ActionSheetButton
 {
   ScoreButton,
+  MarkModeButton,
   UpdatePlayerInfluenceButton,
   ResignButton,
   UndoResignButton,
@@ -125,6 +127,31 @@ enum ActionSheetButton
         if (game.score.scoringEnabled)
           continue;
         title = @"Score";
+        break;
+      }
+      case MarkModeButton:
+      {
+        if (! game.score.scoringEnabled)
+          continue;
+        ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
+        switch (model.scoreMarkMode)
+        {
+          case GoScoreMarkModeDead:
+          {
+            title = @"Start marking as Seki";
+            break;
+          }
+          case GoScoreMarkModeSeki:
+          {
+            title = @"Start marking as dead";
+            break;
+          }
+          default:
+          {
+            assert(0);
+            return;
+          }
+        }
         break;
       }
       case UpdatePlayerInfluenceButton:
@@ -228,6 +255,9 @@ enum ActionSheetButton
     case ScoreButton:
       [self score];
       break;
+    case MarkModeButton:
+      [self toggleMarkMode];
+      break;
     case UpdatePlayerInfluenceButton:
       [self updatePlayerInfluence];
       break;
@@ -260,6 +290,33 @@ enum ActionSheetButton
   score.scoringEnabled = ! score.scoringEnabled;
   [score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Start marking as [...]" action sheet
+/// button. Toggles the mark mode during scoring.
+// -----------------------------------------------------------------------------
+- (void) toggleMarkMode
+{
+  ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
+  switch (model.scoreMarkMode)
+  {
+    case GoScoreMarkModeDead:
+    {
+      model.scoreMarkMode = GoScoreMarkModeSeki;
+      break;
+    }
+    case GoScoreMarkModeSeki:
+    {
+      model.scoreMarkMode = GoScoreMarkModeDead;
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

@@ -63,23 +63,25 @@
 ///
 /// Score calculation depends on the scoring system in effect for the current
 /// game. The score can only be calculated after the status of all stones on the
-/// board has been determined to be either dead or alive. Neither Little Go nor
-/// the GTP engine are "clever" enough to find out which stone groups are truly
-/// dead. This means that the user must help out by interactively marking stones
-/// as dead or alive.
+/// board has been determined to be either dead, alive or in seki. Neither
+/// Little Go nor the GTP engine are "clever" enough to find out this status on
+/// their own. This means that the user must help out by interactively marking
+/// stones as dead, alive or in seki.
 ///
 /// An updated score is calculated every time that the user marks a stone group
-/// as dead or alive. This is the sequence of events:
-/// # toggleDeadStoneStateOfGroup:() is invoked by the controller object that
-///   handles user input
-///   - toggleDeadStoneStateOfGroup:() stores the information whether stones are
-///     dead or alive in GoBoardRegion objects' @e deadStoneGroup property.
+/// as dead, alive or in seki. This is the sequence of events:
+/// # toggleDeadStateOfStoneGroup:() or toggleSekiStateOfStoneGroup:() is
+///   invoked by the controller object that handles user input
+///   - toggleDeadStateOfStoneGroup:() or toggleSekiStateOfStoneGroup:() stores
+///     the information whether stones are dead, alive or in seki in
+///     GoBoardRegion objects' @e stoneGroupState property.
 ///   - If the user has turned the "mark stones intelligently" feature on in
-///     the user preferences, toggleDeadStoneStateOfGroup:() assists the user
-///     by changing the @e deadStoneGroup property not only of the GoBoardRegion
+///     the user preferences, toggleDeadStateOfStoneGroup:() assists the user
+///     by changing the @e stoneGroupState property not only of the GoBoardRegion
 ///     that is passed as a parameter, but also of adjacent GoBoardRegion
 ///     objects. See the "Mark dead stones intelligently" section below for
 ///     details.
+///   - No such assistance is available for toggleSekiStateOfStoneGroup:().
 /// # calculateWaitUntilDone:() is invoked by the controller object that handles
 ///   user input. This initiates the actual scoring process which consists of
 ///   two more steps.
@@ -88,7 +90,7 @@
 ///   - updateTerritoryColor() stores the "owning" color in GoBoardRegion
 ///     objects' @e territoryColor property.
 ///   - Calculation of the territory color entirely depends on the
-///     @e deadStoneGroup property of all GoBoardRegion objects having been
+///     @e stoneGroupState property of all GoBoardRegion objects having been
 ///     set up correctly before.
 ///   - See the section "Determining territory color" below for details on how
 ///     the calculation works
@@ -106,15 +108,15 @@
 /// @par Mark dead stones intelligently
 ///
 /// If the user has turned this feature on in the user preferences,
-/// toggleDeadStoneStateOfGroup:() changes the @e deadStoneGroup property not
+/// toggleDeadStateOfStoneGroup:() changes the @e stoneGroupState property not
 /// only of the GoBoardRegion that is passed as a parameter, but also of
 /// adjacent GoBoardRegion objects. The reasoning is this:
 /// - Marking a stone group as dead means that the owning color has conceded
 ///   that the group is in opposing territory.
 /// - However, it is not possible to have two or more stone groups of the same
 ///   color in the same territory, but some of them are dead and some of them
-///   are alive. They must either be all dead, or all alive.
-/// - toggleDeadStoneStateOfGroup:() therefore looks not only at the single
+///   are alive or in seki. They must either be all dead, or all alive.
+/// - toggleDeadStateOfStoneGroup:() therefore looks not only at the single
 ///   stone group that is passed as a parameter, but also examines adjacent
 ///   GoBoardRegion objects. If it finds other stone groups that do not satisfy
 ///   the rule above, it toggles them to dead/alive as appropriate.
@@ -125,7 +127,7 @@
 ///   groups in the same territory and turn them back to be alive if they were
 ///   dead. The result of this, however, was a cascade of toggling operations
 ///   that, after a few repetitions, would affect the entire board. The feature
-///   effectively became unusable, so toggleDeadStoneStateOfGroup:() was limited
+///   effectively became unusable, so toggleDeadStateOfStoneGroup:() was limited
 ///   to look only at groups of the same color as the group that is passed as
 ///   a parameter.
 ///
@@ -137,23 +139,33 @@
 /// # Territory colors for stone groups can easily be determined by looking at
 ///   the stone group's color
 ///   - If the group is alive, the points in the group belong to the color
-///     that has played the stones
+///     that has played the stones. This is important only for area scoring.
 ///   - If the group is dead, the points in the group belong to the opposing
-///     color
+///     color.
+///   - If the group is in seki, the scoring system decides the territory
+///     that the group belongs to: Under area scoring rules the group belongs to
+///     the color that has played the stones, under territory scoring rules
+///     the group is neutral.
 /// # Territory colors for empty regions are determined by looking at each empty
 ///   region's adjacent regions
 ///   - These must, of course, all be stone groups
 ///   - If all adjacent stone groups are alive and of the same color, the empty
 ///     region belongs to that color's territory. The empty region in this case
 ///     can be considered to be surrounded.
-///   - If all adjacent stone groups are alive and have differents colors, the
-///     empty region does not belong to any territory. This might indicate a
-///     seki, but probably it's just dame (a neutral region).
+///   - If all adjacent stone groups are in seki and of the same color, the
+///     empty region is an eye and either neutral (under territory scoring
+///     rules) or belongs to that color's territory (under area scoring rules).
+///   - If all adjacent stone groups are alive or in seki and have differents
+///     colors, the empty region does not belong to any territory. The region
+///     is neutral and consists of dame points.
 ///   - If at least one adjacent stone group is dead, the empty region belongs
 ///     to the opposing color's territory.
 ///   - In the last case, updateTerritoryColor() makes a final check to see
 ///     if there are any inconsistencies (stone groups of the same color that
 ///     are alive, or stones groups of the opposing color that are also dead).
+///   - An inconsistency is also detected if at least one of the adjacent stone
+///     groups is in seki and one or more other adjacent stone groups are alive
+///     or dead. Seki stones can only share liberties with other seki stones.
 ///   - If inconsistencies are found the empty region is marked accordingly so
 ///     that the problem can be made visible to user. For scoring purposes, the
 ///     empty region is considered to be neutral.
@@ -164,7 +176,8 @@
 
 - (id) initWithGame:(GoGame*)game;
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
-- (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup;
+- (void) toggleDeadStateOfStoneGroup:(GoBoardRegion*)stoneGroup;
+- (void) toggleSekiStateOfStoneGroup:(GoBoardRegion*)stoneGroup;
 - (NSString*) resultString;
 - (void) willChangeBoardPosition;
 - (void) didChangeBoardPosition;
@@ -199,8 +212,8 @@
 @property(nonatomic, assign) int deadWhite;             ///< @brief The number of dead white stones
 @property(nonatomic, assign) int territoryBlack;        ///< @brief Territory for black
 @property(nonatomic, assign) int territoryWhite;        ///< @brief Territory for white
-@property(nonatomic, assign) int aliveBlack;            ///< @brief The number of alive black stones
-@property(nonatomic, assign) int aliveWhite;            ///< @brief The number of alive white stones
+@property(nonatomic, assign) int aliveBlack;            ///< @brief The number of alive black stones (stones in seki are included)
+@property(nonatomic, assign) int aliveWhite;            ///< @brief The number of alive white stones (stones in seki are included)
 @property(nonatomic, assign) double handicapCompensationBlack;  ///< @brief Handicap compensation for black
 @property(nonatomic, assign) double handicapCompensationWhite;  ///< @brief Handicap compensation for white
 @property(nonatomic, assign) double totalScoreBlack;    ///< @brief The total score for black

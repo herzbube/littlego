@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "DeadStonesLayerDelegate.h"
+#import "StoneGroupStateLayerDelegate.h"
 #import "../PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../model/ScoringModel.h"
@@ -25,26 +25,30 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
+#import "../../../utility/UIColorAdditions.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for DeadStonesLayerDelegate.
+/// @brief Class extension with private properties for
+/// StoneGroupStateLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface DeadStonesLayerDelegate()
+@interface StoneGroupStateLayerDelegate()
 @property(nonatomic, retain) ScoringModel* scoringModel;
 @property(nonatomic, assign) CGLayerRef deadStoneSymbolLayer;
+@property(nonatomic, assign) CGLayerRef blackSekiStoneSymbolLayer;
+@property(nonatomic, assign) CGLayerRef whiteSekiStoneSymbolLayer;
 @end
 
 
-@implementation DeadStonesLayerDelegate
+@implementation StoneGroupStateLayerDelegate
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DeadStonesLayerDelegate object.
+/// @brief Initializes a StoneGroupStateLayerDelegate object.
 ///
-/// @note This is the designated initializer of DeadStonesLayerDelegate.
+/// @note This is the designated initializer of StoneGroupStateLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
 {
@@ -54,11 +58,14 @@
     return nil;
   self.scoringModel = theScoringModel;
   _deadStoneSymbolLayer = NULL;
+  _blackSekiStoneSymbolLayer = NULL;
+  _whiteSekiStoneSymbolLayer = NULL;
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DeadStonesLayerDelegate object.
+/// @brief Deallocates memory allocated by this StoneGroupStateLayerDelegate
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -77,6 +84,16 @@
   {
     CGLayerRelease(_deadStoneSymbolLayer);
     _deadStoneSymbolLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+  if (_blackSekiStoneSymbolLayer)
+  {
+    CGLayerRelease(_blackSekiStoneSymbolLayer);
+    _blackSekiStoneSymbolLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
+  if (_whiteSekiStoneSymbolLayer)
+  {
+    CGLayerRelease(_whiteSekiStoneSymbolLayer);
+    _whiteSekiStoneSymbolLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
 }
 
@@ -121,17 +138,46 @@
   GoGame* game = [GoGame sharedGame];
   if (! game.score.scoringEnabled)
     return;
-  DDLogVerbose(@"DeadStonesLayerDelegate is drawing");
+  DDLogVerbose(@"StoneGroupStateLayerDelegate is drawing");
 
   if (! _deadStoneSymbolLayer)
     _deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self);
+  if (! _blackSekiStoneSymbolLayer)
+    _blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
+  if (! _whiteSekiStoneSymbolLayer)
+    _whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
 
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
-    if (point.region.deadStoneGroup)
-      [self.playViewMetrics drawLayer:_deadStoneSymbolLayer withContext:context centeredAtPoint:point];
+    switch (point.region.stoneGroupState)
+    {
+      case GoStoneGroupStateDead:
+      {
+        [self.playViewMetrics drawLayer:_deadStoneSymbolLayer withContext:context centeredAtPoint:point];
+        break;
+      }
+      case GoStoneGroupStateSeki:
+      {
+        switch ([point.region color])
+        {
+          case GoColorBlack:
+            [self.playViewMetrics drawLayer:_blackSekiStoneSymbolLayer withContext:context centeredAtPoint:point];
+            break;
+          case GoColorWhite:
+            [self.playViewMetrics drawLayer:_whiteSekiStoneSymbolLayer withContext:context centeredAtPoint:point];
+            break;
+          default:
+            break;
+        }
+        break;
+      }
+      default:
+      {
+        break;
+      }
+    }
   }
 }
 
@@ -149,7 +195,7 @@
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, DeadStonesLayerDelegate* delegate)
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, StoneGroupStateLayerDelegate* delegate)
 {
   // The symbol for marking a dead stone is an "x"; we draw this as the two
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by

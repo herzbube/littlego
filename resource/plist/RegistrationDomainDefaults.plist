@@ -318,6 +318,12 @@
 		<string>ff0000</string>
 		<key>InconsistentTerritoryFillColorAlpha</key>
 		<real>0.3</real>
+		<key>ScoreMarkMode</key>
+		<integer>0</integer>
+		<key>BlackSekiSymbolColor</key>
+		<string>80c0f0</string>
+		<key>WhiteSekiSymbolColor</key>
+		<string>60b0e0</string>
 	</dict>
 	<key>BoardPosition</key>
 	<dict>

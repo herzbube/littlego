@@ -17,10 +17,12 @@
 
 // Project includes
 #import "TapGestureController.h"
+#import "../model/ScoringModel.h"
 #import "../playview/PlayView.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -117,7 +119,24 @@
   if (! [intersection.point hasStone])
     return;
   GoGame* game = [GoGame sharedGame];
-  [game.score toggleDeadStoneStateOfGroup:intersection.point.region];
+  switch ([ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+  {
+    case GoScoreMarkModeDead:
+    {
+      [game.score toggleDeadStateOfStoneGroup:intersection.point.region];
+      break;
+    }
+    case GoScoreMarkModeSeki:
+    {
+      [game.score toggleSekiStateOfStoneGroup:intersection.point.region];
+      break;
+    }
+    default:
+    {
+      assert(0);
+      return;
+    }
+  }
   [game.score calculateWaitUntilDone:false];
 }
 

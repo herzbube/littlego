@@ -147,9 +147,9 @@
   DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
   if (! _blackLastMoveLayer)
-    _blackLastMoveLayer = CreateLastMoveLayer(context, [UIColor blackColor], self);
+    _blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
   if (! _whiteLastMoveLayer)
-    _whiteLastMoveLayer = CreateLastMoveLayer(context, [UIColor whiteColor], self);
+    _whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
   if (! _nextMoveLayer)
     _nextMoveLayer = CreateNextMoveLayer(context, self);
 
@@ -268,46 +268,6 @@
     [self.playViewMetrics drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered];
     CGLayerRelease(layer);
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates and returns a CGLayer object that is associated with graphics
-/// context @a context and contains the drawing operations to draw a "last move"
-/// symbol that uses the specified color @a symbolColor.
-///
-/// All sizes are taken from the current values in self.playViewMetrics.
-///
-/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
-/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
-///
-/// @note Whoever invokes this function is responsible for releasing the
-/// returned CGLayer object using the function CGLayerRelease when the layer is
-/// no longer needed.
-// -----------------------------------------------------------------------------
-CGLayerRef CreateLastMoveLayer(CGContextRef context, UIColor* symbolColor, SymbolsLayerDelegate* delegate)
-{
-  CGRect layerRect;
-  layerRect.origin = CGPointZero;
-  layerRect.size = delegate.playViewMetrics.stoneInnerSquareSize;
-  // It looks better if the marker is slightly inset, and on the iPad we can
-  // afford to waste the space
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-  {
-    layerRect.size.width -= 2;
-    layerRect.size.height -= 2;
-  }
-  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
-  CGContextRef layerContext = CGLayerGetContext(layer);
-
-  // Half-pixel translation is added at the time when the layer is actually
-  // drawn
-  CGContextBeginPath(layerContext);
-  CGContextAddRect(layerContext, layerRect);
-  CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, delegate.playViewModel.normalLineWidth);
-  CGContextStrokePath(layerContext);
-
-  return layer;
 }
 
 // -----------------------------------------------------------------------------

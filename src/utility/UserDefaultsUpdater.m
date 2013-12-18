@@ -516,6 +516,24 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
       [newGameDictionaryUpgrade setValue:[NSNumber numberWithDouble:gDefaultKomiAreaScoring] forKey:komiKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
+
+  // Add new key to "Scoring" dictionary
+  id scoringDictionary = [userDefaults objectForKey:scoringKey];
+  if (scoringDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* scoringDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:scoringDictionary];
+    [scoringDictionaryUpgrade setValue:[NSNumber numberWithInt:GoScoreMarkModeDead] forKey:scoreMarkModeKey];
+    id scoringDictionaryRegistrationDefaults = [registrationDomainDefaults objectForKey:scoringKey];
+    NSString* blackSekiSymbolColorString = [scoringDictionaryRegistrationDefaults valueForKey:blackSekiSymbolColorKey];
+    if (! blackSekiSymbolColorString)
+      blackSekiSymbolColorString = @"ff0000";
+    [scoringDictionaryUpgrade setValue:blackSekiSymbolColorString forKey:blackSekiSymbolColorKey];
+    NSString* whiteSekiSymbolColorString = [scoringDictionaryRegistrationDefaults valueForKey:whiteSekiSymbolColorKey];
+    if (! whiteSekiSymbolColorString)
+      whiteSekiSymbolColorString = @"ff0000";
+    [scoringDictionaryUpgrade setValue:blackSekiSymbolColorString forKey:whiteSekiSymbolColorKey];
+    [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

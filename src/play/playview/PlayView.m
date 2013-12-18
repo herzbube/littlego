@@ -21,9 +21,9 @@
 #import "layer/CoordinateLabelsLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
-#import "layer/DeadStonesLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/StarPointsLayerDelegate.h"
+#import "layer/StoneGroupStateLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
@@ -65,6 +65,8 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
 @property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
+/// @brief The order in which delegates appear in this array determines the
+/// order in which layers are drawn.
 @property(nonatomic, retain) NSMutableArray* layerDelegates;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -174,6 +176,7 @@
     [self.playViewMetrics updateWithBoardSize:game.board.size];
 
 
+  // Create & setup layer delegates in the order in which layers must be drawn
   id<PlayViewLayerDelegate> layerDelegate;
   layerDelegate = [[[GridLayerDelegate alloc] initWithMainView:self
                                                     metrics:self.playViewMetrics
@@ -209,10 +212,10 @@
                                                    playViewModel:self.playViewModel
                                                     scoringModel:self.scoringModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
-  layerDelegate = [[[DeadStonesLayerDelegate alloc] initWithMainView:self
-                                                          metrics:self.playViewMetrics
-                                                    playViewModel:self.playViewModel
-                                                     scoringModel:self.scoringModel] autorelease];
+  layerDelegate = [[[StoneGroupStateLayerDelegate alloc] initWithMainView:self
+                                                                  metrics:self.playViewMetrics
+                                                            playViewModel:self.playViewModel
+                                                             scoringModel:self.scoringModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
 
 
@@ -286,6 +289,7 @@
   if (! [GoGame sharedGame])
     return;
   self.updatesWereDelayed = false;
+  // Draw layers in the order in which they appear in the layerDelegates array
   for (id<PlayViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate drawLayer];
 }

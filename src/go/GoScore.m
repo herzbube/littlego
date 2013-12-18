@@ -185,7 +185,10 @@
   {
     region.territoryColor = GoColorNone;
     region.territoryInconsistencyFound = false;
-    region.deadStoneGroup = false;
+    if (region.isStoneGroup)
+      region.stoneGroupState = GoStoneGroupStateAlive;
+    else
+      region.stoneGroupState = GoStoneGroupStateUndefined;
     region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
   }
 }
@@ -398,7 +401,7 @@
         // once for each vertex reported by the GTP engine. 2) We don't perform
         // any kind of check if the vertex list reported by the GTP engine
         // matches our regions.
-        point.region.deadStoneGroup = true;
+        point.region.stoneGroupState = GoStoneGroupStateDead;
       }
     }
     else
@@ -453,7 +456,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Toggles the status of the stone group @a stoneGroup from alive to
-/// dead, or vice versa.
+/// dead, or vice versa. If @a stoneGroup is in seki, its status is changed to
+/// dead.
 ///
 /// Once the main stone group @a stoneGroup has been updated, this method also
 /// considers neighbouring regions and, if necessary, toggles the dead/alive
@@ -466,10 +470,10 @@
 /// client needs to separately invoke calculateWaitUntilDone:() to get the
 /// updated score.
 ///
-/// @note This method does nothing if territory scoring is not enabled on this
-/// GoScore object, or if a scoring operation is already in progress.
+/// @note This method does nothing if scoring is not enabled on this GoScore
+/// object, or if a scoring operation is already in progress.
 // -----------------------------------------------------------------------------
-- (void) toggleDeadStoneStateOfGroup:(GoBoardRegion*)stoneGroup
+- (void) toggleDeadStateOfStoneGroup:(GoBoardRegion*)stoneGroup
 {
   if (! self.scoringEnabled)
     return;
@@ -499,8 +503,24 @@
     GoBoardRegion* stoneGroupToToggle = [stoneGroupsToToggle objectAtIndex:0];
     [stoneGroupsToToggle removeObjectAtIndex:0];
 
-    bool newDeadState = ! stoneGroupToToggle.deadStoneGroup;
-    stoneGroupToToggle.deadStoneGroup = newDeadState;
+    enum GoStoneGroupState newStoneGroupState;
+    switch (stoneGroupToToggle.stoneGroupState)
+    {
+      case GoStoneGroupStateAlive:
+        newStoneGroupState = GoStoneGroupStateDead;
+        break;
+      case GoStoneGroupStateDead:
+        newStoneGroupState = GoStoneGroupStateAlive;
+        break;
+      case GoStoneGroupStateSeki:
+        newStoneGroupState = GoStoneGroupStateDead;
+        break;
+      default:
+        DDLogError(@"%@: Unknown stone group state = %d", self, stoneGroupToToggle.stoneGroupState);
+        assert(0);
+        continue;
+    }
+    stoneGroupToToggle.stoneGroupState = newStoneGroupState;
     enum GoColor colorOfStoneGroupToToggle = [stoneGroupToToggle color];
 
     // If the user has decided that he does not need any help with toggling,
@@ -556,7 +576,7 @@
       enum GoColor colorOfAdjacentStoneGroupToExamine = [adjacentStoneGroupToExamine color];
       if (colorOfAdjacentStoneGroupToExamine == colorOfStoneGroupToToggle)
       {
-        if (adjacentStoneGroupToExamine.deadStoneGroup != newDeadState)
+        if (adjacentStoneGroupToExamine.stoneGroupState != newStoneGroupState)
           [stoneGroupsToToggle addObject:adjacentStoneGroupToExamine];
       }
     }
@@ -564,19 +584,62 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Toggles the status of the stone group @a stoneGroup from seki to
+/// alive, or vice versa. If @a stoneGroup is dead, its status is changed to
+/// in seki.
+// -----------------------------------------------------------------------------
+- (void) toggleSekiStateOfStoneGroup:(GoBoardRegion*)stoneGroup
+{
+  if (! self.scoringEnabled)
+    return;
+  if (self.scoringInProgress)
+    return;
+  if (! [stoneGroup isStoneGroup])
+    return;
+  enum GoStoneGroupState newStoneGroupState;
+  switch (stoneGroup.stoneGroupState)
+  {
+    case GoStoneGroupStateAlive:
+      newStoneGroupState = GoStoneGroupStateSeki;
+      break;
+    case GoStoneGroupStateDead:
+      newStoneGroupState = GoStoneGroupStateSeki;
+      break;
+    case GoStoneGroupStateSeki:
+      newStoneGroupState = GoStoneGroupStateAlive;
+      break;
+    default:
+      DDLogError(@"%@: Unknown stone group state = %d", self, stoneGroup.stoneGroupState);
+      assert(0);
+      return;
+  }
+  stoneGroup.stoneGroupState = newStoneGroupState;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief (Re)Calculates the territory color of all GoBoardRegion objects.
 /// Returns true if calculation was successful, false if not.
 ///
-/// This method looks at the @e deadStoneGroup property of GoBoardRegion
+/// This method looks at the @e stoneGroupState property of GoBoardRegion
 /// objects. For details see the class documentation, paragraph "Determining
 /// territory color".
 ///
 /// Initial dead stones are set up by askGtpEngineForDeadStones(). User
-/// interaction during scoring invokes toggleDeadStoneStateOfGroup:() to add
+/// interaction during scoring invokes toggleDeadStateOfStoneGroup:() to add
 /// more dead stones, or turn them back to alive.
 // -----------------------------------------------------------------------------
 - (bool) updateTerritoryColor
 {
+  // Preliminary sanity check. The fact that only two scoring systems can occur
+  // makes some of the logic further down a lot simpler.
+  enum GoScoringSystem scoringSystem = self.game.rules.scoringSystem;
+  if (GoScoringSystemAreaScoring != scoringSystem &&
+      GoScoringSystemTerritoryScoring != scoringSystem)
+  {
+    DDLogError(@"%@: Unknown scoring system = %d", self, scoringSystem);
+    return false;
+  }
+
   // Regions that are truly empty, i.e. that do not have dead stones
   NSMutableArray* emptyRegions = [NSMutableArray arrayWithCapacity:0];
 
@@ -596,25 +659,48 @@
     }
     else
     {
-      // If the group is alive, it belongs to the territory of the color who
-      // played the stones in the group. This is important only for area
-      // scoring.
-      if (! region.deadStoneGroup)
-        region.territoryColor = [region color];
-      // If the group is dead, it belongs to the territory of the opposing color
-      else
+      switch (region.stoneGroupState)
       {
-        switch ([region color])
+        case GoStoneGroupStateAlive:
         {
-          case GoColorBlack:
-            region.territoryColor = GoColorWhite;
-            break;
-          case GoColorWhite:
-            region.territoryColor = GoColorBlack;
-            break;
-          default:
-            DDLogError(@"%@: Stone groups must be either black or white, region %@ has color %d", self, region, [region color]);
-            return false;
+          // If the group is alive, it belongs to the territory of the color who
+          // played the stones in the group. This is important only for area
+          // scoring.
+          region.territoryColor = [region color];
+          break;
+        }
+        case GoStoneGroupStateDead:
+        {
+          // If the group is dead, it belongs to the territory of the opposing
+          // color
+          switch ([region color])
+          {
+            case GoColorBlack:
+              region.territoryColor = GoColorWhite;
+              break;
+            case GoColorWhite:
+              region.territoryColor = GoColorBlack;
+              break;
+            default:
+              DDLogError(@"%@: Stone groups must be either black or white, region %@ has color %d", self, region, [region color]);
+              return false;
+          }
+          break;
+        }
+        case GoStoneGroupStateSeki:
+        {
+          // If the group is in seki, the scoring system decides the territory
+          // that the group belongs to
+          if (GoScoringSystemAreaScoring == scoringSystem)
+            region.territoryColor = [region color];
+          else
+            region.territoryColor = GoColorNone;
+          break;
+        }
+        default:
+        {
+          DDLogError(@"%@: Unknown stone group state = %d", self, region.stoneGroupState);
+          return false;
         }
       }
     }
@@ -630,6 +716,9 @@
     bool deadSeen = false;
     bool blackDeadSeen = false;
     bool whiteDeadSeen = false;
+    bool sekiSeen = false;
+    bool blackSekiSeen = false;
+    bool whiteSekiSeen = false;
     for (GoBoardRegion* adjacentRegion in [emptyRegion adjacentRegions])
     {
       if (! [adjacentRegion isStoneGroup])
@@ -637,36 +726,49 @@
         DDLogError(@"%@: Regions adjacent to an empty region can only be stone groups, adjacent region = %@", self, adjacentRegion);
         return false;
       }
-      if (adjacentRegion.deadStoneGroup)
+
+      // Preliminary sanity check. The fact that only two colors can occur makes
+      // the subsequent logic simpler.
+      enum GoColor adjacentRegionColor = [adjacentRegion color];
+      if (GoColorBlack != adjacentRegionColor && GoColorWhite != adjacentRegionColor)
       {
-        deadSeen = true;
-        switch ([adjacentRegion color])
-        {
-          case GoColorBlack:
-            blackDeadSeen = true;
-            break;
-          case GoColorWhite:
-            whiteDeadSeen = true;
-            break;
-          default:
-            DDLogError(@"%@: Stone groups must be either black or white, adjacent dead stone group region %@ has color %d", self, adjacentRegion, [adjacentRegion color]);
-            return false;  // error! stone group must be either black or white
-        }
+        DDLogError(@"%@: Stone groups must be either black or white, adjacent stone group region %@ has color %d", self, adjacentRegion, adjacentRegionColor);
+        return false;
       }
-      else
+
+      switch (adjacentRegion.stoneGroupState)
       {
-        aliveSeen = true;
-        switch ([adjacentRegion color])
+        case GoStoneGroupStateAlive:
         {
-          case GoColorBlack:
+          aliveSeen = true;
+          if (GoColorBlack == adjacentRegionColor)
             blackAliveSeen = true;
-            break;
-          case GoColorWhite:
+          else
             whiteAliveSeen = true;
-            break;
-          default:
-            DDLogError(@"%@: Stone groups must be either black or white, adjacent alive stone group region %@ has color %d", self, adjacentRegion, [adjacentRegion color]);
-            return false;
+          break;
+        }
+        case GoStoneGroupStateDead:
+        {
+          deadSeen = true;
+          if (GoColorBlack == adjacentRegionColor)
+            blackDeadSeen = true;
+          else
+            whiteDeadSeen = true;
+          break;
+        }
+        case GoStoneGroupStateSeki:
+        {
+          sekiSeen = true;
+          if (GoColorBlack == adjacentRegionColor)
+            blackSekiSeen = true;
+          else
+            whiteSekiSeen = true;
+          break;
+        }
+        default:
+        {
+          DDLogError(@"%@: Unknown stone group state = %d", self, adjacentRegion.stoneGroupState);
+          return false;
         }
       }
     }
@@ -675,38 +777,85 @@
     enum GoColor territoryColor = GoColorNone;
     if (! deadSeen)
     {
-      if (! aliveSeen)  // ok, empty board
-        territoryColor = GoColorNone;
-      else
+      if (! aliveSeen && ! sekiSeen)
       {
-        if (blackAliveSeen && whiteAliveSeen)  // ok, neutral territory
-          territoryColor = GoColorNone;
-        else  // ok, only one color has been seen, and all groups were alive
+        // Ok, empty board, neutral territory
+        territoryColor = GoColorNone;
+      }
+      else if ((blackSekiSeen && blackAliveSeen) || (whiteSekiSeen && whiteAliveSeen))
+      {
+        // Rules violation! Cannot see alive and seki stones of the same
+        // color. In such a position, the seki stones could, theoretically,
+        // be connected to the alive stones. The opposing player therefore
+        // MUST play so that no connection is possible and this position
+        // cannot occur.
+        territoryInconsistencyFound = true;
+      }
+      else if ((blackSekiSeen && whiteAliveSeen) || (whiteSekiSeen && blackAliveSeen))
+      {
+        // Rules violation! Cannot see alive and seki stones of different
+        // colors. In all seki positions and examples that I could find,
+        // seki stones are always completely surrounded, the only liberties
+        // being their own eyes, or liberties shared with seki stones of
+        // the other color. The opposing player therefore MUST play and fill
+        // in all liberties around the seki stones.
+        territoryInconsistencyFound = true;
+      }
+      else if ((blackSekiSeen && whiteSekiSeen) || (blackAliveSeen && whiteAliveSeen))
+      {
+        // Ok, dame, neutral territory
+        territoryColor = GoColorNone;
+      }
+      else if (sekiSeen)
+      {
+        // Ok, only one color has been seen, and all groups were in seki
+        if (GoScoringSystemAreaScoring == scoringSystem)
         {
-          if (blackAliveSeen)
+          // Area scoring counts this as territory
+          if (blackSekiSeen)
             territoryColor = GoColorBlack;
           else
             territoryColor = GoColorWhite;
         }
+        else
+        {
+          // Territory scoring counts this as neutral territory
+          territoryColor = GoColorNone;
+        }
+      }
+      else
+      {
+        // Ok, only one color has been seen, and all groups were alive
+        if (blackAliveSeen)
+          territoryColor = GoColorBlack;
+        else
+          territoryColor = GoColorWhite;
       }
     }
     else
     {
-      if (blackDeadSeen)
+      if (sekiSeen)
       {
-        if (blackAliveSeen)  // rules violation! cannot see both dead and alive stones of the same color
-          territoryInconsistencyFound = true;
-        else if (whiteDeadSeen)  // rules violation! cannot see dead stones of both colors
-          territoryInconsistencyFound = true;
-        else                     // ok, only dead stones of one color seen (we don't care whether the opposing color has alive stones)
-          territoryColor = GoColorWhite;
+        // Rules violation! Cannot see dead and seki stones at the same time
+        territoryInconsistencyFound = true;
       }
-      else  // repeat of the block above, but for the opposing color
+      else if (blackDeadSeen && whiteDeadSeen)
       {
-        if (whiteAliveSeen)
-          territoryInconsistencyFound = true;
-        else if (blackDeadSeen)
-          territoryInconsistencyFound = true;
+        // Rules violation! Cannot see dead stones of both colors
+        territoryInconsistencyFound = true;
+      }
+      else if ((blackDeadSeen && blackAliveSeen) || (whiteDeadSeen && whiteAliveSeen))
+      {
+        // Rules violation! Cannot see both dead and alive stones of the same
+        // color
+        territoryInconsistencyFound = true;
+      }
+      else
+      {
+        // Ok, only dead stones of one color seen (we don't care whether the
+        // opposing color has alive stones)
+        if (blackDeadSeen)
+          territoryColor = GoColorWhite;
         else
           territoryColor = GoColorBlack;
       }
@@ -788,12 +937,18 @@
     {
       int regionSize = [region size];
       bool regionIsStoneGroup = [region isStoneGroup];
-      bool regionIsDeadStoneGroup = region.deadStoneGroup;
+      enum GoStoneGroupState stoneGroupState = region.stoneGroupState;
+      bool regionIsDeadStoneGroup = (GoStoneGroupStateDead == stoneGroupState);
+      enum GoColor regionTerritoryColor = region.territoryColor;
 
-      // Territory: We only count dead stones and empty intersections
+      // Territory: We count dead stones and intersections in empty regions. An
+      // empty region could be an eye in seki, which only counts when area
+      // scoring is in effect. We don't have to check the scoring system,
+      // though, this was already done when the empty region's territory color
+      // was determined.
       if (regionIsDeadStoneGroup || ! regionIsStoneGroup)
       {
-        switch (region.territoryColor)
+        switch (regionTerritoryColor)
         {
           case GoColorBlack:
             self.territoryBlack += regionSize;
@@ -806,10 +961,10 @@
         }
       }
 
-      // Alive stones
+      // Alive stones + stones in seki
       if (regionIsStoneGroup && ! regionIsDeadStoneGroup)
       {
-        switch (region.territoryColor)
+        switch (regionTerritoryColor)
         {
           case GoColorBlack:
             self.aliveBlack += regionSize;

@@ -33,7 +33,6 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.scoreWhenGameEnds = true;
   self.askGtpEngineForDeadStones = false;
   self.markDeadStonesIntelligently = false;
@@ -46,7 +45,9 @@
   self.inconsistentTerritoryDotSymbolPercentage = 0.5;
   self.inconsistentTerritoryFillColor = [UIColor redColor];
   self.inconsistentTerritoryFillColorAlpha = 0.3;
-
+  self.scoreMarkMode = GoScoreMarkModeDead;
+  self.blackSekiSymbolColor = [UIColor redColor];
+  self.whiteSekiSymbolColor = [UIColor redColor];
   return self;
 }
 
@@ -56,6 +57,10 @@
 - (void) dealloc
 {
   self.deadStoneSymbolColor = nil;
+  self.inconsistentTerritoryDotSymbolColor = nil;
+  self.inconsistentTerritoryFillColor = nil;
+  self.blackSekiSymbolColor = nil;
+  self.whiteSekiSymbolColor = nil;
   [super dealloc];
 }
 
@@ -78,6 +83,9 @@
   self.inconsistentTerritoryDotSymbolPercentage = [[dictionary valueForKey:inconsistentTerritoryDotSymbolPercentageKey] floatValue];
   self.inconsistentTerritoryFillColor = [UIColor colorFromHexString:[dictionary valueForKey:inconsistentTerritoryFillColorKey]];
   self.inconsistentTerritoryFillColorAlpha = [[dictionary valueForKey:inconsistentTerritoryFillColorAlphaKey] floatValue];
+  self.scoreMarkMode = [[dictionary valueForKey:scoreMarkModeKey] intValue];
+  self.blackSekiSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:blackSekiSymbolColorKey]];
+  self.whiteSekiSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:whiteSekiSymbolColorKey]];
 }
 
 // -----------------------------------------------------------------------------
@@ -103,6 +111,9 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryDotSymbolPercentage] forKey:inconsistentTerritoryDotSymbolPercentageKey];
   [dictionary setValue:[UIColor hexStringFromUIColor:self.inconsistentTerritoryFillColor] forKey:inconsistentTerritoryFillColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryFillColorAlpha] forKey:inconsistentTerritoryFillColorAlphaKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.scoreMarkMode] forKey:scoreMarkModeKey];
+  [dictionary setValue:[UIColor hexStringFromUIColor:self.blackSekiSymbolColor] forKey:blackSekiSymbolColorKey];
+  [dictionary setValue:[UIColor hexStringFromUIColor:self.whiteSekiSymbolColor] forKey:whiteSekiSymbolColorKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:scoringKey];
 }

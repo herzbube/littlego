@@ -84,9 +84,9 @@
 /// If this flag is true, the property @e territoryColor has value #GoColorNone.
 /// However, it cannot be concluded from this that the region is truly neutral.
 @property(nonatomic, assign) bool territoryInconsistencyFound;
-/// @brief During scoring denotes whether the stones in the stone group
-/// represented by this GoBoardRegion are dead or alive. Is false if this
-/// GoBoardRegion is not a stone group.
-@property(nonatomic, assign) bool deadStoneGroup;
+/// @brief During scoring denotes the state of the stone group represented by
+/// this GoBoardRegion. Is GoStoneGroupStateUndefined if this GoBoardRegion is
+/// not a stone group.
+@property(nonatomic, assign) enum GoStoneGroupState stoneGroupState;
 
 @end

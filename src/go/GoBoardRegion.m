@@ -102,7 +102,7 @@
   _scoringMode = false;  // don't use self, otherwise we trigger the setter!
   self.territoryColor = GoColorNone;
   self.territoryInconsistencyFound = false;
-  self.deadStoneGroup = false;
+  self.stoneGroupState = GoStoneGroupStateUndefined;
   [self invalidateCache];
 
   return self;
@@ -134,10 +134,10 @@
     self.territoryInconsistencyFound = true;
   else
     self.territoryInconsistencyFound = false;
-  if ([decoder containsValueForKey:goBoardRegionDeadStoneGroupKey])
-    self.deadStoneGroup = true;
+  if ([decoder containsValueForKey:goBoardRegionStoneGroupStateKey])
+    self.stoneGroupState = [decoder decodeIntForKey:goBoardRegionStoneGroupStateKey];
   else
-    self.deadStoneGroup = false;
+    self.stoneGroupState = GoStoneGroupStateUndefined;
   if ([decoder containsValueForKey:goBoardRegionCachedSizeKey])
     self.cachedSize = [decoder decodeIntForKey:goBoardRegionCachedSizeKey];
   else
@@ -700,8 +700,8 @@
     [encoder encodeInt:self.territoryColor forKey:goBoardRegionTerritoryColorKey];
   if (self.territoryInconsistencyFound)
     [encoder encodeBool:self.territoryInconsistencyFound forKey:goBoardRegionTerritoryInconsistencyFoundKey];
-  if (self.deadStoneGroup)
-    [encoder encodeBool:self.deadStoneGroup forKey:goBoardRegionDeadStoneGroupKey];
+  if (self.stoneGroupState != GoStoneGroupStateUndefined)
+    [encoder encodeInt:self.stoneGroupState forKey:goBoardRegionStoneGroupStateKey];
   if (self.cachedSize != -1)
     [encoder encodeInt:self.cachedSize forKey:goBoardRegionCachedSizeKey];
   if (self.cachedIsStoneGroup)

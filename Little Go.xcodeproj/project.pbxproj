@@ -162,8 +162,8 @@
 		CD35920B1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */; };
 		CD35920C1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */; };
 		CD35920D1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */; };
-		CD35920E1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */; };
-		CD35920F1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */; };
+		CD35920E1735A757000E2963 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* StoneGroupStateLayerDelegate.m */; };
+		CD35920F1735A757000E2963 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EC1735A757000E2963 /* StoneGroupStateLayerDelegate.m */; };
 		CD3592101735A757000E2963 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EE1735A757000E2963 /* GridLayerDelegate.m */; };
 		CD3592111735A757000E2963 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591EE1735A757000E2963 /* GridLayerDelegate.m */; };
 		CD3592121735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */; };
@@ -635,8 +635,8 @@
 		CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
 		CD3591E91735A757000E2963 /* CrossHairStoneLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairStoneLayerDelegate.h; sourceTree = "<group>"; };
 		CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairStoneLayerDelegate.m; sourceTree = "<group>"; };
-		CD3591EB1735A757000E2963 /* DeadStonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeadStonesLayerDelegate.h; sourceTree = "<group>"; };
-		CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeadStonesLayerDelegate.m; sourceTree = "<group>"; };
+		CD3591EB1735A757000E2963 /* StoneGroupStateLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoneGroupStateLayerDelegate.h; sourceTree = "<group>"; };
+		CD3591EC1735A757000E2963 /* StoneGroupStateLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoneGroupStateLayerDelegate.m; sourceTree = "<group>"; };
 		CD3591ED1735A757000E2963 /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
 		CD3591EE1735A757000E2963 /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
 		CD3591EF1735A757000E2963 /* PlayViewLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewLayerDelegate.h; sourceTree = "<group>"; };
@@ -1400,8 +1400,8 @@
 				CD3591E81735A757000E2963 /* CrossHairLinesLayerDelegate.m */,
 				CD3591E91735A757000E2963 /* CrossHairStoneLayerDelegate.h */,
 				CD3591EA1735A757000E2963 /* CrossHairStoneLayerDelegate.m */,
-				CD3591EB1735A757000E2963 /* DeadStonesLayerDelegate.h */,
-				CD3591EC1735A757000E2963 /* DeadStonesLayerDelegate.m */,
+				CD3591EB1735A757000E2963 /* StoneGroupStateLayerDelegate.h */,
+				CD3591EC1735A757000E2963 /* StoneGroupStateLayerDelegate.m */,
 				CD3591ED1735A757000E2963 /* GridLayerDelegate.h */,
 				CD3591EE1735A757000E2963 /* GridLayerDelegate.m */,
 				CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */,
@@ -2268,7 +2268,7 @@
 				CD3592081735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD35920A1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD35920C1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */,
-				CD35920E1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */,
+				CD35920E1735A757000E2963 /* StoneGroupStateLayerDelegate.m in Sources */,
 				CD3592101735A757000E2963 /* GridLayerDelegate.m in Sources */,
 				CD3592121735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */,
 				CD3592141735A757000E2963 /* StarPointsLayerDelegate.m in Sources */,
@@ -2422,7 +2422,7 @@
 				CD3592091735A757000E2963 /* CoordinateLabelsLayerDelegate.m in Sources */,
 				CD35920B1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD35920D1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */,
-				CD35920F1735A757000E2963 /* DeadStonesLayerDelegate.m in Sources */,
+				CD35920F1735A757000E2963 /* StoneGroupStateLayerDelegate.m in Sources */,
 				CD3592111735A757000E2963 /* GridLayerDelegate.m in Sources */,
 				CD3592131735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */,
 				CD3592151735A757000E2963 /* StarPointsLayerDelegate.m in Sources */,
