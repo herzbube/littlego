@@ -189,7 +189,7 @@ enum BoardPositionSectionItem
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(playersAndProfilesWillReset:) name:playersAndProfilesWillReset object:nil];
   [self setupKVONotificationResponders];
 }
@@ -1146,13 +1146,19 @@ enum BoardPositionSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameDidCreate notification.
+/// @brief Responds to the #goGameWillCreate notification.
 // -----------------------------------------------------------------------------
-- (void) goGameDidCreate:(NSNotification*)notification
+- (void) goGameWillCreate:(NSNotification*)notification
 {
-  // Dismiss the Info view when a new game is started. This typically occurs
-  // when a saved game is loaded from the archive.
+  // Dismiss the Info view when a new game is about to be started. This
+  // typically occurs when a saved game is loaded from the archive.
   [self navigationBar:nil shouldPopItem:nil];
+  // Also unregister ourselves as observer while the old game configuration that
+  // we used for registering is still around. For instance, the new game might
+  // use different players or a different profile, so if we were waiting with
+  // unregistering until dealloc (at which time the new game has already been
+  // started), we would unregister ourselves from the wrong objects.
+  [self removeNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
