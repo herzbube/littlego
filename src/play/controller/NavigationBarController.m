@@ -287,7 +287,7 @@
 {
   if ([self shouldIgnoreTaps])
   {
-    DDLogWarn(@"%@: Ignoring board position change", self);
+    DDLogWarn(@"%@: Ignoring tap on pass button", self);
     return;
   }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
@@ -302,7 +302,7 @@
 {
   if ([self shouldIgnoreTaps])
   {
-    DDLogWarn(@"%@: Ignoring board position change", self);
+    DDLogWarn(@"%@: Ignoring tap on discard button", self);
     return;
   }
   ChangeAndDiscardCommand* command = [[[ChangeAndDiscardCommand alloc] init] autorelease];
@@ -318,7 +318,7 @@
 {
   if ([self shouldIgnoreTaps])
   {
-    DDLogWarn(@"%@: Ignoring board position change", self);
+    DDLogWarn(@"%@: Ignoring tap on computer play button", self);
     return;
   }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
@@ -396,7 +396,7 @@
 {
   if ([self shouldIgnoreTaps])
   {
-    DDLogWarn(@"%@: Ignoring board position change", self);
+    DDLogWarn(@"%@: Ignoring tap on game actions button", self);
     return;
   }
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
