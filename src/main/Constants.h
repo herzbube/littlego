@@ -540,6 +540,7 @@ extern NSString* defaultGtpEngineProfileUUID;
 /// numeric parameter of the GTP command "uct_param_policy knowledge_type".
 enum AdditiveKnowledgeType
 {
+  AdditiveKnowledgeTypeNone,
   AdditiveKnowledgeTypeGreenpeep,
   AdditiveKnowledgeTypeRulebased
 };
