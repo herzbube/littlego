@@ -3,10 +3,9 @@
 # =========================================================================
 # | This is a script snippet that is included (via shell script sourcing) from
 # | a main build script. This snippet provides the required environment
-# | variables and functions to download and extract the files of the Cocoa
-# | Lumberjack logging framework.
+# | variables and functions to build the Cocoa Lumberjack logging framework.
 # |
-# | https://github.com/robbiehanson/CocoaLumberjack
+# | https://github.com/CocoaLumberjack/CocoaLumberjack
 # |
 # | See the main build script for more information.
 # =========================================================================

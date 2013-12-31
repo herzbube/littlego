@@ -26,7 +26,7 @@ license, is available from
 Logging is achieved via the Cocoa Lumberjack framework, copyright by Deusty LLC
 and released under the BSD 2-Clause license. The original source code is
 available from
-  https://github.com/robbiehanson/CocoaLumberjack
+  https://github.com/CocoaLumberjack/CocoaLumberjack
   
 Reading and writing Zip archives is possible through the use of the ZipKit
 framework. ZipKit was developed by Karl Moskowski and has been released under a
