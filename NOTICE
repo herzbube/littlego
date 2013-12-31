@@ -18,10 +18,9 @@ by the Boost library. Boost is released under the Boost Software license, the
 original software is available from
   http://www.boost.org/
 
-MBProgressHUD is used in this product to display progress meters. A copy of the
-source code has been integrated directly into this product. The original, which
-is copyright by Matej Bukovinski and released under the MIT license, is
-available from
+MBProgressHUD is used in this product to display progress meters. The original
+source code, which is copyright by Matej Bukovinski and released under the MIT
+license, is available from
   https://github.com/matej/MBProgressHUD
 
 Logging is achieved via the Cocoa Lumberjack framework, copyright by Deusty LLC

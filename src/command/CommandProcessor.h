@@ -17,7 +17,9 @@
 
 // Project includes
 #import "AsynchronousCommand.h"
-#import "../ui/MBProgressHUD.h"
+
+// Library includes
+#import <mbprogresshud/MBProgressHUD.h>
 
 // Forward declarations
 @protocol Command;

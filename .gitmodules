@@ -10,3 +10,6 @@
 [submodule "3rdparty/src/ZipKit"]
 	path = 3rdparty/src/ZipKit
 	url = git@github.com:kolpanic/ZipKit.git
+[submodule "3rdparty/src/MBProgressHUD"]
+	path = 3rdparty/src/MBProgressHUD
+	url = git@github.com:matej/MBProgressHUD.git

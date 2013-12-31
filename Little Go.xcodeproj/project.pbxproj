@@ -62,8 +62,6 @@
 		CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AAB81424BF1000214BBE /* LoadGameCommand.m */; };
 		CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
 		CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B20F142BC4AF00214BBE /* GtpUtilities.m */; };
-		CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
-		CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B569142EA31700214BBE /* MBProgressHUD.m */; };
 		CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */; };
 		CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */; };
@@ -221,6 +219,7 @@
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
+		CD61BC7118731BA800CFF994 /* build-mbprogresshud.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD61BC7018731BA800CFF994 /* build-mbprogresshud.sh */; };
 		CD66127F155862F6009C6535 /* appicon-ipad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD66127E155862F6009C6535 /* appicon-ipad@2x.png */; };
 		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
@@ -524,8 +523,6 @@
 		CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreGameFromSgfCommand.m; sourceTree = "<group>"; };
 		CD05B20E142BC4AF00214BBE /* GtpUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpUtilities.h; sourceTree = "<group>"; };
 		CD05B20F142BC4AF00214BBE /* GtpUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpUtilities.m; sourceTree = "<group>"; };
-		CD05B568142EA31700214BBE /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		CD05B569142EA31700214BBE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		CD05B60F142F618B00214BBE /* LoadOpeningBookCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadOpeningBookCommand.h; sourceTree = "<group>"; };
 		CD05B610142F618B00214BBE /* LoadOpeningBookCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadOpeningBookCommand.m; sourceTree = "<group>"; };
 		CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfluenceLayerDelegate.h; sourceTree = "<group>"; };
@@ -702,6 +699,7 @@
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
+		CD61BC7018731BA800CFF994 /* build-mbprogresshud.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-mbprogresshud.sh"; sourceTree = "<group>"; };
 		CD66127E155862F6009C6535 /* appicon-ipad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-ipad@2x.png"; sourceTree = "<group>"; };
 		CD6612811558692A009C6535 /* appicon-appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore.png"; sourceTree = "<group>"; };
 		CD6612821558692A009C6535 /* appicon-appstore@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore@2x.png"; sourceTree = "<group>"; };
@@ -1825,6 +1823,7 @@
 				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
+				CD61BC7018731BA800CFF994 /* build-mbprogresshud.sh */,
 				CD02860B1640986B00CF23A1 /* build-quincykit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDFA329015990C8400439B4E /* build-zipkit.sh */,
@@ -1844,8 +1843,6 @@
 				CDDD525A1482DD9F0027476B /* ItemPickerController.m */,
 				CDC4E978167B996C00AFDB51 /* ItemScrollView.h */,
 				CDC4E979167B996C00AFDB51 /* ItemScrollView.m */,
-				CD05B568142EA31700214BBE /* MBProgressHUD.h */,
-				CD05B569142EA31700214BBE /* MBProgressHUD.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
@@ -2037,6 +2034,7 @@
 				CDB0A30C152B72FB003B2BBF /* 162-receipt@2x.png in Resources */,
 				CD7E92D31532333D00DCD671 /* LaunchImageiPad-Landscape.png in Resources */,
 				CD7E92D41532333D00DCD671 /* LaunchImageiPad-Landscape@2x.png in Resources */,
+				CD61BC7118731BA800CFF994 /* build-mbprogresshud.sh in Resources */,
 				CD7E92D51532333D00DCD671 /* LaunchImageiPad-Portrait.png in Resources */,
 				CD7E92D61532333D00DCD671 /* LaunchImageiPad-Portrait@2x.png in Resources */,
 				CDE022D9155731740052ACE0 /* appicon-ipad.png in Resources */,
@@ -2173,7 +2171,6 @@
 				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
-				CD05B56A142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
@@ -2335,7 +2332,6 @@
 				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
-				CD05B56B142EA31700214BBE /* MBProgressHUD.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCB8C142FFAFF00A3F869 /* GtpLogModel.m in Sources */,
@@ -2508,6 +2504,7 @@
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
 					"-ltouchzipkit",
+					"-lMBProgressHUD",
 					"-ObjC",
 				);
 				SDKROOT = iphoneos6.1;
@@ -2539,6 +2536,7 @@
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
 					"-ltouchzipkit",
+					"-lMBProgressHUD",
 					"-ObjC",
 				);
 				SDKROOT = iphoneos6.1;
@@ -2590,6 +2588,7 @@
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
 					"-ltouchzipkit",
+					"-lMBProgressHUD",
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -2794,6 +2793,7 @@
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
 					"-ltouchzipkit",
+					"-lMBProgressHUD",
 					"-ObjC",
 				);
 				SDKROOT = iphoneos6.1;
