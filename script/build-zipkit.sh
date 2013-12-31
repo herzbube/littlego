@@ -3,8 +3,7 @@
 # =========================================================================
 # | This is a script snippet that is included (via shell script sourcing) from
 # | a main build script. This snippet provides the required environment
-# | variables and functions to download and extract the files of the ZipKit
-# | framework.
+# | variables and functions to build the ZipKit static library.
 # |
 # | https://github.com/kolpanic/ZipKit/
 # |
@@ -18,13 +17,12 @@ ZIPKIT_BUILD_CONFIGURATION="Release"
 ZIPKIT_BUILDRESULT_FILENAME="libtouchzipkit.a"
 
 # These paths are relative to the root directory of the extracted source archive
-ZIPKIT_HEADER_SRCDIR="."
+ZIPKIT_HEADER_SRCDIR="ZipKit"
 ZIPKIT_XCODEPROJ_BASEDIR="."
 ZIPKIT_XCODEPROJ_FILENAME="$ZIPKIT_XCODEPROJ_BASEDIR/ZipKit.xcodeproj"
 ZIPKIT_XCODEPROJ_BUILDDIR="$ZIPKIT_XCODEPROJ_BASEDIR/build"
 ZIPKIT_XCODEPROJ_IPHONEOS_BUILDDIR="$ZIPKIT_XCODEPROJ_BUILDDIR/$ZIPKIT_BUILD_CONFIGURATION-$IPHONEOS_SDKPREFIX"
 ZIPKIT_XCODEPROJ_IPHONE_SIMULATOR_BUILDDIR="$ZIPKIT_XCODEPROJ_BUILDDIR/$ZIPKIT_BUILD_CONFIGURATION-$IPHONE_SIMULATOR_SDKPREFIX"
-ZIPKIT_XCODEPROJ_MACOSX_BUILDDIR="$ZIPKIT_XCODEPROJ_BUILDDIR/$ZIPKIT_BUILD_CONFIGURATION"
 
 # These paths are relative to the destination PREFIXDIR
 ZIPKIT_HEADER_DESTDIR="include/zipkit"
@@ -34,7 +32,6 @@ ZIPKIT_LIB_DESTDIR="lib"
 ZIPKIT_COMMON_XCODEBUILDFLAGS="-configuration $ZIPKIT_BUILD_CONFIGURATION -target touchzipkit"
 ZIPKIT_IPHONEOS_XCODEBUILDFLAGS="-sdk $IPHONEOS_SDKNAME"
 ZIPKIT_IPHONE_SIMULATOR_XCODEBUILDFLAGS="-sdk $IPHONE_SIMULATOR_SDKNAME"
-ZIPKIT_MACOSX_XCODEBUILDFLAGS="-sdk $MACOSX_SDKNAME"
 
 
 # +------------------------------------------------------------------------
@@ -123,6 +120,9 @@ INSTALL_STEPS_SOFTWARE()
       mkdir -p "$IPHONEOS_PREFIXDIR/$ZIPKIT_LIB_DESTDIR"
     fi
     cp "$ZIPKIT_XCODEPROJ_IPHONEOS_BUILDDIR/$ZIPKIT_BUILDRESULT_FILENAME" "$IPHONEOS_PREFIXDIR/$ZIPKIT_LIB_DESTDIR"
+    if test $? -ne 0; then
+      return 1
+    fi
   fi
 
   if test "$IPHONE_SIMULATOR_BUILD_ENABLED" = "1"; then
@@ -132,6 +132,9 @@ INSTALL_STEPS_SOFTWARE()
       mkdir -p "$IPHONE_SIMULATOR_PREFIXDIR/$ZIPKIT_LIB_DESTDIR"
     fi
     cp "$ZIPKIT_XCODEPROJ_IPHONE_SIMULATOR_BUILDDIR/$ZIPKIT_BUILDRESULT_FILENAME" "$IPHONE_SIMULATOR_PREFIXDIR/$ZIPKIT_LIB_DESTDIR"
+    if test $? -ne 0; then
+      return 1
+    fi
   fi
   return 0
 }

@@ -31,7 +31,7 @@ available from
 Reading and writing Zip archives is possible through the use of the ZipKit
 framework. ZipKit was developed by Karl Moskowski and has been released under a
 BSD-style license. The original source code is available from
-  https://bitbucket.org/kolpanic/zipkit/
+  https://github.com/kolpanic/ZipKit
 
 This product uses QuincyKit to provide a crash reporting service. QuincyKit in
 turn incorporates the PLCrashReporter framework and the protobuf-c library to
