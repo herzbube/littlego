@@ -50,6 +50,8 @@
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
+@property(nonatomic, retain) UIColor* alternateCellBackgroundColor1;
+@property(nonatomic, retain) UIColor* alternateCellBackgroundColor2;
 @end
 
 
@@ -73,6 +75,10 @@
   self.currentBoardPositionNeedsUpdate = false;
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
+  self.blackStoneImage = nil;
+  self.whiteStoneImage = nil;
+  self.alternateCellBackgroundColor1 = [UIColor lightBlueColor];
+  self.alternateCellBackgroundColor2 = [UIColor whiteColor];
   return self;
 }
 
@@ -98,6 +104,8 @@
   self.boardPositionListTableView = nil;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
+  self.alternateCellBackgroundColor1 = nil;
+  self.alternateCellBackgroundColor2 = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -587,6 +595,7 @@
   cell.textLabel.text = [self labelTextForMove:move];
   cell.detailTextLabel.text = [self detailLabelTextForBoardPosition:boardPositionOfCell move:move];
   cell.imageView.image = [self stoneImageForMove:move];
+  cell.backgroundColor = [self backgroundColorForBoardPosition:boardPositionOfCell];
   return cell;
 }
 
@@ -643,6 +652,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief This is an internal helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (UIColor*) backgroundColorForBoardPosition:(int)boardPosition
+{
+  if (0 == (boardPosition % 2))
+    return self.alternateCellBackgroundColor1;
+  else
+    return self.alternateCellBackgroundColor2;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (BOOL) tableView:(UITableView*)tableView shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath
@@ -651,51 +671,6 @@
     return YES;
   else
     return NO;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (tableView == self.currentBoardPositionTableView)
-  {
-    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-    int currentBoardPosition = boardPosition.currentBoardPosition;
-    if (0 == currentBoardPosition)
-    {
-    }
-    else
-    {
-      GoMove* currentMove = boardPosition.currentMove;
-      cell.backgroundColor = [self backgroundColorForMove:currentMove];
-    }
-  }
-  else
-  {
-    int boardPositionOfCell = indexPath.row;
-    if (0 == boardPositionOfCell)
-    {
-    }
-    else
-    {
-      int moveIndex = boardPositionOfCell - 1;
-      GoMove* move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
-      cell.backgroundColor = [self backgroundColorForMove:move];
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper for
-/// tableView:willDisplayCell:forRowAtIndexPath:().
-// -----------------------------------------------------------------------------
-- (UIColor*) backgroundColorForMove:(GoMove*)move
-{
-  if (move.player.black)
-    return [UIColor whiteColor];
-  else
-    return [UIColor lightBlueColor];
 }
 
 // -----------------------------------------------------------------------------
