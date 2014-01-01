@@ -50,7 +50,7 @@ Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
-- IPHONEOS_DEPLOYMENT_TARGET = 5.0
+- IPHONEOS_DEPLOYMENT_TARGET = 6.1
 - ARCHS = armv7
   - The original value is $(ARCHS_STANDARD_32_BIT)
   - Xcode 4.5 resolves this to "armv7 armv7s", but the 3rd party software build
@@ -116,8 +116,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest iOS", which means that the project is set up with a
   moving target SDK.
-- The deployment target is set to 5.0 so that the application keeps running on
-  iOS 5 devices.
+- The deployment target is set to 6.1 so that the application keeps running on
+  iOS 6 devices.
 
 
 Upgrading the iOS SDK
