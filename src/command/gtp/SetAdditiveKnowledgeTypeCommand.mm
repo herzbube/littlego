@@ -43,11 +43,43 @@
   else
     additiveKnowledgeType = AdditiveKnowledgeTypeRulebased;
 
-  NSString* commandString = [NSString stringWithFormat:@"uct_param_policy knowledge_type %d", additiveKnowledgeType];
+  NSString* commandString = [self commandStringForKnowledgeType:additiveKnowledgeType];
+  if (! commandString)
+    return false;
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
 
   return command.response.status;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GTP command required to configure the GTP engine with the
+/// additive knowlege type @a additiveKnowledgeType. Returns nil if
+/// @a additiveKnowledgeType has an unsupported value.
+// -----------------------------------------------------------------------------
+- (NSString*) commandStringForKnowledgeType:(enum AdditiveKnowledgeType)additiveKnowledgeType
+{
+  NSString* additiveKnowledgeTypeAsString;
+  switch (additiveKnowledgeType)
+  {
+    case AdditiveKnowledgeTypeNone:
+      additiveKnowledgeTypeAsString = @"none";
+      break;
+    case AdditiveKnowledgeTypeGreenpeep:
+      additiveKnowledgeTypeAsString = @"greenpeep";
+      break;
+    case AdditiveKnowledgeTypeRulebased:
+      additiveKnowledgeTypeAsString = @"rulebased";
+      break;
+    case AdditiveKnowledgeTypeBoth:
+      additiveKnowledgeTypeAsString = @"both";
+      break;
+    default:
+      DDLogError(@"%@: Unexpected additive knowledge type %d", [self shortDescription], additiveKnowledgeType);
+      assert(0);
+      return nil;
+  }
+  return [NSString stringWithFormat:@"uct_param_policy knowledge_type %@", additiveKnowledgeTypeAsString];
 }
 
 @end

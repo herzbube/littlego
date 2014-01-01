@@ -535,14 +535,12 @@ extern const int fuegoResignThresholdDefault[];
 extern NSString* defaultGtpEngineProfileUUID;
 
 /// @brief Enumerates the types of additive knowledge known by the GTP engine.
-///
-/// The numeric values of the enumeration members are directly used as the
-/// numeric parameter of the GTP command "uct_param_policy knowledge_type".
 enum AdditiveKnowledgeType
 {
   AdditiveKnowledgeTypeNone,
   AdditiveKnowledgeTypeGreenpeep,
-  AdditiveKnowledgeTypeRulebased
+  AdditiveKnowledgeTypeRulebased,
+  AdditiveKnowledgeTypeBoth  ///< @brief Both = AdditiveKnowledgeTypeGreenpeep and AdditiveKnowledgeTypeRulebased
 };
 //@}
 
