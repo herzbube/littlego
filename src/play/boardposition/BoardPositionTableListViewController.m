@@ -46,7 +46,6 @@
 @property(nonatomic, assign) bool tappingEnabled;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
-@property(nonatomic, assign) int oldCurrentBoardPosition;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, retain) UIImage* blackStoneImage;
@@ -72,7 +71,6 @@
   self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
-  self.oldCurrentBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
   return self;
@@ -305,7 +303,6 @@
   // launches and we need to display a non-zero board position right after a
   // game is created
   self.currentBoardPositionNeedsUpdate = true;
-  self.oldCurrentBoardPosition = -1;
   [self delayedUpdate];
 }
 
@@ -360,13 +357,6 @@
 {
   if ([keyPath isEqualToString:@"currentBoardPosition"])
   {
-    // The old board position is used to find the BoardPositionView whose
-    // currentBoardPosition flag needs to be cleared. If several notifications
-    // are received while updates are delayed, the old board position in the
-    // first notification is the one we need to remember, since the follow-up
-    // notifications never caused a BoardPositionView to be updated.
-    if (! self.currentBoardPositionNeedsUpdate)
-      self.oldCurrentBoardPosition = [[change objectForKey:NSKeyValueChangeOldKey] intValue];
     self.currentBoardPositionNeedsUpdate = true;
     [self delayedUpdate];
   }
@@ -486,28 +476,24 @@
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int newCurrentBoardPosition = boardPosition.currentBoardPosition;
-
   int numberOfRowsInTableView = [self.boardPositionListTableView numberOfRowsInSection:0];
-
-  NSMutableArray* indexPaths = [NSMutableArray arrayWithCapacity:0];
-  if (self.oldCurrentBoardPosition >= 0 && self.oldCurrentBoardPosition < numberOfRowsInTableView)
+  if (newCurrentBoardPosition < numberOfRowsInTableView)
   {
-    NSIndexPath* indexPathForOldCurrentBoardPosition = [NSIndexPath indexPathForRow:self.oldCurrentBoardPosition inSection:0];
-    [indexPaths addObject:indexPathForOldCurrentBoardPosition];
+    NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
+    [self.boardPositionListTableView selectRowAtIndexPath:indexPathForNewCurrentBoardPosition
+                                                 animated:NO
+                                           scrollPosition:UITableViewScrollPositionNone];
+    UITableViewCell* cellForNewCurrentBoardPosition = [self.boardPositionListTableView cellForRowAtIndexPath:indexPathForNewCurrentBoardPosition];
+    if (! cellForNewCurrentBoardPosition)
+    {
+      [self.boardPositionListTableView scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionMiddle
+                                                                         animated:NO];
+    }
   }
-  NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
-  if (newCurrentBoardPosition < numberOfRowsInTableView && newCurrentBoardPosition != self.oldCurrentBoardPosition)
-    [indexPaths addObject:indexPathForNewCurrentBoardPosition];
-  [self.boardPositionListTableView reloadRowsAtIndexPaths:indexPaths
-                                         withRowAnimation:UITableViewRowAnimationNone];
-  self.oldCurrentBoardPosition = -1;
-
-  UITableViewCell* cellForNewCurrentBoardPosition = [self.boardPositionListTableView cellForRowAtIndexPath:indexPathForNewCurrentBoardPosition];
-  if (! cellForNewCurrentBoardPosition)
+  else
   {
-    [self.boardPositionListTableView scrollToRowAtIndexPath:indexPathForNewCurrentBoardPosition
-                                           atScrollPosition:UITableViewScrollPositionMiddle
-                                                   animated:NO];
+    DDLogError(@"%@: Unexpected new current board position %d, number of rows in table view = %d", self, newCurrentBoardPosition, numberOfRowsInTableView);
+    assert(0);
   }
 }
 
@@ -524,22 +510,6 @@
     self.tappingEnabled = false;
   else
     self.tappingEnabled = true;
-  // Must update manually because the delegate method
-  // tableView:shouldHighlightRowAtIndexPath:() is available only in iOS 6 and
-  // later
-  GoBoardPosition* boardPosition = game.boardPosition;
-  int currentBoardPosition = boardPosition.currentBoardPosition;
-  NSArray* indexPathsForVisibleRows = [self.boardPositionListTableView indexPathsForVisibleRows];
-  for (NSIndexPath* indexPath in indexPathsForVisibleRows)
-  {
-    if (indexPath.row == currentBoardPosition)
-      continue;  // keep the highlight of the current board position intact
-    UITableViewCell* cell = [self.boardPositionListTableView cellForRowAtIndexPath:indexPath];
-    if (self.tappingEnabled)
-      cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-    else
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -675,6 +645,17 @@
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
+- (BOOL) tableView:(UITableView*)tableView shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (tableView == self.boardPositionListTableView && self.tappingEnabled)
+    return YES;
+  else
+    return NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
   if (tableView == self.currentBoardPositionTableView)
@@ -689,7 +670,6 @@
       GoMove* currentMove = boardPosition.currentMove;
       cell.backgroundColor = [self backgroundColorForMove:currentMove];
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   else
   {
@@ -702,20 +682,6 @@
       int moveIndex = boardPositionOfCell - 1;
       GoMove* move = [[GoGame sharedGame].moveModel moveAtIndex:moveIndex];
       cell.backgroundColor = [self backgroundColorForMove:move];
-    }
-
-    if (boardPositionOfCell == [GoGame sharedGame].boardPosition.currentBoardPosition)
-    {
-      cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-      cell.selected = YES;
-    }
-    else
-    {
-      if (self.tappingEnabled)
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-      else
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      cell.selected = NO;
     }
   }
 }
@@ -735,20 +701,9 @@
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (NSIndexPath*) tableView:(UITableView*)tableView willSelectRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (tableView == self.boardPositionListTableView && self.tappingEnabled)
-    return indexPath;
-  else
-    return nil;  // highlighting is disabled in updateTappingEnabled()
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (tableView == self.currentBoardPositionTableView)
+  if (tableView != self.boardPositionListTableView)
   {
     DDLogError(@"%@: Unexpected table view %@", self, tableView);
     assert(0);
