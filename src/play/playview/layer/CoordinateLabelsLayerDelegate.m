@@ -119,7 +119,7 @@
       coordinateLabelText = point.vertex.numberAxisCompound;
     [coordinateLabelText drawInRect:coordinateLabelRect
                            withFont:coordinateLabelFont
-                      lineBreakMode:UILineBreakModeWordWrap
+                      lineBreakMode:NSLineBreakByWordWrapping
                           alignment:NSTextAlignmentCenter];
     if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
     {

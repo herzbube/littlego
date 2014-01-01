@@ -50,7 +50,7 @@
 /// Assumptions that this method makes:
 /// - The cell is not indented, i.e. the cell has the full width of the screen
 /// - The label inside the cell uses the default label font and label font size
-/// - The label uses UILineBreakModeWordWrap.
+/// - The label uses NSLineBreakByWordWrapping.
 ///
 /// @note This method is intended to be called from inside a table view
 /// delegate's tableView:heightForRowAtIndexPath:().
@@ -93,7 +93,7 @@
   CGSize constraintSize = CGSizeMake(labelWidth, MAXFLOAT);
   CGSize labelSize = [text sizeWithFont:labelFont
                       constrainedToSize:constraintSize
-                          lineBreakMode:UILineBreakModeWordWrap];
+                          lineBreakMode:NSLineBreakByWordWrapping];
 
   return labelSize.height + 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
 }
@@ -206,7 +206,7 @@
     cell.textLabel.textColor = [UIColor lightGrayColor];
   }
   cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-  cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+  cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
   cell.textLabel.numberOfLines = 0;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }

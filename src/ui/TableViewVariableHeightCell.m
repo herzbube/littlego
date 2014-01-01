@@ -128,7 +128,7 @@
 /// - The cell is not indented, i.e. the cell has the full width of the screen
 /// - The cell does not use an image
 /// - Both labels inside the cell use the default label font and label font size
-/// - The label displaying @a text uses UILineBreakModeWordWrap
+/// - The label displaying @a text uses NSLineBreakByWordWrapping
 ///
 /// @note This method is intended to be called from inside a table view
 /// delegate's tableView:heightForRowAtIndexPath:().
@@ -160,7 +160,7 @@
   CGSize detailTextConstraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   return [detailText sizeWithFont:labelFont
                 constrainedToSize:detailTextConstraintSize
-                    lineBreakMode:UILineBreakModeClip];
+                    lineBreakMode:NSLineBreakByClipping];
 }
 
 // -----------------------------------------------------------------------------
@@ -183,7 +183,7 @@ hasDisclosureIndicator:(bool)hasDisclosureIndicator
   CGSize textConstraintSize = CGSizeMake(maximumTextWidth, MAXFLOAT);
   return [text sizeWithFont:labelFont
           constrainedToSize:textConstraintSize
-              lineBreakMode:UILineBreakModeWordWrap];
+              lineBreakMode:NSLineBreakByWordWrapping];
 }
 
 @end

@@ -191,7 +191,7 @@
       // Make background views visible
       cell.textLabel.backgroundColor = [UIColor clearColor];
       // It's a button, so we want centered text
-      cell.textLabel.textAlignment = UITextAlignmentCenter;
+      cell.textLabel.textAlignment = NSTextAlignmentCenter;
       // Contrast against the red background
       cell.textLabel.textColor = [UIColor whiteColor];
       // Gives the text a slightly embossed effect so it looks more like the

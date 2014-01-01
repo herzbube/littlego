@@ -218,7 +218,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.enabled = YES;
       cell.textLabel.text = markDeadStonesIntelligentlyText;
-      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.scoringModel.markDeadStonesIntelligently;
       [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];

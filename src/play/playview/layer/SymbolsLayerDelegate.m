@@ -263,7 +263,7 @@
     CGContextRef layerContext = CGLayerGetContext(layer);
     UIGraphicsPushContext(layerContext);
     CGContextSetFillColorWithColor(layerContext, textColor.CGColor);
-    [moveNumberText drawInRect:layerRect withFont:moveNumberFont lineBreakMode:UILineBreakModeWordWrap alignment:NSTextAlignmentCenter];
+    [moveNumberText drawInRect:layerRect withFont:moveNumberFont lineBreakMode:NSLineBreakByWordWrapping alignment:NSTextAlignmentCenter];
     UIGraphicsPopContext();
     [self.playViewMetrics drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered];
     CGLayerRelease(layer);
@@ -299,7 +299,7 @@ CGLayerRef CreateNextMoveLayer(CGContextRef context, SymbolsLayerDelegate* deleg
   UIGraphicsPushContext(layerContext);
   CGContextSetFillColorWithColor(layerContext, nextMoveLabelColor.CGColor);
   CGContextSetShadowWithColor(layerContext, CGSizeMake(1.0, 1.0), 5.0, [UIColor blackColor].CGColor);
-  [nextMoveLabelText drawInRect:layerRect withFont:nextMoveLabelFont lineBreakMode:UILineBreakModeWordWrap alignment:NSTextAlignmentCenter];
+  [nextMoveLabelText drawInRect:layerRect withFont:nextMoveLabelFont lineBreakMode:NSLineBreakByWordWrapping alignment:NSTextAlignmentCenter];
   UIGraphicsPopContext();
 
   return layer;

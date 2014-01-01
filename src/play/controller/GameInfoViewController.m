@@ -559,7 +559,7 @@ enum BoardPositionSectionItem
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       // TODO include whether a player has resigned
       cell.textLabel.text = [[GoGame sharedGame].score resultString];
-      cell.textLabel.textAlignment = UITextAlignmentCenter;
+      cell.textLabel.textAlignment = NSTextAlignmentCenter;
       break;
     }
     default:

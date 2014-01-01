@@ -181,7 +181,7 @@
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize labelSize = [labelText sizeWithFont:labelFont
                            constrainedToSize:constraintSize
-                               lineBreakMode:UILineBreakModeWordWrap];
+                               lineBreakMode:NSLineBreakByWordWrapping];
 
   CGRect labelFrame;
   labelFrame.origin.x = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];

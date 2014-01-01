@@ -97,7 +97,7 @@
   [self.contentView addSubview:self.label];
   self.label.tag = TextCellLabelTag;
   self.label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  self.label.textAlignment = UITextAlignmentLeft;
+  self.label.textAlignment = NSTextAlignmentLeft;
   self.label.textColor = [UIColor blackColor];
   self.label.backgroundColor = [UIColor clearColor];
   self.label.hidden = YES;
@@ -148,7 +148,7 @@
     CGSize constraintSize = CGSizeMake(maximumLabelWidth, MAXFLOAT);
     CGSize labelTextSize = [self.label.text sizeWithFont:self.label.font
                                        constrainedToSize:constraintSize
-                                           lineBreakMode:UILineBreakModeWordWrap];
+                                           lineBreakMode:NSLineBreakByWordWrapping];
     int labelWidth = labelTextSize.width;
     if (labelWidth > maximumLabelWidth)
       labelWidth = maximumLabelWidth;

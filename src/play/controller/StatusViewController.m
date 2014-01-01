@@ -122,7 +122,7 @@
   else
     self.statusLabel.textColor = [UIColor blackColor];
   self.statusLabel.backgroundColor = [UIColor clearColor];
-  self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+  self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
   // Give the view its proper height. The width will later change depending on
   // how much space the view gets within the navigation bar

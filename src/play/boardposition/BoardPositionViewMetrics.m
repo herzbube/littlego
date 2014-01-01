@@ -85,7 +85,7 @@
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize labelSize = [textToDetermineLabelSize sizeWithFont:font
                                           constrainedToSize:constraintSize
-                                              lineBreakMode:UILineBreakModeWordWrap];
+                                              lineBreakMode:NSLineBreakByWordWrapping];
   self.labelWidth = labelSize.width;
   self.labelHeight = labelSize.height;
   self.labelOneLineHeight = self.labelHeight / self.labelNumberOfLines;
@@ -144,7 +144,7 @@
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize size = [textToDetermineLabelSize sizeWithFont:font
                                      constrainedToSize:constraintSize
-                                         lineBreakMode:UILineBreakModeWordWrap];
+                                         lineBreakMode:NSLineBreakByWordWrapping];
   CGFloat x = self.stoneImageViewFrame.origin.x;
   CGFloat width = size.width;
   CGFloat height = size.height;

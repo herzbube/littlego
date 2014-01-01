@@ -112,7 +112,7 @@
   self.descriptionLabel = [[[UILabel alloc] initWithFrame:descriptionLabelRect] autorelease];
   self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
   self.descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  self.descriptionLabel.textAlignment = UITextAlignmentLeft;
+  self.descriptionLabel.textAlignment = NSTextAlignmentLeft;
   self.descriptionLabel.textColor = [UIColor blackColor];
   self.descriptionLabel.backgroundColor = [UIColor clearColor];
   self.descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
@@ -124,7 +124,7 @@
     self.valueLabel = [[[UILabel alloc] initWithFrame:valueLabelRect] autorelease];
     self.valueLabel.tag = SliderCellValueLabelTag;
     self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-    self.valueLabel.textAlignment = UITextAlignmentRight;
+    self.valueLabel.textAlignment = NSTextAlignmentRight;
     self.valueLabel.textColor = [UIColor slateBlueColor];
     self.valueLabel.backgroundColor = [UIColor clearColor];
     self.valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);

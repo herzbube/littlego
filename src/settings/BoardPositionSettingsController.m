@@ -173,7 +173,7 @@ enum DiscardFutureMovesAlertSectionItem
     case DiscardFutureMovesAlertSection:
     {
       cell.textLabel.text = discardFutureMovesAlertText;
-      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardPositionModel.discardFutureMovesAlert;
       [accessoryView addTarget:self action:@selector(toggleDiscardFutureMovesAlert:) forControlEvents:UIControlEventValueChanged];

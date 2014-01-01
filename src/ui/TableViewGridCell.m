@@ -199,7 +199,7 @@ static NSString* gridLineColor = @"A9ABAD";
 {
 	UILabel* label = [[[UILabel alloc] initWithFrame:frame] autorelease];
 	label.textColor = [UIColor slateBlueColor];
-	label.textAlignment = UITextAlignmentCenter;
+	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
 	label.backgroundColor = [UIColor clearColor];
 	return label;
@@ -212,7 +212,7 @@ static NSString* gridLineColor = @"A9ABAD";
 {
 	UILabel* label = [[[UILabel alloc] initWithFrame:frame] autorelease];
 	label.textColor = [UIColor blackColor];
-	label.textAlignment = UITextAlignmentCenter;
+	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
 	label.backgroundColor = [UIColor clearColor];
   label.autoresizingMask = UIViewAutoresizingFlexibleWidth;

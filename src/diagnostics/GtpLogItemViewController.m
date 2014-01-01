@@ -210,7 +210,7 @@ enum ResponseStringSectionItem
         case CommandStringItem:
           cell.textLabel.text = self.logItem.commandString;
           cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
           cell.textLabel.numberOfLines = 0;
           break;
         case TimestampItem:
@@ -264,7 +264,7 @@ enum ResponseStringSectionItem
           // The normal font without bold'ness would be
           // [UIFont systemFontOfSize:[UIFont labelFontSize]];
           cell.textLabel.font = [UIFont fontWithName:@"CourierNewPSMT" size:[UIFont labelFontSize]];
-          cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+          cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
           cell.textLabel.numberOfLines = 0;
           break;
         }

@@ -230,7 +230,7 @@ enum DisplayPlayerInfluenceSectionItem
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = displayPlayerInfluenceText;
-      cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.playViewModel.displayPlayerInfluence;
       [accessoryView addTarget:self action:@selector(toggleDisplayPlayerInfluence:) forControlEvents:UIControlEventValueChanged];

@@ -81,7 +81,7 @@
     UIFont* font = [UIFont systemFontOfSize:fontSize];
     CGSize textSize = [text sizeWithFont:font
                        constrainedToSize:constraintSize
-                           lineBreakMode:UILineBreakModeWordWrap];
+                           lineBreakMode:NSLineBreakByWordWrapping];
     NSArray* array = [NSArray arrayWithObjects:font,
                                                [NSNumber numberWithFloat:textSize.width],
                                                [NSNumber numberWithFloat:textSize.height],

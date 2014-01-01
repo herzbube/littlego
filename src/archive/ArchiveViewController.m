@@ -294,7 +294,7 @@ enum DeleteAllSectionItem
   CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   CGSize labelSize = [labelText sizeWithFont:labelFont
                            constrainedToSize:constraintSize
-                               lineBreakMode:UILineBreakModeWordWrap];
+                               lineBreakMode:NSLineBreakByWordWrapping];
   CGRect labelFrame = CGRectNull;
   labelFrame.size = labelSize;
   // Horizontally center
