@@ -129,33 +129,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
-
-  // Super's viewDidUnload does not release self.view/self.tableView for us,
-  // possibly because we override loadView and create the view ourselves
-  self.view = nil;
-
-  // Undo all of the stuff that is happening in viewDidLoad
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.model = nil;
-  self.navigationItem.rightBarButtonItems = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Called by UIKit after the user interface has rotated.
 // -----------------------------------------------------------------------------
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation

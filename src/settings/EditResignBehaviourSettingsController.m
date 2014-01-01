@@ -121,15 +121,6 @@ enum ResignMinGamesCategory
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView

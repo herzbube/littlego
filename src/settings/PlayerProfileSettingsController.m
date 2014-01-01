@@ -172,30 +172,6 @@ enum ResetToDefaultsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
-
-  // Undo all of the stuff that is happening in viewDidLoad
-  [self removeNotificationResponders];
-  self.playerModel = nil;
-  self.gtpEngineProfileModel = nil;
-  self.navigationItem.rightBarButtonItem = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Called when the user taps the edit/done button.
 ///
 /// We override this so that we can add rows to the table view for adding new

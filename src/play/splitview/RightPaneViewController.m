@@ -139,16 +139,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewWillUnload
-{
-  [super viewWillUnload];
-  self.navigationBarController.statusViewController.playView = nil;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief This is an internal helper invoked when the view hierarchy is
 /// created.
 // -----------------------------------------------------------------------------

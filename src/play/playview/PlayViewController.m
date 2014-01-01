@@ -77,17 +77,4 @@
   self.tapGestureController.playView = self.playView;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewWillUnload
-{
-  [super viewWillUnload];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.playView = nil;
-  self.panGestureController.playView = nil;
-  self.tapGestureController.playView = nil;
-}
-
 @end

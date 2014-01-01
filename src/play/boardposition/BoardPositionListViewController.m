@@ -98,17 +98,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewWillUnload
-{
-  [super viewWillUnload];
-  [self removeNotificationResponders];
-  self.boardPositionListView = nil;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders

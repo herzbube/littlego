@@ -117,29 +117,6 @@ enum GameAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
-
-  // Undo all of the stuff that is happening in viewDidLoad
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.game removeObserver:self forKeyPath:@"fileDate"];
-  self.navigationItem.rightBarButtonItem = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView

@@ -103,7 +103,11 @@
 /// orientations on iPad. Returns NO for all other situations.
 ///
 /// This method implements application-wide orientation support. It can be
-/// invoked by all view controller's shouldAutorotateToInterfaceOrientation:().
+/// invoked by all view controllers' implementation of
+/// shouldAutorotateToInterfaceOrientation:().
+///
+/// @note shouldAutorotateToInterfaceOrientation:() is relevant for iOS 5 and
+/// earlier.
 // -----------------------------------------------------------------------------
 + (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -119,7 +123,10 @@
 /// for all orientations on iPad.
 ///
 /// This method implements application-wide orientation support. It can be
-/// invoked by all view controller's supportedInterfaceOrientations().
+/// invoked by all view controllers' implementation of
+/// supportedInterfaceOrientations().
+///
+/// @note supportedInterfaceOrientations:() is relevant for iOS 6 and later.
 // -----------------------------------------------------------------------------
 + (NSUInteger) supportedInterfaceOrientations
 {

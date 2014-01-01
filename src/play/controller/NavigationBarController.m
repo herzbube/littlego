@@ -164,39 +164,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewWillUnload
-{
-  [super viewWillUnload];
-  [self removeNotificationResponders];
-  [self releaseObjects];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // In iOS 5, the system purges the view and self.isViewLoaded becomes false
-  // before didReceiveMemoryWarning() is invoked. In iOS 6 the system does not
-  // purge the view and self.isViewLoaded is still true when we get here. The
-  // view's window property then becomes important: It is nil if the main tab
-  // bar controller displays a different tab than the one where the view is
-  // visible.
-  if (self.isViewLoaded && ! self.view.window)
-  {
-    // Do not release anything in iOS 6 and later (as opposed to iOS 5 where we
-    // are forced to release stuff in viewDidUnload). A run through Instruments
-    // shows that releasing objects here frees between 100-300 KB. Since the
-    // user is expected to switch back to the Play tab anyway, this gain is
-    // only temporary.
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupButtons
@@ -364,13 +331,6 @@
     [score calculateWaitUntilDone:true];
   self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
   [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
-  if (5 == [UIDevice systemVersionMajor])
-  {
-    // We are the GameInfoViewController delegate, so we must not be
-    // deallocated when the parent's viewDidUnload is invoked while
-    // GameInfoViewController does its thing.
-    [self retain];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -380,12 +340,6 @@
 {
   [self.navigationController popViewControllerAnimated:YES];
   self.gameInfoViewController = nil;
-  if (5 == [UIDevice systemVersionMajor])
-  {
-    // Balance the retain message that we sent to this controller before
-    // we displayed GameInfoViewController
-    [self autorelease];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -401,13 +355,6 @@
   }
   PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
   [controller showActionSheetFromView:[ApplicationDelegate sharedDelegate].window];
-  if (5 == [UIDevice systemVersionMajor])
-  {
-    // We are the PlayViewActionSheetController's delegate, so we must not be
-    // deallocated when the parent's viewDidUnload is invoked while
-    // PlayViewActionSheetDelegate does its thing.
-    [self retain];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -425,12 +372,6 @@
 - (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
 {
   [controller release];
-  if (5 == [UIDevice systemVersionMajor])
-  {
-    // Balance the retain message that we send to this controller before
-    // we display PlayViewActionSheetController
-    [self autorelease];
-  }
 }
 
 // -----------------------------------------------------------------------------

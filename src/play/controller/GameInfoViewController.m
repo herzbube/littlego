@@ -345,33 +345,6 @@ enum BoardPositionSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewDidUnload
-{
-  [super viewDidUnload];
-
-  // Super's viewDidUnload does not release self.view/self.tableView for us,
-  // possibly because we override loadView and create the view ourselves
-  self.view = nil;
-  self.navigationBar = nil;
-  self.tableView = nil;
-
-  // Undo all of the stuff that is happening in viewDidLoad
-  [self removeNotificationResponders];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return [UiUtilities shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UINavigationBarDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (BOOL) navigationBar:(UINavigationBar*)navigationBar shouldPopItem:(UINavigationItem*)item

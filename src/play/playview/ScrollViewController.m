@@ -147,19 +147,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exists for compatibility with iOS 5. Is not invoked in iOS 6 and can
-/// be removed if deployment target is set to iOS 6.
-// -----------------------------------------------------------------------------
-- (void) viewWillUnload
-{
-  [super viewWillUnload];
-  self.playViewController.panGestureController.scrollView = nil;
-  self.doubleTapGestureController.scrollView = nil;
-  self.twoFingerTapGestureController.scrollView = nil;
-  self.scrollView = nil;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UIViewController method. This override properly resizes the scroll
 /// view content using self.currentAbsoluteZoomScale.
 ///
