@@ -26,6 +26,7 @@ enum PlayViewLayerDelegateEvent
   PVLDEventRectangleChanged,
   PVLDEventGoGameStarted,
   PVLDEventBoardPositionChanged,
+  PVLDEventNumberOfBoardPositionsChanged,
   PVLDEventMarkLastMoveChanged,
   /// @brief This event can be treated the same as PVLDEventRectangleChanged
   /// because it fundamentally changes the board geometry.

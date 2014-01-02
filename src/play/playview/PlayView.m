@@ -120,7 +120,9 @@
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [self.playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 
   self.playViewModel = nil;
   self.scoringModel = nil;
@@ -166,7 +168,11 @@
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
-    [game.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  {
+    GoBoardPosition* boardPosition = game.boardPosition;
+    [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+    [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  }
 
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
@@ -374,7 +380,9 @@
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
-  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  GoBoardPosition* oldBoardPosition = oldGame.boardPosition;
+  [oldBoardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [oldBoardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------
@@ -383,7 +391,9 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  GoBoardPosition* newBoardPosition = newGame.boardPosition;
+  [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 
   [CATransaction begin];
   [CATransaction setDisableActions:YES];
@@ -488,8 +498,16 @@
   }
   else if (object == [GoGame sharedGame].boardPosition)
   {
-    [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
-    [self delayedUpdate];
+    if ([keyPath isEqualToString:@"currentBoardPosition"])
+    {
+      [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
+      [self delayedUpdate];
+    }
+    else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
+    {
+      [self notifyLayerDelegates:PVLDEventNumberOfBoardPositionsChanged eventInfo:nil];
+      [self delayedUpdate];
+    }
   }
 }
 

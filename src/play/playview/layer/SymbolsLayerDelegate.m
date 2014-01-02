@@ -119,6 +119,11 @@
       break;
     }
     case PVLDEventBoardPositionChanged:
+    // This case covers the following scenario: Board position 0 is selected
+    // and the user discards all board positions. In this scenario the event
+    // PVLDEventBoardPositionChanged - which usually covers the discard of board
+    // positions - does NOT fire because the board position does NOT change.
+    case PVLDEventNumberOfBoardPositionsChanged:
     case PVLDEventMarkLastMoveChanged:
     case PVLDEventMoveNumbersPercentageChanged:
     case PVLDEventScoringModeEnabled:   // temporarily disable symbols
