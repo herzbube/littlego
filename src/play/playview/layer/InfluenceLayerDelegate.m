@@ -53,6 +53,12 @@
       self.dirty = true;
       break;
     }
+    case PVLDEventScoringModeEnabled:
+    case PVLDEventScoringModeDisabled:
+    {
+      self.dirty = true;
+      break;
+    }
     default:
     {
       break;
