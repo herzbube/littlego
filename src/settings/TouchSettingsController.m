@@ -137,7 +137,7 @@ enum ZoomSectionItem
     case StoneDistanceFromFingertipSection:
       return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
     case ZoomSection:
-      return @"Controls how much you can zoom the board. Because zooming costs memory you may want to set a limit that is below the maximum zoom (3x). A limit of 2x zoom is recommended for devices that do not have much RAM (typically older devices such as the iPhone 3GS or the iPad 1st generation).";
+      return @"Controls how much you can zoom the board. Because zooming costs (a lot of) memory you may want to set a limit that is below the maximum. This makes sure that you cannot crash the application by accidentally zooming the board too much.";
     default:
       break;
   }
@@ -191,6 +191,11 @@ enum ZoomSectionItem
           sliderCell.descriptionLabel.text = @"Maximum zoom";
           sliderCell.slider.minimumValue = (1.0
                                             * sliderValueFactorForMaximumZoomScale);
+          float maximumZoomScaleMaximum;
+          if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+            maximumZoomScaleMaximum = iPhoneMaximumZoomScaleMaximum;
+          else
+            maximumZoomScaleMaximum = iPadMaximumZoomScaleMaximum;
           sliderCell.slider.maximumValue = (maximumZoomScaleMaximum
                                             * sliderValueFactorForMaximumZoomScale);
           sliderCell.value = (self.playViewModel.maximumZoomScale

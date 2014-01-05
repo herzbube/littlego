@@ -38,6 +38,7 @@ NSString* displayMoveNumbersKey = @"DisplayMoveNumbers";
 NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 const float stoneDistanceFromFingertipMaximum = 4.0;
+const float maximumZoomScaleDefault = 3.0;
 //@}
 
 
@@ -497,7 +498,21 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
   if (playViewDictionary)  // is nil if the key is not present
   {
     NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    NSMutableDictionary* playViewDictionaryRegistrationDomain = [registrationDomainDefaults objectForKey:playViewKey];
     [playViewDictionaryUpgrade setValue:[NSNumber numberWithBool:displayPlayerInfluenceDefault] forKey:displayPlayerInfluenceKey];
+    // Here we preserve the "maximum zoom scale" user default
+    [UserDefaultsUpdater upgradeDictionary:playViewDictionaryUpgrade
+                                    forKey:maximumZoomScaleKey
+                       upgradeDeviceSuffix:[UIDevice currentDeviceSuffix]
+                registrationDomainDefaults:playViewDictionaryRegistrationDomain];
+    NSString* maximumZoomScaleKeyWithDeviceSuffix = [maximumZoomScaleKey stringByAppendingDeviceSuffix];
+    float maximumZoomScaleUser = [[playViewDictionaryUpgrade valueForKey:maximumZoomScaleKeyWithDeviceSuffix] floatValue];
+    float maximumZoomScaleRegistrationDomain = [[playViewDictionaryRegistrationDomain valueForKey:maximumZoomScaleKeyWithDeviceSuffix] floatValue];
+    // Here we discard the user default if it is too high. It *will* be too high
+    // if the user has never touched the preference.
+    if (maximumZoomScaleUser > maximumZoomScaleRegistrationDomain)
+      [playViewDictionaryUpgrade setValue:[NSNumber numberWithFloat:maximumZoomScaleRegistrationDomain] forKey:maximumZoomScaleKeyWithDeviceSuffix];
+
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 

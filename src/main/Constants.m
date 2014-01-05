@@ -77,8 +77,10 @@ NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 
 // Play view settings default values
-const float maximumZoomScaleDefault = 3.0;
-const float maximumZoomScaleMaximum = 3.0;
+const float iPhoneMaximumZoomScaleDefault = 2.5;
+const float iPadMaximumZoomScaleDefault = 2.0;
+const float iPhoneMaximumZoomScaleMaximum = 2.5;
+const float iPadMaximumZoomScaleMaximum = 2.0;
 const float stoneDistanceFromFingertipDefault = 0.5;
 const float moveNumbersPercentageDefault = 0.0;
 const bool displayPlayerInfluenceDefault = false;

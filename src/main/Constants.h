@@ -477,8 +477,10 @@ extern NSString* territoryStatisticsChanged;
 /// @name Play view settings default values
 // -----------------------------------------------------------------------------
 //@{
-extern const float maximumZoomScaleDefault;
-extern const float maximumZoomScaleMaximum;
+extern const float iPhoneMaximumZoomScaleDefault;
+extern const float iPadMaximumZoomScaleDefault;
+extern const float iPhoneMaximumZoomScaleMaximum;
+extern const float iPadMaximumZoomScaleMaximum;
 extern const float stoneDistanceFromFingertipDefault;
 extern const float moveNumbersPercentageDefault;
 extern const bool displayPlayerInfluenceDefault;
