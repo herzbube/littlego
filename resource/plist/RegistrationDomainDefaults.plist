@@ -355,6 +355,6 @@
 		<integer>8</integer>
 	</array>
 	<key>AdditiveKnowledgeMemoryThreshold</key>
-	<integer>384</integer>
+	<integer>768</integer>
 </dict>
 </plist>
