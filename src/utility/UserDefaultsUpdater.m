@@ -531,7 +531,7 @@ const float stoneDistanceFromFingertipMaximum = 4.0;
     NSString* whiteSekiSymbolColorString = [scoringDictionaryRegistrationDefaults valueForKey:whiteSekiSymbolColorKey];
     if (! whiteSekiSymbolColorString)
       whiteSekiSymbolColorString = @"ff0000";
-    [scoringDictionaryUpgrade setValue:blackSekiSymbolColorString forKey:whiteSekiSymbolColorKey];
+    [scoringDictionaryUpgrade setValue:whiteSekiSymbolColorString forKey:whiteSekiSymbolColorKey];
     [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
   }
 }
