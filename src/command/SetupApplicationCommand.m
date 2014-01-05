@@ -52,7 +52,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.totalSteps = 2;
+  self.totalSteps = 1;
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
   return self;
@@ -85,9 +85,6 @@
     [[[[LoadOpeningBookCommand alloc] init] autorelease] submit];
     [self increaseProgressAndNotifyDelegate];
 
-    [[[[SetAdditiveKnowledgeTypeCommand alloc] init] autorelease] submit];
-    [self increaseProgressAndNotifyDelegate];
-
     // At this point the progress in self.asynchronousCommandDelegate is at
     // 100%. From now on, other commands may take over the progress HUD, with
     // an initial resetting to 0% and display of a different message.
@@ -116,6 +113,11 @@
         [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
       }
     }
+
+    // Run this command *AFTER* the initial "uct_max_memory" GTP command has
+    // been submitted to the GTP engine. See the command's class documentation
+    // for details.
+    [[[[SetAdditiveKnowledgeTypeCommand alloc] init] autorelease] submit];
   }
   @finally
   {

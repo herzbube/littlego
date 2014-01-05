@@ -32,6 +32,17 @@
 ///
 /// The threshold to determine whether the device has sufficient memory is
 /// taken from the user defaults system.
+///
+/// @note On devices with 512 MB of memory this command must be executed *AFTER*
+/// the initial "uct_max_memory" GTP command has been submitted to the GTP
+/// engine. Reason: The "uct_param_policy knowledge_type" GTP command triggers
+/// initialization of the UCT search tree in Fuego. The tree is initialized with
+/// the number of nodes defined by the current value of "uct_max_memory". If no
+/// explicit value has been set yet, the default number of nodes uses up half of
+/// the amount of memory that the device has! On devices with 512 MB of RAM,
+/// this immediately causes enough memory pressure to crash the application,
+/// before "uct_max_memory" has a chance to reduce the amount of memory required
+/// by the UCT search tree.
 // -----------------------------------------------------------------------------
 @interface SetAdditiveKnowledgeTypeCommand : CommandBase
 {
