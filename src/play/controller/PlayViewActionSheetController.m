@@ -138,7 +138,7 @@ enum ActionSheetButton
         {
           case GoScoreMarkModeDead:
           {
-            title = @"Start marking as Seki";
+            title = @"Start marking as seki";
             break;
           }
           case GoScoreMarkModeSeki:
