@@ -81,8 +81,6 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   _scoringEnabled = [decoder decodeBoolForKey:goScoreScoringEnabledKey];
-  _scoringInProgress = [decoder decodeBoolForKey:goScoreScoringInProgressKey];
-  _askGtpEngineForDeadStonesInProgress = [decoder decodeBoolForKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
   _komi = [decoder decodeDoubleForKey:goScoreKomiKey];
   _capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
   _capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
@@ -106,6 +104,13 @@
   _didAskGtpEngineForDeadStones = [decoder decodeBoolForKey:goScoreDidAskGtpEngineForDeadStonesKey];
   _lastCalculationHadError = [decoder decodeBoolForKey:goScoreLastCalculationHadErrorKey];
 
+  // If we wanted to restore the two "in progress" states we would need to
+  // handle the case where one or both of the states is actually true, i.e. we
+  // would have to continue the scoring calculation exactly at the point where
+  // it was interrupted. Since we can't do this, there is no point in
+  // saving/restoring the two "in progress" states.
+  _scoringInProgress = false;
+  _askGtpEngineForDeadStonesInProgress = false;
   _operationQueue = [[NSOperationQueue alloc] init];
 
   return self;
@@ -1039,8 +1044,6 @@
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeBool:self.scoringEnabled forKey:goScoreScoringEnabledKey];
-  [encoder encodeBool:self.scoringInProgress forKey:goScoreScoringInProgressKey];
-  [encoder encodeBool:self.askGtpEngineForDeadStonesInProgress forKey:goScoreAskGtpEngineForDeadStonesInProgressKey];
   [encoder encodeDouble:self.komi forKey:goScoreKomiKey];
   [encoder encodeInt:self.capturedByBlack forKey:goScoreCapturedByBlackKey];
   [encoder encodeInt:self.capturedByWhite forKey:goScoreCapturedByWhiteKey];

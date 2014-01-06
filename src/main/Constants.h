@@ -842,8 +842,6 @@ extern NSString* goPointTerritoryStatisticsScoreKey;
 extern NSString* goPointRegionKey;
 // GoScore keys
 extern NSString* goScoreScoringEnabledKey;
-extern NSString* goScoreScoringInProgressKey;
-extern NSString* goScoreAskGtpEngineForDeadStonesInProgressKey;
 extern NSString* goScoreMarkModeKey;
 extern NSString* goScoreKomiKey;
 extern NSString* goScoreCapturedByBlackKey;

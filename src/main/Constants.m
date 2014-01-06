@@ -372,8 +372,6 @@ NSString* goPointTerritoryStatisticsScoreKey = @"TerritoryStatisticsScore";
 NSString* goPointRegionKey = @"Region";
 // GoScore keys
 NSString* goScoreScoringEnabledKey = @"ScoringEnabled";
-NSString* goScoreScoringInProgressKey = @"ScoringInProgress";
-NSString* goScoreAskGtpEngineForDeadStonesInProgressKey = @"AskGtpEngineForDeadStonesInProgress";
 NSString* goScoreKomiKey = @"Komi";
 NSString* goScoreCapturedByBlackKey = @"CapturedByBlack";
 NSString* goScoreCapturedByWhiteKey = @"CapturedByWhite";
