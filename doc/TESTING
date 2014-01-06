@@ -10,19 +10,26 @@ Automated Unit tests
 --------------------
 All unit test related files are located in the top-level folder "test".
 
-The Xcode project defines a target "Unit tests" which builds a unit test bundle,
-then immediately runs the tests in its "Run Script" phase.
-
-To make the unit tests build & run automatically every time the main target is
-built, I usually make sure that in all of my Xcode schemes the checkbox "Run" is
+The Xcode project defines a target "Unit tests" which builds a unit test bundle.
+To make the unit tests build automatically every time the main target is built,
+I usually make sure that in all of my Xcode schemes the checkbox "Run" is
 checked not only for the main target, but for the unit test target as well.
 Note that the same result can also be achieved by a target dependency.
 
+To run the tests, you must manually select the "Product > Test" menu item. It
+would be preferrable to run the tests automatically as part of the build, but I
+am not aware how this can be achieved in Xcode 5. In Xcode 4.x there was a
+built-in script named "RunUnitTests" that could be invoked in a "Run Script"
+build phase. In Xcode 5, however, this is no longer working, the built-in script
+fails with the error message "RunUnitTests is obsolete."
+
 Notes about the "Unit test" target:
-- All tests in this target are what Apple calls "logic tests" (see [1]), i.e.
-  unit tests exercise more or less isolated classes. The test source code is
-  built using the iOS Simulator SDK, but the tests are run outside of the
-  simulator as part of the build process.
+- All tests in this target are what Apple used to call "logic tests", i.e. unit
+  tests exercise more or less isolated classes. The test source code is built
+  using the iOS Simulator SDK, and tests can be run within the simulator only,
+  i.e. not on a real iOS device, and also not outside of the simulator (the
+  latter differs from Xcode 4.x where it was possible to run tests without
+  launching the simulator)
 - All source code files that are unit tested must be added to the "Unit test"
   target so that they are built for that target.
 - The build setting "Header Search Path" is set to the value "./src". Since the
@@ -33,26 +40,25 @@ Notes about the "Unit test" target:
 - Because application source files depend on the presence of a prefix header,
   the "Unit test" target has to have the same "Prefix header" build settings
   as the main application target.
-- Compiling ApplicationDelegate for the "Unit test" target pulls in Fuego/Boost
-  (via GTP classes) as dependencies. As a consequence, the "Unit test" target
-  must be set up with Header/Library search paths that are the same as in the
-  main application target.
-  - Additionally, the build setting "Symbols hidden by default" must be set to
-    YES to prevent build warnings because of symbol visibility differences
-    between Fuego/Boost libraries and the unit test bundle. For some unknown
-    reason, this build setting is correct by default in the main application
-    target, but incorrect in the "Unit test" target.
+- Compiling ApplicationDelegate usually pulls in Fuego/Boost (via GTP classes)
+  as dependencies. To prevent this, the "Unit test" target defines the
+  preprocessor macro LITTLEGO_UNITTESTS. The effect is that certain #include
+  statements and pieces of code are not compiled and the dependency on
+  Fuego/Boost goes away.
 
 A final note about logging: The log file for unit tests run in the simulator
 environment is located in
 ~/Library/Application Support/iPhone Simulator/Documents/Logs.
 
-[1] http://developer.apple.com/library/ios/#documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
-
 
 Automated UI tests
 ------------------
-TODO
+There are currently no automated UI tests for this project. An attempt was made
+to implement such tests using the cross-platform test automation framework
+Appium [1], but the attempt was aborted because there was simply too much to do
+in the limited amount of time that I am willing to spend on this project.
+
+[1] http://appium.io/
 
 
 Script for manual testing
@@ -72,14 +78,7 @@ Basic tab functionality
 - On the settings tab check that all user preferences use factory default
   settings
 - On the archive tab check that no saved games are present
-- On the diagnostics tab check the GTP log: Because this is the first time that
-  the application is started and no backup game is present, the following
-  commands must be visible in the log:
-  - book_load
-  - clear_board
-  - boardsize
-  - komi
-  - commands for applying profile settings (e.g. uct_max_memory)
+- On the diagnostics tab check that the GTP log contains no failed commands
 - On the "More" tab, go through all the documents once and check that they
   are properly displayed
 
@@ -99,20 +98,21 @@ Basic game play functionality
     following segments: Score, Game, Board
   - The Score segment is selected
 - Select the "Game" segment. Check that the information presented matches the
-  factory defaults: No handicap, board size 9, komi 6.5, black player is
-  "Anonymous", white player is "Fuego".
+  factory defaults: No handicap, board size 9, komi 7.5, simple ko rule, area
+  scoring, black player is "Anonymous", white player is "Fuego".
 - Tap "back" to dismiss the "Game Info" view; the view slides away to once more
   reveal the game board and other UI elements of the play tab
 - Touch the screen & keep touching
 - The stone must appear immediately.
   - iPhone: The stone must appear some distance above the fingertip location
   - iPad: The stone must appear directly under the fingertip
-- Drag the cross-hair around the board: The status line must continuously be
+- Drag the cross-hair around the board: The status view must continuously be
   updated to show the coordinates of the current position
 - Move the stone outside of the board area, then release the finger: No stone
   must be placed
-- Place a stone. The computer player must immediately respond with a move. This
-  indicates that the opening book is present.
+- Place a stone. The computer player must immediately respond with a move, i.e.
+  without a "computer is thinking" delay. This indicates that the opening book
+  is present.
 - In the Play view settings, set the move numbers slider to its lowest value,
   then switch back to the Play tab
 - The white stone is marked with the symbol for the last stone that was placed
@@ -129,10 +129,10 @@ Basic game play functionality
 - When all moves have been discarded, the "discard" button must no longer be
   visible
 - Display the "Game Info" view. The "game state" section on the "game" segment
-  must show that the game is already in progress. The "move statistics" section
-  must show zero moves. Dismiss the "Game Info" view.
+  must show that the game is in progress. The "move statistics" section must
+  show zero moves. Dismiss the "Game Info" view.
 - Generate a few moves using the "computer play" button. At some point the
-  computer will start to take longer for calculating moves. The status line
+  computer will start to take longer for calculating moves. The status view
   must display two distinct messages: "Computer is playing for <player name>"
   and "<player name> is thinking".
 - Tap the "computer play" button. While the computer is thinking the regular
@@ -146,7 +146,19 @@ Basic game play functionality
   dismissed without any action taking place.
 
 
-Play view user preferences
+Illegal play
+- Create a situation that allows you to try to play each of the following
+  illegal moves
+  - Suicide
+  - Ko
+  - Any one of the two superko situations (positional is easier to create).
+    For this you need to restart the game with a superko rule.
+- Try to play the respective illegal move
+- The status text must indicate 1) that play is not possible, and 2) why the
+  move is illegal
+
+
+Basic user preferences
 - Disable the "mark last move" user preference
 - The last move must no longer be marked with a symbol
 - Re-enable the "mark last move" user preference
@@ -156,6 +168,9 @@ Play view user preferences
 - Move the slider "stone distance from fingertip" to a medium setting
 - While panning, the stone must now again be drawn some distance above the
   fingertip location
+
+
+Sound & Vibration user preferences
 - Enable the user preferences "play sound" and "vibrate"
 - When running the following tests on the iPad, ignore any discussion on
   vibration feedback because the iPad does not support vibration
@@ -175,7 +190,7 @@ Play view user preferences
   audio and vibration feedback.
 
 
-Testing "save game"
+Save game
 - Tap the "action" button, then select "save game"
 - A modal screen must pop up that lets the user enter a name for the saved game
 - The name is already filled in with a default name that follows the pattern
@@ -200,43 +215,6 @@ Testing "save game"
   a reserved word.
 
 
-End of game / Resigning
-- Tap the "action" button and select "resign".
-- Scoring mode is now activated. The status line displays a message "scoring in
-  progress" while the initial set of dead stones is determined.
-- After the initial set of dead stones has been determined, the status line
-  displays scoring information, and the navigation bar displays the "done" and
-  "discard" buttons
-- Display the "Game Info" view. The "game state" section on the "game" segment
-  must show that the game has ended. Dismiss the "Game Info" view.
-- Tapping the "action" button reveals a menu with a reduced set of game actions:
-  Undo resign, Save game, New game
-- Select "save game" and save another game, which must appear on the archive tab
-- Tap "done"
-- The "done" button disappears, only the "discard" button remains in the
-  navigation bar. The scoring markup disappears from the board. The status line
-  message is "game has ended by resigning, <color> resigned".
-- Select "score" from the "action menu
-- Scoring mode is activated again, with the same effects as described above
-- Tap "done"
-- Select "undo resign" from the "action" menu
-- The navigation bar again displays the three buttons "computer play", "pass"
-  and "discard"
-- Display the "Game Info" view. The "game state" section on the "game" segment
-  must show that the game is in progress. Dismiss the "Game Info" view.
-- Disable the user preference Scoring > Score when game ends
-- Select "resign" from the "action" menu
-- Scoring mode is not activated. The navigation bar displays only the "discard"
-  button
-- Tap "discard"
-- The navigation bar again displays the three buttons "computer play", "pass"
-  and "discard"
-- Display the "Game Info" view. The "game state" section on the "game" segment
-  must show that the game is in progress. Dismiss the "Game Info" view.
-- Enable the user preference Scoring > Score when game ends. This is important
-  for subsequent tests.
-
-
 New game
 - Tap the actions button and select "new game"
 - A modal screen must pop up that lets the user enter parameters for the new
@@ -244,13 +222,24 @@ New game
 - The default values on all segments must match the factory defaults. For
   human players, "Anonymous" must be pre-selected. For computer players, "Fuego"
   must be pre-selected.
-- Select the "human vs. human" segment, then change the parameters to the
-  following values:
+- Select the "human vs. human" segment and check that the following parameter
+  values are in effect:
+  - Handicap = 0
+  - Komi = 7.5
+  - Scoring system = Area scoring
+- Change handicap to 4. Komi must be automatically adjusted to 0.5.
+- Change scoring system to "Territory scoring". Komi must still be set to 0.5.
+- Change handicap to 0. Komi must be automatically adjusted to 6.5.
+- Change komi to "no komi", then change scoring system to "Area scoring". Komi
+  must be automatically adjusted to 7.5.
+- Change all parameters to the following values:
   - Black = Anonymous
   - White = Anonymous
   - Board size = 13
   - Handicap = 4
-  - Komi = 1/2
+  - Komi = No komi
+  - Ko rule = Positional superko
+  - Scoring system = Territory scoring
 - For all parameters, a modal screen must pop up that lets the user enter the
   new parameter value
 - For all parameters, test that the cancel button dismisses the modal screen
@@ -274,7 +263,67 @@ New game
 - Tap cancel
 
 
+End of game / Resigning
+- Start a new human vs. human game with no handicap
+- Place a black and a white stone
+- Make sure that the "Score when game ends" user preference is enabled
+- Tap the "action" button and select "resign".
+- Scoring mode is not activated. The navigation bar displays only the "discard"
+  button. The status view displays "Black resigned".
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game has ended. Dismiss the "Game Info" view.
+- Tapping the "action" button reveals a menu with these game actions: Score,
+  Undo resign, Save game, New game
+- Select "Undo resign" from the "action menu
+- The navigation bar again displays the three buttons "computer play", "pass"
+  and "discard"
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game is in progress. Dismiss the "Game Info" view.
+- Tap the "action" button and select "resign"
+- Tap "discard"
+- The navigation bar again displays the three buttons "computer play", "pass"
+  and "discard"
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game is in progress. Dismiss the "Game Info" view.
+- Make two pass moves
+- Scoring mode is now activated. The status view displays a message "scoring in
+  progress" while the initial set of dead stones is determined.
+- After the initial set of dead stones has been determined, the status view
+  displays scoring information, and the navigation bar displays the "done" and
+  "discard" buttons
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game has ended. Dismiss the "Game Info" view.
+- Tapping the "action" button reveals a menu with these game actions:
+  Undo resign, Save game, New game
+- Select "Save game" and save another game, which must appear on the archive tab
+- Tap "done"
+- The "done" button disappears, only the "discard" button remains in the
+  navigation bar. The scoring markup disappears from the board. The status view
+  message is "Game has ended by two consecutive pass moves".
+- Select "score" from the "action menu
+- Scoring mode is activated again, with the same effects as described above
+- Tap "done"
+- Tap "discard"
+- The navigation bar again displays the three buttons "computer play", "pass"
+  and "discard"
+- The status view message is "White has passed"
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game is in progress. Dismiss the "Game Info" view.
+- Disable the user preference "Score when game ends"
+- Make a pass move
+- Scoring mode is not activated. The navigation bar displays only the "discard"
+  button
+- Tap "discard"
+- The navigation bar again displays the three buttons "computer play", "pass"
+  and "discard"
+- Display the "Game Info" view. The "game state" section on the "game" segment
+  must show that the game is in progress. Dismiss the "Game Info" view.
+- Enable the user preference "Score when game ends". This is important for
+  subsequent tests.
+
+
 Human vs. human game / Handicap
+- Start a new human vs. human game with handicap 4
 - Place a stone; because of the handicap, the stone must be white
 - The computer does not respond with a move because a human vs. human game is
   in progress
@@ -285,10 +334,11 @@ Human vs. human game / Handicap
 - Place a stone; it must be a black stone
 - Place a few more stones and capture a stone group; the stone group must
   disappear when it is captured
-- Tap "pass". The status line must display the message "white has passed"
-- Disable the user preference Scoring > Find dead stones
+- Tap "pass". The status view must display the message "white has passed"
+- Disable the user preference "Find dead stones"
 - Tap "pass"
-- The game ends and the score is displayed immediately
+- The game ends and the score is displayed immediately, i.e. no delay because
+  the GTP engine tries to find dead stones
 
 
 Computer vs. computer game
@@ -308,7 +358,7 @@ Computer vs. computer game
 - Tap pause
 - The pause button is replaced by the continue button
 - The current computer player finishes calculating its move
-- During that time, the status line still displays "<player name> is thinking"
+- During that time, the status view still displays "<player name> is thinking"
 - Once the computer player has finished generating its move, the following
   happens
   - The interrupt button is replaced by the discard button
@@ -338,7 +388,7 @@ Computer vs. computer game
 
 
 Board position
-- Create a new computer vs. human game that uses a handicap
+- Start a new computer vs. human game that uses a handicap
 - Make a few moves until the computer actually requires some time to make its
   move. Whenever the computer player is thinking, any controls that allow to
   view board positions must be disabled or have no effect when tapped. This
@@ -361,6 +411,12 @@ Board position
 - Go back one move. No progress HUD is displayed.
 - Buttons that allow to view later board positions must now be enabled.
 - The "pass" button must be disabled (because it is the computer player's turn)
+- The next move marker "A" is displayed at the intersection where in the next
+  board position a stone will be placed
+- Disable the "Mark next move" user preference
+- The next move marker "A" is no longer displayed
+- Re-enable the "Mark next move" user preference
+- The next move marker "A" is again displayed
 - Display the "Game Info" view. Dismiss the "Game Info" view after checking the
   following information on the "board" segment:
   - Board position and move info refer to the correct move
@@ -403,13 +459,16 @@ Board position
 - Tap the "discard" button. All moves are discarded. The "discard" button is
   no longer visible. The "computer play" button is visible and enabled. The
   "pass" button is visible but disabled (because it is the computer player's
-  turn).
+  turn). The next move marker "A" is not displayed.
 - Tap the "computer play" button
 - The "discard" button is visible and enabled
-- Go back to the beginning of the game.
+- Go back to the beginning of the game. The next move marker "A" is displayed.
 - Tap the "discard" button. All moves are discarded. The same buttons are
   visible and in the same enabled state as in the previous test where all moves
-  were discarded.
+  were discarded. The next move marker "A" is not displayed.
+- Tap the "computer play" button, then make a pass move.
+- Go back one move. The next move marker "A" is not displayed because the next
+  move is a pass move.
 - Generate more than 10 moves (to make this quicker, start a new game with
   "Fuego (weak)" as the computer player)
 - On the board position list, select the board position that represents the
@@ -429,11 +488,11 @@ Board position
 
 
 Zooming/scrolling, coordinates and move number
-- Switch to the Play view settings screen
-- Enable "mark last move"
-- Enable "display coordinates"
-- Set the move numbers slider to its maximum value
-- Set the maximum zoom to its maximum value
+- Enable the "Mark last move" user preference
+- Enable the "Display coordinates" user preference
+- Set the slider of the "Display move numbers" user preference to its maximum
+  value
+- Set the slider of the "Maximum zoom" user preference to its maximum value
 - From the Archive tab, load the ear-reddening game (use two human players)
 - iPad
   - Coordinate labels are displayed
@@ -473,6 +532,37 @@ Zooming/scrolling, coordinates and move number
 - Move numbers are displayed for all the stones (move numbers 1-40)
 - Go to board position 41
 - Move number 1 is no longer displayed
+
+
+Player influence
+- Start a new computer vs. human game and make a few moves
+- Enable the user preference "Display player influence"
+- No player influence is displayed after you switch back to the "Play" tab
+- Tap the "Actions" button. The menu that pops up must contain an entry
+  "Update player influence"
+- Select the menu entry
+- Fuego takes a few seconds to calculate, then the player influence is displayed
+- Make a few moves. Player influence is updated after each move
+- Select the board position at the beginning of the game
+- Player influence is not updated and remains the same
+- Select "Update player influence" from the "Actions" menu
+- Player influence disappears
+- Select the board position that represents the most recent move
+- No player influence is displayed
+- Select "Update player influence" from the "Actions" menu
+- Fuego takes a few seconds to calculate, then the player influence is displayed
+- Enable scoring mode
+- Player influence disappears
+- Tap the "Actions" button. The menu that pops up must not contain the
+  "Update player influence" entry
+- Disable scoring mode
+- Player influence re-appears
+- Tap the "Actions" button. The menu that pops up must contain the
+  "Update player influence" entry
+- Disable the user preference "Display player influence"
+- No player influence is displayed after you switch back to the "Play" tab
+- Tap the "Actions" button. The menu that pops up must not contain the
+  "Update player influence" entry
 
 
 Players & profiles
@@ -540,8 +630,8 @@ Archive, document interaction
 - Tap done
 - Using iTunes, upload an .sgf file to the device and download the .sgf files
   already in the archive from the device
-- After each upload check that the archive view updates itself
-  - Known bug: Self-updating currently does not work
+- After each upload lock & unlock the device, then check that the archive view
+  has updated itself
 - On the archive view, select one of the saved games
 - Tap the "actions" button
 - A menu opens that offers to export the .sgf file to the following desintations
@@ -595,8 +685,21 @@ Archive, document interaction
   - illegal-move.sgf
   - move-by-wrong-player.sgf
 - Try loading each of these games. An error message must be displayed each time,
-  explaining that the save game contains an error. Dismissing the error message
-  must still result in a new game being started.
+  explaining that the save game contains an error, and also saying what the
+  error is. Dismissing the error message must still result in a new game being
+  started.
+- Make sure that the following saved games which contain superko positions are
+  present on the device
+  - positional-superko.sgf
+  - situational-superko.sgf
+- Try loading these games as follows
+  - positional-superko.sgf with simple and situational superko rules: The game
+    can be loaded
+  - positional-superko.sgf with positional superko rule: The game cannot be
+    loaded
+  - situational-superko.sgf with simple ko rule: The game can be loaded
+  - situational-superko.sgf with positional and situational superko rules: The
+    game cannot be loaded.
 - Load a game, then press the Home button in the middle of the loading process
 - Launch the application. The loading process must continue.
 - Load a game, then press the Home button in the middle of the loading process
@@ -607,7 +710,7 @@ Archive, document interaction
 
 
 Scoring
-- Load game 9x9_1.sgf
+- Load game 9x9_1.sgf with territory scoring
 - Check that the following scores are present on the game info view
     Black             White
       -      Komi       0
@@ -661,6 +764,37 @@ Scoring
 - The footer on the "score" segment of the game info view indicates both 1) that
   the score does not reflect the final score of the game; and 2) that scoring
   mode is disabled
+- Load game seki-9b.sgf with area scoring
+- Turn on scoring mode
+- The status text must read "White wins by 6.5 - Tap to mark dead stones".
+- Tap the "Actions" button. The menu must contain an item
+  "Start marking as seki". Select that item.
+- The status text must read "White wins by 6.5 - Tap to mark stones in seki".
+- Tap white stone at A6
+- The stone group that includes A6 is marked as in seki
+- The empty region including C9 is marked as inconsistent territory
+- Tap black stone at D6
+- The stone group that includes D6 is marked as in seki
+- The empty region including C9 is marked as neutral territory
+- The overall score is now "White wins by 6.5"
+- Check that the following scores are present on the game info view
+    Black             White
+      -      Komi       6.5
+      -    Handicap     0
+     10     Stones     10
+      1    Territory    1
+     11      Score     17.5
+       White wins by 6.5
+- Load game seki-9b.sgf with territory scoring, then repeat the steps that mark
+  stones as in seki
+- Check that the following scores are present on the game info view
+    Black             White
+      -      Komi       6.5
+      0    Captured     0
+      0      Dead       0
+      0    Territory    0
+      0      Score      0
+       White wins by 6.5
 
 
 Suspending the app

@@ -40,7 +40,7 @@ please consult the "Go rules" section in the main manual.
 When you launch the app for the first time, you will find yourself on the "Play"
 tab where the game board is displayed. A new game on a 9x9 board has already
 been set up for you: You play black, the computer plays white. The game has
-komi 6½ and no handicap.
+komi 7½ and no handicap. The rules in effect are simple ko and area scoring.
 
 To place a stone, simply tap somewhere in the middle of the board. Keep your
 fingertip on the screen to move the stone, it will be placed only after you
@@ -51,8 +51,8 @@ fingertip. The reason for this is that on the small screen of the iPhone your
 fingertip partially obscures one or more intersection, making it hard to
 accurately place a stone. Making the stone appear slightly above your fingertip
 tries to work around this problem. If you don't like this behaviour, you can
-turn it off: On the "Settings" tab, select the "Play view" entry and move the
-slider "Stone distance from fingertip" to the lowest setting.
+turn it off: On the "Settings" tab, select the "Touch interaction" entry and
+move the slider "Stone distance from fingertip" to the lowest setting.
 
 To conclude this "Quick start" guide, the following list gives you an idea of
 what each one of the buttons in the toolbar at the top of the screen does. The
@@ -73,11 +73,14 @@ buttons are explained from left to right.
   it will immediately start thinking about its own move, so you may have to
   interrupt again (e.g. if you want to access the menu behind the "Action"
   button).
-- "Game info" button: Tap this to call up the "Game info" view where you can see
-  all sorts of interesting things about the game in progress (e.g. the score).
+- "Game info" button: Tap this to call up the "Game info" screen where you can
+  see all sorts of interesting things about the game in progress (e.g. the
+  score).
 - "Action" button: Tapping this displays a menu with these additional functions:
-  Switch to scoring mode, update player influence, resign the game (or undo
-  the decision to resign), save the game, and start a new game.
+  Switch to scoring mode, resign the game (or undo the decision to resign), save
+  the game, and start a new game. You may find additional or fewer entries in
+  this menu, depending on the current state of the game or your current
+  settings.
 
 
 --------------------------------------------------------------------------------
@@ -98,8 +101,8 @@ especially when playing on large boards and your fingertip covers more than one
 intersection.
 
 If this irritates you, you can turn the feature off: On the "Settings" tab,
-select the "Play view" entry and move the slider "Stone distance from fingertip"
-to the lowest setting.
+select the "Touch interaction" entry and move the slider
+"Stone distance from fingertip" to its lowest setting.
 
 ===============================
 How do I change the board size?
@@ -109,7 +112,7 @@ You need to start a new game. See the next question.
 ==========================
 How do I start a new game?
 ==========================
-Go to the first tab (the one that displays the board). Tap the "Action" button
+Go to the "Play" tab (the one that displays the board). Tap the "Action" button
 on the right-hand side of the toolbar at the top of the screen. Select
 "New game" from the menu that appears.
 
@@ -134,20 +137,25 @@ The computer is too strong / too weak, what can I do?
 In step 3, you can instead tap "Advanced configuration" if you want to tweak
 individual profile settings. Consult the "Players & Profiles" section of the
 manual to learn about the meaning of each setting, especially "Max. memory"
-which is a dangerous setting. You may also be interested in reading the chapter
-"Limiting the computer's playing strength", which appears in the manual after
-the description of the individual profile settings.
+which is a somewhat dangerous setting. You may also be interested in reading the
+chapter "Limiting the computer's playing strength", which appears in the manual
+after the description of the individual profile settings.
 
 =========================================================================
 Player influence is not displayed, or is completely wrong, what can I do?
 =========================================================================
-Tap the "Action" button and select "Update player influence" from the menu.
-Also read the "Player influence" section of this manual to learn important
+Tap the "Action" button and select "Update player influence" from the menu. If
+you don't see this menu entry, you need to enable
+"Display player influence" under "Settings > Display settings". If this setting
+is already enabled, then you are in scoring mode which prevents the display of
+player influence. Disable scoring mode, and, if you still don't see player
+influence, select the "Update player influence" menu entry mentioned above.
+Also read the "Player influence" section of this manual to learn about important
 background information.
 
-=======================================================================================================
-Move numbers/coordinate labels are not displayed even though they are enabled in the Play view settings
-=======================================================================================================
+=====================================================================================================
+Move numbers/coordinate labels are not displayed even though they are enabled in the user preferences
+=====================================================================================================
 Little Go automatically calculates the font size that is required to display
 move numbers and coordinate labels. The font size depends on the board size (a
 bigger board means a smaller font) and the amount of space available for drawing
@@ -213,7 +221,7 @@ If the app crashes after you zoom the board it is likely that your device does
 not have enough memory to support both a fully zoomed board AND the computer
 player's memory requirements. You can try to limit your maximum zoom level so
 that you don't accidentally zoom in too much. You can do this by adjusting the
-slider under "Settings > Play view > Maximum zoom".
+slider under "Settings > Touch interaction > Maximum zoom".
 
 ===================================================
 I cannot load a game, the "load" button is disabled
@@ -240,11 +248,11 @@ files, then please write a bug report and attach the .sgf file in question.
 ===================================================
 File sharing via iTunes does not update the archive
 ===================================================
-Since iOS 5, if you add or remove files via iTunes file sharing, the archive
-view does not update automatically. This is a known problem and I will try to
-find a fix for this. In the meantime, a simple workaround is to temporarily
-lock the device. After the device is unlocked again, the archive view will
-update itself.
+Since iOS 5, if you add or remove files via iTunes file sharing, the screen on
+the "Archive" tab does not update automatically. This is a known problem, and as
+far as I know there is no fix for this. However, a simple workaround is to
+temporarily lock the device. After the device is unlocked again, the screen on
+the "Archive" tab will update itself.
 
 ===============================================================
 Resigned state of a game is lost when a game is saved or loaded
@@ -256,6 +264,23 @@ that information is not picked up by Little Go.
 
 For details see GitHub issue #97
 (https://github.com/herzbube/littlego/issues/97).
+
+==========================================================
+The computer player plays stupid moves during the end game
+==========================================================
+The computer player is not very good at calculating the final score on its own.
+One consequence of this is that you must assist in determining dead stones
+during scoring. Another consequence is that the computer player is not usually
+passing early during the end game - it stubbornly keeps on playing far longer
+than a human player would. If you are playing with area scoring rules, this
+usually does not affect the final score and thus is merely annoying. If you are
+playing with territory scoring rules, however, the computer player may lose a
+game that it would have won with area scoring rules. In some cases the computer
+player may even resign because its automated territory scoring calculations are
+incorrect.
+
+For these reasons, you should try to play with area scoring rules. That's also
+why Little Go uses area scoring rules by default.
 
 
 ********************************************************************************
@@ -285,8 +310,9 @@ tells you more about how to make Fuego stronger or weaker.
 
 When a game is over you will usually want to know who has won. Little Go is not
 very smart about calculating the score - it relies quite heavily on your help
-with evaluating which stones on the board are alive and which ones are dead.
-The "Scoring" section has details about how all this stuff is supposed to work.
+with evaluating which stones on the board are alive, which ones are dead and
+which ones are in seki. The "Scoring" section has details about how all this
+stuff is supposed to work.
 
 When you save a game it will appear in the archive from where you can load it
 again at a later time, delete it, or transfer it via iTunes to your computer.
@@ -313,11 +339,19 @@ When you launch the app it displays the "Play" tab with the game board. It also
 automatically starts a new game, using the settings that you gave it the last
 time you yourself started a new game. If this is the very first time that you
 run Little Go, it will start with a few default settings: A 9x9 board, no
-handicap, a komi of 6½ and a human vs. a computer player.
+handicap, a komi of 7½, simple ko rules, area scoring, and a human vs. a
+computer player.
 
 To start a new game yourself, tap the "Action" button on the right-hand side
 of the toolbar at the top of the screen, then select "New game" from the menu
 that appears.
+
+Komi is adjusted automatically in the following situations:
+- Selecting a scoring system sets a default komi suitable for the scoring system
+  (7½ for area scoring, 6½ for territory scoring).
+- Selecting a handicap sets komi to ½. Selecting no handicap sets komi back to
+  the current scoring system's default. While a handicap is selected, changing
+  the scoring system has no effect on komi.
 
 ===============
 Placing a stone
@@ -332,10 +366,11 @@ your finger from the screen. Voilà.
 If you feel irritated because the stone does not appear directly under your
 fingertip (default behaviour on the iPhone only), you can turn this feature off
 in the preferences my moving the slider under
-"Settings > Play view > Stone distance from fingertip" to the lowest setting.
-You probably won't see the stone anymore because your fingertip covers it, but
-if you watch the status line below the game board you will see the coordinates
-of the intersection where the stone would be placed should you release it now.
+"Settings > Touch interaction > Stone distance from fingertip" to its lowest
+setting. You probably won't see the stone anymore because your fingertip covers
+it, but if you watch the status text in the toolbar above the game board you
+will see the coordinates of the intersection where the stone would be placed
+should you release it now.
 
 ===================
 The computer player
@@ -350,7 +385,7 @@ the button to interrupt and force the computer to play its best move
 If you want to do something else while the computer is thinking, you can always
 switch to one of the other tabs (e.g. to read more of this help). If you would
 like to get a notification when the computer has made its move you can turn on
-audio/vibration feedback options under "Settings > Play view".
+audio/vibration feedback options under "Settings > Sound & Vibration".
 
 You may have noticed that Little Go has two pre-configured computer players,
 "Fuego" and "Fuego (weak)". If you want to know more about the different playing
@@ -426,13 +461,13 @@ to resign is also undone automatically when you discard the last move.
 Game information
 ================
 Tapping the toolbar button with the "rows & columns" symbol will take you to the
-"Game info" view. This view tells you all sorts of interesting things about the
-game that is currently in progress. For instance you can see which player's
+"Game info" screen. This screen tells you all sorts of interesting things about
+the game that is currently in progress. For instance you can see which player's
 turn it is (on the "Game" segment), but probably the most interesting part is
 the "Score" segment which has a table that tells you who would win if the game
-would end right now. Note that you need to activate "Scoring" mode if you want
-the table to display territory scores. See the "Scoring" help section for more
-information.
+would end right now. Note that you need to activate scoring mode if you want
+the table to display area or territory scores. See the "Scoring" help section
+for more information.
 
 
 --------------------------------------------------------------------------------
@@ -503,6 +538,14 @@ positions is always visible just below the "current board position" area.
 When you tap a list entry, the board displays the corresponding board position,
 just as if you had navigated to it using one of the navigation buttons.
 
+==================
+"Next move" marker
+==================
+When you view an old board position, the character "A" is used to mark the
+intersection where the next move will place a stone. The "A" marker is not
+displayed if the next move is a pass move. The "A" marker can also be
+permanently disabled in the user preferences under "Settings > Board position".
+
 ===========================================
 Playing while viewing an old board position
 ===========================================
@@ -537,7 +580,7 @@ happening, and you can disable the alert in the user preferences.
 ===========================================
 Scoring while viewing an old board position
 ===========================================
-When you look at the score in the "Game info" view, it will be based on the
+When you look at the score in the "Game info" screen, it will be based on the
 board position you are currently viewing. When you are in scoring mode and
 you navigate to a different board position, the scoring information is updated
 automatically to reflect the new board position; at the same time, any decisions
@@ -554,7 +597,7 @@ Player influence
 Overview
 ========
 On the "Settings" tab you will find a switch labelled "Display player influence"
-under the "Play view" entry. If you turn this setting on, most intersections on
+under the "Display" entry. If you turn this setting on, most intersections on
 the board will start to show black and white squares of varying size. The color
 of the square indicates which player has more influence on that intersection,
 while the size of the square indicates the degree of influence that player has
@@ -562,7 +605,7 @@ while the size of the square indicates the degree of influence that player has
 influence squares on the entire board you can quickly estimate which parts of
 the board will end up being owned by which player.
 
-<strong>Important:</strong> Player influence is not objective - it is determined
+<strong>Important:</strong> Player influence is subjective - it is determined
 by what the computer player "sees" or "thinks". Therefore, if you play against a
 weak computer player, the player influence being displayed may well be
 inaccurate, simply because the computer player in its weakness has missed a
@@ -597,7 +640,8 @@ You can <em>force</em> player influence to be re-calculated by tapping the
 "Action" toolbar button and selecting the "Update player influence" menu entry.
 The calculation will take a while to complete, during that time you will not be
 able to play. The menu entry is not shown when player influence cannot be
-re-calculated (e.g. during scoring mode).
+re-calculated (e.g. during scoring mode) or, obviously, if the
+"Display player influence" setting is disabled.
 
 ====================
 Technical background
@@ -624,6 +668,14 @@ player strength and the accuracy of playout statistics / player influence.
 
 Read the "Players & profiles" section of this manual for more details about how
 to adjust the computer player's playing strength.
+
+=====================================
+Influence on computer player strength
+=====================================
+The computer player becomes slightly weaker while the display of player
+influence is enabled. The reason is that collecting the player influence
+statistics data requires a bit of calculation power that would otherwise be
+available for calculating the computer's best move.
 
 
 --------------------------------------------------------------------------------
@@ -919,40 +971,76 @@ Never resign (x0.0)    0   0   0   0   0   0   0<br/>
 Scoring
 --------------------------------------------------------------------------------
 
-==============
-Game info view
-==============
-When the Go board is visible, the toolbar at the top of the screen contains a
-button with a "rows & columns" symbol. Tapping this button will display some
-information about the game that is currently in progress. Probably the most
-interesting thing is the "Score" segment which has a table that tells you who
-would win if the game would end right now.
+==================================
+Area scoring and territory scoring
+==================================
+When you start a new game you can choose whether you want to play according to
+area or territory scoring rules (sometimes also known as Chinese or Japanese
+rules). Details about the two scoring systems can be found at
+http://senseis.xmp.net/?Scoring. Because the scoring rules may affect decisions
+how to play, you are not allowed to change the scoring rules in the middle of
+the game.
 
-You will notice that the final score is not really meaningful since the rows
-labelled "Dead" and "Territory" do not contain any numbers. To count dead stones
-and territory you have to activate "Scoring" mode.
+The default scoring system is area scoring.
+
+===============================
+Why area scoring is the default
+===============================
+The reason why area scoring is the default is that the computer player (Fuego)
+does not properly support territory scoring. This can be felt towards the end
+game when the computer engine sometimes makes unnecessary moves:
+- Under territory scoring rules, each stone placed inside your own territory is
+  a lost point because it makes your territory smaller. Each stone placed into
+  your opponent's territory is also a lost pint because it gives your opponent
+  an additional prisoner.
+- Under area scoring rules, both types of play are neutral: A stone placed
+  inside your own territory makes your territory smaller, but it also gives you
+  a point for the stone itself. A stone placed inside your opponent's territory
+  is not relevant because under area scoring rules prisoners do not count.
+
+The bottom line is that under territory scoring rules the computer player may
+lose a game that it would have won under area scoring rules. In some cases the
+computer player may even resign because its automated territory scoring
+calculations are incorrect.
+
+=====================
+How to view the score
+=====================
+Whenever you want to view the current score, you tap the "Game info" button in
+the toolbar above the game board, then you select the "Score" segment. The table
+will display different entries depending on the scoring system that is in effect
+for the current game.
+
+If you view the score in the middle of the game, you will notice that some of
+the scoring table rows do not contain any numbers, and that the final score
+therefore is not meaningful. The reason for this is that, unfortunately,
+Little Go is not very smart about calculating the score - it relies quite
+heavily on your help with evaluating which stones on the board are alive, which
+ones are dead and which ones are in seki. To provide this help you have to
+activate scoring mode.
 
 ==============================
-How to activate "Scoring" mode
+How to activate scoring mode
 ==============================
-To activate "Scoring" mode, go back to the normal board view, tap the "Action"
-toolbar button, then select the "Score" item from the menu that pops up.
+To activate scoring mode, tap the "Action" button in the toolbar above the game
+board, then select the "Score" item from the menu that pops up.
 
-"Scoring" mode can be activated at any time during normal game play, and it will
+Scoring mode can be activated at any time during normal game play, and it will
 activate automatically when the game ends after two consecutive pass moves.
 Automatic activation can be turned off in the user preferences. Automatic
 activation never happens if a player resigns, because in that situation the
-other player automatically wins and the score is not relevant.
+other player automatically wins and the score is not relevant. If you want you
+can manually activate Scoring mode even if a player resigned.
 
-While Scoring mode is active you cannot play moves or perform any other actions
+While scoring mode is active you cannot play moves or perform any other actions
 that influence the game state (exceptions are loading a game from the archive,
-or starting a new game). To leave Scoring mode and return to normal game play
+or starting a new game). To leave scoring mode and return to normal game play
 you can tap the toolbar button labelled "Done".
 
 ================
 Territory markup
 ================
-When Scoring mode becomes active, Little Go (or better: Fuego in the background)
+When scoring mode becomes active, Little Go (or better: Fuego in the background)
 takes a moment while trying to find suggestions for an initial set of dead
 stones. This feature is optional and can be turned off under
 "Settings > Scoring > Find dead stones".
@@ -974,8 +1062,8 @@ Stones marked as dead can be "unmarked" by tapping on them again, thus turning
 them back to alive status.
 
 Whenever you change the dead/alive state of one or more stones, the updated
-total score is displayed in the status line below the game board. To view the
-updated detail score you can display the game info view.
+total score is displayed in the toolbar above the game board. To view the
+updated detail score you can display the "Game info" screen.
 
 ===================================
 Assistance with marking dead stones
@@ -989,18 +1077,35 @@ Go will help you by automatically toggling adjacent stone groups of the same
 color to the same dead/alive status.
 
 ======================
+Marking stones in seki
+======================
+Tap the "Action" button in the toolbar above the game board, then select the
+"Start marking as seki" item from the menu that pops up. From now on tapping
+stones no longer marks them as dead or alive, instead it marks them as being in
+seki. Stones in seki are displayed with a whitish rectangle. Stones marked as
+being in seki can be "unmarked" by tapping on them again, thus turning them back
+to alive status.
+
+Revert to marking dead stones by tapping the "Action" button and selecting the
+"Start marking as dead" item from the menu that pops up.
+
+======================
 Inconsistent territory
 ======================
-If Little Go finds an empty territory where the state of adjacent dead stone
-groups is inconsistent, it will mark that territory in a special way (a red dot
-symbol by default). The definition of "inconsistent" is:
+If Little Go finds an empty territory where the state of adjacent dead or seki
+stone groups is inconsistent, it will mark that territory in a special way (a
+red dot symbol by default). The definition of "inconsistent" is:
 - There are dead stone groups for both black and white
 - There are both dead and alive stone groups of the same color
+- There are both seki and non-seki stone groups in any color combination
+  (effectively, seki stone groups must always be surrounded entirely by alive
+  stone groups of the opposing color, except where they share neutral territory
+  with other seki stone groups)
 
 The reason for marking up inconsistent territory is to give you notice that a
-stone group has probably been erroneously marked as dead or alive. Feel free to
-ignore the markup if this is just a transient problem while you are marking
-several stone groups and are on the way to a consistent state.
+stone group has probably been erroneously marked as dead, alive or in seki. Feel
+free to ignore the markup if this is just a transient problem while you are
+marking several stone groups and are on the way to a consistent state.
 
 If you don't like the "red dot symbol" way to mark inconsistencies, you can
 change the markup type under "Settings > Scoring > Inconsistent territory".
@@ -1009,15 +1114,6 @@ were neutral territories, in other words: not at all.
 
 For the purpose of calculating the score, inconsistent territory always counts
 as neutral territory. This is regardless of how inconsistencies are marked up.
-
-==========================
-Area vs. territory scoring
-==========================
-The Go world knows two scoring systems: Area scoring and territory scoring.
-Little Go currently only supports territory scoring.
-
-Details about the two scoring systems can be found at
-http://senseis.xmp.net/?Scoring
 
 
 --------------------------------------------------------------------------------
@@ -1086,8 +1182,8 @@ one or more saved games. At the bottom of the screen (scroll down if you have
 many saved games) there is a button that allows you to delete all saved games in
 one fell swoop.
 
-When you tap the entry for a saved game, a detail view for that game is
-displayed. You can rename the game by tapping on its name. To load the game
+When you tap the entry for a saved game, a screen with detail info for that game
+is displayed. You can rename the game by tapping on its name. To load the game
 tap the "load" toolbar button. To export the game file to an external
 application (e.g. Mail, DropBox, another Go application that can import .sgf
 files) tap the "Action" toolbar button.
@@ -1141,19 +1237,19 @@ view and the "raw" view of the GTP log.
 
 The "new" toolbar button can be used to inject your own GTP command into the
 communication flow between GTP client and engine. Tapping the button displays
-a view where you can enter a command using free-form text, or you can select
+a screen where you can enter a command using free-form text, or you can select
 a command from a list of pre-defined commands. For more information about this
 see further down.
 
 =======================
 Viewing a GTP log entry
 =======================
-When you tap an entry in the GTP log, a detail view for that entry is displayed.
-Most of the information you see here is already available in the log itself.
-There is one more detail, though, and that is the detailed response string. Most
-of the time the response to a GTP command just consists of the success/failure
-status, but for some commands (e.g. "get_komi") the response contains more
-information that is only available on this view.
+When you tap an entry in the GTP log, a screen with detail information for that
+entry is displayed. Most of the information you see here is already available in
+the log itself. There is one more detail, though, and that is the detailed
+response string. Most of the time the response to a GTP command just consists of
+the success/failure status, but for some commands (e.g. "get_komi") the response
+contains more information that is only available on this screen.
 
 The "+" toolbar button lets you add the command to the list of pre-defined
 commands. If there is no "+" button, the command is already pre-defined.
@@ -1164,11 +1260,12 @@ Pre-defined commands
 On the "Diagnostics" tab you can select the entry "GTP commands" to view and
 manage a list of pre-defined GTP commands. Usually these are often-used or
 complicated commands that you do not want to re-type every time you need to
-submit them. Commands are submitted in the GTP log view.
+submit them. Commands are submitted in the "GTP log" screen.
 
 The "edit" toolbar button lets you delete and re-arrange commands, while the
 "+" toolbar button allows you to add a new command to the list. Tapping an
-entry in the list presents a detail view where you can edit the command string.
+entry in the list presents a detail screen where you can edit the command
+string.
 
 The application comes with a factory set of pre-defined commands which you can
 freely edit. To discard your current set and return to the factory set, select
@@ -1307,22 +1404,33 @@ them usually is the best teacher.
 Purpose of the game
 ===================
 The purpose of the game is to occupy or surround more points than the opponent.
-When the game ends (both players pass), your score is calculated by summing up
-the following:
+When the game ends (both players pass), your score is calculated according to
+the scoring system that you and your opponent agreed upon before the game
+started.
 
-- Number of enemy stones that you captured during the game
-- Number of enemy dead stones on the board completely surrounded by your stones.
-  Your enemy's stones are dead if they are not "alive", i.e. if they could be
-  captured if you were to continue playing
-- Number of points completely surrounded by your stones, regardless of whether
-  they are empty or occupied by enemy dead stones
+For area scoring (the default in Little Go), calculate your score as follows:
+- First, remove all dead stones from the board (your own, but also those of
+  your opponent). Stones are dead if they are not "alive", i.e. if they could be
+  captured if you were to continue playing. After removal, calculate your score
+  as follows.
+- The number of your stones on the board.
+- Plus the number of empty only your stones surround.
 
 Your opponent's score is calculated in the same way, only from his point of
-view. Whoever plays white adds komi to his score (komi is usually 6½ and is
+view. Whoever plays white adds komi to his score (komi is usually 7½ and is
 given to the white player as a bonus to compensate for the black player's
 advantage of first move).
 
 Whoever now has the higher score wins the game.
+
+For territory scoring (the other major scoring system), calculate your score as
+follows:
+- The number of enemy stones that you captured during the game
+- Plus the number of enemy dead stones on the board completely surrounded by
+  your stones. See above for a short definition of when stones are dead.
+- Plus the number of points completely surrounded by your stones, regardless of
+  whether they are empty or occupied by enemy dead stones.
+- Komi is usually 6½ for territory scoring
 
 An important note about dead stones: You and your opponent must agree on which
 stones are dead! If your opponent does not agree with your judgment, you must

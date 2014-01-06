@@ -1,3 +1,60 @@
+Mon January 06 2014   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.0.0
+- Features
+  - When a new game is started, it is now possible to select one of several ko
+    rules. Simple ko remains the default, new choices are positional and
+    situational superko (#169).
+  - When a new game is started, it is now possible to select whether area or
+    territory scoring should be in effect (#30). Area scoring is the default
+    because the computer player (Fuego) does not properly support territory
+    scoring.
+  - During scoring it is now possible to mark stones in seki (#190). Tap the
+    "Actions" button to find the menu entry that lets you switch from
+    "mark dead stones" to "mark stones in seki".
+  - It is now possible to display player influence, aka territory statistics,
+    for an estimate who owns an area (#18). The feature can be enabled under
+    "Settings > Display > Display player influence".
+- Other improvements and changes
+  - Some of the sections on the "Settings" tab have been re-organized (#132)
+  - Attempting to play an illegal move now displays the reason why the move is
+    illegal (#182). Examples are suicide, ko or superko.
+  - When a new game is started and a handicap is selected, komi is adjusted
+    automatically to 0.5 (#189)
+  - The computer player's strength has improved because a new version of Fuego
+    has been integrated into Little Go. It is not possible to quantify the
+    improvement against human opponents, but if the new and the old versions of
+    Fuego play against each other, the new version wins 80% - 90% of the games.
+  - On devices with 512 MB memory and more, the computer player is stronger than
+    on devices with less than 512 MB memory (#187).
+- Bugfixes
+  - iOS 7: The app no longer crashes on startup after a game has been imported
+    from an external app such as Mail or DropBox (#184)
+  - The app no longer crashes when game is loaded while "Game Info" screen is
+    displayed (#191)
+  - The app no longer hangs after launch if it was previously suspended/killed
+    during scoring (#203)
+  - The maximum zoom scale has been reduced to 2.0 for iPad devices, and to 2.5
+    for iPhone devices (#202). The previous maximum zoom scale 3.0 was too high,
+    causing crashes on most devices.
+  - The next stone marker "A" is no longer displayed after all moves have been
+    discarded (#200)
+  - The "Start of the game" board position table view cell no longer has a wrong
+    background color (#199)
+  - The "Delete all games" button on the "Archive" tab is no longer affected by
+    edit mode (#185)
+  - A sliding gesture no longer puts the entire "Players & Profiles" screen into
+    edit mode (#175)
+  - A number of memory leaks were fixed (#188 and other, smaller fixes)
+- Technical changes
+  - The project has been upgraded to Xcode 5.0 (#183)
+  - Support for iOS 5 has been dropped, the minimum required version is now
+    iOS 6.1 (#198). Devices that are no longer supported are iPad 1st generation
+    and iPod Touch 3rd generation.
+  - The 3rd party software build process has been completely rewritten (#92)
+  - All 3rd party software have been upgraded to newest versions
+    (Fuego trunk r1728, Boost 1.55.0, MBProgressHUD 0.8, Cocoa Lumberjack 1.7.0,
+    ZipKit 1.0.2, QuincyKit 2.1.9)
+
 Mon September 09 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.12.0
 - Features
@@ -63,7 +120,6 @@ Mon September 09 2013   "Patrick Näf" <herzbube@herzbube.ch>
   - The board position can no longer be changed while Fuego is searching for
     an initial set of dead stones during scoring (#163)
   - A number of potential app crashes have been eliminated (#130, #172, #173)
-
 
 Mon May 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.11.1

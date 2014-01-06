@@ -9,16 +9,16 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go feature release 0.12.0. A selection of the most important changes are:
+This is the Little Go feature release 1.0.0. A selection of the most important changes are:
 
-* It is now possible to configure the computer player with a threshold how quickly it will resign a game (#133). For instance, it is now possible to tell the computer player to never resign so that the game can be played out to the very end. This also allows beginners to play with a large handicap on a small board (up until now the computer player would always resign immediately when faced with an overwhelming handicap). The resignation behaviour setting can be found towards the bottom on the "edit profile" screen.
-* When an old board position is viewed, the intersection where the next stone will be placed is now marked with the letter "A" (#101). This can be disabled in the "Board position" settings.
-* Changes to the active profile are now immediately applied to the GTP engine (#123). For instance, it is now possible to change the playing strength or the resign behaviour of the computer player without starting a new game.
-* Loading a game from the archive is now about 10% faster (#166)
-* The user interface for changing the dangerous "Max. memory" profile setting is now vastly improved (#153). The maximum value that can be selected for the setting is now limited to a fraction of the device's physical memory, and the amount of physical memory that the device has is also displayed.
-* The GTP engine is configured to no longer recognize positional superko (#171). This is a temporary solution to bring the GTP engine's rules into sync with Little Go's rules. Little Go currently does not recognize superko, so this sync'ing fixes the problem that Little Go lets the user make a superko move which is then rejected by the GTP engine. Many thanks to Brid Griffin for emailing me a bug report that helped me with diagnosing this problem! Note that Little Go will officially support superko in 1.0.
-* On the iPad, the board size is now correct after the device is rotated while the board is zoomed (#162)
-* Dragging a stone outside the zoomed in board section no longer places the stone (#143)
+* When a new game is started, it is now possible to select one of several ko rules. Simple ko remains the default, new choices are positional and situational superko (#169).
+* When a new game is started, it is now possible to select whether area or territory scoring should be in effect (#30). Area scoring is the default because the computer player (Fuego) does not properly support territory scoring.
+* During scoring it is now possible to mark stones in seki (#190). Tap the "Actions" button to find the menu entry that lets you switch from "mark dead stones" to "mark stones in seki".
+* It is now possible to display player influence, aka territory statistics, for an estimate who owns an area (#18). The feature can be enabled under "Settings > Display > Display player influence".
+* iOS 7: The app no longer crashes on startup after a game has been imported from an external app such as Mail or DropBox (#184)
+* Support for iOS 5 has been dropped, the minimum required version is now iOS 6.1 (#198). Devices that are no longer supported are iPad 1st generation and iPod Touch 3rd generation.
+* The project has been upgraded to Xcode 5.0 (#183)
+* The 3rd party software build process has been completely rewritten (#92)
 
 
 The [ChangeLog](doc/ChangeLog) document has more details.
