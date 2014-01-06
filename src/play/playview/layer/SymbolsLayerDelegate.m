@@ -155,8 +155,6 @@
     _blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
   if (! _whiteLastMoveLayer)
     _whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
-  if (! _nextMoveLayer)
-    _nextMoveLayer = CreateNextMoveLayer(context, self);
 
   if ([self shouldDisplayMoveNumbers])
   {
@@ -179,6 +177,12 @@
 
   if ([self shouldDisplayNextMoveLabel])
   {
+    // Create layer only after shouldDisplayNextMoveLabel has made sure that
+    // the "next move label font" is not nil and that the layer will actually
+    // have a non-zero size.
+    if (! _nextMoveLayer)
+      _nextMoveLayer = CreateNextMoveLayer(context, self);
+
     if (! game.boardPosition.isLastPosition)
     {
       GoMove* nextMove;
@@ -294,6 +298,9 @@ CGLayerRef CreateNextMoveLayer(CGContextRef context, SymbolsLayerDelegate* deleg
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = delegate.playViewMetrics.nextMoveLabelMaximumSize;
+  // This function might be called
+  if (CGSizeEqualToSize(layerRect.size, CGSizeZero))
+    return NULL;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
