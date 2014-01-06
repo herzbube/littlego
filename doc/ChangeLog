@@ -24,8 +24,8 @@ Mon January 06 2014   "Patrick Näf" <herzbube@herzbube.ch>
     has been integrated into Little Go. It is not possible to quantify the
     improvement against human opponents, but if the new and the old versions of
     Fuego play against each other, the new version wins 80% - 90% of the games.
-  - On devices with 512 MB memory and more, the computer player is stronger than
-    on devices with less than 512 MB memory (#187).
+  - Use pattern-based additive knowledge on devices with more than 512 MB memory
+    (#187).
 - Bugfixes
   - iOS 7: The app no longer crashes on startup after a game has been imported
     from an external app such as Mail or DropBox (#184)
