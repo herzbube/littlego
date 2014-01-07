@@ -1962,6 +1962,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0420;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = P7NZKNP5L2;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Little Go" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2567,7 +2572,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Patrick Naf Moser";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
@@ -2591,7 +2596,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "3E5C76DC-0E47-4433-A704-FEC52D039BAD";
 				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AppStore;
@@ -2772,7 +2777,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Patrick Naf Moser";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
@@ -2796,6 +2801,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
+				PROVISIONING_PROFILE = "911AB574-C777-4F49-827E-E8C0AFACE3D1";
 				SDKROOT = iphoneos6.1;
 			};
 			name = Distribute_AdHoc;
