@@ -2512,7 +2512,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos6.1;
+				SDKROOT = iphoneos7.0;
 			};
 			name = Debug;
 		};
@@ -2544,7 +2544,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos6.1;
+				SDKROOT = iphoneos7.0;
 			};
 			name = Release;
 		};
@@ -2597,7 +2597,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "3E5C76DC-0E47-4433-A704-FEC52D039BAD";
-				SDKROOT = iphoneos6.1;
+				SDKROOT = iphoneos7.0;
 			};
 			name = Distribute_AppStore;
 		};
@@ -2631,9 +2631,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
+					"$(SDKROOT)/Developer/Library/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2668,9 +2667,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
+					"$(SDKROOT)/Developer/Library/Frameworks",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2706,9 +2704,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
+					"$(SDKROOT)/Developer/Library/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2743,9 +2740,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
+					"$(SDKROOT)/Developer/Library/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2802,7 +2798,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "911AB574-C777-4F49-827E-E8C0AFACE3D1";
-				SDKROOT = iphoneos6.1;
+				SDKROOT = iphoneos7.0;
 			};
 			name = Distribute_AdHoc;
 		};

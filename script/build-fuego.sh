@@ -12,16 +12,17 @@
 # =========================================================================
 
 SRC_DIR="$SRC_BASEDIR/fuego-on-ios"
+DEST_DIR="$PREFIX_BASEDIR"
 
 BOOST_SRC_DIR="$SRC_DIR/boost"
 BOOST_FRAMEWORK_NAME="boost.framework"
 BOOST_FRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_FRAMEWORK_NAME"
-BOOST_FRAMEWORK_DEST_DIR="$PREFIX_BASEDIR/$BOOST_FRAMEWORK_NAME"
+BOOST_FRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_FRAMEWORK_NAME"
 
 FUEGO_SRC_DIR="$SRC_DIR"
 FUEGO_FRAMEWORK_NAME="fuego-on-ios.framework"
 FUEGO_FRAMEWORK_SRC_DIR="$FUEGO_SRC_DIR/ios/framework/$FUEGO_FRAMEWORK_NAME"
-FUEGO_FRAMEWORK_DEST_DIR="$PREFIX_BASEDIR/$FUEGO_FRAMEWORK_NAME"
+FUEGO_FRAMEWORK_DEST_DIR="$DEST_DIR/$FUEGO_FRAMEWORK_NAME"
 
 
 # +------------------------------------------------------------------------
@@ -69,6 +70,13 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
+  # Exporting these variables makes them visible to the Boost and Fuego build
+  # scripts. We expect that the variables are set by build-env.sh.
+  export IPHONEOS_BASESDK_VERSION
+  export IPHONEOS_DEPLOYMENT_TARGET
+  export IPHONE_SIMULATOR_BASESDK_VERSION
+  export IPHONE_SIMULATOR_DEPLOYMENT_TARGET
+
   # Build Boost first. Build script runs both the iPhone and simulator builds.
   echo "Begin building Boost ..."
   pushd "$BOOST_SRC_DIR" >/dev/null
@@ -109,6 +117,9 @@ INSTALL_STEPS_SOFTWARE()
   if test $? -ne 0; then
     return 1
   fi
+
+  echo "Creating installation folder $DEST_DIR ..."
+  mkdir -p "$DEST_DIR"
 
   echo "Copying Boost installation files to $BOOST_FRAMEWORK_DEST_DIR ..."
   cp -R "$BOOST_FRAMEWORK_SRC_DIR" "$BOOST_FRAMEWORK_DEST_DIR"
