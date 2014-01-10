@@ -52,7 +52,7 @@
   STAssertNotNil(m_game.board, nil);
   NSUInteger handicapCount = 0;
   STAssertEquals(m_game.handicapPoints.count, handicapCount, nil);
-  STAssertEquals(m_game.komi, gDefaultKomiTerritoryScoring, nil);
+  STAssertEquals(m_game.komi, gDefaultKomiAreaScoring, nil);
   STAssertNotNil(m_game.playerBlack, nil);
   STAssertNotNil(m_game.playerWhite, nil);
   STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
