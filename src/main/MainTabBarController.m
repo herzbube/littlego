@@ -25,15 +25,14 @@
 @implementation MainTabBarController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a MainTabBarController. This initializer is required
-/// because MainTabBarController is loaded from a .xib file.
+/// @brief Initializes a MainTabBarController.
 ///
 /// @note This is the designated initializer of MainTabBarController.
 // -----------------------------------------------------------------------------
-- (id) initWithCoder:(NSCoder*)decoder
+- (id) init
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super initWithCoder:decoder];
+  // Call designated initializer of superclass (UITabBarController)
+  self = [super init];
   if (! self)
     return nil;
   self.delegate = self;
@@ -185,7 +184,7 @@
   NSString* resourceName = nil;
   switch (tabType)
   {
-    case TabTypeManual:
+    case TabTypeHelp:
       resourceName = manualDocumentResource;
       break;
     case TabTypeAbout:

@@ -60,8 +60,6 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2011-2014 Patrick Näf</string>
-	<key>NSMainNibFile</key>
-	<string>MainWindow</string>
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
 	<key>UILaunchImageFile~ipad</key>

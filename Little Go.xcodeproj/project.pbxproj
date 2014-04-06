@@ -402,10 +402,8 @@
 		CDE1A17F14C1CED200317ECA /* LaunchImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15414C1CED200317ECA /* LaunchImage@2x.png */; };
 		CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */; };
 		CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */; };
-		CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A15E14C1CED200317ECA /* MainWindow.xib */; };
 		CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
 		CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */; };
-		CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */; };
 		CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CDE302891360BDA4005235F2 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302831360BDA3005235F2 /* Player.m */; };
 		CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
@@ -456,6 +454,29 @@
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
+		CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
+		CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
+		CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
+		CDFD9F7218F1D3700031CBCF /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
+		CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
+		CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
+		CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
+		CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
+		CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35C148C2C26004E1A0C /* DocumentViewController.m */; };
+		CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35E148C2C26004E1A0C /* LicensesViewController.m */; };
+		CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */; };
+		CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
+		CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCA714194A420065C93B /* ViewGameController.m */; };
+		CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC741425470B00214BBE /* DeleteGameCommand.m */; };
+		CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC781425470B00214BBE /* RenameGameCommand.m */; };
+		CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
+		CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
+		CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
+		CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */; };
+		CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */; };
+		CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
+		CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
+		CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 /* End PBXBuildFile section */
@@ -881,11 +902,9 @@
 		CDE1A15414C1CED200317ECA /* LaunchImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage@2x.png"; sourceTree = "<group>"; };
 		CDE1A15614C1CED200317ECA /* wood-on-wood-01.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-01.aiff"; sourceTree = "<group>"; };
 		CDE1A15714C1CED200317ECA /* wood-on-wood-12.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "wood-on-wood-12.aiff"; sourceTree = "<group>"; };
-		CDE1A15E14C1CED200317ECA /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		CDE1A19114C1CF4D00317ECA /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		CDE1A19214C1CF4D00317ECA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDE1A19314C1CF4D00317ECA /* RegistrationDomainDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = RegistrationDomainDefaults.plist; sourceTree = "<group>"; };
-		CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		CDE30139135CA7D5005235F2 /* UIColorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIColorAdditions.h; sourceTree = "<group>"; };
 		CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIColorAdditions.m; sourceTree = "<group>"; };
 		CDE302821360BDA3005235F2 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
@@ -1694,15 +1713,6 @@
 			path = sound;
 			sourceTree = "<group>";
 		};
-		CDE1A15814C1CED200317ECA /* xib */ = {
-			isa = PBXGroup;
-			children = (
-				CDE1A15E14C1CED200317ECA /* MainWindow.xib */,
-				CDE1A19E14C1D9F300317ECA /* MainWindow~ipad.xib */,
-			);
-			path = xib;
-			sourceTree = "<group>";
-		};
 		CDE1A19014C1CF4D00317ECA /* plist */ = {
 			isa = PBXGroup;
 			children = (
@@ -1811,7 +1821,6 @@
 				CDE1A19014C1CF4D00317ECA /* plist */,
 				CDE1A15514C1CED200317ECA /* sound */,
 				CD48AD9A15A75B77004A7096 /* text */,
-				CDE1A15814C1CED200317ECA /* xib */,
 				CD02629A16E0F06E007B35CC /* openingbook */,
 			);
 			path = resource;
@@ -2026,9 +2035,7 @@
 				CDE1A17F14C1CED200317ECA /* LaunchImage@2x.png in Resources */,
 				CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */,
 				CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */,
-				CDE1A18714C1CED200317ECA /* MainWindow.xib in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
-				CDE1A19F14C1D9F300317ECA /* MainWindow~ipad.xib in Resources */,
 				CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */,
 				CDB0A2FF152B6C62003B2BBF /* 42-info@2x.png in Resources */,
 				CDB0A303152B6D53003B2BBF /* 108-badge.png in Resources */,
@@ -2304,15 +2311,21 @@
 			files = (
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
+				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
+				CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */,
+				CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
+				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
+				CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */,
 				CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */,
+				CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */,
 				CD85B5AF1401C23D001715B8 /* GtpCommand.m in Sources */,
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
@@ -2325,6 +2338,7 @@
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
+				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
@@ -2332,9 +2346,11 @@
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
+				CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */,
 				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
+				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
@@ -2371,20 +2387,25 @@
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
+				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
+				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
 				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
+				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
 				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,
 				CD1DB6151702582B00C2E648 /* TableViewTextCell.m in Sources */,
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
+				CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */,
 				CD1DB6171702583400C2E648 /* TableViewSegmentedCell.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
 				CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */,
 				CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */,
 				CD9A49DC1712507D009E7514 /* BoardPositionView.m in Sources */,
+				CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */,
 				CD9A49DD17125081009E7514 /* BoardPositionToolbarController.m in Sources */,
 				CD9A49DE17125092009E7514 /* BoardPositionViewMetrics.m in Sources */,
 				CD9A49DF17125095009E7514 /* CurrentBoardPositionViewController.m in Sources */,
@@ -2394,6 +2415,7 @@
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
 				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
+				CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */,
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
 				CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */,
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
@@ -2401,12 +2423,16 @@
 				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
+				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */,
+				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
+				CDFD9F7218F1D3700031CBCF /* PlayViewSettingsController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
+				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
@@ -2415,6 +2441,8 @@
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
+				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
+				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
 				CD3591CF173475E2000E2963 /* BoardPositionController.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayTabController.m in Sources */,
@@ -2430,6 +2458,7 @@
 				CD3592171735A757000E2963 /* StonesLayerDelegate.m in Sources */,
 				CD3592191735A757000E2963 /* SymbolsLayerDelegate.m in Sources */,
 				CD35921B1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
+				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD35921D1735A757000E2963 /* PlayView.m in Sources */,
 				CD35921F1735A757000E2963 /* PlayViewController.m in Sources */,
 				CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */,
@@ -2451,6 +2480,7 @@
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
+				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
 				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,
 			);

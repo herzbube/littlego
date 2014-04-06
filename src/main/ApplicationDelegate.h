@@ -46,9 +46,12 @@
 /// As an additional responsibility, it creates instances of GtpEngine and
 /// GtpClient and sets them up to communicate with each other.
 ///
-/// @note ApplicationDelegate is instantiated when MainWindow.xib is loaded.
-/// The single instance of ApplicationDelegate is available to clients via the
-/// class method sharedDelegate().
+/// @note Since this project does not use any .xib files, the party responsible
+/// for creating an instance of ApplicationDelegate is the project's main()
+/// function (actually the main() function informs another global function,
+/// UIApplicationMain(), which type instantiate). The single instance of
+/// ApplicationDelegate then becomes available to clients via the class method
+/// sharedDelegate().
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate : NSObject <UIApplicationDelegate,
                                            BWQuincyManagerDelegate>
@@ -73,9 +76,9 @@
 - (NSString*) logFolder;
 
 /// @brief The main application window.
-@property(nonatomic, retain) IBOutlet UIWindow* window;
+@property(nonatomic, retain) UIWindow* window;
 /// @brief The main application controller.
-@property(nonatomic, retain) IBOutlet MainTabBarController* tabBarController;
+@property(nonatomic, retain) MainTabBarController* tabBarController;
 /// @brief Indicates how the application was launched.
 ///
 /// This property initially has the value #ApplicationLaunchModeUnknown. At the

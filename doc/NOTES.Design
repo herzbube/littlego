@@ -5,23 +5,8 @@ This document contains design notes on a variety of subjects.
 
 .xib design notes
 -----------------
-I find it difficult to remember some specialities about the UI design in the
-various .xib files. The following notes are to .xib files what inline
-documentation is to source code:
-- MainWindow.xib instantiates the main controller object, which is an instance
-  of MainTabBarController. The main controller in turn references and
-  instantiates all child controllers. To see the class of each sub-controller,
-  select the main controller object in the .xib file, then from the menu select
-  View -> as Columns. Navigate to the child controller of your choice and
-  display its properties in the Inspector window. The properties include the
-  controller's class, and the name of the NIB file associated with the
-  controller.
-- Each TabBarItem in MainWindow.xib has a unique numeric value assigned to its
-  "tag" property. A controller class that is responsible for managing several
-  different tabs can query this "tag" property and thus perform different
-  actions depending on which tab is currently selected. The tag values in the
-  .xib must match the values of the enumeration TabType, which is defined in
-  Constants.h.
+None. This project creates the entire UI programmatically and does not use any
+.xib files.
 
 
 UI elements design notes

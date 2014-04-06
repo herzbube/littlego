@@ -64,16 +64,13 @@ enum InconsistentTerritoryMarkupType
 };
 
 /// @brief Enumerates all existing tabs in the GUI.
-///
-/// Values in this enumeration must match the "tag" property values of each
-/// TabBarItem in MainWindow.xib.
 enum TabType
 {
   TabTypePlay,
   TabTypeSettings,
   TabTypeArchive,
   TabTypeDiagnostics,
-  TabTypeManual,
+  TabTypeHelp,
   TabTypeAbout,
   TabTypeSourceCode,
   TabTypeLicenses,
@@ -632,6 +629,15 @@ extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
+extern NSString* playTabIconResource;
+extern NSString* settingsTabIconResource;
+extern NSString* archiveTabIconResource;
+extern NSString* helpTabIconResource;
+extern NSString* diagnosticsTabIconResource;
+extern NSString* aboutTabIconResource;
+extern NSString* sourceCodeTabIconResource;
+extern NSString* licensesTabIconResource;
+extern NSString* creditsTabIconResource;
 extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* discardButtonIconResource;

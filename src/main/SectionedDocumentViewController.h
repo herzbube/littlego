@@ -29,6 +29,6 @@
 
 /// @brief The tag of this tab bar item provides this controller with the
 /// context what it is supposed to display.
-@property(nonatomic, assign) IBOutlet UITabBarItem* contextTabBarItem;
+@property(nonatomic, assign) UITabBarItem* contextTabBarItem;
 
 @end
