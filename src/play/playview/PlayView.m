@@ -179,7 +179,11 @@
 
   // If we already have a game, recalculate
   if (game)
+  {
     [self.playViewMetrics updateWithBoardSize:game.board.size];
+    // Layer delegates do not exist yet, so they do not need to be notified.
+    // There is also no need to trigger drawing.
+  }
 
 
   // Create & setup layer delegates in the order in which layers must be drawn
@@ -224,7 +228,6 @@
                                                              scoringModel:self.scoringModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
 
-
   self.coordinateLabelsLetterView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
   [self setupCoordinateLabelView:self.coordinateLabelsLetterView
@@ -253,7 +256,7 @@
                        scrollView:(UIScrollView*)scrollView
                              axis:(enum CoordinateLabelAxis)axis
 {
-  scrollView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.backgroundColor = [UIColor clearColor];
   scrollView.userInteractionEnabled = NO;
   [scrollView addSubview:labelView];
@@ -295,9 +298,19 @@
   if (! [GoGame sharedGame])
     return;
   self.updatesWereDelayed = false;
+
+  // Disabling animations here is essential for a smooth GUI update after a zoom
+  // operation ends. If animations were enabled, setting the layer frames would
+  // trigger an animation that looks like a "bounce". For details see
+  // http://stackoverflow.com/questions/15370803/how-to-prevent-bounce-effect-when-a-custom-view-redraws-after-zooming
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
+
   // Draw layers in the order in which they appear in the layerDelegates array
   for (id<PlayViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate drawLayer];
+
+  [CATransaction commit];
 }
 
 // -----------------------------------------------------------------------------
@@ -314,64 +327,35 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIView method.
-///
-/// Overriding this method is important so that we can react to frame size
-/// changes that occur when this view is autoresized, e.g. when the device
-/// orientation changes.
-///
-/// This is also invoked soon after initialization.
+/// @brief Must be invoked whenever the frame of this view is supposed to
+/// change. Changing the intrinsic content size triggers Auto Layout, and thus
+/// provokes a frame change.
 // -----------------------------------------------------------------------------
-- (void) layoutSubviews
+- (void) updateIntrinsicContentSize:(CGSize)newIntrinsicContentSize
 {
-  [super layoutSubviews];
-
-  // Disabling animations here is essential for a smooth GUI update after a zoom
-  // operation ends. If animations were enabled, setting the layer frames would
-  // trigger an animation that looks like a "bounce". For details see
-  // http://stackoverflow.com/questions/15370803/how-to-prevent-bounce-effect-when-a-custom-view-redraws-after-zooming
-  [CATransaction begin];
-  [CATransaction setDisableActions:YES];
-  [self.playViewMetrics updateWithRect:self.bounds];
-  [self layoutCoordinateLabelView:self.coordinateLabelsLetterView
-                       scrollView:self.coordinateLabelsLetterViewScrollView];
-  [self layoutCoordinateLabelView:self.coordinateLabelsNumberView
-                       scrollView:self.coordinateLabelsNumberViewScrollView];
+  CGRect rect = self.playViewMetrics.rect;
+  if (CGSizeEqualToSize(newIntrinsicContentSize, rect.size))
+    return;
+  rect.size = newIntrinsicContentSize;
+  [self.playViewMetrics updateWithRect:rect];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+  // Redraw layers, if possible now, otherwise at a later time
+  // TODO xxx is this the right place to draw? shouldn't we do this in drawRect
+  // or somewhere similar?
+  // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
+  //      drawLayers
   [self delayedUpdate];
-  [CATransaction commit];
+
+  // Notify Auto Layout that our intrinsic size changed
+  [self invalidateIntrinsicContentSize];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for layoutSubviews.
+/// @brief UIView method.
 // -----------------------------------------------------------------------------
-- (void) layoutCoordinateLabelView:(UIView*)view scrollView:(UIScrollView*)scrollView
+- (CGSize) intrinsicContentSize
 {
-  CGRect viewFrame = view.frame;
-  CGRect scrollViewFrame = scrollView.frame;
-  if (view == self.coordinateLabelsLetterView)
-  {
-    viewFrame.size.width = self.bounds.size.width;
-    viewFrame.size.height = self.playViewMetrics.coordinateLabelStripWidth;
-    scrollViewFrame.size.width = self.superview.bounds.size.width;
-    scrollViewFrame.size.height = self.playViewMetrics.coordinateLabelStripWidth;
-  }
-  else
-  {
-    viewFrame.size.width = self.playViewMetrics.coordinateLabelStripWidth;
-    viewFrame.size.height = self.bounds.size.height;
-    scrollViewFrame.size.width = self.playViewMetrics.coordinateLabelStripWidth;
-    scrollViewFrame.size.height = self.superview.bounds.size.height;
-  }
-  view.frame = viewFrame;
-  scrollView.contentSize = viewFrame.size;
-  // Changing the scroll view frame resets the content offset to (0,0). This
-  // must not happen because it would position the coordinate labels wrongly
-  // after a zoom operation. We preserve the content offset by re-applying it
-  // after the frame change.
-  CGPoint contentOffset = scrollView.contentOffset;
-  scrollView.frame = scrollViewFrame;
-  scrollView.contentOffset = contentOffset;
+  return self.playViewMetrics.rect.size;
 }
 
 // -----------------------------------------------------------------------------
@@ -395,16 +379,10 @@
   [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 
-  [CATransaction begin];
-  [CATransaction setDisableActions:YES];
   [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
-  [self layoutCoordinateLabelView:self.coordinateLabelsLetterView
-                       scrollView:self.coordinateLabelsLetterViewScrollView];
-  [self layoutCoordinateLabelView:self.coordinateLabelsNumberView
-                       scrollView:self.coordinateLabelsNumberViewScrollView];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
+  // Redraw layers, if possible now, otherwise at a later time
   [self delayedUpdate];
-  [CATransaction commit];
 }
 
 // -----------------------------------------------------------------------------

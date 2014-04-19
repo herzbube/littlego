@@ -193,7 +193,7 @@ enum NavigationDirection
   frame.size.height = [UiElementMetrics toolbarHeight];
   self.toolbar = [[[UIToolbar alloc] initWithFrame:frame] autorelease];
   self.view = self.toolbar;
-  self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {

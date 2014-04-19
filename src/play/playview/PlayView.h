@@ -66,10 +66,34 @@
 /// is received, all drawing updates that have accumulated are now coalesced
 /// into a single update.
 ///
-/// As a consequence, clients that want to update the view directly must invoke
+/// As a consequence, clients that want to update the view must invoke
 /// delayedUpdate() instead of setNeedsDisplay(). Using delayedUpdate() makes
 /// sure that the update occurs at the right time, either immediately, or after
 /// a long-running action has ended.
+///
+///
+/// @par Auto Layout
+///
+/// PlayView is not a container view (i.e. it does not consist of subviews) but
+/// draws its own content. For the purposes of Auto Layout it therefore has an
+/// intrinsic content size - its size is not derived from the size of any views
+/// that it contains, but from the size of the content that it is supposed to
+/// draw.
+///
+/// On the other hand, PlayView never changes its own content size, regardless
+/// of what it is supposed to draw (compare this to, for instance, a UILabel
+/// that changes its content size depending on the text that it should display).
+/// Instead, PlayView adjusts the stuff it draws to the size that is available.
+/// For instance, board and stones are simply drawn bigger or smaller depending
+/// on how much space PlayView gets to draw.
+///
+/// As a consequence, PlayView's intrinsic content size can only change in
+/// response to external events. These events must be communicated to PlayView
+/// by invoking updateIntrinsicContentSize:(). Currently only a handful events
+/// are known:
+/// - When the size of the parent scroll view changes (e.g. due to rotation of
+///   the interface
+/// - When the user zooms the PlayView
 ///
 ///
 /// @par Implementation notes
@@ -97,7 +121,7 @@
 {
 }
 
-- (void) delayedUpdate;
+- (void) updateIntrinsicContentSize:(CGSize)newIntrinsicContentSize;
 - (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;

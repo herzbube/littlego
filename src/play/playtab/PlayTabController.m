@@ -52,36 +52,8 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  // Note: If the user is holding the device in landscape orientation while the
-  // application is starting up, iOS will first start up in portrait orientation
-  // and then initiate an auto-rotation to landscape orientation. Because the
-  // main view and its subviews have an autoresizing mask, they will have the
-  // correct size when they are finally displayed.
-  [self setupMainView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by loadView().
-// -----------------------------------------------------------------------------
-- (void) setupMainView
-{
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by setupMainView().
-// -----------------------------------------------------------------------------
-- (CGRect) mainViewFrame
-{
-  int mainViewX = 0;
-  int mainViewY = 0;
-  int mainViewWidth = [UiElementMetrics screenWidth];
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
 @end

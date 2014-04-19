@@ -30,9 +30,6 @@
 /// @brief Class extension with private properties for ScrollViewController.
 // -----------------------------------------------------------------------------
 @interface ScrollViewController()
-/// @brief The overall zoom scale currently in use for drawing the Play view.
-/// At zoom scale value 1.0 the entire board is visible.
-@property(nonatomic, assign) CGFloat currentAbsoluteZoomScale;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @end
@@ -112,14 +109,60 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
+  [self configureViewObjects];
+  [self synchronizeZoomScale:self.scrollView.zoomScale
+            minimumZoomScale:self.scrollView.minimumZoomScale
+            maximumZoomScale:self.scrollView.maximumZoomScale];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
   self.scrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.scrollView;
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  [self.view addSubview:self.playViewController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.playViewController.view, @"playView",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|[playView]|",
+                            @"V:|[playView]|",
+                            nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+
+    [self.view addConstraints:constraint];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViewObjects
+{
+  self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.view.backgroundColor = [UIColor clearColor];
+
   self.scrollView.bouncesZoom = NO;
   self.scrollView.delegate = self;
-
-  [self.view addSubview:self.playViewController.view];
+  self.scrollView.zoomScale = 1.0f;
+  self.scrollView.minimumZoomScale = 1.0f;
+  self.scrollView.maximumZoomScale = [ApplicationDelegate sharedDelegate].playViewModel.maximumZoomScale;
 
   // Even though these scroll views do not scroll or zoom interactively, we
   // still need to become their delegate so that we can change their zoomScale
@@ -130,16 +173,6 @@
   // changing the zoomScale).
   self.playViewController.playView.coordinateLabelsLetterViewScrollView.delegate = self;
   self.playViewController.playView.coordinateLabelsNumberViewScrollView.delegate = self;
-
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  self.scrollView.zoomScale = 1.0f;
-  self.scrollView.minimumZoomScale = 1.0f;
-  self.scrollView.maximumZoomScale = playViewModel.maximumZoomScale;
-  [self synchronizeZoomScale:self.scrollView.zoomScale
-            minimumZoomScale:self.scrollView.minimumZoomScale
-            maximumZoomScale:self.scrollView.maximumZoomScale];
-
-  self.currentAbsoluteZoomScale = 1.0f;
 
   self.playViewController.panGestureController.scrollView = self.scrollView;
   self.doubleTapGestureController.scrollView = self.scrollView;
@@ -184,12 +217,14 @@
   if (self.scrollView.zooming || self.scrollView.isDragging)
     return;
 
-  CGRect newFrame = self.playViewController.view.frame;
-  newFrame.size = self.scrollView.bounds.size;
-  newFrame.size.width *= self.currentAbsoluteZoomScale;
-  newFrame.size.height *= self.currentAbsoluteZoomScale;
-  self.playViewController.view.frame = newFrame;
-  self.scrollView.contentSize = newFrame.size;
+  // Updating the play view's intrinsic content size causes Auto Layout
+  // to adjust the scroll view's content size
+  // TODO xxx Check if the content offset is also adjusted. If not we need to
+  // adjust it manually during zooming, possibly in scrollViewDidEndZooming
+  CGSize newIntrinsicSizeOfPlayView = self.view.bounds.size;
+  newIntrinsicSizeOfPlayView.width *= self.scrollView.zoomScale;
+  newIntrinsicSizeOfPlayView.height *= self.scrollView.zoomScale;
+  [self.playViewController.playView updateIntrinsicContentSize:newIntrinsicSizeOfPlayView];
 }
 
 #pragma mark - UIScrollViewDelegate overrides
@@ -246,44 +281,27 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
 {
-  self.currentAbsoluteZoomScale *= scale;
-  DDLogVerbose(@"scrollViewDidEndZooming: new overall zoom scale = %f", self.currentAbsoluteZoomScale);
+  DDLogVerbose(@"scrollViewDidEndZooming: new zoom scale = %f", scale);
 
-  // Remember content offset and size so that we can re-apply them after we
-  // reset the zoom scale to 1.0
-  CGPoint contentOffset = scrollView.contentOffset;
   CGSize contentSize = scrollView.contentSize;
   DDLogVerbose(@"scrollViewDidEndZooming: new content size = %f / %f ",
                contentSize.width, contentSize.height);
 
-  // Big change here: This resets the scroll view's contentSize and
-  // contentOffset, and also the PlayView's frame, bounds and transform
-  // properties
-  scrollView.zoomScale = 1.0f;
-  // Adjust the minimum and maximum zoom scale so that the user cannot zoom
-  // in/out more than originally intended
-  scrollView.minimumZoomScale = scrollView.minimumZoomScale / scale;
-  scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
-  DDLogVerbose(@"scrollViewDidEndZooming: new minimumZoomScale = %f, maximumZoomScale = %f",
-               scrollView.minimumZoomScale, scrollView.maximumZoomScale);
+  CGPoint contentOffset = scrollView.contentOffset;
+  DDLogVerbose(@"scrollViewDidEndZooming: new content offset = %f / %f ",
+               contentOffset.x, contentOffset.y);
 
-  // Re-apply some property values that were changed when the zoom scale was
-  // reset to 1.0
-  scrollView.contentSize = contentSize;
-  [scrollView setContentOffset:contentOffset animated:NO];
-  self.playViewController.view.frame = CGRectMake(0, 0, contentSize.width, contentSize.height);
+  // TODO xxx Currently we assume that viewWillLayoutSubviews will always be
+  // invoked after a zoom operation. Check if this is true, because we rely on
+  // this mechanism to update the play view's intrinsic size. Possibly we should
+  // update the intrinsic size already here.
 
+  self.playViewController.playView.coordinateLabelsLetterViewScrollView.hidden = NO;
+  self.playViewController.playView.coordinateLabelsNumberViewScrollView.hidden = NO;
   [self synchronizeZoomScale:self.scrollView.zoomScale
             minimumZoomScale:self.scrollView.minimumZoomScale
             maximumZoomScale:self.scrollView.maximumZoomScale];
   [self synchronizeContentOffset:contentOffset];
-  // At this point we should also update content size and frame changes. We
-  // don't do so because PlayView already takes care of all this for us.
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.hidden = NO;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.hidden = NO;
-
-  // Finally, trigger the view/layer to redraw their content
-  [self.playViewController.playView delayedUpdate];
 }
 
 #pragma mark - KVO notification
@@ -298,51 +316,28 @@
   {
     if ([keyPath isEqualToString:@"maximumZoomScale"])
     {
-      if (self.currentAbsoluteZoomScale <= playViewModel.maximumZoomScale)
+      if (self.scrollView.zoomScale < playViewModel.maximumZoomScale)
       {
-        CGFloat newRelativeMaximumZoomScale = playViewModel.maximumZoomScale / self.currentAbsoluteZoomScale;
-        self.scrollView.maximumZoomScale = newRelativeMaximumZoomScale;
+        self.scrollView.maximumZoomScale = playViewModel.maximumZoomScale;
       }
       else
       {
         // The Play view is currently zoomed in more than the new maximum zoom
         // scale allows. The goal is to adjust the current zoom scale, and all
         // depending metrics, to the new maximum.
-        CGFloat newAbsoluteZoomScale = playViewModel.maximumZoomScale;
-        CGFloat factor = self.currentAbsoluteZoomScale / newAbsoluteZoomScale;
-        CGFloat oldAbsoluteZoomScale = self.currentAbsoluteZoomScale;
-        self.currentAbsoluteZoomScale = newAbsoluteZoomScale;
-
-        // Make sure that after we are finished the user cannot zoom in any
-        // further
-        if (self.scrollView.maximumZoomScale > 1.0f)
-          self.scrollView.maximumZoomScale = 1.0f;
-
-        // Adjust the relative minimum zoom scale
-        CGFloat oldRelativeMinimumZoomScale = self.scrollView.minimumZoomScale;
-        self.scrollView.minimumZoomScale = factor * oldRelativeMinimumZoomScale;
-
-        // Adjust content offset, content size and Play view frame size
+        // TODO xxx Currently we rely on UIScrollView to perform the proper
+        // adjustments for us (e.g. downscale content size, content offset,
+        // trigger viewWillLayoutSubviews so that the play view's intrinsic
+        // size can be adjusted, trigger synchronizeContentOffset and
+        // synchronizeZoomScale, and so on). Verify that the behaviour is
+        // actually as desired.
+        self.scrollView.maximumZoomScale = playViewModel.maximumZoomScale;
         CGPoint newContentOffset = self.scrollView.contentOffset;
-        newContentOffset.x /= factor;
-        newContentOffset.y /= factor;
-        self.scrollView.contentOffset = newContentOffset;
-        CGSize newContentSize = self.scrollView.contentSize;
-        newContentSize.width /= factor;
-        newContentSize.height /= factor;
-        self.scrollView.contentSize = newContentSize;
-        self.playViewController.view.frame = CGRectMake(0, 0, newContentSize.width, newContentSize.height);
-
-        DDLogInfo(@"%@: Adjusting old zoom scale %f to new maximum %f",
-                  self, oldAbsoluteZoomScale, newAbsoluteZoomScale);
-        DDLogVerbose(@"%@: Old/new relative minimum zoom scale = %f / %f",
-                     self, oldRelativeMinimumZoomScale, self.scrollView.minimumZoomScale);
         DDLogVerbose(@"%@: New content offset = %f / %f ",
                      self, newContentOffset.x, newContentOffset.y);
+        CGSize newContentSize = self.scrollView.contentSize;
         DDLogVerbose(@"%@: New content size = %f / %f ",
                      self, newContentSize.width, newContentSize.height);
-
-        [self.playViewController.playView delayedUpdate];
       }
     }
   }

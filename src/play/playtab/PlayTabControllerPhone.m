@@ -160,146 +160,76 @@
 - (void) loadView
 {
   [super loadView];
-  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 
-  [self setupNavigationBar];
-  // Set up before scroll view because scroll view height depends on toolbar
-  // position
-  [self setupBoardPositionToolbar];
-  [self setupScrollView];
-  [self setupCoordinateLabelScrollViews];
-
-  self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
+  [self configureViewObjects];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupNavigationBar
+- (void) setupViewHierarchy
 {
-  CGRect navigationBarFrame = [self navigationBarFrame];
-  self.navigationBarController.view.frame = navigationBarFrame;
-  UIView* superview = [self navigationBarSuperview];
-  [superview addSubview:self.navigationBarController.view];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) navigationBarFrame
-{
-  UIView* superview = [self navigationBarSuperview];
-  int viewX = 0;
-  int viewY = 0;
-  int viewWidth = superview.bounds.size.width;
-  int viewHeight = [UiElementMetrics navigationBarHeight];
-  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) navigationBarSuperview
-{
-  return self.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupScrollView
-{
-  CGRect scrollViewFrame = [self scrollViewFrame];
-  self.scrollViewController.view.frame = scrollViewFrame;
-  UIView* superview = [self scrollViewSuperview];
-  [superview addSubview:self.scrollViewController.view];
-
-  self.scrollViewController.scrollView.contentSize = scrollViewFrame.size;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) scrollViewFrame
-{
-  UIView* superview = [self scrollViewSuperview];
-  CGSize superviewSize = superview.bounds.size;
-  int viewX = 0;
-  int viewY = CGRectGetMaxY(self.navigationBarController.view.frame);
-  int viewWidth = superviewSize.width;
-  int viewHeight = (superviewSize.height
-                    - self.navigationBarController.view.frame.size.height
-                    - self.boardPositionToolbarController.view.frame.size.height);
-  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) scrollViewSuperview
-{
-  return self.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupCoordinateLabelScrollViews
-{
-  UIView* superview = [self scrollViewSuperview];
+  [self.view addSubview:self.navigationBarController.view];
+  [self.view addSubview:self.boardPositionToolbarController.view];
+  [self.view addSubview:self.scrollViewController.view];
   NSArray* scrollViews = [NSArray arrayWithObjects:
                           self.scrollViewController.playViewController.playView.coordinateLabelsLetterViewScrollView,
                           self.scrollViewController.playViewController.playView.coordinateLabelsNumberViewScrollView,
                           nil];
   for (UIView* scrollView in scrollViews)
   {
-    CGRect scrollViewFrame = scrollView.frame;
-    scrollViewFrame.origin = self.scrollViewController.view.frame.origin;
-    scrollView.frame = scrollViewFrame;
-    [superview addSubview:scrollView];
+    [self.view addSubview:scrollView];
   }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupBoardPositionToolbar
+- (void) setupAutoLayoutConstraints
 {
-  CGRect toolbarFrame = [self boardPositionToolbarFrame];
-  self.boardPositionToolbarController.view.frame = toolbarFrame;
-  UIView* superview = [self boardPositionToolbarSuperview];
-  [superview addSubview:self.boardPositionToolbarController.view];
+  PlayView* playView = self.scrollViewController.playViewController.playView;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.navigationBarController.view, @"navigationBarView",
+                                   self.scrollViewController.view, @"scrollView",
+                                   playView.coordinateLabelsLetterViewScrollView, @"coordinateLabelsLetterView",
+                                   playView.coordinateLabelsNumberViewScrollView, @"coordinateLabelsNumberView",
+                                   self.boardPositionToolbarController.view, @"boardPositionToolbarView",
+                                   nil];
+  // TODO xxx use methods from UiElementMetrics
+  // - 20 = [UiElementMetrics statusBarHeight], this should be 0 in iOS 6
+  // - 44 = [UiElementMetrics navigationBarHeight] or
+  //        [UiElementMetrics toolbarHeight]
+  // - 49 = [UiElementMetrics tabBarHeight]
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[navigationBarView]-0-|",
+                            @"H:|-0-[scrollView]-0-|",
+                            @"H:|-0-[boardPositionToolbarView]-0-|",
+                            @"H:|-0-[coordinateLabelsLetterView]-0-|",
+                            @"H:|-0-[coordinateLabelsNumberView]",
+                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[scrollView]-0-[boardPositionToolbarView(>=44,<=44)]-49-|",
+                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[coordinateLabelsLetterView]",
+                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[coordinateLabelsNumberView]",
+                            nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+
+    [self.view addConstraints:constraint];
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (CGRect) boardPositionToolbarFrame
+- (void) configureViewObjects
 {
-  UIView* superview = [self boardPositionToolbarSuperview];
-  int toolbarViewX = 0;
-  int toolbarViewWidth = superview.bounds.size.width;
-  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
-  int toolbarViewY = superview.bounds.size.height - toolbarViewHeight;
-  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) boardPositionToolbarSuperview
-{
-  return self.view;
+  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+  self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
 }
 
 @end
