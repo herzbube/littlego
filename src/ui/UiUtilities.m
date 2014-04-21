@@ -155,6 +155,9 @@
 // -----------------------------------------------------------------------------
 + (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController
 {
+  // TODO xxx replace by createTableViewWithStyle:withDelegateAndDataSource
+  // the new method uses auto layout and does not set a VC's view property
+
   UITableView* tableView = [[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
                                                         style:tableViewStyle];
 
@@ -169,6 +172,20 @@
     tableView.delegate = (id<UITableViewDelegate>)viewController;
   if ([viewController conformsToProtocol:@protocol(UITableViewDataSource)])
     tableView.dataSource = (id<UITableViewDataSource>)viewController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new UITableView with style @a tableViewStyle, and
+/// configures the table view to use the supplied object both as delegate and
+/// data source.
+// -----------------------------------------------------------------------------
++ (UITableView*) createTableViewWithStyle:(UITableViewStyle)tableViewStyle withDelegateAndDataSource:(id)anObject
+{
+  UITableView* tableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                         style:tableViewStyle] autorelease];
+  tableView.delegate = (id<UITableViewDelegate>)anObject;
+  tableView.dataSource = (id<UITableViewDataSource>)anObject;
+  return tableView;
 }
 
 // -----------------------------------------------------------------------------

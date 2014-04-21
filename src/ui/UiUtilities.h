@@ -35,6 +35,7 @@
 + (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 + (NSUInteger) supportedInterfaceOrientations;
 + (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController;
++ (UITableView*) createTableViewWithStyle:(UITableViewStyle)tableViewStyle withDelegateAndDataSource:(id)anObject;
 + (void) addGroupTableViewBackgroundToView:(UIView*)view;
 + (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder;
 + (UIImageView*) redButtonTableViewCellBackground:(bool)selected;

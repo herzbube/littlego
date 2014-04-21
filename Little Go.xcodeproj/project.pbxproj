@@ -322,6 +322,8 @@
 		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
+		CDACF0B019041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */; };
+		CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */; };
 		CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FC152B6C62003B2BBF /* 42-info.png */; };
 		CDB0A2FF152B6C62003B2BBF /* 42-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */; };
 		CDB0A303152B6D53003B2BBF /* 108-badge.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A301152B6D53003B2BBF /* 108-badge.png */; };
@@ -793,6 +795,8 @@
 		CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameModel.m; sourceTree = "<group>"; };
 		CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameController.h; sourceTree = "<group>"; };
 		CDAB5ED013E483DE00C4A4AA /* NewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameController.m; sourceTree = "<group>"; };
+		CDACF0AE19041C1200A0DAD7 /* AutoLayoutUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoLayoutUtility.h; sourceTree = "<group>"; };
+		CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoLayoutUtility.m; sourceTree = "<group>"; };
 		CDB0A2FC152B6C62003B2BBF /* 42-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info.png"; sourceTree = "<group>"; };
 		CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info@2x.png"; sourceTree = "<group>"; };
 		CDB0A301152B6D53003B2BBF /* 108-badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "108-badge.png"; sourceTree = "<group>"; };
@@ -1846,6 +1850,8 @@
 		CDEF3D87140C2F39002D9C1C /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				CDACF0AE19041C1200A0DAD7 /* AutoLayoutUtility.h */,
+				CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */,
 				CDFABCAB14194DA00065C93B /* EditTextController.h */,
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
 				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
@@ -2214,6 +2220,7 @@
 				CD00A366148C2C26004E1A0C /* LicensesViewController.m in Sources */,
 				CD00A367148C2C26004E1A0C /* main.m in Sources */,
 				CD00A368148C2C26004E1A0C /* SectionedDocumentViewController.m in Sources */,
+				CDACF0B019041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
@@ -2432,6 +2439,7 @@
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
+				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,

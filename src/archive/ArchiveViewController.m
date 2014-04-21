@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #import "ArchiveGame.h"
 #import "ViewGameController.h"
 #import "../main/ApplicationDelegate.h"
+#import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 #import "../command/game/DeleteGameCommand.h"
@@ -51,51 +52,143 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
 @property(nonatomic, retain) UIView* placeholderView;
+@property(nonatomic, retain) UITableView* tableView;
 @end
 
 
 @implementation ArchiveViewController
+
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes an ArchiveViewController object.
+///
+/// @note This is the designated initializer of ArchiveViewController.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
+  if (! self)
+    return nil;
+  self.placeholderView = nil;
+  self.tableView = nil;
+  self.archiveViewModel = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+  return self;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this ArchiveViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.placeholderView = nil;
+  self.tableView = nil;
   [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
+  self.archiveViewModel = nil;
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
-///
-/// This implementation exists because this controller needs a grouped style
-/// table view, and there is no simpler way to specify the table view style.
-/// - This controller does not load its table view from a .nib file, so the
-///   style can't be specified there
-/// - This controller is itself loaded from a .nib file, so the style can't be
-///   specified in initWithStyle:()
+/// @brief UIViewController method
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped forController:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-// -----------------------------------------------------------------------------
-- (void) viewDidLoad
-{
-  [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.archiveViewModel = delegate.archiveViewModel;
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
   [self setupPlaceholderView];
+  [self setupTableView];
 
-  // KVO observing
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+  [self updateVisibleStateOfMainViews];
+  [self updateVisibleStateOfEditButton];
 }
+
+#pragma mark - Private helpers for view setup
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the placeholder view and the static label inside.
+// -----------------------------------------------------------------------------
+- (void) setupPlaceholderView
+{
+  self.placeholderView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.placeholderView];
+
+  // The following font size factors have been experimentally determined, i.e.
+  // what looks good to me on a simulator
+  CGFloat fontSizeFactor;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    fontSizeFactor = 1.5;
+  else
+    fontSizeFactor = 2.0;
+
+  UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  [self.placeholderView addSubview:label];
+  label.text = @"No archived games.";
+  label.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
+  label.textColor = [UIColor blackColor];
+  label.backgroundColor = [UIColor clearColor];
+  label.numberOfLines = 1;
+  label.textAlignment = NSTextAlignmentCenter;
+
+  self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
+                                               withSubview:self.placeholderView];
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility centerSubview:label inSuperview:self.placeholderView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the table view.
+// -----------------------------------------------------------------------------
+- (void) setupTableView
+{
+  self.tableView = [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped
+                               withDelegateAndDataSource:self];
+  [self.view addSubview:self.tableView];
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
+                                               withSubview:self.tableView];
+}
+
+#pragma mark - Private helpers for managing view visibility
+
+// -----------------------------------------------------------------------------
+/// @brief Makes either the placeholder view or the table view visible. The
+/// placeholder view is visible if there are no archived games to display.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleStateOfMainViews
+{
+  if (0 == self.archiveViewModel.gameCount)
+  {
+    self.placeholderView.hidden = NO;
+    self.tableView.hidden = YES;
+  }
+  else
+  {
+    self.placeholderView.hidden = YES;
+    self.tableView.hidden = NO;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Makes the edit button visible if the table view contains 1 or more
+/// rows. Hides the edit button if the table views contains no rows.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleStateOfEditButton
+{
+  // self.editButtonItem is a standard item provided by UIViewController, which
+  // is linked to triggering the view's edit mode
+  if (0 == self.archiveViewModel.gameCount)
+    self.navigationItem.rightBarButtonItem = nil;
+  else
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -114,8 +207,6 @@ enum DeleteAllSectionItem
   {
     case GamesSection:
     {
-      [self updateVisibleStateOfPlaceholderView];
-      [self updateVisibleStateOfEditButton];
       return self.archiveViewModel.gameCount;
     }
     case DeleteAllSection:
@@ -195,6 +286,8 @@ enum DeleteAllSectionItem
     [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -235,81 +328,21 @@ enum DeleteAllSectionItem
   }
 }
 
+#pragma mark - KVO responder
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  // Invocation of most of the UITableViewDataSource methods is delayed until
-  // the table is displayed 
+  [self updateVisibleStateOfMainViews];
+  [self updateVisibleStateOfEditButton];
+  // Debugging note: Invocation of most of the UITableViewDataSource methods is
+  // delayed until the table is displayed
   [self.tableView reloadData];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Sets up the placeholder view and the static label inside.
-// -----------------------------------------------------------------------------
-- (void) setupPlaceholderView
-{
-  self.placeholderView = [[[UIView alloc] initWithFrame:self.tableView.frame] autorelease];
-  [self.tableView addSubview:self.placeholderView];
-  self.placeholderView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-
-  NSString* labelText = @"No archived games.";
-  // The following font size factors have been experimentally determined, i.e.
-  // what looks good to me on a simulator
-  CGFloat fontSizeFactor;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    fontSizeFactor = 1.5;
-  else
-    fontSizeFactor = 2.0;
-  UIFont* labelFont = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-  CGSize labelSize = [labelText sizeWithFont:labelFont
-                           constrainedToSize:constraintSize
-                               lineBreakMode:NSLineBreakByWordWrapping];
-  CGRect labelFrame = CGRectNull;
-  labelFrame.size = labelSize;
-  // Horizontally center
-  labelFrame.origin.x = (self.placeholderView.bounds.size.width - labelSize.width) / 2;
-  // Vertically place label somewhere in the upper part of the view
-  labelFrame.origin.y = (self.placeholderView.bounds.size.height / 4);
-  UILabel* label = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
-  [self.placeholderView addSubview:label];
-  label.text = labelText;
-  label.font = labelFont;
-  label.textColor = [UIColor blackColor];
-  label.backgroundColor = [UIColor clearColor];
-  label.numberOfLines = 1;
-  label.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
-                            UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Makes the placeholder view visible if the table view does not contain
-/// any rows. Hides the placeholder view if the table views contains 1 or more
-/// rows.
-// -----------------------------------------------------------------------------
-- (void) updateVisibleStateOfPlaceholderView
-{
-  if (0 == self.archiveViewModel.gameCount)
-    self.placeholderView.hidden = NO;
-  else
-    self.placeholderView.hidden = YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Makes the edit button visible if the table view contains 1 or more
-/// rows. Hides the edit button if the table views contains no rows.
-// -----------------------------------------------------------------------------
-- (void) updateVisibleStateOfEditButton
-{
-  // self.editButtonItem is a standard item provided by UIViewController, which
-  // is linked to triggering the view's edit mode
-  if (0 == self.archiveViewModel.gameCount)
-    self.navigationItem.rightBarButtonItem = nil;
-  else
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Displays ViewGameController to allow the user to view and/or change
@@ -338,6 +371,8 @@ enum DeleteAllSectionItem
   [alert release];
 }
 
+#pragma mark - UIAlertViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIAlertViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -355,6 +390,8 @@ enum DeleteAllSectionItem
       [[[[DeleteGameCommand alloc] initWithGame:game] autorelease] submit];
     }
     [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+    [self updateVisibleStateOfMainViews];
+    [self updateVisibleStateOfEditButton];
     [self.tableView reloadData];
   }
 }
