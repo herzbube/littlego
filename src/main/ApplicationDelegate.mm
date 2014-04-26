@@ -64,6 +64,7 @@
 #import "../settings/SettingsViewController.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
+#import "../ui/AutoLayoutUtility.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 
@@ -651,6 +652,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.tabBarController = [[[MainTabBarController alloc] init] autorelease];
   self.window.rootViewController = self.tabBarController;
   [self.window addSubview:self.tabBarController.view];
+  self.tabBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.window withSubview:self.tabBarController.view];
 }
 
 // -----------------------------------------------------------------------------

@@ -24,6 +24,7 @@
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../ui/AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -132,22 +133,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.playViewController.view, @"playView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|[playView]|",
-                            @"V:|[playView]|",
-                            nil];
-  for (NSString* visualFormat in visualFormats)
-  {
-    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
-                                                                  options:0
-                                                                  metrics:nil
-                                                                    views:viewsDictionary];
-
-    [self.view addConstraints:constraint];
-  }
+  UIView* playView = self.playViewController.view;
+  playView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:playView];
 }
 
 // -----------------------------------------------------------------------------
@@ -155,7 +143,6 @@
 // -----------------------------------------------------------------------------
 - (void) configureViewObjects
 {
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.view.backgroundColor = [UIColor clearColor];
 
   self.scrollView.bouncesZoom = NO;

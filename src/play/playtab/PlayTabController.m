@@ -53,7 +53,6 @@
 - (void) loadView
 {
   self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
 @end

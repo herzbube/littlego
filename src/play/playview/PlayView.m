@@ -256,7 +256,6 @@
                        scrollView:(UIScrollView*)scrollView
                              axis:(enum CoordinateLabelAxis)axis
 {
-  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.backgroundColor = [UIColor clearColor];
   scrollView.userInteractionEnabled = NO;
   [scrollView addSubview:labelView];

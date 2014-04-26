@@ -190,6 +190,13 @@
 - (void) setupAutoLayoutConstraints
 {
   PlayView* playView = self.scrollViewController.playViewController.playView;
+
+  self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  playView.coordinateLabelsLetterViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  playView.coordinateLabelsNumberViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.navigationBarController.view, @"navigationBarView",
                                    self.scrollViewController.view, @"scrollView",

@@ -150,7 +150,6 @@
 {
   self.navigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.navigationBar;
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   UINavigationItem* navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
   [self.navigationBar pushNavigationItem:navigationItem animated:NO];

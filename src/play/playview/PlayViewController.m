@@ -68,7 +68,6 @@
   self.playView = [[[PlayView alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.playView;
   self.view.backgroundColor = [UIColor clearColor];
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   self.panGestureController.playView = self.playView;
   self.tapGestureController.playView = self.playView;
