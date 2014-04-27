@@ -651,9 +651,12 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   self.tabBarController = [[[MainTabBarController alloc] init] autorelease];
   self.window.rootViewController = self.tabBarController;
-  [self.window addSubview:self.tabBarController.view];
-  self.tabBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.window withSubview:self.tabBarController.view];
+  // UIWindow automatically adds the root VC's view as a subview to itself.
+  // It also manages the layout of that view, so there is no need to use
+  // Auto Layout and install constraints in UIWindow. In fact, doing so causes
+  // trouble later on during the application's lifetime, when VCs are dismissed
+  // after being presented modally. The problem is discussed here:
+  // http://stackoverflow.com/q/23313112/1054378
 }
 
 // -----------------------------------------------------------------------------
