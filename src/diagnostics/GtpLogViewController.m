@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #import "GtpLogModel.h"
 #import "SubmitGtpCommandViewController.h"
 #import "../main/ApplicationDelegate.h"
+#import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
@@ -31,6 +32,7 @@
 /// @brief Class extension with private properties for GtpLogViewController.
 // -----------------------------------------------------------------------------
 @interface GtpLogViewController()
+@property(nonatomic, retain) GtpLogModel* model;
 /// @brief The frontside view. Log items are represented by table view cells.
 @property(nonatomic, retain) UITableView* frontSideView;
 /// @brief The backside view. Log items are represented by raw text.
@@ -48,6 +50,8 @@
 
 @implementation GtpLogViewController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogViewController instance
 /// that loads its frontside and backside view from a .nib file.
@@ -56,7 +60,10 @@
 {
   GtpLogViewController* controller = [[GtpLogViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
+  {
     [controller autorelease];
+    controller.model = [ApplicationDelegate sharedDelegate].gtpLogModel;
+  }
   return controller;
 }
 
@@ -67,45 +74,33 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.model = nil;
+  self.frontSideView = nil;
+  self.backSideView = nil;
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  // Setup view hierarchy
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  self.frontSideView = [[[UITableView alloc] initWithFrame:mainViewFrame
-                                                     style:UITableViewStylePlain] autorelease];
-  self.backSideView = [[[UITextView alloc] initWithFrame:mainViewFrame] autorelease];
-
-  // Configure autoresizingMask properties for proper autorotation
-  UIViewAutoresizing autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.view.autoresizingMask = autoresizingMask;
-  self.frontSideView.autoresizingMask = autoresizingMask;
-  self.backSideView.autoresizingMask = autoresizingMask;
-
-  // Other configuration
-  self.backSideView.editable = false;
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  // The Auto Layout constraints we currently use for the frontside/backside
+  // views are possible only because of this setting
+  self.automaticallyAdjustsScrollViewInsets = NO;
+  [self setupFrontSideView];
+  [self setupBackSideView];
+  [self setupNavigationItem];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.model = delegate.gtpLogModel;
-
-  [self setupNavigationItem];
-  [self setupFrontSideView];
-  [self setupBackSideView];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(gtpLogContentChanged:)
@@ -118,72 +113,49 @@
 
   if (self.model.gtpLogViewFrontSideIsVisible)
   {
-    [self.view addSubview:self.frontSideView];
+    self.frontSideView.hidden = NO;
+    self.backSideView.hidden = YES;
     [self.frontSideView reloadData];
   }
   else
   {
-    [self.view addSubview:self.backSideView];
+    self.frontSideView.hidden = YES;
+    self.backSideView.hidden = NO;
     [self reloadBackSideView];
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Called by UIKit after the user interface has rotated.
-// -----------------------------------------------------------------------------
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-  // Adjust the frame of the view that is currently NOT visible. The main view
-  // has already been resized by the auto-rotation process, so we can take its
-  // frame as the reference.
-  if (self.model.gtpLogViewFrontSideIsVisible)
-    self.backSideView.frame = self.view.frame;
-  else
-    self.frontSideView.frame = self.view.frame;
-}
+#pragma mark - Setup frontside view
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of this controller's main view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
-// -----------------------------------------------------------------------------
-- (CGRect) mainViewFrame
-{
-  int mainViewX = 0;
-  int mainViewY = 0;
-  int mainViewWidth = [UiElementMetrics screenWidth];
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics navigationBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up the navigation item of this view controller.
-// -----------------------------------------------------------------------------
-- (void) setupNavigationItem
-{
-  UIBarButtonItem* composeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                                  target:self
-                                                                                  action:@selector(composeCommand:)] autorelease];
-  composeButton.style = UIBarButtonItemStyleBordered;
-  UIBarButtonItem* flipButton = [[[UIBarButtonItem alloc] initWithTitle:@"Flip"
-                                                                  style:UIBarButtonItemStyleBordered
-                                                                 target:self
-                                                                 action:@selector(flipView:)] autorelease];
-  NSMutableArray* buttons = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
-  [buttons addObject:composeButton];
-  [buttons addObject:flipButton];
-  self.navigationItem.rightBarButtonItems = buttons;
-
-  self.navigationItem.title = @"GTP Log";
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up the frontside view of this controller.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
 - (void) setupFrontSideView
+{
+  self.frontSideView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                     style:UITableViewStylePlain] autorelease];
+
+  [self.view addSubview:self.frontSideView];
+  [self setupFrontSideViewAutoLayoutConstraints];
+  [self configureFrontSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupFrontSideViewAutoLayoutConstraints
+{
+  self.frontSideView.translatesAutoresizingMaskIntoConstraints = NO;
+  // The frontside view is a scroll view. For the following constraint to work,
+  // self.automaticallyAdjustsScrollViewInsets must be set to NO.
+  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
+                                               withSubview:self.frontSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) configureFrontSideView
 {
   self.frontSideView.delegate = self;
   self.frontSideView.dataSource = self;
@@ -193,16 +165,63 @@
   self.updateScheduledByGtpLogContentChanged = false;
 }
 
+#pragma mark - Setup backside view
+
 // -----------------------------------------------------------------------------
-/// @brief Sets up the backside view of this controller.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
 - (void) setupBackSideView
 {
+  self.backSideView = [[[UITextView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.backSideView];
+  [self setupBackSideViewAutoLayoutConstraints];
+  [self configureBackSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupBackSideViewAutoLayoutConstraints
+{
+  self.backSideView.translatesAutoresizingMaskIntoConstraints = NO;
+  // The backside view is a scroll view. For the following constraint to work,
+  // self.automaticallyAdjustsScrollViewInsets must be set to NO.
+  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
+                                               withSubview:self.backSideView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) configureBackSideView
+{
+  self.backSideView.editable = false;
   UIFont* oldFont = self.backSideView.font;
   UIFont* newFont = [oldFont fontWithSize:oldFont.pointSize * 0.75];
-  self.backSideView.text = nil;
   self.backSideView.font = newFont;
+  self.backSideView.text = nil;
 }
+
+#pragma mark - Setup other view stuff
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the navigation item of this view controller.
+// -----------------------------------------------------------------------------
+- (void) setupNavigationItem
+{
+  self.navigationItem.title = @"GTP Log";
+  UIBarButtonItem* composeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                                  target:self
+                                                                                  action:@selector(composeCommand:)] autorelease];
+  composeButton.style = UIBarButtonItemStyleBordered;
+  UIBarButtonItem* flipButton = [[[UIBarButtonItem alloc] initWithTitle:@"Flip"
+                                                                  style:UIBarButtonItemStyleBordered
+                                                                 target:self
+                                                                 action:@selector(flipView:)] autorelease];
+  self.navigationItem.rightBarButtonItems = @[composeButton, flipButton];
+}
+
+#pragma mark - Managing content of backside view
 
 // -----------------------------------------------------------------------------
 /// @brief Reloads the content of the backside view of this controller.
@@ -274,6 +293,8 @@
   return [NSString stringWithFormat:@"%@\n%@\n\n", logItem.commandString, logItem.rawResponseString];
 }
 
+#pragma mark - UITableViewDataSource overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
@@ -337,6 +358,8 @@
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -345,6 +368,8 @@
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   [self viewLogItem:[self.model itemAtIndex:indexPath.row]];
 }
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #gtpLogContentChanged notification.
@@ -400,6 +425,8 @@
                             withRowAnimation:UITableViewRowAnimationNone];
 }
 
+#pragma mark - Scrolling frontside view
+
 // -----------------------------------------------------------------------------
 /// @brief Scrolls to the bottom of the frontside view.
 // -----------------------------------------------------------------------------
@@ -435,6 +462,8 @@
 //  [scrollView setContentOffset:contentOffset animated:YES];
 }
 
+#pragma mark - Flip between frontside and backside view
+
 // -----------------------------------------------------------------------------
 /// @brief Flips the main table view over to the raw log view, and vice versa.
 // -----------------------------------------------------------------------------
@@ -447,15 +476,15 @@
   if (flipToFrontSideView)
   {
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
-    [self.backSideView removeFromSuperview];
-    [self.view addSubview:self.frontSideView];
+    self.backSideView.hidden = YES;
+    self.frontSideView.hidden = NO;
   }
   else
   {
     [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
-    [self.frontSideView removeFromSuperview];
-    [self.view addSubview:self.backSideView];
-    // Content must be reloaded in
+    self.frontSideView.hidden = YES;
+    self.backSideView.hidden = NO;
+    // Content must be reloaded explicitly
     [self reloadBackSideView];
   }
   [UIView commitAnimations];
@@ -463,6 +492,8 @@
   // Remember which view is visible
   self.model.gtpLogViewFrontSideIsVisible = flipToFrontSideView;
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "compose" button in the navigation

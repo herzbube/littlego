@@ -694,7 +694,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [tabControllers addObject:helpTabController];
 
   NSString* diagnosticsTitleString = @"Diagnostics";
-  DiagnosticsViewController* diagnosticsViewController = [[[DiagnosticsViewController alloc] init] autorelease];
+  DiagnosticsViewController* diagnosticsViewController = [DiagnosticsViewController controller];
   diagnosticsViewController.title = diagnosticsTitleString;
   UINavigationController* diagnosticsTabController = [[[UINavigationController alloc] initWithRootViewController:diagnosticsViewController] autorelease];
   diagnosticsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:diagnosticsTitleString image:[UIImage imageNamed:diagnosticsTabIconResource] tag:TabTypeDiagnostics] autorelease];

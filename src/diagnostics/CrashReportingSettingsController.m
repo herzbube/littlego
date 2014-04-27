@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,6 +76,8 @@ enum ContactSectionItem
 
 @implementation CrashReportingSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a CrashReportingSettingsController
 /// instance of grouped style.
@@ -84,7 +86,10 @@ enum ContactSectionItem
 {
   CrashReportingSettingsController* controller = [[CrashReportingSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    controller.crashReportingModel = [ApplicationDelegate sharedDelegate].crashReportingModel;
+  }
   return controller;
 }
 
@@ -98,21 +103,19 @@ enum ContactSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.crashReportingModel = delegate.crashReportingModel;
-
   [self updateBackButtonVisibleState];
-
   self.title = @"Crash report settings";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -227,6 +230,8 @@ enum ContactSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -249,6 +254,8 @@ enum ContactSectionItem
     [editTextController release];
   }
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Collect crash data" switch. Writes
@@ -284,6 +291,8 @@ enum ContactSectionItem
   [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
 }
 
+#pragma mark - EditTextDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
@@ -311,6 +320,8 @@ enum ContactSectionItem
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the visible state of the back button.

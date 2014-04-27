@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,10 +21,19 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GtpCommandViewController.
+// -----------------------------------------------------------------------------
+@interface GtpCommandViewController()
+@property(nonatomic, retain) GtpCommandModel* model;
+@end
 
 
 @implementation GtpCommandViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpCommandViewController instance
@@ -34,7 +43,10 @@
 {
   GtpCommandViewController* controller = [[GtpCommandViewController alloc] initWithStyle:UITableViewStylePlain];
   if (controller)
+  {
     [controller autorelease];
+    controller.model = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+  }
   return controller;
 }
 
@@ -47,17 +59,14 @@
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.model = delegate.gtpCommandModel;
-
   [self setupNavigationItem];
 }
 
@@ -70,14 +79,11 @@
                                                                               target:self
                                                                               action:@selector(addCommand:)] autorelease];
   addButton.style = UIBarButtonItemStyleBordered;
-
-  NSMutableArray* buttons = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
-  [buttons addObject:self.editButtonItem];
-  [buttons addObject:addButton];
-  self.navigationItem.rightBarButtonItems = buttons;
-
+  self.navigationItem.rightBarButtonItems = @[self.editButtonItem, addButton];
   self.navigationItem.title = @"Commands";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -134,6 +140,8 @@
   [self.model moveCommandAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -142,6 +150,8 @@
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   [self editCommandAtIndex:indexPath.row];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Displays EditTextController to allow the user to add a new GTP
@@ -181,6 +191,8 @@
   [navigationController release];
   [editTextController release];
 }
+
+#pragma mark - EditTextDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method

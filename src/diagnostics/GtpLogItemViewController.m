@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,17 @@ enum ResponseStringSectionItem
 };
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GtpLogItemViewController.
+// -----------------------------------------------------------------------------
+@interface GtpLogItemViewController()
+@property(nonatomic, retain) GtpLogItem* logItem;
+@end
+
+
 @implementation GtpLogItemViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogItemViewController instance
@@ -91,9 +101,10 @@ enum ResponseStringSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
@@ -114,6 +125,8 @@ enum ResponseStringSectionItem
                                                name:gtpLogItemChanged
                                              object:nil];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -259,6 +272,8 @@ enum ResponseStringSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -278,6 +293,8 @@ enum ResponseStringSectionItem
          hasDisclosureIndicator:false];
 }
 
+#pragma mark - Notification responders
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #gtpLogItemChanged notification.
 // -----------------------------------------------------------------------------
@@ -286,6 +303,8 @@ enum ResponseStringSectionItem
   if (self.logItem == [notification object])
     [self.tableView reloadData];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "add" button in the navigation item.

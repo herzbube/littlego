@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@
 
 
 @implementation SendBugReportController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor.
@@ -80,6 +82,8 @@
   [super dealloc];
 }
 
+#pragma mark - Public API
+
 // -----------------------------------------------------------------------------
 /// @brief Triggers the "send bug report" process as described in the class
 /// documentation. @a aModalViewControllerParent is used to present the "mail
@@ -116,6 +120,8 @@
   [alert release];
   [self retain];  // must survive until the delegate method is invoked
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the device is configured for sending emails. Displays
@@ -207,6 +213,8 @@
   return [NSString stringWithFormat:bugReportMessageTemplateString, self.bugReportDescription, bugReportStepLines];
 }
 
+#pragma mark - MFMailComposeViewControllerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief MFMailComposeViewControllerDelegate method
 // -----------------------------------------------------------------------------
@@ -250,6 +258,8 @@
   [self notifyDelegate];
 }
 
+#pragma mark - UIAlertViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief Reacts to the user dismissing an alert view for which this controller
 /// is the delegate.
@@ -259,6 +269,8 @@
   [self autorelease];  // balance retain that is sent before an alert is shown
   [self notifyDelegate];
 }
+
+#pragma mark - Private helpers for UIAlertViewDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief Notifies the delegate that the process managed by this controller

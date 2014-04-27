@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,6 +76,8 @@ enum ResetCannedCommandsSectionItem
 
 @implementation GtpLogSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpLogSettingsController instance
 /// of grouped style.
@@ -84,7 +86,11 @@ enum ResetCannedCommandsSectionItem
 {
   GtpLogSettingsController* controller = [[GtpLogSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    controller.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
+    controller.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+  }
   return controller;
 }
 
@@ -98,17 +104,18 @@ enum ResetCannedCommandsSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
-  self.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
   self.navigationItem.title = @"GTP Settings";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -212,6 +219,8 @@ enum ResetCannedCommandsSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -235,6 +244,8 @@ enum ResetCannedCommandsSectionItem
   else if (ResetCannedCommandsSection == indexPath.section && ResetCannedCommandsItem == indexPath.row)
     [self.commandModel resetToFactorySettings];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to the user changing the GTP log size.

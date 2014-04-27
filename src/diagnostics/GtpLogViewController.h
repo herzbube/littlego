@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // -----------------------------------------------------------------------------
-
-
-// Forward declarations
-@class GtpLogModel;
 
 
 // -----------------------------------------------------------------------------
@@ -65,8 +61,8 @@
 ///     and all items currently in the log can be displayed on a single screen
 ///   - This also happens correctly if the user scrolls towards the end of the
 ///     log and the last item becomes visible
-/// - lastRowIsVisible also needs to be cleared when the user scrolls towards
-///   the top of the log and the last item is no longer visible
+/// - lastRowIsVisible needs to be cleared when the user scrolls towards the top
+///   of the log and the last item is no longer visible
 ///   - Here, things become a bit tricky because UITableView does not inform
 ///     its delegate (GtpLogViewController) when a cell goes off the screen.
 ///   - GtpLogViewController could tap into the UIScrollViewDelegate protocol
@@ -109,8 +105,5 @@
 }
 
 + (GtpLogViewController*) controller;
-
-/// @brief The model object
-@property(nonatomic, retain) GtpLogModel* model;
 
 @end

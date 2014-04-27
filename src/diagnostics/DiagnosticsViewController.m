@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,6 +94,20 @@ enum BugReportSectionItem
 
 @implementation DiagnosticsViewController
 
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a DiagnosticsViewController instance
+/// of grouped style.
+// -----------------------------------------------------------------------------
++ (DiagnosticsViewController*) controller
+{
+  DiagnosticsViewController* controller = [[DiagnosticsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+  if (controller)
+    [controller autorelease];
+  return controller;
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this DiagnosticsViewController
 /// object.
@@ -106,24 +120,10 @@ enum BugReportSectionItem
   [super dealloc];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
-///
-/// This implementation exists because this controller needs a grouped style
-/// table view, and there is no simpler way to specify the table view style.
-/// - This controller does not load its table view from a .nib file, so the
-///   style can't be specified there
-/// - This controller is itself loaded from a .nib file, so the style can't be
-///   specified in initWithStyle:()
-// -----------------------------------------------------------------------------
-- (void) loadView
-{
-  [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped forController:self];
-}
+#pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
@@ -140,6 +140,8 @@ enum BugReportSectionItem
   LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
   [loggingModel addObserver:self forKeyPath:@"loggingEnabled" options:0 context:NULL];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -309,6 +311,8 @@ enum BugReportSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -380,6 +384,8 @@ enum BugReportSectionItem
   }
 }
 
+#pragma mark - Action handlers
+
 // -----------------------------------------------------------------------------
 /// @brief Displays GtpLogViewController to allow the user to view the GTP
 /// command/response log.
@@ -441,6 +447,22 @@ enum BugReportSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Enable logging" switch. Writes the
+/// new value to the user defaults and immediately enables/disables logging.
+// -----------------------------------------------------------------------------
+- (void) toggleLoggingEnabled:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  self.ignoreLoggingEnabledModelUpdate = true;
+  appDelegate.loggingModel.loggingEnabled = accessoryView.on;
+  self.ignoreLoggingEnabledModelUpdate = false;
+  [appDelegate setupLogging];
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #computerPlayerThinkingStarts and
 /// #computerPlayerThinkingStops notifications.
 // -----------------------------------------------------------------------------
@@ -481,6 +503,8 @@ enum BugReportSectionItem
                           withRowAnimation:UITableViewRowAnimationNone];
   }
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Enables or disables the features in the "Send bug report" section,
@@ -540,20 +564,6 @@ enum BugReportSectionItem
       return true;
   }
   return false;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Enable logging" switch. Writes the
-/// new value to the user defaults and immediately enables/disables logging.
-// -----------------------------------------------------------------------------
-- (void) toggleLoggingEnabled:(id)sender
-{
-  UISwitch* accessoryView = (UISwitch*)sender;
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  self.ignoreLoggingEnabledModelUpdate = true;
-  appDelegate.loggingModel.loggingEnabled = accessoryView.on;
-  self.ignoreLoggingEnabledModelUpdate = false;
-  [appDelegate setupLogging];
 }
 
 @end

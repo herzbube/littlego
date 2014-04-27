@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@
 // Project includes
 #import "SubmitGtpCommandViewController.h"
 #import "GtpCommandModel.h"
+#import "../gtp/GtpCommand.h"
 #import "../main/ApplicationDelegate.h"
+#import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
-#import "../gtp/GtpCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,11 +33,15 @@
 /// SubmitGtpCommandViewController.
 // -----------------------------------------------------------------------------
 @interface SubmitGtpCommandViewController()
+@property(nonatomic, retain) GtpCommandModel* model;
 @property(nonatomic, retain) UITextField* textField;
+@property(nonatomic, retain) UITableView* tableView;
 @end
 
 
 @implementation SubmitGtpCommandViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a SubmitGtpCommandViewController
@@ -46,7 +51,10 @@
 {
   SubmitGtpCommandViewController* controller = [[SubmitGtpCommandViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
+  {
     [controller autorelease];
+    controller.model = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+  }
   return controller;
 }
 
@@ -57,30 +65,65 @@
 - (void) dealloc
 {
   self.model = nil;
+  self.textField = nil;
+  self.tableView = nil;
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  CGRect textFieldViewFrame = [self textFieldViewFrame];
-  self.textField = [[[UITextField alloc] initWithFrame:textFieldViewFrame] autorelease];
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
+  [self setupTextField];
+  [self setupTableView];
+  [self setupNavigationItem];
+
+  self.tableView.backgroundView = nil;
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+}
+
+#pragma mark - Setup text field
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupTextField
+{
+  self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.textField];
-  CGRect tableViewFrame = [self tableViewFrame];
-  UITableView* tableView = [[[UITableView alloc] initWithFrame:tableViewFrame style:UITableViewStyleGrouped] autorelease];
-  [self.view addSubview:tableView];
+  [self setupTextFieldAutoLayoutConstraints];
+  [self configureTextField];
+}
 
-  self.textField.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin);
-  tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupTextFieldAutoLayoutConstraints
+{
+  self.textField.translatesAutoresizingMaskIntoConstraints = NO;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.textField, @"textField",
+                                   self.topLayoutGuide, @"topLayoutGuide",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-5-[textField]-5-|",
+                            @"V:[topLayoutGuide]-[textField]",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
+}
 
-  self.textField.delegate = self;
-  tableView.delegate = self;
-  tableView.dataSource = self;
-
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) configureTextField
+{
   self.textField.placeholder = @"Enter new command, or select from the list";
   self.textField.borderStyle = UITextBorderStyleRoundedRect;
   self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -91,89 +134,69 @@
   self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
   self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
 
-  tableView.backgroundView = nil;
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  self.textField.delegate = self;
 }
 
+#pragma mark - Setup text view
+
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of this controller's main view, taking into
-/// account the current interface orientation. Assumes that super views have
-/// the correct bounds.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
-- (CGRect) mainViewFrame
+- (void) setupTableView
 {
-  int mainViewX = 0;
-  int mainViewY = 0;
-  int mainViewWidth = [UiElementMetrics screenWidth];
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics navigationBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
+  self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                 style:UITableViewStylePlain] autorelease];
+  [self.view addSubview:self.tableView];
+  [self setupTableViewAutoLayoutConstraints];
+  [self configureTableView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the text field view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
-- (CGRect) textFieldViewFrame
+- (void) setupTableViewAutoLayoutConstraints
 {
-  CGSize superViewSize = self.view.bounds.size;
-  int textFieldViewX = [UiElementMetrics viewMarginHorizontal];
-  int textFieldViewY = [UiElementMetrics viewMarginVertical];
-  int textFieldViewWidth = superViewSize.width - 2 * [UiElementMetrics viewMarginHorizontal];
-  int textFieldViewHeight = [UiElementMetrics textFieldHeight];
-  return CGRectMake(textFieldViewX, textFieldViewY, textFieldViewWidth, textFieldViewHeight);
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.textField, @"textField",
+                                   self.tableView, @"tableView",
+                                   self.bottomLayoutGuide, @"bottomLayoutGuide",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|[tableView]|",
+                            @"V:[textField]-[tableView]-0-[bottomLayoutGuide]",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the table view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
-- (CGRect) tableViewFrame
+- (void) configureTableView
 {
-  CGSize superViewSize = self.view.bounds.size;
-  int tableViewX = 0;
-  int tableViewY = ([UiElementMetrics viewMarginVertical]
-                    + self.textField.bounds.size.height
-                    + [UiElementMetrics spacingVertical]);
-  int tableViewWidth = superViewSize.width;
-  int tableViewHeight = (superViewSize.height
-                         - tableViewY
-                         - [UiElementMetrics viewMarginHorizontal]);
-  return CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
+  self.tableView.delegate = self;
+  self.tableView.dataSource = self;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-// -----------------------------------------------------------------------------
-- (void) viewDidLoad
-{
-  [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.model = delegate.gtpCommandModel;
-
-  [self setupNavigationItem];
-}
+#pragma mark - Setup other view stuff
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the navigation item of this view controller.
+/// @brief Private helper
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
 {
+  self.navigationItem.title = @"New command";
   UIBarButtonItem* submitButton = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
                                                                     style:UIBarButtonItemStyleBordered
                                                                    target:self
                                                                    action:@selector(submitCommand:)] autorelease];
   self.navigationItem.rightBarButtonItem = submitButton;
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
-
-  self.navigationItem.title = @"New command";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -201,6 +224,8 @@
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -210,6 +235,8 @@
   self.textField.text = [self.model commandStringAtIndex:indexPath.row];
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
 }
+
+#pragma mark - UITextFieldDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITextFieldDelegate protocol method.
@@ -250,6 +277,8 @@
   return YES;
 }
 
+#pragma mark - Action handlers
+
 // -----------------------------------------------------------------------------
 /// @brief Submits a GTP command using the text entered by the user as the
 /// command text.
@@ -261,6 +290,8 @@
   [command submit];
   [self.navigationController popViewControllerAnimated:YES];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if @a text is acceptable as valid input.
