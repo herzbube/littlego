@@ -37,5 +37,9 @@
 + (void) installVisualFormats:(NSArray*)visualFormats
                     withViews:(NSDictionary*)viewsDictionary
                        inView:(UIView*)view;
++ (CGFloat) horizontalSpacingSiblings;
++ (CGFloat) verticalSpacingSiblings;
++ (CGFloat) horizontalSpacingSuperview;
++ (CGFloat) verticalSpacingSuperview;
 
 @end

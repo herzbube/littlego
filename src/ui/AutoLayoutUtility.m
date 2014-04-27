@@ -114,13 +114,89 @@
 {
   for (NSString* visualFormat in visualFormats)
   {
-    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
-                                                                  options:0
-                                                                  metrics:nil
-                                                                    views:viewsDictionary];
+    NSArray* constraints = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                   options:0
+                                                                   metrics:nil
+                                                                     views:viewsDictionary];
 
-    [view addConstraints:constraint];
+    [view addConstraints:constraints];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the value used by Auto Layout as the default horizontal
+/// spacing between sibling views. Example visual format string:
+/// @"H:[view]-[view]"
+// -----------------------------------------------------------------------------
++ (CGFloat) horizontalSpacingSiblings
+{
+  static CGFloat horizontalSpacingSiblings = -1.0f;
+  if (horizontalSpacingSiblings < 0.0f)
+    horizontalSpacingSiblings = [AutoLayoutUtility spacingForVisualFormatConstraint:@"H:[view]-[view]"];
+  return horizontalSpacingSiblings;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the value used by Auto Layout as the default vertical spacing
+/// between sibling views. Example visual format string: @"V:[view]-[view]"
+// -----------------------------------------------------------------------------
++ (CGFloat) verticalSpacingSiblings
+{
+  static CGFloat verticalSpacingSiblings = -1.0f;
+  if (verticalSpacingSiblings < 0.0f)
+    verticalSpacingSiblings = [AutoLayoutUtility spacingForVisualFormatConstraint:@"V:[view]-[view]"];
+  return verticalSpacingSiblings;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the value used by Auto Layout as the default horizontal
+/// spacing between a view and its superview. Example visual format string:
+/// @"H:|-[view]"
+// -----------------------------------------------------------------------------
++ (CGFloat) horizontalSpacingSuperview
+{
+  static CGFloat horizontalSpacingSuperview = -1.0f;
+  if (horizontalSpacingSuperview < 0.0f)
+    horizontalSpacingSuperview = [AutoLayoutUtility spacingForVisualFormatConstraint:@"H:|-[view]"];
+  return horizontalSpacingSuperview;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the value used by Auto Layout as the default vertical spacing
+/// between a view and its superview. Example visual format string:
+/// @"V:|-[view]"
+// -----------------------------------------------------------------------------
++ (CGFloat) verticalSpacingSuperview
+{
+  static CGFloat verticalSpacingSuperview = -1.0f;
+  if (verticalSpacingSuperview < 0.0f)
+    verticalSpacingSuperview = [AutoLayoutUtility spacingForVisualFormatConstraint:@"V:|-[view]"];
+  return verticalSpacingSuperview;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for the various horizontalSpacing* and
+/// verticalSpacing* class methods.
+///
+/// @a visualFormat must describe a single relationship between two elements:
+/// Either a view and its superview, or a view and a sibling view. The view
+/// element(s) must always be named "view". Examples:
+/// - View/superview relationship: "H:|-[view]"
+/// - View/view relationship: "V:[view]-[view]"
+///
+/// The return value denotes the spacing between the two related elements.
+// -----------------------------------------------------------------------------
++ (CGFloat) spacingForVisualFormatConstraint:(NSString*)visualFormat
+{
+  UIView* superview = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  UIView* view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [superview addSubview:view];
+  NSArray* constraints = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                 options:0
+                                                                 metrics:nil
+                                                                   views:NSDictionaryOfVariableBindings(view)];
+  NSLayoutConstraint* constraint = constraints[0];
+  return constraint.constant;
 }
 
 @end
