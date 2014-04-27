@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ enum EditTextControllerStyle
 // -----------------------------------------------------------------------------
 @protocol EditTextDelegate
 /// @brief Asks the delegate if editing should end using @a text as the result.
+/// This method is invoked when the user taps the "done" button.
 ///
 /// The delegate should return true if @a text is acceptable, false if not.
 /// If the delegate returns false, it should display an alert prior to returning
@@ -43,10 +44,16 @@ enum EditTextControllerStyle
 /// displayed, the user will have no feedback why tapping the "done" button
 /// has no effect.
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
-/// @brief This method is invoked when the user has finished editing the text.
+/// @brief Notifies the delegate that the editing session has ended. This method
+/// is invoked when the user taps either the "done" or the "cancel" button (in
+/// the former case, this method is invoked only if the delegate returns true
+/// for controller:shouldEndEditingWithText:()).
 ///
 /// @a didCancel is true if the user has cancelled editing. @a didCancel is
 /// false if the user has confirmed editing.
+///
+/// The delegate should dismiss the EditTextController in response to this
+/// method invocation.
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 @end
 
@@ -55,14 +62,15 @@ enum EditTextControllerStyle
 /// @brief The EditTextController class is responsible for displaying an
 /// "Edit Text" view that allows the user to edit a text string.
 ///
-/// The "Edit Text" view is a generic UITableView whose input elements are
-/// created dynamically by EditTextController. The elements are
+/// The "Edit Text" view consists of the following input elements:
 /// - Either a UITextField or a UITextView that allows the user to enter a text
 ///   (initializing the EditTextController instance with an
 ///   #EditTextControllerStyle specifies which input element should be used)
-/// - A "cancel" button used to end editing without changes
+/// - A "cancel" button used to end editing without changes. This button is
+///   placed in the navigation item of EditTextController.
 /// - A "done" button used to end editing, using the currently entered text as
-///   the result
+///   the result. This button is placed in the navigation item of
+///   EditTextController.
 ///
 /// EditTextController expects to be displayed modally by a navigation
 /// controller. For this reason it populates its own navigation item with
