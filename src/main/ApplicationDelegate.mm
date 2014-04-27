@@ -669,7 +669,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [tabControllers addObject:playTabController];
 
   NSString* settingsTitleString = @"Settings";
-  SettingsViewController* settingsViewController = [[[SettingsViewController alloc] init] autorelease];
+  SettingsViewController* settingsViewController = [SettingsViewController controller];
   settingsViewController.title = settingsTitleString;
   UINavigationController* settingsTabController = [[[UINavigationController alloc] initWithRootViewController:settingsViewController] autorelease];
   settingsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:settingsTitleString image:[UIImage imageNamed:settingsTabIconResource] tag:TabTypeSettings] autorelease];

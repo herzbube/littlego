@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ enum FeedbackSectionItem
 
 @implementation SoundSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a SoundSettingsController instance
 /// of grouped style.
@@ -62,7 +64,10 @@ enum FeedbackSectionItem
 {
   SoundSettingsController* controller = [[SoundSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  }
   return controller;
 }
 
@@ -75,17 +80,18 @@ enum FeedbackSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.playViewModel = delegate.playViewModel;
   self.title = @"Sound & Vibration";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -166,6 +172,8 @@ enum FeedbackSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -173,6 +181,8 @@ enum FeedbackSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Play Sound" switch. Writes the new

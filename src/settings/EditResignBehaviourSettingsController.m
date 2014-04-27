@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,6 +83,8 @@ enum ResignMinGamesCategory
 
 @implementation EditResignBehaviourSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a EditResignBehaviourSettingsController object.
 ///
@@ -111,6 +113,8 @@ enum ResignMinGamesCategory
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -119,6 +123,8 @@ enum ResignMinGamesCategory
   [super viewDidLoad];
   self.navigationItem.title = @"Resign behaviour";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -261,6 +267,8 @@ enum ResignMinGamesCategory
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -324,6 +332,8 @@ enum ResignMinGamesCategory
   }
 }
 
+#pragma mark - SliderInputDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief SliderInputDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -342,6 +352,8 @@ enum ResignMinGamesCategory
                           withRowAnimation:UITableViewRowAnimationNone];
   }
 }
+
+#pragma mark - ItemPickerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief ItemPickerDelegate protocol method.
@@ -364,6 +376,8 @@ enum ResignMinGamesCategory
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - UIActionSheetDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief Reacts to the user selecting an action from the action sheet
 /// displayed when the "Reset to default values" button was tapped.
@@ -381,6 +395,8 @@ enum ResignMinGamesCategory
   }
 }
 
+#pragma mark - Action handlers
+
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Ponder" switch. Updates the profile
 /// object with the new value.
@@ -397,6 +413,8 @@ enum ResignMinGamesCategory
   [self.tableView reloadRowsAtIndexPaths:indexPaths
                         withRowAnimation:UITableViewRowAnimationNone];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a natural number corresponding to the enumeration value

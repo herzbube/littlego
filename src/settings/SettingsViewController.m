@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@
 // Project includes
 #import "SettingsViewController.h"
 #import "BoardPositionSettingsController.h"
+#import "DisplaySettingsController.h"
 #import "PlayerProfileSettingsController.h"
-#import "PlayViewSettingsController.h"
 #import "ScoringSettingsController.h"
 #import "SoundSettingsController.h"
 #import "TouchSettingsController.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -71,28 +70,21 @@ enum PlayersProfilesSectionItem
 
 @implementation SettingsViewController
 
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this SettingsViewController object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  [super dealloc];
-}
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
-///
-/// This implementation exists because this controller needs a grouped style
-/// table view, and there is no simpler way to specify the table view style.
-/// - This controller does not load its table view from a .nib file, so the
-///   style can't be specified there
-/// - This controller is itself loaded from a .nib file, so the style can't be
-///   specified in initWithStyle:()
+/// @brief Convenience constructor. Creates a SettingsViewController instance of
+/// grouped style.
 // -----------------------------------------------------------------------------
-- (void) loadView
++ (SettingsViewController*) controller
 {
-  [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped forController:self];
+  SettingsViewController* controller = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+  if (controller)
+    [controller autorelease];
+  return controller;
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -184,6 +176,8 @@ enum PlayersProfilesSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -200,7 +194,7 @@ enum PlayersProfilesSectionItem
       {
         case PlayViewSettingsItem:
         {
-          controller = [PlayViewSettingsController controller];
+          controller = [DisplaySettingsController controller];
           break;
         }
         case BoardPositionSettingsItem:

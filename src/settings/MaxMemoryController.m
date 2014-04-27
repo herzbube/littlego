@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,6 +64,8 @@ enum PhysicalMemorySectionItem
 
 @implementation MaxMemoryController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a MaxMemoryController object.
 ///
@@ -92,6 +94,8 @@ enum PhysicalMemorySectionItem
   return self;
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -106,6 +110,8 @@ enum PhysicalMemorySectionItem
                                                                                           target:self
                                                                                           action:@selector(done:)] autorelease];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -184,6 +190,8 @@ enum PhysicalMemorySectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -204,6 +212,8 @@ enum PhysicalMemorySectionItem
   }
   return height;
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user did select a value.
@@ -239,6 +249,8 @@ enum PhysicalMemorySectionItem
   [self.delegate didEndEditing:self didCancel:true];
 }
 
+#pragma mark - UIAlertViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIAlertViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -250,6 +262,8 @@ enum PhysicalMemorySectionItem
     [self.delegate didEndEditing:self didCancel:false];
   }
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.

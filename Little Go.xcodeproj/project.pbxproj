@@ -368,7 +368,7 @@
 		CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
-		CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
+		CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* DisplaySettingsController.m */; };
 		CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDE022D9155731740052ACE0 /* appicon-ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDE022D6155731740052ACE0 /* appicon-ipad.png */; };
@@ -459,7 +459,7 @@
 		CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
 		CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
 		CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
-		CDFD9F7218F1D3700031CBCF /* PlayViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* PlayViewSettingsController.m */; };
+		CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* DisplaySettingsController.m */; };
 		CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
 		CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
@@ -867,8 +867,8 @@
 		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
 		CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerProfileSettingsController.h; sourceTree = "<group>"; };
 		CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerProfileSettingsController.m; sourceTree = "<group>"; };
-		CDDD525E14840A530027476B /* PlayViewSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewSettingsController.h; sourceTree = "<group>"; };
-		CDDD525F14840A530027476B /* PlayViewSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewSettingsController.m; sourceTree = "<group>"; };
+		CDDD525E14840A530027476B /* DisplaySettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplaySettingsController.h; sourceTree = "<group>"; };
+		CDDD525F14840A530027476B /* DisplaySettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplaySettingsController.m; sourceTree = "<group>"; };
 		CDDD526014840A530027476B /* ScoringSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringSettingsController.h; sourceTree = "<group>"; };
 		CDDD526114840A540027476B /* ScoringSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringSettingsController.m; sourceTree = "<group>"; };
 		CDDD52681485B05B0027476B /* DocumentGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentGenerator.h; sourceTree = "<group>"; };
@@ -1334,8 +1334,8 @@
 				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
 				CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */,
-				CDDD525E14840A530027476B /* PlayViewSettingsController.h */,
-				CDDD525F14840A530027476B /* PlayViewSettingsController.m */,
+				CDDD525E14840A530027476B /* DisplaySettingsController.h */,
+				CDDD525F14840A530027476B /* DisplaySettingsController.m */,
 				CDDD526014840A530027476B /* ScoringSettingsController.h */,
 				CDDD526114840A540027476B /* ScoringSettingsController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
@@ -2211,7 +2211,7 @@
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
-				CDDD526314840A540027476B /* PlayViewSettingsController.m in Sources */,
+				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */,
@@ -2435,7 +2435,7 @@
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
-				CDFD9F7218F1D3700031CBCF /* PlayViewSettingsController.m in Sources */,
+				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,

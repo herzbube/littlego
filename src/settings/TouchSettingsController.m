@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,6 +68,8 @@ enum ZoomSectionItem
 
 @implementation TouchSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TouchSettingsController instance
 /// of grouped style.
@@ -76,7 +78,10 @@ enum ZoomSectionItem
 {
   TouchSettingsController* controller = [[TouchSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  }
   return controller;
 }
 
@@ -89,17 +94,18 @@ enum ZoomSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.playViewModel = delegate.playViewModel;
   self.title = @"Touch interaction";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -220,6 +226,8 @@ enum ZoomSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -267,6 +275,8 @@ enum ZoomSectionItem
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to the user changing the "stone distance from fingertip"

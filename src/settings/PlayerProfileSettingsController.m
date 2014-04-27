@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,6 +82,8 @@ enum ResetToDefaultsSectionItem
 
 @implementation PlayerProfileSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a PlayerProfileSettingsController
 /// instance of grouped style.
@@ -90,7 +92,13 @@ enum ResetToDefaultsSectionItem
 {
   PlayerProfileSettingsController* controller = [[PlayerProfileSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
+    controller.playerModel = delegate.playerModel;
+    controller.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
+    [controller setupNotificationResponders];
+  }
   return controller;
 }
 
@@ -105,6 +113,8 @@ enum ResetToDefaultsSectionItem
   self.gtpEngineProfileModel = nil;
   [super dealloc];
 }
+
+#pragma mark - Setup/remove notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
@@ -150,29 +160,24 @@ enum ResetToDefaultsSectionItem
   [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.playerModel = delegate.playerModel;
-  self.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
-
   self.title = @"Players & Profiles";
-  
   // self.editButtonItem is a standard item provided by UIViewController, which
   // is linked to triggering the view's edit mode
   self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
-  [self setupNotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called when the user taps the edit/done button.
+/// @brief UIViewController method.
+///
+/// This is called when the user taps the edit/done button.
 ///
 /// We override this so that we can add rows to the table view for adding new
 /// players and GTP engine profiles (or remove those rows again when editing
@@ -188,6 +193,8 @@ enum ResetToDefaultsSectionItem
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
   [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -421,6 +428,8 @@ enum ResetToDefaultsSectionItem
   }
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -516,6 +525,8 @@ enum ResetToDefaultsSectionItem
   return UITableViewCellEditingStyleNone;
 }
 
+#pragma mark - Create new player
+
 // -----------------------------------------------------------------------------
 /// @brief Displays EditPlayerController to gather information required to
 /// create a new player.
@@ -538,6 +549,8 @@ enum ResetToDefaultsSectionItem
   [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationTop];  
 }
+
+#pragma mark - Edit existing player
 
 // -----------------------------------------------------------------------------
 /// @brief Displays EditPlayerController to allow the user to change player
@@ -571,6 +584,8 @@ enum ResetToDefaultsSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - Create new profile
+
 // -----------------------------------------------------------------------------
 /// @brief Displays EditGtpEngineProfileController to gather information
 /// required to create a new GtpEngineProfile.
@@ -593,6 +608,8 @@ enum ResetToDefaultsSectionItem
   [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationTop];  
 }
+
+#pragma mark - Edit existing profile
 
 // -----------------------------------------------------------------------------
 /// @brief Displays EditGtpEngineProfileController to allow the user to change
@@ -625,6 +642,8 @@ enum ResetToDefaultsSectionItem
 {
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
@@ -705,6 +724,8 @@ enum ResetToDefaultsSectionItem
   }
 }
 
+#pragma mark - UIAlertViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIAlertViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -739,6 +760,8 @@ enum ResetToDefaultsSectionItem
     }
   }
 }
+
+#pragma mark - Reset to defaults
 
 // -----------------------------------------------------------------------------
 /// @brief Resets all players and profiles to their factory defaults. Also

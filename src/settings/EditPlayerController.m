@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,6 +70,8 @@ enum GtpEngineProfileSectionItem
 
 @implementation EditPlayerController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an EditPlayerController instance of
 /// grouped style that is used to edit the attributes of @a player.
@@ -115,16 +117,14 @@ enum GtpEngineProfileSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  assert(self.delegate != nil);
-
   if (self.playerExists)
   {
     self.navigationItem.title = @"Edit Player";
@@ -151,6 +151,8 @@ enum GtpEngineProfileSectionItem
     self.navigationItem.rightBarButtonItem.enabled = [self isPlayerValid];
   }
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -278,6 +280,8 @@ enum GtpEngineProfileSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -351,6 +355,8 @@ enum GtpEngineProfileSectionItem
   }
 }
 
+#pragma mark - EditTextDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
@@ -387,6 +393,8 @@ enum GtpEngineProfileSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - EditGtpEngineProfileDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditGtpEngineProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -396,6 +404,37 @@ enum GtpEngineProfileSectionItem
   [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationNone];
 }
+
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+    {
+      GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+      GtpEngineProfile* newProfile = [[model profileList] objectAtIndex:controller.indexOfSelectedItem];
+      self.player.gtpEngineProfileUUID = newProfile.uuid;
+
+      NSUInteger sectionIndex = GtpEngineProfileSection;
+      NSUInteger rowIndex = GtpEngineProfileItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+      [self.tableView reloadRowsAtIndexPaths:indexPaths
+                            withRowAnimation:UITableViewRowAnimationNone];
+
+      if ([GtpUtilities playerProvidingActiveProfile] == self.player)
+        [GtpUtilities setupComputerPlayer];
+    }
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user wants to create a new player object using the
@@ -441,6 +480,8 @@ enum GtpEngineProfileSectionItem
   [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
 }
 
+#pragma mark - Private helpers
+
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the current Player object contains valid data so that
 /// editing can safely be stopped.
@@ -448,33 +489,6 @@ enum GtpEngineProfileSectionItem
 - (bool) isPlayerValid
 {
   return (self.player.name.length > 0);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemPickerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
-{
-  if (didMakeSelection)
-  {
-    if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
-    {
-      GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-      GtpEngineProfile* newProfile = [[model profileList] objectAtIndex:controller.indexOfSelectedItem];
-      self.player.gtpEngineProfileUUID = newProfile.uuid;
-
-      NSUInteger sectionIndex = GtpEngineProfileSection;
-      NSUInteger rowIndex = GtpEngineProfileItem;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
-      NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
-      [self.tableView reloadRowsAtIndexPaths:indexPaths
-                            withRowAnimation:UITableViewRowAnimationNone];
-
-      if ([GtpUtilities playerProvidingActiveProfile] == self.player)
-        [GtpUtilities setupComputerPlayer];
-    }
-  }
-  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

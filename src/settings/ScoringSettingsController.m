@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,6 +89,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 
 @implementation ScoringSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a ScoringSettingsController instance
 /// of grouped style.
@@ -97,7 +99,10 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 {
   ScoringSettingsController* controller = [[ScoringSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
     [controller autorelease];
+    controller.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+  }
   return controller;
 }
 
@@ -111,19 +116,18 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.scoringModel = delegate.scoringModel;
-  
   self.title = @"Scoring settings";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -233,6 +237,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -281,6 +287,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
     }
   }
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Score when game ends" switch. Writes
@@ -334,6 +342,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   [navigationController release];
 }
 
+#pragma mark - ItemPickerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief ItemPickerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -351,6 +361,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a short string for @a markupType that is suitable for display

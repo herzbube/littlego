@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,10 +60,10 @@
 ///   cannot be undone, they are immediately written to the Player model object.
 ///
 /// EditPlayerController expects to be displayed by a navigation controller,
-/// either presented modally or pushed on the controller's navigation stack. For
-/// this reason it populates its own navigation item with controls that are
-/// then expected to be displayed in the navigation bar of the parent
-/// navigation controller.
+/// either presented modally (create mode) or pushed on the controller's
+/// navigation stack (edit mode). For this reason it populates its own
+/// navigation item with controls that are then expected to be displayed in the
+/// navigation bar of the parent navigation controller.
 ///
 /// EditPlayerController expects to be configured with a delegate that can be
 /// informed when the user makes any changes. For this to work, the delegate

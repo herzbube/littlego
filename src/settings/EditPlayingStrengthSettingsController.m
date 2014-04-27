@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -127,6 +127,8 @@ enum MaxGamesCategory
 
 @implementation EditPlayingStrengthSettingsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an
 /// EditPlayingStrengthSettingsController instance of grouped style that is
@@ -156,16 +158,18 @@ enum MaxGamesCategory
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
   self.navigationItem.title = @"Playing strength";
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -326,6 +330,8 @@ enum MaxGamesCategory
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -423,8 +429,10 @@ enum MaxGamesCategory
   }
 }
 
+#pragma mark - MaxMemoryControllerDelegate overrides
+
 // -----------------------------------------------------------------------------
-/// @brief MaxMemoryController protocol method.
+/// @brief MaxMemoryControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) didEndEditing:(MaxMemoryController*)maxMemoryController didCancel:(bool)didCancel;
 {
@@ -440,6 +448,8 @@ enum MaxGamesCategory
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - ItemPickerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief ItemPickerDelegate protocol method.
@@ -465,9 +475,10 @@ enum MaxGamesCategory
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - UIActionSheetDelegate overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user selecting an action from the action sheet
-/// displayed when the "Reset to default values" button was tapped.
+/// @brief UIActionSheetDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -478,6 +489,8 @@ enum MaxGamesCategory
     [self.tableView reloadData];
   }
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Ponder" switch. Updates the profile
@@ -548,6 +561,8 @@ enum MaxGamesCategory
 
   [self.delegate didChangeProfile:self];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a natural number corresponding to the enumeration value

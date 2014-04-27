@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewSettingsController class is responsible for managing user
-/// interaction on the "Play View" user preferences view.
+/// @brief The DisplaySettingsController class is responsible for managing user
+/// interaction on the "Display" user preferences view.
 // -----------------------------------------------------------------------------
-@interface PlayViewSettingsController : UITableViewController
+@interface DisplaySettingsController : UITableViewController
 {
 }
 
-+ (PlayViewSettingsController*) controller;
++ (DisplaySettingsController*) controller;
 
 @end

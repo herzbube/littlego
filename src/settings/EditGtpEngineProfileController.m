@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,6 +99,8 @@ enum PlayerListSectionItem
 
 @implementation EditGtpEngineProfileController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a EditGtpEngineProfileController
 /// instance of grouped style that is used to edit @a profile.
@@ -112,6 +114,7 @@ enum PlayerListSectionItem
     controller.delegate = delegate;
     controller.profile = profile;
     controller.profileExists = true;
+    [controller setupPlayersUsingTheProfile];
   }
   return controller;
 }
@@ -131,6 +134,7 @@ enum PlayerListSectionItem
     controller.profile = [[[GtpEngineProfile alloc] init] autorelease];
     controller.profile.playingStrength = defaultPlayingStrength;
     controller.profileExists = false;
+    [controller setupPlayersUsingTheProfile];
   }
   return controller;
 }
@@ -147,13 +151,32 @@ enum PlayerListSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief Populates the private property @e playersUsingTheProfile. Is expected
+/// to be invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupPlayersUsingTheProfile
+{
+  NSMutableArray* playersUsingTheProfile = [NSMutableArray array];
+  if (self.profileExists)
+  {
+    PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+    for (Player* player in model.playerList)
+    {
+      if ([player gtpEngineProfile] == self.profile)
+        [playersUsingTheProfile addObject:player.name];
+    }
+  }
+  self.playersUsingTheProfile = playersUsingTheProfile;
+}
+
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  [self updatePlayersUsingTheProfile];
   if (self.profileExists)
   {
     self.navigationItem.title = @"Edit Profile";
@@ -184,24 +207,6 @@ enum PlayerListSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) updatePlayersUsingTheProfile
-{
-  NSMutableArray* playersUsingTheProfile = [NSMutableArray array];
-  if (self.profileExists)
-  {
-    PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
-    for (Player* player in model.playerList)
-    {
-      if ([player gtpEngineProfile] == self.profile)
-        [playersUsingTheProfile addObject:player.name];
-    }
-  }
-  self.playersUsingTheProfile = playersUsingTheProfile;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewWillDisappear:(BOOL)animated
@@ -210,6 +215,8 @@ enum PlayerListSectionItem
   if (self.profile.isActiveProfile && self.profile.hasUnappliedChanges)
     [self.profile applyProfile];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -406,6 +413,8 @@ enum PlayerListSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -556,6 +565,8 @@ enum PlayerListSectionItem
   }
 }
 
+#pragma mark - EditTextDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
@@ -617,6 +628,8 @@ enum PlayerListSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - ItemPickerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief ItemPickerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -647,6 +660,8 @@ enum PlayerListSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - EditPlayingStrengthSettingsDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditPlayingStrengthSettingsDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -660,6 +675,8 @@ enum PlayerListSectionItem
                         withRowAnimation:UITableViewRowAnimationNone];
 }
 
+#pragma mark - EditResignBehaviourSettingsController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditResignBehaviourSettingsController protocol method.
 // -----------------------------------------------------------------------------
@@ -672,6 +689,8 @@ enum PlayerListSectionItem
   [self.tableView reloadRowsAtIndexPaths:indexPaths
                         withRowAnimation:UITableViewRowAnimationNone];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user wants to create a new profile object using the
@@ -695,6 +714,8 @@ enum PlayerListSectionItem
   if ([self.delegate respondsToSelector:@selector(didEditProfile:)])
     [self.delegate didEditProfile:self];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the current profile object contains valid data so
