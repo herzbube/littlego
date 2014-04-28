@@ -21,7 +21,6 @@
 #import "../play/model/PlayViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
-#import "../ui/UiUtilities.h"
 
 // Constants
 static const float sliderValueFactorForMaximumZoomScale = 10.0;

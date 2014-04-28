@@ -19,7 +19,6 @@
 #import "MaxMemoryController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
-#import "../ui/UiUtilities.h"
 #import "../utility/UIDeviceAdditions.h"
 
 

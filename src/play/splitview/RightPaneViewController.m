@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@
 #import "../playview/PlayViewController.h"
 #import "../playview/ScrollViewController.h"
 #import "../../ui/UiElementMetrics.h"
-#import "../../ui/UiUtilities.h"
 
 
 @implementation RightPaneViewController

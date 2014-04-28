@@ -27,7 +27,6 @@
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------

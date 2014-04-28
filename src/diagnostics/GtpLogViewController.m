@@ -25,7 +25,6 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -53,8 +52,7 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GtpLogViewController instance
-/// that loads its frontside and backside view from a .nib file.
+/// @brief Convenience constructor.
 // -----------------------------------------------------------------------------
 + (GtpLogViewController*) controller
 {

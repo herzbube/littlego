@@ -35,7 +35,6 @@
 #import "../../utility/NSStringAdditions.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewSegmentedCell.h"
-#import "../../ui/UiUtilities.h"
 #import "../../ui/UiElementMetrics.h"
 
 

@@ -19,7 +19,6 @@
 #import "SendBugReportController.h"
 #import "../command/diagnostics/GenerateDiagnosticsInformationFileCommand.h"
 #import "../main/ApplicationDelegate.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
