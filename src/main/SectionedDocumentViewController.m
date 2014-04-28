@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #import "MainTabBarController.h"
 #import "../utility/DocumentGenerator.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -36,6 +35,8 @@
 
 @implementation SectionedDocumentViewController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this SectionedDocumentViewController
 /// object.
@@ -45,6 +46,19 @@
   self.documentGenerator = nil;
   [super dealloc];
 }
+
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) didReceiveMemoryWarning
+{
+  [super didReceiveMemoryWarning];
+  self.documentGenerator = nil;
+}
+
+#pragma mark - Property accessors
 
 // -----------------------------------------------------------------------------
 /// @brief Property accessor with lazy initialization.
@@ -70,14 +84,7 @@
   return _documentGenerator;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  self.documentGenerator = nil;
-}
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -114,6 +121,8 @@
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -122,6 +131,8 @@
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   [self viewSectionAtIndexPath:indexPath];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Displays DocumentViewController with the content of the section at

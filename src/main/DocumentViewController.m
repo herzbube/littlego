@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
 #import "MainTabBarController.h"
-#import "../ui/UiUtilities.h"
 #import "../utility/VersionInfoUtilities.h"
 
 
@@ -27,6 +26,7 @@
 /// @brief Class extension with private properties for DocumentViewController.
 // -----------------------------------------------------------------------------
 @interface DocumentViewController()
+@property(nonatomic, retain) UIWebView* webView;
 @property(nonatomic, retain) NSString* titleString;
 @property(nonatomic, retain) NSString* htmlString;
 @property(nonatomic, retain) NSString* resourceName;
@@ -34,6 +34,8 @@
 
 
 @implementation DocumentViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a DocumentViewController instance
@@ -83,8 +85,10 @@
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
@@ -93,11 +97,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-///
-/// This implementation triggers loading of the HTML content into the UIWebView
-/// associated with this controller.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
@@ -153,10 +153,13 @@
   }
 }
 
+#pragma mark - UIWebViewDelegate overrides
+
 // -----------------------------------------------------------------------------
-/// @brief UIWebViewDelegate method. Makes sure that external links embedded
-/// in the HTML resource are opened in Safari (or whatever browser is configured
-/// to handle such URL requests).
+/// @brief UIWebViewDelegate method.
+///
+/// Makes sure that external links embedded in the HTML resource are opened in
+/// Safari (or whatever browser is configured to handle such URL requests).
 // -----------------------------------------------------------------------------
 - (BOOL) webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
@@ -167,6 +170,8 @@
   }
   return YES;
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Replaces a number of tokens known to be present in @a documentContent

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@
 // Project includes
 #import "LicensesViewController.h"
 #import "DocumentViewController.h"
-#import "ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -53,6 +51,7 @@ enum LicensesSectionItem
 
 @implementation LicensesViewController
 
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this LicensesViewController
@@ -62,6 +61,8 @@ enum LicensesSectionItem
 {
   [super dealloc];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -90,6 +91,8 @@ enum LicensesSectionItem
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -98,6 +101,8 @@ enum LicensesSectionItem
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   [self viewLicenseForRow:indexPath.row];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Displays DocumentViewController with the content of the section at
@@ -111,6 +116,8 @@ enum LicensesSectionItem
                                                                       resourceName:licenseResourceName];
   [self.navigationController pushViewController:controller animated:YES];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a title string that describes the license displayed in table

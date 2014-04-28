@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The DocumentViewController class is responsible for loading an HTML
-/// resource file and displaying its content in the associated UIWebview object.
+/// resource file and displaying the content in its view (a UIWebview object).
 /// Alternatively, a client may provide the HTML document content as a string to
 /// DocumentViewController upon creation.
 ///
 /// The GUI has a number of web views that display different documents such as
-/// the "About" information document. If DocumentViewController is instantiated
-/// from a .nib file, it recognizes which document it is supposed to load by
-/// examining the tag property of its associated view.
+/// the "About" information document. If DocumentViewController is not
+/// instantiated via one of its convenience constructors, it recognizes which
+/// document it is supposed to load by examining the tag property of the
+/// @e contextTabBarItem property.
 ///
 /// If DocumentViewController is instantiated via one of its convenience
 /// constructors, it either just displays the provided HTML document, or loads
@@ -42,8 +43,6 @@
 + (DocumentViewController*) controllerWithTitle:(NSString*)title htmlString:(NSString*)htmlString;
 + (DocumentViewController*) controllerWithTitle:(NSString*)title resourceName:(NSString*)resourceName;
 
-/// @brief The view that this DocumentViewController is responsible for.
-@property(nonatomic, retain) UIWebView* webView;
 /// @brief The tag of this tab bar item provides this controller with the
 /// context what it is supposed to display.
 @property(nonatomic, assign) UITabBarItem* contextTabBarItem;

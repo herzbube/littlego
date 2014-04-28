@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 // -----------------------------------------------------------------------------
 /// @brief The LicensesViewController class is responsible for managing a table
 /// view that lists license documents.
-///
-/// This class is instantiated from a .nib file.
 // -----------------------------------------------------------------------------
 @interface LicensesViewController : UITableViewController
 {
