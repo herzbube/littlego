@@ -23,6 +23,8 @@
 
 @implementation SliderInputController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes an SliderInputController object.
 ///
@@ -59,6 +61,8 @@
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -69,7 +73,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController protocol method.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) didMoveToParentViewController:(UIViewController*)parent
 {
@@ -79,6 +83,8 @@
   if (nil == parent && self.delegate)
     [self.delegate didDismissSliderInputController:self];
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -119,6 +125,8 @@
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -126,6 +134,8 @@
 {
   return [TableViewSliderCell rowHeightInTableView:tableView];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to the user changing the slider value.

@@ -36,6 +36,8 @@
 
 @implementation ItemPickerController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates an ItemPickerController instance of
 /// grouped style that is used to pick an item from @a itemList.
@@ -43,7 +45,10 @@
 /// @a defaultItem is the index of the item that is selected by default when
 /// the selection process begins. Can be -1 to indicate no default selection.
 // -----------------------------------------------------------------------------
-+ (ItemPickerController*) controllerWithItemList:(NSArray*)itemList title:(NSString*)title indexOfDefaultItem:(int)indexOfDefaultItem delegate:(id<ItemPickerDelegate>)delegate
++ (ItemPickerController*) controllerWithItemList:(NSArray*)itemList
+                                           title:(NSString*)title
+                              indexOfDefaultItem:(int)indexOfDefaultItem
+                                        delegate:(id<ItemPickerDelegate>)delegate
 {
   ItemPickerController* controller = [[ItemPickerController alloc] init];
   if (controller)
@@ -95,9 +100,10 @@
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
@@ -113,21 +119,7 @@
   self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished picking an item.
-// -----------------------------------------------------------------------------
-- (void) done:(id)sender
-{
-  [self.delegate itemPickerController:self didMakeSelection:true];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked when the user has cancelled picking an item.
-// -----------------------------------------------------------------------------
-- (void) cancel:(id)sender
-{
-  [self.delegate itemPickerController:self didMakeSelection:false];
-}
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -167,6 +159,8 @@
   return cell;
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -192,6 +186,26 @@
 
   self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
+
+#pragma mark - Action handlers
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user has finished picking an item.
+// -----------------------------------------------------------------------------
+- (void) done:(id)sender
+{
+  [self.delegate itemPickerController:self didMakeSelection:true];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invoked when the user has cancelled picking an item.
+// -----------------------------------------------------------------------------
+- (void) cancel:(id)sender
+{
+  [self.delegate itemPickerController:self didMakeSelection:false];
+}
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the currently selected item is valid.

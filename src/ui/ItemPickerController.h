@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,9 +47,11 @@
 /// are
 /// - A number of table view cells that allow the user to pick one of them
 /// - A "cancel" button used to end the selection process and notify the
-///   delegate that no item has been picked
+///   delegate that no item has been picked. This button is placed in the
+///   navigation item of ItemPickerController.
 /// - A "done" button used to end the selection process and notify the delegate
-///   that an item has been picked
+///   that an item has been picked. This button is placed in the navigation
+///   item of ItemPickerController.
 ///
 /// ItemPickerController expects to be displayed modally by a navigation
 /// controller. For this reason it populates its own navigation item with
@@ -64,7 +66,10 @@
 {
 }
 
-+ (ItemPickerController*) controllerWithItemList:(NSArray*)itemList title:(NSString*)title indexOfDefaultItem:(int)indexOfDefaultItem delegate:(id<ItemPickerDelegate>)delegate;
++ (ItemPickerController*) controllerWithItemList:(NSArray*)itemList
+                                           title:(NSString*)title
+                              indexOfDefaultItem:(int)indexOfDefaultItem
+                                        delegate:(id<ItemPickerDelegate>)delegate;
 
 /// @brief A context object that can be set by the client to identify the
 /// context or purpose that an instance of ItemPickerController was created for.

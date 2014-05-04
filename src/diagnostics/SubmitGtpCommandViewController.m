@@ -44,8 +44,7 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a SubmitGtpCommandViewController
-/// instance that loads its view from a .nib file.
+/// @brief Convenience constructor.
 // -----------------------------------------------------------------------------
 + (SubmitGtpCommandViewController*) controller
 {
