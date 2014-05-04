@@ -30,7 +30,6 @@
 /// @brief Class extension with private properties for PlayViewMetrics.
 // -----------------------------------------------------------------------------
 @interface PlayViewMetrics()
-@property(nonatomic, retain) UIView* playView;
 @property(nonatomic, retain) PlayViewModel* playViewModel;
 @property(nonatomic, retain) FontRange* moveNumberFontRange;
 @property(nonatomic, retain) FontRange* coordinateLabelFontRange;
@@ -45,22 +44,18 @@
 ///
 /// @note This is the designated initializer of PlayViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) initWithView:(UIView*)view model:(PlayViewModel*)model
+- (id) initWithModel:(PlayViewModel*)model
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  
-  self.playView = view;
   self.playViewModel = model;
   [self setupFontRanges];
-
-  self.rect = CGRectNull;
+  self.rect = CGRectZero;
   self.boardSize = GoBoardSizeUndefined;
   // Remaining properties are initialized by updateWithRect:boardSize:()
-  [self updateWithRect:self.playView.bounds boardSize:self.boardSize];
-
+  [self updateWithRect:self.rect boardSize:self.boardSize];
   return self;
 }
 

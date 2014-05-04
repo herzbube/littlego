@@ -132,6 +132,16 @@ enum InfoType
   GameInfoType,
   BoardInfoType
 };
+
+/// @brief Enumerates the axis' displayed around the Go board. "A1" is in the
+/// lower-left corner of the Go board.
+enum CoordinateLabelAxis
+{
+  ///@ brief The axis that displays letters. This is the horizontal axis.
+  CoordinateLabelAxisLetter,
+  ///@ brief The axis that displays numbers. This is the vertical axis.
+  CoordinateLabelAxisNumber
+};
 //@}
 
 // -----------------------------------------------------------------------------

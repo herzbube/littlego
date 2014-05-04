@@ -58,7 +58,7 @@
     case PVLDEventRectangleChanged:
     case PVLDEventGoGameStarted:
     {
-      self.layer.frame = self.mainView.bounds;
+      self.layer.frame = self.playViewMetrics.rect;
       self.dirty = true;
       break;
     }

@@ -127,7 +127,7 @@
 
 /// @name Initialization and deallocation
 //@{
-- (id) initWithView:(UIView*)view model:(PlayViewModel*)model;
+- (id) initWithModel:(PlayViewModel*)model;
 - (void) dealloc;
 //@}
 

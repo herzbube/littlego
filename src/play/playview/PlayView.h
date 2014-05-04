@@ -19,6 +19,7 @@
 #import "PlayViewIntersection.h"
 
 // Forward declarations
+@class CoordinateLabelsView;
 @class GoPoint;
 
 
@@ -145,15 +146,12 @@
 /// This property cannot be monitored via KVO.
 @property(nonatomic, assign) enum GoMoveIsIllegalReason crossHairPointIsIllegalReason;
 //@}
-/// @brief Scroll view that contains coordinateLabelsLetterView.
-@property(nonatomic, retain, readonly) UIScrollView* coordinateLabelsLetterViewScrollView;
-/// @brief View that draws coordinate labels along the letter axis of the
-/// game board.
-@property(nonatomic, retain, readonly) UIView* coordinateLabelsLetterView;
-/// @brief Scroll view that contains coordinateLabelsNumberView.
-@property(nonatomic, retain, readonly) UIScrollView* coordinateLabelsNumberViewScrollView;
-/// @brief View that draws coordinate labels along the number axis of the
-/// game board.
-@property(nonatomic, retain, readonly) UIView* coordinateLabelsNumberView;
+/// @name Related views whose drawing PlayView coordinates
+//@{
+@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsNumberView;
+//@}
 
 @end

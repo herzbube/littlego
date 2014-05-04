@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ScrollViewController.h"
+#import "CoordinateLabelsView.h"
 #import "PlayView.h"
 #import "PlayViewController.h"
 #import "../gesture/DoubleTapGestureController.h"
@@ -158,8 +159,8 @@
   // UIScrollView requires a delegate that it can query with
   // viewForZoomingInScrollView: for all zoom-related operations (such as
   // changing the zoomScale).
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.delegate = self;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.delegate = self;
+  self.coordinateLabelsLetterViewScrollView.delegate = self;
+  self.coordinateLabelsNumberViewScrollView.delegate = self;
 
   self.playViewController.panGestureController.scrollView = self.scrollView;
   self.doubleTapGestureController.scrollView = self.scrollView;
@@ -239,10 +240,10 @@
 {
   if (scrollView == self.scrollView)
     return self.playViewController.view;
-  else if (scrollView == self.playViewController.playView.coordinateLabelsLetterViewScrollView)
-    return self.playViewController.playView.coordinateLabelsLetterView;
-  else if (scrollView == self.playViewController.playView.coordinateLabelsNumberViewScrollView)
-    return self.playViewController.playView.coordinateLabelsNumberView;
+  else if (scrollView == self.coordinateLabelsLetterViewScrollView)
+    return self.coordinateLabelsLetterView;
+  else if (scrollView == self.coordinateLabelsNumberViewScrollView)
+    return self.coordinateLabelsNumberView;
   else
     return nil;
 }
@@ -259,8 +260,8 @@
   // like shit (because the labels are not part of the Play view they zoom
   // differently). So instead of trying hard and failing we just dispense with
   // the effort.
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.hidden = YES;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.hidden = YES;
+  self.coordinateLabelsLetterViewScrollView.hidden = YES;
+  self.coordinateLabelsNumberViewScrollView.hidden = YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -283,8 +284,8 @@
   // this mechanism to update the play view's intrinsic size. Possibly we should
   // update the intrinsic size already here.
 
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.hidden = NO;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.hidden = NO;
+  self.coordinateLabelsLetterViewScrollView.hidden = NO;
+  self.coordinateLabelsNumberViewScrollView.hidden = NO;
   [self synchronizeZoomScale:self.scrollView.zoomScale
             minimumZoomScale:self.scrollView.minimumZoomScale
             maximumZoomScale:self.scrollView.maximumZoomScale];
@@ -337,12 +338,12 @@
 // -----------------------------------------------------------------------------
 - (void) synchronizeContentOffset:(CGPoint)contentOffset
 {
-  CGPoint coordinateLabelsLetterViewScrollViewContentOffset = self.playViewController.playView.coordinateLabelsLetterViewScrollView.contentOffset;
+  CGPoint coordinateLabelsLetterViewScrollViewContentOffset = self.coordinateLabelsLetterViewScrollView.contentOffset;
   coordinateLabelsLetterViewScrollViewContentOffset.x = contentOffset.x;
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.contentOffset = coordinateLabelsLetterViewScrollViewContentOffset;
-  CGPoint coordinateLabelsNumberViewScrollViewContentOffset = self.playViewController.playView.coordinateLabelsNumberViewScrollView.contentOffset;
+  self.coordinateLabelsLetterViewScrollView.contentOffset = coordinateLabelsLetterViewScrollViewContentOffset;
+  CGPoint coordinateLabelsNumberViewScrollViewContentOffset = self.coordinateLabelsNumberViewScrollView.contentOffset;
   coordinateLabelsNumberViewScrollViewContentOffset.y = contentOffset.y;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.contentOffset = coordinateLabelsNumberViewScrollViewContentOffset;
+  self.coordinateLabelsNumberViewScrollView.contentOffset = coordinateLabelsNumberViewScrollViewContentOffset;
 }
 
 // -----------------------------------------------------------------------------
@@ -352,12 +353,12 @@
              minimumZoomScale:(CGFloat)minimumZoomScale
              maximumZoomScale:(CGFloat)maximumZoomScale
 {
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.zoomScale = zoomScale;
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.minimumZoomScale = minimumZoomScale;
-  self.playViewController.playView.coordinateLabelsLetterViewScrollView.maximumZoomScale = maximumZoomScale;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.zoomScale = zoomScale;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.minimumZoomScale = minimumZoomScale;
-  self.playViewController.playView.coordinateLabelsNumberViewScrollView.maximumZoomScale = maximumZoomScale;
+  self.coordinateLabelsLetterViewScrollView.zoomScale = zoomScale;
+  self.coordinateLabelsLetterViewScrollView.minimumZoomScale = minimumZoomScale;
+  self.coordinateLabelsLetterViewScrollView.maximumZoomScale = maximumZoomScale;
+  self.coordinateLabelsNumberViewScrollView.zoomScale = zoomScale;
+  self.coordinateLabelsNumberViewScrollView.minimumZoomScale = minimumZoomScale;
+  self.coordinateLabelsNumberViewScrollView.maximumZoomScale = maximumZoomScale;
 }
 
 @end

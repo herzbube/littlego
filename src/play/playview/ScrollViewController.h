@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,5 +40,9 @@
 
 @property(nonatomic, assign) UIScrollView* scrollView;
 @property(nonatomic, retain) PlayViewController* playViewController;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
+@property(nonatomic, assign) UIView* coordinateLabelsLetterView;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
+@property(nonatomic, assign) UIView* coordinateLabelsNumberView;
 
 @end

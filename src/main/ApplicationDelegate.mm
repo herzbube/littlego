@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@
 #import "../play/model/PlayViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../play/playtab/PlayTabController.h"
+#import "../play/playview/PlayViewMetrics.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
 #import "../diagnostics/CrashReportingModel.h"
@@ -142,6 +143,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.playViewModel = nil;
+  self.playViewMetrics = nil;
   self.boardPositionModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
@@ -164,8 +166,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 /// @brief Performs major application initialization tasks.
 ///
-/// This method is invoked after the main .nib file has been loaded, but while
-/// the application is still in the inactive state.
+/// This method is invoked after the main .nib file (if there is any) has been
+/// loaded, but while the application is still in the inactive state.
 // -----------------------------------------------------------------------------
 - (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
@@ -514,6 +516,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.crashReportingModel readUserDefaults];
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
+  // Is currently dependent on user defaults in PlayViewModel
+  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithModel:self.playViewModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------

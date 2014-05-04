@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayView.h"
 #import "PlayViewMetrics.h"
+#import "CoordinateLabelsView.h"
 #import "layer/CoordinateLabelsLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
@@ -42,9 +43,6 @@
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for PlayView.
@@ -64,17 +62,10 @@
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) ScoringModel* scoringModel;
-@property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
+@property(nonatomic, assign) PlayViewMetrics* playViewMetrics;
 /// @brief The order in which delegates appear in this array determines the
 /// order in which layers are drawn.
 @property(nonatomic, retain) NSMutableArray* layerDelegates;
-//@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, retain, readwrite) UIScrollView* coordinateLabelsLetterViewScrollView;
-@property(nonatomic, retain, readwrite) UIView* coordinateLabelsLetterView;
-@property(nonatomic, retain, readwrite) UIScrollView* coordinateLabelsNumberViewScrollView;
-@property(nonatomic, retain, readwrite) UIView* coordinateLabelsNumberView;
 //@}
 @end
 
@@ -99,9 +90,11 @@
   self.boardPositionModel = delegate.boardPositionModel;
   self.playViewModel = delegate.playViewModel;
   self.scoringModel = delegate.scoringModel;
-  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithView:self
-                                                          model:self.playViewModel] autorelease];
+  self.playViewMetrics = delegate.playViewMetrics;
   self.layerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+
+  self.coordinateLabelsLetterView = nil;
+  self.coordinateLabelsNumberView = nil;
 
   [self setupView];
 
@@ -130,11 +123,6 @@
 
   self.playViewMetrics = nil;
   self.layerDelegates = nil;
-
-  self.coordinateLabelsLetterViewScrollView = nil;
-  self.coordinateLabelsLetterView = nil;
-  self.coordinateLabelsNumberViewScrollView = nil;
-  self.coordinateLabelsNumberView = nil;
 
   [super dealloc];
 }
@@ -227,17 +215,6 @@
                                                             playViewModel:self.playViewModel
                                                              scoringModel:self.scoringModel] autorelease];
   [self setupLayerDelegate:layerDelegate withView:self];
-
-  self.coordinateLabelsLetterView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  [self setupCoordinateLabelView:self.coordinateLabelsLetterView
-                      scrollView:self.coordinateLabelsLetterViewScrollView
-                            axis:CoordinateLabelAxisLetter];
-  self.coordinateLabelsNumberView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  [self setupCoordinateLabelView:self.coordinateLabelsNumberView
-                      scrollView:self.coordinateLabelsNumberViewScrollView
-                            axis:CoordinateLabelAxisNumber];
 }
 
 // -----------------------------------------------------------------------------
@@ -247,23 +224,6 @@
 {
   [view.layer addSublayer:layerDelegate.layer];
   [self.layerDelegates addObject:layerDelegate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupView().
-// -----------------------------------------------------------------------------
-- (void) setupCoordinateLabelView:(UIView*)labelView
-                       scrollView:(UIScrollView*)scrollView
-                             axis:(enum CoordinateLabelAxis)axis
-{
-  scrollView.backgroundColor = [UIColor clearColor];
-  scrollView.userInteractionEnabled = NO;
-  [scrollView addSubview:labelView];
-  id<PlayViewLayerDelegate> layerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithMainView:labelView
-                                                                                             metrics:self.playViewMetrics
-                                                                                               model:self.playViewModel
-                                                                                                axis:axis] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:labelView];
 }
 
 // -----------------------------------------------------------------------------
@@ -338,6 +298,8 @@
   rect.size = newIntrinsicContentSize;
   [self.playViewMetrics updateWithRect:rect];
   [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+  [self.coordinateLabelsLetterView updateIntrinsicContentSize];
+  [self.coordinateLabelsNumberView updateIntrinsicContentSize];
   // Redraw layers, if possible now, otherwise at a later time
   // TODO xxx is this the right place to draw? shouldn't we do this in drawRect
   // or somewhere similar?
@@ -380,6 +342,9 @@
 
   [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
+  [self.coordinateLabelsLetterView updateBoardSize];
+  [self.coordinateLabelsNumberView updateBoardSize];
+
   // Redraw layers, if possible now, otherwise at a later time
   [self delayedUpdate];
 }

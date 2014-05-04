@@ -22,13 +22,28 @@
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
+#import "../playview/CoordinateLabelsView.h"
 #import "../playview/PlayView.h"
 #import "../playview/PlayViewController.h"
 #import "../playview/ScrollViewController.h"
 #import "../../ui/UiElementMetrics.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for MaxMemoryController.
+// -----------------------------------------------------------------------------
+@interface PlayTabControllerPhone()
+@property(nonatomic, assign) UIView* backgroundView;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsNumberView;
+@end
+
+
 @implementation PlayTabControllerPhone
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayTabControllerPhone object.
@@ -42,6 +57,11 @@
   if (! self)
     return nil;
   [self setupChildControllers];
+  self.backgroundView = nil;
+  self.coordinateLabelsLetterViewScrollView = nil;
+  self.coordinateLabelsLetterView = nil;
+  self.coordinateLabelsNumberViewScrollView = nil;
+  self.coordinateLabelsNumberView = nil;
   return self;
 }
 
@@ -78,6 +98,8 @@
   self.boardPositionToolbarController = nil;
   self.discardFutureMovesAlertController = nil;
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
@@ -154,34 +176,42 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
   [super loadView];
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+  self.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterView = [[[CoordinateLabelsView alloc] initWithAxis:CoordinateLabelAxisLetter] autorelease];
+  self.coordinateLabelsNumberView = [[[CoordinateLabelsView alloc] initWithAxis:CoordinateLabelAxisNumber] autorelease];
 
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
-  [self configureViewObjects];
+  [self configureViews];
+  [self configureControllers];
 }
+
+#pragma mark - Private helpers for view setup
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
+  [self.view addSubview:self.backgroundView];
   [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardPositionToolbarController.view];
   [self.view addSubview:self.scrollViewController.view];
-  NSArray* scrollViews = [NSArray arrayWithObjects:
-                          self.scrollViewController.playViewController.playView.coordinateLabelsLetterViewScrollView,
-                          self.scrollViewController.playViewController.playView.coordinateLabelsNumberViewScrollView,
-                          nil];
-  for (UIView* scrollView in scrollViews)
-  {
-    [self.view addSubview:scrollView];
-  }
+  [self.view addSubview:self.coordinateLabelsLetterViewScrollView];
+  [self.view addSubview:self.coordinateLabelsNumberViewScrollView];
+  [self.coordinateLabelsLetterViewScrollView addSubview:self.coordinateLabelsLetterView];
+  [self.coordinateLabelsNumberViewScrollView addSubview:self.coordinateLabelsNumberView];
 }
 
 // -----------------------------------------------------------------------------
@@ -189,35 +219,39 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  PlayView* playView = self.scrollViewController.playViewController.playView;
-
+  self.backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  playView.coordinateLabelsLetterViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  playView.coordinateLabelsNumberViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsLetterViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.backgroundView, @"backgroundView",
                                    self.navigationBarController.view, @"navigationBarView",
                                    self.scrollViewController.view, @"scrollView",
-                                   playView.coordinateLabelsLetterViewScrollView, @"coordinateLabelsLetterView",
-                                   playView.coordinateLabelsNumberViewScrollView, @"coordinateLabelsNumberView",
+                                   self.coordinateLabelsLetterViewScrollView, @"coordinateLabelsLetterViewScrollView",
+                                   self.coordinateLabelsNumberViewScrollView, @"coordinateLabelsNumberViewScrollView",
                                    self.boardPositionToolbarController.view, @"boardPositionToolbarView",
+                                   self.coordinateLabelsLetterView, @"coordinateLabelsLetterView",
+                                   self.coordinateLabelsNumberView, @"coordinateLabelsNumberView",
                                    nil];
-  // TODO xxx use methods from UiElementMetrics
-  // - 20 = [UiElementMetrics statusBarHeight], this should be 0 in iOS 6
-  // - 44 = [UiElementMetrics navigationBarHeight] or
-  //        [UiElementMetrics toolbarHeight]
-  // - 49 = [UiElementMetrics tabBarHeight]
+  // Don't need to specify height values because UINavigationBar and UIToolbar
+  // specify a height value in their intrinsic content size
+  // TODO xxx should not need to specify 20 for the status bar.
   NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[backgroundView]-0-|",
                             @"H:|-0-[navigationBarView]-0-|",
                             @"H:|-0-[scrollView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
-                            @"H:|-0-[coordinateLabelsLetterView]-0-|",
-                            @"H:|-0-[coordinateLabelsNumberView]",
-                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[scrollView]-0-[boardPositionToolbarView(>=44,<=44)]-49-|",
-                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[coordinateLabelsLetterView]",
-                            @"V:|-20-[navigationBarView(>=44,<=44)]-0-[coordinateLabelsNumberView]",
+                            @"H:|-0-[coordinateLabelsLetterViewScrollView]-0-|",
+                            @"H:|-0-[coordinateLabelsNumberViewScrollView]-0-|",
+                            @"V:|-20-[navigationBarView]-0-[scrollView]-0-[boardPositionToolbarView]-0-|",
+                            @"V:[navigationBarView]-0-[backgroundView]-0-[boardPositionToolbarView]",
+                            @"V:|-20-[navigationBarView]-0-[coordinateLabelsLetterViewScrollView]-0-[boardPositionToolbarView]-0-|",
+                            @"V:|-20-[navigationBarView]-0-[coordinateLabelsNumberViewScrollView]-0-[boardPositionToolbarView]-0-|",
                             nil];
   for (NSString* visualFormat in visualFormats)
   {
@@ -225,18 +259,69 @@
                                                                   options:0
                                                                   metrics:nil
                                                                     views:viewsDictionary];
-
     [self.view addConstraints:constraint];
+  }
+
+  visualFormats = [NSArray arrayWithObjects:
+                   @"H:|-0-[coordinateLabelsLetterView]",
+                   @"V:|-0-[coordinateLabelsLetterView]",
+                   nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+    [self.coordinateLabelsLetterViewScrollView addConstraints:constraint];
+  }
+
+  visualFormats = [NSArray arrayWithObjects:
+                   @"H:|-0-[coordinateLabelsNumberView]",
+                   @"V:|-0-[coordinateLabelsNumberView]",
+                   nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+    [self.coordinateLabelsNumberViewScrollView addConstraints:constraint];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) configureViewObjects
+- (void) configureViews
 {
-  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+  [self.view sendSubviewToBack:self.backgroundView];
+  self.backgroundView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+
+  // TODO xxx remove this; coordinate label views should observe
+  // PlayViewMetrics and listen for notifications
+  PlayView* playView = self.scrollViewController.playViewController.playView;
+  playView.coordinateLabelsLetterView = self.coordinateLabelsLetterView;
+  playView.coordinateLabelsNumberView = self.coordinateLabelsNumberView;
+
+  self.coordinateLabelsLetterViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsLetterViewScrollView.userInteractionEnabled = NO;
+  self.coordinateLabelsNumberViewScrollView.userInteractionEnabled = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureControllers
+{
+  // TODO xxx replace this with a notification to remove the direct coupling;
+  // also check if there are other couplings, e.g. in the iPad controller
   self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
+
+  self.scrollViewController.coordinateLabelsLetterViewScrollView = self.coordinateLabelsLetterViewScrollView;
+  self.scrollViewController.coordinateLabelsLetterView = self.coordinateLabelsLetterView;
+  self.scrollViewController.coordinateLabelsNumberViewScrollView = self.coordinateLabelsNumberViewScrollView;
+  self.scrollViewController.coordinateLabelsNumberView = self.coordinateLabelsNumberView;
 }
 
 @end

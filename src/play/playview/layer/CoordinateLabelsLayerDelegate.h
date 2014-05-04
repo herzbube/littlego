@@ -20,29 +20,19 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the axis' supported by CoordinateLabelsLayerDelegate.
-// -----------------------------------------------------------------------------
-enum CoordinateLabelAxis
-{
-  CoordinateLabelAxisLetter,
-  CoordinateLabelAxisNumber
-};
-
-
-// -----------------------------------------------------------------------------
 /// @brief The CoordinateLabelsLayerDelegate class is responsible for drawing
 /// coordinate labels in a strip along the horizontal or vertical edge of the
 /// Go board.
 ///
 /// CoordinateLabelsLayerDelegate is exceptional in that it is not a sublayer
-/// of PlayView. Instead CoordinateLabelsLayerDelegate is a sublayer of a
-/// separate coordinate label view (specified as @a mainView parameter when the
+/// of PlayView. Instead CoordinateLabelsLayerDelegate is a sublayer of
+/// CoordinateLabelsView (specified as @a mainView parameter when the
 /// initializer is invoked). For more information on why this is the case, see
 /// the PlayView class documentation.
 ///
 /// Despite this, CoordinateLabelsLayerDelegate adopts the PlayViewLayerDelegate
-/// protocol so that it and PlayView can make use of the same event and drawing
-/// mechanisms that are also used by other layer delegates.
+/// protocol so that it can make use of the same event and drawing mechanisms
+/// that are also used by other layer delegates.
 // -----------------------------------------------------------------------------
 @interface CoordinateLabelsLayerDelegate : PlayViewLayerDelegateBase
 {
