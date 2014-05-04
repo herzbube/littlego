@@ -110,7 +110,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  [super loadView];
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
   CGRect splitViewControllerViewFrame = self.view.bounds;
   self.splitViewControllerChild.view.frame = splitViewControllerViewFrame;

@@ -37,21 +37,4 @@
     return [[[PlayTabControllerPad alloc] init] autorelease];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabController object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  self.view = nil;
-  [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) loadView
-{
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-}
-
 @end

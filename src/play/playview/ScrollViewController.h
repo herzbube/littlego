@@ -38,11 +38,7 @@
 {
 }
 
-@property(nonatomic, assign) UIScrollView* scrollView;
 @property(nonatomic, retain) PlayViewController* playViewController;
-@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
-@property(nonatomic, assign) UIView* coordinateLabelsLetterView;
-@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
-@property(nonatomic, assign) UIView* coordinateLabelsNumberView;
+@property(nonatomic, assign) UIScrollView* scrollView;
 
 @end

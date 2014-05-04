@@ -32,12 +32,18 @@
 /// @brief Class extension with private properties for ScrollViewController.
 // -----------------------------------------------------------------------------
 @interface ScrollViewController()
+@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
+@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
+@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsNumberView;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @end
 
 
 @implementation ScrollViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ScrollViewController object.
@@ -50,6 +56,10 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.coordinateLabelsLetterViewScrollView = nil;
+  self.coordinateLabelsLetterView = nil;
+  self.coordinateLabelsNumberViewScrollView = nil;
+  self.coordinateLabelsNumberView = nil;
   [self setupChildControllers];
   PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   [playViewModel addObserver:self forKeyPath:@"maximumZoomScale" options:0 context:NULL];
@@ -68,6 +78,8 @@
   self.twoFingerTapGestureController = nil;
   [super dealloc];
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
@@ -104,16 +116,18 @@
   }
 }
 
-#pragma mark - UIViewController overrides
+#pragma mark - loadView and helpers
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  [self createViews];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
-  [self configureViewObjects];
+  [self configureViews];
+  [self configureControllers];
   [self synchronizeZoomScale:self.scrollView.zoomScale
             minimumZoomScale:self.scrollView.minimumZoomScale
             maximumZoomScale:self.scrollView.maximumZoomScale];
@@ -122,11 +136,28 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
+- (void) createViews
+{
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.scrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterView = [[[CoordinateLabelsView alloc] initWithAxis:CoordinateLabelAxisLetter] autorelease];
+  self.coordinateLabelsNumberView = [[[CoordinateLabelsView alloc] initWithAxis:CoordinateLabelAxisNumber] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  self.scrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  self.view = self.scrollView;
-  [self.view addSubview:self.playViewController.view];
+  [self.view addSubview:self.scrollView];
+  [self.view addSubview:self.coordinateLabelsLetterViewScrollView];
+  [self.view addSubview:self.coordinateLabelsNumberViewScrollView];
+
+  [self.scrollView addSubview:self.playViewController.view];
+  [self.coordinateLabelsLetterViewScrollView addSubview:self.coordinateLabelsLetterView];
+  [self.coordinateLabelsNumberViewScrollView addSubview:self.coordinateLabelsNumberView];
 }
 
 // -----------------------------------------------------------------------------
@@ -134,17 +165,26 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  UIView* playView = self.playViewController.view;
-  playView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:playView];
+  self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsLetterViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberViewScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.playViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.scrollView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.coordinateLabelsLetterViewScrollView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.coordinateLabelsNumberViewScrollView];
+  [AutoLayoutUtility fillSuperview:self.scrollView withSubview:self.playViewController.view];
+  [AutoLayoutUtility fillSuperview:self.coordinateLabelsLetterViewScrollView withSubview:self.coordinateLabelsLetterView];
+  [AutoLayoutUtility fillSuperview:self.coordinateLabelsNumberViewScrollView withSubview:self.coordinateLabelsNumberView];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) configureViewObjects
+- (void) configureViews
 {
-  self.view.backgroundColor = [UIColor clearColor];
+  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
 
   self.scrollView.bouncesZoom = NO;
   self.scrollView.delegate = self;
@@ -162,10 +202,29 @@
   self.coordinateLabelsLetterViewScrollView.delegate = self;
   self.coordinateLabelsNumberViewScrollView.delegate = self;
 
+  // TODO xxx remove this; coordinate label views should observe
+  // PlayViewMetrics and listen for notifications
+  PlayView* playView = self.playViewController.playView;
+  playView.coordinateLabelsLetterView = self.coordinateLabelsLetterView;
+  playView.coordinateLabelsNumberView = self.coordinateLabelsNumberView;
+
+  self.coordinateLabelsLetterViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];
+  self.coordinateLabelsLetterViewScrollView.userInteractionEnabled = NO;
+  self.coordinateLabelsNumberViewScrollView.userInteractionEnabled = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureControllers
+{
   self.playViewController.panGestureController.scrollView = self.scrollView;
   self.doubleTapGestureController.scrollView = self.scrollView;
   self.twoFingerTapGestureController.scrollView = self.scrollView;
 }
+
+#pragma mark - viewWillLayoutSubviews
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method. This override properly resizes the scroll
