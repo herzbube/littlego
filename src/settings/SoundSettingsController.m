@@ -119,12 +119,12 @@ enum FeedbackSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
   switch (section)
   {
     case FeedbackSection:
-      return @"Feedback when computer plays";
+      return @"Enable these options if you want to be notified when the computer has made a move. These options are ignored in a computer vs. computer game.";
     default:
       break;
   }
