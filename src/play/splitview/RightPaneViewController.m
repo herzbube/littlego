@@ -29,6 +29,8 @@
 
 @implementation RightPaneViewController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RightPaneViewController object.
 ///
@@ -54,6 +56,8 @@
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
@@ -118,117 +122,86 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect rightPaneViewFrame = CGRectZero;
-  rightPaneViewFrame.size.width = [UiElementMetrics splitViewRightPaneWidth];
-  rightPaneViewFrame.size.height = [UiElementMetrics splitViewHeight];
-  self.view = [[[UIView alloc] initWithFrame:rightPaneViewFrame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+  [self createViews];
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
+  [self configureViews];
+  [self configureControllers];
+}
 
-  [self setupNavigationBar];
-  [self setupScrollView];
-  [self setupCoordinateLabelScrollViews];
+#pragma mark - Private helpers for loadView
 
-  self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) createViews
+{
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupNavigationBar
+- (void) setupViewHierarchy
 {
-  CGRect navigationBarFrame = [self navigationBarFrame];
-  self.navigationBarController.view.frame = navigationBarFrame;
-  UIView* superview = [self navigationBarSuperview];
-  [superview addSubview:self.navigationBarController.view];
+  [self.view addSubview:self.navigationBarController.view];
+  [self.view addSubview:self.scrollViewController.view];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (CGRect) navigationBarFrame
+- (void) setupAutoLayoutConstraints
 {
-  UIView* superview = [self navigationBarSuperview];
-  int viewX = 0;
-  int viewY = 0;
-  int viewWidth = superview.bounds.size.width;
-  int viewHeight = [UiElementMetrics navigationBarHeight];
-  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-}
+  self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) navigationBarSuperview
-{
-  return self.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupScrollView
-{
-  CGRect scrollViewFrame = [self scrollViewFrame];
-  self.scrollViewController.view.frame = scrollViewFrame;
-  UIView* superview = [self scrollViewSuperview];
-  [superview addSubview:self.scrollViewController.view];
-
-  self.scrollViewController.scrollView.contentSize = scrollViewFrame.size;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) scrollViewFrame
-{
-  UIView* superview = [self scrollViewSuperview];
-  CGSize superviewSize = superview.bounds.size;
-  int viewX = 0;
-  int viewY = CGRectGetMaxY(self.navigationBarController.view.frame);
-  int viewWidth = superviewSize.width;
-  int viewHeight = (superviewSize.height
-                    - self.navigationBarController.view.frame.size.height);
-  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) scrollViewSuperview
-{
-  return self.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupCoordinateLabelScrollViews
-{
-  UIView* superview = [self scrollViewSuperview];
-  NSArray* scrollViews = [NSArray arrayWithObjects:
-                          self.scrollViewController.playViewController.playView.coordinateLabelsLetterViewScrollView,
-                          self.scrollViewController.playViewController.playView.coordinateLabelsNumberViewScrollView,
-                          nil];
-  for (UIView* scrollView in scrollViews)
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.navigationBarController.view, @"navigationBarView",
+                                   self.scrollViewController.view, @"scrollViewControllerView",
+                                   nil];
+  // Don't need to specify height value for navigationBarView because
+  // UINavigationBar specifies a height value in its intrinsic content size
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[navigationBarView]-0-|",
+                            @"H:|-0-[scrollViewControllerView]-0-|",
+                            @"V:|-0-[navigationBarView]-0-[scrollViewControllerView]-0-|",
+                            nil];
+  for (NSString* visualFormat in visualFormats)
   {
-    CGRect scrollViewFrame = scrollView.frame;
-    scrollViewFrame.origin = self.scrollViewController.view.frame.origin;
-    scrollView.frame = scrollViewFrame;
-    [superview addSubview:scrollView];
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+    [self.view addConstraints:constraint];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
+  // Set a color (should be the same as the main window's) because we need to
+  // paint over the parent split view background color.
+  self.view.backgroundColor = [UIColor whiteColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureControllers
+{
+  // TODO xxx replace this with a notification to remove the direct coupling;
+  // also check if there are other couplings, e.g. in the iPad controller
+  self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
 }
 
 @end

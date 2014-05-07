@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@
 
 
 @implementation BoardPositionController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionController object.
@@ -48,6 +50,8 @@
   self.boardPositionToolbarController = nil;
   [super dealloc];
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
@@ -108,92 +112,39 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect frame = CGRectZero;
-  // Setup of subviews requires that the parent view has a certain minimal
-  // height, so we assign an arbitrary height here that will later be expanded
-  // to the real height thanks to the autoresizingMask. Note that the height
-  // must be greater than a toolbar height + some vertical spacing.
-  frame.size.height = 200;
-  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.boardPositionToolbarController.view];
+  [self.view addSubview:self.boardPositionTableListViewController.view];
 
-  [self setupBoardPositionToolbar];
-  [self setupBoardPositionTableListView];
-}
+  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionToolbar
-{
-  CGRect toolbarFrame = [self boardPositionToolbarFrame];
-  self.boardPositionToolbarController.view.frame = toolbarFrame;
-  UIView* superview = [self boardPositionToolbarSuperview];
-  [superview addSubview:self.boardPositionToolbarController.view];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) boardPositionToolbarFrame
-{
-  UIView* superview = [self boardPositionToolbarSuperview];
-  int toolbarViewX = 0;
-  int toolbarViewWidth = superview.bounds.size.width;
-  int toolbarViewHeight = [UiElementMetrics toolbarHeight];
-  int toolbarViewY = 0;
-  return CGRectMake(toolbarViewX, toolbarViewY, toolbarViewWidth, toolbarViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) boardPositionToolbarSuperview
-{
-  return self.view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionTableListView
-{
-  CGRect boardPositionTableListViewFrame = [self boardPositionTableListViewFrame];
-  self.boardPositionTableListViewController.view.frame = boardPositionTableListViewFrame;
-  UIView* superview = [self boardPositionToolbarSuperview];
-  [superview addSubview:self.boardPositionTableListViewController.view];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) boardPositionTableListViewFrame
-{
-  UIView* superview = [self boardPositionTableListViewSuperview];
-  int viewX = 0;
-  int viewWidth = superview.bounds.size.width;
-  int viewY = CGRectGetMaxY(self.boardPositionToolbarController.view.frame) + [UiElementMetrics spacingVertical];
-  int viewHeight = superview.bounds.size.height - viewY;
-  return CGRectMake(viewX, viewY, viewWidth, viewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (UIView*) boardPositionTableListViewSuperview
-{
-  return self.view;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.boardPositionToolbarController.view, @"boardPositionToolbar",
+                                   self.boardPositionTableListViewController.view, @"boardPositionTableListView",
+                                   nil];
+  // Don't need to specify height value for boardPositionToolbar because
+  // UIToolbar specifies a height value in its intrinsic content size
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[boardPositionToolbar]-0-|",
+                            @"H:|-0-[boardPositionTableListView]-0-|",
+                            @"V:|-0-[boardPositionToolbar]-[boardPositionTableListView]-0-|",
+                            nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+    [self.view addConstraints:constraint];
+  }
 }
 
 @end

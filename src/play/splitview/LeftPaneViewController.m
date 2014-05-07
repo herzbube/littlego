@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@
 // Project includes
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionController.h"
-#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../ui/AutoLayoutUtility.h"
 
 
 @implementation LeftPaneViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a LeftPaneViewController object.
@@ -47,6 +49,8 @@
   self.boardPositionController = nil;
   [super dealloc];
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
@@ -81,20 +85,21 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect leftPaneViewFrame = CGRectZero;
-  leftPaneViewFrame.size.width = [UiElementMetrics splitViewLeftPaneWidth];
-  leftPaneViewFrame.size.height = [UiElementMetrics splitViewHeight];
-  self.view = [[[UIView alloc] initWithFrame:leftPaneViewFrame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
-
-  self.boardPositionController.view.frame = self.view.bounds;
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.boardPositionController.view];
+  self.boardPositionController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardPositionController.view];
+
+  // Set a color (should be the same as the main window's) because we need to
+  // paint over the parent split view background color.
+  self.view.backgroundColor = [UIColor whiteColor];
 }
 
 @end

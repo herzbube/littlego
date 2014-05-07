@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,6 +55,19 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.navigationBarController = nil;
+  self.scrollViewController = nil;
+  self.boardPositionToolbarController = nil;
+  self.discardFutureMovesAlertController = nil;
+}
+
+#pragma mark - Container view controller handling
+
+// -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
@@ -67,19 +80,6 @@
   self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.navigationBarController = nil;
-  self.scrollViewController = nil;
-  self.boardPositionToolbarController = nil;
-  self.discardFutureMovesAlertController = nil;
-}
-
-#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.

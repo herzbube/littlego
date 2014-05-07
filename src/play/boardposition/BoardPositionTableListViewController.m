@@ -27,8 +27,9 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
 #import "../../shared/LongRunningActionCounter.h"
-#import "../../ui/TableViewCellFactory.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/TableViewCellFactory.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -39,9 +40,7 @@
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
-@property(nonatomic, retain) UILabel* currentBoardPositionTitleLabel;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
-@property(nonatomic, retain) UILabel* boardPositionListTitleLabel;
 @property(nonatomic, retain) UITableView* boardPositionListTableView;
 @property(nonatomic, assign) bool tappingEnabled;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
@@ -56,6 +55,8 @@
 
 
 @implementation BoardPositionTableListViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionTableListViewController object.
@@ -98,9 +99,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.currentBoardPositionTitleLabel = nil;
   self.currentBoardPositionTableView = nil;
-  self.boardPositionListTitleLabel = nil;
   self.boardPositionListTableView = nil;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
@@ -108,141 +107,90 @@
   self.alternateCellBackgroundColor2 = nil;
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect frame = CGRectZero;
-  // setupTableViews requires that the parent view has a certain minimal height,
-  // so we assign an arbitrary height here that will later be expanded to the
-  // real height thanks to the autoresizingMask. Note that the height must be
-  // greater than 2 * label height + current board position table view height +
-  // some vertical spacing.
-  frame.size.height = 200;
-  self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-
-  [self setupTableViews];
+  [self createViews];
+  [self setupViewHierarchy];
+  [self configureViews];
+  [self setupAutoLayoutConstraints];
   [self setupNotificationResponders];
   [self setupStoneImages];
 }
 
+#pragma mark - Private helpers for loadView
+
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupTableViews
+- (void) createViews
 {
-  [self setupCurrentBoardPositionTitleLabel];
-  [self setupCurrentBoardPositionTableView];
-  [self setupBoardPositionListTitleLabel];
-  [self setupBoardPositionListTableView];
+  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.currentBoardPositionTableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                                     style:UITableViewStylePlain] autorelease];
+  self.boardPositionListTableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                                  style:UITableViewStylePlain] autorelease];
 }
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupCurrentBoardPositionTitleLabel
+- (void) setupViewHierarchy
 {
-  NSString* labelText = @"Current board position";
-  self.currentBoardPositionTitleLabel = [self titleLabelWithText:labelText];
-
-  CGRect currentBoardPositionTitleLabelFrame = self.currentBoardPositionTitleLabel.frame;
-  currentBoardPositionTitleLabelFrame.origin.y = [UiElementMetrics spacingVertical];
-  self.currentBoardPositionTitleLabel.frame = currentBoardPositionTitleLabelFrame;
-  [self.view addSubview:self.currentBoardPositionTitleLabel];
-}
-
-// -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionListTitleLabel
-{
-  NSString* labelText = @"List of board positions";
-  self.boardPositionListTitleLabel = [self titleLabelWithText:labelText];
-
-  CGRect boardPositionListTitleLabelFrame = self.boardPositionListTitleLabel.frame;
-  boardPositionListTitleLabelFrame.origin.y = CGRectGetMaxY(self.currentBoardPositionTableView.frame);
-  self.boardPositionListTitleLabel.frame = boardPositionListTitleLabelFrame;
-  [self.view addSubview:self.boardPositionListTitleLabel];
-}
-
-// -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (UILabel*) titleLabelWithText:(NSString*)labelText
-{
-  UIFont* labelFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-  CGSize labelSize = [labelText sizeWithFont:labelFont
-                           constrainedToSize:constraintSize
-                               lineBreakMode:NSLineBreakByWordWrapping];
-
-  CGRect labelFrame;
-  labelFrame.origin.x = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
-  labelFrame.origin.y = 0;
-  labelFrame.size = labelSize;
-  UILabel* titleLabel = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
-  titleLabel.font = labelFont;
-  titleLabel.text = labelText;
-  titleLabel.textColor = [UIColor grayColor];
-  titleLabel.backgroundColor = [UIColor clearColor];
-  return titleLabel;
-}
-
-// -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (void) setupCurrentBoardPositionTableView
-{
-  CGFloat tableViewX = 0;
-  CGFloat tableViewY = CGRectGetMaxY(self.currentBoardPositionTitleLabel.frame);
-  CGFloat tableViewWidth = self.view.frame.size.width;
-  // A bit of optimization: By setting the initial height to 0, we can prevent
-  // tableView:cellForRowAtIndexPath:() from being triggered when we invoke
-  // layoutIfNeeded() further down.
-  CGFloat fakeTableViewHeight = 0;
-  CGRect currentBoardPositionTableViewFrame = CGRectMake(tableViewX, tableViewY, tableViewWidth, fakeTableViewHeight);
-  self.currentBoardPositionTableView = [[[UITableView alloc] initWithFrame:currentBoardPositionTableViewFrame
-                                                                     style:UITableViewStyleGrouped] autorelease];
   [self.view addSubview:self.currentBoardPositionTableView];
+  [self.view addSubview:self.boardPositionListTableView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
   self.currentBoardPositionTableView.delegate = self;
   self.currentBoardPositionTableView.dataSource = self;
-
-  // Force the table view to immediately layout its subviews. As a result,
-  // afterwards we can get the correct content size and use to resize the table
-  // view to its proper height. Note that this invokes some of our
-  // UITableViewDataSource methods!
-  [self.currentBoardPositionTableView layoutIfNeeded];
-  CGFloat realTableViewHeight = [self.currentBoardPositionTableView contentSize].height;
-  currentBoardPositionTableViewFrame.size.height = realTableViewHeight;
-  self.currentBoardPositionTableView.frame = currentBoardPositionTableViewFrame;
-
-  self.currentBoardPositionTableView.backgroundView = nil;
-  self.currentBoardPositionTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.currentBoardPositionTableView.scrollEnabled = NO;
+  self.currentBoardPositionTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+  self.boardPositionListTableView.delegate = self;
+  self.boardPositionListTableView.dataSource = self;
+  self.boardPositionListTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupBoardPositionListTableView
+- (void) setupAutoLayoutConstraints
 {
-  CGRect mainViewFrame = self.view.frame;
-  CGFloat tableViewX = 0;
-  CGFloat tableViewY = (CGRectGetMaxY(self.boardPositionListTitleLabel.frame)
-                        + [UiElementMetrics spacingVertical]);
-  CGFloat tableViewWidth = self.view.frame.size.width;
-  CGFloat tableViewHeight = (mainViewFrame.size.height - tableViewY - [UiElementMetrics spacingVertical]);
-  CGRect boardPositionListTableViewFrame = CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
-  self.boardPositionListTableView = [[[UITableView alloc] initWithFrame:boardPositionListTableViewFrame
-                                                                  style:UITableViewStyleGrouped] autorelease];
-  [self.view addSubview:self.boardPositionListTableView];
-  self.boardPositionListTableView.delegate = self;
-  self.boardPositionListTableView.dataSource = self;
+  self.currentBoardPositionTableView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionListTableView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.boardPositionListTableView.backgroundView = nil;
-  self.boardPositionListTableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.currentBoardPositionTableView, @"currentBoardPositionTableView",
+                                   self.boardPositionListTableView, @"boardPositionListTableView",
+                                   nil];
+
+  // layoutIfNeeded causes various UITableViewSource methods to be called.
+  // Notably ***NOT*** called: tableView:cellForRowAtIndexPath:(). This should
+  // not be a problem since we use standard cells with a standard height.
+  [self.currentBoardPositionTableView layoutIfNeeded];
+  CGFloat realTableViewHeight = [self.currentBoardPositionTableView contentSize].height;
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[currentBoardPositionTableView]-0-|",
+                            @"H:|-0-[boardPositionListTableView]-0-|",
+                            [NSString stringWithFormat:@"V:|-0-[currentBoardPositionTableView(==%f)]-10-[boardPositionListTableView]-0-|", realTableViewHeight],
+                            nil];
+  for (NSString* visualFormat in visualFormats)
+  {
+    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
+                                                                  options:0
+                                                                  metrics:nil
+                                                                    views:viewsDictionary];
+    [self.view addConstraints:constraint];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -285,6 +233,8 @@
   self.blackStoneImage = [[UIImage imageNamed:stoneBlackImageResource] imageByResizingToSize:stoneImageSize];
   self.whiteStoneImage = [[UIImage imageNamed:stoneWhiteImageResource] imageByResizingToSize:stoneImageSize];
 }
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
@@ -358,6 +308,8 @@
   [self delayedUpdate];
 }
 
+#pragma mark - KVO responder
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
@@ -378,6 +330,8 @@
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
   }
 }
+
+#pragma mark - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
@@ -520,6 +474,8 @@
     self.tappingEnabled = true;
 }
 
+#pragma mark - UITableViewDataSource overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
@@ -558,6 +514,17 @@
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+{
+  if (tableView == self.currentBoardPositionTableView)
+    return @"Current board position";
+  else
+    return @"List of board positions";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
@@ -568,7 +535,7 @@
     // board position table view, because we always return 1 for that table
     // view in tableView:numberOfRowsInSection:(). We don't have any content,
     // so we just display an empty cell. Note that we can't eliminate this
-    // because when we are setting up the table view frame during initialization
+    // because when we are setting up layout constraints during initialization
     // we rely on the fact that one row is always present.
     return cell;
   }
@@ -598,6 +565,41 @@
   cell.backgroundColor = [self backgroundColorForBoardPosition:boardPositionOfCell];
   return cell;
 }
+
+#pragma mark - UITableViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (BOOL) tableView:(UITableView*)tableView shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (tableView == self.boardPositionListTableView && self.tappingEnabled)
+    return YES;
+  else
+    return NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (tableView != self.boardPositionListTableView)
+  {
+    DDLogError(@"%@: Unexpected table view %@", self, tableView);
+    assert(0);
+    return;
+  }
+  if ([self shouldIgnoreTaps])
+  {
+    DDLogWarn(@"%@: Ignoring board position change", self);
+    return;
+  }
+  int newBoardPosition = indexPath.row;
+  [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief This is an internal helper for tableView:cellForRowAtIndexPath:().
@@ -660,37 +662,6 @@
     return self.alternateCellBackgroundColor1;
   else
     return self.alternateCellBackgroundColor2;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (BOOL) tableView:(UITableView*)tableView shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (tableView == self.boardPositionListTableView && self.tappingEnabled)
-    return YES;
-  else
-    return NO;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (tableView != self.boardPositionListTableView)
-  {
-    DDLogError(@"%@: Unexpected table view %@", self, tableView);
-    assert(0);
-    return;
-  }
-  if ([self shouldIgnoreTaps])
-  {
-    DDLogWarn(@"%@: Ignoring board position change", self);
-    return;
-  }
-  int newBoardPosition = indexPath.row;
-  [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

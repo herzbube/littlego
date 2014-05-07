@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@
 #import "../controller/NavigationBarController.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
-#import "../../ui/UiElementMetrics.h"
+#import "../../ui/AutoLayoutUtility.h"
 
 
 @implementation PlayTabControllerPad
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PlayTabControllerPad object.
@@ -48,6 +50,8 @@
   [self releaseObjects];
   [super dealloc];
 }
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
@@ -105,6 +109,8 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -112,9 +118,16 @@
 {
   self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
-  CGRect splitViewControllerViewFrame = self.view.bounds;
-  self.splitViewControllerChild.view.frame = splitViewControllerViewFrame;
   [self.view addSubview:self.splitViewControllerChild.view];
+
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+  self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
+
+  // Don't change self.splitViewControllerChild.view.backgroundColor because
+  // that color is used for the separator line between the left and right view.
+  // The left and right view must set their own background color.
+
 }
 
 @end
