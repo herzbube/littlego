@@ -32,6 +32,22 @@ TableViewCell
     frame rect = 280/1, 30x43
 
 
+View layout
+-----------
+This project uses iOS' Auto Layout feature to arrange its views on the screen.
+
+The application has a separate view layout on iPhone and iPad. The decision
+which layout to use is made in a convenience constructor of the
+PlayTabController class. The decision is based on the user interface idiom
+returned by UIDevice.
+
+On the iPad, if the user is holding the device in landscape orientation while
+the application is starting up, iOS will first start up in portrait orientation
+and then initiate an auto-rotation to landscape orientation. Auto Layout makes
+sure that the main view and its subviews are resized correctly when they are
+finally displayed.
+
+
 Working with .sgf files
 -----------------------
 The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,8 @@
 
 @implementation NavigationBarController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a NavigationBarController object.
 ///
@@ -89,14 +91,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
-// -----------------------------------------------------------------------------
-- (void) setupChildControllers
-{
-  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
@@ -116,6 +110,16 @@
   self.gameActionsButton = nil;
   self.doneButton = nil;
   self.statusViewButton = nil;
+}
+
+#pragma mark - Container view controller handling
+
+// -----------------------------------------------------------------------------
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupChildControllers
+{
+  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -143,6 +147,8 @@
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -161,6 +167,8 @@
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
+
+#pragma mark - Private helpers for view setup
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
@@ -244,6 +252,8 @@
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Pass" button. Generates a "Pass"
@@ -333,15 +343,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief GameInfoViewControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
-{
-  [self.navigationController popViewControllerAnimated:YES];
-  self.gameInfoViewController = nil;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Game Actions" button. Displays an
 /// action sheet with actions that related to Go games as a whole.
 // -----------------------------------------------------------------------------
@@ -357,13 +358,26 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if taps on bar button items should currently be
-/// ignored.
+/// @brief Reacts to a tap gesture on the "Done" button. Ends the currently
+/// active mode and returns to normal play mode.
 // -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
+- (void) done:(id)sender
 {
-  return [GoGame sharedGame].isComputerThinking;
+  [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this controller reacts
 }
+
+#pragma mark - GameInfoViewControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
+{
+  [self.navigationController popViewControllerAnimated:YES];
+  self.gameInfoViewController = nil;
+}
+
+#pragma mark - PlayViewActionSheetDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief PlayViewActionSheetDelegate protocol method.
@@ -372,6 +386,8 @@
 {
   [controller release];
 }
+
+#pragma mark - UISplitViewControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UISplitViewControllerDelegate protocol method.
@@ -394,14 +410,7 @@
   [self delayedUpdate];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Done" button. Ends the currently
-/// active mode and returns to normal play mode.
-// -----------------------------------------------------------------------------
-- (void) done:(id)sender
-{
-  [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this controller reacts
-}
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
@@ -511,6 +520,8 @@
   [self delayedUpdate];
 }
 
+#pragma mark - KVO responder
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
@@ -531,6 +542,17 @@
     }
     [self delayedUpdate];
   }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 // -----------------------------------------------------------------------------

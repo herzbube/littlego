@@ -32,7 +32,7 @@
 - (id) init
 {
   // Call designated initializer of superclass (UITabBarController)
-  self = [super init];
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
   self.delegate = self;
