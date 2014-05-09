@@ -29,12 +29,7 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
-#import "DocumentViewController.h"
-#import "LicensesViewController.h"
 #import "MainTabBarController.h"
-#import "SectionedDocumentViewController.h"
-#import "../archive/ArchiveViewController.h"
-#import "../diagnostics/DiagnosticsViewController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -46,7 +41,6 @@
 #import "../play/model/BoardPositionModel.h"
 #import "../play/model/PlayViewModel.h"
 #import "../play/model/ScoringModel.h"
-#import "../play/playtab/PlayTabController.h"
 #import "../play/playview/PlayViewMetrics.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
@@ -62,10 +56,8 @@
 #import "../go/GoGame.h"
 #import "../shared/LongRunningActionCounter.h"
 #import "../shared/ApplicationStateManager.h"
-#import "../settings/SettingsViewController.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
-#import "../ui/AutoLayoutUtility.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 
@@ -628,7 +620,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   [self setupWindow];
   [self setupTabBarController];
-  [self setupTabControllers];
 
   [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
 
@@ -661,81 +652,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   // trouble later on during the application's lifetime, when VCs are dismissed
   // after being presented modally. The problem is discussed here:
   // http://stackoverflow.com/q/23313112/1054378
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupGui.
-// -----------------------------------------------------------------------------
-- (void) setupTabControllers
-{
-  NSMutableArray* tabControllers = [NSMutableArray array];
-
-  NSString* playTitleString = @"Play";
-  UIViewController* playTabController = [PlayTabController playTabController];
-  playTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:playTitleString image:[UIImage imageNamed:playTabIconResource] tag:TabTypePlay] autorelease];
-  [tabControllers addObject:playTabController];
-
-  NSString* settingsTitleString = @"Settings";
-  SettingsViewController* settingsViewController = [SettingsViewController controller];
-  settingsViewController.title = settingsTitleString;
-  UINavigationController* settingsTabController = [[[UINavigationController alloc] initWithRootViewController:settingsViewController] autorelease];
-  settingsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:settingsTitleString image:[UIImage imageNamed:settingsTabIconResource] tag:TabTypeSettings] autorelease];
-  [tabControllers addObject:settingsTabController];
-
-  NSString* archiveTitleString = @"Archive";
-  ArchiveViewController* archiveViewController = [[[ArchiveViewController alloc] init] autorelease];
-  archiveViewController.title = archiveTitleString;
-  UINavigationController* archiveTabController = [[[UINavigationController alloc] initWithRootViewController:archiveViewController] autorelease];
-  archiveTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:archiveTitleString image:[UIImage imageNamed:archiveTabIconResource] tag:TabTypeArchive] autorelease];
-  [tabControllers addObject:archiveTabController];
-
-  NSString* helpTitleString = @"Help";
-  SectionedDocumentViewController* helpSectionedDocumentViewController = [[[SectionedDocumentViewController alloc] init] autorelease];
-  helpSectionedDocumentViewController.title = helpTitleString;
-  UINavigationController* helpTabController = [[[UINavigationController alloc] initWithRootViewController:helpSectionedDocumentViewController] autorelease];
-  helpTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:helpTitleString image:[UIImage imageNamed:helpTabIconResource] tag:TabTypeHelp] autorelease];
-  helpSectionedDocumentViewController.contextTabBarItem = helpTabController.tabBarItem;
-  [tabControllers addObject:helpTabController];
-
-  NSString* diagnosticsTitleString = @"Diagnostics";
-  DiagnosticsViewController* diagnosticsViewController = [DiagnosticsViewController controller];
-  diagnosticsViewController.title = diagnosticsTitleString;
-  UINavigationController* diagnosticsTabController = [[[UINavigationController alloc] initWithRootViewController:diagnosticsViewController] autorelease];
-  diagnosticsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:diagnosticsTitleString image:[UIImage imageNamed:diagnosticsTabIconResource] tag:TabTypeDiagnostics] autorelease];
-  [tabControllers addObject:diagnosticsTabController];
-
-  NSString* aboutTitleString = @"About";
-  DocumentViewController* aboutDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
-  aboutDocumentViewController.title = aboutTitleString;
-  UINavigationController* aboutTabController = [[[UINavigationController alloc] initWithRootViewController:aboutDocumentViewController] autorelease];
-  aboutTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:aboutTitleString image:[UIImage imageNamed:aboutTabIconResource] tag:TabTypeAbout] autorelease];
-  aboutDocumentViewController.contextTabBarItem = aboutTabController.tabBarItem;
-  [tabControllers addObject:aboutTabController];
-
-  NSString* sourceCodeTitleString = @"Source Code";
-  DocumentViewController* sourceCodeDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
-  sourceCodeDocumentViewController.title = sourceCodeTitleString;
-  UINavigationController* sourceCodeTabController = [[[UINavigationController alloc] initWithRootViewController:sourceCodeDocumentViewController] autorelease];
-  sourceCodeTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:sourceCodeTitleString image:[UIImage imageNamed:sourceCodeTabIconResource] tag:TabTypeSourceCode] autorelease];
-  sourceCodeDocumentViewController.contextTabBarItem = sourceCodeTabController.tabBarItem;
-  [tabControllers addObject:sourceCodeTabController];
-
-  NSString* licensesTitleString = @"Licenses";
-  LicensesViewController* licensesViewController = [[[LicensesViewController alloc] init] autorelease];
-  licensesViewController.title = licensesTitleString;
-  UINavigationController* licensesTabController = [[[UINavigationController alloc] initWithRootViewController:licensesViewController] autorelease];
-  licensesTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:licensesTitleString image:[UIImage imageNamed:licensesTabIconResource] tag:TabTypeLicenses] autorelease];
-  [tabControllers addObject:licensesTabController];
-
-  NSString* creditsTitleString = @"Credits";
-  DocumentViewController* creditsDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
-  creditsDocumentViewController.title = creditsTitleString;
-  UINavigationController* creditsTabController = [[[UINavigationController alloc] initWithRootViewController:creditsDocumentViewController] autorelease];
-  creditsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:creditsTitleString image:[UIImage imageNamed:creditsTabIconResource] tag:TabTypeCredits] autorelease];
-  creditsDocumentViewController.contextTabBarItem = creditsTabController.tabBarItem;
-  [tabControllers addObject:creditsTabController];
-
-  self.tabBarController.viewControllers = tabControllers;
 }
 
 // -----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,20 @@
 // Project includes
 #import "MainTabBarController.h"
 #import "ApplicationDelegate.h"
+#import "DocumentViewController.h"
+#import "LicensesViewController.h"
+#import "SectionedDocumentViewController.h"
+#import "../archive/ArchiveViewController.h"
+#import "../diagnostics/DiagnosticsViewController.h"
+#import "../play/playtab/PlayTabController.h"
+#import "../settings/SettingsViewController.h"
 #import "../ui/UiSettingsModel.h"
 #import "../ui/UiUtilities.h"
 
 
 @implementation MainTabBarController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a MainTabBarController.
@@ -37,7 +46,83 @@
     return nil;
   self.delegate = self;
   self.moreNavigationController.delegate = self;
+  [self setupTabControllers];
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupGui.
+// -----------------------------------------------------------------------------
+- (void) setupTabControllers
+{
+  NSMutableArray* tabControllers = [NSMutableArray array];
+
+  NSString* playTitleString = @"Play";
+  UIViewController* playTabController = [PlayTabController playTabController];
+  playTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:playTitleString image:[UIImage imageNamed:playTabIconResource] tag:TabTypePlay] autorelease];
+  [tabControllers addObject:playTabController];
+
+  NSString* settingsTitleString = @"Settings";
+  SettingsViewController* settingsViewController = [SettingsViewController controller];
+  settingsViewController.title = settingsTitleString;
+  UINavigationController* settingsTabController = [[[UINavigationController alloc] initWithRootViewController:settingsViewController] autorelease];
+  settingsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:settingsTitleString image:[UIImage imageNamed:settingsTabIconResource] tag:TabTypeSettings] autorelease];
+  [tabControllers addObject:settingsTabController];
+
+  NSString* archiveTitleString = @"Archive";
+  ArchiveViewController* archiveViewController = [[[ArchiveViewController alloc] init] autorelease];
+  archiveViewController.title = archiveTitleString;
+  UINavigationController* archiveTabController = [[[UINavigationController alloc] initWithRootViewController:archiveViewController] autorelease];
+  archiveTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:archiveTitleString image:[UIImage imageNamed:archiveTabIconResource] tag:TabTypeArchive] autorelease];
+  [tabControllers addObject:archiveTabController];
+
+  NSString* helpTitleString = @"Help";
+  SectionedDocumentViewController* helpSectionedDocumentViewController = [[[SectionedDocumentViewController alloc] init] autorelease];
+  helpSectionedDocumentViewController.title = helpTitleString;
+  UINavigationController* helpTabController = [[[UINavigationController alloc] initWithRootViewController:helpSectionedDocumentViewController] autorelease];
+  helpTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:helpTitleString image:[UIImage imageNamed:helpTabIconResource] tag:TabTypeHelp] autorelease];
+  helpSectionedDocumentViewController.contextTabBarItem = helpTabController.tabBarItem;
+  [tabControllers addObject:helpTabController];
+
+  NSString* diagnosticsTitleString = @"Diagnostics";
+  DiagnosticsViewController* diagnosticsViewController = [DiagnosticsViewController controller];
+  diagnosticsViewController.title = diagnosticsTitleString;
+  UINavigationController* diagnosticsTabController = [[[UINavigationController alloc] initWithRootViewController:diagnosticsViewController] autorelease];
+  diagnosticsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:diagnosticsTitleString image:[UIImage imageNamed:diagnosticsTabIconResource] tag:TabTypeDiagnostics] autorelease];
+  [tabControllers addObject:diagnosticsTabController];
+
+  NSString* aboutTitleString = @"About";
+  DocumentViewController* aboutDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
+  aboutDocumentViewController.title = aboutTitleString;
+  UINavigationController* aboutTabController = [[[UINavigationController alloc] initWithRootViewController:aboutDocumentViewController] autorelease];
+  aboutTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:aboutTitleString image:[UIImage imageNamed:aboutTabIconResource] tag:TabTypeAbout] autorelease];
+  aboutDocumentViewController.contextTabBarItem = aboutTabController.tabBarItem;
+  [tabControllers addObject:aboutTabController];
+
+  NSString* sourceCodeTitleString = @"Source Code";
+  DocumentViewController* sourceCodeDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
+  sourceCodeDocumentViewController.title = sourceCodeTitleString;
+  UINavigationController* sourceCodeTabController = [[[UINavigationController alloc] initWithRootViewController:sourceCodeDocumentViewController] autorelease];
+  sourceCodeTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:sourceCodeTitleString image:[UIImage imageNamed:sourceCodeTabIconResource] tag:TabTypeSourceCode] autorelease];
+  sourceCodeDocumentViewController.contextTabBarItem = sourceCodeTabController.tabBarItem;
+  [tabControllers addObject:sourceCodeTabController];
+
+  NSString* licensesTitleString = @"Licenses";
+  LicensesViewController* licensesViewController = [[[LicensesViewController alloc] init] autorelease];
+  licensesViewController.title = licensesTitleString;
+  UINavigationController* licensesTabController = [[[UINavigationController alloc] initWithRootViewController:licensesViewController] autorelease];
+  licensesTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:licensesTitleString image:[UIImage imageNamed:licensesTabIconResource] tag:TabTypeLicenses] autorelease];
+  [tabControllers addObject:licensesTabController];
+
+  NSString* creditsTitleString = @"Credits";
+  DocumentViewController* creditsDocumentViewController = [[[DocumentViewController alloc] init] autorelease];
+  creditsDocumentViewController.title = creditsTitleString;
+  UINavigationController* creditsTabController = [[[UINavigationController alloc] initWithRootViewController:creditsDocumentViewController] autorelease];
+  creditsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:creditsTitleString image:[UIImage imageNamed:creditsTabIconResource] tag:TabTypeCredits] autorelease];
+  creditsDocumentViewController.contextTabBarItem = creditsTabController.tabBarItem;
+  [tabControllers addObject:creditsTabController];
+
+  self.viewControllers = tabControllers;
 }
 
 #pragma mark - UIViewController overrides
