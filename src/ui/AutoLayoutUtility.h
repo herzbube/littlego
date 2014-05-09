@@ -41,5 +41,7 @@
 + (CGFloat) verticalSpacingSiblings;
 + (CGFloat) horizontalSpacingSuperview;
 + (CGFloat) verticalSpacingSuperview;
++ (CGFloat) horizontalSpacingTableViewCell;
++ (CGFloat) verticalSpacingTableViewCell;
 
 @end

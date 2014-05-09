@@ -51,8 +51,6 @@ enum SliderCellSubViewTag
 /// - Use the @e value property to set or get the integer value
 /// - Each UI element has its view tag set to a value from the
 ///   #SliderCellSubViewTag enum
-/// - The labels' width is fixed
-/// - The value label has room for roughly 3-4 characters
 /// - TableViewSliderCell was not designed to be used in editing mode
 /// - TableViewSliderCell is not tested in table views that do not have grouped
 ///   style
@@ -61,7 +59,7 @@ enum SliderCellSubViewTag
 {
 }
 
-+ (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier;
++ (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier valueLabelHidden:(bool)valueLabelHidden;
 + (CGFloat) rowHeightInTableView:(UITableView*)tableView;
 - (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2;
 
@@ -69,7 +67,7 @@ enum SliderCellSubViewTag
 @property(nonatomic, retain, readonly) UILabel* valueLabel;
 @property(nonatomic, retain, readonly) UISlider* slider;
 @property(nonatomic, assign) int value;
-@property(nonatomic, assign) bool valueLabelHidden;
+@property(nonatomic, assign, readonly) bool valueLabelHidden;
 /// @brief Delegate object that will be informed when the cell's integer
 /// value changes.
 @property(nonatomic, assign, readonly) id delegate;

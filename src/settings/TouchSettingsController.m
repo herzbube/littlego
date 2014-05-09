@@ -163,9 +163,8 @@ enum ZoomSectionItem
       {
         case StoneDistanceFromFingertipItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:SliderWithoutValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          sliderCell.valueLabelHidden = true;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(stoneDistanceFromFingertipDidChange:)];
           sliderCell.descriptionLabel.text = @"Stone distance from fingertip";
           sliderCell.slider.minimumValue = 0;
@@ -189,9 +188,8 @@ enum ZoomSectionItem
       {
         case MaxZoomScaleItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:SliderWithoutValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          sliderCell.valueLabelHidden = true;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxZoomScaleDidChange:)];
           sliderCell.descriptionLabel.text = @"Maximum zoom";
           sliderCell.slider.minimumValue = (1.0

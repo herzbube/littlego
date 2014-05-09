@@ -165,7 +165,7 @@ enum PhysicalMemorySectionItem
   {
     case MaxMemorySection:
     {
-      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+      cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
       TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
       sliderCell.descriptionLabel.text = @"Maximum memory (MB)";
       sliderCell.slider.minimumValue = fuegoMaxMemoryMinimum;

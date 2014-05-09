@@ -18,7 +18,7 @@
 // Project includes
 #import "TableViewSliderCell.h"
 #import "UIColorAdditions.h"
-#import "UiElementMetrics.h"
+#import "AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -44,8 +44,10 @@
 /// reuse identifier @a reuseIdentifier.
 // -----------------------------------------------------------------------------
 + (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier
+                                valueLabelHidden:(bool)valueLabelHidden
 {
-  TableViewSliderCell* cell = [[TableViewSliderCell alloc] initWithReuseIdentifier:reuseIdentifier];
+  TableViewSliderCell* cell = [[TableViewSliderCell alloc] initWithReuseIdentifier:reuseIdentifier
+                                                                  valueLabelHidden:valueLabelHidden];
   if (cell)
     [cell autorelease];
   return cell;
@@ -58,17 +60,16 @@
 /// @note This is the designated initializer of TableViewSliderCell.
 // -----------------------------------------------------------------------------
 - (id) initWithReuseIdentifier:(NSString*)reuseIdentifier
+              valueLabelHidden:(bool)valueLabelHidden
 {
   // Call designated initializer of superclass (UITableViewCell)
   self = [super initWithStyle:UITableViewCellStyleDefault
               reuseIdentifier:reuseIdentifier];
   if (! self)
     return nil;
-
-  self.valueLabelHidden = false;
+  _valueLabelHidden = valueLabelHidden;
   [self setupCell];
   [self setupContentView];
-
   // TODO: instead of duplicating code from the setter, we should invoke the
   // setter (self.value = ...), but we need to be sure that it does not update
   // because of its old/new value check
@@ -76,7 +77,6 @@
   self.value = newValue;
   self.slider.value = newValue;
   [self updateValueLabel];
-
   return self;
 }
 
@@ -108,110 +108,85 @@
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  CGRect descriptionLabelRect = [self descriptionLabelFrame];
-  self.descriptionLabel = [[[UILabel alloc] initWithFrame:descriptionLabelRect] autorelease];
-  self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
-  self.descriptionLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-  self.descriptionLabel.textAlignment = NSTextAlignmentLeft;
-  self.descriptionLabel.textColor = [UIColor blackColor];
-  self.descriptionLabel.backgroundColor = [UIColor clearColor];
-  self.descriptionLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
-  [self.contentView addSubview:self.descriptionLabel];
-
+  [self setupDescriptionLabel];
   if (! self.valueLabelHidden)
-  {
-    CGRect valueLabelRect = [self valueLabelFrame];
-    self.valueLabel = [[[UILabel alloc] initWithFrame:valueLabelRect] autorelease];
-    self.valueLabel.tag = SliderCellValueLabelTag;
-    self.valueLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-    self.valueLabel.textAlignment = NSTextAlignmentRight;
-    self.valueLabel.textColor = [UIColor slateBlueColor];
-    self.valueLabel.backgroundColor = [UIColor clearColor];
-    self.valueLabel.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
-    [self.contentView addSubview:self.valueLabel];
-  }
+    [self setupValueLabel];
+  [self setupSlider];
+  [self setupAutoLayoutConstraints];
+}
 
-  CGRect sliderRect = [self sliderFrame];
-  self.slider = [[[UISlider alloc] initWithFrame:sliderRect] autorelease];
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupContentView
+// -----------------------------------------------------------------------------
+- (void) setupDescriptionLabel
+{
+  self.descriptionLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+  self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
+  self.descriptionLabel.textAlignment = NSTextAlignmentLeft;
+  self.descriptionLabel.backgroundColor = [UIColor clearColor];
+  [self.contentView addSubview:self.descriptionLabel];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupContentView
+// -----------------------------------------------------------------------------
+- (void) setupValueLabel
+{
+  self.valueLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+  self.valueLabel.tag = SliderCellValueLabelTag;
+  self.valueLabel.textAlignment = NSTextAlignmentRight;
+  self.valueLabel.backgroundColor = [UIColor clearColor];
+  [self.contentView addSubview:self.valueLabel];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupContentView
+// -----------------------------------------------------------------------------
+- (void) setupSlider
+{
+  self.slider = [[[UISlider alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
   self.slider.tag = SliderCellSliderTag;
   self.slider.continuous = YES;
-  self.slider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  [self.contentView addSubview:self.slider];
   [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+  [self.contentView addSubview:self.slider];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the description label. Assumes that an
-/// autoresizingMask is later applied to the label that will make it resize
-/// properly.
+/// @brief Private helper for setupContentView
 // -----------------------------------------------------------------------------
-- (CGRect) descriptionLabelFrame
+- (void) setupAutoLayoutConstraints
 {
-  int descriptionLabelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal];
-  int descriptionLabelY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
-  int descriptionLabelWidth;
+  self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.valueLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.slider.translatesAutoresizingMaskIntoConstraints = NO;
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                          self.descriptionLabel, @"descriptionLabel",
+                                          self.slider, @"slider",
+                                          nil];
+  CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
+  CGFloat verticalSpacingSiblings = [AutoLayoutUtility verticalSpacingSiblings];
+  CGFloat horizontalSpacingTableViewCell = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
+  NSString* visualFormat1 = [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingTableViewCell];
+  NSString* visualFormat2 = [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-%f-[valueLabel]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingSiblings, horizontalSpacingTableViewCell];
+  NSString* visualFormat3 = [NSString stringWithFormat:@"H:|-%f-[slider]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingTableViewCell];
+  NSString* visualFormat4 = [NSString stringWithFormat:@"V:|-%f-[descriptionLabel]-%f-[slider]", verticalSpacingTableViewCell, verticalSpacingSiblings];
+  NSString* visualFormat5 = [NSString stringWithFormat:@"V:|-%f-[valueLabel]", verticalSpacingTableViewCell];
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
+                                   visualFormat3,
+                                   visualFormat4,
+                                   nil];
   if (self.valueLabelHidden)
   {
-    descriptionLabelWidth = (self.contentView.bounds.size.width
-                             - 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
+    [visualFormats addObject:visualFormat1];
   }
   else
   {
-    // Arbitrary value that hopefully leaves enough space for the value label
-    descriptionLabelWidth = 230;
+    [viewsDictionary setObject:self.valueLabel forKey:@"valueLabel"];
+    [visualFormats addObject:visualFormat2];
+    [visualFormats addObject:visualFormat5];
   }
-  int descriptionLabelHeight = [UiElementMetrics labelHeight];
-  return CGRectMake(descriptionLabelX, descriptionLabelY, descriptionLabelWidth, descriptionLabelHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the value label. Assumes that an
-/// autoresizingMask is later applied to the label that will make it resize
-/// properly.
-// -----------------------------------------------------------------------------
-- (CGRect) valueLabelFrame
-{
-  CGSize superViewSize = self.contentView.bounds.size;
-  int valueLabelX = CGRectGetMaxX(self.descriptionLabel.frame) + [UiElementMetrics spacingHorizontal];
-  int valueLabelY = self.descriptionLabel.frame.origin.y;
-  int valueLabelWidth = (superViewSize.width
-                         - valueLabelX
-                         - [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]);
-  int valueLabelHeight = [UiElementMetrics labelHeight];
-  return CGRectMake(valueLabelX, valueLabelY, valueLabelWidth, valueLabelHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the slider. Assumes that an autoresizingMask
-/// is later applied to the label that will make it resize properly.
-// -----------------------------------------------------------------------------
-- (CGRect) sliderFrame
-{
-  int sliderX = self.descriptionLabel.frame.origin.x;
-  int sliderY = CGRectGetMaxY(self.descriptionLabel.frame) + [UiElementMetrics spacingVertical];
-  int sliderWidth;
-  if (self.valueLabelHidden)
-    sliderWidth = CGRectGetMaxX(self.descriptionLabel.frame) - sliderX;
-  else
-    sliderWidth = CGRectGetMaxX(self.valueLabel.frame) - sliderX;
-  int sliderHeight = [UiElementMetrics sliderHeight];
-  return CGRectMake(sliderX, sliderY, sliderWidth, sliderHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates / deallocates the value label.
-// -----------------------------------------------------------------------------
-- (void) setValueLabelHidden:(bool)newValue
-{
-  if (newValue == _valueLabelHidden)
-    return;
-  _valueLabelHidden = newValue;
-  [self.descriptionLabel removeFromSuperview];
-  [self.valueLabel removeFromSuperview];
-  [self.slider removeFromSuperview];
-  [self setupContentView];
-  if (! _valueLabelHidden)
-    [self updateValueLabel];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.contentView];
 }
 
 // -----------------------------------------------------------------------------
@@ -222,10 +197,21 @@
   static CGFloat rowHeight = 0;
   if (0 == rowHeight)
   {
-    rowHeight = (2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical]
-                 + [UiElementMetrics labelHeight]
-                 + [UiElementMetrics spacingVertical]
-                 + [UiElementMetrics sliderHeight]);
+    UILabel* dummyLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+    dummyLabel.text = @"A";
+    [dummyLabel setNeedsLayout];
+    [dummyLabel layoutIfNeeded];
+    CGSize labelSize = [dummyLabel systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+    UISlider* dummySlider = [[[UISlider alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+    [dummySlider setNeedsLayout];
+    [dummySlider layoutIfNeeded];
+    CGSize sliderSize = [dummySlider systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+    rowHeight = (2 * [AutoLayoutUtility verticalSpacingTableViewCell]
+                 + labelSize.height
+                 + [AutoLayoutUtility verticalSpacingSiblings]
+                 + sliderSize.height);
   }
   return rowHeight;
 }
@@ -270,6 +256,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateValueLabel
 {
+  if (self.valueLabelHidden)
+    return;
   int intValue = self.slider.value;
   self.valueLabel.text = [NSString stringWithFormat:@"%d", intValue];
 }

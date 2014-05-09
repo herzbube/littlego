@@ -32,7 +32,8 @@ enum TableViewCellType
   SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
   TextFieldCellType,     ///< @brief The cell's content view is divided into a left UILabel and a right UITextField
-  SliderCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value
+  SliderWithValueLabelCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value. Displays the value label.
+  SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
   RedButtonCellType,     ///< @brief Cell that looks like a red button; style and color are similar to the delete button in Apple's address book

@@ -115,7 +115,7 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
   [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(sliderValueDidChange:)];
   sliderCell.descriptionLabel.text = self.descriptionLabelText;

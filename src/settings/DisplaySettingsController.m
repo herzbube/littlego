@@ -207,9 +207,8 @@ enum DisplayPlayerInfluenceSectionItem
       {
         case MoveNumbersPercentageItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:SliderWithoutValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          sliderCell.valueLabelHidden = true;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(moveNumbersPercentageDidChange:)];
           sliderCell.descriptionLabel.text = @"Display move numbers";
           sliderCell.slider.minimumValue = 0;

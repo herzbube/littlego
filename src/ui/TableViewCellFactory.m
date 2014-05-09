@@ -63,8 +63,11 @@
     case TextFieldCellType:
       cellID = @"TextFieldCellType";
       break;
-    case SliderCellType:
-      cellID = @"SliderCellType";
+    case SliderWithValueLabelCellType:
+      cellID = @"SliderWithValueLabelCellType";
+      break;
+    case SliderWithoutValueLabelCellType:
+      cellID = @"SliderWithoutValueLabelCellType";
       break;
     case GridCellType:
       cellID = @"GridCellType";
@@ -109,9 +112,14 @@
   // Create the (autoreleased) cell object
   switch (type)
   {
-    case SliderCellType:
+    case SliderWithValueLabelCellType:
     {
-      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier];
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:false];
+      break;
+    }
+    case SliderWithoutValueLabelCellType:
+    {
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:true];
       break;
     }
     case GridCellType:

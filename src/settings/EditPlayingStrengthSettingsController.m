@@ -222,7 +222,7 @@ enum MaxGamesCategory
     }
     case ThreadsSection:
     {
-      cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+      cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
       TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
       [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
       sliderCell.descriptionLabel.text = @"Number of threads";
@@ -246,7 +246,7 @@ enum MaxGamesCategory
         }
         case FuegoMaxPonderTimeItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxPonderTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Ponder time (minutes)";
@@ -284,7 +284,7 @@ enum MaxGamesCategory
       {
         case FuegoMaxThinkingTimeItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
           [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxThinkingTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Thinking time (seconds)";

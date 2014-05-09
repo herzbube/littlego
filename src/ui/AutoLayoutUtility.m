@@ -199,4 +199,38 @@
   return constraint.constant;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the spacing to use when placing elements inside a table view
+/// cell content view; the spacing is the distance from the left or right edge
+/// of the table view cell content view.
+// -----------------------------------------------------------------------------
++ (CGFloat) horizontalSpacingTableViewCell
+{
+  static CGFloat horizontalSpacingTableViewCell = -1.0f;
+  if (horizontalSpacingTableViewCell < 0.0f)
+  {
+    UITableViewCell* cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"dummy"] autorelease];
+    cell.textLabel.text = @"A";
+    [cell layoutIfNeeded];
+    horizontalSpacingTableViewCell = cell.textLabel.frame.origin.x;
+  }
+  return horizontalSpacingTableViewCell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the spacing to use when placing elements inside a table view
+/// cell content view; the spacing is the distance from the top or bottom edge
+/// of the table view cell content view.
+// -----------------------------------------------------------------------------
++ (CGFloat) verticalSpacingTableViewCell
+{
+  // TODO Don't fake this, calculate the real value. Unfortunately we can't use
+  // the same approach as in horizontalSpacingTableViewCell - with that approach
+  // we would determine the distance of the text label from the top edge of the
+  // content view, i.e. cell.textLabel.frame.origin.y. Unfortunately the value
+  // of this is always 0 (zero). So instead we fake the real thing by returning
+  // an approximate value.
+  return [AutoLayoutUtility verticalSpacingSiblings];
+}
+
 @end
