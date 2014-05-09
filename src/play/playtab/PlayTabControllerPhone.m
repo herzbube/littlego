@@ -26,6 +26,17 @@
 #import "../playview/ScrollViewController.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for PlayTabControllerPhone.
+// -----------------------------------------------------------------------------
+@interface PlayTabControllerPhone()
+@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) ScrollViewController* scrollViewController;
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
+@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
+@end
+
+
 @implementation PlayTabControllerPhone
 
 #pragma mark - Initialization and deallocation

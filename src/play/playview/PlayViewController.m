@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,14 @@
 #import "PlayView.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for PlayViewController.
+// -----------------------------------------------------------------------------
+@interface PlayViewController()
+@property(nonatomic, retain) TapGestureController* tapGestureController;
+@end
 
 
 @implementation PlayViewController

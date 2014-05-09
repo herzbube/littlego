@@ -27,6 +27,15 @@
 #import "../../ui/UiElementMetrics.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for RightPaneViewController.
+// -----------------------------------------------------------------------------
+@interface RightPaneViewController()
+@property(nonatomic, retain) ScrollViewController* scrollViewController;
+@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
+@end
+
+
 @implementation RightPaneViewController
 
 #pragma mark - Initialization and deallocation

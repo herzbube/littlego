@@ -148,9 +148,7 @@
 //@}
 /// @name Related views whose drawing PlayView coordinates
 //@{
-@property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
 @property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
-@property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;
 @property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsNumberView;
 //@}
 

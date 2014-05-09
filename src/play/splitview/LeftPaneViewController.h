@@ -15,11 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class BoardPositionTableListViewController;
-@class BoardPositionToolbarController;
-
-
 // -----------------------------------------------------------------------------
 /// @brief The LeftPaneViewController class manages a simple container view
 /// intended to be displayed as the left pane of a split view (i.e. the view
@@ -31,8 +26,5 @@
 @interface LeftPaneViewController : UIViewController
 {
 }
-
-@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
-@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 
 @end

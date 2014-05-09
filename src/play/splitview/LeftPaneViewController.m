@@ -23,6 +23,15 @@
 #import "../../ui/AutoLayoutUtility.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for LeftPaneViewController.
+// -----------------------------------------------------------------------------
+@interface LeftPaneViewController()
+@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
+@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
+@end
+
+
 @implementation LeftPaneViewController
 
 #pragma mark - Initialization and deallocation

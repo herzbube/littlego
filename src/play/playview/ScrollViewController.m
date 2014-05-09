@@ -32,6 +32,7 @@
 /// @brief Class extension with private properties for ScrollViewController.
 // -----------------------------------------------------------------------------
 @interface ScrollViewController()
+@property(nonatomic, assign) UIScrollView* scrollView;
 @property(nonatomic, assign) UIScrollView* coordinateLabelsLetterViewScrollView;
 @property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
 @property(nonatomic, assign) UIScrollView* coordinateLabelsNumberViewScrollView;

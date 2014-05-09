@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Forward declarations
 @class PlayView;
 @class PanGestureController;
-@class TapGestureController;
 
 
 // -----------------------------------------------------------------------------
@@ -33,6 +32,5 @@
 
 @property(nonatomic, retain) PlayView* playView;
 @property(nonatomic, retain) PanGestureController* panGestureController;
-@property(nonatomic, retain) TapGestureController* tapGestureController;
 
 @end

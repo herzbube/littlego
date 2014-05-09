@@ -23,6 +23,18 @@
 #import "../../ui/AutoLayoutUtility.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for PlayTabControllerPad.
+// -----------------------------------------------------------------------------
+@interface PlayTabControllerPad()
+// Cannot name this property splitViewController, there already is a property
+// of that name in UIViewController, and it has a different meaning
+@property(nonatomic, retain) UISplitViewController* splitViewControllerChild;
+@property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
+@property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
+@end
+
+
 @implementation PlayTabControllerPad
 
 #pragma mark - Initialization and deallocation

@@ -39,6 +39,5 @@
 }
 
 @property(nonatomic, retain) PlayViewController* playViewController;
-@property(nonatomic, assign) UIScrollView* scrollView;
 
 @end
