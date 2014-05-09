@@ -117,17 +117,45 @@
 - (void) loadView
 {
   self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-
   [self.view addSubview:self.splitViewControllerChild.view];
-
-  self.edgesForExtendedLayout = UIRectEdgeNone;
-  self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
+  // Enabling Auto Layout and installation of constraints is delayed until
+  // viewDidLayoutSubviews because the constraints use topLayoutGuide and
+  // bottomLayoutGuide.
 
   // Don't change self.splitViewControllerChild.view.backgroundColor because
   // that color is used for the separator line between the left and right view.
   // The left and right view must set their own background color.
+}
 
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// We override this method so that we can install Auto Layout constraints that
+/// make use of the topLayoutGuide and bottomLayoutGuide properties of this
+/// UIViewController. We cannot install the constraints in loadView because this
+/// results in weird layout issues (when the app launches in landscape
+/// orientation on the iPad, the split view controller starts out with bounds
+/// that match portrait orientation).
+///
+/// Note that Apple's documentation for both the topLayoutGuide and the
+/// bottomLayoutGuide properties says: "Query this property within your
+/// implementation of the viewDidLayoutSubviews method." So this override
+/// actually does the right thing.
+// -----------------------------------------------------------------------------
+- (void) viewDidLayoutSubviews
+{
+  static bool constraintsNotYetInstalled = true;
+  if (constraintsNotYetInstalled)
+  {
+    constraintsNotYetInstalled = false;
+    self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
+    // Make sure that views don't extend beneath the status bar (at the top)
+    // and the tab bar (at the bottom)
+    [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
+    // We must call this to avoid a crash; this is as per documentation of the
+    // topLayoutGuide and bottomLayoutGuide properties.
+    [self.view layoutSubviews];
+  }
 }
 
 @end
