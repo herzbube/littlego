@@ -61,7 +61,12 @@
 /// informed of the result of data collection. For this to work, the delegate
 /// must implement the protocol NewGameDelegate.
 // -----------------------------------------------------------------------------
-@interface NewGameController : UITableViewController <ItemPickerDelegate, HandicapSelectionDelegate, KomiSelectionDelegate, UIAlertViewDelegate>
+@interface NewGameController : UIViewController <UITableViewDataSource,
+                                                 UITableViewDelegate,
+                                                 ItemPickerDelegate,
+                                                 HandicapSelectionDelegate,
+                                                 KomiSelectionDelegate,
+                                                 UIAlertViewDelegate>
 {
 }
 

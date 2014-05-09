@@ -18,8 +18,9 @@
 // Project includes
 #import "NewGameController.h"
 #import "NewGameModel.h"
+#import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/TableViewSegmentedCell.h"
+#import "../ui/UIUtilities.h"
 #import "../utility/NSStringAdditions.h"
 #import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
@@ -36,7 +37,6 @@
 // -----------------------------------------------------------------------------
 enum NewGameTableViewSection
 {
-  GameTypeSection,
   PlayersSection,
   BoardSizeSection,  // doubles as GameRulesSection in "load game" mode
   MaxSectionLoadGame,
@@ -44,15 +44,6 @@ enum NewGameTableViewSection
   HandicapKomiSection = MaxSectionLoadGame,
   GameRulesSection,
   MaxSection
-};
-
-// -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GameTypeSection.
-// -----------------------------------------------------------------------------
-enum GameTypeSectionItem
-{
-  GameTypeItem,
-  MaxGameTypeSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -112,10 +103,14 @@ enum GameRulesSectionItem
 @interface NewGameController()
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
+@property(nonatomic, assign) UITableView* tableView;
+@property(nonatomic, assign) UISegmentedControl* segmentedControl;
 @end
 
 
 @implementation NewGameController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a NewGameController instance of
@@ -129,7 +124,7 @@ enum GameRulesSectionItem
 // -----------------------------------------------------------------------------
 + (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate loadGame:(bool)loadGame
 {
-  NewGameController* controller = [[NewGameController alloc] initWithStyle:UITableViewStyleGrouped];
+  NewGameController* controller = [[NewGameController alloc] initWithNibName:nil bundle:nil];
   if (controller)
   {
     [controller autorelease];
@@ -201,19 +196,106 @@ enum GameRulesSectionItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
-- (void) viewDidLoad
+- (void) loadView
 {
-  [super viewDidLoad];
+  [super loadView];
 
-  assert(self.delegate != nil);
+  [self createSubviews];
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
+  [self configureViews];
+}
 
-  // Configure the navigation item representing this controller. This item will
-  // be displayed by the navigation controller that wraps this controller in
-  // its navigation bar.
+#pragma mark - Private helpers for loadView
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) createSubviews
+{
+  self.segmentedControl = [[[UISegmentedControl alloc] initWithItems:nil] autorelease];
+  self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
+  [self.view addSubview:self.segmentedControl];
+  [self.view addSubview:self.tableView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+  self.segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.segmentedControl, @"segmentedControl",
+                                   self.tableView, @"tableView",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-[segmentedControl]-|",
+                            @"H:|-0-[tableView]-0-|",
+                            @"V:|-[segmentedControl]-[tableView]-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
+  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  [self configureSegmentedControl];
+  [self configureTableView];
+  [self configureNavigationItem];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureSegmentedControl
+{
+  self.segmentedControl.tintColor = [UIColor blackColor];
+
+  [self.segmentedControl insertSegmentWithImage:[UIImage imageNamed:humanVsComputerImageResource]
+                                        atIndex:[NewGameController segmentIndexForGameType:GoGameTypeComputerVsHuman]
+                                       animated:NO];
+  [self.segmentedControl insertSegmentWithImage:[UIImage imageNamed:humanVsHumanImageResource]
+                                        atIndex:[NewGameController segmentIndexForGameType:GoGameTypeHumanVsHuman]
+                                       animated:NO];
+  [self.segmentedControl insertSegmentWithImage:[UIImage imageNamed:computerVsComputerImageResource]
+                                        atIndex:[NewGameController segmentIndexForGameType:GoGameTypeComputerVsComputer]
+                                       animated:NO];
+  self.segmentedControl.selectedSegmentIndex = [NewGameController segmentIndexForGameType:self.theNewGameModel.gameTypeLastSelected];
+  [self.segmentedControl addTarget:self action:@selector(gameTypeChanged:) forControlEvents:UIControlEventValueChanged];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureTableView
+{
+  self.tableView.dataSource = self;
+  self.tableView.delegate = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureNavigationItem
+{
   self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                          target:self
                                                                                          action:@selector(cancel:)] autorelease];
@@ -226,6 +308,8 @@ enum GameRulesSectionItem
                                                                                           action:@selector(done:)] autorelease];
   self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
 }
+
+#pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Invoked when the user has decided to start a new game.
@@ -260,6 +344,8 @@ enum GameRulesSectionItem
   [self.delegate newGameController:self didStartNewGame:false];
 }
 
+#pragma mark - UITableViewDataSource overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
@@ -278,8 +364,6 @@ enum GameRulesSectionItem
 {
   switch (section)
   {
-    case GameTypeSection:
-      return MaxGameTypeSectionItem;
     case PlayersSection:
     {
       switch (self.theNewGameModel.gameTypeLastSelected)
@@ -326,27 +410,22 @@ enum GameRulesSectionItem
   return cell;
 }
 
+#pragma mark - Private helper for tableView:cellForRowAtIndexPath:()
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:cellForRowAtIndexPath:().
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) createCellForTableView:(UITableView*)tableView forRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell;
-  if (indexPath.section == GameTypeSection)
+  if (PlayersSection == indexPath.section && GoGameTypeComputerVsHuman == self.theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
   {
-    cell = [TableViewCellFactory cellWithType:SegmentedCellType tableView:tableView];
+    cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
   }
   else
   {
-    if (PlayersSection == indexPath.section && GoGameTypeComputerVsHuman == self.theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
-    {
-      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-    }
-    else
-    {
-      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
+    cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
   return cell;
 }
@@ -358,23 +437,6 @@ enum GameRulesSectionItem
 {
   switch (indexPath.section)
   {
-    case GameTypeSection:
-    {
-      UISegmentedControl* segmentedControl = ((TableViewSegmentedCell*)cell).segmentedControl;
-      [segmentedControl removeAllSegments];
-      [segmentedControl insertSegmentWithImage:[UIImage imageNamed:humanVsComputerImageResource]
-                                       atIndex:[NewGameController segmentIndexForGameType:GoGameTypeComputerVsHuman]
-                                      animated:NO];
-      [segmentedControl insertSegmentWithImage:[UIImage imageNamed:humanVsHumanImageResource]
-                                       atIndex:[NewGameController segmentIndexForGameType:GoGameTypeHumanVsHuman]
-                                      animated:NO];
-      [segmentedControl insertSegmentWithImage:[UIImage imageNamed:computerVsComputerImageResource]
-                                       atIndex:[NewGameController segmentIndexForGameType:GoGameTypeComputerVsComputer]
-                                      animated:NO];
-      segmentedControl.selectedSegmentIndex = [NewGameController segmentIndexForGameType:self.theNewGameModel.gameTypeLastSelected];
-      [segmentedControl addTarget:self action:@selector(gameTypeChanged:) forControlEvents:UIControlEventValueChanged];
-      break;
-    }
     case PlayersSection:
     {
       switch (self.theNewGameModel.gameTypeLastSelected)
@@ -508,6 +570,8 @@ enum GameRulesSectionItem
   }
 }
 
+#pragma mark - UITableViewDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -620,6 +684,8 @@ enum GameRulesSectionItem
   [navigationController release];
 }
 
+#pragma mark - ItemPickerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief ItemPickerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -684,6 +750,8 @@ enum GameRulesSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - HandicapSelectionDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief HandicapSelectionDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -706,6 +774,8 @@ enum GameRulesSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - KomiSelectionDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief KomiSelectionDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -723,6 +793,8 @@ enum GameRulesSectionItem
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the object from the player property that corresponds to the
