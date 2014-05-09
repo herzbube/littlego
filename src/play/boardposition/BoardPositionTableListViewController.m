@@ -181,7 +181,7 @@
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-0-[currentBoardPositionTableView]-0-|",
                             @"H:|-0-[boardPositionListTableView]-0-|",
-                            [NSString stringWithFormat:@"V:|-0-[currentBoardPositionTableView(==%f)]-10-[boardPositionListTableView]-0-|", realTableViewHeight],
+                            [NSString stringWithFormat:@"V:|-0-[currentBoardPositionTableView(==%f)]-0-[boardPositionListTableView]-0-|", realTableViewHeight],
                             nil];
   for (NSString* visualFormat in visualFormats)
   {
@@ -519,7 +519,7 @@
   if (tableView == self.currentBoardPositionTableView)
     return @"Current board position";
   else
-    return @"List of board positions";
+    return @"All board positions - Tap to select";
 }
 
 // -----------------------------------------------------------------------------
@@ -597,6 +597,24 @@
   }
   int newBoardPosition = indexPath.row;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView willDisplayHeaderView:(UIView*)view forSection:(NSInteger)section
+{
+  if ([view isKindOfClass:[UITableViewHeaderFooterView class]])
+  {
+    UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
+    headerFooterView.contentView.backgroundColor = [UIColor blackColor];
+    headerFooterView.textLabel.textColor = [UIColor whiteColor];
+  }
+  else
+  {
+    DDLogError(@"%@: Header view object %@ has unexpected type %@", self, view, [view class]);
+    assert(0);
+  }
 }
 
 #pragma mark - Private helpers
