@@ -17,7 +17,8 @@
 
 // Project includes
 #import "LeftPaneViewController.h"
-#import "../boardposition/BoardPositionController.h"
+#import "../boardposition/BoardPositionTableListViewController.h"
+#import "../boardposition/BoardPositionToolbarController.h"
 #import "../../ui/UiUtilities.h"
 #import "../../ui/AutoLayoutUtility.h"
 
@@ -46,7 +47,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardPositionController = nil;
+  self.boardPositionToolbarController = nil;
+  self.boardPositionTableListViewController = nil;
   [super dealloc];
 }
 
@@ -57,31 +59,57 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.boardPositionController = [[[BoardPositionController alloc] init] autorelease];
+  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
+  self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setBoardPositionController:(BoardPositionController*)boardPositionController
+- (void) setBoardPositionToolbarController:(BoardPositionToolbarController*)boardPositionToolbarController
 {
-  if (_boardPositionController == boardPositionController)
+  if (_boardPositionToolbarController == boardPositionToolbarController)
     return;
-  if (_boardPositionController)
+  if (_boardPositionToolbarController)
   {
-    [_boardPositionController willMoveToParentViewController:nil];
+    [_boardPositionToolbarController willMoveToParentViewController:nil];
     // Automatically calls didMoveToParentViewController:
-    [_boardPositionController removeFromParentViewController];
-    [_boardPositionController release];
-    _boardPositionController = nil;
+    [_boardPositionToolbarController removeFromParentViewController];
+    [_boardPositionToolbarController release];
+    _boardPositionToolbarController = nil;
   }
-  if (boardPositionController)
+  if (boardPositionToolbarController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardPositionController];
-    [boardPositionController didMoveToParentViewController:self];
-    [boardPositionController retain];
-    _boardPositionController = boardPositionController;
+    [self addChildViewController:boardPositionToolbarController];
+    [_boardPositionToolbarController didMoveToParentViewController:self];
+    [boardPositionToolbarController retain];
+    _boardPositionToolbarController = boardPositionToolbarController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionTableListViewController:(BoardPositionTableListViewController*)boardPositionTableListViewController
+{
+  if (_boardPositionTableListViewController == boardPositionTableListViewController)
+    return;
+  if (_boardPositionTableListViewController)
+  {
+    [_boardPositionTableListViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionTableListViewController removeFromParentViewController];
+    [_boardPositionTableListViewController release];
+    _boardPositionTableListViewController = nil;
+  }
+  if (boardPositionTableListViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionTableListViewController];
+    [_boardPositionTableListViewController didMoveToParentViewController:self];
+    [boardPositionTableListViewController retain];
+    _boardPositionTableListViewController = boardPositionTableListViewController;
   }
 }
 
@@ -93,9 +121,25 @@
 - (void) loadView
 {
   self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.boardPositionController.view];
-  self.boardPositionController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardPositionController.view];
+
+  [self.view addSubview:self.boardPositionToolbarController.view];
+  [self.view addSubview:self.boardPositionTableListViewController.view];
+
+  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.boardPositionToolbarController.view, @"boardPositionToolbar",
+                                   self.boardPositionTableListViewController.view, @"boardPositionTableListView",
+                                   nil];
+  // Don't need to specify height value for boardPositionToolbar because
+  // UIToolbar specifies a height value in its intrinsic content size
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[boardPositionToolbar]-0-|",
+                            @"H:|-0-[boardPositionTableListView]-0-|",
+                            @"V:|-0-[boardPositionToolbar]-[boardPositionTableListView]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   // Set a color (should be the same as the main window's) because we need to
   // paint over the parent split view background color.
