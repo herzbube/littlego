@@ -120,7 +120,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
 
   [self.view addSubview:self.boardPositionToolbarController.view];
   [self.view addSubview:self.boardPositionTableListViewController.view];
