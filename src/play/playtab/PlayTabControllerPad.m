@@ -118,6 +118,7 @@
 {
   [super loadView];
   [self.view addSubview:self.splitViewControllerChild.view];
+
   // Enabling Auto Layout and installation of constraints is delayed until
   // viewDidLayoutSubviews because the constraints use topLayoutGuide and
   // bottomLayoutGuide.
@@ -149,8 +150,11 @@
   {
     constraintsNotYetInstalled = false;
     self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
-    // Make sure that views don't extend beneath the status bar (at the top)
-    // and the tab bar (at the bottom)
+    // Unfortunately we can't say
+    //   self.edgesForExtendedLayout = UIRectEdgeNone;
+    // because then the split view controller's view extends beneath the status
+    // bar at the top. So instead we ***MUST*** use the VC's layout guides,
+    // which in turn forces us to override viewDidLayoutSubviews.
     [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
     // We must call this to avoid a crash; this is as per documentation of the
     // topLayoutGuide and bottomLayoutGuide properties.

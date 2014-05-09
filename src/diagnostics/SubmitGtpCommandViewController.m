@@ -81,9 +81,7 @@
   [self setupTextField];
   [self setupTableView];
   [self setupNavigationItem];
-
-  self.tableView.backgroundView = nil;
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  [self setupAutoLayoutConstraints];
 }
 
 #pragma mark - Setup text field
@@ -95,27 +93,7 @@
 {
   self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.textField];
-  [self setupTextFieldAutoLayoutConstraints];
   [self configureTextField];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper
-// -----------------------------------------------------------------------------
-- (void) setupTextFieldAutoLayoutConstraints
-{
-  self.textField.translatesAutoresizingMaskIntoConstraints = NO;
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.textField, @"textField",
-                                   self.topLayoutGuide, @"topLayoutGuide",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-5-[textField]-5-|",
-                            @"V:[topLayoutGuide]-[textField]",
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -146,28 +124,7 @@
   self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                  style:UITableViewStylePlain] autorelease];
   [self.view addSubview:self.tableView];
-  [self setupTableViewAutoLayoutConstraints];
   [self configureTableView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper
-// -----------------------------------------------------------------------------
-- (void) setupTableViewAutoLayoutConstraints
-{
-  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.textField, @"textField",
-                                   self.tableView, @"tableView",
-                                   self.bottomLayoutGuide, @"bottomLayoutGuide",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|[tableView]|",
-                            @"V:[textField]-[tableView]-0-[bottomLayoutGuide]",
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -193,6 +150,29 @@
                                                                    action:@selector(submitCommand:)] autorelease];
   self.navigationItem.rightBarButtonItem = submitButton;
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+
+  self.textField.translatesAutoresizingMaskIntoConstraints = NO;
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.textField, @"textField",
+                                   self.tableView, @"tableView",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-5-[textField]-5-|",
+                            @"H:|[tableView]|",
+                            @"V:|-[textField]-[tableView]-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
 }
 
 #pragma mark - UITableViewDataSource overrides

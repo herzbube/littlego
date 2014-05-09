@@ -106,6 +106,8 @@
 - (void) loadView
 {
   [super loadView];
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+
   [self setupNavigationItem];
   switch (self.editTextControllerStyle)
   {
@@ -164,11 +166,10 @@
   self.textField.translatesAutoresizingMaskIntoConstraints = NO;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.textField, @"textField",
-                                   self.topLayoutGuide, @"topLayoutGuide",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
-                            @"V:[topLayoutGuide]-[textField]",
+                            @"V:|-[textField]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
@@ -219,24 +220,12 @@
                                    self.textView, @"textView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|[textView]|",
-                            // The VC's automaticallyAdjustsScrollViewInsets
-                            // property adjusts the top so that we don't have
-                            // to align to self.topLayoutGuide. Also note that
-                            // the textView bottom is handled by additional
-                            // constraints below.
-                            @"V:|[textView]",
+                            @"H:|-0-[textView]-0-|",
+                            @"V:|-0-[textView]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self.view];
-
-  // ----------------------------------------
-  // Precondition for the following constraints to work: We expect that this VC
-  // is presented modally in a nagivation controller, so this VC's root view
-  // should extend to the bottom of the screen to where the keyboard pops up
-  // from. Also, self.bottomLayoutGuide can be disregarded.
-  // ----------------------------------------
 
   // Constraint that allows the text view to extend its bottom down to the
   // bottom of this VC's root view. This constraint is permanently installed.
@@ -254,20 +243,6 @@
                                                                                           constant:0];
   textViewHeightConstraintLowPriority.priority = UILayoutPriorityDefaultLow;
   [self.view addConstraint:textViewHeightConstraintLowPriority];
-
-  // Constraint that allows the text view to extend its bottom down to the top
-  // of the keyboard. This constraint is not installed yet. It will be
-  // dynamically installed/uninstalled whenever the keyboard is shown/hidden.
-  // While this constraint is installed, it will take precedence over the
-  // low-priority constraint that we created above.
-  self.textViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.textView
-                                                               attribute:NSLayoutAttributeBottom
-                                                               relatedBy:NSLayoutRelationEqual
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1.0f
-                                                                constant:0];
-  self.textViewHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 }
 
 // -----------------------------------------------------------------------------
@@ -321,9 +296,10 @@
 #pragma mark - Adjust text view size when keyboard appears/disappears
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the keyboard being shown. Calculates the proper constant
-/// for @e self.textViewHeightConstraint and installs the constraint, thus
-/// forcing @e self.textView to become smaller.
+/// @brief Responds to the keyboard being shown. Creates a high-priority
+/// Auto Layout constraint that overrides the default constraint for defining
+/// the height of @e self.textView. The new constraint forces @e self.textView
+/// to become smaller to make room for the keyboard.
 // -----------------------------------------------------------------------------
 - (void) keyboardWillShow:(NSNotification*)notification
 {
@@ -340,10 +316,7 @@
   CGFloat distanceFromViewBottom = keyboardFrame.size.height;
 
   // Constraint that allows the text view to extend its bottom down to the top
-  // of the keyboard. This constraint is not installed yet. It will be
-  // dynamically installed/uninstalled whenever the keyboard is shown/hidden.
-  // While this constraint is installed, it will take precedence over the
-  // low-priority constraint that we created above.
+  // of the keyboard
   self.textViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.textView
                                                                attribute:NSLayoutAttributeBottom
                                                                relatedBy:NSLayoutRelationEqual
@@ -351,12 +324,17 @@
                                                                attribute:NSLayoutAttributeBottom
                                                               multiplier:1.0f
                                                                 constant:0];
-  self.textViewHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-
-
-  // We make distanceFromViewBottom negative for the constraint because we want
-  // to express the difference of the bottom of the two views.
+  // The constraint uses the negative of distanceFromViewBottom because we want
+  // to express the **difference** of the bottom of the two views involved in
+  // the constraint (self.textView and self.view). In order for this to work,
+  // this VC's root view must extend to the bottom of the screen to where the
+  // keyboard pops up from. This should be the case if this VC is presented
+  // modally in a nagivation controller.
   self.textViewHeightConstraint.constant = -distanceFromViewBottom;
+  // While this constraint is installed, it will take precedence over the
+  // low-priority constraint that was permanently installed in
+  // setupTextViewAutoLayoutConstraints()
+  self.textViewHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 
   NSTimeInterval animationDuration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{
@@ -366,9 +344,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the keyboard being hidden. Removes
-/// @e self.textViewHeightConstraint, thus allowing @e self.textView to become
-/// bigger.
+/// @brief Responds to the keyboard being hidden. Removes the high-priority
+/// Auto layout constraint created by keyboardWillShow:(). @e self.textView is
+/// allowed to become bigger to take up the room freed by the disappearance of
+/// the keyboard.
 // -----------------------------------------------------------------------------
 - (void) keyboardWillHide:(NSNotification*)notification
 {

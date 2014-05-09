@@ -52,6 +52,7 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
 @property(nonatomic, retain) UIView* placeholderView;
+@property(nonatomic, retain) UILabel* placeholderLabel;
 @property(nonatomic, retain) UITableView* tableView;
 @end
 
@@ -72,6 +73,7 @@ enum DeleteAllSectionItem
   if (! self)
     return nil;
   self.placeholderView = nil;
+  self.placeholderLabel = nil;
   self.tableView = nil;
   self.archiveViewModel = [ApplicationDelegate sharedDelegate].archiveViewModel;
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
@@ -84,6 +86,7 @@ enum DeleteAllSectionItem
 - (void) dealloc
 {
   self.placeholderView = nil;
+  self.placeholderLabel = nil;
   self.tableView = nil;
   [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
   self.archiveViewModel = nil;
@@ -101,6 +104,7 @@ enum DeleteAllSectionItem
 
   [self setupPlaceholderView];
   [self setupTableView];
+  [self setupAutoLayoutConstraints];
 
   [self updateVisibleStateOfMainViews];
   [self updateVisibleStateOfEditButton];
@@ -124,20 +128,14 @@ enum DeleteAllSectionItem
   else
     fontSizeFactor = 2.0;
 
-  UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-  [self.placeholderView addSubview:label];
-  label.text = @"No archived games.";
-  label.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
-  label.textColor = [UIColor blackColor];
-  label.backgroundColor = [UIColor clearColor];
-  label.numberOfLines = 1;
-  label.textAlignment = NSTextAlignmentCenter;
-
-  self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
-                                               withSubview:self.placeholderView];
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility centerSubview:label inSuperview:self.placeholderView];
+  self.placeholderLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  [self.placeholderView addSubview:self.placeholderLabel];
+  self.placeholderLabel.text = @"No archived games.";
+  self.placeholderLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
+  self.placeholderLabel.textColor = [UIColor blackColor];
+  self.placeholderLabel.backgroundColor = [UIColor clearColor];
+  self.placeholderLabel.numberOfLines = 1;
+  self.placeholderLabel.textAlignment = NSTextAlignmentCenter;
 }
 
 // -----------------------------------------------------------------------------
@@ -148,9 +146,21 @@ enum DeleteAllSectionItem
   self.tableView = [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped
                                withDelegateAndDataSource:self];
   [self.view addSubview:self.tableView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+
+  self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
-                                               withSubview:self.tableView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
+  [AutoLayoutUtility centerSubview:self.placeholderLabel inSuperview:self.placeholderView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
 }
 
 #pragma mark - Private helpers for managing view visibility

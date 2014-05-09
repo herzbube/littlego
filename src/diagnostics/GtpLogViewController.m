@@ -85,12 +85,11 @@
 - (void) loadView
 {
   [super loadView];
-  // The Auto Layout constraints we currently use for the frontside/backside
-  // views are possible only because of this setting
-  self.automaticallyAdjustsScrollViewInsets = NO;
+
   [self setupFrontSideView];
   [self setupBackSideView];
   [self setupNavigationItem];
+  [self setupAutoLayoutConstraints];
 }
 
 // -----------------------------------------------------------------------------
@@ -134,20 +133,7 @@
                                                      style:UITableViewStylePlain] autorelease];
 
   [self.view addSubview:self.frontSideView];
-  [self setupFrontSideViewAutoLayoutConstraints];
   [self configureFrontSideView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper
-// -----------------------------------------------------------------------------
-- (void) setupFrontSideViewAutoLayoutConstraints
-{
-  self.frontSideView.translatesAutoresizingMaskIntoConstraints = NO;
-  // The frontside view is a scroll view. For the following constraint to work,
-  // self.automaticallyAdjustsScrollViewInsets must be set to NO.
-  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
-                                               withSubview:self.frontSideView];
 }
 
 // -----------------------------------------------------------------------------
@@ -172,20 +158,7 @@
 {
   self.backSideView = [[[UITextView alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.backSideView];
-  [self setupBackSideViewAutoLayoutConstraints];
   [self configureBackSideView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper
-// -----------------------------------------------------------------------------
-- (void) setupBackSideViewAutoLayoutConstraints
-{
-  self.backSideView.translatesAutoresizingMaskIntoConstraints = NO;
-  // The backside view is a scroll view. For the following constraint to work,
-  // self.automaticallyAdjustsScrollViewInsets must be set to NO.
-  [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self
-                                               withSubview:self.backSideView];
 }
 
 // -----------------------------------------------------------------------------
@@ -217,6 +190,19 @@
                                                                  target:self
                                                                  action:@selector(flipView:)] autorelease];
   self.navigationItem.rightBarButtonItems = @[composeButton, flipButton];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+
+  self.frontSideView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.backSideView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.frontSideView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.backSideView];
 }
 
 #pragma mark - Managing content of backside view
