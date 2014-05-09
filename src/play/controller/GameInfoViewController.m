@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
 #import "../../utility/NSStringAdditions.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewSegmentedCell.h"
 #import "../../ui/UiElementMetrics.h"
@@ -135,7 +136,6 @@ enum BoardPositionSectionItem
 };
 
 
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties and properties for
 /// GameInfoViewController.
@@ -152,6 +152,8 @@ enum BoardPositionSectionItem
 
 
 @implementation GameInfoViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor.
@@ -181,6 +183,89 @@ enum BoardPositionSectionItem
   self.tableView = nil;
   [super dealloc];
 }
+
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  [super loadView];
+
+  [self setupNavigationBar];
+  [self setupTableView];
+  [self setupAutoLayoutConstraints];
+  [self configureViews];
+  [self setupNotificationResponders];
+}
+
+#pragma mark - Private helpers for view setup
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupNavigationBar
+{
+  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.navigationBar];
+  self.navigationBar.delegate = self;
+
+  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
+  [self.navigationBar pushNavigationItem:backItem animated:NO];
+
+  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
+  segmentedControl.selectedSegmentIndex = self.playViewModel.infoTypeLastSelected;
+  [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
+  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+  self.navigationItem.titleView = segmentedControl;
+  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupTableView
+{
+  self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                 style:UITableViewStyleGrouped] autorelease];
+  [self.view addSubview:self.tableView];
+  self.tableView.delegate = self;
+  self.tableView.dataSource = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.edgesForExtendedLayout = UIRectEdgeNone;
+
+  self.navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.navigationBar, @"navigationBar",
+                                   self.tableView, @"tableView",
+                                   nil];
+  // TODO xxx should not need to specify 20 for the status bar.
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[navigationBar]-0-|",
+                            @"H:|-0-[tableView]-0-|",
+                            @"V:|-20-[navigationBar]-0-[tableView]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
+  self.title = @"Game Info";
+}
+
+#pragma mark - Setup/remove notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
@@ -234,114 +319,7 @@ enum BoardPositionSectionItem
   [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Creates the view that this controller manages.
-// -----------------------------------------------------------------------------
-- (void) loadView
-{
-  [self setupMainView];
-  [self setupNavigationBar];
-  [self setupTableView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (void) setupMainView
-{
-  CGRect mainViewFrame = [self mainViewFrame];
-  self.view = [[[UIView alloc] initWithFrame:mainViewFrame] autorelease];
-  self.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (CGRect) mainViewFrame
-{
-  int mainViewX = 0;
-  int mainViewY = 0;
-  int mainViewWidth = [UiElementMetrics screenWidth];
-  int mainViewHeight = ([UiElementMetrics screenHeight]
-                        - [UiElementMetrics tabBarHeight]
-                        - [UiElementMetrics statusBarHeight]);
-  return CGRectMake(mainViewX, mainViewY, mainViewWidth, mainViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (void) setupNavigationBar
-{
-  CGRect navigationBarFrame = [self navigationBarFrame];
-  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:navigationBarFrame] autorelease];
-  [self.view addSubview:self.navigationBar];
-  self.navigationBar.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
-  self.navigationBar.delegate = self;
-
-  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
-  [self.navigationBar pushNavigationItem:backItem animated:NO];
-
-  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
-  segmentedControl.selectedSegmentIndex = self.playViewModel.infoTypeLastSelected;
-  [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
-  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
-  self.navigationItem.titleView = segmentedControl;
-  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (CGRect) navigationBarFrame
-{
-  CGSize superViewSize = self.view.bounds.size;
-  int navigationBarViewX = 0;
-  int navigationBarViewY = 0;
-  int navigationBarViewWidth = superViewSize.width;
-  int navigationBarViewHeight = [UiElementMetrics navigationBarHeight];
-  return CGRectMake(navigationBarViewX, navigationBarViewY, navigationBarViewWidth, navigationBarViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (void) setupTableView
-{
-  CGRect tableViewFrame = [self tableViewFrame];
-  self.tableView = [[[UITableView alloc] initWithFrame:tableViewFrame
-                                                 style:UITableViewStyleGrouped] autorelease];
-  [self.view addSubview:self.tableView];
-  self.tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-  self.tableView.delegate = self;
-  self.tableView.dataSource = self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates the frame of the toolbar view, taking into account the
-/// current interface orientation. Assumes that super views have the correct
-/// bounds.
-// -----------------------------------------------------------------------------
-- (CGRect) tableViewFrame
-{
-  CGSize superViewSize = self.view.bounds.size;
-  int tableViewX = 0;
-  int tableViewY = CGRectGetMaxY(self.navigationBar.frame);
-  int tableViewWidth = superViewSize.width;
-  int tableViewHeight = superViewSize.height - tableViewY;
-  return CGRectMake(tableViewX, tableViewY, tableViewWidth, tableViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Called after the controller’s view is loaded into memory, usually
-/// to perform additional initialization steps.
-// -----------------------------------------------------------------------------
-- (void) viewDidLoad
-{
-  [super viewDidLoad];
-  self.title = @"Game Info";
-  [self setupNotificationResponders];
-}
+#pragma mark - UINavigationBarDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UINavigationBarDelegate protocol method.
@@ -356,6 +334,8 @@ enum BoardPositionSectionItem
   [self.delegate gameInfoViewControllerDidFinish:self];
   return YES;
 }
+
+#pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -517,6 +497,8 @@ enum BoardPositionSectionItem
   }
   return nil;
 }
+
+#pragma mark - Private helpers for tableView:cellForRowAtIndexPath:().
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:cellForRowAtIndexPath:().
@@ -879,6 +861,38 @@ enum BoardPositionSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:cellForRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (NSString*) descriptionOfMove:(GoMove*)move
+{
+  NSString* playerColorString;
+  GoPlayer* player = move.player;
+  if (player.isBlack)
+    playerColorString = @"Black";
+  else
+    playerColorString = @"White";
+  switch (move.type)
+  {
+    case GoMoveTypePlay:
+    {
+      return [NSString stringWithFormat:@"%@ played at %@",
+              playerColorString,
+              move.point.vertex.string];
+    }
+    case GoMoveTypePass:
+    {
+      return [playerColorString stringByAppendingString:@" passed"];
+    }
+    default:
+    {
+      return @"n/a";
+    }
+  }
+}
+
+#pragma mark - UITableViewDelegate overrides
+
+// -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
@@ -926,6 +940,8 @@ enum BoardPositionSectionItem
     }
   }
 }
+
+#pragma mark - TableViewGridCellDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief TableViewGridCellDelegate protocol method.
@@ -1117,6 +1133,8 @@ enum BoardPositionSectionItem
   return @"";
 }
 
+#pragma mark - Notification responders
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
 // -----------------------------------------------------------------------------
@@ -1144,6 +1162,8 @@ enum BoardPositionSectionItem
   // as part of the reset and we will be dismissed.
   [self removeKVONotificationResponders];
 }
+
+#pragma mark - KVO responder
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -1184,46 +1204,7 @@ enum BoardPositionSectionItem
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for tableView:cellForRowAtIndexPath:().
-// -----------------------------------------------------------------------------
-- (NSString*) descriptionOfMove:(GoMove*)move
-{
-  NSString* playerColorString;
-  GoPlayer* player = move.player;
-  if (player.isBlack)
-    playerColorString = @"Black";
-  else
-    playerColorString = @"White";
-  switch (move.type)
-  {
-    case GoMoveTypePlay:
-    {
-      return [NSString stringWithFormat:@"%@ played at %@",
-              playerColorString,
-              move.point.vertex.string];
-    }
-    case GoMoveTypePass:
-    {
-      return [playerColorString stringByAppendingString:@" passed"];
-    }
-    default:
-    {
-      return @"n/a";
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Info Type" segmented control. Updates
-/// the main table view to display information for the selected type.
-// -----------------------------------------------------------------------------
-- (void) infoTypeChanged:(id)sender
-{
-  UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
-  self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
-  [self.tableView reloadData];
-}
+#pragma mark - EditPlayerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief EditPlayerDelegate protocol method.
@@ -1247,6 +1228,8 @@ enum BoardPositionSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - EditGtpEngineProfileDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief EditGtpEngineProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -1257,5 +1240,19 @@ enum BoardPositionSectionItem
                         withRowAnimation:UITableViewRowAnimationNone];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - Action handlers
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Info Type" segmented control. Updates
+/// the main table view to display information for the selected type.
+// -----------------------------------------------------------------------------
+- (void) infoTypeChanged:(id)sender
+{
+  UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
+  self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
+  [self.tableView reloadData];
+}
+
 
 @end
