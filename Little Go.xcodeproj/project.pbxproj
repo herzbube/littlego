@@ -144,8 +144,6 @@
 		CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
 		CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
 		CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
-		CD3591CE173475E2000E2963 /* BoardPositionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591CD173475E2000E2963 /* BoardPositionController.m */; };
-		CD3591CF173475E2000E2963 /* BoardPositionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591CD173475E2000E2963 /* BoardPositionController.m */; };
 		CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
 		CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
 		CD3592021735A757000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayTabController.m */; };
@@ -641,8 +639,6 @@
 		CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoFingerTapGestureController.m; sourceTree = "<group>"; };
 		CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardFutureMovesAlertController.h; sourceTree = "<group>"; };
 		CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardFutureMovesAlertController.m; sourceTree = "<group>"; };
-		CD3591CC173475E2000E2963 /* BoardPositionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionController.h; sourceTree = "<group>"; };
-		CD3591CD173475E2000E2963 /* BoardPositionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionController.m; sourceTree = "<group>"; };
 		CD3591D81735A711000E2963 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
 		CD3591D91735A711000E2963 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
 		CD3591DD1735A757000E2963 /* PlayTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabController.h; sourceTree = "<group>"; };
@@ -1202,8 +1198,6 @@
 		CD0FE8FD169A122400053671 /* boardposition */ = {
 			isa = PBXGroup;
 			children = (
-				CD3591CC173475E2000E2963 /* BoardPositionController.h */,
-				CD3591CD173475E2000E2963 /* BoardPositionController.m */,
 				CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */,
 				CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */,
 				CD0519D216B2D23B002771F7 /* BoardPositionTableListViewController.h */,
@@ -2283,7 +2277,6 @@
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
-				CD3591CE173475E2000E2963 /* BoardPositionController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592021735A757000E2963 /* PlayTabController.m in Sources */,
 				CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */,
@@ -2459,7 +2452,6 @@
 				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
-				CD3591CF173475E2000E2963 /* BoardPositionController.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayTabController.m in Sources */,
 				CD3592051735A757000E2963 /* PlayTabControllerPad.m in Sources */,
