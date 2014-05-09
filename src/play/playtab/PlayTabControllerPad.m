@@ -116,7 +116,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
   [self.view addSubview:self.splitViewControllerChild.view];
   // Enabling Auto Layout and installation of constraints is delayed until
   // viewDidLayoutSubviews because the constraints use topLayoutGuide and

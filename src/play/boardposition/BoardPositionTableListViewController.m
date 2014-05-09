@@ -129,7 +129,7 @@
 // -----------------------------------------------------------------------------
 - (void) createViews
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
   self.currentBoardPositionTableView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                                      style:UITableViewStylePlain] autorelease];
   self.boardPositionListTableView = [[[UITableView alloc] initWithFrame:CGRectZero

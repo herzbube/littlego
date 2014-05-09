@@ -76,7 +76,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
 
   [self setupTextField];
   [self setupTableView];

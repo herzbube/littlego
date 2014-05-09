@@ -129,7 +129,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  [self createViews];
+  [super loadView];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
@@ -137,14 +137,6 @@
 }
 
 #pragma mark - Private helpers for loadView
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (void) createViews
-{
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.

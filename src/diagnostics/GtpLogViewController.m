@@ -84,7 +84,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
   // The Auto Layout constraints we currently use for the frontside/backside
   // views are possible only because of this setting
   self.automaticallyAdjustsScrollViewInsets = NO;

@@ -123,7 +123,8 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  [self createViews];
+  [super loadView];
+  [self createSubviews];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
@@ -136,9 +137,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) createViews
+- (void) createSubviews
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.scrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
   self.coordinateLabelsLetterViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
   self.coordinateLabelsNumberViewScrollView = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];

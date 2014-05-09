@@ -97,7 +97,7 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [super loadView];
 
   [self setupPlaceholderView];
   [self setupTableView];
