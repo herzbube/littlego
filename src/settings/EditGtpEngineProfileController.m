@@ -23,7 +23,6 @@
 #import "../player/Player.h"
 #import "../player/PlayerModel.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/TableViewTextCell.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UiColorAdditions.h"
 

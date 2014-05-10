@@ -118,7 +118,6 @@
 		CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
 		CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */; };
 		CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
-		CD1DB6151702582B00C2E648 /* TableViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E571645FFE400329154 /* TableViewTextCell.m */; };
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
@@ -261,7 +260,6 @@
 		CD899E421643477D00329154 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0286291640AEE100CF23A1 /* BWCrashReportTextFormatter.m */; };
 		CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */; };
 		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
-		CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E571645FFE400329154 /* TableViewTextCell.m */; };
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
@@ -743,8 +741,6 @@
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
-		CD899E561645FFE300329154 /* TableViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewTextCell.h; sourceTree = "<group>"; };
-		CD899E571645FFE400329154 /* TableViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewTextCell.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
@@ -1862,8 +1858,6 @@
 				CD72216814633F1D005EAC65 /* TableViewGridCell.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
 				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
-				CD899E561645FFE300329154 /* TableViewTextCell.h */,
-				CD899E571645FFE400329154 /* TableViewTextCell.m */,
 				CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */,
 				CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */,
 				CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */,
@@ -2226,7 +2220,6 @@
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
 				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
-				CD899E581645FFE400329154 /* TableViewTextCell.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
@@ -2397,7 +2390,6 @@
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
 				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,
-				CD1DB6151702582B00C2E648 /* TableViewTextCell.m in Sources */,
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
 				CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,

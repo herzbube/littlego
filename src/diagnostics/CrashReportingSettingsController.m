@@ -20,7 +20,6 @@
 #import "../main/ApplicationDelegate.h"
 #import "../diagnostics/CrashReportingModel.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/TableViewTextCell.h"
 #import "../ui/UiUtilities.h"
 
 

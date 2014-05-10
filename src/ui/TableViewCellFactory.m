@@ -19,7 +19,6 @@
 #import "TableViewCellFactory.h"
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
-#import "TableViewTextCell.h"
 #import "TableViewVariableHeightCell.h"
 #import "UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
@@ -59,9 +58,6 @@
       break;
     case SwitchCellType:
       cellID = @"SwitchCellType";
-      break;
-    case TextFieldCellType:
-      cellID = @"TextFieldCellType";
       break;
     case SliderWithValueLabelCellType:
       cellID = @"SliderWithValueLabelCellType";
@@ -125,11 +121,6 @@
     case GridCellType:
     {
       cell = [TableViewGridCell cellWithReuseIdentifier:identifier];
-      break;
-    }
-    case TextFieldCellType:
-    {
-      cell = [TableViewTextCell cellWithReuseIdentifier:identifier];
       break;
     }
     case VariableHeightCellType:

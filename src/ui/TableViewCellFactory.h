@@ -31,7 +31,6 @@ enum TableViewCellType
   Value2CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue2
   SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
-  TextFieldCellType,     ///< @brief The cell's content view is divided into a left UILabel and a right UITextField
   SliderWithValueLabelCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value. Displays the value label.
   SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
