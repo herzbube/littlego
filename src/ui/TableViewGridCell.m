@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 // Project includes
 #import "TableViewGridCell.h"
 #import "UIColorAdditions.h"
-#import "UiElementMetrics.h"
+#import "AutoLayoutUtility.h"
 
 // Forward declarations
 @class GridCellContentView;
@@ -48,6 +48,15 @@ static NSString* gridLineColor = @"A9ABAD";
 - (void) dealloc;
 - (void) drawRect:(CGRect)rect;
 @property(nonatomic, assign) int numberOfColumns;
+@end
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties and properties for
+/// TableViewGridCell.
+// -----------------------------------------------------------------------------
+@interface TableViewGridCell()
+@property(nonatomic, retain) NSArray* constraintsXXX;
 @end
 
 
@@ -94,6 +103,10 @@ static NSString* gridLineColor = @"A9ABAD";
 /// delegate.
 ///
 /// This method may be invoked repeatedly, e.g. for a cell that is being reused.
+///
+/// TODO: Reused cells should have the same layout. Invoke
+/// numberOfColumnsInGridCell:() only for cells with different reuse
+/// identifiers.
 // -----------------------------------------------------------------------------
 - (void) setupCellContent
 {
@@ -105,45 +118,56 @@ static NSString* gridLineColor = @"A9ABAD";
   // 2) Cell border
   // 3) Grid line
   //
-  // a) self.indentationWidth
-  // b) [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
+  // a) self.indentationWidth * self.indentationLevel
+  // b) [AutoLayoutUtility horizontalSpacingTableViewCell]
   // c) columnWidth
-  // d) [UiElementMetrics spacingHorizontal]
+  // d) [AutoLayoutUtility horizontalSpacingSiblings] / 2
 
-  // Remove the old content view, 
+  // Remove the old content view and constraints
   UIView* oldGridCellContentView = [self.contentView viewWithTag:GridCellContentViewTag];
   if (oldGridCellContentView)
     [oldGridCellContentView removeFromSuperview];
+  for (id constraint in self.contentView.constraints)
+    [self.contentView removeConstraint:constraint];
+
   GridCellContentView* gridCellContentView = [self gridCellContentView];
+  [self.contentView addSubview:gridCellContentView];
+  gridCellContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.contentView withSubview:gridCellContentView];
 
   int numberOfColumns = [self.delegate numberOfColumnsInGridCell:self];
-  int numberOfGridLines = numberOfColumns - 1;
-  const int gridLinePadding = 2 * [UiElementMetrics spacingHorizontal];  // padding on the left and on the right of a grid line
-  int totalWidthAvailableForAllColumns = (gridCellContentView.bounds.size.width
-                                          - 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal]
-                                          - (numberOfGridLines * gridLinePadding));
-  int columnWidth = totalWidthAvailableForAllColumns / numberOfColumns;
-
   gridCellContentView.numberOfColumns = numberOfColumns;
 
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithCapacity:0];
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithCapacity:0];
+
+  // The final horizontal visual format line looks like this:
+  //   H:|-%f-[label0]-%f-[label1(==label0)]-%f-[label2(==label)]-%f-|
+  // The vertical visual format line for all labels looks like this:
+  //   V:|-%f-[label<column>]-%f-|"
+  const CGFloat indentation = self.indentationWidth * self.indentationLevel;
+  const CGFloat cellPadding = indentation + [AutoLayoutUtility horizontalSpacingTableViewCell];  // padding on the left and on the right of a grid line
+
+  NSString* visualFormatHorizontalPrefix = [NSString stringWithFormat:@"H:|-%f-", cellPadding];
+  NSString* visualFormatHorizontalSuffix = [NSString stringWithFormat:@"-%f-|", cellPadding];
+  NSString* visualFormatHorizontal = visualFormatHorizontalPrefix;
+  NSString* visualFormatVerticalTemplate = [NSString stringWithFormat:@"V:|-%f-[%%@]-%f-|", [AutoLayoutUtility verticalSpacingTableViewCell], [AutoLayoutUtility verticalSpacingTableViewCell]];
+
+  NSString* visualFormatReferenceLabelName;
   for (int column = 0; column < numberOfColumns; ++column)
   {
-    int labelX = [UiElementMetrics tableViewCellContentDistanceFromEdgeHorizontal] + column * (columnWidth + gridLinePadding);
-    int labelY = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
-    int labelWidth = columnWidth;
-    CGRect labelRect = CGRectMake(labelX, labelY, labelWidth, [UiElementMetrics labelHeight]);
     UILabel* label = nil;
     enum GridCellColumnStyle columnStyle = [self.delegate gridCell:self styleInColumn:column];
     switch (columnStyle)
     {
       case ValueGridCellColumnStyle:
       {
-        label = [TableViewGridCell valueLabelWithFrame:labelRect];
+        label = [TableViewGridCell valueLabel];
         break;
       }
       case TitleGridCellColumnStyle:
       {
-        label = [TableViewGridCell titleLabelWithFrame:labelRect];
+        label = [TableViewGridCell titleLabel];
         break;
       }
       default:
@@ -153,51 +177,49 @@ static NSString* gridLineColor = @"A9ABAD";
         continue;
       }
     }
-
     label.tag = GridCellContentViewTag + column + 1;
+    label.text = [self.delegate gridCell:self textForColumn:column];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    [gridCellContentView addSubview:label];
+
+    NSString* visualFormatLabelName = [NSString stringWithFormat:@"label%d", column];
+    NSString* visualFormatLabelHorizontal;
     if (0 == column)
     {
-      // Left label
-      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
-    }
-    else if (numberOfColumns == (column + 1))
-    {
-      // Right label
-      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin);
+      visualFormatLabelHorizontal = [NSString stringWithFormat:@"[%@]", visualFormatLabelName];
+      visualFormatReferenceLabelName = visualFormatLabelName;
     }
     else
     {
-      // In-between labels
-      label.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin);
+      visualFormatLabelHorizontal = [NSString stringWithFormat:@"-%f-[%@(==%@)]", [AutoLayoutUtility horizontalSpacingSiblings], visualFormatLabelName, visualFormatReferenceLabelName];
     }
-
-    label.text = [self.delegate gridCell:self textForColumn:column];
-    [gridCellContentView addSubview:label];
+    visualFormatHorizontal = [visualFormatHorizontal stringByAppendingString:visualFormatLabelHorizontal];
+    [viewsDictionary setObject:label forKey:visualFormatLabelName];
+    [visualFormats addObject:[NSString stringWithFormat:visualFormatVerticalTemplate, visualFormatLabelName]];
   }
+  visualFormatHorizontal = [visualFormatHorizontal stringByAppendingString:visualFormatHorizontalSuffix];
+  [visualFormats addObject:visualFormatHorizontal];
+
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:gridCellContentView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and returns a fully configured instance of
-/// GridCellContentView. Configuration includes adding the view as a subview to
-/// self.contentView.
+/// @brief Creates and returns an instance of GridCellContentView.
 // -----------------------------------------------------------------------------
 - (GridCellContentView*) gridCellContentView
 {
   CGRect gridCellContentViewFrameRect = self.contentView.bounds;
-  GridCellContentView* gridCellContentView = [[GridCellContentView alloc] initWithFrame:gridCellContentViewFrameRect];
-  [self.contentView addSubview:gridCellContentView];
-  [gridCellContentView release];
+  GridCellContentView* gridCellContentView = [[[GridCellContentView alloc] initWithFrame:gridCellContentViewFrameRect] autorelease];
   gridCellContentView.tag = GridCellContentViewTag;
-  gridCellContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   return gridCellContentView;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and returns a value label with initial frame @a frame.
+/// @brief Creates and returns a value label with initial frame of size zero.
 // -----------------------------------------------------------------------------
-+ (UILabel*) valueLabelWithFrame:(CGRect)frame
++ (UILabel*) valueLabel
 {
-	UILabel* label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+	UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
 	label.textColor = [UIColor slateBlueColor];
 	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
@@ -206,11 +228,11 @@ static NSString* gridLineColor = @"A9ABAD";
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and returns a title label with initial frame @a frame.
+/// @brief Creates and returns a title label with initial frame of size zero.
 // -----------------------------------------------------------------------------
-+ (UILabel*) titleLabelWithFrame:(CGRect)frame
++ (UILabel*) titleLabel
 {
-	UILabel* label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+	UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
 	label.textColor = [UIColor blackColor];
 	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];

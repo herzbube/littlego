@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,11 +41,11 @@ enum GridCellColumnStyle
 
 // -----------------------------------------------------------------------------
 /// @brief The TableViewGridCell class implements a custom table view cell
-/// that displays partitions its horizontal stretch into an arbitrary number of
-/// columns. If a table view displays multiple TableViewGridCell's in a row the
-/// overall visual effect is that of a grid.
+/// that partitions its horizontal stretch into an arbitrary number of columns.
+/// If a table view displays multiple TableViewGridCell's in a row the overall
+/// visual effect is that of a grid.
 ///
-/// TableViewGridCell adds its UI elements as subview to its content view and
+/// TableViewGridCell adds its UI elements as subviews to its content view and
 /// arranges them according to the following schema:
 ///
 /// @verbatim
@@ -68,6 +68,12 @@ enum GridCellColumnStyle
 /// as "how many columns should I display" or "which style should I use for a
 /// the label of a given column", etc. The role of TableViewGridCellDelegate is
 /// similar to a combination of UITableViewDelegate and UITableViewDataSource.
+///
+/// The UITableViewDataSource must first set the delegate property, then invoke
+/// setupCellContent() in its tableView:cellForRowAtIndexPath:() implementation.
+/// These actions replace the cell setup usually done by assigning values to
+/// cell properties such as @e cell.textLabel.text. Invoking setupCellContent()
+/// triggers the querying of the delegate.
 ///
 /// Notes and constraints:
 /// - TableViewGridCell expects to be displayed in a table view of grouped
