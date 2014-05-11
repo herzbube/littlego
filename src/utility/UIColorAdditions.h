@@ -48,4 +48,5 @@
 + (UIColor*) iPadGroupTableViewBackgroundGradientEndColor;
 + (NSArray*) redButtonTableViewCellBackgroundGradientColors;
 + (NSArray*) redButtonTableViewCellSelectedBackgroundGradientColors;
++ (UIColor*) tableViewCellDetailTextLabelColor;
 @end

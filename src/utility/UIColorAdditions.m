@@ -308,4 +308,19 @@
   return [NSArray arrayWithObjects:startColor1, endColor1, startColor2, endColor2, nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object that is the same as the text color used by the
+/// detailTextLabel of a table view cell with style UITableViewCellStyleValue1.
+// -----------------------------------------------------------------------------
++ (UIColor*) tableViewCellDetailTextLabelColor
+{
+  static UIColor* tableViewCellDetailTextLabelColor = nil;
+  if (! tableViewCellDetailTextLabelColor)
+  {
+    UITableViewCell* dummyCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"dummyCell"] autorelease];
+    tableViewCellDetailTextLabelColor = [dummyCell.detailTextLabel.textColor retain];
+  }
+  return tableViewCellDetailTextLabelColor;
+}
+
 @end

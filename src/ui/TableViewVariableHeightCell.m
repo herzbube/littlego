@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,26 @@
 
 // Project includes
 #import "TableViewVariableHeightCell.h"
-#import "UiElementMetrics.h"
+#import "AutoLayoutUtility.h"
+#import "UIColorAdditions.h"
 
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for
+/// TableViewVariableHeightCell.
+// -----------------------------------------------------------------------------
+@interface TableViewVariableHeightCell()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
+@property(nonatomic, retain, readwrite) UILabel* valueLabel;
+//@}
+@property(nonatomic, assign) CGFloat totalAmountOfHorizontalSpacing;
+@end
 
 @implementation TableViewVariableHeightCell
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a TableViewVariableHeightCell
@@ -47,143 +63,130 @@
               reuseIdentifier:reuseIdentifier];
   if (! self)
     return nil;
+  [self setupContentView];
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This overrides the superclass implementation.
+/// @brief Deallocates memory allocated by this ArchiveViewController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.descriptionLabel = nil;
+  self.valueLabel = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the content view with subviews for all UI elements in this
+/// cell.
+// -----------------------------------------------------------------------------
+- (void) setupContentView
+{
+  self.descriptionLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
+  [self.contentView addSubview:self.descriptionLabel];
+  self.descriptionLabel.numberOfLines = 0;
+  self.descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
+
+  self.valueLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
+  [self.contentView addSubview:self.valueLabel];
+  self.valueLabel.textAlignment = NSTextAlignmentRight;
+  self.valueLabel.textColor = [UIColor tableViewCellDetailTextLabelColor];
+
+  self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.valueLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  CGFloat horizontalSpacingTableViewCell = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
+  self.totalAmountOfHorizontalSpacing = horizontalSpacingTableViewCell;
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.descriptionLabel, @"descriptionLabel",
+                                   self.valueLabel, @"valueLabel",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-0-[valueLabel]-0-|", horizontalSpacingTableViewCell],
+                            [NSString stringWithFormat:@"V:|-%f-[descriptionLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
+                            [NSString stringWithFormat:@"V:|-%f-[valueLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.contentView];
+}
+
+#pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
 // -----------------------------------------------------------------------------
 - (void) layoutSubviews
 {
-  // Temporarily reset the text label to its default single-line layout so that
-  // the superclass implementation can do its work
-  self.textLabel.numberOfLines = 1;
+  // The purpose of this first layout pass is that the content view gets its
+  // correct width, because we need that width to calculate the description
+  // label's preferredMaxLayoutWidth.
   [super layoutSubviews];
-  self.textLabel.numberOfLines = 0;
 
-  CGSize newDetailTextLabelSize;
-  CGSize newTextLabelSize;
-  [self calculateNewDetailTextLabelSize:&newDetailTextLabelSize newTextLabelSize:&newTextLabelSize];
+  // Multi-line labels only expand vertically if their preferredMaxLayoutWidth
+  // property is set. In a "normal" view hierarchy the Auto Layout engine
+  // automatically sets the property to a width that fits the bounds of the
+  // label's superview. Here we need to set the property manually because
+  // heightForRowInTableView... below is layouting an offscreen cell which is
+  // not embedded in a view hierarchy and therefore is not constrained by the
+  // bounds of a superview.
+  CGFloat valueLabelWidth = self.valueLabel.intrinsicContentSize.width;
+  self.descriptionLabel.preferredMaxLayoutWidth = (self.contentView.bounds.size.width
+                                                   - valueLabelWidth
+                                                   - self.totalAmountOfHorizontalSpacing);
 
-  [self adjustTextLabelWithNewSize:newTextLabelSize];
-  [self adjustDetailTextLabelWithNewSize:newDetailTextLabelSize
-                        newTextLabelHeight:newTextLabelSize.height
-                          textLabelOriginY:self.textLabel.frame.origin.y];
+  // This second layout pass is required, obviously, because we just changed one
+  // of the layouting properties of one of this cell's subviews.
+  [super layoutSubviews];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for layoutSubviews().
-// -----------------------------------------------------------------------------
-- (void) calculateNewDetailTextLabelSize:(CGSize*)newDetailTextLabelSize
-                        newTextLabelSize:(CGSize*)newTextLabelSize
-{
-  *newDetailTextLabelSize = [TableViewVariableHeightCell sizeForDetailText:self.detailTextLabel.text
-                                                                  withFont:self.detailTextLabel.font];
-  bool hasDisclosureIndicator = (self.accessoryType != UITableViewCellAccessoryNone);
-  *newTextLabelSize = [TableViewVariableHeightCell sizeForText:self.textLabel.text
-                                           withDetailTextWidth:newDetailTextLabelSize->width
-                                        hasDisclosureIndicator:hasDisclosureIndicator
-                                                      withFont:self.textLabel.font];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for layoutSubviews().
-// -----------------------------------------------------------------------------
-- (void) adjustTextLabelWithNewSize:(CGSize)newTextLabelSize
-{
-  CGRect textLabelFrame = self.textLabel.frame;
-  textLabelFrame.origin.y = [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
-  textLabelFrame.size = newTextLabelSize;
-  self.textLabel.frame = textLabelFrame;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for layoutSubviews().
-// -----------------------------------------------------------------------------
-- (void) adjustDetailTextLabelWithNewSize:(CGSize)newDetailTextLabelSize
-                       newTextLabelHeight:(CGFloat)newTextLabelHeight
-                         textLabelOriginY:(CGFloat)textLabelOriginY
-{
-  CGRect detailTextLabelFrame = self.detailTextLabel.frame;
-  // Remain right-aligned
-  detailTextLabelFrame.origin.x = (CGRectGetMaxX(detailTextLabelFrame)
-                                   - newDetailTextLabelSize.width);
-  // Vertically centered
-  detailTextLabelFrame.origin.y = (textLabelOriginY
-                                   + ((newTextLabelHeight - newDetailTextLabelSize.height) / 2.0));
-  // Finally, don't forget the size
-  detailTextLabelFrame.size = newDetailTextLabelSize;
-  self.detailTextLabel.frame = detailTextLabelFrame;
-}
+#pragma mark - Public API
 
 // -----------------------------------------------------------------------------
 /// @brief Calculates the row height for a TableViewVariableHeightCell that is
-/// to display @a text in its text label, and @a detailText in its detail text
-/// label.
+/// to display @a descriptionText and @a valueText in its corresponding labels.
 ///
 /// @a hasDisclosureIndicator is true if the cell displays a standard disclosure
 /// indicator.
 ///
-/// Assumptions that this method makes:
-/// - The cell is not indented, i.e. the cell has the full width of the screen
-/// - The cell does not use an image
-/// - Both labels inside the cell use the default label font and label font size
-/// - The label displaying @a text uses NSLineBreakByWordWrapping
-///
 /// @note This method is intended to be called from inside a table view
 /// delegate's tableView:heightForRowAtIndexPath:().
-// -----------------------------------------------------------------------------
-+ (CGFloat) heightForRowWithText:(NSString*)text
-                      detailText:(NSString*)detailText
-          hasDisclosureIndicator:(bool)hasDisclosureIndicator
-{
-  UIFont* labelFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  CGSize detailTextSize = [TableViewVariableHeightCell sizeForDetailText:detailText
-                                                                withFont:labelFont];
-  CGSize textSize = [TableViewVariableHeightCell sizeForText:text
-                                         withDetailTextWidth:detailTextSize.width
-                                      hasDisclosureIndicator:hasDisclosureIndicator
-                                                    withFont:labelFont];
-  return (textSize.height
-          + 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical]);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates and returns the size for the detail text @a detailText.
 ///
-/// The text is allowed to get as much width as is required to display it with
-/// no truncation
-// -----------------------------------------------------------------------------
-+ (CGSize) sizeForDetailText:(NSString*)detailText
-                    withFont:(UIFont*)labelFont
-{
-  CGSize detailTextConstraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
-  return [detailText sizeWithFont:labelFont
-                constrainedToSize:detailTextConstraintSize
-                    lineBreakMode:NSLineBreakByClipping];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Calculates and returns the size for the text @a text.
+/// Assumptions that this method makes:
+/// - The cell is not indented, i.e. the cell has the full width of the screen
+/// - The appearance of the labels inside the cell has not been modified (e.g.
+///   no font or line break changes).
 ///
-/// The text is constrained to the width that remains after @a detailTextWidth
-/// and @a hasDisclosureIndicator have been taken into account. The text is
-/// allowed to get as much height as is required to display it with no
-/// truncation.
+/// If any of these assumptions are not true, the caller must
 // -----------------------------------------------------------------------------
-+ (CGSize) sizeForText:(NSString*)text
-   withDetailTextWidth:(CGFloat)detailTextWidth
-hasDisclosureIndicator:(bool)hasDisclosureIndicator
-              withFont:(UIFont*)labelFont
++ (CGFloat) heightForRowInTableView:(UITableView*)tableView
+                    descriptionText:(NSString*)descriptionText
+                          valueText:(NSString*)valueText
+             hasDisclosureIndicator:(bool)hasDisclosureIndicator
 {
-  CGFloat totalWidthAvailableForBothTexts = [UiElementMetrics tableViewCellContentViewAvailableWidth];
+  static TableViewVariableHeightCell* dummyCell = nil;
+  if (nil == dummyCell)
+  {
+    dummyCell = [TableViewVariableHeightCell cellWithReuseIdentifier:@"dummyCell"];
+    [dummyCell retain];
+  }
+  dummyCell.descriptionLabel.text = descriptionText;
+  dummyCell.valueLabel.text = valueText;
   if (hasDisclosureIndicator)
-    totalWidthAvailableForBothTexts -= [UiElementMetrics tableViewCellDisclosureIndicatorWidth];
-  CGFloat maximumTextWidth = totalWidthAvailableForBothTexts - detailTextWidth;
-  CGSize textConstraintSize = CGSizeMake(maximumTextWidth, MAXFLOAT);
-  return [text sizeWithFont:labelFont
-          constrainedToSize:textConstraintSize
-              lineBreakMode:NSLineBreakByWordWrapping];
+    dummyCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  else
+    dummyCell.accessoryType = UITableViewCellAccessoryNone;
+  CGRect dummyCellBounds = dummyCell.bounds;
+  dummyCellBounds.size.width = tableView.bounds.size.width;
+  dummyCell.bounds = dummyCellBounds;
+  [dummyCell setNeedsLayout];
+  [dummyCell layoutIfNeeded];
+  CGFloat height = [dummyCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+  // +1 for the separator line drawn between cells
+  height += 1.0f;
+  return height;
 }
 
 @end

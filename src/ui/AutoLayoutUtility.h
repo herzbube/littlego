@@ -30,6 +30,9 @@
 + (void) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
                                    withSubview:(UIView*)subview;
 + (void) centerSubview:(UIView*)subview inSuperview:(UIView*)superview;
++ (void) centerSubview:(UIView*)subview
+           inSuperview:(UIView*)superview
+                onAxis:(UILayoutConstraintAxis)axis;
 + (void) alignFirstView:(UIView*)firstView
          withSecondView:(UIView*)secondView
             onAttribute:(NSLayoutAttribute)attribute

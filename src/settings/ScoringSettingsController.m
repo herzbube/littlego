@@ -222,8 +222,9 @@ enum InconsistentTerritoryMarkupTypeSectionItem
     case InconsistentTerritoryMarkupTypeSection:
     {
       cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
-      cell.textLabel.text = inconsistentTerritoryMarkupTypeText;
-      cell.detailTextLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
+      TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+      variableHeightCell.descriptionLabel.text = inconsistentTerritoryMarkupTypeText;
+      variableHeightCell.valueLabel.text = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
@@ -255,10 +256,11 @@ enum InconsistentTerritoryMarkupTypeSectionItem
     }
     case InconsistentTerritoryMarkupTypeSection:
     {
-      NSString* detailText = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
-      return [TableViewVariableHeightCell heightForRowWithText:inconsistentTerritoryMarkupTypeText
-                                                    detailText:detailText
-                                        hasDisclosureIndicator:true];
+      NSString* valueText = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
+      return [TableViewVariableHeightCell heightForRowInTableView:tableView
+                                                  descriptionText:inconsistentTerritoryMarkupTypeText
+                                                        valueText:valueText
+                                           hasDisclosureIndicator:true];
     }
     default:
     {

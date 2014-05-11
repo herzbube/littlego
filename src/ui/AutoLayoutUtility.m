@@ -78,6 +78,25 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Adds an Auto Layout constraint to @a superview that specifies that
+/// @a subview is centered in @a superview along the specified axis.
+// -----------------------------------------------------------------------------
++ (void) centerSubview:(UIView*)subview
+           inSuperview:(UIView*)superview
+                onAxis:(UILayoutConstraintAxis)axis
+{
+  NSLayoutAttribute attribute;
+  if (UILayoutConstraintAxisHorizontal == axis)
+    attribute = NSLayoutAttributeCenterX;
+  else
+    attribute = NSLayoutAttributeCenterY;
+  [AutoLayoutUtility alignFirstView:subview
+                     withSecondView:superview
+                        onAttribute:attribute
+                   constraintHolder:superview];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Creates an Auto Layout constraint that aligns two views @a firstView
 /// and @a secondView on the attribute @a attribute. The constraint is added to
 /// @a constraintHolder.
@@ -118,7 +137,6 @@
                                                                    options:0
                                                                    metrics:nil
                                                                      views:viewsDictionary];
-
     [view addConstraints:constraints];
   }
 }
