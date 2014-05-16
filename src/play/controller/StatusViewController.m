@@ -29,7 +29,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/Player.h"
 #import "../../shared/LongRunningActionCounter.h"
-#import "../../ui/UiElementMetrics.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -42,13 +42,14 @@
 @property(nonatomic, assign) UILabel* statusLabel;
 @property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
-@property(nonatomic, assign) bool viewLayoutNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
 //@}
 @end
 
 
 @implementation StatusViewController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a StatusViewController object.
@@ -64,7 +65,6 @@
   self.playView = nil;
   [self releaseObjects];
   self.activityIndicatorNeedsUpdate = false;
-  self.viewLayoutNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   return self;
 }
@@ -88,55 +88,83 @@
   self.activityIndicator = nil;
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  [self setupView];
+  [self createViews];
+  [self setupViewHierarchy];
+  [self configureViews];
+  [self setupAutoLayoutConstraints];
   [self setupNotificationResponders];
 }
 
+#pragma mark - Private helpers for loadView
+
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupView
+- (void) createViews
 {
+  [super loadView];
   self.statusLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-  self.statusLabel.numberOfLines = 3;
-  self.statusLabel.font = [UIFont systemFontOfSize:10];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    self.statusLabel.textColor = [UIColor whiteColor];
-  else
-    self.statusLabel.textColor = [UIColor blackColor];
-  self.statusLabel.backgroundColor = [UIColor clearColor];
-  self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  self.statusLabel.textAlignment = NSTextAlignmentCenter;
-  // Give the view its proper height. The width will later change depending on
-  // how much space the view gets within the navigation bar
-  self.statusLabel.text = @"line 1\nline 2\nline 3";
-  [self.statusLabel sizeToFit];
-  self.statusLabel.text = nil;
+  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectZero] autorelease];
+}
 
-  CGRect activityIndicatorFrame;
-  activityIndicatorFrame.size.width = [UiElementMetrics activityIndicatorWidthAndHeight];
-  activityIndicatorFrame.size.height = [UiElementMetrics activityIndicatorWidthAndHeight];
-  activityIndicatorFrame.origin.x = CGRectGetMaxX(self.statusLabel.frame);
-  activityIndicatorFrame.origin.y = (self.statusLabel.frame.size.height - activityIndicatorFrame.size.height) / 2;
-  self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:activityIndicatorFrame] autorelease];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
-  else
-    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-  self.activityIndicator.hidden = YES;
-
-  // The activity indicator is initially hidden, so we can use the label size
-  // for the initial frame
-  self.view = [[[UIView alloc] initWithFrame:self.statusLabel.bounds] autorelease];
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
   [self.view addSubview:self.statusLabel];
   [self.view addSubview:self.activityIndicator];
-  // Don't use self, we don't want to trigger the setter
-  _statusViewWidth = self.view.frame.size.width;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
+  self.statusLabel.numberOfLines = 0;
+  CGFloat fontSize;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    fontSize = 9.0f;
+  else
+    fontSize = 10.0f;
+  self.statusLabel.font = [UIFont systemFontOfSize:fontSize];
+  self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  self.statusLabel.textAlignment = NSTextAlignmentCenter;
+
+  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  self.activityIndicator.hidden = YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.statusLabel, @"statusLabel",
+                                   self.activityIndicator, @"activityIndicator",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[statusLabel]-0-[activityIndicator]-0-|",
+                            @"V:|-0-[statusLabel]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
+  [AutoLayoutUtility alignFirstView:self.activityIndicator
+                     withSecondView:self.statusLabel
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -185,20 +213,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the status view frame with the new width. May also adjust
-/// the text, i.e. make it longer or shorter depending on the new width.
+/// @brief Updates the status view with a new size.
 // -----------------------------------------------------------------------------
-- (void) setStatusViewWidth:(int)newWidth
+- (void) setStatusViewSize:(CGSize)statusViewSize;
 {
-  if (self.statusViewWidth == newWidth)
-    return;
-  _statusViewWidth = newWidth;
-  CGRect frame = self.view.frame;
-  frame.size.width = self.statusViewWidth;
-  self.view.frame = frame;
-
-  self.viewLayoutNeedsUpdate = true;
-  [self delayedUpdate];
+  CGRect bounds = self.view.bounds;
+  bounds.size = statusViewSize;
+  self.view.bounds = bounds;
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 // -----------------------------------------------------------------------------
@@ -218,8 +241,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateStatusView
 {
-  [self updateActivityIndicator];  // invoke before updateViewLayout, may trigger a view layout update
-  [self updateViewLayout];
+  [self updateActivityIndicator];
   [self updateStatusLabel];
 }
 
@@ -255,7 +277,6 @@
     {
       [self.activityIndicator startAnimating];
       self.activityIndicator.hidden = NO;
-      self.viewLayoutNeedsUpdate = true;
     }
   }
   else
@@ -264,30 +285,8 @@
     {
       [self.activityIndicator stopAnimating];
       self.activityIndicator.hidden = YES;
-      self.viewLayoutNeedsUpdate = true;
     }
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for updateStatusView.
-// -----------------------------------------------------------------------------
-- (void) updateViewLayout
-{
-  if (! self.viewLayoutNeedsUpdate)
-    return;
-  self.viewLayoutNeedsUpdate = false;
-
-  CGRect statusLabelFrame = self.statusLabel.frame;
-  if (self.activityIndicator.hidden)
-    statusLabelFrame.size.width = self.view.frame.size.width;
-  else
-    statusLabelFrame.size.width = self.view.frame.size.width - self.activityIndicator.frame.size.width;
-  self.statusLabel.frame = statusLabelFrame;
-
-  CGRect activityIndicatorFrame = self.activityIndicator.frame;
-  activityIndicatorFrame.origin.x = CGRectGetMaxX(statusLabelFrame);
-  self.activityIndicator.frame = activityIndicatorFrame;
 }
 
 // -----------------------------------------------------------------------------

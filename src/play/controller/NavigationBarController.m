@@ -39,6 +39,7 @@
 @property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
+@property(nonatomic, assign) bool statusViewSizeNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, retain) UIBarButtonItem* computerPlayButton;
 @property(nonatomic, retain) UIBarButtonItem* passButton;
@@ -74,6 +75,7 @@
   [self releaseObjects];
   [self setupChildControllers];
   self.navigationBarNeedsPopulation = false;
+  self.statusViewSizeNeedsUpdate = false;
   self.buttonStatesNeedUpdate = false;
   return self;
 }
@@ -166,6 +168,17 @@
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  // TODO: Find out why interface rotation is messing up the status view frame.
+  // For now, fix the frame by calling our updater.
+  self.statusViewSizeNeedsUpdate = true;
+  [self updateStatusViewSize];
 }
 
 #pragma mark - Private helpers for view setup
@@ -565,6 +578,7 @@
     return;
   [self populateNavigationBar];
   [self updateButtonStates];
+  [self updateStatusViewSize];
 }
 
 // -----------------------------------------------------------------------------
@@ -577,38 +591,16 @@
     return;
   self.navigationBarNeedsPopulation = false;
 
-  NSArray* leftBarButtonItems = [self leftBarButtonItems];
-  NSArray* rightBarButtonItems = [self rightBarButtonItems];
-
   NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
-  [barButtonItems addObjectsFromArray:leftBarButtonItems];
-  if (self.statusViewController)
-  {
-    int maximumNumberOfButtons = 5;
-    if (self.barButtonItemForShowingTheHiddenViewController)
-      maximumNumberOfButtons++;
-    int numberOfUnusedButtons = maximumNumberOfButtons - leftBarButtonItems.count - rightBarButtonItems.count;
-    int statusViewMinimumWidth;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-      statusViewMinimumWidth = 60;
-    else
-      statusViewMinimumWidth = 100;
-    int widthPerUnusedButton = 20;
-    int statusViewWidth = (statusViewMinimumWidth
-                           + (widthPerUnusedButton * numberOfUnusedButtons));
-    self.statusViewController.statusViewWidth = statusViewWidth;
-
-    [barButtonItems addObject:self.flexibleSpaceButtonLeft];
-    [barButtonItems addObject:self.statusViewButton];
-    [barButtonItems addObject:self.flexibleSpaceButtonRight];
-  }
-  else
-  {
-    [barButtonItems addObject:self.flexibleSpaceButtonLeft];  // need only one spacer
-  }
-  [barButtonItems addObjectsFromArray:rightBarButtonItems];
+  [barButtonItems addObjectsFromArray:[self leftBarButtonItems]];
+  [barButtonItems addObject:self.flexibleSpaceButtonLeft];
+  [barButtonItems addObject:self.statusViewButton];
+  [barButtonItems addObject:self.flexibleSpaceButtonRight];
+  [barButtonItems addObjectsFromArray:[self rightBarButtonItems]];
   self.navigationBar.topItem.leftBarButtonItems = barButtonItems;
   self.navigationBar.topItem.rightBarButtonItems = nil;
+
+  self.statusViewSizeNeedsUpdate = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -681,6 +673,33 @@
   [rightBarButtonItems addObject:self.gameInfoButton];
   [rightBarButtonItems addObject:self.gameActionsButton];
   return rightBarButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the size of the status view depending on how much width there
+/// is left, and the current height of the navigation bar.
+// -----------------------------------------------------------------------------
+- (void) updateStatusViewSize
+{
+  if (! self.statusViewSizeNeedsUpdate)
+    return;
+  self.statusViewSizeNeedsUpdate = false;
+
+  int maximumNumberOfButtons = 8;
+  if (self.barButtonItemForShowingTheHiddenViewController)
+    maximumNumberOfButtons++;
+  int numberOfUnusedButtons = maximumNumberOfButtons - self.navigationBar.topItem.leftBarButtonItems.count;
+  int statusViewMinimumWidth;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    statusViewMinimumWidth = 60;
+  else
+    statusViewMinimumWidth = 100;
+  int widthPerUnusedButton = 20;
+  CGSize statusViewSize;
+  statusViewSize.width = (statusViewMinimumWidth
+                          + (widthPerUnusedButton * numberOfUnusedButtons));
+  statusViewSize.height = self.view.bounds.size.height;
+  [self.statusViewController setStatusViewSize:statusViewSize];
 }
 
 // -----------------------------------------------------------------------------
