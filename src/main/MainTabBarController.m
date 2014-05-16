@@ -25,6 +25,7 @@
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/playtab/PlayTabController.h"
 #import "../settings/SettingsViewController.h"
+#import "../ui/UIElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 #import "../ui/UiUtilities.h"
 
@@ -130,11 +131,38 @@
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
-/// @brief This implementation exists so that in iOS 6 the app can rotate to
-/// UIInterfaceOrientationPortraitUpsideDown on the iPhone.
+/// @brief UIViewController method
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  [super loadView];
+
+  // Place an application-wide black background behind the status bar. Requires
+  // that the status bar style is set to UIStatusBarStyleLightContent. This
+  // happens in the project's Info.plist, by using the UIStatusBarStyle key. In
+  // order for that key to take effect, another key named
+  // UIViewControllerBasedStatusBarAppearance must also be set in the
+  // Info.plist.
+  // Note: This method of making the status bar background black is a bit
+  // hack'ish, especially because the background view does not participate in
+  // the view layout process (instead it is simply created with a fixed frame
+  // that is wide enough for landscape), but I simply cannot be bothered with
+  // all the "extended layout" mumbo jumbo that Apple introduced in iOS 7.
+  CGRect backgroundViewFrame = CGRectZero;
+  backgroundViewFrame.size.width = [UiElementMetrics screenWidthLandscape];
+  backgroundViewFrame.size.height = [UiElementMetrics statusBarHeight];
+  UIView* view = [[[UIView alloc] initWithFrame:backgroundViewFrame] autorelease];
+  [self.view addSubview: view];
+  view.backgroundColor = [UIColor blackColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method
 // -----------------------------------------------------------------------------
 - (NSUInteger) supportedInterfaceOrientations
 {
+  // This implementation exists so that the app can rotate to
+  // UIInterfaceOrientationPortraitUpsideDown on the iPhone
   return [UiUtilities supportedInterfaceOrientations];
 }
 

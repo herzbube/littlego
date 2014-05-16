@@ -46,6 +46,12 @@ static UIViewController* m_interfaceOrientationSource;
     return [UIScreen mainScreen].bounds.size.width;
 }
 
++ (int) screenWidthLandscape
+{
+  CGRect mainScreenBounds = [UIScreen mainScreen].bounds;
+  return MAX(mainScreenBounds.size.width, mainScreenBounds.size.height);
+}
+
 /// @brief Frame of application screen area (i.e. entire screen minus status
 /// bar if visible)
 + (CGRect) applicationFrame
@@ -66,7 +72,8 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) statusBarHeight
 {
-  return 20;
+  CGRect statusbarFrame = [UIApplication sharedApplication].statusBarFrame;
+  return MIN(statusbarFrame.size.width, statusbarFrame.size.height);
 }
 
 // It's recommended not to set bar heights programmatically, but heck, why not

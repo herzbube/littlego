@@ -45,6 +45,7 @@
 
 + (int) screenWidth;
 + (int) screenHeight;
++ (int) screenWidthLandscape;
 + (CGRect) applicationFrame;
 + (int) statusBarHeight;
 + (int) navigationBarHeight;
