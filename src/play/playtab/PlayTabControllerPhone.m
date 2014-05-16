@@ -24,6 +24,7 @@
 #import "../gesture/PanGestureController.h"
 #import "../playview/PlayViewController.h"
 #import "../playview/ScrollViewController.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -208,14 +209,11 @@
                                    self.scrollViewController.view, @"scrollViewControllerView",
                                    self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                    nil];
-  // Don't need to specify height values because UINavigationBar and UIToolbar
-  // specify a height value in their intrinsic content size
-  // TODO xxx should not need to specify 20 for the status bar.
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-0-[navigationBarView]-0-|",
                             @"H:|-0-[scrollViewControllerView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
-                            @"V:|-20-[navigationBarView]-0-[scrollViewControllerView]-0-[boardPositionToolbarView]-0-|",
+                            [NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[scrollViewControllerView]-0-[boardPositionToolbarView]-0-|", [UiElementMetrics statusBarHeight]],
                             nil];
   for (NSString* visualFormat in visualFormats)
   {

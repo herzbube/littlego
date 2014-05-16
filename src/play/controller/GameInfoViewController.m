@@ -238,8 +238,6 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
-
   self.navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -247,11 +245,10 @@ enum BoardPositionSectionItem
                                    self.navigationBar, @"navigationBar",
                                    self.tableView, @"tableView",
                                    nil];
-  // TODO xxx should not need to specify 20 for the status bar.
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-0-[navigationBar]-0-|",
                             @"H:|-0-[tableView]-0-|",
-                            @"V:|-20-[navigationBar]-0-[tableView]-0-|",
+                            [NSString stringWithFormat:@"V:|-%d-[navigationBar]-0-[tableView]-0-|", [UiElementMetrics statusBarHeight]],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
