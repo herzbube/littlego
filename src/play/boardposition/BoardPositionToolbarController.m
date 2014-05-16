@@ -187,6 +187,7 @@ enum NavigationDirection
 {
   self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.toolbar;
+  self.toolbar.delegate = self;
 
   [self setupSpacerItems];
   [self setupBarButtonItems];
@@ -586,6 +587,19 @@ enum NavigationDirection
 - (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
 {
   [self toggleToolbarItems];
+}
+
+#pragma mark - UIBarPositioning overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIBarPositioning protocol method.
+// -----------------------------------------------------------------------------
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+{
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    return UIBarPositionBottom;
+  else
+    return UIBarPositionTop;
 }
 
 #pragma mark - Private helpers

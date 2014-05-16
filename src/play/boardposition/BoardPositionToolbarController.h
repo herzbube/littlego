@@ -40,7 +40,7 @@
 /// managing user interaction with custom view bar button items - this is the
 /// job of the respective child view controllers.
 // -----------------------------------------------------------------------------
-@interface BoardPositionToolbarController : UIViewController <CurrentBoardPositionViewControllerDelegate>
+@interface BoardPositionToolbarController : UIViewController <UIToolbarDelegate, CurrentBoardPositionViewControllerDelegate>
 {
 }
 
