@@ -57,6 +57,8 @@ enum NavigationDirection
 
 @implementation BoardPositionToolbarController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardPositionToolbarController object.
 ///
@@ -91,6 +93,23 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper invoked during initialization and deallocation.
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.toolbar = nil;
+  self.negativeSpacer = nil;
+  self.flexibleSpacer = nil;
+  self.navigationBarButtonItems = nil;
+  self.navigationBarButtonItemsBackward = nil;
+  self.navigationBarButtonItemsForward = nil;
+  self.boardPositionListViewItem = nil;
+  self.currentBoardPositionViewItem = nil;
+}
+
+#pragma mark - Container view controller handling
+
+// -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
@@ -107,21 +126,6 @@ enum NavigationDirection
     self.boardPositionListViewController = nil;
     self.currentBoardPositionViewController = nil;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) releaseObjects
-{
-  self.toolbar = nil;
-  self.negativeSpacer = nil;
-  self.flexibleSpacer = nil;
-  self.navigationBarButtonItems = nil;
-  self.navigationBarButtonItemsBackward = nil;
-  self.navigationBarButtonItemsForward = nil;
-  self.boardPositionListViewItem = nil;
-  self.currentBoardPositionViewItem = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -174,26 +178,16 @@ enum NavigationDirection
   }
 }
 
+#pragma mark - loadView and helpers
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  CGRect frame = CGRectZero;
-  // Need the correct initial width so that the board position list view width
-  // can be calculated correctly (autoresizingMask does not help us here because
-  // the board position list view is added to the toolbar as a bar button item,
-  // not as a regular subview)
-  frame.size.width = [UiElementMetrics screenWidth];
-  frame.size.height = [UiElementMetrics toolbarHeight];
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:frame] autorelease];
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.toolbar;
 
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    [self setupBoardPositionListView];
-    [self setupCurrentBoardPositionView];
-  }
   [self setupSpacerItems];
   [self setupBarButtonItems];
   [self setupCustomViewItems];
@@ -205,44 +199,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionListView
-{
-  CGRect boardPositionListViewFrame = [self boardPositionListViewFrame];
-  self.boardPositionListViewController.view.frame = boardPositionListViewFrame;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (CGRect) boardPositionListViewFrame
-{
-  int listViewX = 0;
-  int listViewY = 0;
-  int listViewWidth = (self.view.frame.size.width
-                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
-                       - [BoardPositionView boardPositionViewSize].width
-                       - (2 * [UiElementMetrics toolbarSpacing]));
-  int listViewHeight = [BoardPositionView boardPositionViewSize].height;
-  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked when the view hierarchy is
-/// created.
-// -----------------------------------------------------------------------------
-- (void) setupCurrentBoardPositionView
-{
-  CGRect currentBoardPositionViewFrame = CGRectZero;
-  currentBoardPositionViewFrame.size = [BoardPositionView boardPositionViewSize];
-  self.currentBoardPositionViewController.view.frame = currentBoardPositionViewFrame;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
 - (void) setupSpacerItems
 {
@@ -256,7 +213,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
 - (void) setupBarButtonItems
 {
@@ -291,7 +248,7 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
 - (void) setupCustomViewItems
 {
@@ -336,6 +293,43 @@ enum NavigationDirection
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
+
+#pragma mark - viewWillLayoutSubviews and helpers
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  // super's implementation of viewWillLayoutSubviews is documented to be a
+  // no-op, so there's no need to invoke it.
+
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    // The board position list view is not a regular subview, it's added to the
+    // toolbar using a bar button item. Because of this we cannot use Auto
+    // Layout but must calculate the frame ourselves.
+    CGRect boardPositionListViewFrame = [self boardPositionListViewFrame];
+    self.boardPositionListViewController.view.frame = boardPositionListViewFrame;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for viewWillLayoutSubviews.
+// -----------------------------------------------------------------------------
+- (CGRect) boardPositionListViewFrame
+{
+  int listViewX = 0;
+  int listViewY = 0;
+  int listViewWidth = (self.view.frame.size.width
+                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
+                       - [BoardPositionView boardPositionViewSize].width
+                       - (2 * [UiElementMetrics toolbarSpacing]));
+  int listViewHeight = [BoardPositionView boardPositionViewSize].height;
+  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
+}
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
@@ -398,6 +392,8 @@ enum NavigationDirection
   [self delayedUpdate];
 }
 
+#pragma mark - KVO responder
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
@@ -412,6 +408,8 @@ enum NavigationDirection
     [self delayedUpdate];
   }
 }
+
+#pragma mark - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
@@ -500,6 +498,8 @@ enum NavigationDirection
   [self delayedUpdate];
 }
 
+#pragma mark - Action handlers
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to the user tapping the "rewind to start" button.
 // -----------------------------------------------------------------------------
@@ -578,14 +578,7 @@ enum NavigationDirection
   [[[[ChangeBoardPositionCommand alloc] initWithLastBoardPosition] autorelease] submit];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on bar button items should currently be
-/// ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return [GoGame sharedGame].isComputerThinking;
-}
+#pragma mark - CurrentBoardPositionViewControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief CurrentBoardPositionViewControllerDelegate protocol method.
@@ -593,6 +586,17 @@ enum NavigationDirection
 - (void) didTapCurrentBoardPositionViewController:(CurrentBoardPositionViewController*)controller
 {
   [self toggleToolbarItems];
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 @end

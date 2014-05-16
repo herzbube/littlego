@@ -80,7 +80,6 @@
   self.boardPositionListView = [[[ItemScrollView alloc] initWithFrame:CGRectZero
                                                           orientation:ItemScrollViewOrientationHorizontal] autorelease];
   self.view = self.boardPositionListView;
-  self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   self.view.backgroundColor = [UIColor clearColor];
   self.boardPositionListView.itemScrollViewDelegate = self;
   self.boardPositionListView.itemScrollViewDataSource = self;
