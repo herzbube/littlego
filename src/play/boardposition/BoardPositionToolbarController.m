@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 // Project includes
 #import "BoardPositionToolbarController.h"
 #import "BoardPositionListViewController.h"
-#import "BoardPositionViewMetrics.h"
+#import "BoardPositionView.h"
 #import "CurrentBoardPositionViewController.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
@@ -85,7 +85,6 @@ enum NavigationDirection
 {
   [self removeNotificationResponders];
   [self releaseObjects];
-  self.boardPositionViewMetrics = nil;
   self.boardPositionListViewController = nil;
   self.currentBoardPositionViewController = nil;
   [super dealloc];
@@ -98,17 +97,13 @@ enum NavigationDirection
 {
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
   {
-    self.boardPositionViewMetrics = [[[BoardPositionViewMetrics alloc] init] autorelease];
     self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
-    self.boardPositionListViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
     self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
-    self.currentBoardPositionViewController.boardPositionViewMetrics = self.boardPositionViewMetrics;
 
     self.currentBoardPositionViewController.delegate = self;
   }
   else
   {
-    self.boardPositionViewMetrics = nil;
     self.boardPositionListViewController = nil;
     self.currentBoardPositionViewController = nil;
   }
@@ -229,9 +224,9 @@ enum NavigationDirection
   int listViewY = 0;
   int listViewWidth = (self.view.frame.size.width
                        - (2 * [UiElementMetrics toolbarPaddingHorizontal])
-                       - self.boardPositionViewMetrics.boardPositionViewWidth
+                       - [BoardPositionView boardPositionViewSize].width
                        - (2 * [UiElementMetrics toolbarSpacing]));
-  int listViewHeight = self.boardPositionViewMetrics.boardPositionViewHeight;
+  int listViewHeight = [BoardPositionView boardPositionViewSize].height;
   return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
 }
 
@@ -241,7 +236,8 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupCurrentBoardPositionView
 {
-  CGRect currentBoardPositionViewFrame = self.boardPositionViewMetrics.boardPositionViewBounds;
+  CGRect currentBoardPositionViewFrame = CGRectZero;
+  currentBoardPositionViewFrame.size = [BoardPositionView boardPositionViewSize];
   self.currentBoardPositionViewController.view.frame = currentBoardPositionViewFrame;
 }
 

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Project includes
 #import "CurrentBoardPositionViewController.h"
 #import "BoardPositionView.h"
-#import "BoardPositionViewMetrics.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -52,7 +51,6 @@
   if (! self)
     return nil;
   self.delegate = nil;
-  self.boardPositionViewMetrics = nil;
   [self setupTapGestureRecognizer];
   self.allDataNeedsUpdate = false;
   self.boardPositionViewNeedsUpdate = false;
@@ -69,7 +67,6 @@
   [self removeNotificationResponders];
   self.delegate = nil;
   self.tapRecognizer = nil;
-  self.boardPositionViewMetrics = nil;
   self.boardPositionView = nil;
   [super dealloc];
 }
@@ -88,8 +85,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.boardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1
-                                                                 viewMetrics:self.boardPositionViewMetrics] autorelease];
+  self.boardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1] autorelease];
   self.view = self.boardPositionView;
 
 	[self.boardPositionView addGestureRecognizer:self.tapRecognizer];

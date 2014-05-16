@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Project includes
 #import "BoardPositionListViewController.h"
 #import "BoardPositionView.h"
-#import "BoardPositionViewMetrics.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -70,7 +69,6 @@
 {
   [self removeNotificationResponders];
   self.boardPositionListView = nil;
-  self.boardPositionViewMetrics = nil;
   [super dealloc];
 }
 
@@ -347,7 +345,7 @@
 // -----------------------------------------------------------------------------
 - (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView
 {
-  return self.boardPositionViewMetrics.boardPositionViewWidth;
+  return [BoardPositionView boardPositionViewSize].width;
 }
 
 // -----------------------------------------------------------------------------
@@ -355,7 +353,7 @@
 // -----------------------------------------------------------------------------
 - (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView
 {
-  return self.boardPositionViewMetrics.boardPositionViewHeight;
+  return [BoardPositionView boardPositionViewSize].height;
 }
 
 // -----------------------------------------------------------------------------
@@ -363,8 +361,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index
 {
-  BoardPositionView* view = [[[BoardPositionView alloc] initWithBoardPosition:index
-                                                                  viewMetrics:self.boardPositionViewMetrics] autorelease];
+  BoardPositionView* view = [[[BoardPositionView alloc] initWithBoardPosition:index] autorelease];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   if (index == boardPosition.currentBoardPosition)
     view.currentBoardPosition = true;

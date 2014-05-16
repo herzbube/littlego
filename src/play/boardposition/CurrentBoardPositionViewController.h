@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Forward declarations
 @class CurrentBoardPositionViewController;
 @class BoardPositionView;
-@class BoardPositionViewMetrics;
 
 
 // -----------------------------------------------------------------------------
@@ -50,6 +49,5 @@
 
 @property(nonatomic, assign) id<CurrentBoardPositionViewControllerDelegate> delegate;
 @property(nonatomic, retain) BoardPositionView* boardPositionView;
-@property(nonatomic, assign) BoardPositionViewMetrics* boardPositionViewMetrics;
 
 @end
