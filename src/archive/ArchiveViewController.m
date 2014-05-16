@@ -254,7 +254,7 @@ enum DeleteAllSectionItem
     }
     case DeleteAllSection:
     {
-      cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+      cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
       cell.textLabel.text = @"Delete all games";
       break;
     }

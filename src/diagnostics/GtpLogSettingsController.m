@@ -202,7 +202,7 @@ enum ResetCannedCommandsSectionItem
       switch (indexPath.row)
       {
         case ResetCannedCommandsItem:
-          cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+          cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
           cell.textLabel.text = @"Reset predefined commands";
           break;
         default:

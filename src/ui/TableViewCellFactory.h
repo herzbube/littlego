@@ -35,7 +35,7 @@ enum TableViewCellType
   SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
-  RedButtonCellType,     ///< @brief Cell that looks like a red button; style and color are similar to the delete button in Apple's address book
+  DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
   VariableHeightCellType  ///< @brief Similar to Value1CellType, but the text label uses a variable number of lines.
 };
 

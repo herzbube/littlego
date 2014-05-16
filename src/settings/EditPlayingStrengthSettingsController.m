@@ -315,7 +315,7 @@ enum MaxGamesCategory
     }
     case ResetToDefaultsSection:
     {
-      cell = [TableViewCellFactory cellWithType:RedButtonCellType tableView:tableView];
+      cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
       cell.textLabel.text = @"Reset to default values";
       break;
     }
