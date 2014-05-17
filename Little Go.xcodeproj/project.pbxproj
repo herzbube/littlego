@@ -1958,7 +1958,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0510;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = P7NZKNP5L2;
@@ -2527,6 +2527,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
 					"-ltouchzipkit",
