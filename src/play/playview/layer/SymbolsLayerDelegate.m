@@ -37,6 +37,8 @@
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
+@property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
+@property(nonatomic, retain) NSShadow* shadow;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef nextMoveLayer;
@@ -60,6 +62,12 @@
   if (! self)
     return nil;
   _boardPositionModel = boardPositionmodel;
+  self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+  self.paragraphStyle.alignment = NSTextAlignmentCenter;
+  self.shadow = [[[NSShadow alloc] init] autorelease];
+  self.shadow.shadowColor = [UIColor blackColor];
+  self.shadow.shadowBlurRadius = 5.0;
+  self.shadow.shadowOffset = CGSizeMake(1.0, 1.0);
   _blackLastMoveLayer = NULL;
   _whiteLastMoveLayer = NULL;
   _nextMoveLayer = NULL;
@@ -261,6 +269,9 @@
     else
       textColor = [UIColor blackColor];
     NSString* moveNumberText = [NSString stringWithFormat:@"%d", moveToBeNumbered.moveNumber];
+    NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
+                                      NSForegroundColorAttributeName : textColor,
+                                      NSParagraphStyleAttributeName : self.paragraphStyle };
 
     // TODO: Creating a new CGLayer for each move number is probably not
     // very efficient, but it allows us to reuse the PlayViewMetrics
@@ -271,8 +282,7 @@
     CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
     CGContextRef layerContext = CGLayerGetContext(layer);
     UIGraphicsPushContext(layerContext);
-    CGContextSetFillColorWithColor(layerContext, textColor.CGColor);
-    [moveNumberText drawInRect:layerRect withFont:moveNumberFont lineBreakMode:NSLineBreakByWordWrapping alignment:NSTextAlignmentCenter];
+    [moveNumberText drawInRect:layerRect withAttributes:textAttributes];
     UIGraphicsPopContext();
     [self.playViewMetrics drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered];
     CGLayerRelease(layer);
@@ -304,14 +314,14 @@ CGLayerRef CreateNextMoveLayer(CGContextRef context, SymbolsLayerDelegate* deleg
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  UIColor* nextMoveLabelColor = [UIColor whiteColor];
   NSString* nextMoveLabelText = @"A";
-  UIFont* nextMoveLabelFont = delegate.playViewMetrics.nextMoveLabelFont;
+  NSDictionary* textAttributes = @{ NSFontAttributeName : delegate.playViewMetrics.nextMoveLabelFont,
+                                    NSForegroundColorAttributeName : [UIColor whiteColor],
+                                    NSParagraphStyleAttributeName : delegate.paragraphStyle,
+                                    NSShadowAttributeName: delegate.shadow };
 
   UIGraphicsPushContext(layerContext);
-  CGContextSetFillColorWithColor(layerContext, nextMoveLabelColor.CGColor);
-  CGContextSetShadowWithColor(layerContext, CGSizeMake(1.0, 1.0), 5.0, [UIColor blackColor].CGColor);
-  [nextMoveLabelText drawInRect:layerRect withFont:nextMoveLabelFont lineBreakMode:NSLineBreakByWordWrapping alignment:NSTextAlignmentCenter];
+  [nextMoveLabelText drawInRect:layerRect withAttributes:textAttributes];
   UIGraphicsPopContext();
 
   return layer;

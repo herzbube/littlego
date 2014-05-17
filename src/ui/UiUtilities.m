@@ -91,11 +91,15 @@
 
   UIFont* labelFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
   CGSize constraintSize = CGSizeMake(labelWidth, MAXFLOAT);
-  CGSize labelSize = [text sizeWithFont:labelFont
-                      constrainedToSize:constraintSize
-                          lineBreakMode:NSLineBreakByWordWrapping];
-
-  return labelSize.height + 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
+  NSDictionary* textAttributes = @{ NSFontAttributeName : labelFont };
+  NSStringDrawingContext* context = [[[NSStringDrawingContext alloc] init] autorelease];
+  CGRect boundingRect = [text boundingRectWithSize:constraintSize
+                                           options:NSStringDrawingUsesLineFragmentOrigin
+                                        attributes:textAttributes
+                                           context:context];
+  boundingRect.size.width = ceilf(boundingRect.size.width);
+  boundingRect.size.height = ceilf(boundingRect.size.height);
+  return boundingRect.size.height + 2 * [UiElementMetrics tableViewCellContentDistanceFromEdgeVertical];
 }
 
 // -----------------------------------------------------------------------------

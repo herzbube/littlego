@@ -79,12 +79,17 @@
   for (int fontSize = maximumFontSize; fontSize >= minimumFontSize; --fontSize)
   {
     UIFont* font = [UIFont systemFontOfSize:fontSize];
-    CGSize textSize = [text sizeWithFont:font
-                       constrainedToSize:constraintSize
-                           lineBreakMode:NSLineBreakByWordWrapping];
+    NSDictionary* textAttributes = @{ NSFontAttributeName : font };
+    NSStringDrawingContext* context = [[[NSStringDrawingContext alloc] init] autorelease];
+    CGRect boundingRect = [text boundingRectWithSize:constraintSize
+                                             options:NSStringDrawingUsesLineFragmentOrigin
+                                          attributes:textAttributes
+                                             context:context];
+    boundingRect.size.width = ceilf(boundingRect.size.width);
+    boundingRect.size.height = ceilf(boundingRect.size.height);
     NSArray* array = [NSArray arrayWithObjects:font,
-                                               [NSNumber numberWithFloat:textSize.width],
-                                               [NSNumber numberWithFloat:textSize.height],
+                                               [NSNumber numberWithFloat:boundingRect.size.width],
+                                               [NSNumber numberWithFloat:boundingRect.size.height],
                                                nil];
     [precalculatedFonts addObject:array];
   }

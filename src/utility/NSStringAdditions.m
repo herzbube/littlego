@@ -51,9 +51,13 @@
 // -----------------------------------------------------------------------------
 - (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow
 {
-  if (! nil)
+  if (nil == font)
     font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  CGSize size = [self sizeWithFont:font];
+  NSDictionary* textAttributes = @{ NSFontAttributeName : font };
+  CGSize size = [self sizeWithAttributes:textAttributes];
+  size.width = ceilf(size.width);
+  size.height = ceilf(size.height);
+
   const CGSize shadowOffset = CGSizeMake(1, 1);
   // Increase the context size to avoid clipping the shadow
   if (drawShadow)
@@ -72,7 +76,7 @@
     CGContextSetShadowWithColor(context, shadowOffset, shadowBlur, shadowColor.CGColor);
   }
 
-  [self drawAtPoint:CGPointMake(0, 0) withFont:font];
+  [self drawAtPoint:CGPointMake(0, 0) withAttributes:textAttributes];
   UIImage* outputImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
 

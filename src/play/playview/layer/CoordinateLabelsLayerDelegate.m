@@ -28,6 +28,17 @@
 #import <QuartzCore/QuartzCore.h>
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for
+// CoordinateLabelsLayerDelegate.
+// -----------------------------------------------------------------------------
+@interface CoordinateLabelsLayerDelegate()
+@property(nonatomic, retain) UIColor* textColor;
+@property(nonatomic, retain) NSShadow* shadow;
+@property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
+@end
+
+
 @implementation CoordinateLabelsLayerDelegate
 
 // -----------------------------------------------------------------------------
@@ -45,6 +56,16 @@
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
+  // Drawing the label in white makes it stand out nicely from the wooden
+  // background. The drop shadow is essential so that the label is visible even
+  // if it overlays a white stone.
+  self.textColor = [UIColor whiteColor];
+  self.shadow = [[[NSShadow alloc] init] autorelease];
+  self.shadow.shadowColor = [UIColor blackColor];
+  self.shadow.shadowBlurRadius = 5.0;
+  self.shadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+  self.paragraphStyle.alignment = NSTextAlignmentCenter;
   return self;
 }
 
@@ -81,6 +102,11 @@
                self.coordinateLabelAxis,
                coordinateLabelFont.pointSize);
 
+  NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
+                                    NSForegroundColorAttributeName : self.textColor,
+                                    NSShadowAttributeName: self.shadow,
+                                    NSParagraphStyleAttributeName : self.paragraphStyle };
+
   CGRect coordinateLabelRect = CGRectZero;
   coordinateLabelRect.size = self.playViewMetrics.coordinateLabelMaximumSize;
   if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
@@ -99,15 +125,10 @@
                                     - floor(self.playViewMetrics.coordinateLabelMaximumSize.height / 2));
   }
 
-  // Drawing the label in white makes it stand out nicely from the wooden
-  // background. The drop shadow is essential so that the label is visible even
-  // if it overlays a white stone.
-  CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-  CGContextSetShadowWithColor(context, CGSizeMake(1.0, 1.0), 5.0, [UIColor blackColor].CGColor);
 
-  // NSString's drawInRect:withFont:lineBreakMode:alignment: is a UIKit drawing
-  // function. To make it work we need to push our layer drawing context to the
-  // top of the UIKit context stack (which is currently empty).
+  // NSString's drawInRect:withAttributes: is a UIKit drawing function. To make
+  // it work we need to push our layer drawing context to the top of the UIKit
+  // context stack (which is currently empty).
   UIGraphicsPushContext(context);
   GoPoint* point = [[GoGame sharedGame].board pointAtVertex:@"A1"];
   while (point)
@@ -117,10 +138,7 @@
       coordinateLabelText = point.vertex.letterAxisCompound;
     else
       coordinateLabelText = point.vertex.numberAxisCompound;
-    [coordinateLabelText drawInRect:coordinateLabelRect
-                           withFont:coordinateLabelFont
-                      lineBreakMode:NSLineBreakByWordWrapping
-                          alignment:NSTextAlignmentCenter];
+    [coordinateLabelText drawInRect:coordinateLabelRect withAttributes:textAttributes];
     if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
     {
       point = point.right;

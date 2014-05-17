@@ -216,7 +216,6 @@ enum BoardPositionSectionItem
   UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
   segmentedControl.selectedSegmentIndex = self.playViewModel.infoTypeLastSelected;
   [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
-  segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
   self.navigationItem.titleView = segmentedControl;
   [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }

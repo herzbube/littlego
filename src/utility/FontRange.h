@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@
 /// - A UIFont object. If you use this UIFont for drawing the text specified
 ///   at construction time, the drawn text will make maximum use of the width
 ///   you specified. In other words, if you were using a UIFont object with a
-///   a font size that is 1 unit larger, the drawn text would no longer fit
-///   into the width you specified.
+///   font size that is 1 unit larger, the drawn text would no longer fit into
+///   the width you specified.
 /// - A CGSize structure. This is the precalculated size required to draw the
-///   the text specified at construction time with the UIFont that you just
-///   received as the first result of the query.
+///   text specified at construction time with the UIFont that you just received
+///   as the first result of the query.
 ///
 /// @note The use case that FontRange was originally developed for is the
 /// drawing of move numbers on a Go board. The client knows in advance the
