@@ -2504,7 +2504,8 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2518,7 +2519,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_LDFLAGS = (
 					"-lLumberjack",
@@ -2526,14 +2527,15 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos7.0;
+				SDKROOT = iphoneos7.1;
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
@@ -2549,7 +2551,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = (
@@ -2558,7 +2560,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos7.0;
+				SDKROOT = iphoneos7.1;
 			};
 			name = Release;
 		};
@@ -2585,7 +2587,8 @@
 		CD89232B149FDC8A00A94A7B /* Distribute_AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Patrick Naf Moser";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
@@ -2601,7 +2604,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = (
@@ -2611,7 +2614,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "3E5C76DC-0E47-4433-A704-FEC52D039BAD";
-				SDKROOT = iphoneos7.0;
+				SDKROOT = iphoneos7.1;
 			};
 			name = Distribute_AppStore;
 		};
@@ -2786,7 +2789,8 @@
 		CDE3010D1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Patrick Naf Moser";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
@@ -2802,7 +2806,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = (
@@ -2812,7 +2816,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "911AB574-C777-4F49-827E-E8C0AFACE3D1";
-				SDKROOT = iphoneos7.0;
+				SDKROOT = iphoneos7.1;
 			};
 			name = Distribute_AdHoc;
 		};
