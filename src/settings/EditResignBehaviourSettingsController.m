@@ -205,7 +205,6 @@ enum ResignMinGamesCategory
       cell.detailTextLabel.text = [NSString stringWithFormat:@"%d%%", resignThreshold];
       // The following properties must be set because of cell reuse, and because
       // ResignMinGamesItem may change them to non-standard values
-      cell.detailTextLabel.textColor = [UIColor slateBlueColor];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       cell.selectionStyle = UITableViewCellSelectionStyleBlue;
       break;
@@ -230,13 +229,11 @@ enum ResignMinGamesCategory
           cell.detailTextLabel.text = [NSString stringWithFormat:@"%llu", self.profile.fuegoResignMinGames];
           if (self.profile.autoSelectFuegoResignMinGames)
           {
-            cell.detailTextLabel.textColor = [UIColor grayColor];
             cell.accessoryType = UITableViewCellAccessoryNone;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
           }
           else
           {
-            cell.detailTextLabel.textColor = [UIColor slateBlueColor];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
           }

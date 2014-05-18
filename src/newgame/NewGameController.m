@@ -963,12 +963,11 @@ enum GameRulesSectionItem
   if (player)
   {
     cell.detailTextLabel.text = player.name;
-    cell.detailTextLabel.textColor = [UIColor slateBlueColor];
   }
   else
   {
     cell.detailTextLabel.text = @"No player selected";
-    cell.detailTextLabel.textColor = [UIColor grayColor];
+    cell.detailTextLabel.textColor = [UIColor redColor];
   }
 }
 

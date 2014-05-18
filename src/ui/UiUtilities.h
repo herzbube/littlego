@@ -37,7 +37,7 @@
 + (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController;
 + (UITableView*) createTableViewWithStyle:(UITableViewStyle)tableViewStyle withDelegateAndDataSource:(id)anObject;
 + (void) addGroupTableViewBackgroundToView:(UIView*)view;
-+ (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder;
++ (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder textIsRequired:(bool)textIsRequired;
 + (UIImageView*) redButtonTableViewCellBackground:(bool)selected;
 + (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
 + (UIImage*) captureView:(UIView*)view;

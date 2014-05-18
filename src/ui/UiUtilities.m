@@ -221,19 +221,24 @@
 /// If @a text is empty, the @a placeholder is used instead to fake the look of
 /// a UITextField's placeholder (i.e. non-bold font, light gray text color).
 // -----------------------------------------------------------------------------
-+ (void) setupDefaultTypeCell:(UITableViewCell*)cell withText:(NSString*)text placeHolder:(NSString*)placeholder
++ (void) setupDefaultTypeCell:(UITableViewCell*)cell
+                     withText:(NSString*)text
+                  placeHolder:(NSString*)placeholder
+               textIsRequired:(bool)textIsRequired
 {
   if (text.length > 0)
   {
     cell.textLabel.text = text;
-    cell.textLabel.textColor = [UIColor slateBlueColor];
+    cell.textLabel.textColor = [UIColor tableViewCellDetailTextLabelColor];
   }
   else
   {
     cell.textLabel.text = placeholder;
-    cell.textLabel.textColor = [UIColor lightGrayColor];
+    if (textIsRequired)
+      cell.textLabel.textColor = [UIColor redColor];
+    else
+      cell.textLabel.textColor = [UIColor tableViewCellDetailTextLabelColor];
   }
-  cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
   cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
   cell.textLabel.numberOfLines = 0;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

@@ -304,7 +304,7 @@ enum PlayerListSectionItem
         case ProfileNameItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
-          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.name placeHolder:@"Profile name"];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.name placeHolder:@"Profile name" textIsRequired:true];
           break;
         }
         default:
@@ -384,7 +384,7 @@ enum PlayerListSectionItem
         case ProfileNotesItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
-          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.profileDescription placeHolder:@"Profile notes"];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.profile.profileDescription placeHolder:@"Profile notes" textIsRequired:false];
           break;
         }
         default:

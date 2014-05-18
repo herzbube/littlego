@@ -182,7 +182,6 @@
 - (void) configureTextField
 {
   self.textField.borderStyle = UITextBorderStyleRoundedRect;
-  self.textField.textColor = [UIColor slateBlueColor];
   self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
   self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
   self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -251,7 +250,6 @@
 - (void) configureTextView
 {
   self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-  self.textView.textColor = [UIColor slateBlueColor];
 
   self.textView.delegate = self;
   self.textView.text = self.text;

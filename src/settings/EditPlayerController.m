@@ -216,7 +216,7 @@ enum GtpEngineProfileSectionItem
         case PlayerNameItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
-          [UiUtilities setupDefaultTypeCell:cell withText:self.player.name placeHolder:@"Player name"];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.player.name placeHolder:@"Player name" textIsRequired:true];
           break;
         }
         default:

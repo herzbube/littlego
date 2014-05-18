@@ -220,10 +220,8 @@ static NSString* gridLineColor = @"A9ABAD";
 + (UILabel*) valueLabel
 {
 	UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-	label.textColor = [UIColor slateBlueColor];
+  label.textColor = [UIColor tableViewCellDetailTextLabelColor];
 	label.textAlignment = NSTextAlignmentCenter;
-	label.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-	label.backgroundColor = [UIColor clearColor];
 	return label;
 }
 
@@ -233,11 +231,8 @@ static NSString* gridLineColor = @"A9ABAD";
 + (UILabel*) titleLabel
 {
 	UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-	label.textColor = [UIColor blackColor];
 	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-	label.backgroundColor = [UIColor clearColor];
-  label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	return label;
 }
 

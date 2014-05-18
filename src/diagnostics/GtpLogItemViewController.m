@@ -182,14 +182,22 @@ enum ResponseStringSectionItem
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   enum TableViewCellType cellType;
+  NSString* reusableCellIdentifier;
   if ((CommandSection == indexPath.section && CommandStringItem == indexPath.row)
       || (ResponseStringSection == indexPath.section && ResponseStringItem == indexPath.row))
   {
     cellType = DefaultCellType;
+    if (CommandSection == indexPath.section)
+      reusableCellIdentifier = @"CommandStringCell";
+    else
+      reusableCellIdentifier = @"ResponseStringCell";
   }
   else
+  {
     cellType = Value1CellType;
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:cellType tableView:tableView];
+    reusableCellIdentifier = @"Value1CellType";
+  }
+  UITableViewCell* cell = [TableViewCellFactory cellWithType:cellType tableView:tableView reusableCellIdentifier:reusableCellIdentifier];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   switch (indexPath.section)
@@ -200,7 +208,6 @@ enum ResponseStringSectionItem
       {
         case CommandStringItem:
           cell.textLabel.text = self.logItem.commandString;
-          cell.textLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];  // remove bold'ness
           cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
           cell.textLabel.numberOfLines = 0;
           break;
@@ -223,7 +230,6 @@ enum ResponseStringSectionItem
           if (! self.logItem.hasResponse)
           {
             cell.detailTextLabel.text = @"No response received yet";
-            cell.detailTextLabel.textColor = [UIColor lightGrayColor];
           }
           else
           {
@@ -252,8 +258,6 @@ enum ResponseStringSectionItem
         case ResponseStringItem:
         {
           cell.textLabel.text = self.logItem.parsedResponseString;
-          // The normal font without bold'ness would be
-          // [UIFont systemFontOfSize:[UIFont labelFontSize]];
           cell.textLabel.font = [UIFont fontWithName:@"CourierNewPSMT" size:[UIFont labelFontSize]];
           cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
           cell.textLabel.numberOfLines = 0;

@@ -132,9 +132,6 @@ enum DeleteAllSectionItem
   [self.placeholderView addSubview:self.placeholderLabel];
   self.placeholderLabel.text = @"No archived games.";
   self.placeholderLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
-  self.placeholderLabel.textColor = [UIColor blackColor];
-  self.placeholderLabel.backgroundColor = [UIColor clearColor];
-  self.placeholderLabel.numberOfLines = 1;
   self.placeholderLabel.textAlignment = NSTextAlignmentCenter;
 }
 

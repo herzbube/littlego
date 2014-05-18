@@ -208,7 +208,7 @@ enum ContactSectionItem
         case EmailAddressItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView reusableCellIdentifier:@"TextFieldCellType"];
-          [UiUtilities setupDefaultTypeCell:cell withText:self.crashReportingModel.contactEmail placeHolder:@"Your email address"];
+          [UiUtilities setupDefaultTypeCell:cell withText:self.crashReportingModel.contactEmail placeHolder:@"Your email address" textIsRequired:true];
           break;
         }
         default:
