@@ -427,8 +427,13 @@
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
+      // TODO xxx we give the same rectangle to PlayViewMetrics that it already
+      // has, but somewhere inside the updater PlayViewMetrics takes the new
+      // state of displayCoordinates into account. PlayViewMetrics should
+      // provide us with a better way to tell it what changed
+      [self.playViewMetrics updateWithRect:self.playViewMetrics.rect];
       [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
-      [self setNeedsLayout];
+      [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
     {

@@ -19,6 +19,7 @@
 #import "CoordinateLabelsView.h"
 #import "PlayViewMetrics.h"
 #import "layer/CoordinateLabelsLayerDelegate.h"
+#import "../model/PlayViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -57,6 +58,8 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  [[ApplicationDelegate sharedDelegate].playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+
   self.updatesWereDelayed = false;
 
   return self;
@@ -68,6 +71,7 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[ApplicationDelegate sharedDelegate].playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   self.playViewMetrics = nil;
   self.layerDelegate = nil;
   [super dealloc];
@@ -141,6 +145,22 @@
 {
   if (self.updatesWereDelayed)
     [self updateLayer];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  if (object == playViewModel)
+  {
+    if ([keyPath isEqualToString:@"displayCoordinates"])
+    {
+      [self.layerDelegate notify:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
+      [self delayedUpdate];
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

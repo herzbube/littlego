@@ -64,6 +64,7 @@
   [self setupChildControllers];
   PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   [playViewModel addObserver:self forKeyPath:@"maximumZoomScale" options:0 context:NULL];
+  [playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   return self;
 }
 
@@ -74,6 +75,7 @@
 {
   PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
   [playViewModel removeObserver:self forKeyPath:@"maximumZoomScale"];
+  [playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   self.playViewController = nil;
   self.doubleTapGestureController = nil;
   self.twoFingerTapGestureController = nil;
@@ -213,6 +215,8 @@
   self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];
   self.coordinateLabelsLetterViewScrollView.userInteractionEnabled = NO;
   self.coordinateLabelsNumberViewScrollView.userInteractionEnabled = NO;
+
+  [self updateCoordinateLabelsVisibleState];
 }
 
 // -----------------------------------------------------------------------------
@@ -320,8 +324,11 @@
   // like shit (because the labels are not part of the Play view they zoom
   // differently). So instead of trying hard and failing we just dispense with
   // the effort.
-  self.coordinateLabelsLetterViewScrollView.hidden = YES;
-  self.coordinateLabelsNumberViewScrollView.hidden = YES;
+  if ([ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates)
+  {
+    self.coordinateLabelsLetterViewScrollView.hidden = YES;
+    self.coordinateLabelsNumberViewScrollView.hidden = YES;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -344,8 +351,11 @@
   // this mechanism to update the play view's intrinsic size. Possibly we should
   // update the intrinsic size already here.
 
-  self.coordinateLabelsLetterViewScrollView.hidden = NO;
-  self.coordinateLabelsNumberViewScrollView.hidden = NO;
+  if ([ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates)
+  {
+    self.coordinateLabelsLetterViewScrollView.hidden = NO;
+    self.coordinateLabelsNumberViewScrollView.hidden = NO;
+  }
   [self synchronizeZoomScale:self.scrollView.zoomScale
             minimumZoomScale:self.scrollView.minimumZoomScale
             maximumZoomScale:self.scrollView.maximumZoomScale];
@@ -388,13 +398,37 @@
                      self, newContentSize.width, newContentSize.height);
       }
     }
+    else if ([keyPath isEqualToString:@"displayCoordinates"])
+    {
+      [self updateCoordinateLabelsVisibleState];
+    }
   }
 }
 
 #pragma mark - Internal helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for synchronizing scroll view.
+/// @brief Internal helper for updating synchronizing scroll view.
+// -----------------------------------------------------------------------------
+- (void) updateCoordinateLabelsVisibleState
+{
+  BOOL hidden;
+  if (self.scrollView.zooming)
+  {
+    hidden = YES;
+  }
+  else
+  {
+    PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    hidden = playViewModel.displayCoordinates ? NO : YES;
+  }
+  self.coordinateLabelsLetterViewScrollView.hidden = hidden;
+  self.coordinateLabelsNumberViewScrollView.hidden = hidden;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for synchronizing the coordinate label scroll views
+/// with the master scroll view.
 // -----------------------------------------------------------------------------
 - (void) synchronizeContentOffset:(CGPoint)contentOffset
 {
@@ -407,7 +441,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for synchronizing scroll view.
+/// @brief Internal helper for synchronizing the coordinate label scroll views
+/// with the master scroll view.
 // -----------------------------------------------------------------------------
 - (void) synchronizeZoomScale:(CGFloat)zoomScale
              minimumZoomScale:(CGFloat)minimumZoomScale
