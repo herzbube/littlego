@@ -43,6 +43,7 @@
 + (UIColor*) slateBlueColor;
 + (UIColor*) lightBlueColor;
 + (UIColor*) lightBlueGrayColor;
++ (UIColor*) bleuDeFranceColor;
 + (UIColor*) randomColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientStartColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientEndColor;

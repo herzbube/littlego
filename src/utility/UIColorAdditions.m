@@ -222,6 +222,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "318CE7", and whose alpha
+/// value is 1.0. This is the CSS color named "Bleu de France".
+///
+/// This is a nice blue'ish color to use as the tint color for a tab bar.
+// -----------------------------------------------------------------------------
++ (UIColor*) bleuDeFranceColor
+{
+  return [UIColor colorFromHexString:@"318CE7"];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are randomly chosen and
 /// whose alpha value is 1.0.
 // -----------------------------------------------------------------------------

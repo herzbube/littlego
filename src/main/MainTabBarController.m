@@ -28,6 +28,7 @@
 #import "../ui/UIElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/UIColorAdditions.h"
 
 
 @implementation MainTabBarController
@@ -137,6 +138,18 @@
 {
   [super loadView];
 
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    // The default bar is translucent, so we see the white background. On the
+    // iPhone this does not look good because we have a toolbar stacked on top
+    // of the tab bar.
+    self.tabBar.barTintColor = [UIColor blackColor];
+    // The default tint color is a rather dark/intense blue which does not look
+    // good on a black background. The color we select here is slightly lighter
+    // and not as intensely blue as the default.
+    self.tabBar.tintColor = [UIColor bleuDeFranceColor];
+  }
+
   // Place an application-wide black background behind the status bar. Requires
   // that the status bar style is set to UIStatusBarStyleLightContent. This
   // happens in the project's Info.plist, by using the UIStatusBarStyle key. In
@@ -151,9 +164,9 @@
   CGRect backgroundViewFrame = CGRectZero;
   backgroundViewFrame.size.width = [UiElementMetrics screenWidthLandscape];
   backgroundViewFrame.size.height = [UiElementMetrics statusBarHeight];
-  UIView* view = [[[UIView alloc] initWithFrame:backgroundViewFrame] autorelease];
-  [self.view addSubview: view];
-  view.backgroundColor = [UIColor blackColor];
+  UIView* backgroundView = [[[UIView alloc] initWithFrame:backgroundViewFrame] autorelease];
+  [self.view addSubview:backgroundView];
+  backgroundView.backgroundColor = [UIColor blackColor];
 }
 
 // -----------------------------------------------------------------------------
