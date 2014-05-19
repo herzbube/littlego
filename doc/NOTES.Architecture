@@ -111,30 +111,9 @@ About the "Play" tab
   triggers a second cascade of object creation during which all the view
   objects are created and notification and KVO observing mechanisms are
   initialized.
-- View sizing and layouting: Apple makes the following suggestions:
-  1) Container view controllers are responsible for placing and sizing the
-     root views of their child view controllers (frame.origin and frame.size)
-  2) Child view controllers are responsible for placing the subviews they own
-     based on the size given to their root view by their container view
-     controller.
-  3) The autoresizingMask of each view handles how views are resized when
-     some size change occurs, e.g. when the device orientation changes
-  The main question in regard of 2) is: When does a child view controller know
-  the size given to its root view? It definitely cannot know in loadView, so
-  theoretically a child view controller needs to delay creation of its
-  subviews until either viewWillAppear: or viewWillLayoutSubviews is invoked
-  (the root view size is known then). The drawback of this is that these
-  methods are invoked not just once, but many times, so the child view
-  controller would need to take special measures so that it creates its
-  subviews only once. I don't like this, so I have decided to use a slightly
-  different approach: Create subviews in loadView, but where necessary assume
-  an arbitrary initial root view size that is sufficient to place subviews
-  inside the root view. The initial arbitrary sizes are fixed up later when
-  views are laid out according to the selected autoresizingMask. The only
-  drawback of this approach: The container view controller must make sure that
-  when it places the child view controller's root view into a superview, the
-  superview must have a size that is greater or equal to the root view's size,
-  otherwise the size fixup according to autoresizingMask will go wrong.
+- View sizing and layouting is done via Auto Layout. Once you get over the
+  initial stumbling blocks, Auto Layout in general is much easier to understand
+  than manually calculating view frames.
 
 
 UI design

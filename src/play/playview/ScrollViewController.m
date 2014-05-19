@@ -232,31 +232,10 @@
 #pragma mark - viewWillLayoutSubviews
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method. This override properly resizes the scroll
-/// view content using self.currentAbsoluteZoomScale.
+/// @brief UIViewController method.
 ///
-/// Under normal circumstances, the Play view (which is the content of the
-/// scroll view) would be resized automatically by way of a properly set
-/// autoresizingMask. For some unknown reason the automatic resize does not work
-/// in this scenario:
-/// - The device is iPad, i.e. the scroll view (and with it the Play view) is
-///   embedded in a split view controller
-/// - The Play view is zoomed in
-/// - The UI is rotated
-///
-/// Because of the split view controller, which shows/hides its master view
-/// depending on the UI orientation, the resize of the scroll view during UI
-/// rotation is dis-proportional. If the rotation happens while the Play view is
-/// zoomed in, the automatic resize of the Play view does not use the same
-/// dis-proportional factor as the resize of the scroll view. Why this is the
-/// case is unknown, but this override of viewWillLayoutSubviews has been
-/// implemented to work around the problem.
-///
-/// Due to this override's existence, the Play view is no longer fitted with an
-/// autoresizingMask. This means that this override not only must handle UI
-/// orientation changes, but also initial resizing when the Play view is shown
-/// for the first time after the app is launched, or after the Play view is
-/// reloaded due to a view purge in iOS 5.
+/// This override exists to resize the scroll view content after a change to
+/// the interface orientation.
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {

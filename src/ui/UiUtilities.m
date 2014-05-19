@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UiUtilities.h"
+#import "AutoLayoutUtility.h"
 #import "UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
 #import "../utility/UIImageAdditions.h"
@@ -205,8 +206,9 @@
 + (void) addGroupTableViewBackgroundToView:(UIView*)view
 {
   UIView* backgroundView = [[[UITableView alloc] initWithFrame:view.bounds style:UITableViewStyleGrouped] autorelease];
-  backgroundView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
   [view addSubview:backgroundView];
+  backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:view withSubview:backgroundView];
   [view sendSubviewToBack:backgroundView];
 }
 
