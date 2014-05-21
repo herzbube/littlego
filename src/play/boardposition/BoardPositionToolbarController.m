@@ -45,13 +45,13 @@ enum NavigationDirection
 @property(nonatomic, assign) UIToolbar* toolbar;
 @property(nonatomic, retain) UIBarButtonItem* negativeSpacer;
 @property(nonatomic, retain) UIBarButtonItem* flexibleSpacer;
+@property(nonatomic, retain) UIBarButtonItem* navigationBarButtonSpacer;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItems;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsBackward;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsForward;
 @property(nonatomic, retain) UIBarButtonItem* boardPositionListViewItem;
 @property(nonatomic, retain) UIBarButtonItem* currentBoardPositionViewItem;
 @property(nonatomic, assign) bool boardPositionListViewIsVisible;
-@property(nonatomic, assign) int numberOfBoardPositionsOnPage;
 @end
 
 
@@ -72,7 +72,6 @@ enum NavigationDirection
     return nil;
   [self releaseObjects];
   [self setupChildControllers];
-  self.numberOfBoardPositionsOnPage = 10;
   self.boardPositionListViewIsVisible = false;
   self.toolbarNeedsPopulation = false;
   self.buttonStatesNeedUpdate = false;
@@ -100,6 +99,7 @@ enum NavigationDirection
   self.toolbar = nil;
   self.negativeSpacer = nil;
   self.flexibleSpacer = nil;
+  self.navigationBarButtonSpacer = nil;
   self.navigationBarButtonItems = nil;
   self.navigationBarButtonItemsBackward = nil;
   self.navigationBarButtonItemsForward = nil;
@@ -211,6 +211,10 @@ enum NavigationDirection
   self.flexibleSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                        target:nil
                                                                        action:nil] autorelease];
+  self.navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                  target:nil
+                                                                                  action:nil] autorelease];
+  self.navigationBarButtonSpacer.width = [UiElementMetrics toolbarSpacing];
 }
 
 // -----------------------------------------------------------------------------
@@ -224,11 +228,12 @@ enum NavigationDirection
 
   enum NavigationDirection direction = NavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
-  [self addButtonWithImageNamed:rewindButtonIconResource withSelector:@selector(rewind:) navigationDirection:direction];
+  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
   [self addButtonWithImageNamed:backButtonIconResource withSelector:@selector(previousBoardPosition:) navigationDirection:direction];
+  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
   direction = NavigationDirectionForward;
-  [self addButtonWithImageNamed:playButtonIconResource withSelector:@selector(nextBoardPosition:) navigationDirection:direction];
-  [self addButtonWithImageNamed:fastForwardButtonIconResource withSelector:@selector(fastForward:) navigationDirection:direction];
+  [self addButtonWithImageNamed:forwardButtonIconResource withSelector:@selector(nextBoardPosition:) navigationDirection:direction];
+  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
   [self addButtonWithImageNamed:forwardToEndButtonIconResource withSelector:@selector(fastForwardToEnd:) navigationDirection:direction];
 }
 
@@ -515,19 +520,6 @@ enum NavigationDirection
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the user tapping the "rewind" button.
-// -----------------------------------------------------------------------------
-- (void) rewind:(id)sender
-{
-  if ([self shouldIgnoreTaps])
-  {
-    DDLogWarn(@"%@: Ignoring board position change", self);
-    return;
-  }
-  [[[[ChangeBoardPositionCommand alloc] initWithOffset:(- self.numberOfBoardPositionsOnPage)] autorelease] submit];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the user tapping the "previous board position" button.
 // -----------------------------------------------------------------------------
 - (void) previousBoardPosition:(id)sender
@@ -551,19 +543,6 @@ enum NavigationDirection
     return;
   }
   [[[[ChangeBoardPositionCommand alloc] initWithOffset:1] autorelease] submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the user tapping the "fast forward" button.
-// -----------------------------------------------------------------------------
-- (void) fastForward:(id)sender
-{
-  if ([self shouldIgnoreTaps])
-  {
-    DDLogWarn(@"%@: Ignoring board position change", self);
-    return;
-  }
-  [[[[ChangeBoardPositionCommand alloc] initWithOffset:self.numberOfBoardPositionsOnPage] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
