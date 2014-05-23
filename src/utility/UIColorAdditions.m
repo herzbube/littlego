@@ -190,8 +190,8 @@
 /// @brief Returns a color object whose RGB values are 0.22, 0.33, and 0.53 and
 /// whose alpha value is 1.0.
 ///
-/// This is the color that Apple uses in their UIs for displaying editable text
-/// and selected values.
+/// This is the color that Apple uses in their UIs prior to iOS 7 for displaying
+/// editable text and selected values.
 // -----------------------------------------------------------------------------
 + (UIColor*) slateBlueColor
 {
@@ -225,11 +225,60 @@
 /// @brief Returns a color object whose hex code is "318CE7", and whose alpha
 /// value is 1.0. This is the CSS color named "Bleu de France".
 ///
-/// This is a nice blue'ish color to use as the tint color for a tab bar.
+/// This is a nice, dark'ish blue color that is useful as the tint color for a
+/// tab bar.
 // -----------------------------------------------------------------------------
 + (UIColor*) bleuDeFranceColor
 {
   return [UIColor colorFromHexString:@"318CE7"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "FFA812", and whose alpha
+/// value is 1.0. This is the CSS color named "Dark Tangerine".
+///
+/// This is a light, friendly orange color that is useful for highlighting
+/// something when the surrounding colors are also light.
+// -----------------------------------------------------------------------------
++ (UIColor*) darkTangerineColor
+{
+  return [UIColor colorFromHexString:@"FFA812"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "F5F5F5", and whose alpha
+/// value is 1.0. This is the CSS color named "White Smoke".
+///
+/// This is a shade of white, or a very light gray, that can be used as a
+/// contrasting background on which to place stuff that is really white.
+// -----------------------------------------------------------------------------
++ (UIColor*) whiteSmokeColor
+{
+  return [UIColor colorFromHexString:@"F5F5F5"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "73C2FB", and whose alpha
+/// value is 1.0. This is the CSS color named "Non Photo Blue".
+///
+/// This is a shade of blue that can be used as an alternating color to
+/// nonPhotoBlueColor().
+// -----------------------------------------------------------------------------
++ (UIColor*) mayaBlueColor
+{
+  return [UIColor colorFromHexString:@"73C2FB"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "A4DDED", and whose alpha
+/// value is 1.0. This is the CSS color named "White Smoke".
+///
+/// This is a shade of blue that can be used as an alternating color to
+/// mayaBlueColor().
+// -----------------------------------------------------------------------------
++ (UIColor*) nonPhotoBlueColor
+{
+  return [UIColor colorFromHexString:@"A4DDED"];
 }
 
 // -----------------------------------------------------------------------------

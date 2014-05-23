@@ -158,6 +158,17 @@
   self.boardPositionListTableView.delegate = self;
   self.boardPositionListTableView.dataSource = self;
   self.boardPositionListTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+  // One of the alternate table view cell background colors is white. We want
+  // to contrast this with a very light gray color so that the user sees where
+  // the last/first cell of self.boardPositionListTableView begins and ends
+  // (e.g. when there are not enough cells to fill the entire vertical extent
+  // of self.boardPositionListTableView, but also when the table view bounces
+  // on scroll).
+  self.view.backgroundColor = [UIColor whiteSmokeColor];
+  // The background of self.boardPositionListTableView must be transparent,
+  // otherwise the background of self.view is not visible
+  self.boardPositionListTableView.backgroundColor = [UIColor clearColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -563,6 +574,9 @@
   cell.detailTextLabel.text = [self detailLabelTextForBoardPosition:boardPositionOfCell move:move];
   cell.imageView.image = [self stoneImageForMove:move];
   cell.backgroundColor = [self backgroundColorForBoardPosition:boardPositionOfCell];
+  cell.selectedBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  cell.selectedBackgroundView.backgroundColor = [UIColor darkTangerineColor];
+
   return cell;
 }
 

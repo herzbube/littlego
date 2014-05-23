@@ -44,6 +44,10 @@
 + (UIColor*) lightBlueColor;
 + (UIColor*) lightBlueGrayColor;
 + (UIColor*) bleuDeFranceColor;
++ (UIColor*) darkTangerineColor;
++ (UIColor*) whiteSmokeColor;
++ (UIColor*) mayaBlueColor;
++ (UIColor*) nonPhotoBlueColor;
 + (UIColor*) randomColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientStartColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientEndColor;

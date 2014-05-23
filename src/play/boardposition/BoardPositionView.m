@@ -241,24 +241,21 @@ static UIImage* whiteStoneImage = nil;
 {
   if (self.currentBoardPosition)
   {
-    self.backgroundColor = [UIColor colorWithRed:0.0f
-                                           green:0.667f
-                                            blue:1.0f
-                                           alpha:1.0f];
-  }
-  else if (0 == self.boardPosition)
-  {
-    if (0 == [GoGame sharedGame].handicapPoints.count)
-      self.backgroundColor = [UIColor lightBlueGrayColor];
-    else
-      self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = [UIColor darkTangerineColor];
   }
   else
   {
-    if (move.player.black)
-      self.backgroundColor = [UIColor whiteColor];
+    bool isMoveByBlackPlayer;
+    if (0 == self.boardPosition)
+      isMoveByBlackPlayer = ([GoGame sharedGame].handicapPoints.count > 0);
     else
-      self.backgroundColor = [UIColor lightBlueGrayColor];
+      isMoveByBlackPlayer = move.player.black;
+    // These colors are shown on a very light background (almost white), so
+    // they must have a certain "punch"
+    if (isMoveByBlackPlayer)
+      self.backgroundColor = [UIColor nonPhotoBlueColor];
+    else
+      self.backgroundColor = [UIColor mayaBlueColor];
   }
 }
 
