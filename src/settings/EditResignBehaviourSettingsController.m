@@ -290,6 +290,8 @@ enum ResignMinGamesCategory
   {
     if (ResignMinGamesItem == indexPath.row)
     {
+      if (self.profile.autoSelectFuegoResignMinGames)
+        return;
       NSNumberFormatter* formatter = [[[NSNumberFormatter alloc] init] autorelease];
       formatter.numberStyle = NSNumberFormatterDecimalStyle;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
