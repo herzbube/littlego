@@ -132,9 +132,7 @@
   [self setupAutoLayoutConstraints];
   [self configureViews];
   [self configureControllers];
-  [self synchronizeZoomScale:self.scrollView.zoomScale
-            minimumZoomScale:self.scrollView.minimumZoomScale
-            maximumZoomScale:self.scrollView.maximumZoomScale];
+  [self synchronizeZoomScales];
 }
 
 // -----------------------------------------------------------------------------
@@ -242,16 +240,13 @@
   // super's implementation of viewWillLayoutSubviews is documented to be a
   // no-op, so there's no need to invoke it.
 
-  // viewWillLayoutSubviews is also called continuously while the user is
-  // zooming in/out, or is scrolling. In these cases we must not perform any
-  // resizes
+  // viewWillLayoutSubviews is called continuously while the user is zooming
+  // in/out, or is scrolling. In these cases we must not perform any resizes
   if (self.scrollView.zooming || self.scrollView.isDragging)
     return;
 
   // Updating the play view's intrinsic content size causes Auto Layout
   // to adjust the scroll view's content size
-  // TODO xxx Check if the content offset is also adjusted. If not we need to
-  // adjust it manually during zooming, possibly in scrollViewDidEndZooming
   CGSize newIntrinsicSizeOfPlayView = self.view.bounds.size;
   newIntrinsicSizeOfPlayView.width *= self.scrollView.zoomScale;
   newIntrinsicSizeOfPlayView.height *= self.scrollView.zoomScale;
@@ -273,7 +268,7 @@
   // Coordinate label scroll views are not visible during zooming, so we don't
   // need to synchronize
   if (! scrollView.zooming)
-    [self synchronizeContentOffset:scrollView.contentOffset];
+    [self synchronizeContentOffset];
 }
 
 // -----------------------------------------------------------------------------
@@ -303,11 +298,7 @@
   // like shit (because the labels are not part of the Play view they zoom
   // differently). So instead of trying hard and failing we just dispense with
   // the effort.
-  if ([ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates)
-  {
-    self.coordinateLabelsLetterViewScrollView.hidden = YES;
-    self.coordinateLabelsNumberViewScrollView.hidden = YES;
-  }
+  [self updateCoordinateLabelsVisibleState];
 }
 
 // -----------------------------------------------------------------------------
@@ -315,33 +306,13 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
 {
-  DDLogVerbose(@"scrollViewDidEndZooming: new zoom scale = %f", scale);
-
-  CGSize contentSize = scrollView.contentSize;
-  DDLogVerbose(@"scrollViewDidEndZooming: new content size = %f / %f ",
-               contentSize.width, contentSize.height);
-
-  CGPoint contentOffset = scrollView.contentOffset;
-  DDLogVerbose(@"scrollViewDidEndZooming: new content offset = %f / %f ",
-               contentOffset.x, contentOffset.y);
-
-  // TODO xxx Currently we assume that viewWillLayoutSubviews will always be
-  // invoked after a zoom operation. Check if this is true, because we rely on
-  // this mechanism to update the play view's intrinsic size. Possibly we should
-  // update the intrinsic size already here.
-
-  if ([ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates)
-  {
-    self.coordinateLabelsLetterViewScrollView.hidden = NO;
-    self.coordinateLabelsNumberViewScrollView.hidden = NO;
-  }
-  [self synchronizeZoomScale:self.scrollView.zoomScale
-            minimumZoomScale:self.scrollView.minimumZoomScale
-            maximumZoomScale:self.scrollView.maximumZoomScale];
-  [self synchronizeContentOffset:contentOffset];
+  [self updateAfterZoomScaleDidChange];
+  // Show coordinate label views that were temporarily hidden when the zoom
+  // operation started
+  [self updateCoordinateLabelsVisibleState];
 }
 
-#pragma mark - KVO notification
+#pragma mark - KVO responder
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -356,25 +327,15 @@
       if (self.scrollView.zoomScale < playViewModel.maximumZoomScale)
       {
         self.scrollView.maximumZoomScale = playViewModel.maximumZoomScale;
+        [self synchronizeZoomScales];
       }
       else
       {
         // The Play view is currently zoomed in more than the new maximum zoom
-        // scale allows. The goal is to adjust the current zoom scale, and all
-        // depending metrics, to the new maximum.
-        // TODO xxx Currently we rely on UIScrollView to perform the proper
-        // adjustments for us (e.g. downscale content size, content offset,
-        // trigger viewWillLayoutSubviews so that the play view's intrinsic
-        // size can be adjusted, trigger synchronizeContentOffset and
-        // synchronizeZoomScale, and so on). Verify that the behaviour is
-        // actually as desired.
+        // scale allows. Adjust the zoom scale to the new maximum.
         self.scrollView.maximumZoomScale = playViewModel.maximumZoomScale;
-        CGPoint newContentOffset = self.scrollView.contentOffset;
-        DDLogVerbose(@"%@: New content offset = %f / %f ",
-                     self, newContentOffset.x, newContentOffset.y);
-        CGSize newContentSize = self.scrollView.contentSize;
-        DDLogVerbose(@"%@: New content size = %f / %f ",
-                     self, newContentSize.width, newContentSize.height);
+        self.scrollView.zoomScale = playViewModel.maximumZoomScale;
+        [self updateAfterZoomScaleDidChange];
       }
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
@@ -384,10 +345,23 @@
   }
 }
 
-#pragma mark - Internal helpers
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for updating synchronizing scroll view.
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) updateAfterZoomScaleDidChange
+{
+  [self synchronizeZoomScales];
+  [self synchronizeContentOffset];
+  CGSize newIntrinsicSizeOfPlayView = self.view.bounds.size;
+  newIntrinsicSizeOfPlayView.width *= self.scrollView.zoomScale;
+  newIntrinsicSizeOfPlayView.height *= self.scrollView.zoomScale;
+  [self.playViewController.playView updateIntrinsicContentSize:newIntrinsicSizeOfPlayView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) updateCoordinateLabelsVisibleState
 {
@@ -406,33 +380,33 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for synchronizing the coordinate label scroll views
-/// with the master scroll view.
+/// @brief Private helper.
+///
+/// Synchronizes the coordinate label scroll views with the master scroll view.
 // -----------------------------------------------------------------------------
-- (void) synchronizeContentOffset:(CGPoint)contentOffset
+- (void) synchronizeContentOffset
 {
   CGPoint coordinateLabelsLetterViewScrollViewContentOffset = self.coordinateLabelsLetterViewScrollView.contentOffset;
-  coordinateLabelsLetterViewScrollViewContentOffset.x = contentOffset.x;
+  coordinateLabelsLetterViewScrollViewContentOffset.x = self.scrollView.contentOffset.x;
   self.coordinateLabelsLetterViewScrollView.contentOffset = coordinateLabelsLetterViewScrollViewContentOffset;
   CGPoint coordinateLabelsNumberViewScrollViewContentOffset = self.coordinateLabelsNumberViewScrollView.contentOffset;
-  coordinateLabelsNumberViewScrollViewContentOffset.y = contentOffset.y;
+  coordinateLabelsNumberViewScrollViewContentOffset.y = self.scrollView.contentOffset.y;
   self.coordinateLabelsNumberViewScrollView.contentOffset = coordinateLabelsNumberViewScrollViewContentOffset;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper for synchronizing the coordinate label scroll views
-/// with the master scroll view.
+/// @brief Private helper.
+///
+/// Synchronizes the coordinate label scroll views with the master scroll view.
 // -----------------------------------------------------------------------------
-- (void) synchronizeZoomScale:(CGFloat)zoomScale
-             minimumZoomScale:(CGFloat)minimumZoomScale
-             maximumZoomScale:(CGFloat)maximumZoomScale
+- (void) synchronizeZoomScales
 {
-  self.coordinateLabelsLetterViewScrollView.zoomScale = zoomScale;
-  self.coordinateLabelsLetterViewScrollView.minimumZoomScale = minimumZoomScale;
-  self.coordinateLabelsLetterViewScrollView.maximumZoomScale = maximumZoomScale;
-  self.coordinateLabelsNumberViewScrollView.zoomScale = zoomScale;
-  self.coordinateLabelsNumberViewScrollView.minimumZoomScale = minimumZoomScale;
-  self.coordinateLabelsNumberViewScrollView.maximumZoomScale = maximumZoomScale;
+  self.coordinateLabelsLetterViewScrollView.zoomScale = self.scrollView.zoomScale;
+  self.coordinateLabelsLetterViewScrollView.minimumZoomScale = self.scrollView.minimumZoomScale;
+  self.coordinateLabelsLetterViewScrollView.maximumZoomScale = self.scrollView.maximumZoomScale;
+  self.coordinateLabelsNumberViewScrollView.zoomScale = self.scrollView.zoomScale;
+  self.coordinateLabelsNumberViewScrollView.minimumZoomScale = self.scrollView.minimumZoomScale;
+  self.coordinateLabelsNumberViewScrollView.maximumZoomScale = self.scrollView.maximumZoomScale;
 }
 
 @end
