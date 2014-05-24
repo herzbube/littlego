@@ -128,7 +128,14 @@ static UIImage* whiteStoneImage = nil;
                                    self.stoneImageView, @"stoneImageView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-2-[boardPositionLabel]-2-[stoneImageView]-2-|",
+                            @"H:|-2-[boardPositionLabel]",
+                            // boardPositionLabel will never overlap
+                            // stoneImageView, so we don't have to specify a
+                            // spacing between the two. This is important
+                            // because it saves us another constraint where we
+                            // would have to specify that the label can expand
+                            // while the image must hug its content.
+                            @"H:[stoneImageView]-2-|",
                             @"H:|-2-[intersectionLabel]-2-[capturedStonesLabel]-2-|",
                             @"V:|-2-[boardPositionLabel]-0-[intersectionLabel]-2-|",
                             @"V:[capturedStonesLabel]-2-|",
@@ -136,13 +143,12 @@ static UIImage* whiteStoneImage = nil;
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self];
+  // Experimentally determined that pinning the baseline looks best with how we
+  // currently calculate the stone image size (see setupStaticViewMetrics())
   [AutoLayoutUtility alignFirstView:self.stoneImageView
                      withSecondView:self.boardPositionLabel
-                        onAttribute:NSLayoutAttributeCenterY
+                        onAttribute:NSLayoutAttributeBaseline
                    constraintHolder:self];
-  // Let the boardPositionLabel expand
-  [self.stoneImageView setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                         forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 // -----------------------------------------------------------------------------
@@ -311,6 +317,15 @@ static UIImage* whiteStoneImage = nil;
   // The stone image size is based on the height of one of the labels
   CGFloat stoneImageDimension = offscreenView.boardPositionLabel.intrinsicContentSize.height;
   stoneImageDimension *= 0.75;
+  // We can't have fractions, otherwise the resulting image will look fuzzy due
+  // to anti-aliasing
+  stoneImageDimension = floorf(stoneImageDimension);
+  // Experimentally determined that decrementing the diameter by one more point
+  // looks best together with
+  // 1) font size 11.0f (see configureSubviews()), and with
+  // 2) pinning the stone image baseline to the board position label baseline
+  //    (see setupAutoLayoutConstraints())
+  stoneImageDimension--;
   blackStoneImage = [[BoardPositionView stoneImageWithDimension:stoneImageDimension
                                                           color:[UIColor blackColor]] retain];
   whiteStoneImage = [[BoardPositionView stoneImageWithDimension:stoneImageDimension
@@ -322,18 +337,16 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 + (UIImage*) stoneImageWithDimension:(CGFloat)dimension color:(UIColor*)color
 {
-  CGFloat diameter = dimension;
-  // -1 because the center pixel does not count for drawing
-  CGFloat radius = (diameter - 1) / 2;
-  // -1 because center coordinates are zero-based, but diameter is a size (i.e.
-  // 1-based)
-  CGFloat centerXAndY = (diameter - 1) / 2.0;
+  // Make sure that we don't have fractions. If we have fractions, the resulting
+  // image will be fuzzy due to anti-aliasing.
+  CGFloat diameter = floorf(dimension);
+  CGFloat radius = diameter / 2.0f;
+  CGFloat centerXAndY = radius;
   CGPoint center = CGPointMake(centerXAndY, centerXAndY);
 
-  CGSize imageSize = CGSizeMake(dimension, dimension);
+  CGSize imageSize = CGSizeMake(diameter, diameter);
   UIGraphicsBeginImageContext(imageSize);
   CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextTranslateCTM(context, gHalfPixel, gHalfPixel);  // avoid anti-aliasing
   [UiUtilities drawCircleWithContext:context center:center radius:radius fill:true color:color];
   UIImage* stoneImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
