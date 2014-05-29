@@ -786,13 +786,18 @@
 // -----------------------------------------------------------------------------
 - (void) handleTapFrom:(UITapGestureRecognizer*)gestureRecognizer
 {
+  if (! [self.itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
+    return;
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self];
   UIView* itemView = [self hitTest:tappingLocation withEvent:nil];
-  if ([self.itemScrollViewDelegate respondsToSelector:@selector(itemScrollView:didTapItemView:)])
-    [self.itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
+  // Make sure that the tap gesture actually hit an item view and not the
+  // container view
+  if (-1 == [self indexOfVisibleItemView:itemView])
+    return;
+  [self.itemScrollViewDelegate itemScrollView:self didTapItemView:itemView];
 }
 
 // -----------------------------------------------------------------------------
