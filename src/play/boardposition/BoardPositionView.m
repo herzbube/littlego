@@ -112,10 +112,10 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  self.boardPositionLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  self.intersectionLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  self.capturedStonesLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  self.stoneImageView = [[UIImageView alloc] initWithImage:nil];
+  self.boardPositionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.intersectionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.capturedStonesLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.stoneImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   [self addSubview:self.boardPositionLabel];
   [self addSubview:self.intersectionLabel];
   [self addSubview:self.capturedStonesLabel];
