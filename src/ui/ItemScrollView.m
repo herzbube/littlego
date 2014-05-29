@@ -232,10 +232,31 @@
 // -----------------------------------------------------------------------------
 - (void) reloadData
 {
+  // TODO There is a weird problem where sometimes setNeedsLayout (invoked
+  // further down) does not trigger layoutSubviews. This is an attempt at
+  // working around the problem, because it appears that setting the content
+  // offset to a different value will guarantee that layoutSubviews is called.
+  // The circumstances where layoutSubviews is not triggered apparently are
+  // these:
+  // 1) Content offset does not change (i.e. we are already at content offset
+  //    0,0 when reloadData is invoked)
+  // 2) Content size does not change (i.e. the number of items and the item
+  //    extent do not change when reloadData is invoked)
+  // 3) The item views use Auto Layout (i.e. layoutSubviews is always invoked
+  //    if item views do not use Auto Layout)
+  // 4) Possibly: Content size is < scroll view frame size
+  if (CGPointEqualToPoint(self.contentOffset, CGPointMake(0, 0)))
+  {
+    // Set a dummy value that is different from 0,0. resetScrollPosition which
+    // is invoked further down will set the content offset back to 0,0.
+    self.contentOffset = CGPointMake(1, 1);
+  }
+
   [self removeAllVisibleItems];
   [self resetScrollPosition];
-  [self updateNumberOfItems];
-  [self setNeedsLayout];  // force layout update
+  self.numberOfItemsInItemScrollView = [self.itemScrollViewDataSource numberOfItemsInItemScrollView:self];
+  [self updateContentSize];
+  [self setNeedsLayout];
 }
 
 // -----------------------------------------------------------------------------
@@ -492,6 +513,8 @@
 - (void) layoutSubviews
 {
   [super layoutSubviews];
+
+  self.itemContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
 
   // Methods that are subsequently invoked no longer check this!
   if (0 == self.numberOfItemsInItemScrollView)
