@@ -39,6 +39,7 @@ static UIImage* whiteStoneImage = nil;
 /// @brief Class extension with private properties for BoardPositionView.
 // -----------------------------------------------------------------------------
 @interface BoardPositionView()
+@property(nonatomic, assign) bool offscreenMode;
 @property(nonatomic, assign) UILabel* boardPositionLabel;
 @property(nonatomic, assign) UILabel* intersectionLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
@@ -58,13 +59,22 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (id) initWithBoardPosition:(int)boardPosition
 {
+  // TODO: We should not need to set a frame.
+  // - BoardPositionView implements intrinsicContentSize in case it is used with
+  //   Auto Layout. This works well.
+  // - If BoardPositionView is used without Auto Layout, the superview or the
+  //   managing view controller is responsible for assigning a frame. This does
+  //   not work quite as expected. For some reason if the frame is not set here
+  //   and BoardPositionView is used in ItemScrollView, there is a weird Auto
+  //   Layout warning. Find out why this is the case so that we can get rid of
+  //   the frame calculation here.
+  CGRect frame = CGRectZero;
+  frame.size = [BoardPositionView boardPositionViewSize];
   // Call designated initializer of superclass (UIView)
-  self = [super initWithFrame:CGRectZero];
+  self = [super initWithFrame:frame];
   if (! self)
     return nil;
-  CGRect bounds = self.bounds;
-  bounds.size = [BoardPositionView boardPositionViewSize];
-  self.bounds = bounds;
+  self.offscreenMode = false;
   _boardPosition = boardPosition;  // don't use self, we don't want to trigger the setter
   _currentBoardPosition = false;   // ditto
   [self setupViewHierarchy];
@@ -87,6 +97,7 @@ static UIImage* whiteStoneImage = nil;
   self = [super initWithFrame:CGRectZero];
   if (! self)
     return nil;
+  self.offscreenMode = true;
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureSubviews];
@@ -263,6 +274,19 @@ static UIImage* whiteStoneImage = nil;
     else
       self.backgroundColor = [UIColor mayaBlueColor];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// This is implemented so that BoardPositionView can be used with Auto Layout.
+// -----------------------------------------------------------------------------
+- (CGSize) intrinsicContentSize
+{
+  if (self.offscreenMode)
+    return [super intrinsicContentSize];
+  else
+    return boardPositionViewSize;
 }
 
 #pragma mark - Property setters

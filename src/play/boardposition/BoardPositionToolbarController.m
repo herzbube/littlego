@@ -25,6 +25,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UIElementMetrics.h"
 
 // Enums
@@ -43,14 +44,9 @@ enum NavigationDirection
 @property(nonatomic, assign) bool toolbarNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, assign) UIToolbar* toolbar;
-@property(nonatomic, retain) UIBarButtonItem* negativeSpacer;
-@property(nonatomic, retain) UIBarButtonItem* flexibleSpacer;
-@property(nonatomic, retain) UIBarButtonItem* navigationBarButtonSpacer;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItems;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsBackward;
 @property(nonatomic, retain) NSMutableArray* navigationBarButtonItemsForward;
-@property(nonatomic, retain) UIBarButtonItem* boardPositionListViewItem;
-@property(nonatomic, retain) UIBarButtonItem* currentBoardPositionViewItem;
 @property(nonatomic, assign) bool boardPositionListViewIsVisible;
 @end
 
@@ -97,14 +93,9 @@ enum NavigationDirection
 - (void) releaseObjects
 {
   self.toolbar = nil;
-  self.negativeSpacer = nil;
-  self.flexibleSpacer = nil;
-  self.navigationBarButtonSpacer = nil;
   self.navigationBarButtonItems = nil;
   self.navigationBarButtonItemsBackward = nil;
   self.navigationBarButtonItemsForward = nil;
-  self.boardPositionListViewItem = nil;
-  self.currentBoardPositionViewItem = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -189,9 +180,9 @@ enum NavigationDirection
   self.view = self.toolbar;
   self.toolbar.delegate = self;
 
-  [self setupSpacerItems];
   [self setupBarButtonItems];
-  [self setupCustomViewItems];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    [self setupBoardPositionViews];
   [self setupNotificationResponders];
 
   self.toolbarNeedsPopulation = true;
@@ -202,38 +193,24 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupSpacerItems
-{
-  self.negativeSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                       target:nil
-                                                                       action:nil] autorelease];
-  self.negativeSpacer.width = (-[UiElementMetrics toolbarCustomViewItemPaddingHorizontal]);
-  self.flexibleSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                       target:nil
-                                                                       action:nil] autorelease];
-  self.navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                  target:nil
-                                                                                  action:nil] autorelease];
-  self.navigationBarButtonSpacer.width = [UiElementMetrics toolbarSpacing];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
 - (void) setupBarButtonItems
 {
   self.navigationBarButtonItems = [NSMutableArray arrayWithCapacity:0];
   self.navigationBarButtonItemsBackward = [NSMutableArray arrayWithCapacity:0];
   self.navigationBarButtonItemsForward = [NSMutableArray arrayWithCapacity:0];
+  UIBarButtonItem* navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                              target:nil
+                                                                                              action:nil] autorelease];
+  navigationBarButtonSpacer.width = [UiElementMetrics toolbarSpacing];
 
   enum NavigationDirection direction = NavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
-  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
+  [self.navigationBarButtonItems addObject:navigationBarButtonSpacer];
   [self addButtonWithImageNamed:backButtonIconResource withSelector:@selector(previousBoardPosition:) navigationDirection:direction];
-  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
+  [self.navigationBarButtonItems addObject:navigationBarButtonSpacer];
   direction = NavigationDirectionForward;
   [self addButtonWithImageNamed:forwardButtonIconResource withSelector:@selector(nextBoardPosition:) navigationDirection:direction];
-  [self.navigationBarButtonItems addObject:self.navigationBarButtonSpacer];
+  [self.navigationBarButtonItems addObject:navigationBarButtonSpacer];
   [self addButtonWithImageNamed:forwardToEndButtonIconResource withSelector:@selector(fastForwardToEnd:) navigationDirection:direction];
 }
 
@@ -256,18 +233,36 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupCustomViewItems
+- (void) setupBoardPositionViews
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    self.boardPositionListViewItem = [[[UIBarButtonItem alloc] initWithCustomView:self.boardPositionListViewController.view] autorelease];
-    self.currentBoardPositionViewItem = [[[UIBarButtonItem alloc] initWithCustomView:self.currentBoardPositionViewController.view] autorelease];
-  }
-  else
-  {
-    self.boardPositionListViewItem = nil;
-    self.currentBoardPositionViewItem = nil;
-  }
+  [self.view addSubview:self.boardPositionListViewController.view];
+  [self.view addSubview:self.currentBoardPositionViewController.view];
+
+  self.boardPositionListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.currentBoardPositionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  int toolbarPaddingHorizontal = [UiElementMetrics toolbarPaddingHorizontal];
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.boardPositionListViewController.view, @"boardPositionListView",
+                                   self.currentBoardPositionViewController.view, @"currentBoardPositionView",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            [NSString stringWithFormat:@"H:|-%d-[boardPositionListView]-[currentBoardPositionView]-%d-|", toolbarPaddingHorizontal, toolbarPaddingHorizontal],
+                            // This works because currentBoardPositionView has
+                            // an intrinsic content size
+                            @"V:[boardPositionListView(==currentBoardPositionView)]",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
+  [AutoLayoutUtility alignFirstView:self.boardPositionListViewController.view
+                     withSecondView:self.view
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self.view];
+  [AutoLayoutUtility alignFirstView:self.currentBoardPositionViewController.view
+                     withSecondView:self.view
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -300,41 +295,6 @@ enum NavigationDirection
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
-#pragma mark - viewWillLayoutSubviews and helpers
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
-  // super's implementation of viewWillLayoutSubviews is documented to be a
-  // no-op, so there's no need to invoke it.
-
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    // The board position list view is not a regular subview, it's added to the
-    // toolbar using a bar button item. Because of this we cannot use Auto
-    // Layout but must calculate the frame ourselves.
-    CGRect boardPositionListViewFrame = [self boardPositionListViewFrame];
-    self.boardPositionListViewController.view.frame = boardPositionListViewFrame;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for viewWillLayoutSubviews.
-// -----------------------------------------------------------------------------
-- (CGRect) boardPositionListViewFrame
-{
-  int listViewX = 0;
-  int listViewY = 0;
-  int listViewWidth = (self.view.frame.size.width
-                       - (2 * [UiElementMetrics toolbarPaddingHorizontal])
-                       - [BoardPositionView boardPositionViewSize].width
-                       - (2 * [UiElementMetrics toolbarSpacing]));
-  int listViewHeight = [BoardPositionView boardPositionViewSize].height;
-  return CGRectMake(listViewX, listViewY, listViewWidth, listViewHeight);
-}
-
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
@@ -357,7 +317,6 @@ enum NavigationDirection
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  self.toolbarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -441,27 +400,12 @@ enum NavigationDirection
   NSMutableArray* toolbarItems = [NSMutableArray arrayWithCapacity:0];
   if (self.boardPositionListViewIsVisible)
   {
-    if (self.boardPositionListViewItem)
-    {
-      [toolbarItems addObject:self.negativeSpacer];
-      [toolbarItems addObject:self.boardPositionListViewItem];
-    }
-    if (self.currentBoardPositionViewItem)
-    {
-      [toolbarItems addObject:self.flexibleSpacer];
-      [toolbarItems addObject:self.currentBoardPositionViewItem];
-      [toolbarItems addObject:self.negativeSpacer];
-    }
+    self.boardPositionListViewController.view.hidden = NO;
   }
   else
   {
+    self.boardPositionListViewController.view.hidden = YES;
     [toolbarItems addObjectsFromArray:self.navigationBarButtonItems];
-    if (self.currentBoardPositionViewItem)
-    {
-      [toolbarItems addObject:self.flexibleSpacer];
-      [toolbarItems addObject:self.currentBoardPositionViewItem];
-      [toolbarItems addObject:self.negativeSpacer];
-    }
   }
   [self.toolbar setItems:toolbarItems animated:YES];
 }

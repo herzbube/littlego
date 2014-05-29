@@ -32,13 +32,13 @@
 /// - Populate the toolbar with controls. This includes knowledge how the
 ///   controls need to be laid out in the toolbar.
 /// - iPhone only: Integrate child view controllers' root views into the toolbar
-///   as bar button items with custom views
+///   as subviews and use Auto Layout to place them
 /// - React to taps on bar buttons (only those owned by
 ///   BoardPositionToolbarController)
 ///
 /// BoardPositionToolbarController specifically is @b NOT responsible for
-/// managing user interaction with custom view bar button items - this is the
-/// job of the respective child view controllers.
+/// managing user interaction with child view controller's root views - this is
+/// the job of the respective child view controllers.
 // -----------------------------------------------------------------------------
 @interface BoardPositionToolbarController : UIViewController <UIToolbarDelegate, CurrentBoardPositionViewControllerDelegate>
 {
