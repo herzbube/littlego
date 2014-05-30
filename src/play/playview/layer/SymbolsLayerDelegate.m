@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 
 // Project includes
 #import "SymbolsLayerDelegate.h"
-#import "../PlayViewMetrics.h"
+#import "PlayViewDrawingHelper.h"
 #import "../../model/BoardPositionModel.h"
+#import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -176,9 +177,9 @@
       if (lastMove && GoMoveTypePlay == lastMove.type)
       {
         if (lastMove.player.isBlack)
-          [self.playViewMetrics drawLayer:_whiteLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
+          [PlayViewDrawingHelper drawLayer:_whiteLastMoveLayer withContext:context centeredAtPoint:lastMove.point withMetrics:self.playViewMetrics];
         else
-          [self.playViewMetrics drawLayer:_blackLastMoveLayer withContext:context centeredAtPoint:lastMove.point];
+          [PlayViewDrawingHelper drawLayer:_blackLastMoveLayer withContext:context centeredAtPoint:lastMove.point withMetrics:self.playViewMetrics];
       }
     }
   }
@@ -199,7 +200,7 @@
       else
         nextMove = game.boardPosition.currentMove.next;
       if (GoMoveTypePlay == nextMove.type)
-        [self.playViewMetrics drawLayer:_nextMoveLayer withContext:context centeredAtPoint:nextMove.point];
+        [PlayViewDrawingHelper drawLayer:_nextMoveLayer withContext:context centeredAtPoint:nextMove.point withMetrics:self.playViewMetrics];
     }
   }
 }
@@ -284,7 +285,7 @@
     UIGraphicsPushContext(layerContext);
     [moveNumberText drawInRect:layerRect withAttributes:textAttributes];
     UIGraphicsPopContext();
-    [self.playViewMetrics drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered];
+    [PlayViewDrawingHelper drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered withMetrics:self.playViewMetrics];
     CGLayerRelease(layer);
   }
 }

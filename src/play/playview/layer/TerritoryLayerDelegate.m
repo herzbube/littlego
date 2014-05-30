@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 
 // Project includes
 #import "TerritoryLayerDelegate.h"
-#import "../PlayViewMetrics.h"
+#import "PlayViewDrawingHelper.h"
+#import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
@@ -198,10 +199,10 @@ enum TerritoryLayerType
     switch (point.region.territoryColor)
     {
       case GoColorBlack:
-        [self.playViewMetrics drawLayer:_blackTerritoryLayer withContext:context centeredAtPoint:point];
+        [PlayViewDrawingHelper drawLayer:_blackTerritoryLayer withContext:context centeredAtPoint:point withMetrics:self.playViewMetrics];
         break;
       case GoColorWhite:
-        [self.playViewMetrics drawLayer:_whiteTerritoryLayer withContext:context centeredAtPoint:point];
+        [PlayViewDrawingHelper drawLayer:_whiteTerritoryLayer withContext:context centeredAtPoint:point withMetrics:self.playViewMetrics];
         break;
       case GoColorNone:
         if (! point.region.territoryInconsistencyFound)
@@ -209,7 +210,7 @@ enum TerritoryLayerType
         else if (InconsistentTerritoryMarkupTypeNeutral == inconsistentTerritoryMarkupType)
           continue;  // territory is inconsistent, but user does not want markup
         else
-          [self.playViewMetrics drawLayer:inconsistentTerritoryLayer withContext:context centeredAtPoint:point];
+          [PlayViewDrawingHelper drawLayer:inconsistentTerritoryLayer withContext:context centeredAtPoint:point withMetrics:self.playViewMetrics];
         break;
       default:
         continue;

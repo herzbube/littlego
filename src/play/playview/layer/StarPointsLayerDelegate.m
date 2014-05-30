@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 
 // Project includes
 #import "StarPointsLayerDelegate.h"
-#import "../PlayViewMetrics.h"
+#import "PlayViewDrawingHelper.h"
+#import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
@@ -113,7 +114,7 @@
     _starPointLayer = CreateStarPointLayer(context, self);
 
   for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
-    [self.playViewMetrics drawLayer:_starPointLayer withContext:context centeredAtPoint:starPoint];
+    [PlayViewDrawingHelper drawLayer:_starPointLayer withContext:context centeredAtPoint:starPoint withMetrics:self.playViewMetrics];
 }
 
 // -----------------------------------------------------------------------------

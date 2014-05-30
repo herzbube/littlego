@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 
 // Project includes
 #import "CrossHairLinesLayerDelegate.h"
-#import "../PlayViewMetrics.h"
+#import "PlayViewDrawingHelper.h"
+#import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPlayer.h"
@@ -156,8 +157,8 @@
   else
     verticalLineLayer = _normalLineLayer;
 
-  [self.playViewMetrics drawLineLayer:horizontalLineLayer withContext:context horizontal:true positionedAtPoint:self.crossHairPoint];
-  [self.playViewMetrics drawLineLayer:verticalLineLayer withContext:context horizontal:false positionedAtPoint:self.crossHairPoint];
+  [PlayViewDrawingHelper drawLineLayer:horizontalLineLayer withContext:context horizontal:true positionedAtPoint:self.crossHairPoint withMetrics:self.playViewMetrics];
+  [PlayViewDrawingHelper drawLineLayer:verticalLineLayer withContext:context horizontal:false positionedAtPoint:self.crossHairPoint withMetrics:self.playViewMetrics];
 }
 
 @end

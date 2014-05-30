@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,11 +25,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewMetrics class is responsible for calculating the
-/// coordinates and sizes of UI elements on the PlayView, and for providing
-/// those values to clients that need them for drawing. PlayViewMetrics also
-/// provides a few drawing helper methods because their implementation is also
-/// calculation-heavy.
+/// @brief The PlayViewMetrics class is a model class that provides coordinates
+/// and sizes of UI elements on the PlayView to clients that need them for
+/// drawing.
 ///
 /// If the frame of the Play view changes (e.g. when an interface orientation
 /// change occurs), someone must invoke updateWithRect:(). If the size of the
@@ -144,27 +142,7 @@
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 //@}
 
-/// @name Layer creation functions
-///
-/// @brief These functions exist as CF-like creation functions to make Xcode's
-/// analyze tool happy. If these functions are declared as Obj-C methods, the
-/// analyze tool reports a possible memory leak because it does not see the
-/// method as conforming to Core Foundation's ownership policy naming
-/// conventions.
-//@{
-CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWidth, PlayViewMetrics* metrics);
-CGLayerRef CreateStoneLayerWithColor(CGContextRef context, UIColor* stoneColor, PlayViewMetrics* metrics);
-CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
-CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics);
-//@}
-
-/// @name Drawing helpers
-//@{
-- (void) drawLineLayer:(CGLayerRef)layer withContext:(CGContextRef)context horizontal:(bool)horizontal positionedAtPoint:(GoPoint*)point;
-- (void) drawLayer:(CGLayerRef)layer withContext:(CGContextRef)context centeredAtPoint:(GoPoint*)point;
-//@}
-
-
+@property(nonatomic, retain) PlayViewModel* playViewModel;
 /// @brief The rectangle that Play view layers must use as their frame.
 @property(nonatomic, assign) CGRect rect;
 /// @brief The size of the Go board that is drawn by Play view layers.

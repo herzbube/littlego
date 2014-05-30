@@ -174,8 +174,6 @@
 		CD35921D1735A757000E2963 /* PlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FB1735A757000E2963 /* PlayView.m */; };
 		CD35921E1735A757000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FD1735A757000E2963 /* PlayViewController.m */; };
 		CD35921F1735A757000E2963 /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FD1735A757000E2963 /* PlayViewController.m */; };
-		CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FF1735A757000E2963 /* PlayViewMetrics.m */; };
-		CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591FF1735A757000E2963 /* PlayViewMetrics.m */; };
 		CD3592221735A757000E2963 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3592011735A757000E2963 /* ScrollViewController.m */; };
 		CD3592231735A757000E2963 /* ScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3592011735A757000E2963 /* ScrollViewController.m */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
@@ -271,6 +269,10 @@
 		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
+		CD8A3A7D1937FA89003D4F4E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8A3A7C1937FA89003D4F4E /* PlayViewMetrics.m */; };
+		CD8A3A821937FBD1003D4F4E /* PlayViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8A3A7C1937FA89003D4F4E /* PlayViewMetrics.m */; };
+		CD8A3A83193800CD003D4F4E /* PlayViewDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8A3A801937FBB9003D4F4E /* PlayViewDrawingHelper.m */; };
+		CD8A3A84193800DA003D4F4E /* PlayViewDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8A3A801937FBB9003D4F4E /* PlayViewDrawingHelper.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */; };
 		CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EAAB91787232900D92BA3 /* VersionInfoUtilities.m */; };
@@ -662,8 +664,6 @@
 		CD3591FB1735A757000E2963 /* PlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayView.m; sourceTree = "<group>"; };
 		CD3591FC1735A757000E2963 /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		CD3591FD1735A757000E2963 /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
-		CD3591FE1735A757000E2963 /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
-		CD3591FF1735A757000E2963 /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
 		CD3592001735A757000E2963 /* ScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollViewController.h; sourceTree = "<group>"; };
 		CD3592011735A757000E2963 /* ScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollViewController.m; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
@@ -745,6 +745,10 @@
 		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
+		CD8A3A7B1937FA89003D4F4E /* PlayViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewMetrics.h; sourceTree = "<group>"; };
+		CD8A3A7C1937FA89003D4F4E /* PlayViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewMetrics.m; sourceTree = "<group>"; };
+		CD8A3A7F1937FBB9003D4F4E /* PlayViewDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewDrawingHelper.h; sourceTree = "<group>"; };
+		CD8A3A801937FBB9003D4F4E /* PlayViewDrawingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewDrawingHelper.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
 		CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementMetrics.m; sourceTree = "<group>"; };
 		CD8EAAB81787232900D92BA3 /* VersionInfoUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionInfoUtilities.h; sourceTree = "<group>"; };
@@ -1329,6 +1333,8 @@
 			children = (
 				CD3591D81735A711000E2963 /* BoardPositionModel.h */,
 				CD3591D91735A711000E2963 /* BoardPositionModel.m */,
+				CD8A3A7B1937FA89003D4F4E /* PlayViewMetrics.h */,
+				CD8A3A7C1937FA89003D4F4E /* PlayViewMetrics.m */,
 				CD1311BD17180B45006CE699 /* PlayViewModel.h */,
 				CD1311BE17180B45006CE699 /* PlayViewModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
@@ -1382,8 +1388,6 @@
 				CD3591FD1735A757000E2963 /* PlayViewController.m */,
 				CDDCD0A7173D111400359DE7 /* PlayViewIntersection.h */,
 				CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */,
-				CD3591FE1735A757000E2963 /* PlayViewMetrics.h */,
-				CD3591FF1735A757000E2963 /* PlayViewMetrics.m */,
 				CD3592001735A757000E2963 /* ScrollViewController.h */,
 				CD3592011735A757000E2963 /* ScrollViewController.m */,
 			);
@@ -1405,6 +1409,8 @@
 				CD3591EE1735A757000E2963 /* GridLayerDelegate.m */,
 				CD0726F9180AE35E0083B138 /* InfluenceLayerDelegate.h */,
 				CD0726FA180AE35E0083B138 /* InfluenceLayerDelegate.m */,
+				CD8A3A7F1937FBB9003D4F4E /* PlayViewDrawingHelper.h */,
+				CD8A3A801937FBB9003D4F4E /* PlayViewDrawingHelper.m */,
 				CD3591EF1735A757000E2963 /* PlayViewLayerDelegate.h */,
 				CD3591F01735A757000E2963 /* PlayViewLayerDelegateBase.h */,
 				CD3591F11735A757000E2963 /* PlayViewLayerDelegateBase.m */,
@@ -2120,6 +2126,7 @@
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
+				CD8A3A83193800CD003D4F4E /* PlayViewDrawingHelper.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
 				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
@@ -2220,6 +2227,7 @@
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
+				CD8A3A7D1937FA89003D4F4E /* PlayViewMetrics.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
 				CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */,
@@ -2256,7 +2264,6 @@
 				CD35921A1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
 				CD35921C1735A757000E2963 /* PlayView.m in Sources */,
 				CD35921E1735A757000E2963 /* PlayViewController.m in Sources */,
-				CD3592201735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
@@ -2429,17 +2436,18 @@
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD35921D1735A757000E2963 /* PlayView.m in Sources */,
 				CD35921F1735A757000E2963 /* PlayViewController.m in Sources */,
-				CD3592211735A757000E2963 /* PlayViewMetrics.m in Sources */,
 				CD3592231735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
+				CD8A3A84193800DA003D4F4E /* PlayViewDrawingHelper.m in Sources */,
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
+				CD8A3A821937FBD1003D4F4E /* PlayViewMetrics.m in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */,

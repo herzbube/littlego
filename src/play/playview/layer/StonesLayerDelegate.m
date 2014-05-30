@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 
 // Project includes
 #import "StonesLayerDelegate.h"
-#import "../PlayViewMetrics.h"
+#import "PlayViewDrawingHelper.h"
+#import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
@@ -136,9 +137,9 @@
     if (point.hasStone)
     {
       if (point.blackStone)
-        [self.playViewMetrics drawLayer:_blackStoneLayer withContext:context centeredAtPoint:point];
+        [PlayViewDrawingHelper drawLayer:_blackStoneLayer withContext:context centeredAtPoint:point withMetrics:self.playViewMetrics];
       else
-        [self.playViewMetrics drawLayer:_whiteStoneLayer withContext:context centeredAtPoint:point];
+        [PlayViewDrawingHelper drawLayer:_whiteStoneLayer withContext:context centeredAtPoint:point withMetrics:self.playViewMetrics];
     }
     else
     {
