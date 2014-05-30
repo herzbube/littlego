@@ -19,7 +19,6 @@
 #import "StoneGroupStateLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
@@ -51,10 +50,12 @@
 ///
 /// @note This is the designated initializer of StoneGroupStateLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+           scoringModel:(ScoringModel*)theScoringModel
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
@@ -218,7 +219,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, StoneGroupStateLayer
   CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
   CGContextSetStrokeColorWithColor(layerContext, delegate.scoringModel.deadStoneSymbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, delegate.playViewModel.normalLineWidth);
+  CGContextSetLineWidth(layerContext, delegate.playViewMetrics.normalLineWidth);
   CGContextStrokePath(layerContext);
 
   return layer;

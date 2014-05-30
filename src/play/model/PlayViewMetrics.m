@@ -22,6 +22,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/FontRange.h"
 
@@ -43,22 +44,18 @@
 ///
 /// @note This is the designated initializer of PlayViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) initWithModel:(PlayViewModel*)model
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
-  self.playViewModel = model;
+  [self setupStaticProperties];
   [self setupFontRanges];
-  self.rect = CGRectZero;
-  self.boardSize = GoBoardSizeUndefined;
-  self.displayCoordinates = model.displayCoordinates;
+  [self setupMainProperties];
+  [self setupNotificationResponders];
   // Remaining properties are initialized by this updater
   [self updateWithRect:self.rect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   return self;
 }
 
@@ -67,13 +64,34 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
-  self.playViewModel = nil;
+  [self removeNotificationResponders];
+  self.lineColor = nil;
+  self.starPointColor = nil;
+  self.crossHairColor = nil;
   self.moveNumberFontRange = nil;
   self.coordinateLabelFontRange = nil;
   self.nextMoveLabelFontRange = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupStaticProperties
+{
+  self.lineColor = [UIColor blackColor];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.boundingLineWidth = 2;
+  else
+    self.boundingLineWidth = 3;
+  self.normalLineWidth = 1;
+  self.starPointColor = [UIColor blackColor];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.starPointRadius = 3;
+  else
+    self.starPointRadius = 5;
+  self.stoneRadiusPercentage = 0.9;
+  self.crossHairColor = [UIColor blueColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -101,6 +119,34 @@
   self.nextMoveLabelFontRange = [[[FontRange alloc] initWithText:widestNextMoveLabel
                                                  minimumFontSize:minimumFontSize
                                                  maximumFontSize:maximumFontSize] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupMainProperties
+{
+  self.rect = CGRectZero;
+  self.boardSize = GoBoardSizeUndefined;
+  self.displayCoordinates = [ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [[ApplicationDelegate sharedDelegate].playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[ApplicationDelegate sharedDelegate].playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
 }
 
 // -----------------------------------------------------------------------------
@@ -301,7 +347,7 @@
     // width is added to the *OUTSIDE* of the board (see GridLayerDelegate).
     int numberOfPointsAvailableForCells = (self.boardSideLength
                                            - (numberOfCoordinateLabelStripsPerAxis * self.coordinateLabelStripWidth)
-                                           - newBoardSize * self.playViewModel.normalLineWidth);
+                                           - newBoardSize * self.normalLineWidth);
     assert(numberOfPointsAvailableForCells >= 0);
     if (numberOfPointsAvailableForCells < 0)
       DDLogError(@"%@: Negative value %d for numberOfPointsAvailableForCells", self, numberOfPointsAvailableForCells);
@@ -310,10 +356,10 @@
     // of the board (top/bottom or left/right) to draw, for instance, a stone
     self.cellWidth = floor(numberOfPointsAvailableForCells / (self.numberOfCells + 1));
 
-    self.pointDistance = self.cellWidth + self.playViewModel.normalLineWidth;
-    self.stoneRadius = floor(self.cellWidth / 2 * self.playViewModel.stoneRadiusPercentage);
-    int pointsUsedForGridLines = ((newBoardSize - 2) * self.playViewModel.normalLineWidth
-                                  + 2 * self.playViewModel.boundingLineWidth);
+    self.pointDistance = self.cellWidth + self.normalLineWidth;
+    self.stoneRadius = floor(self.cellWidth / 2 * self.stoneRadiusPercentage);
+    int pointsUsedForGridLines = ((newBoardSize - 2) * self.normalLineWidth
+                                  + 2 * self.boundingLineWidth);
     self.lineLength = pointsUsedForGridLines + self.cellWidth * self.numberOfCells;
 
     
@@ -322,7 +368,7 @@
     // point, which sits in the middle of a normal line. Because the centering
     // calculation divides by 2 we must subtract a full line width here, not
     // just half a line width.
-    int widthForCentering = self.cellWidth * self.numberOfCells + (newBoardSize - 1) * self.playViewModel.normalLineWidth;
+    int widthForCentering = self.cellWidth * self.numberOfCells + (newBoardSize - 1) * self.normalLineWidth;
     int topLeftPointOffset = floor((self.boardSideLength
                                     - (numberOfCoordinateLabelStripsPerAxis * self.coordinateLabelStripWidth)
                                     - widthForCentering) / 2);
@@ -339,7 +385,7 @@
 
     // Calculate self.pointCellSize. See property documentation for details
     // what we calculate here.
-    int pointCellSideLength = self.cellWidth + self.playViewModel.normalLineWidth;
+    int pointCellSideLength = self.cellWidth + self.normalLineWidth;
     self.pointCellSize = CGSizeMake(pointCellSideLength, pointCellSideLength);
 
     // Geometry tells us that for the square with side length "a":
@@ -382,8 +428,8 @@
     // Based on this, the calculation for startB looks like this:
     //       startB = strokeB - widthB / 2
     int normalLineStrokeCoordinate = self.topLeftPointY;
-    CGFloat normalLineHalfWidth = self.playViewModel.normalLineWidth / 2.0;
-    CGFloat boundingLineHalfWidth = self.playViewModel.boundingLineWidth / 2.0;
+    CGFloat normalLineHalfWidth = self.normalLineWidth / 2.0;
+    CGFloat boundingLineHalfWidth = self.boundingLineWidth / 2.0;
     CGFloat boundingLineStrokeCoordinate = normalLineStrokeCoordinate + normalLineHalfWidth - boundingLineHalfWidth;
     self.boundingLineStrokeOffset = normalLineStrokeCoordinate - boundingLineStrokeCoordinate;
     CGFloat boundingLineStartCoordinate = boundingLineStrokeCoordinate - boundingLineHalfWidth;

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Project includes
 #import "PlayViewModel.h"
 #import "../../utility/NSStringAdditions.h"
-#import "../../utility/UIColorAdditions.h"
 
 
 @implementation PlayViewModel
@@ -34,43 +33,19 @@
   self = [super init];
   if (! self)
     return nil;
-
   self.markLastMove = false;
   self.displayCoordinates = false;
   self.displayPlayerInfluence = displayPlayerInfluenceDefault;
   self.moveNumbersPercentage = 0.0;
   self.playSound = false;
   self.vibrate = false;
-  self.backgroundColor = [UIColor whiteColor];
-  self.boardColor = [UIColor orangeColor];
-  self.lineColor = [UIColor blackColor];
-  self.boundingLineWidth = 2;
-  self.normalLineWidth = 1;
-  self.starPointColor = [UIColor blackColor];
-  self.starPointRadius = 3;
-  self.stoneRadiusPercentage = 1.0;
-  self.crossHairColor = [UIColor greenColor];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     self.maximumZoomScale = iPhoneMaximumZoomScaleMaximum;
   else
     self.maximumZoomScale = iPadMaximumZoomScaleMaximum;
   self.stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
   self.infoTypeLastSelected = ScoreInfoType;
-
   return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayViewModel object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  self.backgroundColor = nil;
-  self.boardColor = nil;
-  self.lineColor = nil;
-  self.starPointColor = nil;
-  self.crossHairColor = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -86,15 +61,6 @@
   self.moveNumbersPercentage = [[dictionary valueForKey:moveNumbersPercentageKey] floatValue];
   self.playSound = [[dictionary valueForKey:playSoundKey] boolValue];
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
-  self.backgroundColor = [UIColor colorFromHexString:[dictionary valueForKey:backgroundColorKey]];
-  self.boardColor = [UIColor colorFromHexString:[dictionary valueForKey:boardColorKey]];
-  self.lineColor = [UIColor colorFromHexString:[dictionary valueForKey:lineColorKey]];
-  self.boundingLineWidth = [[dictionary valueForKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]] intValue];
-  self.normalLineWidth = [[dictionary valueForKey:normalLineWidthKey] intValue];
-  self.starPointColor = [UIColor colorFromHexString:[dictionary valueForKey:starPointColorKey]];
-  self.starPointRadius = [[dictionary valueForKey:[starPointRadiusKey stringByAppendingDeviceSuffix]] intValue];
-  self.stoneRadiusPercentage = [[dictionary valueForKey:stoneRadiusPercentageKey] floatValue];
-  self.crossHairColor = [UIColor colorFromHexString:[dictionary valueForKey:crossHairColorKey]];
   self.maximumZoomScale = [[dictionary valueForKey:[maximumZoomScaleKey stringByAppendingDeviceSuffix]] floatValue];
   self.stoneDistanceFromFingertip = [[dictionary valueForKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]] floatValue];
   self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
@@ -121,15 +87,6 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.moveNumbersPercentage] forKey:moveNumbersPercentageKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playSound] forKey:playSoundKey];
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.backgroundColor] forKey:backgroundColorKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.boardColor] forKey:boardColorKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.lineColor] forKey:lineColorKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.boundingLineWidth] forKey:[boundingLineWidthKey stringByAppendingDeviceSuffix]];
-  [dictionary setValue:[NSNumber numberWithInt:self.normalLineWidth] forKey:normalLineWidthKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.starPointColor] forKey:starPointColorKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.starPointRadius] forKey:[starPointRadiusKey stringByAppendingDeviceSuffix]];
-  [dictionary setValue:[NSNumber numberWithFloat:self.stoneRadiusPercentage] forKey:stoneRadiusPercentageKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.crossHairColor] forKey:crossHairColorKey];
   [dictionary setValue:[NSNumber numberWithFloat:self.maximumZoomScale] forKey:[maximumZoomScaleKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneDistanceFromFingertip] forKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];

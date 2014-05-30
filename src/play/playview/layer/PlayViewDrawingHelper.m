@@ -18,7 +18,6 @@
 // Project includes
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../ui/UiUtilities.h"
@@ -282,7 +281,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
   CGContextBeginPath(layerContext);
   CGContextAddRect(layerContext, layerRect);
   CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, metrics.playViewModel.normalLineWidth);
+  CGContextSetLineWidth(layerContext, metrics.normalLineWidth);
   CGContextStrokePath(layerContext);
 
   return layer;

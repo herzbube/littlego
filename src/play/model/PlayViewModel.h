@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewModel class provides user defaults data to its clients
-/// that describes the UI characteristics of the Play view.
+/// related to normal play.
 // -----------------------------------------------------------------------------
 @interface PlayViewModel : NSObject
 {
 }
 
 - (id) init;
+
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
@@ -33,15 +34,6 @@
 @property(nonatomic, assign) float moveNumbersPercentage;
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
-@property(nonatomic, retain) UIColor* backgroundColor;
-@property(nonatomic, retain) UIColor* boardColor;
-@property(nonatomic, retain) UIColor* lineColor;
-@property(nonatomic, assign) int boundingLineWidth;
-@property(nonatomic, assign) int normalLineWidth;
-@property(nonatomic, retain) UIColor* starPointColor;
-@property(nonatomic, assign) int starPointRadius;
-@property(nonatomic, assign) float stoneRadiusPercentage;
-@property(nonatomic, retain) UIColor* crossHairColor;
 @property(nonatomic, assign) float maximumZoomScale;
 /// @brief How far from the fingertip should the cross-hair point be displayed
 /// when placing stones on the Play tab.

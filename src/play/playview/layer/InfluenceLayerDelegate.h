@@ -18,6 +18,9 @@
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
 
+// Forward declarations
+@class PlayViewModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The InfluenceLayerDelegate class is responsible for drawing a
@@ -28,6 +31,10 @@
 @interface InfluenceLayerDelegate : PlayViewLayerDelegateBase
 {
 }
+
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+          playViewModel:(PlayViewModel*)playViewModel;
 
 /// @name PlayViewLayerDelegate methods
 //@{

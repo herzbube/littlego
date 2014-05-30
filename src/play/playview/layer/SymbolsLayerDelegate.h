@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class BoardPositionModel;
+@class PlayViewModel;
 
 
 // -----------------------------------------------------------------------------

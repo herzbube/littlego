@@ -51,7 +51,6 @@
   self.playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   self.layerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithMainView:self
                                                                         metrics:self.playViewMetrics
-                                                                          model:[ApplicationDelegate sharedDelegate].playViewModel
                                                                            axis:axis] autorelease];
   [self.layer addSublayer:self.layerDelegate.layer];
 

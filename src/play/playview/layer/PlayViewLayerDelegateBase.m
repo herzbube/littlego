@@ -17,7 +17,6 @@
 
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
-#import "../../model/PlayViewMetrics.h"
 
 // System includes
 #import <QuartzCore/QuartzCore.h>
@@ -36,7 +35,7 @@
 ///
 /// @note This is the designated initializer of PlayViewLayerDelegateBase.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -46,7 +45,6 @@
   self.layer = [CALayer layer];
   self.mainView = mainView;
   self.playViewMetrics = metrics;
-  self.playViewModel = model;
   self.dirty = false;
 
   [self.mainView.layer addSublayer:self.layer];
@@ -71,7 +69,6 @@
   self.layer = nil;
   self.mainView = nil;
   self.playViewMetrics = nil;
-  self.playViewModel = nil;
   [super dealloc];
 }
 

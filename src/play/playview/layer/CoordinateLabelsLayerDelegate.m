@@ -18,7 +18,6 @@
 // Project includes
 #import "CoordinateLabelsLayerDelegate.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -48,11 +47,10 @@
 // -----------------------------------------------------------------------------
 - (id) initWithMainView:(UIView*)mainView
                 metrics:(PlayViewMetrics*)metrics
-                  model:(PlayViewModel*)playViewModel
                    axis:(enum CoordinateLabelAxis)axis
 {
   // Call designated initializer of superclass (PlayViewLayerDelegateBase)
-  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
@@ -165,7 +163,7 @@
   if (! self.playViewMetrics.coordinateLabelFont)
     return false;
   else
-    return self.playViewModel.displayCoordinates;
+    return self.playViewMetrics.displayCoordinates;
 }
 
 @end

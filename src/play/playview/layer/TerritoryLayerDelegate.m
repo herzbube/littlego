@@ -19,7 +19,6 @@
 #import "TerritoryLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
@@ -61,10 +60,10 @@ enum TerritoryLayerType
 ///
 /// @note This is the designated initializer of TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics scoringModel:(ScoringModel*)theScoringModel
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;

@@ -128,11 +128,6 @@
 {
 }
 
-/// @name Initialization and deallocation
-//@{
-- (id) initWithModel:(PlayViewModel*)model;
-//@}
-
 /// @name Updaters
 //@{
 - (void) updateWithRect:(CGRect)newRect;
@@ -147,7 +142,11 @@
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 //@}
 
-@property(nonatomic, retain) PlayViewModel* playViewModel;
+
+// -----------------------------------------------------------------------------
+/// @name Main properties
+// -----------------------------------------------------------------------------
+//@{
 /// @brief The rectangle that Play view layers must use as their frame.
 ///
 /// Clients that use KVO on this property will be triggered after
@@ -169,6 +168,12 @@
 /// require correct values from PlayViewMetrics must ***NOT*** use KVO on the
 /// PlayViewModel property.
 @property(nonatomic, assign) bool displayCoordinates;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Properties that depend on main properties
+// -----------------------------------------------------------------------------
+//@{
 /// @brief True if @e rect refers to a rectangle with portrait orientation,
 /// false if the rectangle uses landscape orientation.
 @property(nonatomic, assign) bool portrait;
@@ -287,4 +292,19 @@
 /// label using the current @e nextMoveLabelFont. Is CGSizeZero if no suitable
 /// font exists.
 @property(nonatomic, assign) CGSize nextMoveLabelMaximumSize;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Static properties whose values never change
+// -----------------------------------------------------------------------------
+//@{
+@property(nonatomic, retain) UIColor* lineColor;
+@property(nonatomic, assign) int boundingLineWidth;
+@property(nonatomic, assign) int normalLineWidth;
+@property(nonatomic, retain) UIColor* starPointColor;
+@property(nonatomic, assign) int starPointRadius;
+@property(nonatomic, assign) float stoneRadiusPercentage;
+@property(nonatomic, retain) UIColor* crossHairColor;
+//@}
+
 @end

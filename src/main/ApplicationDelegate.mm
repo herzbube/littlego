@@ -508,8 +508,8 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.crashReportingModel readUserDefaults];
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
-  // Is currently dependent on user defaults in PlayViewModel
-  self.playViewMetrics = [[[PlayViewMetrics alloc] initWithModel:self.playViewModel] autorelease];
+  // Is dependent on some user defaults in PlayViewModel
+  self.playViewMetrics = [[[PlayViewMetrics alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------

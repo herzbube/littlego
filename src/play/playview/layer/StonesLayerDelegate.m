@@ -19,7 +19,6 @@
 #import "StonesLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
 #import "../../../go/GoGame.h"
@@ -47,10 +46,10 @@
 ///
 /// @note This is the designated initializer of StonesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:model];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   _blackStoneLayer = NULL;

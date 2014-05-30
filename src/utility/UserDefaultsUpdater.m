@@ -39,6 +39,15 @@ NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 const float stoneDistanceFromFingertipMaximum = 4.0;
 const float maximumZoomScaleDefault = 3.0;
+NSString* backgroundColorKey = @"BackgroundColor";
+NSString* boardColorKey = @"BoardColor";
+NSString* lineColorKey = @"LineColor";
+NSString* boundingLineWidthKey = @"BoundingLineWidth";
+NSString* normalLineWidthKey = @"NormalLineWidth";
+NSString* starPointColorKey = @"StarPointColor";
+NSString* starPointRadiusKey = @"StarPointRadius";
+NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
+NSString* crossHairColorKey = @"CrossHairColor";
 //@}
 
 
@@ -552,6 +561,32 @@ const float maximumZoomScaleDefault = 3.0;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 9.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion9:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Remove obsolete keys from "Play view" dictionary
+  id playViewDictionary = [userDefaults objectForKey:playViewKey];
+  if (playViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
+    [playViewDictionaryUpgrade removeObjectForKey:backgroundColorKey];
+    [playViewDictionaryUpgrade removeObjectForKey:boardColorKey];
+    [playViewDictionaryUpgrade removeObjectForKey:lineColorKey];
+    [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:boundingLineWidthKey fromDictionary:playViewDictionaryUpgrade];
+    [playViewDictionaryUpgrade removeObjectForKey:normalLineWidthKey];
+    [playViewDictionaryUpgrade removeObjectForKey:starPointColorKey];
+    [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:starPointRadiusKey fromDictionary:playViewDictionaryUpgrade];
+    [playViewDictionaryUpgrade removeObjectForKey:stoneRadiusPercentageKey];
+    [playViewDictionaryUpgrade removeObjectForKey:crossHairColorKey];
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Upgrades @a dictionary so that after the upgrade it contains
 /// device-specific keys that match the device-agnostic @a key for all
 /// supported devices.
@@ -595,6 +630,19 @@ const float maximumZoomScaleDefault = 3.0;
       id valueFromRegistrationDomainDefaults = [registrationDomainDefaults valueForKey:keyWithDeviceSuffix];
       [dictionary setValue:valueFromRegistrationDomainDefaults forKey:keyWithDeviceSuffix];
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Upgrades @a dictionary so that after the upgrade it no longer
+/// contains device-specific keys that match the device-agnostic @a key.
+// -----------------------------------------------------------------------------
++ (void) removeDeviceSpecificKeysForDeviceAgnosticKey:(NSString*)key fromDictionary:(NSMutableDictionary*)dictionary
+{
+  for (NSString* deviceSuffix in [UIDevice deviceSuffixes])
+  {
+    NSString* keyWithDeviceSuffix = [key stringByAppendingString:deviceSuffix];
+    [dictionary removeObjectForKey:keyWithDeviceSuffix];
   }
 }
 

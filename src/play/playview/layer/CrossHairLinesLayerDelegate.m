@@ -19,7 +19,6 @@
 #import "CrossHairLinesLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
@@ -46,10 +45,10 @@
 ///
 /// @note This is the designated initializer of CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:model];
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   self.crossHairPoint = nil;
@@ -131,15 +130,15 @@
   if (! _normalLineLayer)
   {
     _normalLineLayer = CreateLineLayer(context,
-                                       self.playViewModel.crossHairColor,
-                                       self.playViewModel.normalLineWidth,
+                                       self.playViewMetrics.crossHairColor,
+                                       self.playViewMetrics.normalLineWidth,
                                        self.playViewMetrics);
   }
   if (! _boundingLineLayer)
   {
     _boundingLineLayer = CreateLineLayer(context,
-                                         self.playViewModel.crossHairColor,
-                                         self.playViewModel.boundingLineWidth,
+                                         self.playViewMetrics.crossHairColor,
+                                         self.playViewMetrics.boundingLineWidth,
                                          self.playViewMetrics);
   }
 

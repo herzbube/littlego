@@ -19,7 +19,6 @@
 #import "StarPointsLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -45,10 +44,10 @@
 ///
 /// @note This is the designated initializer of StarPointsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:model];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   _starPointLayer = nil;
@@ -146,11 +145,11 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, StarPointsLayerDelegate* d
   CGContextAddArc(layerContext,
                   layerCenter.x,
                   layerCenter.y,
-                  delegate.playViewModel.starPointRadius,
+                  delegate.playViewMetrics.starPointRadius,
                   startRadius,
                   endRadius,
                   clockwise);
-	CGContextSetFillColorWithColor(layerContext, delegate.playViewModel.starPointColor.CGColor);
+	CGContextSetFillColorWithColor(layerContext, delegate.playViewMetrics.starPointColor.CGColor);
   CGContextFillPath(layerContext);
   
   return layer;

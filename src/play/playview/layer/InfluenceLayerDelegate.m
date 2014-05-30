@@ -29,7 +29,41 @@
 #import <QuartzCore/QuartzCore.h>
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for InfluenceLayerDelegate.
+// -----------------------------------------------------------------------------
+@interface InfluenceLayerDelegate()
+@property(nonatomic, assign) PlayViewModel* playViewModel;
+@end
+
+
 @implementation InfluenceLayerDelegate
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a InfluenceLayerDelegate object.
+///
+/// @note This is the designated initializer of InfluenceLayerDelegate.
+// -----------------------------------------------------------------------------
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+          playViewModel:(PlayViewModel*)playViewModel
+{
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
+  if (! self)
+    return nil;
+  self.playViewModel = playViewModel;
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this InfluenceLayerDelegate object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.playViewModel = nil;
+  [super dealloc];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief PlayViewLayerDelegate method.

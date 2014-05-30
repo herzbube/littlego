@@ -19,7 +19,6 @@
 #import "GridLayerDelegate.h"
 #import "PlayViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -44,10 +43,10 @@
 ///
 /// @note This is the designated initializer of GridLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:model];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
   _normalLineLayer = nil;
@@ -123,15 +122,15 @@
   if (! _normalLineLayer)
   {
     _normalLineLayer = CreateLineLayer(context,
-                                       self.playViewModel.lineColor,
-                                       self.playViewModel.normalLineWidth,
+                                       self.playViewMetrics.lineColor,
+                                       self.playViewMetrics.normalLineWidth,
                                        self.playViewMetrics);
   }
   if (! _boundingLineLayer)
   {
     _boundingLineLayer = CreateLineLayer(context,
-                                        self.playViewModel.lineColor,
-                                        self.playViewModel.boundingLineWidth,
+                                        self.playViewMetrics.lineColor,
+                                        self.playViewMetrics.boundingLineWidth,
                                         self.playViewMetrics);
   }
 

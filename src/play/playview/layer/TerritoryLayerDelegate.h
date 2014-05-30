@@ -30,7 +30,7 @@
 {
 }
 
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics playViewModel:(PlayViewModel*)playViewModel scoringModel:(ScoringModel*)theScoringModel;
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics scoringModel:(ScoringModel*)theScoringModel;
 
 /// @name PlayViewLayerDelegate methods
 //@{

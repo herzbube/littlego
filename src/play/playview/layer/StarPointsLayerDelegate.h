@@ -27,7 +27,7 @@
 {
 }
 
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
+- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics;
 
 /// @name PlayViewLayerDelegate methods
 //@{

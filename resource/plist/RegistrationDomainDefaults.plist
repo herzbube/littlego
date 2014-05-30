@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>8</integer>
+	<integer>9</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>PlayView</key>
@@ -20,28 +20,6 @@
 		<false/>
 		<key>Vibrate</key>
 		<false/>
-		<key>BackgroundColor</key>
-		<string>ffffff</string>
-		<key>BoardColor</key>
-		<string>f3ac5f</string>
-		<key>LineColor</key>
-		<string>000000</string>
-		<key>BoundingLineWidth~iphone</key>
-		<integer>2</integer>
-		<key>BoundingLineWidth~ipad</key>
-		<string>3</string>
-		<key>NormalLineWidth</key>
-		<integer>1</integer>
-		<key>StarPointColor</key>
-		<string>000000</string>
-		<key>StarPointRadius~iphone</key>
-		<integer>3</integer>
-		<key>StarPointRadius~ipad</key>
-		<integer>5</integer>
-		<key>StoneRadiusPercentage</key>
-		<real>0.9</real>
-		<key>CrossHairColor</key>
-		<string>0000ff</string>
 		<key>MaximumZoomScale~iphone</key>
 		<real>2.5</real>
 		<key>MaximumZoomScale~ipad</key>

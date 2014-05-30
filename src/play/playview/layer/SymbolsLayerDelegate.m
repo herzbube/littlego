@@ -37,6 +37,7 @@
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
+@property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* shadow;
@@ -58,10 +59,11 @@
           playViewModel:(PlayViewModel*)playViewModel
      boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegate)
-  self = [super initWithMainView:mainView metrics:metrics model:playViewModel];
+  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
+  self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
+  _playViewModel = playViewModel;
   _boardPositionModel = boardPositionmodel;
   self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
