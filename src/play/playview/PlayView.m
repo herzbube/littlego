@@ -17,9 +17,6 @@
 
 // Project includes
 #import "PlayView.h"
-#import "PlayViewMetrics.h"
-#import "CoordinateLabelsView.h"
-#import "layer/CoordinateLabelsLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
@@ -30,6 +27,7 @@
 #import "layer/TerritoryLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
 #import "../model/BoardPositionModel.h"
+#import "../model/PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoard.h"
@@ -40,8 +38,6 @@
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
-#import "../../utility/NSStringAdditions.h"
-#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -92,9 +88,6 @@
   self.scoringModel = delegate.scoringModel;
   self.playViewMetrics = delegate.playViewMetrics;
   self.layerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
-
-  self.coordinateLabelsLetterView = nil;
-  self.coordinateLabelsNumberView = nil;
 
   [self setupView];
 
@@ -308,14 +301,7 @@
   GoBoardPosition* newBoardPosition = newGame.boardPosition;
   [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
-  // TODO xxx we should not be responsible for those views, they should observe
-  // PlayViewMetrics on their own
-  [self.coordinateLabelsLetterView updateBoardSize];
-  [self.coordinateLabelsNumberView updateBoardSize];
-
-  // Redraw layers, if possible now, otherwise at a later time
   [self delayedUpdate];
 }
 
@@ -398,10 +384,6 @@
       // but this also updates our own intrinsic size, which unnecessarily
       // affects a view layout cycle.
 
-      // TODO xxx we should not be responsible for those views, they should
-      // observe PlayViewMetrics on their own
-      [self.coordinateLabelsLetterView updateIntrinsicContentSize];
-      [self.coordinateLabelsNumberView updateIntrinsicContentSize];
       // Notify Auto Layout that our intrinsic size changed. This provokes a
       // frame change.
       [self invalidateIntrinsicContentSize];

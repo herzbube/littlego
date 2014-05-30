@@ -18,7 +18,6 @@
 // Project includes
 #import "ScrollViewController.h"
 #import "CoordinateLabelsView.h"
-#import "PlayView.h"
 #import "PlayViewController.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/PanGestureController.h"
@@ -203,12 +202,6 @@
   // changing the zoomScale).
   self.coordinateLabelsLetterViewScrollView.delegate = self;
   self.coordinateLabelsNumberViewScrollView.delegate = self;
-
-  // TODO xxx remove this; coordinate label views should observe
-  // PlayViewMetrics and listen for notifications
-  PlayView* playView = self.playViewController.playView;
-  playView.coordinateLabelsLetterView = self.coordinateLabelsLetterView;
-  playView.coordinateLabelsNumberView = self.coordinateLabelsNumberView;
 
   self.coordinateLabelsLetterViewScrollView.backgroundColor = [UIColor clearColor];
   self.coordinateLabelsNumberViewScrollView.backgroundColor = [UIColor clearColor];

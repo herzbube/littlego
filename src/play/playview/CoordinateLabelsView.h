@@ -31,9 +31,6 @@
 
 - (id) initWithAxis:(enum CoordinateLabelAxis)axis;
 
-- (void) updateIntrinsicContentSize;
-- (void) updateBoardSize;
-
 @property(nonatomic, assign) enum CoordinateLabelAxis coordinateLabelAxis;
 
 @end

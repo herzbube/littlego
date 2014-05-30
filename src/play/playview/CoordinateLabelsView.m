@@ -17,8 +17,8 @@
 
 // Project includes
 #import "CoordinateLabelsView.h"
-#import "PlayViewMetrics.h"
 #import "layer/CoordinateLabelsLayerDelegate.h"
+#import "../model/PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
@@ -57,7 +57,10 @@
   [self.layer addSublayer:self.layerDelegate.layer];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [[ApplicationDelegate sharedDelegate].playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 
   self.updatesWereDelayed = false;
@@ -71,6 +74,8 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
   [[ApplicationDelegate sharedDelegate].playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   self.playViewMetrics = nil;
   self.layerDelegate = nil;
@@ -139,6 +144,22 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  // TODO xxx this should not be required; currently it *is* required because
+  // during application launch the board size in PlayViewMetrics goes from
+  // GoBoardSizeUndefined to a concrete size when the first GoGame is started;
+  // while PlayViewMetrics has the board size as GoBoardSizeUndefined, the
+  // PlayViewMetrics rect - and therefore our own intrinsic content size - is
+  // zero
+  [self invalidateIntrinsicContentSize];
+  [self.layerDelegate notify:PVLDEventGoGameStarted eventInfo:nil];
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -161,39 +182,25 @@
       [self delayedUpdate];
     }
   }
-}
+  else if (object == self.playViewMetrics)
+  {
+    if ([keyPath isEqualToString:@"rect"] || [keyPath isEqualToString:@"boardSize"])
+    {
+      // TODO xxx define a new dedicated event for board size changes; at the
+      // moment we act as if the play view metrics rectangle changed, because
+      // that is the only way how we can get all layers to update themselves.
+      // but this also updates our own intrinsic size, which unnecessarily
+      // affects a view layout cycle.
 
-// -----------------------------------------------------------------------------
-/// @brief Must be invoked whenever the frame of this view is supposed to
-/// change. Changing the intrinsic content size triggers Auto Layout, and thus
-/// provokes a frame change.
-// -----------------------------------------------------------------------------
-- (void) updateIntrinsicContentSize
-{
-  [self.layerDelegate notify:PVLDEventRectangleChanged eventInfo:nil];
-  // Redraw layers, if possible now, otherwise at a later time
-  // TODO xxx is this the right place to draw? shouldn't we do this in drawRect
-  // or somewhere similar?
-  // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
-  //      drawLayers
-  [self delayedUpdate];
-  [self invalidateIntrinsicContentSize];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Must be invoked whenever the size of the Go board changes.
-// -----------------------------------------------------------------------------
-- (void) updateBoardSize
-{
-  [self.layerDelegate notify:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
-  // TODO xxx this should not be required; currently it *is* required because
-  // during application launch the board size in PlayViewMetrics goes from
-  // GoBoardSizeUndefined to a concrete size when the first GoGame is started;
-  // while PlayViewMetrics has the board size as GoBoardSizeUndefined, the
-  // PlayViewMetrics rect - and therefore our own intrinsic content size - is
-  // zero
-  [self invalidateIntrinsicContentSize];
+      // Notify Auto Layout that our intrinsic size changed. This provokes a
+      // frame change.
+      [self invalidateIntrinsicContentSize];
+      [self.layerDelegate notify:PVLDEventRectangleChanged eventInfo:nil];
+      // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
+      //      drawLayers
+      [self delayedUpdate];
+    }
+  }
 }
 
 @end

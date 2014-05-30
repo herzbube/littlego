@@ -19,7 +19,6 @@
 #import "PlayViewIntersection.h"
 
 // Forward declarations
-@class CoordinateLabelsView;
 @class GoPoint;
 
 
@@ -144,11 +143,6 @@
 ///
 /// This property cannot be monitored via KVO.
 @property(nonatomic, assign) enum GoMoveIsIllegalReason crossHairPointIsIllegalReason;
-//@}
-/// @name Related views whose drawing PlayView coordinates
-//@{
-@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsLetterView;
-@property(nonatomic, assign) CoordinateLabelsView* coordinateLabelsNumberView;
 //@}
 
 @end
