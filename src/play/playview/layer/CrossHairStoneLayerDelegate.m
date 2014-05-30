@@ -25,9 +25,6 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
@@ -37,6 +34,8 @@
 @property(nonatomic, assign) CGLayerRef blackStoneLayer;
 @property(nonatomic, assign) CGLayerRef whiteStoneLayer;
 @property(nonatomic, assign) CGLayerRef crossHairStoneLayer;
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
 @end
 
 

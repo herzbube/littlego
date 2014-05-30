@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,6 @@
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
 
-// Forward declarations
-@class GoPoint;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The CrossHairStoneLayerDelegate class is responsible for drawing the
@@ -30,19 +27,5 @@
 @interface CrossHairStoneLayerDelegate : PlayViewLayerDelegateBase
 {
 }
-
-/// @name PlayViewLayerDelegate methods
-//@{
-- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
-//@}
-
-/// @name CALayer delegate methods
-//@{
-- (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
-//@}
-
-
-/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
-@property(nonatomic, retain) GoPoint* crossHairPoint;
 
 @end

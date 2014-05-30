@@ -26,9 +26,6 @@
 #import "../../../go/GoVertex.h"
 #import "../../../ui/UiUtilities.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for StonesLayerDelegate.

@@ -24,9 +24,6 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
@@ -35,6 +32,8 @@
 @interface CrossHairLinesLayerDelegate()
 @property(nonatomic, assign) CGLayerRef normalLineLayer;
 @property(nonatomic, assign) CGLayerRef boundingLineLayer;
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
 @end
 
 

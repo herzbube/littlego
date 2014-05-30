@@ -19,7 +19,6 @@
 #import "PlayViewLayerDelegate.h"
 
 // Forward declarations
-@class CALayer;
 @class PlayViewMetrics;
 
 
@@ -34,7 +33,8 @@
 ///
 /// In addition, PlayViewLayerDelegateBase provides the following simple
 /// implementation of the PlayViewLayerDelegate protocol:
-/// - Defines the properties @e layer and @e mainView
+/// - Synthesizes the properties @e layer and @e mainView (because properties
+///   declared in protocols are not auto-synthesized)
 /// - In its initializer, creates a new CALayer object, adds it as a sublayer
 ///   to @e mainView, and configures the layer object to use the
 ///   PlayViewLayerDelegateBase as its delegate.

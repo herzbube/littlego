@@ -23,9 +23,6 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GridLayerDelegate.

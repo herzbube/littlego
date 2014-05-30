@@ -27,9 +27,6 @@
 #import "../../../go/GoScore.h"
 #import "../../../utility/UIColorAdditions.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for

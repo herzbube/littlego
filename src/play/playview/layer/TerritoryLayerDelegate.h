@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,16 +30,8 @@
 {
 }
 
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics scoringModel:(ScoringModel*)theScoringModel;
-
-/// @name PlayViewLayerDelegate methods
-//@{
-- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
-//@}
-
-/// @name CALayer delegate methods
-//@{
-- (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context;
-//@}
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+           scoringModel:(ScoringModel*)scoringModel;
 
 @end

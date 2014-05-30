@@ -28,9 +28,6 @@
 #import "../../../ui/UiUtilities.h"
 #import "../../../utility/UIColorAdditions.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 /// @brief Enumerates all possible layer types to mark up territory
 enum TerritoryLayerType
@@ -60,13 +57,15 @@ enum TerritoryLayerType
 ///
 /// @note This is the designated initializer of TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics scoringModel:(ScoringModel*)theScoringModel
+- (id) initWithMainView:(UIView*)mainView
+                metrics:(PlayViewMetrics*)metrics
+           scoringModel:(ScoringModel*)scoringModel
 {
   // Call designated initializer of superclass (PlayViewLayerDelegateBase)
   self = [super initWithMainView:mainView metrics:metrics];
   if (! self)
     return nil;
-  self.scoringModel = theScoringModel;
+  self.scoringModel = scoringModel;
   _blackTerritoryLayer = NULL;
   _whiteTerritoryLayer = NULL;
   _inconsistentFillColorTerritoryLayer = NULL;

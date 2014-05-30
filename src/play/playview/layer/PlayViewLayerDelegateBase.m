@@ -18,12 +18,12 @@
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 @implementation PlayViewLayerDelegateBase
 
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize these properties that are declared in the
+// PlayViewLayerDelegate protocol.
 @synthesize layer = _layer;
 @synthesize mainView = _mainView;
 

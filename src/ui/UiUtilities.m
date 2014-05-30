@@ -22,9 +22,6 @@
 #import "../utility/UIColorAdditions.h"
 #import "../utility/UIImageAdditions.h"
 
-// System includes
-#import <QuartzCore/QuartzCore.h>
-
 
 @implementation UiUtilities
 
