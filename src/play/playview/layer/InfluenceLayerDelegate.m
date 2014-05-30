@@ -44,12 +44,8 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:
+    case PVLDEventGoGameStarted:  // reset statistics to zero
     {
-      // TODO Do we need to react to this event? At the moment we do because
-      // territory statistics certainly change (they are reset to zero), but
-      // it's possible that PVLDEventTerritoryStatisticsChanged is also sent
-      // when a new game starts.
       self.dirty = true;
       break;
     }

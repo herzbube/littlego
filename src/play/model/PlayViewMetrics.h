@@ -131,7 +131,6 @@
 /// @name Initialization and deallocation
 //@{
 - (id) initWithModel:(PlayViewModel*)model;
-- (void) dealloc;
 //@}
 
 /// @name Updaters

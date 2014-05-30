@@ -51,15 +51,6 @@ static NSString* gridLineColor = @"A9ABAD";
 @end
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private properties and properties for
-/// TableViewGridCell.
-// -----------------------------------------------------------------------------
-@interface TableViewGridCell()
-@property(nonatomic, retain) NSArray* constraintsXXX;
-@end
-
-
 @implementation TableViewGridCell
 
 // -----------------------------------------------------------------------------

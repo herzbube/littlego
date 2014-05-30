@@ -30,7 +30,6 @@
 /// @name Initialization and deallocation
 //@{
 - (id) initWithMainView:(UIView*)mainView metrics:(PlayViewMetrics*)metrics model:(PlayViewModel*)model;
-- (void) dealloc;
 //@}
 
 /// @name PlayViewLayerDelegate methods
