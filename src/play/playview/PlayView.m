@@ -46,8 +46,9 @@
 @interface PlayView()
 /// @name Update optimizing properties
 //@{
-/// @brief Is true if updates were delayed because of long-running actions.
-@property(nonatomic, assign) bool updatesWereDelayed;
+/// @brief Is true if invocation of drawLayers() was delayed because of
+/// long-running actions.
+@property(nonatomic, assign) bool drawLayersWasDelayed;
 //@}
 /// @name Dynamically calculated properties
 //@{
@@ -132,7 +133,7 @@
   self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
   self.crossHairPointDistanceFromFinger = 0;
 
-  self.updatesWereDelayed = false;
+  self.drawLayersWasDelayed = false;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
@@ -208,36 +209,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper that correctly handles delayed updates. PlayView
-/// methods that need a view update should invoke this helper instead of
-/// updateLayers().
+/// @brief Internal helper that correctly handles delayed drawing of layers.
+/// PlayView methods that need a view update should invoke this helper instead
+/// of drawLayers().
 ///
 /// If no long-running actions are in progress, this helper invokes
-/// updateLayers(), thus triggering the update in UIKit.
+/// drawLayers(), thus triggering the update in UIKit.
 ///
 /// If any long-running actions are in progress, this helper sets
-/// @e updatesWereDelayed to true.
+/// @e drawLayersWasDelayed to true.
 // -----------------------------------------------------------------------------
-- (void) delayedUpdate
+- (void) delayedDrawLayers
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)
-    self.updatesWereDelayed = true;
+    self.drawLayersWasDelayed = true;
   else
-    [self updateLayers];
+    [self drawLayers];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Notifies all layers that they need to update now if they are dirty.
 /// This marks one update cycle.
 // -----------------------------------------------------------------------------
-- (void) updateLayers
+- (void) drawLayers
 {
   // No game -> no board -> no drawing. This situation exists right after the
   // application has launched and the initial game is created only after a
   // small delay.
   if (! [GoGame sharedGame])
     return;
-  self.updatesWereDelayed = false;
+  self.drawLayersWasDelayed = false;
 
   // Disabling animations here is essential for a smooth GUI update after a zoom
   // operation ends. If animations were enabled, setting the layer frames would
@@ -295,7 +296,7 @@
   [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -304,7 +305,7 @@
 - (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeEnabled eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -313,7 +314,7 @@
 - (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoringModeDisabled eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -322,7 +323,7 @@
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventScoreCalculationEnds eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -331,7 +332,7 @@
 - (void) territoryStatisticsChanged:(NSNotification*)notification
 {
   [self notifyLayerDelegates:PVLDEventTerritoryStatisticsChanged eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -339,8 +340,8 @@
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  if (self.updatesWereDelayed)
-    [self updateLayers];
+  if (self.drawLayersWasDelayed)
+    [self drawLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -355,7 +356,7 @@
       if ([GoGame sharedGame].score.scoringEnabled)
       {
         [self notifyLayerDelegates:PVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
-        [self delayedUpdate];
+        [self delayedDrawLayers];
       }
     }
   }
@@ -364,7 +365,7 @@
     if ([keyPath isEqualToString:@"markNextMove"])
     {
       [self notifyLayerDelegates:PVLDEventMarkNextMoveChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
   }
   else if (object == self.playViewMetrics)
@@ -375,19 +376,17 @@
       // frame change.
       [self invalidateIntrinsicContentSize];
       [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
-      // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
-      //      drawLayers
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"boardSize"])
     {
       [self notifyLayerDelegates:PVLDEventBoardSizeChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
       [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
   }
   else if (object == self.playViewModel)
@@ -395,12 +394,12 @@
     if ([keyPath isEqualToString:@"markLastMove"])
     {
       [self notifyLayerDelegates:PVLDEventMarkLastMoveChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
     {
       [self notifyLayerDelegates:PVLDEventMoveNumbersPercentageChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])
       [self updateCrossHairPointDistanceFromFinger];
@@ -410,12 +409,12 @@
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {
       [self notifyLayerDelegates:PVLDEventBoardPositionChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
     {
       [self notifyLayerDelegates:PVLDEventNumberOfBoardPositionsChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayers];
     }
   }
 }
@@ -481,7 +480,7 @@
   self.crossHairPoint = point;
 
   [self notifyLayerDelegates:PVLDEventCrossHairChanged eventInfo:point];
-  [self delayedUpdate];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------

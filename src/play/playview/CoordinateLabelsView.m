@@ -30,7 +30,7 @@
 @interface CoordinateLabelsView()
 @property(nonatomic, assign) PlayViewMetrics* playViewMetrics;
 @property(nonatomic, retain) CoordinateLabelsLayerDelegate* layerDelegate;
-@property(nonatomic, assign) bool updatesWereDelayed;
+@property(nonatomic, assign) bool drawLayerWasDelayed;
 @end
 
 @implementation CoordinateLabelsView
@@ -61,7 +61,7 @@
   [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 
-  self.updatesWereDelayed = false;
+  self.drawLayerWasDelayed = false;
 
   return self;
 }
@@ -81,36 +81,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper that correctly handles delayed updates.
-/// CoordinateLabelsView methods that need a view update should invoke this
-/// helper instead of updateLayer().
+/// @brief Internal helper that correctly handles delayed drawing of the view
+/// layer. CoordinateLabelsView methods that need a view update should invoke
+/// this helper instead of drawLayer().
 ///
 /// If no long-running actions are in progress, this helper invokes
-/// updateLayer(), thus triggering the update in UIKit.
+/// drawLayer(), thus triggering the update in UIKit.
 ///
 /// If any long-running actions are in progress, this helper sets
-/// @e updatesWereDelayed to true.
+/// @e drawLayerWasDelayed to true.
 // -----------------------------------------------------------------------------
-- (void) delayedUpdate
+- (void) delayedDrawLayer
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)
-    self.updatesWereDelayed = true;
+    self.drawLayerWasDelayed = true;
   else
-    [self updateLayer];
+    [self drawLayer];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Notifies all layers that they need to update now if they are dirty.
 /// This marks one update cycle.
 // -----------------------------------------------------------------------------
-- (void) updateLayer
+- (void) drawLayer
 {
   // No game -> no board -> no drawing. This situation exists right after the
   // application has launched and the initial game is created only after a
   // small delay.
   if (! [GoGame sharedGame])
     return;
-  self.updatesWereDelayed = false;
+  self.drawLayerWasDelayed = false;
 
   // Disabling animations here is essential for a smooth GUI update after a zoom
   // operation ends. If animations were enabled, setting the layer frames would
@@ -154,7 +154,7 @@
   // zero
   [self invalidateIntrinsicContentSize];
   [self.layerDelegate notify:PVLDEventGoGameStarted eventInfo:nil];
-  [self delayedUpdate];
+  [self delayedDrawLayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -162,8 +162,8 @@
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
-  if (self.updatesWereDelayed)
-    [self updateLayer];
+  if (self.drawLayerWasDelayed)
+    [self drawLayer];
 }
 
 // -----------------------------------------------------------------------------
@@ -179,19 +179,17 @@
       // frame change.
       [self invalidateIntrinsicContentSize];
       [self.layerDelegate notify:PVLDEventRectangleChanged eventInfo:nil];
-      // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
-      //      drawLayers
-      [self delayedUpdate];
+      [self delayedDrawLayer];
     }
     else if ([keyPath isEqualToString:@"boardSize"])
     {
       [self.layerDelegate notify:PVLDEventBoardSizeChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayer];
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
       [self.layerDelegate notify:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
-      [self delayedUpdate];
+      [self delayedDrawLayer];
     }
   }
 }
