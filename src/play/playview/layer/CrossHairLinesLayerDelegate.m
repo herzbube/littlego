@@ -101,11 +101,11 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change -> need to recalculate length of grid lines
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseLineLayers];
       self.dirty = true;
-      break;      
+      break;
     }
     case PVLDEventCrossHairChanged:
     {

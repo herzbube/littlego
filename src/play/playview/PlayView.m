@@ -101,8 +101,8 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
-  [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
   [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
   [self.playViewMetrics removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
@@ -144,8 +144,8 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
-  [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
@@ -376,20 +376,19 @@
   }
   else if (object == self.playViewMetrics)
   {
-    if ([keyPath isEqualToString:@"rect"] || [keyPath isEqualToString:@"boardSize"])
+    if ([keyPath isEqualToString:@"rect"])
     {
-      // TODO xxx define a new dedicated event for board size changes; at the
-      // moment we act as if the play view metrics rectangle changed, because
-      // that is the only way how we can get all layers to update themselves.
-      // but this also updates our own intrinsic size, which unnecessarily
-      // affects a view layout cycle.
-
       // Notify Auto Layout that our intrinsic size changed. This provokes a
       // frame change.
       [self invalidateIntrinsicContentSize];
       [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
       // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
       //      drawLayers
+      [self delayedUpdate];
+    }
+    else if ([keyPath isEqualToString:@"boardSize"])
+    {
+      [self notifyLayerDelegates:PVLDEventBoardSizeChanged eventInfo:nil];
       [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])

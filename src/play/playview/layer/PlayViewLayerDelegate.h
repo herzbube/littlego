@@ -25,6 +25,7 @@ enum PlayViewLayerDelegateEvent
   /// orientation changes.
   PVLDEventRectangleChanged,
   PVLDEventGoGameStarted,
+  PVLDEventBoardSizeChanged,
   PVLDEventBoardPositionChanged,
   PVLDEventNumberOfBoardPositionsChanged,
   PVLDEventMarkLastMoveChanged,

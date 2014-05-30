@@ -121,12 +121,13 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change + clear last move marker
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseLayers];
       self.dirty = true;
       break;
     }
+    case PVLDEventGoGameStarted:        // clear last move marker
     case PVLDEventBoardPositionChanged:
     // This case covers the following scenario: Board position 0 is selected
     // and the user discards all board positions. In this scenario the event

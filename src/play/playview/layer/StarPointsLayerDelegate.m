@@ -91,7 +91,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // board size possibly changes
+    case PVLDEventBoardSizeChanged:
     {
       self.dirty = true;
       break;

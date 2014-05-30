@@ -99,7 +99,12 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change + place handicap stones
+    case PVLDEventGoGameStarted:  // place handicap stones
+    {
+      self.dirty = true;
+      break;
+    }
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseLayers];
       self.dirty = true;

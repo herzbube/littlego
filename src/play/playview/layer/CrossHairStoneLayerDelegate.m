@@ -109,7 +109,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change -> need to recalculate size of cross-hair stone
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseStoneLayers];
       self.dirty = true;

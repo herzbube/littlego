@@ -127,7 +127,7 @@ enum TerritoryLayerType
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseLayers];
       self.dirty = true;

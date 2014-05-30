@@ -44,7 +44,16 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change
+    case PVLDEventGoGameStarted:
+    {
+      // TODO Do we need to react to this event? At the moment we do because
+      // territory statistics certainly change (they are reset to zero), but
+      // it's possible that PVLDEventTerritoryStatisticsChanged is also sent
+      // when a new game starts.
+      self.dirty = true;
+      break;
+    }
+    case PVLDEventBoardSizeChanged:
     {
       self.dirty = true;
       break;

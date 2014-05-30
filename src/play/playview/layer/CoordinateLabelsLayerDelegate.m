@@ -78,6 +78,7 @@
   {
     case PVLDEventRectangleChanged:
     case PVLDEventGoGameStarted:
+    case PVLDEventBoardSizeChanged:
     {
       self.layer.frame = self.playViewMetrics.rect;
       self.dirty = true;

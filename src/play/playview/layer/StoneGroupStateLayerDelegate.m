@@ -112,7 +112,7 @@
       self.dirty = true;
       break;
     }
-    case PVLDEventGoGameStarted:  // possible board size change
+    case PVLDEventBoardSizeChanged:
     {
       [self releaseLayer];
       self.dirty = true;
