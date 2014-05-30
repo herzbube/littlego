@@ -53,8 +53,9 @@
   [self setupFontRanges];
   self.rect = CGRectZero;
   self.boardSize = GoBoardSizeUndefined;
-  // Remaining properties are initialized by updateWithRect:boardSize:()
-  [self updateWithRect:self.rect boardSize:self.boardSize];
+  self.displayCoordinates = model.displayCoordinates;
+  // Remaining properties are initialized by this updater
+  [self updateWithRect:self.rect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
@@ -110,7 +111,10 @@
 {
   if (CGRectEqualToRect(newRect, self.rect))
     return;
-  [self updateWithRect:newRect boardSize:self.boardSize];
+  [self updateWithRect:newRect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.rect = newRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -121,20 +125,41 @@
 {
   if (self.boardSize == newBoardSize)
     return;
-  [self updateWithRect:self.rect boardSize:newBoardSize];
+  [self updateWithRect:self.rect boardSize:newBoardSize displayCoordinates:self.displayCoordinates];
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.boardSize = newBoardSize;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this PlayViewMetrics object based on
-/// @a newRect and @a newBoardSize.
+/// @a newDisplayCoordinates.
 // -----------------------------------------------------------------------------
-- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
+- (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates
+{
+  if (self.displayCoordinates == newDisplayCoordinates)
+    return;
+  [self updateWithRect:self.rect boardSize:self.boardSize displayCoordinates:newDisplayCoordinates];
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.displayCoordinates = newDisplayCoordinates;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @a newRect, @a newBoardSize and @a newDisplayCoordinates.
+///
+/// This is the internal backend for updateWithRect:(), updateWithBoardSize:()
+/// and updateWithDisplayCoordinates:().
+// -----------------------------------------------------------------------------
+- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize displayCoordinates:(bool)newDisplayCoordinates
 {
   // ----------------------------------------------------------------------
-  // self.rect and self.boardSize are updated at the end of this method so that
-  // KVO observers get notified only after all the metrics have been
-  // re-calculated. The re-calculation process therefore must access newRect
-  // and newBoardSize only.
+  // All calculations in this method must use newRect, newBoardSize and
+  // newDisplayCoordinates. The corresponding properties self.rect,
+  // self.boardSize and self.displayCoordinates must not be used because, due
+  // to the way how this update method is invoked, at least one of these
+  // properties is guaranteed to be not up-to-date.
   // ----------------------------------------------------------------------
 
   // The rect is rectangular, but the Go board is square. Examine the rect
@@ -194,7 +219,7 @@
     self.topLeftBoardCornerX = offsetForCenteringX + rectWidthFraction;
     self.topLeftBoardCornerY = offsetForCenteringY + rectHeightFraction;
 
-    if (self.playViewModel.displayCoordinates)
+    if (newDisplayCoordinates)
     {
       // The coordinate labels' font size will be selected so that labels fit
       // into the width of the strip that we calculate here. The following
@@ -382,12 +407,6 @@
       self.nextMoveLabelMaximumSize = CGSizeZero;
     }
   }  // else [if (GoBoardSizeUndefined == newBoardSize)]
-
-
-  // Update properties only after everything has been re-calculated so that KVO
-  // observers get the new values
-  self.boardSize = newBoardSize;
-  self.rect = newRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -536,10 +555,8 @@
 {
   if ([keyPath isEqualToString:@"displayCoordinates"])
   {
-    // TODO xxx we use the same rectangle that we already have, but somewhere
-    // inside the updater the new state of displayCoordinates is taken into
-    // account. We should have a better, more explicit updater
-    [self updateWithRect:self.rect boardSize:self.boardSize];
+    PlayViewModel* model = (PlayViewModel*)object;
+    [self updateWithDisplayCoordinates:model.displayCoordinates];
   }
 }
 

@@ -19,7 +19,6 @@
 #import "CoordinateLabelsView.h"
 #import "layer/CoordinateLabelsLayerDelegate.h"
 #import "../model/PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -61,7 +60,7 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
-  [[ApplicationDelegate sharedDelegate].playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 
   self.updatesWereDelayed = false;
 
@@ -76,7 +75,7 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
   [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
-  [[ApplicationDelegate sharedDelegate].playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"displayCoordinates"];
   self.playViewMetrics = nil;
   self.layerDelegate = nil;
   [super dealloc];
@@ -173,16 +172,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  if (object == playViewModel)
-  {
-    if ([keyPath isEqualToString:@"displayCoordinates"])
-    {
-      [self.layerDelegate notify:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
-      [self delayedUpdate];
-    }
-  }
-  else if (object == self.playViewMetrics)
+  if (object == self.playViewMetrics)
   {
     if ([keyPath isEqualToString:@"rect"] || [keyPath isEqualToString:@"boardSize"])
     {
@@ -198,6 +188,11 @@
       [self.layerDelegate notify:PVLDEventRectangleChanged eventInfo:nil];
       // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
       //      drawLayers
+      [self delayedUpdate];
+    }
+    else if ([keyPath isEqualToString:@"displayCoordinates"])
+    {
+      [self.layerDelegate notify:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
       [self delayedUpdate];
     }
   }

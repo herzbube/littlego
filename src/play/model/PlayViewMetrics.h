@@ -32,10 +32,15 @@
 /// If the frame of the Play view changes (e.g. when an interface orientation
 /// change occurs), someone must invoke updateWithRect:(). If the size of the
 /// Go board that is displayed by the Play view changes (e.g. when a new game
-/// is started), someone must invoke updateWithBoardSize:().
+/// is started), someone must invoke updateWithBoardSize:(). If the display of
+/// coordinate labels changes, someone must invoke
+/// updateWithDisplayCoordinates:().
 ///
 /// In reaction to either of these events, PlayViewMetrics re-calculates all
-/// of its properties. Re-drawing of layers must be initiated separately.
+/// of its properties. Clients are expected to use KVO to notice any changes in
+/// self.rect, self.boardSize or self.displayCoordinates, and to respond to such
+/// changes by initiating the re-drawing of the appropriate parts of the Go
+/// board.
 ///
 ///
 /// @par Calculations
@@ -133,6 +138,7 @@
 //@{
 - (void) updateWithRect:(CGRect)newRect;
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize;
+- (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates;
 //@}
 
 /// @name Calculators
@@ -144,9 +150,26 @@
 
 @property(nonatomic, retain) PlayViewModel* playViewModel;
 /// @brief The rectangle that Play view layers must use as their frame.
+///
+/// Clients that use KVO on this property will be triggered after
+/// PlayViewMetrics has updated its values to match the new rectangle.
 @property(nonatomic, assign) CGRect rect;
 /// @brief The size of the Go board that is drawn by Play view layers.
+///
+/// Clients that use KVO on this property will be triggered after
+/// PlayViewMetrics has updated its values to match the new board size.
 @property(nonatomic, assign) enum GoBoardSize boardSize;
+/// @brief True if coordinate labels are displayed, false if not.
+///
+/// Clients that use KVO on this property will be triggered after
+/// PlayViewMetrics has updated its values to match the new display coordinates
+/// value.
+///
+/// @note PlayViewModel has a property of the same name, which is the master
+/// property on which PlayViewMetrics depends. For this reason, clients that
+/// require correct values from PlayViewMetrics must ***NOT*** use KVO on the
+/// PlayViewModel property.
+@property(nonatomic, assign) bool displayCoordinates;
 /// @brief True if @e rect refers to a rectangle with portrait orientation,
 /// false if the rectangle uses landscape orientation.
 @property(nonatomic, assign) bool portrait;

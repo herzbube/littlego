@@ -103,8 +103,8 @@
   [self.boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
   [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
   [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [self.playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   [self.scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
@@ -146,8 +146,8 @@
   [self.boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
-  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   [self.scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
@@ -392,17 +392,17 @@
       //      drawLayers
       [self delayedUpdate];
     }
+    else if ([keyPath isEqualToString:@"displayCoordinates"])
+    {
+      [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
+      [self delayedUpdate];
+    }
   }
   else if (object == self.playViewModel)
   {
     if ([keyPath isEqualToString:@"markLastMove"])
     {
       [self notifyLayerDelegates:PVLDEventMarkLastMoveChanged eventInfo:nil];
-      [self delayedUpdate];
-    }
-    else if ([keyPath isEqualToString:@"displayCoordinates"])
-    {
-      [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
       [self delayedUpdate];
     }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
