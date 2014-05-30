@@ -24,7 +24,6 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------

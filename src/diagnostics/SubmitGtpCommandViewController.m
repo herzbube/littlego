@@ -23,7 +23,6 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 

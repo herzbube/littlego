@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
 #import "TableViewVariableHeightCell.h"
-#import "UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 #import "../utility/UIDeviceAdditions.h"
