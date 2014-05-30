@@ -23,6 +23,7 @@
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
+#import "../model/PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -245,12 +246,7 @@
   if (self.scrollView.zooming || self.scrollView.isDragging)
     return;
 
-  // Updating the play view's intrinsic content size causes Auto Layout
-  // to adjust the scroll view's content size
-  CGSize newIntrinsicSizeOfPlayView = self.view.bounds.size;
-  newIntrinsicSizeOfPlayView.width *= self.scrollView.zoomScale;
-  newIntrinsicSizeOfPlayView.height *= self.scrollView.zoomScale;
-  [self.playViewController.playView updateIntrinsicContentSize:newIntrinsicSizeOfPlayView];
+  [self updatePlayViewMetricsRect];
 }
 
 #pragma mark - UIScrollViewDelegate overrides
@@ -354,10 +350,7 @@
 {
   [self synchronizeZoomScales];
   [self synchronizeContentOffset];
-  CGSize newIntrinsicSizeOfPlayView = self.view.bounds.size;
-  newIntrinsicSizeOfPlayView.width *= self.scrollView.zoomScale;
-  newIntrinsicSizeOfPlayView.height *= self.scrollView.zoomScale;
-  [self.playViewController.playView updateIntrinsicContentSize:newIntrinsicSizeOfPlayView];
+  [self updatePlayViewMetricsRect];
 }
 
 // -----------------------------------------------------------------------------
@@ -377,6 +370,22 @@
   }
   self.coordinateLabelsLetterViewScrollView.hidden = hidden;
   self.coordinateLabelsNumberViewScrollView.hidden = hidden;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// Updating the play view metrics rectangle triggers an update of the PlayView
+/// intrinsic content size, which in turn causes Auto Layout to adjust the
+/// scroll view's content size.
+// -----------------------------------------------------------------------------
+- (void) updatePlayViewMetricsRect
+{
+  CGRect newPlayViewMetricsRect = CGRectZero;
+  newPlayViewMetricsRect.size = self.view.bounds.size;
+  newPlayViewMetricsRect.size.width *= self.scrollView.zoomScale;
+  newPlayViewMetricsRect.size.height *= self.scrollView.zoomScale;
+  [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithRect:newPlayViewMetricsRect];
 }
 
 // -----------------------------------------------------------------------------

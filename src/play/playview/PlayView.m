@@ -108,6 +108,8 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"boardSize"];
+  [self.playViewMetrics removeObserver:self forKeyPath:@"rect"];
   [self.playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   [self.playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
@@ -149,6 +151,8 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self.boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
+  [self.playViewMetrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [self.playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
@@ -164,15 +168,6 @@
 
   // One-time initialization
   [self updateCrossHairPointDistanceFromFinger];
-
-  // If we already have a game, recalculate
-  if (game)
-  {
-    [self.playViewMetrics updateWithBoardSize:game.board.size];
-    // Layer delegates do not exist yet, so they do not need to be notified.
-    // There is also no need to trigger drawing.
-  }
-
 
   // Create & setup layer delegates in the order in which layers must be drawn
   id<PlayViewLayerDelegate> layerDelegate;
@@ -286,32 +281,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Must be invoked whenever the frame of this view is supposed to
-/// change. Changing the intrinsic content size triggers Auto Layout, and thus
-/// provokes a frame change.
-// -----------------------------------------------------------------------------
-- (void) updateIntrinsicContentSize:(CGSize)newIntrinsicContentSize
-{
-  CGRect rect = self.playViewMetrics.rect;
-  if (CGSizeEqualToSize(newIntrinsicContentSize, rect.size))
-    return;
-  rect.size = newIntrinsicContentSize;
-  [self.playViewMetrics updateWithRect:rect];
-  [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
-  [self.coordinateLabelsLetterView updateIntrinsicContentSize];
-  [self.coordinateLabelsNumberView updateIntrinsicContentSize];
-  // Redraw layers, if possible now, otherwise at a later time
-  // TODO xxx is this the right place to draw? shouldn't we do this in drawRect
-  // or somewhere similar?
-  // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
-  //      drawLayers
-  [self delayedUpdate];
-
-  // Notify Auto Layout that our intrinsic size changed
-  [self invalidateIntrinsicContentSize];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief UIView method.
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
@@ -340,8 +309,9 @@
   [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 
-  [self.playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
   [self notifyLayerDelegates:PVLDEventGoGameStarted eventInfo:nil];
+  // TODO xxx we should not be responsible for those views, they should observe
+  // PlayViewMetrics on their own
   [self.coordinateLabelsLetterView updateBoardSize];
   [self.coordinateLabelsNumberView updateBoardSize];
 
@@ -418,6 +388,29 @@
       [self delayedUpdate];
     }
   }
+  else if (object == self.playViewMetrics)
+  {
+    if ([keyPath isEqualToString:@"rect"] || [keyPath isEqualToString:@"boardSize"])
+    {
+      // TODO xxx define a new dedicated event for board size changes; at the
+      // moment we act as if the play view metrics rectangle changed, because
+      // that is the only way how we can get all layers to update themselves.
+      // but this also updates our own intrinsic size, which unnecessarily
+      // affects a view layout cycle.
+
+      // TODO xxx we should not be responsible for those views, they should
+      // observe PlayViewMetrics on their own
+      [self.coordinateLabelsLetterView updateIntrinsicContentSize];
+      [self.coordinateLabelsNumberView updateIntrinsicContentSize];
+      // Notify Auto Layout that our intrinsic size changed. This provokes a
+      // frame change.
+      [self invalidateIntrinsicContentSize];
+      [self notifyLayerDelegates:PVLDEventRectangleChanged eventInfo:nil];
+      // TODO xxx rename delayedUpdate and updateLayers to delayedDrawLayers and
+      //      drawLayers
+      [self delayedUpdate];
+    }
+  }
   else if (object == self.playViewModel)
   {
     if ([keyPath isEqualToString:@"markLastMove"])
@@ -427,11 +420,6 @@
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
-      // TODO xxx we give the same rectangle to PlayViewMetrics that it already
-      // has, but somewhere inside the updater PlayViewMetrics takes the new
-      // state of displayCoordinates into account. PlayViewMetrics should
-      // provide us with a better way to tell it what changed
-      [self.playViewMetrics updateWithRect:self.playViewMetrics.rect];
       [self notifyLayerDelegates:PVLDEventDisplayCoordinatesChanged eventInfo:nil];
       [self delayedUpdate];
     }

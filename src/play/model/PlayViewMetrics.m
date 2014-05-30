@@ -55,6 +55,9 @@
   self.boardSize = GoBoardSizeUndefined;
   // Remaining properties are initialized by updateWithRect:boardSize:()
   [self updateWithRect:self.rect boardSize:self.boardSize];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [self.playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   return self;
 }
 
@@ -63,6 +66,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
   self.playViewModel = nil;
   self.moveNumberFontRange = nil;
   self.coordinateLabelFontRange = nil;
@@ -103,6 +108,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect
 {
+  if (CGRectEqualToRect(newRect, self.rect))
+    return;
   [self updateWithRect:newRect boardSize:self.boardSize];
 }
 
@@ -112,6 +119,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize
 {
+  if (self.boardSize == newBoardSize)
+    return;
   [self updateWithRect:self.rect boardSize:newBoardSize];
 }
 
@@ -121,8 +130,12 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize
 {
-  self.boardSize = newBoardSize;
-  self.rect = newRect;
+  // ----------------------------------------------------------------------
+  // self.rect and self.boardSize are updated at the end of this method so that
+  // KVO observers get notified only after all the metrics have been
+  // re-calculated. The re-calculation process therefore must access newRect
+  // and newBoardSize only.
+  // ----------------------------------------------------------------------
 
   // The rect is rectangular, but the Go board is square. Examine the rect
   // orientation and use the smaller dimension of the rect as the base for
@@ -369,6 +382,12 @@
       self.nextMoveLabelMaximumSize = CGSizeZero;
     }
   }  // else [if (GoBoardSizeUndefined == newBoardSize)]
+
+
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.boardSize = newBoardSize;
+  self.rect = newRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -498,6 +517,29 @@
       DDLogError(@"Snap-to calculation failed");
       return PlayViewIntersectionNull;
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  GoGame* newGame = [notification object];
+  [self updateWithBoardSize:newGame.board.size];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  if ([keyPath isEqualToString:@"displayCoordinates"])
+  {
+    // TODO xxx we use the same rectangle that we already have, but somewhere
+    // inside the updater the new state of displayCoordinates is taken into
+    // account. We should have a better, more explicit updater
+    [self updateWithRect:self.rect boardSize:self.boardSize];
   }
 }
 

@@ -122,7 +122,6 @@
 {
 }
 
-- (void) updateIntrinsicContentSize:(CGSize)newIntrinsicContentSize;
 - (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
