@@ -21,6 +21,7 @@
 #import "DocumentViewController.h"
 #import "MainTabBarController.h"
 #import "../utility/DocumentGenerator.h"
+#import "../utility/UIColorAdditions.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -130,6 +131,24 @@
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   [self viewSectionAtIndexPath:indexPath];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView willDisplayHeaderView:(UIView*)view forSection:(NSInteger)section
+{
+  if ([view isKindOfClass:[UITableViewHeaderFooterView class]])
+  {
+    UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
+    headerFooterView.contentView.backgroundColor = [UIColor blackColor];
+    headerFooterView.textLabel.textColor = [UIColor whiteColor];
+  }
+  else
+  {
+    DDLogError(@"%@: Header view object %@ has unexpected type %@", self, view, [view class]);
+    assert(0);
+  }
 }
 
 #pragma mark - Action handlers
