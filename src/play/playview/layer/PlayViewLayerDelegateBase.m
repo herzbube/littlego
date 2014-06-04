@@ -49,6 +49,8 @@
 
   [self.mainView.layer addSublayer:self.layer];
   self.layer.delegate = self;
+  // Without this, all manner of drawing looks blurry on Retina displays
+  self.layer.contentsScale = [[UIScreen mainScreen] scale];
 
   // This disables the implicit animation that normally occurs when the layer
   // delegate is drawing. As always, stackoverflow.com is our friend:
