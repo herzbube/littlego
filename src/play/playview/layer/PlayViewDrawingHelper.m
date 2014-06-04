@@ -322,4 +322,44 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
   CGContextRestoreGState(context);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws the string @a string using the specified drawing context. The
+/// text is drawn into a rectangle of the specified size, and the rectangle is
+/// positioned so that it is centered at the intersection specified by @a point.
+// -----------------------------------------------------------------------------
++ (void) drawString:(NSString*)string
+        withContext:(CGContextRef)context
+         attributes:(NSDictionary*)attributes
+     inRectWithSize:(CGSize)size
+    centeredAtPoint:(GoPoint*)point
+        withMetrics:(PlayViewMetrics*)metrics
+{
+  // Create a save point that we can restore to before we leave this method
+  CGContextSaveGState(context);
+
+  // The text is drawn into this rectangle. The rect origin will remain at
+  // CGPointZero because we are going to use CTM translations for positioning.
+  CGRect textRect = CGRectZero;
+  textRect.size = size;
+
+  // Adjust the CTM as if we were drawing the text with its upper-left corner
+  // at the specified intersection
+  CGPoint pointCoordinates = [metrics coordinatesFromPoint:point];
+  CGContextTranslateCTM(context,
+                        pointCoordinates.x,
+                        pointCoordinates.y);
+
+  // Adjust the CTM to align the rect center with the intersection
+  CGPoint textRectCenter = CGPointMake(CGRectGetMidX(textRect), CGRectGetMidY(textRect));
+  CGContextTranslateCTM(context, -textRectCenter.x, -textRectCenter.y);
+  // Small correction for better centering. This has been experimentally
+  // determined.
+  //CGContextTranslateCTM(context, 1, 0);
+
+  [string drawInRect:textRect withAttributes:attributes];
+
+  // Restore the drawing context to undo CTM adjustments
+  CGContextRestoreGState(context);
+}
+
 @end

@@ -57,6 +57,13 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
        withContext:(CGContextRef)context
    centeredAtPoint:(GoPoint*)point
        withMetrics:(PlayViewMetrics*)metrics;
+
++ (void) drawString:(NSString*)string
+        withContext:(CGContextRef)context
+         attributes:(NSDictionary*)attributes
+     inRectWithSize:(CGSize)size
+    centeredAtPoint:(GoPoint*)point
+        withMetrics:(PlayViewMetrics*)metrics;
 //@}
 
 @end

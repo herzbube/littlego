@@ -37,10 +37,9 @@
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
-@property(nonatomic, retain) NSShadow* shadow;
+@property(nonatomic, retain) NSShadow* nextMoveShadow;
 @property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
 @property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
-@property(nonatomic, assign) CGLayerRef nextMoveLayer;
 @end
 
 
@@ -64,13 +63,12 @@
   _boardPositionModel = boardPositionmodel;
   self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
-  self.shadow = [[[NSShadow alloc] init] autorelease];
-  self.shadow.shadowColor = [UIColor blackColor];
-  self.shadow.shadowBlurRadius = 5.0;
-  self.shadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.nextMoveShadow = [[[NSShadow alloc] init] autorelease];
+  self.nextMoveShadow.shadowColor = [UIColor blackColor];
+  self.nextMoveShadow.shadowBlurRadius = 5.0;
+  self.nextMoveShadow.shadowOffset = CGSizeMake(1.0, 1.0);
   _blackLastMoveLayer = NULL;
   _whiteLastMoveLayer = NULL;
-  _nextMoveLayer = NULL;
   return self;
 }
 
@@ -98,11 +96,6 @@
   {
     CGLayerRelease(_whiteLastMoveLayer);
     _whiteLastMoveLayer = NULL;
-  }
-  if (_nextMoveLayer)
-  {
-    CGLayerRelease(_nextMoveLayer);
-    _nextMoveLayer = NULL;
   }
 }
 
@@ -186,22 +179,7 @@
 
   if ([self shouldDisplayNextMoveLabel])
   {
-    // Create layer only after shouldDisplayNextMoveLabel has made sure that
-    // the "next move label font" is not nil and that the layer will actually
-    // have a non-zero size.
-    if (! _nextMoveLayer)
-      _nextMoveLayer = CreateNextMoveLayer(context, self);
-
-    if (! game.boardPosition.isLastPosition)
-    {
-      GoMove* nextMove;
-      if (game.boardPosition.isFirstPosition)
-        nextMove = game.firstMove;
-      else
-        nextMove = game.boardPosition.currentMove.next;
-      if (GoMoveTypePlay == nextMove.type)
-        [PlayViewDrawingHelper drawLayer:_nextMoveLayer withContext:context centeredAtPoint:nextMove.point withMetrics:self.playViewMetrics];
-    }
+    [self drawNextMoveInContext:context];
   }
 }
 
@@ -233,12 +211,11 @@
 // -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
 {
+  UIGraphicsPushContext(context);
+
   UIFont* moveNumberFont = self.playViewMetrics.moveNumberFont;
   DDLogVerbose(@"Drawing move numbers with font size %f", moveNumberFont.pointSize);
 
-  CGRect layerRect;
-  layerRect.origin = CGPointZero;
-  layerRect.size = self.playViewMetrics.moveNumberMaximumSize;
   NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
 
@@ -273,59 +250,49 @@
     NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
                                       NSForegroundColorAttributeName : textColor,
                                       NSParagraphStyleAttributeName : self.paragraphStyle };
-
-    // TODO: Creating a new CGLayer for each move number is probably not
-    // very efficient, but it allows us to reuse the PlayViewMetrics
-    // utility method drawLayer:withContext:centeredAtPoint:. Find out
-    // whether creating so many CGLayer objects is really as inefficient
-    // as suspected, and if they are, redesign the way how move numbers
-    // are drawn.
-    CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
-    CGContextRef layerContext = CGLayerGetContext(layer);
-    UIGraphicsPushContext(layerContext);
-    [moveNumberText drawInRect:layerRect withAttributes:textAttributes];
-    UIGraphicsPopContext();
-    [PlayViewDrawingHelper drawLayer:layer withContext:context centeredAtPoint:pointToBeNumbered withMetrics:self.playViewMetrics];
-    CGLayerRelease(layer);
+    [PlayViewDrawingHelper drawString:moveNumberText
+                          withContext:context
+                           attributes:textAttributes
+                       inRectWithSize:self.playViewMetrics.moveNumberMaximumSize
+                      centeredAtPoint:pointToBeNumbered
+                          withMetrics:self.playViewMetrics];
   }
+
+  UIGraphicsPopContext();
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and returns a CGLayer object that is associated with graphics
-/// context @a context and contains the drawing operations to draw a "next move"
-/// symbol.
-///
-/// All sizes are taken from the current values in self.playViewMetrics.
-///
-/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
-/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
-///
-/// @note Whoever invokes this function is responsible for releasing the
-/// returned CGLayer object using the function CGLayerRelease when the layer is
-/// no longer needed.
+/// @brief Private helper for drawLayer:inContext:
 // -----------------------------------------------------------------------------
-CGLayerRef CreateNextMoveLayer(CGContextRef context, SymbolsLayerDelegate* delegate)
+- (void) drawNextMoveInContext:(CGContextRef)context
 {
-  CGRect layerRect;
-  layerRect.origin = CGPointZero;
-  layerRect.size = delegate.playViewMetrics.nextMoveLabelMaximumSize;
-  // This function might be called
-  if (CGSizeEqualToSize(layerRect.size, CGSizeZero))
-    return NULL;
-  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
-  CGContextRef layerContext = CGLayerGetContext(layer);
+  GoGame* game = [GoGame sharedGame];
+  if (game.boardPosition.isLastPosition)
+    return;
+  GoMove* nextMove;
+  if (game.boardPosition.isFirstPosition)
+    nextMove = game.firstMove;
+  else
+    nextMove = game.boardPosition.currentMove.next;
+  if (GoMoveTypePlay != nextMove.type)
+    return;
+
+  UIGraphicsPushContext(context);
 
   NSString* nextMoveLabelText = @"A";
-  NSDictionary* textAttributes = @{ NSFontAttributeName : delegate.playViewMetrics.nextMoveLabelFont,
+  NSDictionary* textAttributes = @{ NSFontAttributeName : self.playViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
-                                    NSParagraphStyleAttributeName : delegate.paragraphStyle,
-                                    NSShadowAttributeName: delegate.shadow };
+                                    NSParagraphStyleAttributeName : self.paragraphStyle,
+                                    NSShadowAttributeName: self.nextMoveShadow };
+  [PlayViewDrawingHelper drawString:nextMoveLabelText
+                        withContext:context
+                         attributes:textAttributes
+                     inRectWithSize:self.playViewMetrics.nextMoveLabelMaximumSize
+                    centeredAtPoint:nextMove.point
+                        withMetrics:self.playViewMetrics];
 
-  UIGraphicsPushContext(layerContext);
-  [nextMoveLabelText drawInRect:layerRect withAttributes:textAttributes];
   UIGraphicsPopContext();
-
-  return layer;
 }
+
 
 @end
