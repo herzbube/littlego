@@ -167,44 +167,35 @@
   id<PlayViewLayerDelegate> layerDelegate;
   layerDelegate = [[[GridLayerDelegate alloc] initWithMainView:self
                                                        metrics:self.playViewMetrics] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[StarPointsLayerDelegate alloc] initWithMainView:self
                                                              metrics:self.playViewMetrics] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithMainView:self
                                                                  metrics:self.playViewMetrics] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[StonesLayerDelegate alloc] initWithMainView:self
                                                          metrics:self.playViewMetrics] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithMainView:self
                                                                  metrics:self.playViewMetrics] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[InfluenceLayerDelegate alloc] initWithMainView:self
                                                             metrics:self.playViewMetrics
                                                       playViewModel:self.playViewModel] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[SymbolsLayerDelegate alloc] initWithMainView:self
                                                           metrics:self.playViewMetrics
                                                     playViewModel:self.playViewModel
                                                boardPositionModel:self.boardPositionModel] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[TerritoryLayerDelegate alloc] initWithMainView:self
                                                             metrics:self.playViewMetrics
                                                        scoringModel:self.scoringModel] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[StoneGroupStateLayerDelegate alloc] initWithMainView:self
                                                                   metrics:self.playViewMetrics
                                                              scoringModel:self.scoringModel] autorelease];
-  [self setupLayerDelegate:layerDelegate withView:self];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupView().
-// -----------------------------------------------------------------------------
-- (void) setupLayerDelegate:(id<PlayViewLayerDelegate>)layerDelegate withView:(UIView*)view
-{
-  [view.layer addSublayer:layerDelegate.layer];
   [self.layerDelegates addObject:layerDelegate];
 }
 

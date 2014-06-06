@@ -52,7 +52,6 @@
   self.layerDelegate = [[[CoordinateLabelsLayerDelegate alloc] initWithMainView:self
                                                                         metrics:self.playViewMetrics
                                                                            axis:axis] autorelease];
-  [self.layer addSublayer:self.layerDelegate.layer];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
