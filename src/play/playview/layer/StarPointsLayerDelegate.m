@@ -132,6 +132,8 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, StarPointsLayerDelegate* d
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = delegate.playViewMetrics.pointCellSize;
+  layerRect.size.width *= delegate.playViewMetrics.contentsScale;
+  layerRect.size.height *= delegate.playViewMetrics.contentsScale;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -142,7 +144,7 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, StarPointsLayerDelegate* d
   CGContextAddArc(layerContext,
                   layerCenter.x,
                   layerCenter.y,
-                  delegate.playViewMetrics.starPointRadius,
+                  delegate.playViewMetrics.starPointRadius * delegate.playViewMetrics.contentsScale,
                   startRadius,
                   endRadius,
                   clockwise);

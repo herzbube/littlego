@@ -181,8 +181,8 @@
   CGRect influenceLayerRect;
   influenceLayerRect.origin = CGPointZero;
   influenceLayerRect.size = self.playViewMetrics.stoneInnerSquareSize;
-  influenceLayerRect.size.width *= influenceScore;
-  influenceLayerRect.size.height *= influenceScore;
+  influenceLayerRect.size.width *= influenceScore * self.playViewMetrics.contentsScale;
+  influenceLayerRect.size.height *= influenceScore * self.playViewMetrics.contentsScale;
   return influenceLayerRect;
 }
 

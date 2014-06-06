@@ -200,9 +200,11 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, StoneGroupStateLayer
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by
   // making the square's size slightly smaller
   CGSize layerSize = delegate.playViewMetrics.stoneInnerSquareSize;
+  layerSize.width *= delegate.playViewMetrics.contentsScale;
+  layerSize.height *= delegate.playViewMetrics.contentsScale;
   CGFloat inset = floor(layerSize.width * (1.0 - delegate.scoringModel.deadStoneSymbolPercentage));
-  layerSize.width -= inset;
-  layerSize.height -= inset;
+  layerSize.width -= inset * delegate.playViewMetrics.contentsScale;
+  layerSize.height -= inset * delegate.playViewMetrics.contentsScale;
 
   CGRect layerRect;
   layerRect.origin = CGPointZero;

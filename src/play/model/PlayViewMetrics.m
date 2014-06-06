@@ -79,6 +79,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupStaticProperties
 {
+  self.contentsScale = [UIScreen mainScreen].scale;
   self.lineColor = [UIColor blackColor];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     self.boundingLineWidth = 2;

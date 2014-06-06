@@ -269,6 +269,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = delegate.playViewMetrics.pointCellSize;
+  layerRect.size.width *= delegate.playViewMetrics.contentsScale;
+  layerRect.size.height *= delegate.playViewMetrics.contentsScale;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -282,7 +284,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
     CGContextAddArc(layerContext,
                     layerCenter.x,
                     layerCenter.y,
-                    delegate.playViewMetrics.stoneRadius * delegate.scoringModel.inconsistentTerritoryDotSymbolPercentage,
+                    delegate.playViewMetrics.stoneRadius * delegate.scoringModel.inconsistentTerritoryDotSymbolPercentage * delegate.playViewMetrics.contentsScale,
                     startRadius,
                     endRadius,
                     clockwise);

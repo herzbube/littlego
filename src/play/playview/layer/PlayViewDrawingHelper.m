@@ -47,6 +47,8 @@ CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWid
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = CGSizeMake(metrics.lineLength, lineWidth);
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -82,8 +84,8 @@ CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWid
   bool isBoundingLineLeftOrTop = (0 == lineIndexCountingFromTopLeft);
   bool isBoundingLineRightOrBottom = ((metrics.boardSize - 1) == lineIndexCountingFromTopLeft);
   // Line layer must refer to a horizontal line
-  CGSize layerSize = CGLayerGetSize(layer);
-  CGFloat lineHalfWidth = layerSize.height / 2.0;
+  CGRect drawingRect = [PlayViewDrawingHelper drawingRectForScaledLayer:layer withMetrics:metrics];
+  CGFloat lineHalfWidth = drawingRect.size.height / 2.0;
 
   // Create a save point that we can restore to before we leave this method
   CGContextSaveGState(context);
@@ -137,8 +139,7 @@ CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWid
     // origin used for rotation will also be moved by CTM translations (or maybe
     // it's more intuitive to imagine that any artifact will be rotated
     // "in place")!
-    CGSize layerSize = CGLayerGetSize(layer);
-    CGContextTranslateCTM(context, layerSize.height, 0);
+    CGContextTranslateCTM(context, drawingRect.size.height, 0);
     // Phew, done, finally we can rotate.
     CGContextRotateCTM(context, [UiUtilities radians:90]);
   }
@@ -147,8 +148,9 @@ CGLayerRef CreateLineLayer(CGContextRef context, UIColor* lineColor, int lineWid
   // straddle the intersection.
   CGContextTranslateCTM(context, gHalfPixel, gHalfPixel);
 
-  // Because of the CTM adjustments, we can now use CGPointZero
-  CGContextDrawLayerAtPoint(context, CGPointZero, layer);
+  // Because of the CTM adjustments, we can now draw into a rect with origin
+  // CGPointZero
+  CGContextDrawLayerInRect(context, drawingRect, layer);
 
   // Restore the drawing context to undo CTM adjustments
   CGContextRestoreGState(context);
@@ -217,6 +219,8 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = metrics.pointCellSize;
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -266,12 +270,14 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = metrics.stoneInnerSquareSize;
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
   // It looks better if the marker is slightly inset, and on the iPad we can
   // afford to waste the space
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
   {
-    layerRect.size.width -= 2;
-    layerRect.size.height -= 2;
+    layerRect.size.width -= 2 * metrics.contentsScale;
+    layerRect.size.height -= 2 * metrics.contentsScale;
   }
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
@@ -306,17 +312,15 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
                         pointCoordinates.x,
                         pointCoordinates.y);
   // Align the layer center with the intersection
-  CGSize layerSize = CGLayerGetSize(layer);
-  CGRect layerRect;
-  layerRect.origin = CGPointZero;
-  layerRect.size = layerSize;
-  CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+  CGRect drawingRect = [PlayViewDrawingHelper drawingRectForScaledLayer:layer withMetrics:metrics];
+  CGPoint layerCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
   CGContextTranslateCTM(context, -layerCenter.x, -layerCenter.y);
   // Half-pixel translation to prevent unnecessary anti-aliasing
   CGContextTranslateCTM(context, gHalfPixel, gHalfPixel);
 
-  // Because of the CTM adjustments, we can now use CGPointZero
-  CGContextDrawLayerAtPoint(context, CGPointZero, layer);
+  // Because of the CTM adjustments, we can now draw into a rect with origin
+  // CGPointZero
+  CGContextDrawLayerInRect(context, drawingRect, layer);
 
   // Restore the drawing context to undo CTM adjustments
   CGContextRestoreGState(context);
@@ -352,9 +356,6 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
   // Adjust the CTM to align the rect center with the intersection
   CGPoint textRectCenter = CGPointMake(CGRectGetMidX(textRect), CGRectGetMidY(textRect));
   CGContextTranslateCTM(context, -textRectCenter.x, -textRectCenter.y);
-  // Small correction for better centering. This has been experimentally
-  // determined.
-  //CGContextTranslateCTM(context, 1, 0);
 
   [string drawInRect:textRect withAttributes:attributes];
 
@@ -362,4 +363,20 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
   CGContextRestoreGState(context);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle that must be passed to CGContextDrawLayerInRect
+/// for drawing the specified layer, which must have a size that is scaled up
+/// using @e metrics.contentScale.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
+                         withMetrics:(PlayViewMetrics*)metrics
+{
+  CGSize drawingSize = CGLayerGetSize(layer);
+  drawingSize.width /= metrics.contentsScale;
+  drawingSize.height /= metrics.contentsScale;
+  CGRect drawingRect;
+  drawingRect.origin = CGPointZero;
+  drawingRect.size = drawingSize;
+  return drawingRect;
+}
 @end

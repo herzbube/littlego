@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayViewLayerDelegateBase.h"
+#import "../../model/PlayViewMetrics.h"
 
 
 @implementation PlayViewLayerDelegateBase
@@ -50,7 +51,7 @@
   [self.mainView.layer addSublayer:self.layer];
   self.layer.delegate = self;
   // Without this, all manner of drawing looks blurry on Retina displays
-  self.layer.contentsScale = [[UIScreen mainScreen] scale];
+  self.layer.contentsScale = metrics.contentsScale;
 
   // This disables the implicit animation that normally occurs when the layer
   // delegate is drawing. As always, stackoverflow.com is our friend:

@@ -298,6 +298,28 @@
 /// @name Static properties whose values never change
 // -----------------------------------------------------------------------------
 //@{
+/// @brief This is the scaling factor that must be taken into account by layers
+/// and drawing methods in order to support Retina displays.
+///
+/// The CALayer property @e contentsScale must be set to this value for all
+/// CALayer objects (UIKit does not do this automatically). As a result, all
+/// drawing operations in layer delegates that use the CGContext provided by the
+/// CALayer are scaled up properly. If the CALayer property @e contentsScale
+/// were not set, drawing operations would take place without scaling, and the
+/// resulting ***BITMAP*** is then scaled up. This, of course, results in ugly
+/// graphics.
+///
+/// Special care must be taken if drawing operations are made into a CGLayer.
+/// The CGLayer size must be scaled up using the @e contentsScale value so that
+/// the drawing operations take place at the correct size. Later, when the
+/// CGLayer is "pasted" onto the CALayer, the CGLayer must be drawn using
+/// CGContextDrawLayerInRect. The rectangle specified to that function must have
+/// a size that does ***NOT*** include the @e contentsScale value, because the
+/// CGContextDrawLayerInRect function operates with the CGContext provided by
+/// the CALayer, which means that the CALayer's @e contentsScale value will take
+/// care of scaling up the rectangle. As a result, the CGLayer is drawn into a
+/// rectangle that matches the CGLayer size.
+@property(nonatomic, assign) CGFloat contentsScale;
 @property(nonatomic, retain) UIColor* lineColor;
 @property(nonatomic, assign) int boundingLineWidth;
 @property(nonatomic, assign) int normalLineWidth;
