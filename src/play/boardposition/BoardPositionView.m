@@ -369,7 +369,7 @@ static UIImage* whiteStoneImage = nil;
   CGPoint center = CGPointMake(centerXAndY, centerXAndY);
 
   CGSize imageSize = CGSizeMake(diameter, diameter);
-  UIGraphicsBeginImageContext(imageSize);
+  UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0f);
   CGContextRef context = UIGraphicsGetCurrentContext();
   [UiUtilities drawCircleWithContext:context center:center radius:radius fill:true color:color];
   UIImage* stoneImage = UIGraphicsGetImageFromCurrentImageContext();

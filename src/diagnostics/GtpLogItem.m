@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@
   const int radius = 4;
   const int width = radius * 2;
   const int height = width;
-  UIGraphicsBeginImageContext(CGSizeMake(width, height));
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 0.0f);
   // Get Core Graphics context
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	// Push context to make it current (need to do this manually because we are
