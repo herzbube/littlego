@@ -15,6 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
+bool useTiling = true;
+
 // GUI constants
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;

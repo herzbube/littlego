@@ -409,6 +409,24 @@
 		CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
 		CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
 		CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
+		CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E419433EAC00DF2389 /* BoardTileView.m */; };
+		CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E419433EAC00DF2389 /* BoardTileView.m */; };
+		CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E619433EAC00DF2389 /* BoardView.m */; };
+		CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E619433EAC00DF2389 /* BoardView.m */; };
+		CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E819433EAC00DF2389 /* BoardViewController.m */; };
+		CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E819433EAC00DF2389 /* BoardViewController.m */; };
+		CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19EB19433EAC00DF2389 /* BoardViewDrawingHelper.m */; };
+		CDEE19F819433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19EB19433EAC00DF2389 /* BoardViewDrawingHelper.m */; };
+		CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */; };
+		CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */; };
+		CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */; };
+		CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */; };
+		CDEE19FF194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */; };
+		CDEE1A00194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */; };
+		CDEE1A0319438AE000DF2389 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */; };
+		CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */; };
+		CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */; };
+		CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -920,6 +938,25 @@
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
 		CDEC288412F477E70069F5B7 /* Roadmap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Roadmap; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-3rdparty-software.sh"; sourceTree = "<group>"; };
+		CDEE19E319433EAC00DF2389 /* BoardTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardTileView.h; sourceTree = "<group>"; };
+		CDEE19E419433EAC00DF2389 /* BoardTileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardTileView.m; sourceTree = "<group>"; };
+		CDEE19E519433EAC00DF2389 /* BoardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardView.h; sourceTree = "<group>"; };
+		CDEE19E619433EAC00DF2389 /* BoardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardView.m; sourceTree = "<group>"; };
+		CDEE19E719433EAC00DF2389 /* BoardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewController.h; sourceTree = "<group>"; };
+		CDEE19E819433EAC00DF2389 /* BoardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewController.m; sourceTree = "<group>"; };
+		CDEE19EA19433EAC00DF2389 /* BoardViewDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewDrawingHelper.h; sourceTree = "<group>"; };
+		CDEE19EB19433EAC00DF2389 /* BoardViewDrawingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewDrawingHelper.m; sourceTree = "<group>"; };
+		CDEE19EC19433EAC00DF2389 /* BoardViewLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE19ED19433EAC00DF2389 /* BoardViewLayerDelegateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewLayerDelegateBase.h; sourceTree = "<group>"; };
+		CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewLayerDelegateBase.m; sourceTree = "<group>"; };
+		CDEE19EF19433EAC00DF2389 /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE19FD194367EB00DF2389 /* StarPointsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StarPointsLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarPointsLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StonesLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolsLayerDelegate.m; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
 		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
@@ -1287,6 +1324,7 @@
 			isa = PBXGroup;
 			children = (
 				CD0FE8FD169A122400053671 /* boardposition */,
+				CDEE19E219433EAC00DF2389 /* boardview */,
 				CD1E9E54171806FE00E1B7D1 /* controller */,
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CD1311BC17180AFC006CE699 /* model */,
@@ -1827,6 +1865,40 @@
 			path = script;
 			sourceTree = "<group>";
 		};
+		CDEE19E219433EAC00DF2389 /* boardview */ = {
+			isa = PBXGroup;
+			children = (
+				CDEE19E919433EAC00DF2389 /* layer */,
+				CDEE19E319433EAC00DF2389 /* BoardTileView.h */,
+				CDEE19E419433EAC00DF2389 /* BoardTileView.m */,
+				CDEE19E519433EAC00DF2389 /* BoardView.h */,
+				CDEE19E619433EAC00DF2389 /* BoardView.m */,
+				CDEE19E719433EAC00DF2389 /* BoardViewController.h */,
+				CDEE19E819433EAC00DF2389 /* BoardViewController.m */,
+			);
+			path = boardview;
+			sourceTree = "<group>";
+		};
+		CDEE19E919433EAC00DF2389 /* layer */ = {
+			isa = PBXGroup;
+			children = (
+				CDEE19EA19433EAC00DF2389 /* BoardViewDrawingHelper.h */,
+				CDEE19EB19433EAC00DF2389 /* BoardViewDrawingHelper.m */,
+				CDEE19EC19433EAC00DF2389 /* BoardViewLayerDelegate.h */,
+				CDEE19ED19433EAC00DF2389 /* BoardViewLayerDelegateBase.h */,
+				CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */,
+				CDEE19EF19433EAC00DF2389 /* GridLayerDelegate.h */,
+				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
+				CDEE19FD194367EB00DF2389 /* StarPointsLayerDelegate.h */,
+				CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */,
+				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
+				CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */,
+				CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */,
+				CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */,
+			);
+			path = layer;
+			sourceTree = "<group>";
+		};
 		CDEF3D87140C2F39002D9C1C /* ui */ = {
 			isa = PBXGroup;
 			children = (
@@ -2128,6 +2200,7 @@
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CD8A3A83193800CD003D4F4E /* PlayViewDrawingHelper.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
+				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
 				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
 				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
@@ -2150,6 +2223,7 @@
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
+				CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
@@ -2162,6 +2236,7 @@
 				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
+				CDEE19FF194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
@@ -2181,12 +2256,14 @@
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
+				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
+				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A364148C2C26004E1A0C /* Constants.m in Sources */,
 				CD00A365148C2C26004E1A0C /* DocumentViewController.m in Sources */,
@@ -2202,6 +2279,7 @@
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
+				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E3F1643477800329154 /* BWQuincyManager.m in Sources */,
 				CD899E411643477C00329154 /* BWCrashReportTextFormatter.m in Sources */,
@@ -2256,6 +2334,7 @@
 				CD35920A1735A757000E2963 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD35920C1735A757000E2963 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD35920E1735A757000E2963 /* StoneGroupStateLayerDelegate.m in Sources */,
+				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CD3592101735A757000E2963 /* GridLayerDelegate.m in Sources */,
 				CD3592121735A757000E2963 /* PlayViewLayerDelegateBase.m in Sources */,
 				CD3592141735A757000E2963 /* StarPointsLayerDelegate.m in Sources */,
@@ -2267,11 +2346,13 @@
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
+				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
+				CDEE1A0319438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FB180AE35E0083B138 /* InfluenceLayerDelegate.m in Sources */,
 				CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
@@ -2298,6 +2379,7 @@
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
+				CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
 				CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */,
@@ -2312,16 +2394,20 @@
 				CDACF1AD1912DCC600A0DAD7 /* CoordinateLabelsView.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
+				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
+				CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
+				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
+				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */,
@@ -2342,6 +2428,7 @@
 				CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,
+				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
@@ -2364,6 +2451,7 @@
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
+				CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
@@ -2394,6 +2482,7 @@
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
 				CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */,
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
+				CDEE19F819433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */,
 				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
@@ -2455,6 +2544,7 @@
 				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
+				CDEE1A00194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,

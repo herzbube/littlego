@@ -47,6 +47,9 @@
 - (NSEnumerator*) pointEnumerator;
 - (GoPoint*) pointAtVertex:(NSString*)vertex;
 - (GoPoint*) neighbourOf:(GoPoint*)point inDirection:(enum GoBoardDirection)direction;
+// TODO xxx make this into a generic method that takes a GoBoardCorner parameter
+- (GoPoint*) topLeftPoint;
+- (GoPoint*) bottomRightPoint;
 
 /// @brief The board size, specifying the horizontal and vertical board
 /// dimensions.

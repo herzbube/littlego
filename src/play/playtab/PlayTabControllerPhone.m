@@ -18,12 +18,14 @@
 // Project includes
 #import "PlayTabControllerPhone.h"
 #import "../boardposition/BoardPositionToolbarController.h"
+#import "../boardview/BoardViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
 #import "../playview/PlayViewController.h"
 #import "../playview/ScrollViewController.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 
 
@@ -35,6 +37,7 @@
 @property(nonatomic, retain) ScrollViewController* scrollViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
+@property(nonatomic, retain) BoardViewController* boardViewController;
 @end
 
 
@@ -88,6 +91,7 @@
   self.scrollViewController = [[[ScrollViewController alloc] init] autorelease];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
+  self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
@@ -168,6 +172,31 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardViewController:(BoardViewController*)boardViewController
+{
+  if (_boardViewController == boardViewController)
+    return;
+  if (_boardViewController)
+  {
+    [_boardViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardViewController removeFromParentViewController];
+    [_boardViewController release];
+    _boardViewController = nil;
+  }
+  if (boardViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardViewController];
+    [boardViewController didMoveToParentViewController:self];
+    [boardViewController retain];
+    _boardViewController = boardViewController;
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -190,7 +219,10 @@
 {
   [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardPositionToolbarController.view];
-  [self.view addSubview:self.scrollViewController.view];
+  if (useTiling)
+    [self.view addSubview:self.boardViewController.view];
+  else
+    [self.view addSubview:self.scrollViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -199,22 +231,44 @@
 - (void) setupAutoLayoutConstraints
 {
   self.edgesForExtendedLayout = UIRectEdgeNone;
+  if (useTiling)
+    self.automaticallyAdjustsScrollViewInsets = NO;
 
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.navigationBarController.view, @"navigationBarView",
-                                   self.scrollViewController.view, @"scrollViewControllerView",
-                                   self.boardPositionToolbarController.view, @"boardPositionToolbarView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[navigationBarView]-0-|",
-                            @"H:|-0-[scrollViewControllerView]-0-|",
-                            @"H:|-0-[boardPositionToolbarView]-0-|",
-                            [NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[scrollViewControllerView]-0-[boardPositionToolbarView]-0-|", [UiElementMetrics statusBarHeight]],
-                            nil];
+  NSDictionary* viewsDictionary;
+  NSArray* visualFormats;
+  if (useTiling)
+  {
+    viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                       self.navigationBarController.view, @"navigationBarView",
+                       self.boardPositionToolbarController.view, @"boardPositionToolbarView",
+                       self.boardViewController.view, @"boardViewController",
+                       nil];
+    visualFormats = [NSArray arrayWithObjects:
+                     @"H:|-0-[navigationBarView]-0-|",
+                     @"H:|-0-[boardViewController]-0-|",
+                     @"H:|-0-[boardPositionToolbarView]-0-|",
+                     [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
+                     @"V:[boardPositionToolbarView]-0-|",
+                     nil];
+  }
+  else
+  {
+    viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                       self.navigationBarController.view, @"navigationBarView",
+                       self.scrollViewController.view, @"scrollViewControllerView",
+                       self.boardPositionToolbarController.view, @"boardPositionToolbarView",
+                       nil];
+    visualFormats = [NSArray arrayWithObjects:
+                     @"H:|-0-[navigationBarView]-0-|",
+                     @"H:|-0-[scrollViewControllerView]-0-|",
+                     @"H:|-0-[boardPositionToolbarView]-0-|",
+                     [NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[scrollViewControllerView]-0-[boardPositionToolbarView]-0-|", [UiElementMetrics statusBarHeight]],
+                     nil];
+  }
   for (NSString* visualFormat in visualFormats)
   {
     NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
@@ -222,6 +276,34 @@
                                                                   metrics:nil
                                                                     views:viewsDictionary];
     [self.view addConstraints:constraint];
+  }
+}
+
+- (void) viewDidLayoutSubviews
+{
+  if (! useTiling)
+    return;
+  static bool constraintsNotYetInstalled = true;
+  if (constraintsNotYetInstalled)
+  {
+    constraintsNotYetInstalled = false;
+    self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     self.navigationBarController.view, @"navigationBarView",
+                                     self.boardViewController.view, @"boardViewControllerView",
+                                     self.boardPositionToolbarController.view, @"boardPositionToolbarView",
+                                     //self.bottomLayoutGuide, @"bottomLayoutGuide",
+                                     nil];
+    NSArray* visualFormats = [NSArray arrayWithObjects:
+                              //[NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[boardViewControllerView(==100)]-0-[boardPositionToolbarView]-0-[bottomLayoutGuide]", [UiElementMetrics statusBarHeight]],
+                              //[NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[boardViewControllerView(==100)]-0-[boardPositionToolbarView]-0-[bottomLayoutGuide]", [UiElementMetrics statusBarHeight]],
+                              //@"V:[navigationBarView]-0-[boardViewControllerView(==100)]",
+                              @"V:[navigationBarView]-0-[boardViewControllerView]-0-[boardPositionToolbarView]",
+                              nil];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+    // We must call this to avoid a crash; this is as per documentation of the
+    // topLayoutGuide and bottomLayoutGuide properties.
+    [self.view layoutSubviews];
   }
 }
 
