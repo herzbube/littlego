@@ -79,12 +79,15 @@
                                                  boardPositionModel:boardPositionModel] autorelease];
   [self.layerDelegates addObject:layerDelegate];
 
+  NSLog(@"init BoardTileView %@", self);
+
   return self;
 }
 
 
 - (void) dealloc
 {
+  NSLog(@"dealloc BoardTileView %@", self);
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center removeObserver:self];
   self.layerDelegates = nil;
@@ -137,7 +140,7 @@
 - (void) layoutSubviews
 {
   [super layoutSubviews];
-  //NSLog(@"tile layoutSubviews, row = %d, column = %d, view = %@", self.row, self.column, self);
+  NSLog(@"tile layoutSubviews, row = %d, column = %d, view = %@", self.row, self.column, self);
 }
 
 - (void) goGameDidCreate:(NSNotification*)notification
@@ -151,6 +154,12 @@
 {
   if (self.drawLayersWasDelayed)
     [self drawLayers];
+}
+
+- (void) redraw
+{
+  [self notifyLayerDelegates:BVLDEventRectangleChanged eventInfo:nil];
+  [self delayedDrawLayers];
 }
 
 @end

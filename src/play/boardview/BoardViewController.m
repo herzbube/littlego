@@ -89,6 +89,8 @@
   self.boardView.contentSize = self.boardView.bounds.size;
   [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithRect:self.boardView.bounds];
   [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize = self.boardView.tileSize;
+  
+  NSLog(@"viewDidLayoutSubviews, tileSize = %@", NSStringFromCGSize(self.boardView.tileSize));
 }
 
 #pragma mark TiledScrollViewDataSource method
@@ -119,6 +121,7 @@
   tile.row = row;
   tile.column = column;
   //tile.backgroundColor = [UIColor randomColor];
+  [tile redraw];
 
   return tile;
 }
@@ -132,20 +135,64 @@
 
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
 {
-  NSLog(@"layoutSubviews, content size w = %f, h = %f, container view w = %f, h = %f",
-        self.boardView.contentSize.width, self.boardView.contentSize.height,
-        self.boardView.tileContainerView.frame.size.width, self.boardView.tileContainerView.frame.size.height);
+  // todo xxx we should not use the scale parameter after this line, because
+  // playviewmetrics may have made some adjustments (snap-to, optimizing for
+  // tile size, etc.)
+  [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithZoomScale:scale];
+  NSLog(@"scrollViewDidEndZooming: new absolute zoom scale = %f", [ApplicationDelegate sharedDelegate].playViewMetrics.zoomScale);
 
+  CGPoint contentOffset = scrollView.contentOffset;
+  CGSize  contentSize   = scrollView.contentSize;
+  CGSize  containerSize = self.boardView.tileContainerView.frame.size;
+
+   NSLog(@"scrollViewDidEndZooming,\n content size w = %f, h = %f,\n content offset x = %f,\n y = %f, container view w = %f, h = %f, \n board view transform = %@,\n container view transform = %@,\n first subview transform = %@",
+         contentSize.width, contentSize.height,
+         contentOffset.x, contentOffset.y,
+         containerSize.width, containerSize.height,
+         NSStringFromCGAffineTransform(self.boardView.transform),
+         NSStringFromCGAffineTransform(self.boardView.tileContainerView.transform),
+         NSStringFromCGAffineTransform(((UIView*)[[self.boardView.tileContainerView subviews] objectAtIndex:0]).transform));
+
+  // Big change here: This resets the scroll view's contentSize and
+  // contentOffset, and also the tile container view's frame, bounds and
+  // transform properties
+  scrollView.zoomScale = 1.0f;
+  // Adjust the minimum and maximum zoom scale so that the user cannot zoom
+  // in/out more than originally intended
+  scrollView.minimumZoomScale = scrollView.minimumZoomScale / scale;
+  scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
+
+  // restore content offset, content size, and container size
+  // todo xxx we should get contentSize and containerSize (they should be equal)
+  // from playviewmetrics because playViewmetrics may have made some
+  // adjustments to the zoom scale, which would mean that the sizes we
+  // remembered above are no longer accurate. more difficult is the content
+  // offset, which might also be no longer accurate. to fix this we either need
+  // to record the contentOffset in playviewmetrics (so that the metrics can
+  // perform the adjustments on the offset as well), or we need to adjust the
+  // content offset ourselves by somehow calculating the difference between the
+  // original scale (scale parameter) and the adjusted scale. in that case
+  // playviewmetrics must provide us with the adjusted scale (zoomScale is
+  // the absolute scale).
+  scrollView.contentOffset = contentOffset;
+  scrollView.contentSize = contentSize;
+  self.boardView.tileContainerView.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
+
+  // throw out all tiles so they'll reload at the new resolution
+  [self.boardView reloadData];
+
+  /*xxx
   if (scrollView == self.boardView)
   {
     // after a zoom, check to see if we should change the resolution of our tiles
     [self updateResolution];
   }
+   */
 }
 
 #pragma mark UIScrollView overrides
 
-/*
+/*xxx
 // the scrollViewDidEndZooming: delegate method is only called after an *animated* zoom. We also need to update our
 // resolution for non-animated zooms. So we also override the new setZoomScale:animated: method on UIScrollView
 - (void) setZoomScale:(float)scale animated:(BOOL)animated
@@ -167,7 +214,7 @@
 /*****************************************************************************************/
 - (void)updateResolution
 {
-/*
+/* xxx
   // delta will store the number of steps we should change our resolution by. If we've fallen below
   // a 25% zoom scale, for example, we should lower our resolution by 2 steps so delta will equal -2.
   // (Provided that lowering our resolution 2 steps stays within the limit imposed by minimumResolution.)

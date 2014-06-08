@@ -127,6 +127,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupMainProperties
 {
+  self.zoomScale = 1.0f;
+  // todo xxx assign tileSize
   self.rect = CGRectZero;
   self.boardSize = GoBoardSizeUndefined;
   self.displayCoordinates = [ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates;
@@ -190,6 +192,24 @@
   // Update properties only after everything has been re-calculated so that KVO
   // observers get the new values
   self.displayCoordinates = newDisplayCoordinates;
+}
+
+// todo xxx document
+- (void) updateWithZoomScale:(CGFloat)newZoomScale
+{
+  if (self.zoomScale == newZoomScale)
+    return;
+  CGRect newRect = self.rect;
+  newRect.size.width *= newZoomScale;
+  newRect.size.height *= newZoomScale;
+  [self updateWithRect:newRect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.rect = newRect;
+  // todo xxx also document that self.zoomScale is the absolute zoom scale,
+  // while newZoomScale is a relative zoomscale
+  self.zoomScale *= newZoomScale;
+
 }
 
 // -----------------------------------------------------------------------------

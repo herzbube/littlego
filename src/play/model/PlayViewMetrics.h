@@ -133,6 +133,7 @@
 - (void) updateWithRect:(CGRect)newRect;
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize;
 - (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates;
+- (void) updateWithZoomScale:(CGFloat)newZoomScale;
 //@}
 
 /// @name Calculators
@@ -143,6 +144,7 @@
 //@}
 
 
+@property(nonatomic, assign) CGFloat zoomScale;
 @property(nonatomic, assign) CGSize tileSize;
 
 // -----------------------------------------------------------------------------
