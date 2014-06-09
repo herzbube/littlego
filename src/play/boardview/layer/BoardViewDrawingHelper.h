@@ -20,6 +20,16 @@
 @class GoPoint;
 @class PlayViewMetrics;
 
+/// @brief Enumerates all possible layer types to mark up territory
+// todo xxx move this enum somewhere else
+enum TerritoryLayerType
+{
+  TerritoryLayerTypeBlack,
+  TerritoryLayerTypeWhite,
+  TerritoryLayerTypeInconsistentFillColor,
+  TerritoryLayerTypeInconsistentDotSymbol
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardViewDrawingHelper class provides a few drawing helper
@@ -43,6 +53,8 @@
 CGLayerRef BVCreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics);
 CGLayerRef BVCreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
 CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics);
+CGLayerRef BVCreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics);
+CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers
@@ -79,6 +91,8 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
 
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
                          withMetrics:(PlayViewMetrics*)metrics;
++ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
+                      inTileWithRect:(CGRect)tileRect;
 //@}
 
 @end

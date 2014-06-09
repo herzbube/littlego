@@ -427,6 +427,14 @@
 		CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */; };
 		CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */; };
 		CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */; };
+		CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */; };
+		CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */; };
+		CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */; };
+		CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */; };
+		CDEE1A131946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */; };
+		CDEE1A141946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */; };
+		CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
+		CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -957,6 +965,14 @@
 		CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolsLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A091946081000DF2389 /* CoordinatesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinatesLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinatesLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfluenceLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfluenceLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A111946124600DF2389 /* StoneGroupStateLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoneGroupStateLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoneGroupStateLayerDelegate.m; sourceTree = "<group>"; };
+		CDEE1A151946124E00DF2389 /* TerritoryLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerritoryLayerDelegate.h; sourceTree = "<group>"; };
+		CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
 		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
@@ -1887,14 +1903,22 @@
 				CDEE19EC19433EAC00DF2389 /* BoardViewLayerDelegate.h */,
 				CDEE19ED19433EAC00DF2389 /* BoardViewLayerDelegateBase.h */,
 				CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */,
+				CDEE1A091946081000DF2389 /* CoordinatesLayerDelegate.h */,
+				CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */,
 				CDEE19EF19433EAC00DF2389 /* GridLayerDelegate.h */,
 				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
+				CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */,
+				CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */,
 				CDEE19FD194367EB00DF2389 /* StarPointsLayerDelegate.h */,
 				CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */,
 				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
 				CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */,
+				CDEE1A111946124600DF2389 /* StoneGroupStateLayerDelegate.h */,
+				CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */,
 				CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */,
 				CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */,
+				CDEE1A151946124E00DF2389 /* TerritoryLayerDelegate.h */,
+				CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */,
 			);
 			path = layer;
 			sourceTree = "<group>";
@@ -2187,6 +2211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
 				CD108812132559DE00E83543 /* GtpCommand.m in Sources */,
@@ -2274,8 +2299,10 @@
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
+				CDEE1A131946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
+				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
@@ -2292,6 +2319,7 @@
 				CDACF1AC1912DCC600A0DAD7 /* CoordinateLabelsView.m in Sources */,
 				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
 				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
+				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
@@ -2379,6 +2407,7 @@
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
+				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
@@ -2445,6 +2474,7 @@
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
+				CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
@@ -2538,6 +2568,7 @@
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD8A3A821937FBD1003D4F4E /* PlayViewMetrics.m in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
+				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD0726FC180AE36B0083B138 /* InfluenceLayerDelegate.m in Sources */,
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
@@ -2549,6 +2580,7 @@
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
 				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,
+				CDEE1A141946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

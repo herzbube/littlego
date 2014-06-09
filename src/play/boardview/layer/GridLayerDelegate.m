@@ -126,8 +126,8 @@ NSMutableArray* lineRectangles = nil;
     CGRect drawingRect = CGRectIntersection(canvasRect, lineRect);
     if (CGRectIsNull(drawingRect))
       continue;
-    drawingRect.origin.x -= canvasRect.origin.x;
-    drawingRect.origin.y -= canvasRect.origin.y;
+    drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                                     inTileWithRect:canvasRect];
     CGContextSetFillColorWithColor(context, self.playViewMetrics.lineColor.CGColor);
     CGContextFillRect(context, drawingRect);
   }

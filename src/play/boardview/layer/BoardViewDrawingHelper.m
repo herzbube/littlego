@@ -161,6 +161,99 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a "dead
+/// stone" symbol.
+///
+/// All sizes are taken from the current values in self.playViewMetrics.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
+// -----------------------------------------------------------------------------
+CGLayerRef BVCreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics)
+{
+  // The symbol for marking a dead stone is an "x"; we draw this as the two
+  // diagonals of a Go stone's "inner square". We make the diagonals shorter by
+  // making the square's size slightly smaller
+  CGSize layerSize = metrics.stoneInnerSquareSize;
+  layerSize.width *= metrics.contentsScale;
+  layerSize.height *= metrics.contentsScale;
+  CGFloat inset = floor(layerSize.width * (1.0 - symbolSizePercentage));
+  layerSize.width -= inset * metrics.contentsScale;
+  layerSize.height -= inset * metrics.contentsScale;
+
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = layerSize;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGContextBeginPath(layerContext);
+  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y);
+  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.width);
+  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
+  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
+  CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
+  CGContextSetLineWidth(layerContext, metrics.normalLineWidth);
+  CGContextStrokePath(layerContext);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to markup territory
+/// of the specified type @a layerType.
+///
+/// All sizes are taken from the current values in self.playViewMetrics.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
+// -----------------------------------------------------------------------------
+CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics)
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = metrics.pointCellSize;
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGContextSetFillColorWithColor(layerContext, territoryColor.CGColor);
+  if (TerritoryLayerTypeInconsistentDotSymbol == layerType)
+  {
+    CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+    const int startRadius = [UiUtilities radians:0];
+    const int endRadius = [UiUtilities radians:360];
+    const int clockwise = 0;
+    CGContextAddArc(layerContext,
+                    layerCenter.x,
+                    layerCenter.y,
+                    metrics.stoneRadius * symbolSizePercentage * metrics.contentsScale,
+                    startRadius,
+                    endRadius,
+                    clockwise);
+  }
+  else
+  {
+    CGContextAddRect(layerContext, layerRect);
+    CGContextSetBlendMode(layerContext, kCGBlendModeNormal);
+  }
+  CGContextFillPath(layerContext);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Draws the layer @a layer using the specified drawing context so that
 /// the layer is centered at the intersection specified by @a point.
 ///
@@ -178,9 +271,8 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
                                                               metrics:metrics];
   if (! CGRectIntersectsRect(tileRect, layerRect))
     return;
-  CGRect drawingRect = layerRect;
-  drawingRect.origin.x -= tileRect.origin.x;
-  drawingRect.origin.y -= tileRect.origin.y;
+  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:layerRect
+                                                          inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
 }
 
@@ -240,9 +332,8 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
   if (! CGRectIntersectsRect(tileRect, textRect))
     return;
 
-  CGRect drawingRect = textRect;
-  drawingRect.origin.x -= tileRect.origin.x;
-  drawingRect.origin.y -= tileRect.origin.y;
+  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:textRect
+                                                          inTileWithRect:tileRect];
 
   UIGraphicsPushContext(context);
   [string drawInRect:drawingRect withAttributes:attributes];
@@ -316,6 +407,16 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
   CGRect drawingRect;
   drawingRect.origin = CGPointZero;
   drawingRect.size = drawingSize;
+  return drawingRect;
+}
+
+// todo xxx document
++ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
+                      inTileWithRect:(CGRect)tileRect
+{
+  CGRect drawingRect = canvasRect;
+  drawingRect.origin.x -= tileRect.origin.x;
+  drawingRect.origin.y -= tileRect.origin.y;
   return drawingRect;
 }
 
