@@ -16,27 +16,37 @@
 
 
 // Project includes
-#import "StonesLayerDelegate.h"
+#import "CrossHairStoneLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
-#import "../../../go/GoBoard.h"
-#import "../../../go/GoBoardRegion.h"
+#import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-#import "../../../ui/UiUtilities.h"
 
 
 CGLayerRef blackStoneLayer;
 CGLayerRef whiteStoneLayer;
+CGLayerRef crossHairStoneLayer;
 
-
-@implementation BVStonesLayerDelegate
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a StonesLayerDelegate object.
+/// @brief Class extension with private properties for
+/// CrossHairStoneLayerDelegate.
+// -----------------------------------------------------------------------------
+@interface BVCrossHairStoneLayerDelegate()
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
+@end
+
+
+@implementation BVCrossHairStoneLayerDelegate
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a CrossHairStoneLayerDelegate object.
 ///
-/// @note This is the designated initializer of StonesLayerDelegate.
+/// @note This is the designated initializer of CrossHairStoneLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
 {
@@ -44,22 +54,26 @@ CGLayerRef whiteStoneLayer;
   self = [super initWithTileView:tileView metrics:metrics];
   if (! self)
     return nil;
+  self.crossHairPoint = nil;
   blackStoneLayer = NULL;
   whiteStoneLayer = NULL;
+  crossHairStoneLayer = NULL;
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this StonesLayerDelegate object.
+/// @brief Deallocates memory allocated by this CrossHairStoneLayerDelegate
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.crossHairPoint = nil;
   [self invalidateLayers];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the stone layers.
+/// @brief Invalidates stone layers.
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
@@ -73,10 +87,15 @@ CGLayerRef whiteStoneLayer;
     CGLayerRelease(whiteStoneLayer);
     whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
   }
+  if (crossHairStoneLayer)
+  {
+    CGLayerRelease(crossHairStoneLayer);
+    crossHairStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewLayerDelegate method.
+/// @brief BoardViewLayerDelegateBase method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
@@ -91,19 +110,15 @@ CGLayerRef whiteStoneLayer;
       self.dirty = true;
       break;
     }
-    case BVLDEventGoGameStarted:  // place handicap stones
-    {
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
       self.dirty = true;
       break;      
     }
-    case BVLDEventBoardPositionChanged:
+    case BVLDEventCrossHairChanged:
     {
+      self.crossHairPoint = eventInfo;
       self.dirty = true;
       break;
     }
@@ -119,34 +134,35 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  DDLogVerbose(@"StonesLayerDelegate is drawing");
+  if (! self.crossHairPoint)
+    return;
 
   if (! blackStoneLayer)
     blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
   if (! whiteStoneLayer)
     whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+  if (! crossHairStoneLayer)
+    crossHairStoneLayer = BVCreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
 
-  GoGame* game = [GoGame sharedGame];
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (point = [enumerator nextObject])
+  CGLayerRef stoneLayer;
+  if (self.crossHairPoint.hasStone)
+    stoneLayer = crossHairStoneLayer;
+  else
   {
-    if (! point.hasStone)
-      continue;
-    CGLayerRef stoneLayer;
-    if (point.blackStone)
+    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    if (boardPosition.currentPlayer.isBlack)
       stoneLayer = blackStoneLayer;
     else
       stoneLayer = whiteStoneLayer;
-    [BoardViewDrawingHelper drawLayer:stoneLayer
-                          withContext:context
-                      centeredAtPoint:point
-                       inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
   }
+  [BoardViewDrawingHelper drawLayer:stoneLayer
+                        withContext:context
+                    centeredAtPoint:self.crossHairPoint
+                     inTileWithRect:tileRect
+                        withMetrics:self.playViewMetrics];
 }
 
 @end

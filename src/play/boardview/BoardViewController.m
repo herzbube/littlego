@@ -18,6 +18,7 @@
 // Project includes
 #import "BoardViewController.h"
 #import "BoardTileView.h"
+#import "../gesture/PanGestureController.h"
 #import "../model/PlayViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../utility/UIColorAdditions.h"
@@ -30,6 +31,7 @@
 // -----------------------------------------------------------------------------
 @interface BoardViewController()
 @property(nonatomic, retain) BoardView* boardView;
+@property(nonatomic, retain) PanGestureController* panGestureController;
 @end
 
 
@@ -47,6 +49,7 @@
   if (! self)
     return nil;
   self.boardView = nil;
+  self.panGestureController = [[[PanGestureController alloc] init] autorelease];
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   return self;
@@ -58,6 +61,7 @@
 - (void) dealloc
 {
   self.boardView = nil;
+  self.panGestureController = nil;
   [super dealloc];
 }
 
@@ -80,6 +84,8 @@
 
   self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
   self.boardView.backgroundColor = [UIColor clearColor];
+
+  self.panGestureController.boardView = self.boardView;
 }
 
 - (void) viewDidLayoutSubviews

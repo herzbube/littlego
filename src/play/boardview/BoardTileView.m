@@ -18,6 +18,8 @@
 // Project includes
 #import "BoardTileView.h"
 #import "layer/CoordinatesLayerDelegate.h"
+#import "layer/CrossHairLinesLayerDelegate.h"
+#import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
 #import "layer/StarPointsLayerDelegate.h"
@@ -98,8 +100,14 @@
   layerDelegate = [[[BVStarPointsLayerDelegate alloc] initWithTileView:self
                                                                metrics:metrics] autorelease];
   [self.layerDelegates addObject:layerDelegate];
+  layerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
+                                                                   metrics:metrics] autorelease];
+  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVStonesLayerDelegate alloc] initWithTileView:self
                                                            metrics:metrics] autorelease];
+  [self.layerDelegates addObject:layerDelegate];
+  layerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
+                                                                   metrics:metrics] autorelease];
   [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTileView:self
                                                               metrics:metrics
@@ -110,10 +118,6 @@
                                                       playViewModel:playViewModel
                                                  boardPositionModel:boardPositionModel] autorelease];
   [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
-                                                                metrics:metrics
-                                                                   axis:CoordinateLabelAxisLetter] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
                                                               metrics:metrics
                                                          scoringModel:scoringModel] autorelease];
@@ -121,6 +125,10 @@
   layerDelegate = [[[BVStoneGroupStateLayerDelegate alloc] initWithTileView:self
                                                                     metrics:metrics
                                                                scoringModel:scoringModel] autorelease];
+  [self.layerDelegates addObject:layerDelegate];
+  layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
+                                                                metrics:metrics
+                                                                   axis:CoordinateLabelAxisLetter] autorelease];
   [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
                                                                 metrics:metrics
@@ -166,6 +174,7 @@
   _row = row;
 
 }
+
 - (void) delayedDrawLayers
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)

@@ -93,6 +93,9 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
                          withMetrics:(PlayViewMetrics*)metrics;
 + (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
                       inTileWithRect:(CGRect)tileRect;
+
++ (NSArray*) calculateLineRectanglesStartingAtTopLeftPoint:(GoPoint*)topLeftPoint
+                                               withMetrics:(PlayViewMetrics*)metrics;
 //@}
 
 @end

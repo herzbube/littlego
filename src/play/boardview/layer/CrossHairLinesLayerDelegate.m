@@ -16,27 +16,35 @@
 
 
 // Project includes
-#import "StonesLayerDelegate.h"
+#import "CrossHairLinesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoBoard.h"
-#import "../../../go/GoBoardRegion.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-#import "../../../ui/UiUtilities.h"
 
 
-CGLayerRef blackStoneLayer;
-CGLayerRef whiteStoneLayer;
+NSArray* lineRectangles2 = nil;
 
-
-@implementation BVStonesLayerDelegate
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a StonesLayerDelegate object.
+/// @brief Class extension with private properties for
+/// CrossHairLinesLayerDelegate.
+// -----------------------------------------------------------------------------
+@interface BVCrossHairLinesLayerDelegate()
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
+@end
+
+
+@implementation BVCrossHairLinesLayerDelegate
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a CrossHairLinesLayerDelegate object.
 ///
-/// @note This is the designated initializer of StonesLayerDelegate.
+/// @note This is the designated initializer of CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
 {
@@ -44,39 +52,39 @@ CGLayerRef whiteStoneLayer;
   self = [super initWithTileView:tileView metrics:metrics];
   if (! self)
     return nil;
-  blackStoneLayer = NULL;
-  whiteStoneLayer = NULL;
+  self.crossHairPoint = nil;
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this StonesLayerDelegate object.
+/// @brief Deallocates memory allocated by this CrossHairLinesLayerDelegate
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self invalidateLayers];
+  self.crossHairPoint = nil;
+  // TODO xxx cannot release the lineRectangles array, other tile views might
+  // still depend on it. someone else should be the holder of the array, e.g.
+  // PlayViewMetrics?
+  //[self invalidateLineRectangles];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the stone layers.
+/// @brief Invalidates pre-calculated line rectangles. Invoke this if the board
+/// geometry changes.
 // -----------------------------------------------------------------------------
-- (void) invalidateLayers
+- (void) invalidateLineRectangles
 {
-  if (blackStoneLayer)
+  if (lineRectangles2)
   {
-    CGLayerRelease(blackStoneLayer);
-    blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
-  if (whiteStoneLayer)
-  {
-    CGLayerRelease(whiteStoneLayer);
-    whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    [lineRectangles2 release];
+    lineRectangles2 = nil;  // when it is next invoked, drawLayer:inContext:() will re-create and populate the array
   }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewLayerDelegate method.
+/// @brief BoardViewLayerDelegateBase method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
@@ -87,23 +95,19 @@ CGLayerRef whiteStoneLayer;
       CGRect layerFrame = CGRectZero;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
-      [self invalidateLayers];
-      self.dirty = true;
-      break;
-    }
-    case BVLDEventGoGameStarted:  // place handicap stones
-    {
+      [self invalidateLineRectangles];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
-      [self invalidateLayers];
+      [self invalidateLineRectangles];
       self.dirty = true;
-      break;      
+      break;
     }
-    case BVLDEventBoardPositionChanged:
+    case BVLDEventCrossHairChanged:
     {
+      self.crossHairPoint = eventInfo;
       self.dirty = true;
       break;
     }
@@ -119,33 +123,32 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  DDLogVerbose(@"StonesLayerDelegate is drawing");
+  if (! self.crossHairPoint)
+    return;
 
-  if (! blackStoneLayer)
-    blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
-  if (! whiteStoneLayer)
-    whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+  if (! lineRectangles2)
+  {
+    lineRectangles2 = [BoardViewDrawingHelper calculateLineRectanglesStartingAtTopLeftPoint:[[GoGame sharedGame].board topLeftPoint]
+                                                                                withMetrics:self.playViewMetrics];
+    [lineRectangles2 retain];
+  }
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
+  CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:self.crossHairPoint];
 
-  GoGame* game = [GoGame sharedGame];
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (point = [enumerator nextObject])
+  for (NSValue* lineRectValue in lineRectangles2)
   {
-    if (! point.hasStone)
+    CGRect lineRect = [lineRectValue CGRectValue];
+    if (! CGRectContainsPoint(lineRect, crossHairPointCoordinates))
       continue;
-    CGLayerRef stoneLayer;
-    if (point.blackStone)
-      stoneLayer = blackStoneLayer;
-    else
-      stoneLayer = whiteStoneLayer;
-    [BoardViewDrawingHelper drawLayer:stoneLayer
-                          withContext:context
-                      centeredAtPoint:point
-                       inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
+    CGRect drawingRect = CGRectIntersection(tileRect, lineRect);
+    if (CGRectIsNull(drawingRect))
+      continue;
+    drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                                     inTileWithRect:tileRect];
+    CGContextSetFillColorWithColor(context, self.playViewMetrics.crossHairColor.CGColor);
+    CGContextFillRect(context, drawingRect);
   }
 }
 

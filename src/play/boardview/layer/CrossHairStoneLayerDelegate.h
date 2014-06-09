@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,22 +16,16 @@
 
 
 // Project includes
-#import "layer/BoardViewLayerDelegate.h"
+#import "BoardViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardTileView class xxx
-///
-/// The tile with row/column = 0/0 is in the upper-left corner
+/// @brief The CrossHairStoneLayerDelegate class is responsible for drawing the
+/// cross-hair that indicates to the user during stone placement where the
+/// stone would be placed.
 // -----------------------------------------------------------------------------
-@interface BoardTileView : UIView
+@interface BVCrossHairStoneLayerDelegate : BoardViewLayerDelegateBase
 {
 }
-
-- (void) notifyLayerDelegates:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
-- (void) delayedDrawLayers;
-
-@property(nonatomic, assign) int row;
-@property(nonatomic, assign) int column;
 
 @end

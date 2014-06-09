@@ -420,4 +420,106 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
   return drawingRect;
 }
 
+// TODO xxx document
++ (NSArray*) calculateLineRectanglesStartingAtTopLeftPoint:(GoPoint*)topLeftPoint
+                                               withMetrics:(PlayViewMetrics*)metrics
+{
+  NSMutableArray* lineRectangles = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+
+  for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
+  {
+    bool isHorizontalLine = (0 == lineDirection) ? true : false;
+    GoPoint* previousPoint = nil;
+    GoPoint* currentPoint = topLeftPoint;
+    while (currentPoint)
+    {
+      GoPoint* nextPoint;
+      if (isHorizontalLine)
+        nextPoint = currentPoint.below;
+      else
+        nextPoint = currentPoint.right;
+      CGPoint pointCoordinates = [metrics coordinatesFromPoint:currentPoint];
+
+      int lineWidth;
+      bool isBoundingLine = (nil == previousPoint || nil == nextPoint);
+      if (isBoundingLine)
+        lineWidth = metrics.boundingLineWidth;
+      else
+        lineWidth = metrics.normalLineWidth;
+      CGFloat lineHalfWidth = lineWidth / 2.0f;
+
+      struct GoVertexNumeric numericVertex = currentPoint.vertex.numeric;
+      int lineIndexCountingFromTopLeft;
+      if (isHorizontalLine)
+        lineIndexCountingFromTopLeft = metrics.boardSize - numericVertex.y;
+      else
+        lineIndexCountingFromTopLeft = numericVertex.x - 1;
+      bool isBoundingLineLeftOrTop = (0 == lineIndexCountingFromTopLeft);
+      bool isBoundingLineRightOrBottom = ((metrics.boardSize - 1) == lineIndexCountingFromTopLeft);
+
+      CGRect lineRect;
+      if (isHorizontalLine)
+      {
+        // 1. Determine the rectangle size. Everything below this deals with
+        // the rectangle origin.
+        lineRect.size = CGSizeMake(metrics.lineLength, lineWidth);
+        // 2. Place line so that its upper-left corner is at the y-position of
+        // the specified intersection
+        lineRect.origin.x = metrics.topLeftPointX;
+        lineRect.origin.y = pointCoordinates.y;
+        // 3. Place line so that it straddles the y-position of the specified
+        // intersection
+        lineRect.origin.y -= lineHalfWidth;
+        // 4. If it's a bounding line, adjust the line position so that its edge
+        // is in the same position as if a normal line were drawn. The surplus
+        // width lies outside of the board. As a result, all cells inside the
+        // board have the same size.
+        if (isBoundingLineLeftOrTop)
+          lineRect.origin.y -= metrics.boundingLineStrokeOffset;
+        else if (isBoundingLineRightOrBottom)
+          lineRect.origin.y += metrics.boundingLineStrokeOffset;
+        // 5. Adjust horizontal line position so that it starts at the left edge
+        // of the left bounding line
+        lineRect.origin.x -= metrics.lineStartOffset;
+      }
+      else
+      {
+        // The if-branch above that deals with horizontal lines has more
+        // detailed comments.
+
+        // 1. Rectangle size
+        lineRect.size = CGSizeMake(lineWidth, metrics.lineLength);
+        // 2. Initial rectangle origin
+        lineRect.origin.x = pointCoordinates.x;
+        lineRect.origin.y = metrics.topLeftPointY;
+        // 3. Straddle intersection
+        lineRect.origin.x -= lineHalfWidth;
+        // 4. Position bounding lines
+        if (isBoundingLineLeftOrTop)
+          lineRect.origin.x -= metrics.boundingLineStrokeOffset;
+        else if (isBoundingLineRightOrBottom)
+          lineRect.origin.x += metrics.boundingLineStrokeOffset;
+        // 5. Adjust vertical line position
+        lineRect.origin.y -= metrics.lineStartOffset;
+        // Shift all vertical lines 1 point to the right. This is what I call
+        // "the mystery point" - I couldn't come up with a satisfactory
+        // explanation why this is needed even after hours of geometric drawings
+        // and manual calculations. Very unsatisfactory :-(
+        // TODO xxx It appears that this is no longer necessary. If this is
+        // true, then close the corresponding GitHub issue. The reason probably
+        // is connected with the CTM rotation that we did in the old drawing
+        // mechanism.
+        //lineRect.origin.x += 1;
+      }
+
+      [lineRectangles addObject:[NSValue valueWithCGRect:lineRect]];
+
+      previousPoint = currentPoint;
+      currentPoint = nextPoint;
+    }
+  }
+  
+  return lineRectangles;
+}
+
 @end

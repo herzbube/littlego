@@ -15,9 +15,14 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "PlayViewIntersection.h"
+
 // Forward declarations
 @class BoardTileView;
 @class BoardView;
+@class GoPoint;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The data source of BoardView must adopt the BoardViewDataSource
@@ -41,5 +46,29 @@
 @property(nonatomic, assign) id<BoardViewDataSource> dataSource;
 @property(nonatomic, retain, readonly) UIView* tileContainerView;
 @property(nonatomic, assign) CGSize tileSize;
+
+- (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
+- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
+- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
+
+/// @name Cross-hair point properties
+//@{
+/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
+///
+/// Observers may monitor this property via KVO. If this property changes its
+/// value, observers can also get a correctly updated value from property
+/// @e crossHairPointIsLegalMove.
+@property(nonatomic, retain) GoPoint* crossHairPoint;
+/// @brief Is true if the GoPoint object at the focus of the cross-hair
+/// represents a legal move.
+///
+/// This property cannot be monitored via KVO.
+@property(nonatomic, assign) bool crossHairPointIsLegalMove;
+/// @brief If crossHairPointIsLegalMove is false, this contains the reason why
+/// the move is illegal.
+///
+/// This property cannot be monitored via KVO.
+@property(nonatomic, assign) enum GoMoveIsIllegalReason crossHairPointIsIllegalReason;
+//@}
 
 @end
