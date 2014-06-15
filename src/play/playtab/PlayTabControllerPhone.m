@@ -237,6 +237,7 @@
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary;
   NSArray* visualFormats;
@@ -245,11 +246,11 @@
     viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                        self.navigationBarController.view, @"navigationBarView",
                        self.boardPositionToolbarController.view, @"boardPositionToolbarView",
-                       self.boardViewController.view, @"boardViewController",
+                       self.boardViewController.view, @"boardView",
                        nil];
     visualFormats = [NSArray arrayWithObjects:
                      @"H:|-0-[navigationBarView]-0-|",
-                     @"H:|-0-[boardViewController]-0-|",
+                     @"H:|-0-[boardView]-0-|",
                      @"H:|-0-[boardPositionToolbarView]-0-|",
                      [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
                      @"V:[boardPositionToolbarView]-0-|",
@@ -287,18 +288,14 @@
   if (constraintsNotYetInstalled)
   {
     constraintsNotYetInstalled = false;
-    self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                      self.navigationBarController.view, @"navigationBarView",
-                                     self.boardViewController.view, @"boardViewControllerView",
+                                     self.boardViewController.view, @"boardView",
                                      self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                      //self.bottomLayoutGuide, @"bottomLayoutGuide",
                                      nil];
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              //[NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[boardViewControllerView(==100)]-0-[boardPositionToolbarView]-0-[bottomLayoutGuide]", [UiElementMetrics statusBarHeight]],
-                              //[NSString stringWithFormat:@"V:|-%d-[navigationBarView]-0-[boardViewControllerView(==100)]-0-[boardPositionToolbarView]-0-[bottomLayoutGuide]", [UiElementMetrics statusBarHeight]],
-                              //@"V:[navigationBarView]-0-[boardViewControllerView(==100)]",
-                              @"V:[navigationBarView]-0-[boardViewControllerView]-0-[boardPositionToolbarView]",
+                              @"V:[navigationBarView]-0-[boardView]-0-[boardPositionToolbarView]",
                               nil];
     [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
     // We must call this to avoid a crash; this is as per documentation of the
