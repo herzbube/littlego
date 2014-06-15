@@ -219,7 +219,7 @@ enum GameRulesSectionItem
 - (void) createSubviews
 {
   self.segmentedControl = [[[UISegmentedControl alloc] initWithItems:nil] autorelease];
-  self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+  self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped] autorelease];
 }
 
 // -----------------------------------------------------------------------------

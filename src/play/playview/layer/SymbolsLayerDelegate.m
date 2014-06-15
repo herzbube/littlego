@@ -61,7 +61,7 @@
     return nil;
   _playViewModel = playViewModel;
   _boardPositionModel = boardPositionmodel;
-  self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+  self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
   self.nextMoveShadow = [[[NSShadow alloc] init] autorelease];
   self.nextMoveShadow.shadowColor = [UIColor blackColor];

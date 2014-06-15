@@ -59,7 +59,7 @@
   self.shadow.shadowColor = [UIColor blackColor];
   self.shadow.shadowBlurRadius = 5.0;
   self.shadow.shadowOffset = CGSizeMake(1.0, 1.0);
-  self.paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+  self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
   return self;
 }
