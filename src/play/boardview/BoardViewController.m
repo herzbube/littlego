@@ -86,6 +86,8 @@
   self.boardView.backgroundColor = [UIColor clearColor];
 
   self.panGestureController.boardView = self.boardView;
+
+  [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize = self.boardView.tileSize;
 }
 
 - (void) viewDidLayoutSubviews
@@ -94,9 +96,8 @@
   self.boardView.tileContainerView.frame = self.boardView.bounds;
   self.boardView.contentSize = self.boardView.bounds.size;
   [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithRect:self.boardView.bounds];
-  [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize = self.boardView.tileSize;
-  
-  NSLog(@"viewDidLayoutSubviews, tileSize = %@", NSStringFromCGSize(self.boardView.tileSize));
+
+  NSLog(@"viewDidLayoutSubviews, view size = %@, tileSize = %@", NSStringFromCGSize(self.boardView.frame.size), NSStringFromCGSize(self.boardView.tileSize));
 }
 
 #pragma mark TiledScrollViewDataSource method
@@ -109,14 +110,6 @@
   {
     // the scroll view will handle setting the tile's frame, so we don't have to worry about it
     tile = [[[BoardTileView alloc] initWithFrame:CGRectZero] autorelease];
-
-    // Some of the tiles won't be completely filled, because they're on the right or bottom edge.
-    // By default, the image would be stretched to fill the frame of the image view, but we don't
-    // want this. Setting the content mode to "top left" ensures that the images around the edge are
-    // positioned properly in their tiles.
-    // TODO xxx is this necessary?
-    tile.contentMode = UIViewContentModeTopLeft;
-
     //NSLog(@"creating new tile - %@", tile);
   }
   else
