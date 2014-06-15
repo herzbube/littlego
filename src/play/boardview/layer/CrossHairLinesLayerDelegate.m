@@ -26,9 +26,6 @@
 #import "../../../go/GoVertex.h"
 
 
-NSArray* lineRectangles2 = nil;
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// CrossHairLinesLayerDelegate.
@@ -63,24 +60,7 @@ NSArray* lineRectangles2 = nil;
 - (void) dealloc
 {
   self.crossHairPoint = nil;
-  // TODO xxx cannot release the lineRectangles array, other tile views might
-  // still depend on it. someone else should be the holder of the array, e.g.
-  // PlayViewMetrics?
-  //[self invalidateLineRectangles];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invalidates pre-calculated line rectangles. Invoke this if the board
-/// geometry changes.
-// -----------------------------------------------------------------------------
-- (void) invalidateLineRectangles
-{
-  if (lineRectangles2)
-  {
-    [lineRectangles2 release];
-    lineRectangles2 = nil;  // when it is next invoked, drawLayer:inContext:() will re-create and populate the array
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -95,13 +75,11 @@ NSArray* lineRectangles2 = nil;
       CGRect layerFrame = CGRectZero;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
-      [self invalidateLineRectangles];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
-      [self invalidateLineRectangles];
       self.dirty = true;
       break;
     }
@@ -126,18 +104,11 @@ NSArray* lineRectangles2 = nil;
   if (! self.crossHairPoint)
     return;
 
-  if (! lineRectangles2)
-  {
-    lineRectangles2 = [BoardViewDrawingHelper calculateLineRectanglesStartingAtTopLeftPoint:[[GoGame sharedGame].board topLeftPoint]
-                                                                                withMetrics:self.playViewMetrics];
-    [lineRectangles2 retain];
-  }
-
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
   CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:self.crossHairPoint];
 
-  for (NSValue* lineRectValue in lineRectangles2)
+  for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
   {
     CGRect lineRect = [lineRectValue CGRectValue];
     if (! CGRectContainsPoint(lineRect, crossHairPointCoordinates))

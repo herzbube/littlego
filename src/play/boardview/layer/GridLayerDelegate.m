@@ -26,10 +26,6 @@
 #import "../../../go/GoVertex.h"
 
 
-// todo xxx dumb name because of name collision with crosshairlineslayerdelegate
-NSArray* lineRectangles1 = nil;
-
-
 @implementation BVGridLayerDelegate
 
 // -----------------------------------------------------------------------------
@@ -52,24 +48,7 @@ NSArray* lineRectangles1 = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  // TODO xxx cannot release the lineRectangles array, other tile views might
-  // still depend on it. someone else should be the holder of the array, e.g.
-  // PlayViewMetrics?
-  //[self invalidateLineRectangles];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invalidates pre-calculated line rectangles. Invoke this if the board
-/// geometry changes.
-// -----------------------------------------------------------------------------
-- (void) invalidateLineRectangles
-{
-  if (lineRectangles1)
-  {
-    [lineRectangles1 release];
-    lineRectangles1 = nil;  // when it is next invoked, drawLayer:inContext:() will re-create and populate the array
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -84,13 +63,11 @@ NSArray* lineRectangles1 = nil;
       CGRect layerFrame = CGRectZero;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
-      [self invalidateLineRectangles];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
-      [self invalidateLineRectangles];
       self.dirty = true;
       break;
     }
@@ -110,19 +87,9 @@ NSArray* lineRectangles1 = nil;
     return;
   DDLogVerbose(@"GridLayerDelegate is drawing");
 
-  // There are many GridLayerDelegate instances around - whichever instance gets
-  // here first re-creates and populates the lineRectangles array for all the
-  // other instances
-  if (! lineRectangles1)
-  {
-    lineRectangles1 = [BoardViewDrawingHelper calculateLineRectanglesStartingAtTopLeftPoint:[[GoGame sharedGame].board topLeftPoint]
-                                                                                withMetrics:self.playViewMetrics];
-    [lineRectangles1 retain];
-  }
-
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
-  for (NSValue* lineRectValue in lineRectangles1)
+  for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
   {
     CGRect lineRect = [lineRectValue CGRectValue];
     CGRect drawingRect = CGRectIntersection(tileRect, lineRect);

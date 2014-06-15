@@ -198,6 +198,9 @@
 /// @brief The length of a grid line. Thickness of bounding and normal grid
 /// lines is taken into account.
 @property(nonatomic, assign) int lineLength;
+/// @brief A list of rectangles that together make up all grid lines on the
+/// board. The array elements are NSValue objects that store CGRect values.
+@property(nonatomic, retain) NSArray* lineRectangles;
 /// @brief Radius of the circle that represents a Go stone. The circle is
 /// guaranteed to fit into a rectangle of size pointCellSize.
 @property(nonatomic, assign) int stoneRadius;
