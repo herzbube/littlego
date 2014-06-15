@@ -57,6 +57,7 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
+
   self.row = -1;
   self.column = -1;
   self.layerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
@@ -135,16 +136,12 @@
                                                                    axis:CoordinateLabelAxisNumber] autorelease];
   [self.layerDelegates addObject:layerDelegate];
 
-  NSLog(@"init BoardTileView %@", self);
-
   return self;
 }
 
 
 - (void) dealloc
 {
-  NSLog(@"dealloc BoardTileView %@", self);
-
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
@@ -193,30 +190,15 @@
     return;
   self.drawLayersWasDelayed = false;
 
-  // Disabling animations here is essential for a smooth GUI update after a zoom
-  // operation ends. If animations were enabled, setting the layer frames would
-  // trigger an animation that looks like a "bounce". For details see
-  // http://stackoverflow.com/questions/15370803/how-to-prevent-bounce-effect-when-a-custom-view-redraws-after-zooming
-  [CATransaction begin];
-  [CATransaction setDisableActions:YES];
-
   // Draw layers in the order in which they appear in the layerDelegates array
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate drawLayer];
-
-  [CATransaction commit];
 }
 
 - (void) notifyLayerDelegates:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate notify:event eventInfo:eventInfo];
-}
-
-- (void) layoutSubviews
-{
-  [super layoutSubviews];
-  NSLog(@"tile layoutSubviews, row = %d, column = %d, view = %@", self.row, self.column, self);
 }
 
 - (void) goGameWillCreate:(NSNotification*)notification
