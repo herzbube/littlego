@@ -357,10 +357,24 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by @a layer on the "canvas", i.e.
-/// the area covered by the entire board view, after placing @a layer so that
-/// it is centered on the coordinates of the intersection @a point. The origin
-/// is in the upper-left corner.
+/// @brief Returns the rectangle occupied by a stone on the "canvas", i.e. the
+/// area covered by the entire board view, after placing the stone so that it is
+/// centered on the coordinates of the intersection @a point. The origin is in
+/// the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
+                             metrics:(PlayViewMetrics*)metrics
+{
+  return [BoardViewDrawingHelper canvasRectForSize:metrics.pointCellSize
+                                   centeredAtPoint:point
+                                           metrics:metrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by @a layer on the "canvas", i.e. the
+/// area covered by the entire board view, after placing @a layer so that it is
+/// centered on the coordinates of the intersection @a point. The origin is in
+/// the upper-left corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point

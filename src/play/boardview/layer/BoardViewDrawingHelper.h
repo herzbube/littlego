@@ -82,6 +82,8 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
 
 + (CGRect) canvasRectForTileView:(BoardTileView*)tileView
                          metrics:(PlayViewMetrics*)metrics;
++ (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
+                             metrics:(PlayViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point
                             metrics:(PlayViewMetrics*)metrics;
