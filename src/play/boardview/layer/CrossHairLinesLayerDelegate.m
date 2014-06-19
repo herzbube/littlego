@@ -31,8 +31,11 @@
 /// CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface BVCrossHairLinesLayerDelegate()
-/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
-@property(nonatomic, retain) GoPoint* crossHairPoint;
+/// @brief Store drawing rectangles between notify:eventInfo:() and
+/// drawLayer:inContext:(), and also between drawing cycles.
+@property(nonatomic, retain) NSMutableArray* drawingRectangles;
+/// @brief Store dirty rect between notify:eventInfo:() and drawLayer().
+@property(nonatomic, assign) CGRect dirtyRect;
 @end
 
 
@@ -49,7 +52,8 @@
   self = [super initWithTileView:tileView metrics:metrics];
   if (! self)
     return nil;
-  self.crossHairPoint = nil;
+  self.drawingRectangles = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+  self.dirtyRect = CGRectZero;
   return self;
 }
 
@@ -59,12 +63,28 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.crossHairPoint = nil;
+  self.drawingRectangles = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief BoardViewLayerDelegateBase method.
+/// @brief Invalidates all drawing rectangles.
+// -----------------------------------------------------------------------------
+- (void) invalidateDrawingRectangles
+{
+  [self.drawingRectangles removeAllObjects];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the dirty rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyRect
+{
+  self.dirtyRect = CGRectZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
@@ -75,18 +95,39 @@
       CGRect layerFrame = CGRectZero;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
+      [self invalidateDrawingRectangles];
+      [self invalidateDirtyRect];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
+      [self invalidateDrawingRectangles];
+      [self invalidateDirtyRect];
       self.dirty = true;
       break;
     }
     case BVLDEventCrossHairChanged:
     {
-      self.crossHairPoint = eventInfo;
-      self.dirty = true;
+      // We need to compare the drawing rectangles, not the dirty rects. For
+      // instance, if newDrawingRectangles is empty, but oldDrawingRectangles
+      // is not, this means that we need to draw to clear the line(s) from the
+      // previous drawing cycle. The old and the new dirty rects, however, are
+      // the same, so it's clear that we can't just compare those.
+      NSMutableArray* oldDrawingRectangles = self.drawingRectangles;
+      NSMutableArray* newDrawingRectangles = [self calculateDrawingRectanglesForCrossHairPoint:eventInfo];
+      if (! [oldDrawingRectangles isEqualToArray:newDrawingRectangles])
+      {
+        // Keep oldDrawingRectangles alive, otherwise overwriting the
+        // drawingRectangles property value will dealloc oldDrawingRectangles
+        [[oldDrawingRectangles retain] autorelease];
+        self.drawingRectangles = newDrawingRectangles;
+
+        CGRect oldDirtyRect = [BVCrossHairLinesLayerDelegate unionRectFromDrawingRectangles:oldDrawingRectangles];
+        CGRect newDirtyRect = [BVCrossHairLinesLayerDelegate unionRectFromDrawingRectangles:newDrawingRectangles];
+        self.dirtyRect = CGRectUnion(oldDirtyRect, newDirtyRect);
+        self.dirty = true;
+      }
       break;
     }
     default:
@@ -97,16 +138,56 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief BoardViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) drawLayer
+{
+  if (self.dirty)
+  {
+    self.dirty = false;
+    if (CGRectIsEmpty(self.dirtyRect))
+      [self.layer setNeedsDisplay];
+    else
+      [self.layer setNeedsDisplayInRect:self.dirtyRect];
+    [self invalidateDirtyRect];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief CALayer delegate method.
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! self.crossHairPoint)
-    return;
+  // If we don't have any pre-calculated drawing rectangles we draw nothing
+  // which results in an empty layer
+  CGContextSetFillColorWithColor(context, self.playViewMetrics.crossHairColor.CGColor);
+  for (NSValue* drawingRectValue in self.drawingRectangles)
+  {
+    CGRect drawingRect = [drawingRectValue CGRectValue];
+    CGContextFillRect(context, drawingRect);
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array that contains 0-2 rectangles that need to be filled
+/// with a color to draw the cross-hair lines that intersect at the specified
+/// cross-hair point.
+///
+/// The array contains 0 rectangles if neither the horizontal nor the vertical
+/// cross-hair line intersect with this tile.
+///
+/// The array contains 1-2 rectangles if either the horizontal or the vertical
+/// or both cross-hair lines intersect with this tile.
+// -----------------------------------------------------------------------------
+- (NSMutableArray*) calculateDrawingRectanglesForCrossHairPoint:(GoPoint*)crossHairPoint
+{
+  NSMutableArray* drawingRectangles = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+  if (! crossHairPoint)
+    return drawingRectangles;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
-  CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:self.crossHairPoint];
+  CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:crossHairPoint];
 
   for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
   {
@@ -118,9 +199,28 @@
       continue;
     drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
                                                      inTileWithRect:tileRect];
-    CGContextSetFillColorWithColor(context, self.playViewMetrics.crossHairColor.CGColor);
-    CGContextFillRect(context, drawingRect);
+    [drawingRectangles addObject:[NSValue valueWithCGRect:drawingRect]];
   }
+
+  return drawingRectangles;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a CGRect that is the union of all rectangles in
+/// @a drawingRectangles.
+// -----------------------------------------------------------------------------
++ (CGRect) unionRectFromDrawingRectangles:(NSArray*)drawingRectangles
+{
+  CGRect unionRect = CGRectZero;
+  for (NSValue* drawingRectValue in drawingRectangles)
+  {
+    CGRect drawingRect = [drawingRectValue CGRectValue];
+    if (CGRectIsEmpty(unionRect))
+      unionRect = drawingRect;
+    else
+      unionRect = CGRectUnion(unionRect, drawingRect);
+  }
+  return unionRect;
 }
 
 @end
