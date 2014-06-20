@@ -30,6 +30,15 @@
 CGLayerRef blackStoneLayer;
 CGLayerRef whiteStoneLayer;
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for BVStonesLayerDelegate.
+// -----------------------------------------------------------------------------
+@interface BVStonesLayerDelegate()
+/// @brief Store list of points to draw between notify:eventInfo:() and
+/// drawLayer:inContext:(), and also between drawing cycles.
+@property(nonatomic, retain) NSMutableDictionary* drawingPoints;
+@end
+
 
 @implementation BVStonesLayerDelegate
 
@@ -44,6 +53,7 @@ CGLayerRef whiteStoneLayer;
   self = [super initWithTileView:tileView metrics:metrics];
   if (! self)
     return nil;
+  self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   blackStoneLayer = NULL;
   whiteStoneLayer = NULL;
   return self;
@@ -54,6 +64,7 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.drawingPoints = nil;
   [self invalidateLayers];
   [super dealloc];
 }
@@ -88,23 +99,35 @@ CGLayerRef whiteStoneLayer;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
       [self invalidateLayers];
-      self.dirty = true;
-      break;
-    }
-    case BVLDEventGoGameStarted:  // place handicap stones
-    {
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
-      break;      
+      break;
+    }
+    case BVLDEventGoGameStarted:  // place handicap stones
+    {
+      self.drawingPoints = [self calculateDrawingPoints];
+      self.dirty = true;
+      break;
     }
     case BVLDEventBoardPositionChanged:
     {
-      self.dirty = true;
+      NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
+      NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
+      // The dictionary must contain the intersection state so that the
+      // dictionary comparison detects whether a stone was placed or captured
+      if (! [oldDrawingPoints isEqualToDictionary:newDrawingPoints])
+      {
+        self.drawingPoints = newDrawingPoints;
+        // Re-draw the entire layer. Further optimization could
+        self.dirty = true;
+      }
       break;
     }
     default:
@@ -119,8 +142,6 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  DDLogVerbose(@"StonesLayerDelegate is drawing");
-
   if (! blackStoneLayer)
     blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
   if (! whiteStoneLayer)
@@ -128,14 +149,13 @@ CGLayerRef whiteStoneLayer;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
-
-  GoGame* game = [GoGame sharedGame];
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (point = [enumerator nextObject])
-  {
+  GoBoard* board = [GoGame sharedGame].board;
+  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop){
+    // Ignore stoneStateAsNumber, get the current values directly from the
+    // GoPoint object
+    GoPoint* point = [board pointAtVertex:vertexString];
     if (! point.hasStone)
-      continue;
+      return;
     CGLayerRef stoneLayer;
     if (point.blackStone)
       stoneLayer = blackStoneLayer;
@@ -146,7 +166,48 @@ CGLayerRef whiteStoneLayer;
                       centeredAtPoint:point
                        inTileWithRect:tileRect
                           withMetrics:self.playViewMetrics];
+  }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a dictionary that identifies the points whose intersections
+/// are located on this tile, and their current states.
+///
+/// Dictionary keys are NSString objects that contain the intersection vertex.
+/// The vertex string can be used to get the GoPoint object that corresponds to
+/// the intersection.
+///
+/// Dictionary values are NSNumber objects that store a GoColor enum value. The
+/// value identifies what needs to be drawn at the intersection (i.e. a black
+/// or white stone, or nothing).
+// -----------------------------------------------------------------------------
+- (NSMutableDictionary*) calculateDrawingPoints
+{
+  NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
+                                                          metrics:self.playViewMetrics];
+
+  // TODO: Currently we always iterate over all points. This could be
+  // optimized: If the tile rect stays the same, we should already know which
+  // points intersect with the tile, so we could fall back on a pre-filtered
+  // list of points. On a 19x19 board this could save us quite a bit of time:
+  // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
+  // on iPad where there are more tiles it is even worse.
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                                 metrics:self.playViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, stoneRect))
+      continue;
+    NSNumber* stoneStateAsNumber = [[[NSNumber alloc] initWithInt:point.stoneState] autorelease];
+    [drawingPoints setObject:stoneStateAsNumber forKey:point.vertex.string];
   }
+
+  return drawingPoints;
 }
 
 @end
