@@ -18,6 +18,7 @@
 // Project includes
 #import "StoneGroupStateLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
+#import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
@@ -25,6 +26,7 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
+#import "../../../go/GoVertex.h"
 #import "../../../utility/UIColorAdditions.h"
 
 
@@ -39,6 +41,9 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 @interface BVStoneGroupStateLayerDelegate()
 @property(nonatomic, retain) ScoringModel* scoringModel;
+/// @brief Store list of points to draw between notify:eventInfo:() and
+/// drawLayer:inContext:(), and also between drawing cycles.
+@property(nonatomic, retain) NSMutableDictionary* drawingPoints;
 @end
 
 
@@ -58,6 +63,7 @@ CGLayerRef whiteSekiStoneSymbolLayer;
   if (! self)
     return nil;
   self.scoringModel = theScoringModel;
+  self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   deadStoneSymbolLayer = NULL;
   blackSekiStoneSymbolLayer = NULL;
   whiteSekiStoneSymbolLayer = NULL;
@@ -71,6 +77,7 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 - (void) dealloc
 {
   self.scoringModel = nil;
+  self.drawingPoints = nil;
   [self invalidateLayers];
   [super dealloc];
 }
@@ -110,19 +117,32 @@ CGLayerRef whiteSekiStoneSymbolLayer;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
       [self invalidateLayers];
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventScoreCalculationEnds:
     case BVLDEventScoringModeDisabled:
     {
-      self.dirty = true;
+      NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
+      NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
+      // The dictionary must contain the stone group state so that the
+      // dictionary comparison detects whether a state change occurred
+      if (! [oldDrawingPoints isEqualToDictionary:newDrawingPoints])
+      {
+        self.drawingPoints = newDrawingPoints;
+        // Re-draw the entire layer. Further optimization could be made here
+        // by only drawing that rectangle which is actually affected by
+        // self.drawingPoints.
+        self.dirty = true;
+      }
       break;
     }
     default:
@@ -137,11 +157,6 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
-    return;
-  DDLogVerbose(@"StoneGroupStateLayerDelegate is drawing");
-
   if (! deadStoneSymbolLayer)
     deadStoneSymbolLayer = BVCreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
   if (! blackSekiStoneSymbolLayer)
@@ -151,13 +166,12 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
-
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (point = [enumerator nextObject])
-  {
+  GoBoard* board = [GoGame sharedGame].board;
+  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneGroupStateAsNumber, BOOL* stop){
+    GoPoint* point = [board pointAtVertex:vertexString];
+    enum GoStoneGroupState stoneGroupState = [stoneGroupStateAsNumber intValue];
     CGLayerRef layerToDraw = 0;
-    switch (point.region.stoneGroupState)
+    switch (stoneGroupState)
     {
       case GoStoneGroupStateDead:
       {
@@ -166,7 +180,7 @@ CGLayerRef whiteSekiStoneSymbolLayer;
       }
       case GoStoneGroupStateSeki:
       {
-        switch ([point.region color])
+        switch (point.stoneState)
         {
           case GoColorBlack:
             layerToDraw = blackSekiStoneSymbolLayer;
@@ -175,24 +189,69 @@ CGLayerRef whiteSekiStoneSymbolLayer;
             layerToDraw = whiteSekiStoneSymbolLayer;
             break;
           default:
-            break;
+            DDLogError(@"Unknown value %d for property point.stoneState", point.stoneState);
+            return;
         }
         break;
       }
       default:
       {
-        break;
+        DDLogError(@"Unknown value %d for property point.region.stoneGroupState", stoneGroupState);
+        return;
       }
     }
-    if (layerToDraw)
-    {
-      [BoardViewDrawingHelper drawLayer:layerToDraw
-                            withContext:context
-                        centeredAtPoint:point
-                         inTileWithRect:tileRect
-                            withMetrics:self.playViewMetrics];
-    }
+    [BoardViewDrawingHelper drawLayer:layerToDraw
+                          withContext:context
+                      centeredAtPoint:point
+                       inTileWithRect:tileRect
+                          withMetrics:self.playViewMetrics];
+  }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a dictionary that identifies the points whose intersections
+/// are located on this tile, and the stone group state of the region that each
+/// point belongs to.
+///
+/// Dictionary keys are NSString objects that contain the intersection vertex.
+/// The vertex string can be used to get the GoPoint object that corresponds to
+/// the intersection.
+///
+/// Dictionary values are NSNumber objects that store a GoStoneGroupState enum
+/// value.
+// -----------------------------------------------------------------------------
+- (NSMutableDictionary*) calculateDrawingPoints
+{
+  NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.scoringEnabled)
+    return drawingPoints;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
+                                                          metrics:self.playViewMetrics];
+
+  // TODO: Currently we always iterate over all points. This could be
+  // optimized: If the tile rect stays the same, we should already know which
+  // points intersect with the tile, so we could fall back on a pre-filtered
+  // list of points. On a 19x19 board this could save us quite a bit of time:
+  // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
+  // on iPad where there are more tiles it is even worse.
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    if (! point.hasStone)
+      continue;
+    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                                 metrics:self.playViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, stoneRect))
+      continue;
+    enum GoStoneGroupState stoneGroupState = point.region.stoneGroupState;
+    NSNumber* stoneGroupStateAsNumber = [[[NSNumber alloc] initWithInt:stoneGroupState] autorelease];
+    [drawingPoints setObject:stoneGroupStateAsNumber forKey:point.vertex.string];
   }
+
+  return drawingPoints;
 }
 
 @end
