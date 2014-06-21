@@ -26,6 +26,7 @@
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
 #import "../model/PlayViewMetrics.h"
+#import "../model/PlayViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
@@ -37,7 +38,16 @@
 // -----------------------------------------------------------------------------
 @interface BoardTileView()
 @property(nonatomic, assign) bool drawLayersWasDelayed;
-@property(nonatomic, retain) NSMutableArray* layerDelegates;
+@property(nonatomic, retain) NSArray* layerDelegates;
+@property(nonatomic, assign) BVGridLayerDelegate* gridLayerDelegate;
+@property(nonatomic, assign) BVCrossHairLinesLayerDelegate* crossHairLinesLayerDelegate;
+@property(nonatomic, assign) BVStonesLayerDelegate* stonesLayerDelegate;
+@property(nonatomic, assign) BVCrossHairStoneLayerDelegate* crossHairStoneLayerDelegate;
+@property(nonatomic, assign) BVInfluenceLayerDelegate* influenceLayerDelegate;
+@property(nonatomic, assign) BVSymbolsLayerDelegate* symbolsLayerDelegate;
+@property(nonatomic, assign) BVTerritoryLayerDelegate* territoryLayerDelegate;
+@property(nonatomic, assign) BVCoordinatesLayerDelegate* letterAxisCoordinatesLayerDelegate;
+@property(nonatomic, assign) BVCoordinatesLayerDelegate* numberAxisCoordinatesLayerDelegate;
 //@}
 @end
 
@@ -58,7 +68,6 @@
 
   self.row = -1;
   self.column = -1;
-  self.layerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
 
   self.drawLayersWasDelayed = false;
 
@@ -80,6 +89,7 @@
   [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [playViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
   [playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
   [playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
@@ -92,44 +102,82 @@
     [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   }
 
-  id<BoardViewLayerDelegate> layerDelegate;
-  layerDelegate = [[[BVGridLayerDelegate alloc] initWithTileView:self
-                                                         metrics:metrics] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
-                                                                   metrics:metrics] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVStonesLayerDelegate alloc] initWithTileView:self
-                                                           metrics:metrics] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
-                                                                   metrics:metrics] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTileView:self
-                                                              metrics:metrics
-                                                        playViewModel:playViewModel] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTileView:self
-                                                            metrics:metrics
-                                                      playViewModel:playViewModel
-                                                 boardPositionModel:boardPositionModel] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
-                                                              metrics:metrics
-                                                         scoringModel:scoringModel] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
-                                                                metrics:metrics
-                                                                   axis:CoordinateLabelAxisLetter] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
-                                                                metrics:metrics
-                                                                   axis:CoordinateLabelAxisNumber] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
+  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTileView:self
+                                                                  metrics:metrics] autorelease];
+  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
+                                                                                      metrics:metrics] autorelease];
+  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTileView:self
+                                                                      metrics:metrics] autorelease];
+  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
+                                                                                      metrics:metrics] autorelease];
+  [self createOrResetInfluenceLayer];
+  self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTileView:self
+                                                                        metrics:metrics
+                                                                  playViewModel:playViewModel
+                                                             boardPositionModel:boardPositionModel] autorelease];
+  self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
+                                                                            metrics:metrics
+                                                                       scoringModel:scoringModel] autorelease];
+  self.letterAxisCoordinatesLayerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
+                                                                                          metrics:metrics
+                                                                                             axis:CoordinateLabelAxisLetter] autorelease];
+  self.numberAxisCoordinatesLayerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
+                                                                                          metrics:metrics
+                                                                                             axis:CoordinateLabelAxisNumber] autorelease];
+
+  [self updateLayers];
 
   return self;
 }
 
+// either creates the influence layer delegate, or resets it to nil
+- (void) createOrResetInfluenceLayer
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  PlayViewModel* playViewModel = appDelegate.playViewModel;
+  if (playViewModel.displayPlayerInfluence)
+  {
+    PlayViewMetrics* metrics = appDelegate.playViewMetrics;
+    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTileView:self
+                                                                              metrics:metrics
+                                                                        playViewModel:playViewModel] autorelease];
+  }
+  else
+  {
+    // The layer delegate will be deallocated later in updateLayers
+    self.influenceLayerDelegate = 0;
+  }
+}
+
+- (void) updateLayers
+{
+  NSArray* oldLayerDelegates = self.layerDelegates;
+  NSMutableArray* newLayerDelegates = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
+
+  // The order in which layer delegates are added to the array is important: It
+  // determines the order in which layers are stacked.
+  [newLayerDelegates addObject:self.gridLayerDelegate];
+  [newLayerDelegates addObject:self.crossHairLinesLayerDelegate];
+  [newLayerDelegates addObject:self.stonesLayerDelegate];
+  [newLayerDelegates addObject:self.crossHairStoneLayerDelegate];
+  if (self.influenceLayerDelegate)
+    [newLayerDelegates addObject:self.influenceLayerDelegate];
+  [newLayerDelegates addObject:self.symbolsLayerDelegate];
+  [newLayerDelegates addObject:self.territoryLayerDelegate];
+  [newLayerDelegates addObject:self.letterAxisCoordinatesLayerDelegate];
+  [newLayerDelegates addObject:self.numberAxisCoordinatesLayerDelegate];
+
+  // Removing/adding layers does not cause them to redraw. Only layers that
+  // are newly created are redrawn.
+  for (id<BoardViewLayerDelegate> oldLayerDelegate in oldLayerDelegates)
+    [oldLayerDelegate.layer removeFromSuperlayer];
+  for (id<BoardViewLayerDelegate> newLayerDelegate in newLayerDelegates)
+    [self.layer addSublayer:newLayerDelegate.layer];
+
+  // Replace the old array at the very end. The old array is now deallocated,
+  // including any layer delegates that are no longer in newLayerDelegates
+  self.layerDelegates = newLayerDelegates;
+}
 
 - (void) dealloc
 {
@@ -145,6 +193,7 @@
   [metrics removeObserver:self forKeyPath:@"rect"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
+  [playViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
   [playViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
@@ -181,7 +230,6 @@
     return;
   self.drawLayersWasDelayed = false;
 
-  // Draw layers in the order in which they appear in the layerDelegates array
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate drawLayer];
 }
@@ -304,6 +352,11 @@
     {
       [self notifyLayerDelegates:BVLDEventMoveNumbersPercentageChanged eventInfo:nil];
       [self delayedDrawLayers];
+    }
+    else if ([keyPath isEqualToString:@"displayPlayerInfluence"])
+    {
+      [self createOrResetInfluenceLayer];
+      [self updateLayers];
     }
 /*xxx
     else if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])

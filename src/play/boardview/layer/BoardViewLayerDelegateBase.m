@@ -31,9 +31,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardViewLayerDelegateBase object. Adds a newly created
-/// CALayer to @a tileView. The layer object is set up to use this
-/// BoardViewLayerDelegateBase as its delegate.
+/// @brief Initializes a BoardViewLayerDelegateBase object. Creates a new
+/// CALayer that uses this BoardViewLayerDelegateBase as its delegate.
 ///
 /// @note This is the designated initializer of BoardViewLayerDelegateBase.
 // -----------------------------------------------------------------------------
@@ -49,7 +48,10 @@
   self.playViewMetrics = metrics;
   self.dirty = false;
 
-  [self.tileView.layer addSublayer:self.layer];
+  CGRect layerFrame = CGRectZero;
+  layerFrame.size = self.playViewMetrics.tileSize;
+  self.layer.frame = layerFrame;
+
   self.layer.delegate = self;
   // Without this, all manner of drawing looks blurry on Retina displays
   self.layer.contentsScale = metrics.contentsScale;
