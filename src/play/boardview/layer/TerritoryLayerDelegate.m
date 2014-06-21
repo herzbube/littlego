@@ -18,6 +18,7 @@
 // Project includes
 #import "TerritoryLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
+#import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
@@ -25,6 +26,7 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
+#import "../../../go/GoVertex.h"
 #import "../../../ui/UiUtilities.h"
 #import "../../../utility/UIColorAdditions.h"
 
@@ -40,6 +42,9 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 // -----------------------------------------------------------------------------
 @interface BVTerritoryLayerDelegate()
 @property(nonatomic, retain) ScoringModel* scoringModel;
+/// @brief Store list of points to draw between notify:eventInfo:() and
+/// drawLayer:inContext:(), and also between drawing cycles.
+@property(nonatomic, retain) NSMutableDictionary* drawingPoints;
 @property(nonatomic, retain) UIColor* territoryColorBlack;
 @property(nonatomic, retain) UIColor* territoryColorWhite;
 @property(nonatomic, retain) UIColor* territoryColorInconsistent;
@@ -62,6 +67,7 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
   if (! self)
     return nil;
   self.scoringModel = scoringModel;
+  self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   self.territoryColorBlack = [UIColor colorWithWhite:0.0 alpha:scoringModel.alphaTerritoryColorBlack];
   self.territoryColorWhite = [UIColor colorWithWhite:1.0 alpha:scoringModel.alphaTerritoryColorWhite];
   self.territoryColorInconsistent = [scoringModel.inconsistentTerritoryFillColor colorWithAlphaComponent:scoringModel.inconsistentTerritoryFillColorAlpha];
@@ -78,6 +84,7 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 - (void) dealloc
 {
   self.scoringModel = nil;
+  self.drawingPoints = nil;
   self.territoryColorBlack = nil;
   self.territoryColorWhite = nil;
   self.territoryColorInconsistent = nil;
@@ -125,12 +132,14 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
       [self invalidateLayers];
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
+      self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
@@ -138,7 +147,19 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
     case BVLDEventInconsistentTerritoryMarkupTypeChanged:
     case BVLDEventScoringModeDisabled:
     {
-      self.dirty = true;
+      NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
+      NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
+      // The dictionary must contain the territory markup style so that the
+      // dictionary comparison detects whether the territory color changed, or
+      // the inconsistent territory markup type changed
+      if (! [oldDrawingPoints isEqualToDictionary:newDrawingPoints])
+      {
+        self.drawingPoints = newDrawingPoints;
+        // Re-draw the entire layer. Further optimization could be made here
+        // by only drawing that rectangle which is actually affected by
+        // self.drawingPoints.
+        self.dirty = true;
+      }
       break;
     }
     default:
@@ -153,11 +174,6 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
-    return;
-  DDLogVerbose(@"TerritoryLayerDelegate is drawing");
-
   if (! blackTerritoryLayer)
     blackTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
   if (! whiteTerritoryLayer)
@@ -172,67 +188,121 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
                                                                  self.playViewMetrics);
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                            metrics:self.playViewMetrics];
+                                                          metrics:self.playViewMetrics];
+  GoBoard* board = [GoGame sharedGame].board;
+  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryLayerTypeAsNumber, BOOL* stop){
+    enum TerritoryLayerType territoryLayerType = [territoryLayerTypeAsNumber intValue];
+    CGLayerRef layerToDraw = 0;
+    switch (territoryLayerType)
+    {
+      case TerritoryLayerTypeBlack:
+        layerToDraw = blackTerritoryLayer;
+        break;
+      case TerritoryLayerTypeWhite:
+        layerToDraw = whiteTerritoryLayer;
+        break;
+      case TerritoryLayerTypeInconsistentFillColor:
+        layerToDraw = inconsistentFillColorTerritoryLayer;
+        break;
+      case TerritoryLayerTypeInconsistentDotSymbol:
+        layerToDraw = inconsistentDotSymbolTerritoryLayer;
+        break;
+      default:
+        return;
+    }
+    GoPoint* point = [board pointAtVertex:vertexString];
+    [BoardViewDrawingHelper drawLayer:layerToDraw
+                          withContext:context
+                      centeredAtPoint:point
+                       inTileWithRect:tileRect
+                          withMetrics:self.playViewMetrics];
+  }];
+}
 
-  CGLayerRef inconsistentTerritoryLayer = NULL;
+// -----------------------------------------------------------------------------
+/// @brief Returns a dictionary that identifies the points whose intersections
+/// are located on this tile, and the markup style that should be used to draw
+/// the territory for these points.
+///
+/// Dictionary keys are NSString objects that contain the intersection vertex.
+/// The vertex string can be used to get the GoPoint object that corresponds to
+/// the intersection.
+///
+/// Dictionary values are NSNumber objects that store a TerritoryLayerType enum
+/// value. The value identifies the layer that needs to be drawn at the
+/// intersection.
+// -----------------------------------------------------------------------------
+- (NSMutableDictionary*) calculateDrawingPoints
+{
+  NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.scoringEnabled)
+    return drawingPoints;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
+                                                          metrics:self.playViewMetrics];
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
-  switch (inconsistentTerritoryMarkupType)
-  {
-    case InconsistentTerritoryMarkupTypeDotSymbol:
-    {
-      inconsistentTerritoryLayer = inconsistentDotSymbolTerritoryLayer;
-      break;
-    }
-    case InconsistentTerritoryMarkupTypeFillColor:
-    {
-      inconsistentTerritoryLayer = inconsistentFillColorTerritoryLayer;
-      break;
-    }
-    case InconsistentTerritoryMarkupTypeNeutral:
-    {
-      inconsistentTerritoryLayer = NULL;
-      break;
-    }
-    default:
-    {
-      DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
-      break;
-    }
-  }
 
+  // TODO: Currently we always iterate over all points. This could be
+  // optimized: If the tile rect stays the same, we should already know which
+  // points intersect with the tile, so we could fall back on a pre-filtered
+  // list of points. On a 19x19 board this could save us quite a bit of time:
+  // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
+  // on iPad where there are more tiles it is even worse.
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
-    CGLayerRef layerToDraw = 0;
-    switch (point.region.territoryColor)
+    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                                 metrics:self.playViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, stoneRect))
+      continue;
+    enum GoColor territoryColor = point.region.territoryColor;
+    enum TerritoryLayerType territoryLayerType;
+    switch (territoryColor)
     {
       case GoColorBlack:
-        layerToDraw = blackTerritoryLayer;
+      {
+        territoryLayerType = TerritoryLayerTypeBlack;
         break;
+      }
       case GoColorWhite:
-        layerToDraw = whiteTerritoryLayer;
+      {
+        territoryLayerType = TerritoryLayerTypeWhite;
         break;
+      }
       case GoColorNone:
+      {
         if (! point.region.territoryInconsistencyFound)
           continue;  // territory is truly neutral, no markup needed
-        else if (InconsistentTerritoryMarkupTypeNeutral == inconsistentTerritoryMarkupType)
-          continue;  // territory is inconsistent, but user does not want markup
-        else
-          layerToDraw = inconsistentTerritoryLayer;
+        switch (inconsistentTerritoryMarkupType)
+        {
+          case InconsistentTerritoryMarkupTypeNeutral:
+            continue;  // territory is inconsistent, but user does not want markup
+          case InconsistentTerritoryMarkupTypeDotSymbol:
+            territoryLayerType = TerritoryLayerTypeInconsistentDotSymbol;
+            break;
+          case InconsistentTerritoryMarkupTypeFillColor:
+            territoryLayerType = TerritoryLayerTypeInconsistentFillColor;
+            break;
+          default:
+            DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
+            continue;
+        }
         break;
+      }
       default:
+      {
+        DDLogError(@"Unknown value %d for property point.region.territoryColor", territoryColor);
         continue;
+      }
     }
-    if (layerToDraw)
-    {
-      [BoardViewDrawingHelper drawLayer:layerToDraw
-                            withContext:context
-                        centeredAtPoint:point
-                         inTileWithRect:tileRect
-                            withMetrics:self.playViewMetrics];
-    }
+
+    NSNumber* territoryLayerTypeAsNumber = [[[NSNumber alloc] initWithInt:territoryLayerType] autorelease];
+    [drawingPoints setObject:territoryLayerTypeAsNumber forKey:point.vertex.string];
   }
+
+  return drawingPoints;
 }
 
 @end
