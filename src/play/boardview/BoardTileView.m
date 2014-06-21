@@ -111,13 +111,8 @@
   self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
                                                                                       metrics:metrics] autorelease];
   [self createOrResetInfluenceLayer];
-  self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTileView:self
-                                                                        metrics:metrics
-                                                                  playViewModel:playViewModel
-                                                             boardPositionModel:boardPositionModel] autorelease];
-  self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
-                                                                            metrics:metrics
-                                                                       scoringModel:scoringModel] autorelease];
+  [self createOrResetSymbolsLayer];
+  [self createOrResetTerritoryLayer];
   self.letterAxisCoordinatesLayerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
                                                                                           metrics:metrics
                                                                                              axis:CoordinateLabelAxisLetter] autorelease];
@@ -137,15 +132,49 @@
   PlayViewModel* playViewModel = appDelegate.playViewModel;
   if (playViewModel.displayPlayerInfluence)
   {
-    PlayViewMetrics* metrics = appDelegate.playViewMetrics;
     self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTileView:self
-                                                                              metrics:metrics
+                                                                              metrics:appDelegate.playViewMetrics
                                                                         playViewModel:playViewModel] autorelease];
   }
   else
   {
-    // The layer delegate will be deallocated later in updateLayers
     self.influenceLayerDelegate = 0;
+  }
+}
+
+// either creates the territory layer delegate, or resets it to nil
+- (void) createOrResetSymbolsLayer
+{
+
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    self.symbolsLayerDelegate = 0;
+  }
+  else
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTileView:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                    playViewModel:appDelegate.playViewModel
+                                                               boardPositionModel:appDelegate.boardPositionModel] autorelease];
+
+  }
+}
+
+// either creates the territory layer delegate, or resets it to nil
+- (void) createOrResetTerritoryLayer
+{
+
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
+                                                                              metrics:appDelegate.playViewMetrics
+                                                                         scoringModel:appDelegate.scoringModel] autorelease];
+  }
+  else
+  {
+    self.territoryLayerDelegate = 0;
   }
 }
 
@@ -162,8 +191,10 @@
   [newLayerDelegates addObject:self.crossHairStoneLayerDelegate];
   if (self.influenceLayerDelegate)
     [newLayerDelegates addObject:self.influenceLayerDelegate];
-  [newLayerDelegates addObject:self.symbolsLayerDelegate];
-  [newLayerDelegates addObject:self.territoryLayerDelegate];
+  if (self.symbolsLayerDelegate)
+    [newLayerDelegates addObject:self.symbolsLayerDelegate];
+  if (self.territoryLayerDelegate)
+    [newLayerDelegates addObject:self.territoryLayerDelegate];
   [newLayerDelegates addObject:self.letterAxisCoordinatesLayerDelegate];
   [newLayerDelegates addObject:self.numberAxisCoordinatesLayerDelegate];
 
@@ -262,12 +293,20 @@
 
 - (void) goScoreScoringEnabled:(NSNotification*)notification
 {
+  [self createOrResetInfluenceLayer];
+  [self createOrResetSymbolsLayer];
+  [self createOrResetTerritoryLayer];
+  [self updateLayers];
   [self notifyLayerDelegates:BVLDEventScoringModeEnabled eventInfo:nil];
   [self delayedDrawLayers];
 }
 
 - (void) goScoreScoringDisabled:(NSNotification*)notification
 {
+  [self createOrResetInfluenceLayer];
+  [self createOrResetSymbolsLayer];
+  [self createOrResetTerritoryLayer];
+  [self updateLayers];
   [self notifyLayerDelegates:BVLDEventScoringModeDisabled eventInfo:nil];
   [self delayedDrawLayers];
 }
