@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class BoardView;
 @class PlayView;
 
 
@@ -29,5 +30,6 @@
 }
 
 @property(nonatomic, assign) PlayView* playView;
+@property(nonatomic, assign) BoardView* boardView;
 
 @end

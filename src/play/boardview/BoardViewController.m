@@ -19,6 +19,7 @@
 #import "BoardViewController.h"
 #import "BoardTileView.h"
 #import "../gesture/PanGestureController.h"
+#import "../gesture/TapGestureController.h"
 #import "../model/PlayViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../utility/UIColorAdditions.h"
@@ -32,6 +33,7 @@
 @interface BoardViewController()
 @property(nonatomic, retain) BoardView* boardView;
 @property(nonatomic, retain) PanGestureController* panGestureController;
+@property(nonatomic, retain) TapGestureController* tapGestureController;
 @end
 
 
@@ -50,6 +52,7 @@
     return nil;
   self.boardView = nil;
   self.panGestureController = [[[PanGestureController alloc] init] autorelease];
+  self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   return self;
@@ -86,6 +89,7 @@
   self.boardView.backgroundColor = [UIColor clearColor];
 
   self.panGestureController.boardView = self.boardView;
+  self.tapGestureController.boardView = self.boardView;
 
   [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize = self.boardView.tileSize;
 }
