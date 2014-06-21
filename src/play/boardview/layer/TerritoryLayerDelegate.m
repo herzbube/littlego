@@ -27,7 +27,6 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
 #import "../../../go/GoVertex.h"
-#import "../../../ui/UiUtilities.h"
 #import "../../../utility/UIColorAdditions.h"
 
 
@@ -35,6 +34,9 @@ CGLayerRef blackTerritoryLayer;
 CGLayerRef whiteTerritoryLayer;
 CGLayerRef inconsistentFillColorTerritoryLayer;
 CGLayerRef inconsistentDotSymbolTerritoryLayer;
+CGLayerRef deadStoneSymbolLayer;
+CGLayerRef blackSekiStoneSymbolLayer;
+CGLayerRef whiteSekiStoneSymbolLayer;
 
 
 // -----------------------------------------------------------------------------
@@ -44,7 +46,10 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 @property(nonatomic, retain) ScoringModel* scoringModel;
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
-@property(nonatomic, retain) NSMutableDictionary* drawingPoints;
+@property(nonatomic, retain) NSMutableDictionary* drawingPointsTerritory;
+/// @brief Store list of points to draw between notify:eventInfo:() and
+/// drawLayer:inContext:(), and also between drawing cycles.
+@property(nonatomic, retain) NSMutableDictionary* drawingPointsStoneGroupState;
 @property(nonatomic, retain) UIColor* territoryColorBlack;
 @property(nonatomic, retain) UIColor* territoryColorWhite;
 @property(nonatomic, retain) UIColor* territoryColorInconsistent;
@@ -67,7 +72,8 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
   if (! self)
     return nil;
   self.scoringModel = scoringModel;
-  self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  self.drawingPointsTerritory = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  self.drawingPointsStoneGroupState = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   self.territoryColorBlack = [UIColor colorWithWhite:0.0 alpha:scoringModel.alphaTerritoryColorBlack];
   self.territoryColorWhite = [UIColor colorWithWhite:1.0 alpha:scoringModel.alphaTerritoryColorWhite];
   self.territoryColorInconsistent = [scoringModel.inconsistentTerritoryFillColor colorWithAlphaComponent:scoringModel.inconsistentTerritoryFillColorAlpha];
@@ -75,6 +81,9 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
   whiteTerritoryLayer = NULL;
   inconsistentFillColorTerritoryLayer = NULL;
   inconsistentDotSymbolTerritoryLayer = NULL;
+  deadStoneSymbolLayer = NULL;
+  blackSekiStoneSymbolLayer = NULL;
+  whiteSekiStoneSymbolLayer = NULL;
   return self;
 }
 
@@ -84,7 +93,8 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 - (void) dealloc
 {
   self.scoringModel = nil;
-  self.drawingPoints = nil;
+  self.drawingPointsTerritory = nil;
+  self.drawingPointsStoneGroupState = nil;
   self.territoryColorBlack = nil;
   self.territoryColorWhite = nil;
   self.territoryColorInconsistent = nil;
@@ -93,29 +103,47 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the layers for marking up territory.
+/// @brief Invalidates the layers for marking up territory, and for marking dead
+/// or seki stones.
+///
+/// When it is next invoked, drawLayer:inContext:() will re-create the layers.
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
   if (blackTerritoryLayer)
   {
     CGLayerRelease(blackTerritoryLayer);
-    blackTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    blackTerritoryLayer = NULL;
   }
   if (whiteTerritoryLayer)
   {
     CGLayerRelease(whiteTerritoryLayer);
-    whiteTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    whiteTerritoryLayer = NULL;
   }
   if (inconsistentFillColorTerritoryLayer)
   {
     CGLayerRelease(inconsistentFillColorTerritoryLayer);
-    inconsistentFillColorTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    inconsistentFillColorTerritoryLayer = NULL;
   }
   if (inconsistentDotSymbolTerritoryLayer)
   {
     CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
-    inconsistentDotSymbolTerritoryLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+    inconsistentDotSymbolTerritoryLayer = NULL;
+  }
+  if (deadStoneSymbolLayer)
+  {
+    CGLayerRelease(deadStoneSymbolLayer);
+    deadStoneSymbolLayer = NULL;
+  }
+  if (blackSekiStoneSymbolLayer)
+  {
+    CGLayerRelease(blackSekiStoneSymbolLayer);
+    blackSekiStoneSymbolLayer = NULL;
+  }
+  if (whiteSekiStoneSymbolLayer)
+  {
+    CGLayerRelease(whiteSekiStoneSymbolLayer);
+    whiteSekiStoneSymbolLayer = NULL;
   }
 }
 
@@ -132,14 +160,16 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
       [self invalidateLayers];
-      self.drawingPoints = [self calculateDrawingPoints];
+      self.drawingPointsTerritory = [self calculateDrawingPointsTerritory];
+      self.drawingPointsStoneGroupState = [self calculateDrawingPointsStoneGroupState];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
-      self.drawingPoints = [self calculateDrawingPoints];
+      self.drawingPointsTerritory = [self calculateDrawingPointsTerritory];
+      self.drawingPointsStoneGroupState = [self calculateDrawingPointsStoneGroupState];
       self.dirty = true;
       break;
     }
@@ -147,18 +177,34 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
     case BVLDEventInconsistentTerritoryMarkupTypeChanged:
     case BVLDEventScoringModeDisabled:
     {
-      NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
-      NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
+      NSMutableDictionary* oldDrawingPointsTerritory = self.drawingPointsTerritory;
+      NSMutableDictionary* newDrawingPointsTerritory = [self calculateDrawingPointsTerritory];
       // The dictionary must contain the territory markup style so that the
       // dictionary comparison detects whether the territory color changed, or
       // the inconsistent territory markup type changed
-      if (! [oldDrawingPoints isEqualToDictionary:newDrawingPoints])
+      if (! [oldDrawingPointsTerritory isEqualToDictionary:newDrawingPointsTerritory])
       {
-        self.drawingPoints = newDrawingPoints;
+        self.drawingPointsTerritory = newDrawingPointsTerritory;
         // Re-draw the entire layer. Further optimization could be made here
         // by only drawing that rectangle which is actually affected by
-        // self.drawingPoints.
+        // self.drawingPointsTerritory.
         self.dirty = true;
+      }
+
+      if (event != BVLDEventInconsistentTerritoryMarkupTypeChanged)
+      {
+        NSMutableDictionary* oldDrawingPointsStoneGroupState = self.drawingPointsStoneGroupState;
+        NSMutableDictionary* newDrawingPointsStoneGroupState = [self calculateDrawingPointsStoneGroupState];
+        // The dictionary must contain the stone group state so that the
+        // dictionary comparison detects whether a state change occurred
+        if (! [oldDrawingPointsStoneGroupState isEqualToDictionary:newDrawingPointsStoneGroupState])
+        {
+          self.drawingPointsStoneGroupState = newDrawingPointsStoneGroupState;
+          // Re-draw the entire layer. Further optimization could be made here
+          // by only drawing that rectangle which is actually affected by
+          // self.drawingPointsStoneGroupState.
+          self.dirty = true;
+        }
       }
       break;
     }
@@ -174,6 +220,25 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
+                                                          metrics:self.playViewMetrics];
+  GoBoard* board = [GoGame sharedGame].board;
+
+  // Make sure that layers are created before drawing methods that use them are
+  // invoked
+  [self createLayersIfNecessaryWithContext:context];
+
+  // Order is important: Later drawing methods draw their content over earlier
+  // content
+  [self drawTerritoryWithContext:context inTileRect:tileRect withBoard:board];
+  [self drawStoneGroupStateWithContext:context inTileRect:tileRect withBoard:board];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) createLayersIfNecessaryWithContext:(CGContextRef)context
+{
   if (! blackTerritoryLayer)
     blackTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
   if (! whiteTerritoryLayer)
@@ -186,11 +251,20 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolColor,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
                                                                  self.playViewMetrics);
+  if (! deadStoneSymbolLayer)
+    deadStoneSymbolLayer = BVCreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
+  if (! blackSekiStoneSymbolLayer)
+    blackSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
+  if (! whiteSekiStoneSymbolLayer)
+    whiteSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
+}
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
-  GoBoard* board = [GoGame sharedGame].board;
-  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryLayerTypeAsNumber, BOOL* stop){
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawTerritoryWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect withBoard:(GoBoard*)board
+{
+  [self.drawingPointsTerritory enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryLayerTypeAsNumber, BOOL* stop){
     enum TerritoryLayerType territoryLayerType = [territoryLayerTypeAsNumber intValue];
     CGLayerRef layerToDraw = 0;
     switch (territoryLayerType)
@@ -220,6 +294,52 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawStoneGroupStateWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect withBoard:(GoBoard*)board
+{
+  [self.drawingPointsStoneGroupState enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneGroupStateAsNumber, BOOL* stop){
+    GoPoint* point = [board pointAtVertex:vertexString];
+    enum GoStoneGroupState stoneGroupState = [stoneGroupStateAsNumber intValue];
+    CGLayerRef layerToDraw = 0;
+    switch (stoneGroupState)
+    {
+      case GoStoneGroupStateDead:
+      {
+        layerToDraw = deadStoneSymbolLayer;
+        break;
+      }
+      case GoStoneGroupStateSeki:
+      {
+        switch (point.stoneState)
+        {
+          case GoColorBlack:
+            layerToDraw = blackSekiStoneSymbolLayer;
+            break;
+          case GoColorWhite:
+            layerToDraw = whiteSekiStoneSymbolLayer;
+            break;
+          default:
+            DDLogError(@"Unknown value %d for property point.stoneState", point.stoneState);
+            return;
+        }
+        break;
+      }
+      default:
+      {
+        DDLogError(@"Unknown value %d for property point.region.stoneGroupState", stoneGroupState);
+        return;
+      }
+    }
+    [BoardViewDrawingHelper drawLayer:layerToDraw
+                          withContext:context
+                      centeredAtPoint:point
+                       inTileWithRect:tileRect
+                          withMetrics:self.playViewMetrics];
+  }];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a dictionary that identifies the points whose intersections
 /// are located on this tile, and the markup style that should be used to draw
 /// the territory for these points.
@@ -232,7 +352,7 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 /// value. The value identifies the layer that needs to be drawn at the
 /// intersection.
 // -----------------------------------------------------------------------------
-- (NSMutableDictionary*) calculateDrawingPoints
+- (NSMutableDictionary*) calculateDrawingPointsTerritory
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   GoGame* game = [GoGame sharedGame];
@@ -300,6 +420,52 @@ CGLayerRef inconsistentDotSymbolTerritoryLayer;
 
     NSNumber* territoryLayerTypeAsNumber = [[[NSNumber alloc] initWithInt:territoryLayerType] autorelease];
     [drawingPoints setObject:territoryLayerTypeAsNumber forKey:point.vertex.string];
+  }
+
+  return drawingPoints;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a dictionary that identifies the points whose intersections
+/// are located on this tile, and the stone group state of the region that each
+/// point belongs to.
+///
+/// Dictionary keys are NSString objects that contain the intersection vertex.
+/// The vertex string can be used to get the GoPoint object that corresponds to
+/// the intersection.
+///
+/// Dictionary values are NSNumber objects that store a GoStoneGroupState enum
+/// value.
+// -----------------------------------------------------------------------------
+- (NSMutableDictionary*) calculateDrawingPointsStoneGroupState
+{
+  NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  GoGame* game = [GoGame sharedGame];
+  if (! game.score.scoringEnabled)
+    return drawingPoints;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
+                                                          metrics:self.playViewMetrics];
+
+  // TODO: Currently we always iterate over all points. This could be
+  // optimized: If the tile rect stays the same, we should already know which
+  // points intersect with the tile, so we could fall back on a pre-filtered
+  // list of points. On a 19x19 board this could save us quite a bit of time:
+  // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
+  // on iPad where there are more tiles it is even worse.
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (point = [enumerator nextObject])
+  {
+    if (! point.hasStone)
+      continue;
+    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                                 metrics:self.playViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, stoneRect))
+      continue;
+    enum GoStoneGroupState stoneGroupState = point.region.stoneGroupState;
+    NSNumber* stoneGroupStateAsNumber = [[[NSNumber alloc] initWithInt:stoneGroupState] autorelease];
+    [drawingPoints setObject:stoneGroupStateAsNumber forKey:point.vertex.string];
   }
 
   return drawingPoints;

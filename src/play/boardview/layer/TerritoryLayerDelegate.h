@@ -23,8 +23,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TerritoryLayerDelegate class is responsible for drawing territory
-/// while scoring is in progress.
+/// @brief The TerritoryLayerDelegate class is responsible for drawing
+/// territory, and for marking up stones according to their GoBoardRegion's
+/// @e stoneGroupState property. TerritoryLayerDelegate is drawing only while
+/// scoring is in progress.
 // -----------------------------------------------------------------------------
 @interface BVTerritoryLayerDelegate : BoardViewLayerDelegateBase
 {

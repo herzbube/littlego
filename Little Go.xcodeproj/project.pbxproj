@@ -429,8 +429,6 @@
 		CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */; };
 		CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */; };
 		CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */; };
-		CDEE1A131946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */; };
-		CDEE1A141946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */; };
 		CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
 		CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
 		CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */; };
@@ -969,8 +967,6 @@
 		CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinatesLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfluenceLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfluenceLayerDelegate.m; sourceTree = "<group>"; };
-		CDEE1A111946124600DF2389 /* StoneGroupStateLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoneGroupStateLayerDelegate.h; sourceTree = "<group>"; };
-		CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoneGroupStateLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A151946124E00DF2389 /* TerritoryLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerritoryLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A1919464B7C00DF2389 /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
@@ -1919,8 +1915,6 @@
 				CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */,
 				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
 				CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */,
-				CDEE1A111946124600DF2389 /* StoneGroupStateLayerDelegate.h */,
-				CDEE1A121946124600DF2389 /* StoneGroupStateLayerDelegate.m */,
 				CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */,
 				CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */,
 				CDEE1A151946124E00DF2389 /* TerritoryLayerDelegate.h */,
@@ -2305,7 +2299,6 @@
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
-				CDEE1A131946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
@@ -2588,7 +2581,6 @@
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
 				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,
-				CDEE1A141946124600DF2389 /* StoneGroupStateLayerDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

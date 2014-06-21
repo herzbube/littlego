@@ -23,7 +23,6 @@
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
-#import "layer/StoneGroupStateLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
 #import "../model/PlayViewMetrics.h"
@@ -118,10 +117,6 @@
   layerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
                                                               metrics:metrics
                                                          scoringModel:scoringModel] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVStoneGroupStateLayerDelegate alloc] initWithTileView:self
-                                                                    metrics:metrics
-                                                               scoringModel:scoringModel] autorelease];
   [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
                                                                 metrics:metrics
