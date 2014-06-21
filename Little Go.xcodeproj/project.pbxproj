@@ -421,8 +421,6 @@
 		CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */; };
 		CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */; };
 		CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */; };
-		CDEE19FF194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */; };
-		CDEE1A00194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */; };
 		CDEE1A0319438AE000DF2389 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */; };
 		CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */; };
 		CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A06194391AE00DF2389 /* SymbolsLayerDelegate.m */; };
@@ -963,8 +961,6 @@
 		CDEE19EE19433EAC00DF2389 /* BoardViewLayerDelegateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewLayerDelegateBase.m; sourceTree = "<group>"; };
 		CDEE19EF19433EAC00DF2389 /* GridLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayerDelegate.m; sourceTree = "<group>"; };
-		CDEE19FD194367EB00DF2389 /* StarPointsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StarPointsLayerDelegate.h; sourceTree = "<group>"; };
-		CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarPointsLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StonesLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StonesLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolsLayerDelegate.h; sourceTree = "<group>"; };
@@ -1921,8 +1917,6 @@
 				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
 				CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */,
 				CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */,
-				CDEE19FD194367EB00DF2389 /* StarPointsLayerDelegate.h */,
-				CDEE19FE194367EB00DF2389 /* StarPointsLayerDelegate.m */,
 				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
 				CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */,
 				CDEE1A111946124600DF2389 /* StoneGroupStateLayerDelegate.h */,
@@ -2273,7 +2267,6 @@
 				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
-				CDEE19FF194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
@@ -2591,7 +2584,6 @@
 				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
-				CDEE1A00194367EB00DF2389 /* StarPointsLayerDelegate.m in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,

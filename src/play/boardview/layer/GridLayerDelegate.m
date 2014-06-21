@@ -26,6 +26,9 @@
 #import "../../../go/GoVertex.h"
 
 
+CGLayerRef starPointLayer;
+
+
 @implementation BVGridLayerDelegate
 
 // -----------------------------------------------------------------------------
@@ -39,6 +42,7 @@
   self = [super initWithTileView:tileView metrics:metrics];
   if (! self)
     return nil;
+  starPointLayer = nil;
   return self;
 }
 
@@ -48,7 +52,20 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self invalidateLayer];
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the star point layer.
+// -----------------------------------------------------------------------------
+- (void) invalidateLayer
+{
+  if (starPointLayer)
+  {
+    CGLayerRelease(starPointLayer);
+    starPointLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -63,11 +80,13 @@
       CGRect layerFrame = CGRectZero;
       layerFrame.size = self.playViewMetrics.tileSize;
       self.layer.frame = layerFrame;
+      [self invalidateLayer];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardSizeChanged:
     {
+      [self invalidateLayer];
       self.dirty = true;
       break;
     }
@@ -83,12 +102,20 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! [GoGame sharedGame])
-    return;
-  DDLogVerbose(@"GridLayerDelegate is drawing");
+  if (! starPointLayer)
+    starPointLayer = BVCreateStarPointLayer(context, self.playViewMetrics);
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
                                                           metrics:self.playViewMetrics];
+  [self drawGridLinesWithContext:context inTileRect:tileRect];
+  [self drawStarPointsWithContext:context inTileRect:tileRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawGridLinesWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect
+{
   for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
   {
     CGRect lineRect = [lineRectValue CGRectValue];
@@ -99,6 +126,21 @@
                                                      inTileWithRect:tileRect];
     CGContextSetFillColorWithColor(context, self.playViewMetrics.lineColor.CGColor);
     CGContextFillRect(context, drawingRect);
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawStarPointsWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect
+{
+  for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
+  {
+    [BoardViewDrawingHelper drawLayer:starPointLayer
+                          withContext:context
+                      centeredAtPoint:starPoint
+                       inTileWithRect:tileRect
+                          withMetrics:self.playViewMetrics];
   }
 }
 

@@ -22,7 +22,6 @@
 #import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
-#import "layer/StarPointsLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
 #import "layer/StoneGroupStateLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
@@ -97,9 +96,6 @@
   id<BoardViewLayerDelegate> layerDelegate;
   layerDelegate = [[[BVGridLayerDelegate alloc] initWithTileView:self
                                                          metrics:metrics] autorelease];
-  [self.layerDelegates addObject:layerDelegate];
-  layerDelegate = [[[BVStarPointsLayerDelegate alloc] initWithTileView:self
-                                                               metrics:metrics] autorelease];
   [self.layerDelegates addObject:layerDelegate];
   layerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
                                                                    metrics:metrics] autorelease];
