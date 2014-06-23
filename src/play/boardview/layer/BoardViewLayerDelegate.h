@@ -25,22 +25,24 @@
 // -----------------------------------------------------------------------------
 enum BoardViewLayerDelegateEvent
 {
-  /// @brief Occurs when the Board view is initialized, and when the interface
-  /// orientation changes.
-  BVLDEventRectangleChanged,
+  /// @brief Occurs when the Board view is initialized, when the zoom level
+  /// changes, and when the interface orientation changes.
+  BVLDEventBoardGeometryChanged,
   BVLDEventGoGameStarted,
   BVLDEventBoardSizeChanged,
   BVLDEventBoardPositionChanged,
   BVLDEventNumberOfBoardPositionsChanged,
   BVLDEventMarkLastMoveChanged,
-  /// @brief This event can be treated the same as BVLDEventRectangleChanged
+  /// @brief This event can be treated the same as BVLDEventBoardGeometryChanged
   /// because it fundamentally changes the board geometry.
-  BVLDEventDisplayCoordinatesChanged = BVLDEventRectangleChanged,
+  BVLDEventDisplayCoordinatesChanged = BVLDEventBoardGeometryChanged,
   BVLDEventMoveNumbersPercentageChanged = BVLDEventMarkLastMoveChanged + 1,
   BVLDEventInconsistentTerritoryMarkupTypeChanged,
   /// @brief The event info object that accompanies this event type is a GoPoint
   /// object that identifies the location of the cross-hair center.
   BVLDEventCrossHairChanged,
+  // TODO xxx remove the next two enums; layers are added/removed
+  // dynamically as a result of scoring becoming enabled/disabled
   BVLDEventScoringModeEnabled,
   BVLDEventScoringModeDisabled,
   BVLDEventScoreCalculationEnds,

@@ -75,11 +75,8 @@
 {
   switch (event)
   {
-    case BVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
     {
-      CGRect layerFrame = CGRectZero;
-      layerFrame.size = self.playViewMetrics.tileSize;
-      self.layer.frame = layerFrame;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -119,6 +116,8 @@
       }
       break;
     }
+    // TODO xxx remove the next two cases; the layer is added/removed
+    // dynamically as a result of scoring becoming enabled/disabled
     case BVLDEventScoringModeEnabled:
     case BVLDEventScoringModeDisabled:
     {

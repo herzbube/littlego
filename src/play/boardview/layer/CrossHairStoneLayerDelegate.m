@@ -124,11 +124,8 @@ CGLayerRef crossHairStoneLayer;
 {
   switch (event)
   {
-    case BVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
     {
-      CGRect layerFrame = CGRectZero;
-      layerFrame.size = self.playViewMetrics.tileSize;
-      self.layer.frame = layerFrame;
       self.crossHairPoint = nil;
       [self invalidateLayers];
       [self invalidateDrawingRect];

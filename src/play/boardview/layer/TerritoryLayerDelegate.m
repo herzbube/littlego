@@ -154,11 +154,8 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 {
   switch (event)
   {
-    case BVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
     {
-      CGRect layerFrame = CGRectZero;
-      layerFrame.size = self.playViewMetrics.tileSize;
-      self.layer.frame = layerFrame;
       [self invalidateLayers];
       self.drawingPointsTerritory = [self calculateDrawingPointsTerritory];
       self.drawingPointsStoneGroupState = [self calculateDrawingPointsStoneGroupState];

@@ -93,11 +93,8 @@ CGLayerRef whiteStoneLayer;
 {
   switch (event)
   {
-    case BVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
     {
-      CGRect layerFrame = CGRectZero;
-      layerFrame.size = self.playViewMetrics.tileSize;
-      self.layer.frame = layerFrame;
       [self invalidateLayers];
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
@@ -125,7 +122,9 @@ CGLayerRef whiteStoneLayer;
       if (! [oldDrawingPoints isEqualToDictionary:newDrawingPoints])
       {
         self.drawingPoints = newDrawingPoints;
-        // Re-draw the entire layer. Further optimization could
+        // Re-draw the entire layer. Further optimization could be made here
+        // by only drawing that rectangle which is actually affected by
+        // self.drawingPoints.
         self.dirty = true;
       }
       break;

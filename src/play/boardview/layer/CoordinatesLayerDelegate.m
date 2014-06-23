@@ -71,11 +71,8 @@
 {
   switch (event)
   {
-    case BVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
     {
-      CGRect layerFrame = CGRectZero;
-      layerFrame.size = self.playViewMetrics.tileSize;
-      self.layer.frame = layerFrame;
       self.dirty = true;
       break;
     }

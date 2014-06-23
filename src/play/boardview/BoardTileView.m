@@ -304,7 +304,7 @@
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   [self notifyLayerDelegates:BVLDEventGoGameStarted eventInfo:nil];
   // todo xxx we should not need that, but layer delegates still rely on it
-  [self notifyLayerDelegates:BVLDEventRectangleChanged eventInfo:nil];
+  [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 
@@ -395,7 +395,7 @@
       // Notify Auto Layout that our intrinsic size changed. This provokes a
       // frame change.
       [self invalidateIntrinsicContentSize];
-      [self notifyLayerDelegates:BVLDEventRectangleChanged eventInfo:nil];
+      [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"boardSize"])
@@ -448,7 +448,7 @@
 
 - (void) redraw
 {
-  [self notifyLayerDelegates:BVLDEventRectangleChanged eventInfo:nil];
+  [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 
