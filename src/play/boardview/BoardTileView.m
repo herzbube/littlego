@@ -83,6 +83,8 @@
   [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -104,12 +106,10 @@
 
   self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTileView:self
                                                                   metrics:metrics] autorelease];
-  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
-                                                                                      metrics:metrics] autorelease];
+  self.crossHairLinesLayerDelegate = nil;
   self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTileView:self
                                                                       metrics:metrics] autorelease];
-  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
-                                                                                      metrics:metrics] autorelease];
+  self.crossHairStoneLayerDelegate = nil;
   [self createOrResetInfluenceLayer];
   [self createOrResetSymbolsLayer];
   [self createOrResetTerritoryLayer];
@@ -178,6 +178,21 @@
   }
 }
 
+- (void) createCrossHairLayers
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
+                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
+                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+}
+
+- (void) removeCrossHairLayers
+{
+  self.crossHairLinesLayerDelegate = nil;
+  self.crossHairStoneLayerDelegate = nil;
+}
+
 - (void) updateLayers
 {
   NSArray* oldLayerDelegates = self.layerDelegates;
@@ -186,9 +201,11 @@
   // The order in which layer delegates are added to the array is important: It
   // determines the order in which layers are stacked.
   [newLayerDelegates addObject:self.gridLayerDelegate];
-  [newLayerDelegates addObject:self.crossHairLinesLayerDelegate];
+  if (self.crossHairLinesLayerDelegate)
+    [newLayerDelegates addObject:self.crossHairLinesLayerDelegate];
   [newLayerDelegates addObject:self.stonesLayerDelegate];
-  [newLayerDelegates addObject:self.crossHairStoneLayerDelegate];
+  if (self.crossHairStoneLayerDelegate)
+    [newLayerDelegates addObject:self.crossHairStoneLayerDelegate];
   if (self.influenceLayerDelegate)
     [newLayerDelegates addObject:self.influenceLayerDelegate];
   if (self.symbolsLayerDelegate)
@@ -321,6 +338,18 @@
 {
   [self notifyLayerDelegates:BVLDEventTerritoryStatisticsChanged eventInfo:nil];
   [self delayedDrawLayers];
+}
+
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  [self createCrossHairLayers];
+  [self updateLayers];
+}
+
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+{
+  [self removeCrossHairLayers];
+  [self updateLayers];
 }
 
 - (void) longRunningActionEnds:(NSNotification*)notification

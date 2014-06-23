@@ -192,6 +192,7 @@
   {
     case UIGestureRecognizerStateBegan:
     {
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
       if (useTiling)
         [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       else
@@ -208,6 +209,7 @@
     }
     case UIGestureRecognizerStateEnded:
     {
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       if (useTiling)
         [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       else
@@ -219,10 +221,11 @@
       }
       break;
     }
+    // Occurs, for instance, if an alert is displayed while a gesture is
+    // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
-      // Occurs, for instance, if an alert is displayed while a gesture is
-      // being handled, or if the gesture recognizer was disabled.
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       if (useTiling)
         [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       else
