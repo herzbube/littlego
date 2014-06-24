@@ -85,7 +85,15 @@
   self.boardView.minimumZoomScale = 1.0f;
   self.boardView.maximumZoomScale = 3.0f;
 
-  self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:woodenBackgroundImageResource]];
+  // The background image is quite large, so we don't use UIImage namedImage:()
+  // because that method caches the image in the background. We don't need
+  // caching because we only load the image once, so not using namedImage:()
+  // saves us quite a bit of valuable memory.
+  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
+                                                        ofType:nil];
+  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
+  UIImage* image = [UIImage imageWithData:imageData];
+  self.view.backgroundColor = [UIColor colorWithPatternImage:image];
   self.boardView.backgroundColor = [UIColor clearColor];
 
   self.panGestureController.boardView = self.boardView;
