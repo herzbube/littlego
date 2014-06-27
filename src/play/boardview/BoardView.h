@@ -16,36 +16,19 @@
 
 
 // Project includes
+#import "TiledScrollView.h"
 #import "PlayViewIntersection.h"
 
 // Forward declarations
-@class BoardTileView;
-@class BoardView;
 @class GoPoint;
-
-
-// -----------------------------------------------------------------------------
-/// @brief The data source of BoardView must adopt the BoardViewDataSource
-/// protocol.
-// -----------------------------------------------------------------------------
-@protocol BoardViewDataSource <NSObject>
-- (BoardTileView*) boardView:(BoardView*)boardView boardTileViewForRow:(int)row column:(int)column;
-@end
 
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardView class xxx
 // -----------------------------------------------------------------------------
-@interface BoardView : UIScrollView
+@interface BoardView : TiledScrollView
 {
 }
-
-- (BoardTileView*) dequeueReusableTile;
-- (void) reloadData;
-
-@property(nonatomic, assign) id<BoardViewDataSource> dataSource;
-@property(nonatomic, retain, readonly) UIView* tileContainerView;
-@property(nonatomic, assign) CGSize tileSize;
 
 - (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;

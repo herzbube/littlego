@@ -17,7 +17,7 @@
 
 // Project includes
 #import "BoardViewDrawingHelper.h"
-#import "../BoardTileView.h"
+#import "../Tile.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
@@ -341,18 +341,18 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by @a tileView on the "canvas", i.e.
-/// the area covered by the entire board view. The origin is in the upper-left
+/// @brief Returns the rectangle occupied by @a tile on the "canvas", i.e. the
+/// area covered by the entire board view. The origin is in the upper-left
 /// corner.
 // -----------------------------------------------------------------------------
-+ (CGRect) canvasRectForTileView:(BoardTileView*)tileView
-                         metrics:(PlayViewMetrics*)metrics
++ (CGRect) canvasRectForTile:(id<Tile>)tile
+                     metrics:(PlayViewMetrics*)metrics
 {
   CGRect canvasRect = CGRectZero;
   canvasRect.size = metrics.tileSize;
   // The tile with row/column = 0/0 is in the upper-left corner
-  canvasRect.origin.x = tileView.column * canvasRect.size.width;
-  canvasRect.origin.y = tileView.row * canvasRect.size.height;
+  canvasRect.origin.x = tile.column * canvasRect.size.width;
+  canvasRect.origin.y = tile.row * canvasRect.size.height;
   return canvasRect;
 }
 

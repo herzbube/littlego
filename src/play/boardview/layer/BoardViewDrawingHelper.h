@@ -16,12 +16,13 @@
 
 
 // Forward declarations
-@class BoardTileView;
 @class GoPoint;
 @class PlayViewMetrics;
+@protocol Tile;
 
 /// @brief Enumerates all possible layer types to mark up territory
-// todo xxx move this enum somewhere else
+// todo xxx move this enum somewhere else. also rename the enum to something
+// like TerritoryMarkupStyle
 enum TerritoryLayerType
 {
   TerritoryLayerTypeBlack,
@@ -80,8 +81,8 @@ CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType 
      inTileWithRect:(CGRect)tileRect
         withMetrics:(PlayViewMetrics*)metrics;
 
-+ (CGRect) canvasRectForTileView:(BoardTileView*)tileView
-                         metrics:(PlayViewMetrics*)metrics;
++ (CGRect) canvasRectForTile:(id<Tile>)tile
+                     metrics:(PlayViewMetrics*)metrics;
 + (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
                              metrics:(PlayViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer

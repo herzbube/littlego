@@ -15,15 +15,13 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "BoardView.h"
-
-
 // -----------------------------------------------------------------------------
-/// @brief The BoardViewController class xxx
+/// @brief The Tile protocol defines the interface that tile views displayed
+/// by TiledScrollView must implement.
+///
+/// The tile with row/column = 0/0 is in the upper-left corner.
 // -----------------------------------------------------------------------------
-@interface BoardViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
-{
-}
-
+@protocol Tile <NSObject>
+@property(nonatomic, assign) int row;
+@property(nonatomic, assign) int column;
 @end

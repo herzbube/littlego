@@ -52,13 +52,13 @@ CGLayerRef whiteLastMoveLayer;
 ///
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-          playViewModel:(PlayViewModel*)playViewModel
-     boardPositionModel:(BoardPositionModel*)boardPositionmodel
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+      playViewModel:(PlayViewModel*)playViewModel
+ boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   _playViewModel = playViewModel;
@@ -160,8 +160,8 @@ CGLayerRef whiteLastMoveLayer;
   if (! whiteLastMoveLayer)
     whiteLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
 
-  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                                metrics:self.playViewMetrics];
+  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                            metrics:self.playViewMetrics];
 
   if ([self shouldDisplayMoveNumbers])
   {

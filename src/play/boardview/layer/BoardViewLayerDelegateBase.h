@@ -19,7 +19,6 @@
 #import "BoardViewLayerDelegate.h"
 
 // Forward declarations
-@class BoardTileView;
 @class PlayViewMetrics;
 
 
@@ -34,11 +33,10 @@
 ///
 /// In addition, BoardViewLayerDelegateBase provides the following simple
 /// implementation of the BoardViewLayerDelegate protocol:
-/// - Synthesizes the properties @e layer and @e tileView (because properties
+/// - Synthesizes the properties @e layer and @e tile (because properties
 ///   declared in protocols are not auto-synthesized)
-/// - In its initializer, creates a new CALayer object, adds it as a sublayer
-///   to @e tileView, and configures the layer object to use the
-///   BoardViewLayerDelegateBase as its delegate.
+/// - In its initializer, creates a new CALayer object and configures that
+///   object to use the BoardViewLayerDelegateBase as its delegate.
 /// - Provides an empty "do-nothing" implementation of notify:eventInfo:().
 ///   A concrete delegate subclass must override notify:eventInfo:(), otherwise
 ///   an instance of the concrete delegate class won't react to any events.
@@ -53,7 +51,7 @@
 {
 }
 
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics;
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics;
 
 /// @name BoardViewLayerDelegate methods
 //@{

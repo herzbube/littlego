@@ -18,6 +18,7 @@
 // Project includes
 #import "CoordinatesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
+#import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
@@ -42,12 +43,12 @@
 ///
 /// @note This is the designated initializer of CoordinatesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-                   axis:(enum CoordinateLabelAxis)axis
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+               axis:(enum CoordinateLabelAxis)axis
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
@@ -100,8 +101,8 @@
                self.coordinateLabelAxis,
                coordinateLabelFont.pointSize);
 
-  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                                metrics:self.playViewMetrics];
+  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                            metrics:self.playViewMetrics];
 
   NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
                                     NSForegroundColorAttributeName : self.textColor,

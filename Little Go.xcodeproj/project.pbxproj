@@ -326,6 +326,10 @@
 		CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */; };
 		CDACF1AC1912DCC600A0DAD7 /* CoordinateLabelsView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF1AB1912DCC600A0DAD7 /* CoordinateLabelsView.m */; };
 		CDACF1AD1912DCC600A0DAD7 /* CoordinateLabelsView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF1AB1912DCC600A0DAD7 /* CoordinateLabelsView.m */; };
+		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
+		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
+		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
+		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FC152B6C62003B2BBF /* 42-info.png */; };
 		CDB0A2FF152B6C62003B2BBF /* 42-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */; };
 		CDB0A303152B6D53003B2BBF /* 108-badge.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A301152B6D53003B2BBF /* 108-badge.png */; };
@@ -817,6 +821,11 @@
 		CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoLayoutUtility.m; sourceTree = "<group>"; };
 		CDACF1AA1912DCC600A0DAD7 /* CoordinateLabelsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsView.h; sourceTree = "<group>"; };
 		CDACF1AB1912DCC600A0DAD7 /* CoordinateLabelsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsView.m; sourceTree = "<group>"; };
+		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
+		CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TiledScrollView.m; sourceTree = "<group>"; };
+		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
+		CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsTileView.m; sourceTree = "<group>"; };
+		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		CDB0A2FC152B6C62003B2BBF /* 42-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info.png"; sourceTree = "<group>"; };
 		CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info@2x.png"; sourceTree = "<group>"; };
 		CDB0A301152B6D53003B2BBF /* 108-badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "108-badge.png"; sourceTree = "<group>"; };
@@ -1891,6 +1900,11 @@
 				CDEE19E619433EAC00DF2389 /* BoardView.m */,
 				CDEE19E719433EAC00DF2389 /* BoardViewController.h */,
 				CDEE19E819433EAC00DF2389 /* BoardViewController.m */,
+				CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */,
+				CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */,
+				CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */,
+				CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */,
+				CDAFAE2B195DB78200EF84A9 /* Tile.h */,
 			);
 			path = boardview;
 			sourceTree = "<group>";
@@ -2253,6 +2267,7 @@
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
+				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
@@ -2329,6 +2344,7 @@
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
+				CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */,
@@ -2395,6 +2411,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
@@ -2403,6 +2420,7 @@
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
+				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,

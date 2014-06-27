@@ -36,10 +36,10 @@ CGLayerRef starPointLayer;
 ///
 /// @note This is the designated initializer of GridLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   starPointLayer = nil;
@@ -102,8 +102,8 @@ CGLayerRef starPointLayer;
   if (! starPointLayer)
     starPointLayer = BVCreateStarPointLayer(context, self.playViewMetrics);
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   [self drawGridLinesWithContext:context inTileRect:tileRect];
   [self drawStarPointsWithContext:context inTileRect:tileRect];
 }

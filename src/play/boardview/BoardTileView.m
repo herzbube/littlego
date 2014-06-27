@@ -46,13 +46,18 @@
 @property(nonatomic, assign) BVInfluenceLayerDelegate* influenceLayerDelegate;
 @property(nonatomic, assign) BVSymbolsLayerDelegate* symbolsLayerDelegate;
 @property(nonatomic, assign) BVTerritoryLayerDelegate* territoryLayerDelegate;
-@property(nonatomic, assign) BVCoordinatesLayerDelegate* letterAxisCoordinatesLayerDelegate;
-@property(nonatomic, assign) BVCoordinatesLayerDelegate* numberAxisCoordinatesLayerDelegate;
 //@}
 @end
 
 
 @implementation BoardTileView
+
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize these properties that are declared in the
+// Tile protocol.
+@synthesize row = _row;
+@synthesize column = _column;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardView object with frame rectangle @a rect.
@@ -104,21 +109,15 @@
     [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   }
 
-  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTileView:self
-                                                                  metrics:metrics] autorelease];
+  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
+                                                              metrics:metrics] autorelease];
   self.crossHairLinesLayerDelegate = nil;
-  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTileView:self
-                                                                      metrics:metrics] autorelease];
+  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
+                                                                  metrics:metrics] autorelease];
   self.crossHairStoneLayerDelegate = nil;
   [self createOrResetInfluenceLayer];
   [self createOrResetSymbolsLayer];
   [self createOrResetTerritoryLayer];
-  self.letterAxisCoordinatesLayerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
-                                                                                          metrics:metrics
-                                                                                             axis:CoordinateLabelAxisLetter] autorelease];
-  self.numberAxisCoordinatesLayerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTileView:self
-                                                                                          metrics:metrics
-                                                                                             axis:CoordinateLabelAxisNumber] autorelease];
 
   [self updateLayers];
 
@@ -132,13 +131,13 @@
   PlayViewModel* playViewModel = appDelegate.playViewModel;
   if (playViewModel.displayPlayerInfluence)
   {
-    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTileView:self
-                                                                              metrics:appDelegate.playViewMetrics
-                                                                        playViewModel:playViewModel] autorelease];
+    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                    playViewModel:playViewModel] autorelease];
   }
   else
   {
-    self.influenceLayerDelegate = 0;
+    self.influenceLayerDelegate = nil;
   }
 }
 
@@ -148,15 +147,15 @@
 
   if ([GoGame sharedGame].score.scoringEnabled)
   {
-    self.symbolsLayerDelegate = 0;
+    self.symbolsLayerDelegate = nil;
   }
   else
   {
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTileView:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                    playViewModel:appDelegate.playViewModel
-                                                               boardPositionModel:appDelegate.boardPositionModel] autorelease];
+    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
+                                                                      metrics:appDelegate.playViewMetrics
+                                                                playViewModel:appDelegate.playViewModel
+                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
 
   }
 }
@@ -168,23 +167,23 @@
   if ([GoGame sharedGame].score.scoringEnabled)
   {
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTileView:self
-                                                                              metrics:appDelegate.playViewMetrics
-                                                                         scoringModel:appDelegate.scoringModel] autorelease];
+    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                     scoringModel:appDelegate.scoringModel] autorelease];
   }
   else
   {
-    self.territoryLayerDelegate = 0;
+    self.territoryLayerDelegate = nil;
   }
 }
 
 - (void) createCrossHairLayers
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTileView:self
-                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
-  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTileView:self
-                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
+                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
+  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
+                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
 }
 
 - (void) removeCrossHairLayers
@@ -212,8 +211,6 @@
     [newLayerDelegates addObject:self.symbolsLayerDelegate];
   if (self.territoryLayerDelegate)
     [newLayerDelegates addObject:self.territoryLayerDelegate];
-  [newLayerDelegates addObject:self.letterAxisCoordinatesLayerDelegate];
-  [newLayerDelegates addObject:self.numberAxisCoordinatesLayerDelegate];
 
   // Removing/adding layers does not cause them to redraw. Only layers that
   // are newly created are redrawn.
@@ -392,9 +389,6 @@
   {
     if ([keyPath isEqualToString:@"rect"])
     {
-      // Notify Auto Layout that our intrinsic size changed. This provokes a
-      // frame change.
-      [self invalidateIntrinsicContentSize];
       [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
@@ -405,6 +399,9 @@
     }
     else if ([keyPath isEqualToString:@"displayCoordinates"])
     {
+      // Even though none of our layers draws coordinate labels, we still need
+      // to send a notification because showing/hiding coordinates fundamentally
+      // changes the geometry of the board
       [self notifyLayerDelegates:BVLDEventDisplayCoordinatesChanged eventInfo:nil];
       [self delayedDrawLayers];
     }

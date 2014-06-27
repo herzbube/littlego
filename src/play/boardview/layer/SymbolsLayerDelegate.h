@@ -31,9 +31,9 @@
 {
 }
 
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-          playViewModel:(PlayViewModel*)playViewModel
-     boardPositionModel:(BoardPositionModel*)boardPositionmodel;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+      playViewModel:(PlayViewModel*)playViewModel
+ boardPositionModel:(BoardPositionModel*)boardPositionmodel;
 
 @end

@@ -16,7 +16,7 @@
 
 
 // Forward declarations
-@class BoardTileView;
+@protocol Tile;
 
 
 // -----------------------------------------------------------------------------
@@ -89,8 +89,7 @@ enum BoardViewLayerDelegateEvent
 /// @brief The layer managed by the delegate.
 @property(nonatomic, retain) CALayer* layer;
 
-/// @brief The tile view that the layer belongs to.
-@property(nonatomic, assign) BoardTileView* tileView;
+/// @brief The tile that the layer is drawing.
+@property(nonatomic, assign) id<Tile> tile;
 
 @end
-

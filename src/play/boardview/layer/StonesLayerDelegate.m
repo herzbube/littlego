@@ -47,10 +47,10 @@ CGLayerRef whiteStoneLayer;
 ///
 /// @note This is the designated initializer of StonesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
@@ -146,8 +146,8 @@ CGLayerRef whiteStoneLayer;
   if (! whiteStoneLayer)
     whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop){
     // Ignore stoneStateAsNumber, get the current values directly from the
@@ -184,8 +184,8 @@ CGLayerRef whiteStoneLayer;
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which

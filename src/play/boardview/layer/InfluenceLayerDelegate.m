@@ -45,12 +45,12 @@
 ///
 /// @note This is the designated initializer of InfluenceLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-          playViewModel:(PlayViewModel*)playViewModel
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+      playViewModel:(PlayViewModel*)playViewModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.playViewModel = playViewModel;
@@ -137,8 +137,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* influenceScoreAsNumber, BOOL* stop){
     GoPoint* point = [board pointAtVertex:vertexString];
@@ -254,8 +254,8 @@
   if (game.score.scoringEnabled)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which
   // points intersect with the tile, so we could fall back on a pre-filtered

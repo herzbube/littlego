@@ -32,8 +32,8 @@
 {
 }
 
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-           scoringModel:(ScoringModel*)scoringModel;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+       scoringModel:(ScoringModel*)scoringModel;
 
 @end

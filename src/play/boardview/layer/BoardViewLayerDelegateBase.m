@@ -17,7 +17,6 @@
 
 // Project includes
 #import "BoardViewLayerDelegateBase.h"
-#import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
 
 
@@ -27,7 +26,7 @@
 // have to explicitly synthesize these properties that are declared in the
 // BoardViewLayerDelegate protocol.
 @synthesize layer = _layer;
-@synthesize tileView = _tileView;
+@synthesize tile = _tile;
 
 
 // -----------------------------------------------------------------------------
@@ -36,7 +35,7 @@
 ///
 /// @note This is the designated initializer of BoardViewLayerDelegateBase.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -44,7 +43,7 @@
     return nil;
 
   self.layer = [CALayer layer];
-  self.tileView = tileView;
+  self.tile = tile;
   self.playViewMetrics = metrics;
   self.dirty = false;
 
@@ -73,7 +72,7 @@
 - (void) dealloc
 {
   self.layer = nil;
-  self.tileView = nil;
+  self.tile = nil;
   self.playViewMetrics = nil;
   [super dealloc];
 }

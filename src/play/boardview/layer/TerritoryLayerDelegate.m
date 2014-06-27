@@ -63,12 +63,12 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 ///
 /// @note This is the designated initializer of TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-           scoringModel:(ScoringModel*)scoringModel
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+       scoringModel:(ScoringModel*)scoringModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.scoringModel = scoringModel;
@@ -217,8 +217,8 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
 
   // Make sure that layers are created before drawing methods that use them are
@@ -356,8 +356,8 @@ CGLayerRef whiteSekiStoneSymbolLayer;
   if (! game.score.scoringEnabled)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
 
   // TODO: Currently we always iterate over all points. This could be
@@ -441,8 +441,8 @@ CGLayerRef whiteSekiStoneSymbolLayer;
   if (! game.score.scoringEnabled)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which

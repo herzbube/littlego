@@ -46,10 +46,10 @@
 ///
 /// @note This is the designated initializer of CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.drawingRectangles = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
@@ -182,8 +182,8 @@
   if (! crossHairPoint)
     return drawingRectangles;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:crossHairPoint];
 
   for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)

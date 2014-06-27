@@ -28,9 +28,9 @@
 {
 }
 
-- (id) initWithTileView:(BoardTileView*)tileView
-                metrics:(PlayViewMetrics*)metrics
-                   axis:(enum CoordinateLabelAxis)axis;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+               axis:(enum CoordinateLabelAxis)axis;
 
 /// @brief The axis that CoordinatesLayerDelegate is drawing.
 @property(nonatomic, assign) enum CoordinateLabelAxis coordinateLabelAxis;

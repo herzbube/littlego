@@ -16,14 +16,20 @@
 
 
 // Project includes
-#import "BoardView.h"
+#import "Tile.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardViewController class xxx
+/// @brief The CoordinateLabelsTileView class xxx
+///
+/// The tile with row/column = 0/0 is in the upper-left corner
 // -----------------------------------------------------------------------------
-@interface BoardViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
+@interface CoordinateLabelsTileView : UIView <Tile>
 {
 }
+
+- (id) initWithFrame:(CGRect)rect axis:(enum CoordinateLabelAxis)axis;
+
+@property(nonatomic, assign) enum CoordinateLabelAxis coordinateLabelAxis;
 
 @end

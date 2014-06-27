@@ -53,10 +53,10 @@ CGLayerRef crossHairStoneLayer;
 ///
 /// @note This is the designated initializer of CrossHairStoneLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTileView:(BoardTileView*)tileView metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
-  self = [super initWithTileView:tileView metrics:metrics];
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.crossHairPoint = nil;
@@ -224,8 +224,8 @@ CGLayerRef crossHairStoneLayer;
       stoneLayer = whiteStoneLayer;
   }
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   [BoardViewDrawingHelper drawLayer:stoneLayer
                         withContext:context
                     centeredAtPoint:self.crossHairPoint
@@ -243,8 +243,8 @@ CGLayerRef crossHairStoneLayer;
 {
   if (! crossHairPoint)
     return CGRectZero;
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTileView:self.tileView
-                                                          metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:crossHairPoint
                                                                metrics:self.playViewMetrics];
   CGRect drawingRect = CGRectIntersection(tileRect, stoneRect);

@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "Tile.h"
 #import "layer/BoardViewLayerDelegate.h"
 
 
@@ -24,14 +25,13 @@
 ///
 /// The tile with row/column = 0/0 is in the upper-left corner
 // -----------------------------------------------------------------------------
-@interface BoardTileView : UIView
+@interface BoardTileView : UIView <Tile>
 {
 }
 
+- (id) initWithFrame:(CGRect)rect;
+
 - (void) notifyLayerDelegates:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
 - (void) delayedDrawLayers;
-
-@property(nonatomic, assign) int row;
-@property(nonatomic, assign) int column;
 
 @end
