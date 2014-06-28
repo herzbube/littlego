@@ -25,7 +25,6 @@
 #import "../gesture/TapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/PlayViewMetrics.h"
-#import "../model/PlayViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
@@ -37,9 +36,11 @@
 /// @brief Class extension with private properties for BoardViewController.
 // -----------------------------------------------------------------------------
 @interface BoardViewController()
+@property(nonatomic, assign) bool viewDidLayoutSubviewsInProgress;
 @property(nonatomic, retain) BoardView* boardView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsLetterView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
+@property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
 @property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
@@ -62,9 +63,11 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.viewDidLayoutSubviewsInProgress = false;
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
+  self.coordinateLabelsViewConstraints = nil;
   [self setupChildControllers];
   return self;
 }
@@ -75,6 +78,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  [self removeCoordinateLabelsViewConstraints];
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
@@ -111,6 +115,8 @@
   [self configureViews];
   [self configureControllers];
   [self setupNotificationResponders];
+
+  [self createOrDeallocCoordinateLabelsViews];
 }
 
 // -----------------------------------------------------------------------------
@@ -119,8 +125,6 @@
 - (void) createSubviews
 {
   self.boardView = [[[BoardView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
-  self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -129,8 +133,6 @@
 - (void) setupViewHierarchy
 {
   [self.view addSubview:self.boardView];
-  [self.view addSubview:self.coordinateLabelsLetterView];
-  [self.view addSubview:self.coordinateLabelsNumberView];
 }
 
 // -----------------------------------------------------------------------------
@@ -138,26 +140,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-
   self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardView];
-
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.coordinateLabelsLetterView, @"coordinateLabelsLetterView",
-                                   self.coordinateLabelsNumberView, @"coordinateLabelsNumberView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[coordinateLabelsLetterView]-0-|",
-                            [NSString stringWithFormat:@"V:|-0-[coordinateLabelsLetterView(==%f)]", metrics.tileSize.height],
-                            @"V:|-0-[coordinateLabelsNumberView]-0-|",
-                            [NSString stringWithFormat:@"H:|-0-[coordinateLabelsNumberView(==%f)]", metrics.tileSize.width],
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -175,8 +159,6 @@
   UIImage* image = [UIImage imageWithData:imageData];
   self.view.backgroundColor = [UIColor colorWithPatternImage:image];
 
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-
   self.boardView.backgroundColor = [UIColor clearColor];
   // TODO xxx should this really be YES? the no-tiling implementation used NO
   self.boardView.bouncesZoom = YES;
@@ -184,19 +166,7 @@
   self.boardView.minimumZoomScale = 1.0f;
   self.boardView.maximumZoomScale = 3.0f;
   self.boardView.dataSource = self;
-  self.boardView.tileSize = metrics.tileSize;
-
-  self.coordinateLabelsLetterView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsLetterView.dataSource = self;
-  self.coordinateLabelsLetterView.tileSize = metrics.tileSize;
-  self.coordinateLabelsLetterView.userInteractionEnabled = NO;
-
-  self.coordinateLabelsNumberView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsNumberView.dataSource = self;
-  self.coordinateLabelsNumberView.tileSize = metrics.tileSize;
-  self.coordinateLabelsNumberView.userInteractionEnabled = NO;
-
-  [self updateCoordinateLabelsVisibleState];
+  self.boardView.tileSize = [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -220,11 +190,13 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
+  self.viewDidLayoutSubviewsInProgress = true;
   // First prepare the new board geometry. This triggers a re-draw of all tiles.
   [self updatePlayViewMetricsRect];
   // Now prepare all scroll views with the new content size. The content size
   // is taken from the values in PlayViewMetrics.
   [self updateContentSize];
+  self.viewDidLayoutSubviewsInProgress = false;
 }
 
 #pragma mark - Setup/remove notification responders
@@ -234,8 +206,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  [playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -243,8 +217,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  [playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  [metrics removeObserver:self forKeyPath:@"rect"];
+  [metrics removeObserver:self forKeyPath:@"boardSize"];
+  [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -349,26 +325,132 @@
   [self updateCoordinateLabelsVisibleState];
 }
 
-#pragma mark - Private helpers
+#pragma mark - Manage coordinate labels views
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Creates or deallocates coordinate labels views depending on the value
+/// of the "display coordinates" user preference, and depending on whether the
+/// current board geometry allows coordinate labels to be displayed.
+///
+/// On devices with small screens, coordinate labels are not displayed for
+/// large board sizes, unless the board is zoomed in.
 // -----------------------------------------------------------------------------
-- (void) updateCoordinateLabelsVisibleState
+- (void) createOrDeallocCoordinateLabelsViews
 {
-  BOOL hidden;
-  if (self.boardView.zooming)
+  if ([self coordinateLabelsViewsShouldExist])
   {
-    hidden = YES;
+    if ([self coordinateLabelsViewsExist])
+      return;
+    self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
+    self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.view addSubview:self.coordinateLabelsLetterView];
+    [self.view addSubview:self.coordinateLabelsNumberView];
+    [self addCoordinateLabelsViewConstraints];
+    [self configureCoordinateLabelsView:self.coordinateLabelsLetterView];
+    [self configureCoordinateLabelsView:self.coordinateLabelsNumberView];
   }
   else
   {
-    PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-    hidden = playViewModel.displayCoordinates ? NO : YES;
+    if (! [self coordinateLabelsViewsExist])
+      return;
+    [self removeCoordinateLabelsViewConstraints];
+    [self.coordinateLabelsLetterView removeFromSuperview];
+    [self.coordinateLabelsNumberView removeFromSuperview];
+    self.coordinateLabelsLetterView = nil;
+    self.coordinateLabelsNumberView = nil;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if coordinate labels views should exist.
+// -----------------------------------------------------------------------------
+- (bool) coordinateLabelsViewsShouldExist
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  if (! metrics.displayCoordinates)
+    return false;
+  return (metrics.coordinateLabelStripWidth > 0.0f);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if coordinate labels views currently exist.
+// -----------------------------------------------------------------------------
+- (bool) coordinateLabelsViewsExist
+{
+  return (self.coordinateLabelsLetterView != nil);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and adds auto layout constraints for layouting coordinate
+/// labels views.
+// -----------------------------------------------------------------------------
+- (void) addCoordinateLabelsViewConstraints
+{
+  self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsViewConstraints = [self coordinateLabelsViewConstraints];
+  [self.view addConstraints:self.coordinateLabelsViewConstraints];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes and deallocates auto layout constraints for layouting
+/// coordinate labels views.
+// -----------------------------------------------------------------------------
+- (void) removeCoordinateLabelsViewConstraints
+{
+  if (! self.coordinateLabelsViewConstraints)
+    return;
+  [self.view removeConstraints:self.coordinateLabelsViewConstraints];
+  self.coordinateLabelsViewConstraints = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array of auto layout constraints for layouting coordinate
+/// labels views.
+// -----------------------------------------------------------------------------
+- (NSArray*) coordinateLabelsViewConstraints
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  return [NSArray arrayWithObjects:
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:metrics.tileSize.height],
+
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsNumberView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsNumberView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:metrics.tileSize.width],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsNumberView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+          [NSLayoutConstraint constraintWithItem:self.coordinateLabelsNumberView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1 constant:0],
+          nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the specified coordinate labels view after it was created.
+// -----------------------------------------------------------------------------
+- (void) configureCoordinateLabelsView:(TiledScrollView*)coordinateLabelsView
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  coordinateLabelsView.backgroundColor = [UIColor clearColor];
+  coordinateLabelsView.dataSource = self;
+  coordinateLabelsView.tileSize = metrics.tileSize;
+  coordinateLabelsView.userInteractionEnabled = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Hides coordinate labels views while a zoom operation is in progress.
+/// Shows the views while no zooming is in progress. Does nothing if the views
+/// currently do not exist.
+// -----------------------------------------------------------------------------
+- (void) updateCoordinateLabelsVisibleState
+{
+  if (! [self coordinateLabelsViewsExist])
+    return;
+  BOOL hidden = self.boardView.zooming;
   self.coordinateLabelsLetterView.hidden = hidden;
   self.coordinateLabelsNumberView.hidden = hidden;
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
@@ -433,12 +515,34 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  if (object == playViewModel)
+  if (object == [ApplicationDelegate sharedDelegate].playViewMetrics)
   {
-    if ([keyPath isEqualToString:@"displayCoordinates"])
+    if ([keyPath isEqualToString:@"rect"] ||
+        [keyPath isEqualToString:@"boardSize"] ||
+        [keyPath isEqualToString:@"displayCoordinates"])
     {
-      [self updateCoordinateLabelsVisibleState];
+      // Coordinate labels views depend on the coordinate label strip width,
+      // which may change significantly when the board geometry changes (rect
+      // and boardSize properties). Obviously, the displayCoordinates property
+      // is als important.
+      if (self.viewDidLayoutSubviewsInProgress)
+      {
+        // UIKit sometimes crashes if we add coordinate labels while a layouting
+        // cycle is in progress. The crash happens if 1) the app starts up and
+        // initially displays some other than the Play tab, then 2) the user
+        // switches to the play tab. At this moment viewDidLayoutSubviews is
+        // executed, it invokes updatePlayViewMetricsRect, which in turn
+        // triggers this KVO observer. If we now add coordinate labels, the app
+        // crashes. The exact reason for the crash is unknown, but probable
+        // causes are either adding subviews, or adding constraints, in the
+        // middle of a layouting cycle. The workaround is to add a bit of
+        // asynchrony.
+        [self performSelector:@selector(createOrDeallocCoordinateLabelsViews) withObject:nil afterDelay:0];
+      }
+      else
+      {
+        [self createOrDeallocCoordinateLabelsViews];
+      }
     }
   }
 }
