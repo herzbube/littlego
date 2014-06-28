@@ -24,10 +24,11 @@
 #import "../gesture/TapGestureController.h"
 #import "../model/PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../utility/UIColorAdditions.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../ui/AutoLayoutUtility.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -112,20 +113,9 @@
 // -----------------------------------------------------------------------------
 - (void) createSubviews
 {
-  // TODO xxx use CGRectZero and use Auto Layout
-  self.boardView = [[[BoardView alloc] initWithFrame:self.view.bounds] autorelease];
-
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-
-  CGRect coordinateLabelsLetterViewRect = CGRectZero;
-  coordinateLabelsLetterViewRect.size.width = self.view.bounds.size.width;
-  coordinateLabelsLetterViewRect.size.height = metrics.tileSize.height;
-  self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsLetterViewRect] autorelease];
-
-  CGRect coordinateLabelsNumberViewRect = CGRectZero;
-  coordinateLabelsNumberViewRect.size.width = metrics.tileSize.width;
-  coordinateLabelsNumberViewRect.size.height = self.view.bounds.size.height;
-  self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsNumberViewRect] autorelease];
+  self.boardView = [[[BoardView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
+  self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -143,8 +133,26 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  // TODO xxx implement; remove rects in createSubviews; remove frame
-  // adjustments in viewDidLayoutSubviews
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+
+  self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardView];
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.coordinateLabelsLetterView, @"coordinateLabelsLetterView",
+                                   self.coordinateLabelsNumberView, @"coordinateLabelsNumberView",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[coordinateLabelsLetterView]-0-|",
+                            [NSString stringWithFormat:@"V:|-0-[coordinateLabelsLetterView(==%f)]", metrics.tileSize.height],
+                            @"V:|-0-[coordinateLabelsNumberView]-0-|",
+                            [NSString stringWithFormat:@"H:|-0-[coordinateLabelsNumberView(==%f)]", metrics.tileSize.width],
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -226,30 +234,11 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
-  self.boardView.frame = self.view.bounds;
-  // todo xxx this is probably wrong, this should include the zoom scale
-  self.boardView.tileContainerView.frame = self.boardView.bounds;
-  self.boardView.contentSize = self.boardView.bounds.size;
-
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-
-  CGRect coordinateLabelsLetterViewRect = CGRectZero;
-  coordinateLabelsLetterViewRect.size.width = self.view.bounds.size.width;
-  coordinateLabelsLetterViewRect.size.height = metrics.tileSize.height;
-  self.coordinateLabelsLetterView.frame = coordinateLabelsLetterViewRect;
-  // todo xxx this is probably wrong, this should include the zoom scale
-  self.coordinateLabelsLetterView.tileContainerView.frame = self.coordinateLabelsLetterView.bounds;
-  self.coordinateLabelsLetterView.contentSize = self.coordinateLabelsLetterView.bounds.size;
-
-  CGRect coordinateLabelsNumberViewRect = CGRectZero;
-  coordinateLabelsNumberViewRect.size.width = metrics.tileSize.width;
-  coordinateLabelsNumberViewRect.size.height = self.view.bounds.size.height;
-  self.coordinateLabelsNumberView.frame = coordinateLabelsNumberViewRect;
-  // todo xxx this is probably wrong, this should include the zoom scale
-  self.coordinateLabelsNumberView.tileContainerView.frame = self.coordinateLabelsNumberView.bounds;
-  self.coordinateLabelsNumberView.contentSize = self.coordinateLabelsNumberView.bounds.size;
-
+  // First prepare the new board geometry. This triggers a re-draw of all tiles.
   [self updatePlayViewMetricsRect];
+  // Now prepare all scroll views with the new content size. The content size
+  // is taken from the values in PlayViewMetrics.
+  [self updateContentSize];
 }
 
 #pragma mark - Setup/remove notification responders
@@ -350,11 +339,9 @@
   // tile size, etc.)
   [metrics updateWithZoomScale:scale];
 
-  // Remember content offset and size so that we can re-apply them after we
-  // reset the zoom scale to 1.0
+  // Remember content offset so that we can re-apply it after we reset the zoom
+  // scale to 1.0. Note: The content size will be recalculated.
   CGPoint contentOffset = scrollView.contentOffset;
-  CGSize contentSize = scrollView.contentSize;
-  CGSize containerSize = self.boardView.tileContainerView.frame.size;
 
   // Big change here: This resets the scroll view's contentSize and
   // contentOffset, and also the tile container view's frame, bounds and
@@ -366,24 +353,19 @@
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
   // Restore properties that were changed when the zoom scale was reset to 1.0
-  // todo xxx we should get contentSize and containerSize (they should be equal)
-  // from playviewmetrics because playViewmetrics may have made some
-  // adjustments to the zoom scale, which would mean that the sizes we
-  // remembered above are no longer accurate. more difficult is the content
-  // offset, which might also be no longer accurate. to fix this we either need
-  // to record the contentOffset in playviewmetrics (so that the metrics can
-  // perform the adjustments on the offset as well), or we need to adjust the
-  // content offset ourselves by somehow calculating the difference between the
-  // original scale (scale parameter) and the adjusted scale. in that case
-  // playviewmetrics must provide us with the adjusted scale (zoomScale is
-  // the absolute scale).
+  [self updateContentSize];
+  // todo xxx the content offset that we remembered above may no longer be
+  // accurate because playViewmetrics may have made some adjustments to the
+  // zoom scale. to fix this we either need to record the contentOffset in
+  // playviewmetrics (so that the metrics can perform the adjustments on the
+  // offset as well), or we need to adjust the content offset ourselves by
+  // somehow calculating the difference between the original scale (scale
+  // parameter) and the adjusted scale. in that case playviewmetrics must
+  // provide us with the adjusted scale (zoomScale is the absolute scale).
   scrollView.contentOffset = contentOffset;
-  scrollView.contentSize = contentSize;
-  self.boardView.tileContainerView.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
 
   [self synchronizeZoomScales];
   [self synchronizeContentOffset];
-  [self synchronizeContentSize];
 
   // Show coordinate labels that were temporarily hidden when the zoom
   // operation started
@@ -429,6 +411,32 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 ///
+/// Updates the content size of all scroll views to match the current values in
+/// PlayViewMetrics.
+// -----------------------------------------------------------------------------
+- (void) updateContentSize
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  CGSize contentSize = metrics.rect.size;
+  CGSize tileSize = metrics.tileSize;
+  CGRect tileContainerViewFrame = CGRectZero;
+
+  self.boardView.contentSize = contentSize;
+  tileContainerViewFrame.size = self.boardView.contentSize;
+  self.boardView.tileContainerView.frame = tileContainerViewFrame;
+
+  self.coordinateLabelsLetterView.contentSize = CGSizeMake(contentSize.width, tileSize.height);
+  tileContainerViewFrame.size = self.coordinateLabelsLetterView.contentSize;
+  self.coordinateLabelsLetterView.tileContainerView.frame = tileContainerViewFrame;
+
+  self.coordinateLabelsNumberView.contentSize = CGSizeMake(tileSize.width, contentSize.height);
+  tileContainerViewFrame.size = self.coordinateLabelsNumberView.contentSize;
+  self.coordinateLabelsNumberView.tileContainerView.frame = tileContainerViewFrame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
 /// Synchronizes the coordinate label scroll views with the master scroll view.
 // -----------------------------------------------------------------------------
 - (void) synchronizeZoomScales
@@ -454,28 +462,6 @@
   CGPoint coordinateLabelsNumberViewContentOffset = self.coordinateLabelsNumberView.contentOffset;
   coordinateLabelsNumberViewContentOffset.y = self.boardView.contentOffset.y;
   self.coordinateLabelsNumberView.contentOffset = coordinateLabelsNumberViewContentOffset;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-///
-/// Synchronizes the coordinate label scroll views with the master scroll view.
-// -----------------------------------------------------------------------------
-- (void) synchronizeContentSize
-{
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-
-  CGSize coordinateLabelsLetterViewContentSize;
-  coordinateLabelsLetterViewContentSize.width = self.boardView.contentSize.width;
-  coordinateLabelsLetterViewContentSize.height = metrics.tileSize.height;
-  self.coordinateLabelsLetterView.contentSize = coordinateLabelsLetterViewContentSize;
-  self.coordinateLabelsLetterView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsLetterViewContentSize.width, coordinateLabelsLetterViewContentSize.height);
-
-  CGSize coordinateLabelsNumberViewContentSize;
-  coordinateLabelsNumberViewContentSize.width = metrics.tileSize.width;
-  coordinateLabelsNumberViewContentSize.height = self.boardView.contentSize.height;
-  self.coordinateLabelsNumberView.contentSize = coordinateLabelsNumberViewContentSize;
-  self.coordinateLabelsNumberView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsNumberViewContentSize.width, coordinateLabelsNumberViewContentSize.height);
 }
 
 @end
