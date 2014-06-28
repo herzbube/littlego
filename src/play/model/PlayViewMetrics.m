@@ -198,7 +198,7 @@
 // todo xxx document
 - (void) updateWithZoomScale:(CGFloat)newZoomScale
 {
-  if (self.zoomScale == newZoomScale)
+  if (1.0f == newZoomScale)
     return;
   CGRect newRect = self.rect;
   newRect.size.width *= newZoomScale;
