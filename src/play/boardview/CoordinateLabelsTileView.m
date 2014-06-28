@@ -58,8 +58,8 @@
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
-  self.row = -1;
-  self.column = -1;
+  _row = -1;
+  _column = -1;
 
   [self setupLayer];
   [self setupNotificationResponders];
@@ -160,7 +160,27 @@
 #pragma mark - Tile protocol overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Re-draws the entire content of this CoordinateLabelsTileView.
+/// @brief Tile protocol method
+// -----------------------------------------------------------------------------
+- (void) updateWithRow:(int)row column:(int)column
+{
+  bool shouldInvalidateContent = false;
+  if (_row != row)
+  {
+    _row = row;
+    shouldInvalidateContent = true;
+  }
+  if (_column != column)
+  {
+    _column = column;
+    shouldInvalidateContent = true;
+  }
+  if (shouldInvalidateContent)
+    [self invalidateContent];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tile protocol method
 // -----------------------------------------------------------------------------
 - (void) invalidateContent
 {

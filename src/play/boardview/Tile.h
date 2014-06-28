@@ -22,7 +22,19 @@
 /// The tile with row/column = 0/0 is in the upper-left corner.
 // -----------------------------------------------------------------------------
 @protocol Tile <NSObject>
+/// @brief Changes the row and/or column of the tile.
+///
+/// Because the row/column combination identifies the content that the tile must
+/// display, a row and/or column change means that the content currently
+/// displayed by the tile is no longer valid. The tile should therefore redraw
+/// its content in response to this method being invoked.
+- (void) updateWithRow:(int)row column:(int)column;
+
+/// @brief Invalidates the content currently displayed by the tile.
+///
+/// The tile should redraw its content in response to this method being invoked.
 - (void) invalidateContent;
-@property(nonatomic, assign) int row;
-@property(nonatomic, assign) int column;
+
+@property(nonatomic, assign, readonly) int row;
+@property(nonatomic, assign, readonly) int column;
 @end

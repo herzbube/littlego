@@ -25,14 +25,17 @@
 // -----------------------------------------------------------------------------
 enum BoardViewLayerDelegateEvent
 {
-  /// @brief Is sent whenever the layer needs a full redraw although the board
-  /// geometry did not change.
-  BVLDEventInvalidateContent,
   /// @brief Occurs when the Board view is initialized, when the zoom level
   /// changes, and when the interface orientation changes.
   BVLDEventBoardGeometryChanged,
   BVLDEventGoGameStarted,
+  /// @brief Occurs if a new game is started with a different board size.
   BVLDEventBoardSizeChanged,
+  /// @brief Is sent whenever the layer needs a full redraw although the board
+  /// geometry did not change. One typical use of this event is when the tiling
+  /// mechanism reuses a tile to display content at a different position on the
+  /// canvas.
+  BVLDEventInvalidateContent,
   BVLDEventBoardPositionChanged,
   BVLDEventNumberOfBoardPositionsChanged,
   BVLDEventMarkLastMoveChanged,
