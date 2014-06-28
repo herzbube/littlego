@@ -181,30 +181,12 @@
   self.boardView.dataSource = self;
   self.boardView.tileSize = metrics.tileSize;
 
-  // Even though these scroll views do not scroll or zoom interactively, we
-  // still need to become their delegate so that we can change their zoomScale
-  // property. If we don't do this, then changing their zoomScale will have no
-  // effect, i.e. the property will always remain at 1.0. This is because
-  // UIScrollView requires a delegate that it can query with
-  // viewForZoomingInScrollView: for all zoom-related operations (such as
-  // changing the zoomScale).
-  // TODO xxx But we don't want to change the zoom scale property... that
-  // value always remains at 1.0...
-  self.coordinateLabelsLetterView.delegate = self;
-  self.coordinateLabelsNumberView.delegate = self;
-
   self.coordinateLabelsLetterView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsLetterView.bouncesZoom = YES;
-  self.coordinateLabelsLetterView.minimumZoomScale = 1.0f;
-  self.coordinateLabelsLetterView.maximumZoomScale = 3.0f;
   self.coordinateLabelsLetterView.dataSource = self;
   self.coordinateLabelsLetterView.tileSize = metrics.tileSize;
   self.coordinateLabelsLetterView.userInteractionEnabled = NO;
 
   self.coordinateLabelsNumberView.backgroundColor = [UIColor clearColor];
-  self.coordinateLabelsNumberView.bouncesZoom = YES;
-  self.coordinateLabelsNumberView.minimumZoomScale = 1.0f;
-  self.coordinateLabelsNumberView.maximumZoomScale = 3.0f;
   self.coordinateLabelsNumberView.dataSource = self;
   self.coordinateLabelsNumberView.tileSize = metrics.tileSize;
   self.coordinateLabelsNumberView.userInteractionEnabled = NO;
@@ -287,11 +269,6 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidScroll:(UIScrollView*)scrollView
 {
-  // Only synchronize if the board view is the trigger. Coordinate label views
-  // views are the trigger when their content offset is synchronized because
-  // changing the content offset counts as scrolling.
-  if (scrollView != self.boardView)
-    return;
   // Coordinate label scroll views are not visible during zooming, so we don't
   // need to synchronize
   if (! scrollView.zooming)
@@ -303,14 +280,7 @@
 // -----------------------------------------------------------------------------
 - (UIView*) viewForZoomingInScrollView:(UIScrollView*)scrollView
 {
-  if (scrollView == self.boardView)
-    return self.boardView.tileContainerView;
-  else if (scrollView == self.coordinateLabelsLetterView)
-    return self.coordinateLabelsLetterView.tileContainerView;
-  else if (scrollView == self.coordinateLabelsNumberView)
-    return self.coordinateLabelsNumberView.tileContainerView;
-  else
-    return nil;
+  return self.boardView.tileContainerView;
 }
 
 // -----------------------------------------------------------------------------
@@ -364,7 +334,6 @@
   // provide us with the adjusted scale (zoomScale is the absolute scale).
   scrollView.contentOffset = contentOffset;
 
-  [self synchronizeZoomScales];
   [self synchronizeContentOffset];
 
   // Show coordinate labels that were temporarily hidden when the zoom
@@ -432,21 +401,6 @@
   self.coordinateLabelsNumberView.contentSize = CGSizeMake(tileSize.width, contentSize.height);
   tileContainerViewFrame.size = self.coordinateLabelsNumberView.contentSize;
   self.coordinateLabelsNumberView.tileContainerView.frame = tileContainerViewFrame;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-///
-/// Synchronizes the coordinate label scroll views with the master scroll view.
-// -----------------------------------------------------------------------------
-- (void) synchronizeZoomScales
-{
-  self.coordinateLabelsLetterView.zoomScale = self.boardView.zoomScale;
-  self.coordinateLabelsLetterView.minimumZoomScale = self.boardView.minimumZoomScale;
-  self.coordinateLabelsLetterView.maximumZoomScale = self.boardView.maximumZoomScale;
-  self.coordinateLabelsNumberView.zoomScale = self.boardView.zoomScale;
-  self.coordinateLabelsNumberView.minimumZoomScale = self.boardView.minimumZoomScale;
-  self.coordinateLabelsNumberView.maximumZoomScale = self.boardView.maximumZoomScale;
 }
 
 // -----------------------------------------------------------------------------
