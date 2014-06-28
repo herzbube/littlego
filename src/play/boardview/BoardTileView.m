@@ -226,17 +226,24 @@
 // -----------------------------------------------------------------------------
 - (void) createOrResetInfluenceLayer
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  PlayViewModel* playViewModel = appDelegate.playViewModel;
-  if (playViewModel.displayPlayerInfluence)
+  if ([GoGame sharedGame].score.scoringEnabled)
   {
-    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                    playViewModel:playViewModel] autorelease];
+    self.influenceLayerDelegate = nil;
   }
   else
   {
-    self.influenceLayerDelegate = nil;
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    PlayViewModel* playViewModel = appDelegate.playViewModel;
+    if (playViewModel.displayPlayerInfluence)
+    {
+      self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
+                                                                            metrics:appDelegate.playViewMetrics
+                                                                      playViewModel:playViewModel] autorelease];
+    }
+    else
+    {
+      self.influenceLayerDelegate = nil;
+    }
   }
 }
 
