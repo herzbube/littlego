@@ -16,11 +16,30 @@
 
 
 // Project includes
-#import "BoardView.h"
+#import "TiledScrollView.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardViewController class xxx
+/// @brief The BoardViewController class manages the scroll views that display
+/// the Go board and the board's coordinate labels.
+///
+/// BoardViewController has the following responsibilities:
+/// - Manage zooming and scrolling of the main scroll view that displays the Go
+///   board
+/// - Synchronize zooming and scrolling properties of scroll views that contain
+///   coordinate label views with the corresponding properties of the main
+///   scroll view
+/// - Monitor the maximum zoom scale user preference and apply the new value
+///   to all scroll views
+/// - Resize scroll views when a view layout change occurs outside of zooming
+///   (typically when the device changes orientation). See the documentation of
+///   viewWillLayoutSubviews() for details.
+///
+/// BoardViewController creates additional controllers for managing all gestures
+/// except zooming and scrolling. Since these sub-controllers are not view
+/// controllers, BoardViewController is also not a container view controller
+/// (i.e. it does not use addChildViewController:() to manage these
+/// sub-controllers).
 // -----------------------------------------------------------------------------
 @interface BoardViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
 {

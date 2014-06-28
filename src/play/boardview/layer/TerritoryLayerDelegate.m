@@ -155,6 +155,7 @@ CGLayerRef whiteSekiStoneSymbolLayer;
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
+    case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
       self.drawingPointsTerritory = [self calculateDrawingPointsTerritory];
@@ -162,9 +163,8 @@ CGLayerRef whiteSekiStoneSymbolLayer;
       self.dirty = true;
       break;
     }
-    case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
-      [self invalidateLayers];
       self.drawingPointsTerritory = [self calculateDrawingPointsTerritory];
       self.drawingPointsStoneGroupState = [self calculateDrawingPointsStoneGroupState];
       self.dirty = true;

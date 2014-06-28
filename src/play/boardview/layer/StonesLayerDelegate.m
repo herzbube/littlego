@@ -94,12 +94,6 @@ CGLayerRef whiteStoneLayer;
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
-    {
-      [self invalidateLayers];
-      self.drawingPoints = [self calculateDrawingPoints];
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
@@ -108,6 +102,7 @@ CGLayerRef whiteStoneLayer;
       break;
     }
     case BVLDEventGoGameStarted:  // place handicap stones
+    case BVLDEventInvalidateContent:
     {
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;

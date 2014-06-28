@@ -33,6 +33,8 @@
 
 @implementation BoardView
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardView object with frame rectangle @a rect.
 ///
@@ -44,12 +46,12 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
-
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
   [self updateCrossHairPointDistanceFromFinger];
-
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  [playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   return self;
 }
 
@@ -58,9 +60,28 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  [playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   self.crossHairPoint = nil;
   [super dealloc];
 }
+
+#pragma mark - KVO responder
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  if (object == playViewModel)
+  {
+    if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])
+      [self updateCrossHairPointDistanceFromFinger];
+  }
+}
+
+#pragma mark - Cross-hair handling
 
 // -----------------------------------------------------------------------------
 /// @brief Updates self.crossHairPointDistanceFromFinger.
@@ -112,13 +133,15 @@
 /// @brief Moves the cross-hair to the intersection identified by @a point,
 /// specifying whether an actual play move at the intersection would be legal.
 // -----------------------------------------------------------------------------
-- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
+- (void) moveCrossHairTo:(GoPoint*)point
+             isLegalMove:(bool)isLegalMove
+         isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
 {
   if (_crossHairPoint == point && _crossHairPointIsLegalMove == isLegalMove)
     return;
 
   // Update *BEFORE* self.crossHairPoint so that KVO observers that monitor
-  // self.crossHairPoint get both changes at once. Don't use self to update the
+  // self.crossHairPoint get all changes at once. Don't use self to update the
   // property because we don't want observers to monitor the property via KVO.
   _crossHairPointIsLegalMove = isLegalMove;
   _crossHairPointIsIllegalReason = illegalReason;
@@ -143,6 +166,5 @@
   PlayViewMetrics* playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   return [playViewMetrics intersectionNear:coordinates];
 }
-
 
 @end

@@ -73,11 +73,8 @@
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
-    {
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
       self.dirty = true;
       break;

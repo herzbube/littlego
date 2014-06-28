@@ -35,12 +35,15 @@
 
 @implementation CoordinateLabelsTileView
 
+#pragma mark - Synthesize properties
+
 // Auto-synthesizing does not work for properties declared in a protocol, so we
 // have to explicitly synthesize these properties that are declared in the
 // Tile protocol.
 @synthesize row = _row;
 @synthesize column = _column;
 
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CoordinateLabelsTileView object with frame rectangle
@@ -57,18 +60,9 @@
   self.coordinateLabelAxis = axis;
   self.row = -1;
   self.column = -1;
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  self.layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTile:self
-                                                                 metrics:metrics
-                                                                    axis:axis] autorelease];
-  [self.layer addSublayer:self.layerDelegate.layer];
 
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
-  [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
-  [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [self setupLayer];
+  [self setupNotificationResponders];
 
   self.drawLayerWasDelayed = false;
 
@@ -80,14 +74,54 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
+  self.layerDelegate = nil;
+  [super dealloc];
+}
+
+#pragma mark - View setup
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupLayer
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  self.layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTile:self
+                                                                 metrics:metrics
+                                                                    axis:self.coordinateLabelAxis] autorelease];
+  [self.layer addSublayer:self.layerDelegate.layer];
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   [metrics removeObserver:self forKeyPath:@"rect"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
-  self.layerDelegate = nil;
-  [super dealloc];
 }
+
+#pragma mark - Handle delayed drawing
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed drawing of the view
@@ -123,6 +157,19 @@
   [self.layerDelegate drawLayer];
 }
 
+#pragma mark - Tile protocol overrides
+
+// -----------------------------------------------------------------------------
+/// @brief Re-draws the entire content of this CoordinateLabelsTileView.
+// -----------------------------------------------------------------------------
+- (void) invalidateContent
+{
+  [self.layerDelegate notify:BVLDEventInvalidateContent eventInfo:nil];
+  [self delayedDrawLayer];
+}
+
+#pragma mark - Notification responders
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
@@ -140,6 +187,8 @@
   if (self.drawLayerWasDelayed)
     [self drawLayer];
 }
+
+#pragma mark - KVO responder
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -167,14 +216,18 @@
   }
 }
 
+#pragma mark - UIView overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Re-draws the entire content of this CoordinateLabelsTileView.
+/// @brief UIView method.
+///
+/// This implementation is not strictly required because
+/// CoordinateLabelsTileView is currently not used in conjunction with Auto
+/// Layout.
 // -----------------------------------------------------------------------------
-- (void) redraw
+- (CGSize) intrinsicContentSize
 {
-  // TODO xxx why exactly do we need this?
-  [self.layerDelegate notify:BVLDEventBoardGeometryChanged eventInfo:nil];
-  [self delayedDrawLayer];
+  return [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
 }
 
 @end

@@ -25,6 +25,9 @@
 // -----------------------------------------------------------------------------
 enum BoardViewLayerDelegateEvent
 {
+  /// @brief Is sent whenever the layer needs a full redraw although the board
+  /// geometry did not change.
+  BVLDEventInvalidateContent,
   /// @brief Occurs when the Board view is initialized, when the zoom level
   /// changes, and when the interface orientation changes.
   BVLDEventBoardGeometryChanged,

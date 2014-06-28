@@ -20,9 +20,40 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The CoordinateLabelsTileView class xxx
+/// @brief The CoordinateLabelsTileView class is a custom view that is
+/// responsible for drawing only a small part (called a "tile") of the visible
+/// part of one of the coordinate labels axis of the Go board.
 ///
-/// The tile with row/column = 0/0 is in the upper-left corner
+/// CoordinateLabelsTileView draws either letter or number coordinates,
+/// depending on the axis specified during initialization.
+///
+/// Most of what is said in the documentation of the BoardTileView class also
+/// applies to the CoordinateLabelsTileView class. The difference is that
+/// CoordinateLabelsTileView has only one layer and therefore does not need to
+/// dynamically add/remove layers. Instead, an outside force is responsible for
+/// adding/removing CoordinateLabelsTileView instances depending on whether
+/// coordinate labels should be displayed, or not.
+///
+///
+/// @par Implementation note
+///
+/// Coordinate labels must be drawn independently from the remaining board
+/// elements so that the user can always see the labels even if the board is
+/// zoomed in and scrolled to a position where the board edges are no longer
+/// visible.
+///
+/// The way to achieve this is to display coordinate labels in additional scroll
+/// views that scroll independently from the main scroll view that displays the
+/// Go board.
+///
+/// It would have been possible to add BoardTileView instances to those
+/// additional scroll views, and to let BoardTileView manage two additional
+/// coordinate label layers that are only active when BoardTileView is in
+/// "coordinate labels" mode. However, this would have bloated BoardTileView
+/// and made the class even more complicated than it already is.
+///
+/// I believe it is a better design choice to create CoordinateLabelsTileView
+/// as a separate class that is dedicated to coordinate label handling.
 // -----------------------------------------------------------------------------
 @interface CoordinateLabelsTileView : UIView <Tile>
 {

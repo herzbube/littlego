@@ -66,7 +66,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayView object.
+/// @brief Deallocates memory allocated by this CoordinateLabelsView object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

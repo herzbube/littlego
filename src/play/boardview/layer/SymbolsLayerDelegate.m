@@ -108,17 +108,13 @@ CGLayerRef whiteLastMoveLayer;
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
-    {
-      [self invalidateLayers];
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
       self.dirty = true;
       break;
     }
+    case BVLDEventInvalidateContent:
     case BVLDEventGoGameStarted:        // clear last move marker
     case BVLDEventBoardPositionChanged:
     // This case covers the following scenario: Board position 0 is selected

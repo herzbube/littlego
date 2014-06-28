@@ -76,13 +76,9 @@
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
-    {
-      self.drawingPoints = [self calculateDrawingPoints];
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
     case BVLDEventGoGameStarted:  // reset statistics to zero (even if board size remains the same)
+    case BVLDEventInvalidateContent:
     {
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;

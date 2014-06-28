@@ -36,6 +36,8 @@
 
 @implementation TiledScrollView
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TiledScrollView object with frame rectangle @a rect.
 ///
@@ -71,6 +73,8 @@
   self.tileContainerView = nil;
   [super dealloc];
 }
+
+#pragma mark - Public interface
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a tile view from the pool of reusable tile views. The caller
@@ -110,6 +114,8 @@
   self.indexOfLastVisibleColumn  = NSIntegerMin;
   [self setNeedsLayout];
 }
+
+#pragma mark - UIView overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIView method.
@@ -222,6 +228,7 @@
   self.indexOfLastVisibleColumn = indexOfLastNeededColumn;
 }
 
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Annotates the specified tile view to make it visible. This is a

@@ -91,13 +91,8 @@
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
-    {
-      [self invalidateDrawingRectangles];
-      [self invalidateDirtyRect];
-      self.dirty = true;
-      break;
-    }
     case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
       [self invalidateDrawingRectangles];
       [self invalidateDirtyRect];

@@ -52,17 +52,20 @@
 
 @implementation BoardTileView
 
+#pragma mark - Synthesize properties
+
 // Auto-synthesizing does not work for properties declared in a protocol, so we
 // have to explicitly synthesize these properties that are declared in the
 // Tile protocol.
 @synthesize row = _row;
 @synthesize column = _column;
 
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardView object with frame rectangle @a rect.
+/// @brief Initializes a BoardTileView object with frame rectangle @a rect.
 ///
-/// @note This is the designated initializer of BoardView.
+/// @note This is the designated initializer of BoardTileView.
 // -----------------------------------------------------------------------------
 - (id) initWithFrame:(CGRect)rect
 {
@@ -70,12 +73,52 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
-
   self.row = -1;
   self.column = -1;
-
   self.drawLayersWasDelayed = false;
+  [self setupLayers];
+  [self setupNotificationResponders];
+  return self;
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this BoardTileView object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self removeNotificationResponders];
+  self.layerDelegates = nil;
+  [super dealloc];
+}
+
+#pragma mark - View setup
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupLayers
+{
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
+                                                              metrics:metrics] autorelease];
+  self.crossHairLinesLayerDelegate = nil;
+  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
+                                                                  metrics:metrics] autorelease];
+  self.crossHairStoneLayerDelegate = nil;
+  [self createOrResetInfluenceLayer];
+  [self createOrResetSymbolsLayer];
+  [self createOrResetTerritoryLayer];
+
+  [self updateLayers];
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
@@ -99,7 +142,6 @@
   [playViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
   [playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
-  [playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   [scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -108,90 +150,44 @@
     [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
     [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   }
-
-  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics] autorelease];
-  self.crossHairLinesLayerDelegate = nil;
-  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
-                                                                  metrics:metrics] autorelease];
-  self.crossHairStoneLayerDelegate = nil;
-  [self createOrResetInfluenceLayer];
-  [self createOrResetSymbolsLayer];
-  [self createOrResetTerritoryLayer];
-
-  [self updateLayers];
-
-  return self;
 }
 
-// either creates the influence layer delegate, or resets it to nil
-- (void) createOrResetInfluenceLayer
+// -----------------------------------------------------------------------------
+/// @brief Private helper for dealloc.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
-  if (playViewModel.displayPlayerInfluence)
-  {
-    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                    playViewModel:playViewModel] autorelease];
-  }
-  else
-  {
-    self.influenceLayerDelegate = nil;
-  }
-}
+  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
+  ScoringModel* scoringModel = appDelegate.scoringModel;
 
-// either creates the territory layer delegate, or resets it to nil
-- (void) createOrResetSymbolsLayer
-{
-
-  if ([GoGame sharedGame].score.scoringEnabled)
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center removeObserver:self];
+  [boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
+  [metrics removeObserver:self forKeyPath:@"rect"];
+  [metrics removeObserver:self forKeyPath:@"boardSize"];
+  [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
+  [playViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
+  [playViewModel removeObserver:self forKeyPath:@"markLastMove"];
+  [playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
+  [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
+  GoGame* game = [GoGame sharedGame];
+  if (game)
   {
-    self.symbolsLayerDelegate = nil;
-  }
-  else
-  {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
-                                                                      metrics:appDelegate.playViewMetrics
-                                                                playViewModel:appDelegate.playViewModel
-                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
-
+    GoBoardPosition* boardPosition = game.boardPosition;
+    [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+    [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   }
 }
 
-// either creates the territory layer delegate, or resets it to nil
-- (void) createOrResetTerritoryLayer
-{
+#pragma mark - Manage layers and layer delegates
 
-  if ([GoGame sharedGame].score.scoringEnabled)
-  {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                     scoringModel:appDelegate.scoringModel] autorelease];
-  }
-  else
-  {
-    self.territoryLayerDelegate = nil;
-  }
-}
-
-- (void) createCrossHairLayers
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
-                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
-  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
-                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
-}
-
-- (void) removeCrossHairLayers
-{
-  self.crossHairLinesLayerDelegate = nil;
-  self.crossHairStoneLayerDelegate = nil;
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Updates the layers of this BoardTileView based on the layer delegates
+/// that currently exist.
+// -----------------------------------------------------------------------------
 - (void) updateLayers
 {
   NSArray* oldLayerDelegates = self.layerDelegates;
@@ -224,39 +220,101 @@
   self.layerDelegates = newLayerDelegates;
 }
 
-- (void) dealloc
+// -----------------------------------------------------------------------------
+/// @brief Creates the influence layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) createOrResetInfluenceLayer
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
-  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  ScoringModel* scoringModel = appDelegate.scoringModel;
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center removeObserver:self];
-  [boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
-  [metrics removeObserver:self forKeyPath:@"rect"];
-  [metrics removeObserver:self forKeyPath:@"boardSize"];
-  [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
-  [playViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
-  [playViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
-  [playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
-  [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-
-  self.layerDelegates = nil;
-  [super dealloc];
+  if (playViewModel.displayPlayerInfluence)
+  {
+    self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                    playViewModel:playViewModel] autorelease];
+  }
+  else
+  {
+    self.influenceLayerDelegate = nil;
+  }
 }
 
-- (void) setRow:(int)row
+// -----------------------------------------------------------------------------
+/// @brief Creates the symbols layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) createOrResetSymbolsLayer
 {
-  _row = row;
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    self.symbolsLayerDelegate = nil;
+  }
+  else
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
+                                                                      metrics:appDelegate.playViewMetrics
+                                                                playViewModel:appDelegate.playViewModel
+                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
 
+  }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Creates the territory layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) createOrResetTerritoryLayer
+{
+
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                     scoringModel:appDelegate.scoringModel] autorelease];
+  }
+  else
+  {
+    self.territoryLayerDelegate = nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the cross-hair layer delegates.
+// -----------------------------------------------------------------------------
+- (void) createCrossHairLayers
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
+                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
+  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
+                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resets the cross-hair layer delegates to nil.
+// -----------------------------------------------------------------------------
+- (void) resetCrossHairLayers
+{
+  self.crossHairLinesLayerDelegate = nil;
+  self.crossHairStoneLayerDelegate = nil;
+}
+
+#pragma mark - Handle delayed drawing
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed drawing of layers.
+/// BoardTileView methods that need a view update should invoke this helper
+/// instead of drawLayers().
+///
+/// If no long-running actions are in progress, this helper invokes
+/// drawLayers(), thus triggering the update in UIKit.
+///
+/// If any long-running actions are in progress, this helper sets
+/// @e drawLayersWasDelayed to true.
+// -----------------------------------------------------------------------------
 - (void) delayedDrawLayers
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)
@@ -265,7 +323,10 @@
     [self drawLayers];
 }
 
-
+// -----------------------------------------------------------------------------
+/// @brief Notifies all layers that they need to update now if they are dirty.
+/// This marks one update cycle.
+// -----------------------------------------------------------------------------
 - (void) drawLayers
 {
   // No game -> no board -> no drawing. This situation exists right after the
@@ -279,12 +340,35 @@
     [layerDelegate drawLayer];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Notifies all layer delegates that @a event has occurred. The event
+/// info object supplied to the delegates is @a eventInfo.
+///
+/// Delegates will ignore the event, or react to the event, as appropriate for
+/// the layer that they manage.
+// -----------------------------------------------------------------------------
 - (void) notifyLayerDelegates:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate notify:event eventInfo:eventInfo];
 }
 
+#pragma mark - Tile protocol overrides
+
+// -----------------------------------------------------------------------------
+/// @brief Re-draws the entire content of this BoardTileView.
+// -----------------------------------------------------------------------------
+- (void) invalidateContent
+{
+  [self notifyLayerDelegates:BVLDEventInvalidateContent eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameWillCreate notification.
+// -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
@@ -293,6 +377,9 @@
   [oldBoardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
@@ -305,6 +392,9 @@
   [self delayedDrawLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringEnabled notification.
+// -----------------------------------------------------------------------------
 - (void) goScoreScoringEnabled:(NSNotification*)notification
 {
   [self createOrResetInfluenceLayer];
@@ -315,6 +405,9 @@
   [self delayedDrawLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreScoringDisabled notification.
+// -----------------------------------------------------------------------------
 - (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [self createOrResetInfluenceLayer];
@@ -325,35 +418,52 @@
   [self delayedDrawLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goScoreCalculationEnds notifications.
+// -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
   [self notifyLayerDelegates:BVLDEventScoreCalculationEnds eventInfo:nil];
   [self delayedDrawLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #territoryStatisticsChanged notifications.
+// -----------------------------------------------------------------------------
 - (void) territoryStatisticsChanged:(NSNotification*)notification
 {
   [self notifyLayerDelegates:BVLDEventTerritoryStatisticsChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
   [self createCrossHairLayers];
   [self updateLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
-  [self removeCrossHairLayers];
+  [self resetCrossHairLayers];
   [self updateLayers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notification.
+// -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   if (self.drawLayersWasDelayed)
     [self drawLayers];
 }
+
+#pragma mark - KVO responder
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -423,10 +533,6 @@
       [self createOrResetInfluenceLayer];
       [self updateLayers];
     }
-/*xxx
-    else if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])
-      [self updateCrossHairPointDistanceFromFinger];
-*/ 
   }
   else if (object == [GoGame sharedGame].boardPosition)
   {
@@ -443,10 +549,17 @@
   }
 }
 
-- (void) redraw
+#pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// This implementation is not strictly required because BoardTileView is
+/// currently not used in conjunction with Auto Layout.
+// -----------------------------------------------------------------------------
+- (CGSize) intrinsicContentSize
 {
-  [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
-  [self delayedDrawLayers];
+  return [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
 }
 
 @end

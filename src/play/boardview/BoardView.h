@@ -24,14 +24,17 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardView class xxx
+/// @brief The BoardView class subclasses TiledScrollView to add cross-hair
+/// handling.
 // -----------------------------------------------------------------------------
 @interface BoardView : TiledScrollView
 {
 }
 
 - (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
-- (void) moveCrossHairTo:(GoPoint*)point isLegalMove:(bool)isLegalMove isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
+- (void) moveCrossHairTo:(GoPoint*)point
+             isLegalMove:(bool)isLegalMove
+         isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
 - (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
 
 /// @name Cross-hair point properties
@@ -39,8 +42,8 @@
 /// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
 ///
 /// Observers may monitor this property via KVO. If this property changes its
-/// value, observers can also get a correctly updated value from property
-/// @e crossHairPointIsLegalMove.
+/// value, observers can also get updated values from the properties
+/// @e crossHairPointIsLegalMove and @e crossHairPointIsIllegalReason.
 @property(nonatomic, retain) GoPoint* crossHairPoint;
 /// @brief Is true if the GoPoint object at the focus of the cross-hair
 /// represents a legal move.

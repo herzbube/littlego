@@ -18,10 +18,12 @@
 // Project includes
 #import "BoardViewController.h"
 #import "BoardTileView.h"
+#import "BoardView.h"
 #import "CoordinateLabelsTileView.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
 #import "../model/PlayViewMetrics.h"
+#import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../go/GoBoard.h"
@@ -42,6 +44,8 @@
 
 @implementation BoardViewController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardViewController object.
 ///
@@ -56,10 +60,7 @@
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
-  self.panGestureController = [[[PanGestureController alloc] init] autorelease];
-  self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [self setupChildControllers];
   return self;
 }
 
@@ -68,6 +69,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
@@ -76,23 +78,80 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) setupChildControllers
+{
+  self.panGestureController = [[[PanGestureController alloc] init] autorelease];
+  self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
+  // todo xxx
+  //self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
+  //self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
+}
+
+#pragma mark - loadView and helpers
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
 - (void) loadView
 {
   [super loadView];
 
+  [self createSubviews];
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
+  [self configureViews];
+  [self configureControllers];
+  [self setupNotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) createSubviews
+{
   // TODO xxx use CGRectZero and use Auto Layout
   self.boardView = [[[BoardView alloc] initWithFrame:self.view.bounds] autorelease];
+
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+
+  CGRect coordinateLabelsLetterViewRect = CGRectZero;
+  coordinateLabelsLetterViewRect.size.width = self.view.bounds.size.width;
+  coordinateLabelsLetterViewRect.size.height = metrics.tileSize.height;
+  self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsLetterViewRect] autorelease];
+
+  CGRect coordinateLabelsNumberViewRect = CGRectZero;
+  coordinateLabelsNumberViewRect.size.width = metrics.tileSize.width;
+  coordinateLabelsNumberViewRect.size.height = self.view.bounds.size.height;
+  self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsNumberViewRect] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
   [self.view addSubview:self.boardView];
+  [self.view addSubview:self.coordinateLabelsLetterView];
+  [self.view addSubview:self.coordinateLabelsNumberView];
+}
 
-  self.boardView.dataSource = self;
-  self.boardView.tileSize = CGSizeMake(128, 128);
-  self.boardView.backgroundColor = [UIColor clearColor];
-  self.boardView.bouncesZoom = YES;
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  // TODO xxx implement; remove rects in createSubviews; remove frame
+  // adjustments in viewDidLayoutSubviews
+}
 
-  self.boardView.delegate = self;
-  self.boardView.minimumZoomScale = 1.0f;
-  self.boardView.maximumZoomScale = 3.0f;
-
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
   // The background image is quite large, so we don't use UIImage namedImage:()
   // because that method caches the image in the background. We don't need
   // caching because we only load the image once, so not using namedImage:()
@@ -102,133 +161,143 @@
   NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
   UIImage* image = [UIImage imageWithData:imageData];
   self.view.backgroundColor = [UIColor colorWithPatternImage:image];
+
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+
   self.boardView.backgroundColor = [UIColor clearColor];
+  // TODO xxx should this really be YES? the no-tiling implementation used NO
+  self.boardView.bouncesZoom = YES;
+  self.boardView.delegate = self;
+  self.boardView.minimumZoomScale = 1.0f;
+  self.boardView.maximumZoomScale = 3.0f;
+  self.boardView.dataSource = self;
+  self.boardView.tileSize = metrics.tileSize;
 
-  self.panGestureController.boardView = self.boardView;
-  self.tapGestureController.boardView = self.boardView;
+  // Even though these scroll views do not scroll or zoom interactively, we
+  // still need to become their delegate so that we can change their zoomScale
+  // property. If we don't do this, then changing their zoomScale will have no
+  // effect, i.e. the property will always remain at 1.0. This is because
+  // UIScrollView requires a delegate that it can query with
+  // viewForZoomingInScrollView: for all zoom-related operations (such as
+  // changing the zoomScale).
+  // TODO xxx But we don't want to change the zoom scale property... that
+  // value always remains at 1.0...
+  self.coordinateLabelsLetterView.delegate = self;
+  self.coordinateLabelsNumberView.delegate = self;
 
-  [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize = self.boardView.tileSize;
-
-  CGRect coordinateLabelsLetterViewRect = CGRectZero;
-  coordinateLabelsLetterViewRect.size.width = self.view.bounds.size.width;
-  coordinateLabelsLetterViewRect.size.height = self.boardView.tileSize.height;
-  CGRect coordinateLabelsNumberViewRect = CGRectZero;
-  coordinateLabelsNumberViewRect.size.width = self.boardView.tileSize.width;
-  coordinateLabelsNumberViewRect.size.height = self.view.bounds.size.height;
-  self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsLetterViewRect] autorelease];
-  self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:coordinateLabelsNumberViewRect] autorelease];
-  [self.view addSubview:self.coordinateLabelsLetterView];
-  [self.view addSubview:self.coordinateLabelsNumberView];
-
-  self.coordinateLabelsLetterView.dataSource = self;
-  self.coordinateLabelsLetterView.tileSize = CGSizeMake(128, 128);
   self.coordinateLabelsLetterView.backgroundColor = [UIColor clearColor];
   self.coordinateLabelsLetterView.bouncesZoom = YES;
-
-  self.coordinateLabelsLetterView.delegate = self;
   self.coordinateLabelsLetterView.minimumZoomScale = 1.0f;
   self.coordinateLabelsLetterView.maximumZoomScale = 3.0f;
+  self.coordinateLabelsLetterView.dataSource = self;
+  self.coordinateLabelsLetterView.tileSize = metrics.tileSize;
+  self.coordinateLabelsLetterView.userInteractionEnabled = NO;
 
-  self.coordinateLabelsNumberView.dataSource = self;
-  self.coordinateLabelsNumberView.tileSize = CGSizeMake(128, 128);
   self.coordinateLabelsNumberView.backgroundColor = [UIColor clearColor];
   self.coordinateLabelsNumberView.bouncesZoom = YES;
-
-  self.coordinateLabelsNumberView.delegate = self;
   self.coordinateLabelsNumberView.minimumZoomScale = 1.0f;
   self.coordinateLabelsNumberView.maximumZoomScale = 3.0f;
-
-
-  self.coordinateLabelsLetterView.userInteractionEnabled = NO;
+  self.coordinateLabelsNumberView.dataSource = self;
+  self.coordinateLabelsNumberView.tileSize = metrics.tileSize;
   self.coordinateLabelsNumberView.userInteractionEnabled = NO;
 
-  // TODO xxx auto layout
+  [self updateCoordinateLabelsVisibleState];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureControllers
+{
+  self.panGestureController.boardView = self.boardView;
+  self.tapGestureController.boardView = self.boardView;
+  // todo xxx
+  //self.doubleTapGestureController.scrollView = self.scrollView;
+  //self.twoFingerTapGestureController.scrollView = self.scrollView;
+}
+
+#pragma mark - viewWillLayoutSubviews
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// This override exists to resize the scroll view content after a change to
+/// the interface orientation.
+// -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
   self.boardView.frame = self.view.bounds;
+  // todo xxx this is probably wrong, this should include the zoom scale
   self.boardView.tileContainerView.frame = self.boardView.bounds;
   self.boardView.contentSize = self.boardView.bounds.size;
 
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+
   CGRect coordinateLabelsLetterViewRect = CGRectZero;
   coordinateLabelsLetterViewRect.size.width = self.view.bounds.size.width;
-  coordinateLabelsLetterViewRect.size.height = self.boardView.tileSize.height;
+  coordinateLabelsLetterViewRect.size.height = metrics.tileSize.height;
   self.coordinateLabelsLetterView.frame = coordinateLabelsLetterViewRect;
+  // todo xxx this is probably wrong, this should include the zoom scale
   self.coordinateLabelsLetterView.tileContainerView.frame = self.coordinateLabelsLetterView.bounds;
   self.coordinateLabelsLetterView.contentSize = self.coordinateLabelsLetterView.bounds.size;
 
   CGRect coordinateLabelsNumberViewRect = CGRectZero;
-  coordinateLabelsNumberViewRect.size.width = self.boardView.tileSize.width;
+  coordinateLabelsNumberViewRect.size.width = metrics.tileSize.width;
   coordinateLabelsNumberViewRect.size.height = self.view.bounds.size.height;
   self.coordinateLabelsNumberView.frame = coordinateLabelsNumberViewRect;
+  // todo xxx this is probably wrong, this should include the zoom scale
   self.coordinateLabelsNumberView.tileContainerView.frame = self.coordinateLabelsNumberView.bounds;
   self.coordinateLabelsNumberView.contentSize = self.coordinateLabelsNumberView.bounds.size;
 
-  [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithRect:self.boardView.bounds];
-
-  //xxxNSLog(@"viewDidLayoutSubviews, view size = %@, tileSize = %@", NSStringFromCGSize(self.boardView.frame.size), NSStringFromCGSize(self.boardView.tileSize));
+  [self updatePlayViewMetricsRect];
 }
 
-#pragma mark TiledScrollViewDataSource method
+#pragma mark - Setup/remove notification responders
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+}
+
+#pragma mark TiledScrollViewDataSource overrides
+
+// -----------------------------------------------------------------------------
+/// @brief TiledScrollViewDataSource protocol method.
+// -----------------------------------------------------------------------------
 - (UIView*) tiledScrollView:(TiledScrollView*)tiledScrollView tileViewForRow:(int)row column:(int)column
 {
-  // re-use a tile rather than creating a new one, if possible
   UIView<Tile>* tileView = (UIView<Tile>*)[tiledScrollView dequeueReusableTileView];
   if (! tileView)
   {
-    // the scroll view will handle setting the tile's frame, so we don't have to worry about it
+    // The scroll view will set the tile view frame, so we don't have to worry
+    // about it
     if (tiledScrollView == self.boardView)
-    {
       tileView = [[[BoardTileView alloc] initWithFrame:CGRectZero] autorelease];
-    }
     else if (tiledScrollView == self.coordinateLabelsLetterView)
-    {
-      //xxxNSLog(@"create letter tile, axis = %d, row = %d, col = %d", 0, row, column);
       tileView = [[[CoordinateLabelsTileView alloc] initWithFrame:CGRectZero axis:CoordinateLabelAxisLetter] autorelease];
-    }
     else if (tiledScrollView == self.coordinateLabelsNumberView)
-    {
-      //xxxNSLog(@"create number tile, axis = %d, row = %d, col = %d", 1, row, column);
       tileView = [[[CoordinateLabelsTileView alloc] initWithFrame:CGRectZero axis:CoordinateLabelAxisNumber] autorelease];
-    }
   }
-  else
-  {
-    if (tiledScrollView == self.boardView)
-    {
-    }
-    else if (tiledScrollView == self.coordinateLabelsLetterView)
-    {
-      //xxxNSLog(@"reusing letter tile, row = %d, col = %d", row, column);
-    }
-    else if (tiledScrollView == self.coordinateLabelsNumberView)
-    {
-      //xxxNSLog(@"reusing number tile, row = %d, col = %d", row, column);
-      if (row >= 3)
-      {
-        NSArray* subviews = tiledScrollView.tileContainerView.subviews;
-        for (id i in subviews)
-        {
-          //xxxNSLog(@"%@", i);
-        }
-        int i = 99;
-      }
-    }
-    //NSLog(@"reusing tile - %@", tile);
-  }
-
   tileView.row = row;
   tileView.column = column;
-  //tile.backgroundColor = [UIColor randomColor];
-  [tileView redraw];
-
+  [tileView invalidateContent];
   return tileView;
 }
 
-#pragma mark UIScrollViewDelegate
+#pragma mark UIScrollViewDelegate overrides
 
+// -----------------------------------------------------------------------------
+/// @brief UIScrollViewDelegate protocol method.
+// -----------------------------------------------------------------------------
 - (void) scrollViewDidScroll:(UIScrollView*)scrollView
 {
   // Only synchronize if the board view is the trigger. Coordinate label views
@@ -242,6 +311,9 @@
     [self synchronizeContentOffset];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIScrollViewDelegate protocol method.
+// -----------------------------------------------------------------------------
 - (UIView*) viewForZoomingInScrollView:(UIScrollView*)scrollView
 {
   if (scrollView == self.boardView)
@@ -259,37 +331,32 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewWillBeginZooming:(UIScrollView*)scrollView withView:(UIView*)view
 {
-  // Temporarily hide coordinate label views while a zoom operation is in
-  // progress. Synchronizing coordinate label views' zoom scale, content offset
+  // Temporarily hide coordinate labels while a zoom operation is in progress.
+  // Synchronizing coordinate label scroll views' zoom scale, content offset
   // and frame size while the zoom operation is in progress is a lot of effort,
   // and even though the views are zoomed formally correct the end result looks
-  // like shit (because the labels are not part of the Play view they zoom
+  // like shit (because the labels are not part of the BoardView they zoom
   // differently). So instead of trying hard and failing we just dispense with
   // the effort.
   [self updateCoordinateLabelsVisibleState];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIScrollViewDelegate protocol method.
+// -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
 {
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   // todo xxx we should not use the scale parameter after this line, because
   // playviewmetrics may have made some adjustments (snap-to, optimizing for
   // tile size, etc.)
-  [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithZoomScale:scale];
-  //xxxNSLog(@"scrollViewDidEndZooming: new absolute zoom scale = %f", [ApplicationDelegate sharedDelegate].playViewMetrics.zoomScale);
+  [metrics updateWithZoomScale:scale];
 
+  // Remember content offset and size so that we can re-apply them after we
+  // reset the zoom scale to 1.0
   CGPoint contentOffset = scrollView.contentOffset;
-  CGSize  contentSize   = scrollView.contentSize;
-  CGSize  containerSize = self.boardView.tileContainerView.frame.size;
-
-/*xxx
-   NSLog(@"scrollViewDidEndZooming,\n content size w = %f, h = %f,\n content offset x = %f,\n y = %f, container view w = %f, h = %f, \n board view transform = %@,\n container view transform = %@,\n first subview transform = %@",
-         contentSize.width, contentSize.height,
-         contentOffset.x, contentOffset.y,
-         containerSize.width, containerSize.height,
-         NSStringFromCGAffineTransform(self.boardView.transform),
-         NSStringFromCGAffineTransform(self.boardView.tileContainerView.transform),
-         NSStringFromCGAffineTransform(((UIView*)[[self.boardView.tileContainerView subviews] objectAtIndex:0]).transform));
-*/
+  CGSize contentSize = scrollView.contentSize;
+  CGSize containerSize = self.boardView.tileContainerView.frame.size;
 
   // Big change here: This resets the scroll view's contentSize and
   // contentOffset, and also the tile container view's frame, bounds and
@@ -300,7 +367,7 @@
   scrollView.minimumZoomScale = scrollView.minimumZoomScale / scale;
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
-  // restore content offset, content size, and container size
+  // Restore properties that were changed when the zoom scale was reset to 1.0
   // todo xxx we should get contentSize and containerSize (they should be equal)
   // from playviewmetrics because playViewmetrics may have made some
   // adjustments to the zoom scale, which would mean that the sizes we
@@ -316,129 +383,64 @@
   scrollView.contentSize = contentSize;
   self.boardView.tileContainerView.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
 
-
   [self synchronizeZoomScales];
   [self synchronizeContentOffset];
+  [self synchronizeContentSize];
 
-
-  CGSize coordinateLabelsLetterViewContentSize;
-  coordinateLabelsLetterViewContentSize.width = contentSize.width;
-  coordinateLabelsLetterViewContentSize.height = self.boardView.tileSize.height;
-  self.coordinateLabelsLetterView.contentSize = coordinateLabelsLetterViewContentSize;
-  self.coordinateLabelsLetterView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsLetterViewContentSize.width, coordinateLabelsLetterViewContentSize.height);
-
-  CGSize coordinateLabelsNumberViewContentSize;
-  coordinateLabelsNumberViewContentSize.width = self.boardView.tileSize.width;
-  coordinateLabelsNumberViewContentSize.height = contentSize.height;
-  self.coordinateLabelsNumberView.contentSize = coordinateLabelsNumberViewContentSize;
-  self.coordinateLabelsNumberView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsNumberViewContentSize.width, coordinateLabelsNumberViewContentSize.height);
-
-  // throw out all tiles so they'll reload at the new resolution
-  // TODO xxx is this really necessary? we don't work with resolutions, so
-  // layoutSubviews in TiledScrollView should do its work without a reload
-/*
-  [self.boardView reloadData];
-  [self.coordinateLabelsLetterView reloadData];
-  [self.coordinateLabelsNumberView reloadData];
-*/ 
-
+  // Show coordinate labels that were temporarily hidden when the zoom
+  // operation started
   [self updateCoordinateLabelsVisibleState];
+}
 
-  /*xxx
-  if (scrollView == self.boardView)
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) updateCoordinateLabelsVisibleState
+{
+  BOOL hidden;
+  if (self.boardView.zooming)
   {
-    // after a zoom, check to see if we should change the resolution of our tiles
-    [self updateResolution];
+    hidden = YES;
   }
-   */
+  else
+  {
+    PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    hidden = playViewModel.displayCoordinates ? NO : YES;
+  }
+  self.coordinateLabelsLetterView.hidden = hidden;
+  self.coordinateLabelsNumberView.hidden = hidden;
 }
 
-#pragma mark UIScrollView overrides
-
-/*xxx
-// the scrollViewDidEndZooming: delegate method is only called after an *animated* zoom. We also need to update our
-// resolution for non-animated zooms. So we also override the new setZoomScale:animated: method on UIScrollView
-- (void) setZoomScale:(float)scale animated:(BOOL)animated
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// Updates the play view metrics rectangle, triggering a redraw in all tiles.
+// -----------------------------------------------------------------------------
+- (void) updatePlayViewMetricsRect
 {
-  [super setZoomScale:scale animated:animated];
-
-  // the delegate callback will catch the animated case, so just cover the non-animated case
-  if (!animated) {
-    [self updateResolution];
-  }
-}
-*/
-
-/*****************************************************************************************/
-/* The following method handles changing the resolution of our tiles when our zoomScale  */
-/* gets below 50% or above 100%. When we fall below 50%, we lower the resolution 1 step, */
-/* and when we get above 100% we raise it 1 step. The resolution is stored as a power of */
-/* 2, so -1 represents 50%, and 0 represents 100%, and so on.                            */
-/*****************************************************************************************/
-- (void)updateResolution
-{
-/* xxx
-  // delta will store the number of steps we should change our resolution by. If we've fallen below
-  // a 25% zoom scale, for example, we should lower our resolution by 2 steps so delta will equal -2.
-  // (Provided that lowering our resolution 2 steps stays within the limit imposed by minimumResolution.)
-  int delta = 0;
-
-  // check if we should decrease our resolution
-  for (int thisResolution = minimumResolution; thisResolution < resolution; thisResolution++) {
-    int thisDelta = thisResolution - resolution;
-    // we decrease resolution by 1 step if the zoom scale is <= 0.5 (= 2^-1); by 2 steps if <= 0.25 (= 2^-2), and so on
-    float scaleCutoff = pow(2, thisDelta);
-    if ([self zoomScale] <= scaleCutoff) {
-      delta = thisDelta;
-      break;
-    }
-  }
-
-  // if we didn't decide to decrease the resolution, see if we should increase it
-  if (delta == 0) {
-    for (int thisResolution = maximumResolution; thisResolution > resolution; thisResolution--) {
-      int thisDelta = thisResolution - resolution;
-      // we increase by 1 step if the zoom scale is > 1 (= 2^0); by 2 steps if > 2 (= 2^1), and so on
-      float scaleCutoff = pow(2, thisDelta - 1);
-      if ([self zoomScale] > scaleCutoff) {
-        delta = thisDelta;
-        break;
-      }
-    }
-  }
-
-  if (delta != 0) {
-    resolution += delta;
-
-    // if we're increasing resolution by 1 step we'll multiply our zoomScale by 0.5; up 2 steps multiply by 0.25, etc
-    // if we're decreasing resolution by 1 step we'll multiply our zoomScale by 2.0; down 2 steps by 4.0, etc
-    float zoomFactor = pow(2, delta * -1);
-
-    // save content offset, content size, and tileContainer size so we can restore them when we're done
-    // (contentSize is not equal to containerSize when the container is smaller than the frame of the scrollView.)
-    CGPoint contentOffset = [self contentOffset];
-    CGSize  contentSize   = [self contentSize];
-    CGSize  containerSize = [tileContainerView frame].size;
-
-    // adjust all zoom values (they double as we cut resolution in half)
-    [self setMaximumZoomScale:[self maximumZoomScale] * zoomFactor];
-    [self setMinimumZoomScale:[self minimumZoomScale] * zoomFactor];
-    [super setZoomScale:[self zoomScale] * zoomFactor];
-
-    // restore content offset, content size, and container size
-    [self setContentOffset:contentOffset];
-    [self setContentSize:contentSize];
-    [tileContainerView setFrame:CGRectMake(0, 0, containerSize.width, containerSize.height)];
-
-    // throw out all tiles so they'll reload at the new resolution
-    [self reloadData];
-  }
- */
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  CGRect newPlayViewMetricsRect = CGRectZero;
+  newPlayViewMetricsRect.size = self.view.bounds.size;
+  newPlayViewMetricsRect.size.width *= metrics.zoomScale;
+  newPlayViewMetricsRect.size.height *= metrics.zoomScale;
+  [metrics updateWithRect:newPlayViewMetricsRect];
 }
 
-- (void) goGameDidCreate:(NSNotification*)notification
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// Synchronizes the coordinate label scroll views with the master scroll view.
+// -----------------------------------------------------------------------------
+- (void) synchronizeZoomScales
 {
-  [[ApplicationDelegate sharedDelegate].playViewMetrics updateWithBoardSize:[GoGame sharedGame].board.size];
+  self.coordinateLabelsLetterView.zoomScale = self.boardView.zoomScale;
+  self.coordinateLabelsLetterView.minimumZoomScale = self.boardView.minimumZoomScale;
+  self.coordinateLabelsLetterView.maximumZoomScale = self.boardView.maximumZoomScale;
+  self.coordinateLabelsNumberView.zoomScale = self.boardView.zoomScale;
+  self.coordinateLabelsNumberView.minimumZoomScale = self.boardView.minimumZoomScale;
+  self.coordinateLabelsNumberView.maximumZoomScale = self.boardView.maximumZoomScale;
 }
 
 // -----------------------------------------------------------------------------
@@ -461,36 +463,21 @@
 ///
 /// Synchronizes the coordinate label scroll views with the master scroll view.
 // -----------------------------------------------------------------------------
-- (void) synchronizeZoomScales
+- (void) synchronizeContentSize
 {
-  self.coordinateLabelsLetterView.zoomScale = self.boardView.zoomScale;
-  self.coordinateLabelsLetterView.minimumZoomScale = self.boardView.minimumZoomScale;
-  self.coordinateLabelsLetterView.maximumZoomScale = self.boardView.maximumZoomScale;
-  self.coordinateLabelsNumberView.zoomScale = self.boardView.zoomScale;
-  self.coordinateLabelsNumberView.minimumZoomScale = self.boardView.minimumZoomScale;
-  self.coordinateLabelsNumberView.maximumZoomScale = self.boardView.maximumZoomScale;
-}
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) updateCoordinateLabelsVisibleState
-{
-  BOOL hidden;
-  if (self.boardView.zooming)
-  {
-    hidden = YES;
-  }
-  else
-  {
-    hidden = NO;
-/*xxx
-    PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-    hidden = playViewModel.displayCoordinates ? NO : YES;
-*/
-  }
-  self.coordinateLabelsLetterView.hidden = hidden;
-  self.coordinateLabelsNumberView.hidden = hidden;
+  CGSize coordinateLabelsLetterViewContentSize;
+  coordinateLabelsLetterViewContentSize.width = self.boardView.contentSize.width;
+  coordinateLabelsLetterViewContentSize.height = metrics.tileSize.height;
+  self.coordinateLabelsLetterView.contentSize = coordinateLabelsLetterViewContentSize;
+  self.coordinateLabelsLetterView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsLetterViewContentSize.width, coordinateLabelsLetterViewContentSize.height);
+
+  CGSize coordinateLabelsNumberViewContentSize;
+  coordinateLabelsNumberViewContentSize.width = metrics.tileSize.width;
+  coordinateLabelsNumberViewContentSize.height = self.boardView.contentSize.height;
+  self.coordinateLabelsNumberView.contentSize = coordinateLabelsNumberViewContentSize;
+  self.coordinateLabelsNumberView.tileContainerView.frame = CGRectMake(0, 0, coordinateLabelsNumberViewContentSize.width, coordinateLabelsNumberViewContentSize.height);
 }
 
 @end

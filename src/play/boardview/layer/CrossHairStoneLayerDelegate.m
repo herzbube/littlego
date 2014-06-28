@@ -106,7 +106,7 @@ CGLayerRef crossHairStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) invalidateDrawingRect
 {
-  self.dirtyRect = CGRectZero;
+  self.drawingRect = CGRectZero;
 }
 
 // -----------------------------------------------------------------------------
@@ -125,6 +125,7 @@ CGLayerRef crossHairStoneLayer;
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
+    case BVLDEventBoardSizeChanged:
     {
       self.crossHairPoint = nil;
       [self invalidateLayers];
@@ -133,14 +134,12 @@ CGLayerRef crossHairStoneLayer;
       self.dirty = true;
       break;
     }
-    case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
-      self.crossHairPoint = nil;
-      [self invalidateLayers];
       [self invalidateDrawingRect];
       [self invalidateDirtyRect];
       self.dirty = true;
-      break;      
+      break;
     }
     case BVLDEventCrossHairChanged:
     {

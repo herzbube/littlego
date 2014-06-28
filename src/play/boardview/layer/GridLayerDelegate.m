@@ -76,14 +76,14 @@ CGLayerRef starPointLayer;
   switch (event)
   {
     case BVLDEventBoardGeometryChanged:
+    case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayer];
       self.dirty = true;
       break;
     }
-    case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
-      [self invalidateLayer];
       self.dirty = true;
       break;
     }

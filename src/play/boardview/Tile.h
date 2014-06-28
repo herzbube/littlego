@@ -22,6 +22,7 @@
 /// The tile with row/column = 0/0 is in the upper-left corner.
 // -----------------------------------------------------------------------------
 @protocol Tile <NSObject>
+- (void) invalidateContent;
 @property(nonatomic, assign) int row;
 @property(nonatomic, assign) int column;
 @end

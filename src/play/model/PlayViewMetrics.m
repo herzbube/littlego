@@ -129,7 +129,7 @@
 - (void) setupMainProperties
 {
   self.zoomScale = 1.0f;
-  // todo xxx assign tileSize
+  self.tileSize = CGSizeMake(128, 128);
   self.rect = CGRectZero;
   self.boardSize = GoBoardSizeUndefined;
   self.displayCoordinates = [ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates;
