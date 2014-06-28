@@ -234,6 +234,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  [playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -241,6 +243,8 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  [playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -420,6 +424,23 @@
   CGPoint coordinateLabelsNumberViewContentOffset = self.coordinateLabelsNumberView.contentOffset;
   coordinateLabelsNumberViewContentOffset.y = self.boardView.contentOffset.y;
   self.coordinateLabelsNumberView.contentOffset = coordinateLabelsNumberViewContentOffset;
+}
+
+#pragma mark - KVO notification
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+  if (object == playViewModel)
+  {
+    if ([keyPath isEqualToString:@"displayCoordinates"])
+    {
+      [self updateCoordinateLabelsVisibleState];
+    }
+  }
 }
 
 @end
