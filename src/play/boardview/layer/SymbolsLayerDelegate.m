@@ -79,6 +79,10 @@ CGLayerRef whiteLastMoveLayer;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.playViewModel = nil;
+  self.boardPositionModel = nil;
+  self.paragraphStyle = nil;
+  self.nextMoveShadow = nil;
   [self invalidateLayers];
   [super dealloc];
 }

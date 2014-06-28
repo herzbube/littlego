@@ -75,6 +75,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  [self.layerDelegate.layer removeFromSuperlayer];
   self.layerDelegate = nil;
   [super dealloc];
 }

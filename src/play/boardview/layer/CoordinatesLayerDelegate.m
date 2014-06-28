@@ -66,6 +66,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this CoordinatesLayerDelegate object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.textColor = nil;
+  self.shadow = nil;
+  self.paragraphStyle = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo

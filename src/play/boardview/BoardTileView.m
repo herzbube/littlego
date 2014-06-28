@@ -87,6 +87,8 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
+    [layerDelegate.layer removeFromSuperlayer];
   self.layerDelegates = nil;
   [super dealloc];
 }
