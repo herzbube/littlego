@@ -20,8 +20,10 @@
 #import "BoardTileView.h"
 #import "BoardView.h"
 #import "CoordinateLabelsTileView.h"
+#import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
+#import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/PlayViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../go/GoBoard.h"
@@ -40,6 +42,8 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
+@property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
+@property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @end
 
 
@@ -76,6 +80,8 @@
   self.coordinateLabelsNumberView = nil;
   self.panGestureController = nil;
   self.tapGestureController = nil;
+  self.doubleTapGestureController = nil;
+  self.twoFingerTapGestureController = nil;
   [super dealloc];
 }
 
@@ -86,9 +92,8 @@
 {
   self.panGestureController = [[[PanGestureController alloc] init] autorelease];
   self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
-  // todo xxx
-  //self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
-  //self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
+  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
+  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
 }
 
 #pragma mark - loadView and helpers
@@ -201,9 +206,8 @@
 {
   self.panGestureController.boardView = self.boardView;
   self.tapGestureController.boardView = self.boardView;
-  // todo xxx
-  //self.doubleTapGestureController.scrollView = self.scrollView;
-  //self.twoFingerTapGestureController.scrollView = self.scrollView;
+  self.doubleTapGestureController.scrollView = self.boardView;
+  self.twoFingerTapGestureController.scrollView = self.boardView;
 }
 
 #pragma mark - viewWillLayoutSubviews
