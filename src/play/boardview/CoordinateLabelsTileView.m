@@ -25,9 +25,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for BoardTileView.
+/// @brief Class extension with private properties for CoordinateLabelsTileView.
 // -----------------------------------------------------------------------------
 @interface CoordinateLabelsTileView()
+/// @brief Prevents double-unregistering of notification responders by
+/// willMoveToSuperview: followed by dealloc, or double-registering by two
+/// consecutive invocations of willMoveToSuperview: where the argument is not
+/// nil.
+///
+/// With the current tiling implementation these precautions are probably
+/// unnecessary because the two scenarios should never occur. The keyword is
+/// "should" - we are not entirely sure how things might behave in production,
+/// so we are playing it safe. Also, we guard against future implementation
+/// changes.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) BVCoordinatesLayerDelegate* layerDelegate;
 @property(nonatomic, assign) bool drawLayerWasDelayed;
 @end
@@ -58,14 +69,11 @@
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
-  _row = -1;
-  _column = -1;
-
-  [self setupLayer];
-  [self setupNotificationResponders];
-
+  self.row = -1;
+  self.column = -1;
+  self.notificationRespondersAreSetup = false;
   self.drawLayerWasDelayed = false;
-
+  [self setupLayer];
   return self;
 }
 
@@ -101,6 +109,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -115,6 +127,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   [metrics removeObserver:self forKeyPath:@"rect"];
@@ -159,26 +175,6 @@
 }
 
 #pragma mark - Tile protocol overrides
-
-// -----------------------------------------------------------------------------
-/// @brief Tile protocol method
-// -----------------------------------------------------------------------------
-- (void) updateWithRow:(int)row column:(int)column
-{
-  bool shouldInvalidateContent = false;
-  if (_row != row)
-  {
-    _row = row;
-    shouldInvalidateContent = true;
-  }
-  if (_column != column)
-  {
-    _column = column;
-    shouldInvalidateContent = true;
-  }
-  if (shouldInvalidateContent)
-    [self invalidateContent];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Tile protocol method
@@ -238,6 +234,33 @@
 }
 
 #pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// If this CoordinateLabelsTileView is added to a superview (i.e.
+/// @a newSuperview is not nil), this CoordinateLabelsTileView registers to
+/// receive notifications so that it can participate in drawing. It also
+/// invalidates the content of its layers so that it redraws in the next
+/// drawing cycle. This make sures that the tile view is drawing its content
+/// the first time after it is newly allocated, or after it is reused.
+///
+/// If this CoordinateLabelsTileView is removed from its superview (i.e.
+/// @a newSuperview is nil), this CoordinateLabelsTileView unregisters from all
+/// notifications so that it no longer takes part in the drawing process.
+// -----------------------------------------------------------------------------
+- (void) willMoveToSuperview:(UIView*)newSuperview
+{
+  if (newSuperview)
+  {
+    [self setupNotificationResponders];
+    [self invalidateContent];
+  }
+  else
+  {
+    [self removeNotificationResponders];
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief UIView method.

@@ -242,7 +242,8 @@
     else if (tiledScrollView == self.coordinateLabelsNumberView)
       tileView = [[[CoordinateLabelsTileView alloc] initWithFrame:CGRectZero axis:CoordinateLabelAxisNumber] autorelease];
   }
-  [tileView updateWithRow:row column:column];
+  tileView.row = row;
+  tileView.column = column;
   return tileView;
 }
 

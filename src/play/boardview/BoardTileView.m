@@ -37,6 +37,17 @@
 /// @brief Class extension with private properties for BoardTileView.
 // -----------------------------------------------------------------------------
 @interface BoardTileView()
+/// @brief Prevents double-unregistering of notification responders by
+/// willMoveToSuperview: followed by dealloc, or double-registering by two
+/// consecutive invocations of willMoveToSuperview: where the argument is not
+/// nil.
+///
+/// With the current tiling implementation these precautions are probably
+/// unnecessary because the two scenarios should never occur. The keyword is
+/// "should" - we are not entirely sure how things might behave in production,
+/// so we are playing it safe. Also, we guard against future implementation
+/// changes.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, assign) bool drawLayersWasDelayed;
 @property(nonatomic, retain) NSArray* layerDelegates;
 @property(nonatomic, assign) BVGridLayerDelegate* gridLayerDelegate;
@@ -73,11 +84,11 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
-  _row = -1;
-  _column = -1;
+  self.row = -1;
+  self.column = -1;
+  self.notificationRespondersAreSetup = false;
   self.drawLayersWasDelayed = false;
   [self setupLayers];
-  [self setupNotificationResponders];
   return self;
 }
 
@@ -121,6 +132,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
@@ -159,6 +174,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   PlayViewMetrics* metrics = appDelegate.playViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
@@ -367,26 +386,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Tile protocol method
 // -----------------------------------------------------------------------------
-- (void) updateWithRow:(int)row column:(int)column
-{
-  bool shouldInvalidateContent = false;
-  if (_row != row)
-  {
-    _row = row;
-    shouldInvalidateContent = true;
-  }
-  if (_column != column)
-  {
-    _column = column;
-    shouldInvalidateContent = true;
-  }
-  if (shouldInvalidateContent)
-    [self invalidateContent];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Tile protocol method
-// -----------------------------------------------------------------------------
 - (void) invalidateContent
 {
   [self notifyLayerDelegates:BVLDEventInvalidateContent eventInfo:nil];
@@ -579,6 +578,33 @@
 }
 
 #pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// If this BoardTileView is added to a superview (i.e. @a newSuperview is not
+/// nil), this BoardTileView registers to receive notifications so that it can
+/// participate in drawing. It also invalidates the content in all of its
+/// layers so that they redraw in the next drawing cycle. This make sures that
+/// the tile view is drawing its content the first time after it is newly
+/// allocated, or after it is reused.
+///
+/// If this BoardTileView is removed from its superview (i.e. @a newSuperview is
+/// nil), this BoardTileView unregisters from all notifications so that it no
+/// longer takes part in the drawing process.
+// -----------------------------------------------------------------------------
+- (void) willMoveToSuperview:(UIView*)newSuperview
+{
+  if (newSuperview)
+  {
+    [self setupNotificationResponders];
+    [self invalidateContent];
+  }
+  else
+  {
+    [self removeNotificationResponders];
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief UIView method.
