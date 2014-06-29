@@ -17,6 +17,7 @@
 
 // Project includes
 #import "StonesLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoBoard.h"
@@ -26,9 +27,6 @@
 #import "../../../go/GoVertex.h"
 #import "../../../ui/UiUtilities.h"
 
-
-CGLayerRef blackStoneLayer;
-CGLayerRef whiteStoneLayer;
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for BVStonesLayerDelegate.
@@ -54,8 +52,6 @@ CGLayerRef whiteStoneLayer;
   if (! self)
     return nil;
   self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
-  blackStoneLayer = NULL;
-  whiteStoneLayer = NULL;
   return self;
 }
 
@@ -65,7 +61,6 @@ CGLayerRef whiteStoneLayer;
 - (void) dealloc
 {
   self.drawingPoints = nil;
-  [self invalidateLayers];
   [super dealloc];
 }
 
@@ -74,16 +69,9 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
-  if (blackStoneLayer)
-  {
-    CGLayerRelease(blackStoneLayer);
-    blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
-  if (whiteStoneLayer)
-  {
-    CGLayerRelease(whiteStoneLayer);
-    whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:BlackStoneLayerType];
+  [cache invalidateLayerOfType:WhiteStoneLayerType];
 }
 
 // -----------------------------------------------------------------------------
@@ -136,10 +124,21 @@ CGLayerRef whiteStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
+  {
     blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
+    CGLayerRelease(blackStoneLayer);
+  }
+  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
+  {
     whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
+    CGLayerRelease(whiteStoneLayer);
+  }
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.playViewMetrics];

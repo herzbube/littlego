@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SymbolsLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardPositionModel.h"
 #import "../../model/PlayViewMetrics.h"
@@ -28,10 +29,6 @@
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
-
-
-CGLayerRef blackLastMoveLayer;
-CGLayerRef whiteLastMoveLayer;
 
 
 // -----------------------------------------------------------------------------
@@ -69,8 +66,6 @@ CGLayerRef whiteLastMoveLayer;
   self.nextMoveShadow.shadowColor = [UIColor blackColor];
   self.nextMoveShadow.shadowBlurRadius = 5.0;
   self.nextMoveShadow.shadowOffset = CGSizeMake(1.0, 1.0);
-  blackLastMoveLayer = NULL;
-  whiteLastMoveLayer = NULL;
   return self;
 }
 
@@ -83,7 +78,6 @@ CGLayerRef whiteLastMoveLayer;
   self.boardPositionModel = nil;
   self.paragraphStyle = nil;
   self.nextMoveShadow = nil;
-  [self invalidateLayers];
   [super dealloc];
 }
 
@@ -92,16 +86,9 @@ CGLayerRef whiteLastMoveLayer;
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
-  if (blackLastMoveLayer)
-  {
-    CGLayerRelease(blackLastMoveLayer);
-    blackLastMoveLayer = NULL;
-  }
-  if (whiteLastMoveLayer)
-  {
-    CGLayerRelease(whiteLastMoveLayer);
-    whiteLastMoveLayer = NULL;
-  }
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:BlackLastMoveLayerType];
+  [cache invalidateLayerOfType:WhiteLastMoveLayerType];
 }
 
 // -----------------------------------------------------------------------------
@@ -155,14 +142,24 @@ CGLayerRef whiteLastMoveLayer;
     return;
   DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
   if (! blackLastMoveLayer)
+  {
     blackLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
+    [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
+    CGLayerRelease(blackLastMoveLayer);
+  }
+  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
   if (! whiteLastMoveLayer)
+  {
     whiteLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
+    [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
+    CGLayerRelease(whiteLastMoveLayer);
+  }
 
   CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                             metrics:self.playViewMetrics];
-
   if ([self shouldDisplayMoveNumbers])
   {
     [self drawMoveNumbersInContext:context inTileWithRect:canvasRectTile];

@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TerritoryLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
@@ -28,15 +29,6 @@
 #import "../../../go/GoScore.h"
 #import "../../../go/GoVertex.h"
 #import "../../../utility/UIColorAdditions.h"
-
-
-CGLayerRef blackTerritoryLayer;
-CGLayerRef whiteTerritoryLayer;
-CGLayerRef inconsistentFillColorTerritoryLayer;
-CGLayerRef inconsistentDotSymbolTerritoryLayer;
-CGLayerRef deadStoneSymbolLayer;
-CGLayerRef blackSekiStoneSymbolLayer;
-CGLayerRef whiteSekiStoneSymbolLayer;
 
 
 // -----------------------------------------------------------------------------
@@ -77,13 +69,6 @@ CGLayerRef whiteSekiStoneSymbolLayer;
   self.territoryColorBlack = [UIColor colorWithWhite:0.0 alpha:scoringModel.alphaTerritoryColorBlack];
   self.territoryColorWhite = [UIColor colorWithWhite:1.0 alpha:scoringModel.alphaTerritoryColorWhite];
   self.territoryColorInconsistent = [scoringModel.inconsistentTerritoryFillColor colorWithAlphaComponent:scoringModel.inconsistentTerritoryFillColorAlpha];
-  blackTerritoryLayer = NULL;
-  whiteTerritoryLayer = NULL;
-  inconsistentFillColorTerritoryLayer = NULL;
-  inconsistentDotSymbolTerritoryLayer = NULL;
-  deadStoneSymbolLayer = NULL;
-  blackSekiStoneSymbolLayer = NULL;
-  whiteSekiStoneSymbolLayer = NULL;
   return self;
 }
 
@@ -110,41 +95,14 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
-  if (blackTerritoryLayer)
-  {
-    CGLayerRelease(blackTerritoryLayer);
-    blackTerritoryLayer = NULL;
-  }
-  if (whiteTerritoryLayer)
-  {
-    CGLayerRelease(whiteTerritoryLayer);
-    whiteTerritoryLayer = NULL;
-  }
-  if (inconsistentFillColorTerritoryLayer)
-  {
-    CGLayerRelease(inconsistentFillColorTerritoryLayer);
-    inconsistentFillColorTerritoryLayer = NULL;
-  }
-  if (inconsistentDotSymbolTerritoryLayer)
-  {
-    CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
-    inconsistentDotSymbolTerritoryLayer = NULL;
-  }
-  if (deadStoneSymbolLayer)
-  {
-    CGLayerRelease(deadStoneSymbolLayer);
-    deadStoneSymbolLayer = NULL;
-  }
-  if (blackSekiStoneSymbolLayer)
-  {
-    CGLayerRelease(blackSekiStoneSymbolLayer);
-    blackSekiStoneSymbolLayer = NULL;
-  }
-  if (whiteSekiStoneSymbolLayer)
-  {
-    CGLayerRelease(whiteSekiStoneSymbolLayer);
-    whiteSekiStoneSymbolLayer = NULL;
-  }
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:BlackTerritoryLayerType];
+  [cache invalidateLayerOfType:WhiteTerritoryLayerType];
+  [cache invalidateLayerOfType:InconsistentFillColorTerritoryLayerType];
+  [cache invalidateLayerOfType:InconsistentDotSymbolTerritoryLayerType];
+  [cache invalidateLayerOfType:DeadStoneSymbolLayerType];
+  [cache invalidateLayerOfType:BlackSekiStoneSymbolLayerType];
+  [cache invalidateLayerOfType:WhiteSekiStoneSymbolLayerType];
 }
 
 // -----------------------------------------------------------------------------
@@ -236,24 +194,60 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) createLayersIfNecessaryWithContext:(CGContextRef)context
 {
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
   if (! blackTerritoryLayer)
+  {
     blackTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
+    [cache setLayer:blackTerritoryLayer ofType:BlackTerritoryLayerType];
+    CGLayerRelease(blackTerritoryLayer);
+  }
+  CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
   if (! whiteTerritoryLayer)
+  {
     whiteTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.playViewMetrics);
+    [cache setLayer:whiteTerritoryLayer ofType:WhiteTerritoryLayerType];
+    CGLayerRelease(whiteTerritoryLayer);
+  }
+  CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   if (! inconsistentFillColorTerritoryLayer)
+  {
     inconsistentFillColorTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.playViewMetrics);
+    [cache setLayer:inconsistentFillColorTerritoryLayer ofType:InconsistentFillColorTerritoryLayerType];
+    CGLayerRelease(inconsistentFillColorTerritoryLayer);
+  }
+  CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
   if (! inconsistentDotSymbolTerritoryLayer)
+  {
     inconsistentDotSymbolTerritoryLayer = BVCreateTerritoryLayer(context,
                                                                  TerritoryLayerTypeInconsistentDotSymbol,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolColor,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
                                                                  self.playViewMetrics);
+    [cache setLayer:inconsistentDotSymbolTerritoryLayer ofType:InconsistentDotSymbolTerritoryLayerType];
+    CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
+  }
+  CGLayerRef deadStoneSymbolLayer = [cache layerOfType:DeadStoneSymbolLayerType];
   if (! deadStoneSymbolLayer)
+  {
     deadStoneSymbolLayer = BVCreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
+    [cache setLayer:deadStoneSymbolLayer ofType:DeadStoneSymbolLayerType];
+    CGLayerRelease(deadStoneSymbolLayer);
+  }
+  CGLayerRef blackSekiStoneSymbolLayer = [cache layerOfType:BlackSekiStoneSymbolLayerType];
   if (! blackSekiStoneSymbolLayer)
+  {
     blackSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
+    [cache setLayer:blackSekiStoneSymbolLayer ofType:BlackSekiStoneSymbolLayerType];
+    CGLayerRelease(blackSekiStoneSymbolLayer);
+  }
+  CGLayerRef whiteSekiStoneSymbolLayer = [cache layerOfType:WhiteSekiStoneSymbolLayerType];
   if (! whiteSekiStoneSymbolLayer)
+  {
     whiteSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
+    [cache setLayer:whiteSekiStoneSymbolLayer ofType:WhiteSekiStoneSymbolLayerType];
+    CGLayerRelease(whiteSekiStoneSymbolLayer);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -261,6 +255,12 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) drawTerritoryWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect withBoard:(GoBoard*)board
 {
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
+  CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
+  CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
+  CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
+
   [self.drawingPointsTerritory enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryLayerTypeAsNumber, BOOL* stop){
     enum TerritoryLayerType territoryLayerType = [territoryLayerTypeAsNumber intValue];
     CGLayerRef layerToDraw = 0;
@@ -295,6 +295,11 @@ CGLayerRef whiteSekiStoneSymbolLayer;
 // -----------------------------------------------------------------------------
 - (void) drawStoneGroupStateWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect withBoard:(GoBoard*)board
 {
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef deadStoneSymbolLayer = [cache layerOfType:DeadStoneSymbolLayerType];
+  CGLayerRef blackSekiStoneSymbolLayer = [cache layerOfType:BlackSekiStoneSymbolLayerType];
+  CGLayerRef whiteSekiStoneSymbolLayer = [cache layerOfType:WhiteSekiStoneSymbolLayerType];
+
   [self.drawingPointsStoneGroupState enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneGroupStateAsNumber, BOOL* stop){
     GoPoint* point = [board pointAtVertex:vertexString];
     enum GoStoneGroupState stoneGroupState = [stoneGroupStateAsNumber intValue];

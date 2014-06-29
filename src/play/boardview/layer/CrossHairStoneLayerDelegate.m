@@ -17,6 +17,7 @@
 
 // Project includes
 #import "CrossHairStoneLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoBoardPosition.h"
@@ -24,11 +25,6 @@
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-
-
-CGLayerRef blackStoneLayer;
-CGLayerRef whiteStoneLayer;
-CGLayerRef crossHairStoneLayer;
 
 
 // -----------------------------------------------------------------------------
@@ -62,9 +58,6 @@ CGLayerRef crossHairStoneLayer;
   self.crossHairPoint = nil;
   self.drawingRect = CGRectZero;
   self.dirtyRect = CGRectZero;
-  blackStoneLayer = NULL;
-  whiteStoneLayer = NULL;
-  crossHairStoneLayer = NULL;
   return self;
 }
 
@@ -75,7 +68,6 @@ CGLayerRef crossHairStoneLayer;
 - (void) dealloc
 {
   self.crossHairPoint = nil;
-  [self invalidateLayers];
   [super dealloc];
 }
 
@@ -84,21 +76,10 @@ CGLayerRef crossHairStoneLayer;
 // -----------------------------------------------------------------------------
 - (void) invalidateLayers
 {
-  if (blackStoneLayer)
-  {
-    CGLayerRelease(blackStoneLayer);
-    blackStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
-  if (whiteStoneLayer)
-  {
-    CGLayerRelease(whiteStoneLayer);
-    whiteStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
-  if (crossHairStoneLayer)
-  {
-    CGLayerRelease(crossHairStoneLayer);
-    crossHairStoneLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:BlackStoneLayerType];
+  [cache invalidateLayerOfType:WhiteStoneLayerType];
+  [cache invalidateLayerOfType:CrossHairStoneLayerType];
 }
 
 // -----------------------------------------------------------------------------
@@ -204,12 +185,28 @@ CGLayerRef crossHairStoneLayer;
   if (! self.crossHairPoint)
     return;
 
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
+  {
     blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
+    CGLayerRelease(blackStoneLayer);
+  }
+  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
+  {
     whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
+    CGLayerRelease(whiteStoneLayer);
+  }
+  CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
   if (! crossHairStoneLayer)
+  {
     crossHairStoneLayer = BVCreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
+    [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
+    CGLayerRelease(crossHairStoneLayer);
+  }
 
   CGLayerRef stoneLayer;
   if (self.crossHairPoint.hasStone)

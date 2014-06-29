@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GridLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
@@ -24,9 +25,6 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-
-
-CGLayerRef starPointLayer;
 
 
 @implementation BVGridLayerDelegate
@@ -42,7 +40,6 @@ CGLayerRef starPointLayer;
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
-  starPointLayer = nil;
   return self;
 }
 
@@ -52,20 +49,7 @@ CGLayerRef starPointLayer;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self invalidateLayer];
   [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invalidates the star point layer.
-// -----------------------------------------------------------------------------
-- (void) invalidateLayer
-{
-  if (starPointLayer)
-  {
-    CGLayerRelease(starPointLayer);
-    starPointLayer = NULL;  // when it is next invoked, drawLayer:inContext:() will re-create the layer
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -78,7 +62,7 @@ CGLayerRef starPointLayer;
     case BVLDEventBoardGeometryChanged:
     case BVLDEventBoardSizeChanged:
     {
-      [self invalidateLayer];
+      [[BoardViewCGLayerCache sharedCache] invalidateLayerOfType:StarPointLayerType];
       self.dirty = true;
       break;
     }
@@ -99,9 +83,6 @@ CGLayerRef starPointLayer;
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  if (! starPointLayer)
-    starPointLayer = BVCreateStarPointLayer(context, self.playViewMetrics);
-
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.playViewMetrics];
   [self drawGridLinesWithContext:context inTileRect:tileRect];
@@ -131,6 +112,15 @@ CGLayerRef starPointLayer;
 // -----------------------------------------------------------------------------
 - (void) drawStarPointsWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect
 {
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef starPointLayer = [cache layerOfType:StarPointLayerType];
+  if (! starPointLayer)
+  {
+    starPointLayer = BVCreateStarPointLayer(context, self.playViewMetrics);
+    [cache setLayer:starPointLayer ofType:StarPointLayerType];
+    CGLayerRelease(starPointLayer);
+  }
+
   for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
   {
     [BoardViewDrawingHelper drawLayer:starPointLayer

@@ -330,6 +330,8 @@
 		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
+		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
+		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDB0A2FE152B6C62003B2BBF /* 42-info.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FC152B6C62003B2BBF /* 42-info.png */; };
 		CDB0A2FF152B6C62003B2BBF /* 42-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */; };
 		CDB0A303152B6D53003B2BBF /* 108-badge.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB0A301152B6D53003B2BBF /* 108-badge.png */; };
@@ -826,6 +828,8 @@
 		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
 		CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordinateLabelsTileView.m; sourceTree = "<group>"; };
 		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
+		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
+		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
 		CDB0A2FC152B6C62003B2BBF /* 42-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info.png"; sourceTree = "<group>"; };
 		CDB0A2FD152B6C62003B2BBF /* 42-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "42-info@2x.png"; sourceTree = "<group>"; };
 		CDB0A301152B6D53003B2BBF /* 108-badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "108-badge.png"; sourceTree = "<group>"; };
@@ -1912,6 +1916,8 @@
 		CDEE19E919433EAC00DF2389 /* layer */ = {
 			isa = PBXGroup;
 			children = (
+				CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */,
+				CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */,
 				CDEE19EA19433EAC00DF2389 /* BoardViewDrawingHelper.h */,
 				CDEE19EB19433EAC00DF2389 /* BoardViewDrawingHelper.m */,
 				CDEE19EC19433EAC00DF2389 /* BoardViewLayerDelegate.h */,
@@ -2386,6 +2392,7 @@
 				CD3592181735A757000E2963 /* SymbolsLayerDelegate.m in Sources */,
 				CD35921A1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
 				CD35921C1735A757000E2963 /* PlayView.m in Sources */,
+				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CD35921E1735A757000E2963 /* PlayViewController.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD3592221735A757000E2963 /* ScrollViewController.m in Sources */,
@@ -2572,6 +2579,7 @@
 				CD3592171735A757000E2963 /* StonesLayerDelegate.m in Sources */,
 				CD3592191735A757000E2963 /* SymbolsLayerDelegate.m in Sources */,
 				CD35921B1735A757000E2963 /* TerritoryLayerDelegate.m in Sources */,
+				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD35921D1735A757000E2963 /* PlayView.m in Sources */,
 				CD35921F1735A757000E2963 /* PlayViewController.m in Sources */,
