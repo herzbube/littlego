@@ -140,7 +140,6 @@
   GoGame* game = [GoGame sharedGame];
   if (game.score.scoringEnabled)
     return;
-  DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
@@ -158,11 +157,11 @@
     CGLayerRelease(whiteLastMoveLayer);
   }
 
-  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                            metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   if ([self shouldDisplayMoveNumbers])
   {
-    [self drawMoveNumbersInContext:context inTileWithRect:canvasRectTile];
+    [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
   }
   else
   {
@@ -179,7 +178,7 @@
         [BoardViewDrawingHelper drawLayer:lastMoveLayer
                               withContext:context
                           centeredAtPoint:lastMove.point
-                           inTileWithRect:canvasRectTile
+                           inTileWithRect:tileRect
                               withMetrics:self.playViewMetrics];
       }
     }
@@ -187,7 +186,7 @@
 
   if ([self shouldDisplayNextMoveLabel])
   {
-    [self drawNextMoveInContext:context inTileWithRect:canvasRectTile];
+    [self drawNextMoveInContext:context inTileWithRect:tileRect];
   }
 }
 
@@ -221,7 +220,6 @@
                    inTileWithRect:(CGRect)tileRect
 {
   UIFont* moveNumberFont = self.playViewMetrics.moveNumberFont;
-  DDLogVerbose(@"Drawing move numbers with font size %f", moveNumberFont.pointSize);
 
   NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];

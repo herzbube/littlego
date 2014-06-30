@@ -105,12 +105,9 @@
   UIFont* coordinateLabelFont = self.playViewMetrics.coordinateLabelFont;
   if (! coordinateLabelFont)
     return;
-  DDLogVerbose(@"CoordinatesLayerDelegate is drawing axis %d with font size %f",
-               self.coordinateLabelAxis,
-               coordinateLabelFont.pointSize);
 
-  CGRect canvasRectTile = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                            metrics:self.playViewMetrics];
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
 
   NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
                                     NSForegroundColorAttributeName : self.textColor,
@@ -142,10 +139,10 @@
   GoPoint* point = [[GoGame sharedGame].board pointAtVertex:@"A1"];
   while (point)
   {
-    if (CGRectIntersectsRect(canvasRectTile, coordinateLabelRect))
+    if (CGRectIntersectsRect(tileRect, coordinateLabelRect))
     {
       CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:coordinateLabelRect
-                                                              inTileWithRect:canvasRectTile];
+                                                              inTileWithRect:tileRect];
 
       NSString* coordinateLabelText;
       if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)

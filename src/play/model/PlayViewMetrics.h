@@ -46,8 +46,8 @@
 /// @par Calculations
 ///
 /// The following schematic illustrates the composition of the view for a
-/// (theoretical) 4x4 board. Note that view has rectangular dimensions, while
-/// the board is square and centered within the view rectangle.
+/// (theoretical) 4x4 board. Note that the view has rectangular dimensions,
+/// while the board is square and centered within the view rectangle.
 ///
 /// @verbatim
 ///                                                      offsetForCenteringX
