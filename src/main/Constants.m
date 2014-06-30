@@ -15,6 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
+bool useTiling = true;
+
 // GUI constants
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
@@ -75,6 +77,8 @@ NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
 NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+NSString* boardViewWillDisplayCrossHair = @"BoardViewWillDisplayCrossHair";
+NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
 
 // Play view settings default values
 const float iPhoneMaximumZoomScaleDefault = 2.5;

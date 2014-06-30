@@ -111,6 +111,9 @@
     unarchivedGame.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   }
 
+  // The GTP engine always starts out with territory statistics disabled. The
+  // following command enables/disables statistics according to the current
+  // user preference.
   [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
 
   return true;

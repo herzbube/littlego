@@ -369,6 +369,24 @@
   return [self pointAtVertex:vertex.string];
 }
 
+- (GoPoint*) topLeftPoint
+{
+  struct GoVertexNumeric numericVertex;
+  numericVertex.x = 1;
+  numericVertex.y = _size;
+  GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
+  return [self pointAtVertex:vertex.string];
+}
+
+- (GoPoint*) bottomRightPoint
+{
+  struct GoVertexNumeric numericVertex;
+  numericVertex.x = _size;
+  numericVertex.y = 1;
+  GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
+  return [self pointAtVertex:vertex.string];
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of NSString vertexes that define the star points for
 /// the current board size.

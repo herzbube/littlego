@@ -17,6 +17,8 @@
 
 /// @file
 
+extern bool useTiling;
+
 // -----------------------------------------------------------------------------
 /// @name GUI constants
 // -----------------------------------------------------------------------------
@@ -478,6 +480,12 @@ extern NSString* playersAndProfilesDidReset;
 /// @brief Is sent to indicate that territory statistics in GoPoint object have
 /// been updated.
 extern NSString* territoryStatisticsChanged;
+/// @brief Is sent to indicate that the board view is about to display a
+/// cross-hair in order to help the user place a stone.
+extern NSString* boardViewWillDisplayCrossHair;
+/// @brief Is sent to indicate that the board view is about to hide the
+/// cross-hair that is currently being displayed.
+extern NSString* boardViewWillHideCrossHair;
 //@}
 
 // -----------------------------------------------------------------------------

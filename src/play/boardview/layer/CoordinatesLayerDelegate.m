@@ -16,7 +16,9 @@
 
 
 // Project includes
-#import "CoordinateLabelsLayerDelegate.h"
+#import "CoordinatesLayerDelegate.h"
+#import "BoardViewDrawingHelper.h"
+#import "../BoardTileView.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
@@ -25,29 +27,28 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for
-// CoordinateLabelsLayerDelegate.
+/// @brief Class extension with private properties for CoordinatesLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface CoordinateLabelsLayerDelegate()
+@interface BVCoordinatesLayerDelegate()
 @property(nonatomic, retain) UIColor* textColor;
 @property(nonatomic, retain) NSShadow* shadow;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @end
 
 
-@implementation CoordinateLabelsLayerDelegate
+@implementation BVCoordinatesLayerDelegate
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a CoordinateLabelsLayerDelegate object.
+/// @brief Initializes a CoordinatesLayerDelegate object.
 ///
-/// @note This is the designated initializer of CoordinateLabelsLayerDelegate.
+/// @note This is the designated initializer of CoordinatesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView
-                metrics:(PlayViewMetrics*)metrics
-                   axis:(enum CoordinateLabelAxis)axis
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+               axis:(enum CoordinateLabelAxis)axis
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
-  self = [super initWithMainView:mainView metrics:metrics];
+  // Call designated initializer of superclass (BoardViewLayerDelegateBase)
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   self.coordinateLabelAxis = axis;
@@ -65,19 +66,26 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewLayerDelegate method.
+/// @brief Deallocates memory allocated by this CoordinatesLayerDelegate object.
 // -----------------------------------------------------------------------------
-- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+- (void) dealloc
+{
+  self.textColor = nil;
+  self.shadow = nil;
+  self.paragraphStyle = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief BoardViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
   switch (event)
   {
-    case PVLDEventRectangleChanged:
-    {
-      self.layer.frame = self.playViewMetrics.rect;
-      self.dirty = true;
-      break;
-    }
-    case PVLDEventBoardSizeChanged:
+    case BVLDEventBoardGeometryChanged:
+    case BVLDEventBoardSizeChanged:
+    case BVLDEventInvalidateContent:
     {
       self.dirty = true;
       break;
@@ -97,9 +105,9 @@
   UIFont* coordinateLabelFont = self.playViewMetrics.coordinateLabelFont;
   if (! coordinateLabelFont)
     return;
-  DDLogVerbose(@"CoordinateLabelsLayerDelegate is drawing axis %d with font size %f",
-               self.coordinateLabelAxis,
-               coordinateLabelFont.pointSize);
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
 
   NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
                                     NSForegroundColorAttributeName : self.textColor,
@@ -124,7 +132,6 @@
                                     - floor(self.playViewMetrics.coordinateLabelMaximumSize.height / 2));
   }
 
-
   // NSString's drawInRect:withAttributes: is a UIKit drawing function. To make
   // it work we need to push our layer drawing context to the top of the UIKit
   // context stack (which is currently empty).
@@ -132,12 +139,19 @@
   GoPoint* point = [[GoGame sharedGame].board pointAtVertex:@"A1"];
   while (point)
   {
-    NSString* coordinateLabelText;
-    if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
-      coordinateLabelText = point.vertex.letterAxisCompound;
-    else
-      coordinateLabelText = point.vertex.numberAxisCompound;
-    [coordinateLabelText drawInRect:coordinateLabelRect withAttributes:textAttributes];
+    if (CGRectIntersectsRect(tileRect, coordinateLabelRect))
+    {
+      CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:coordinateLabelRect
+                                                              inTileWithRect:tileRect];
+
+      NSString* coordinateLabelText;
+      if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
+        coordinateLabelText = point.vertex.letterAxisCompound;
+      else
+        coordinateLabelText = point.vertex.numberAxisCompound;
+      [coordinateLabelText drawInRect:drawingRect withAttributes:textAttributes];
+    }
+
     if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
     {
       point = point.right;

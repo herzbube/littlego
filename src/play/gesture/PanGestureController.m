@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PanGestureController.h"
+#import "../boardview/BoardView.h"
 #import "../playview/PlayView.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
@@ -47,6 +48,7 @@
   if (! self)
     return nil;
   self.playView = nil;
+  self.boardView = nil;
   self.delegate = nil;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
@@ -62,6 +64,7 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.playView = nil;
+  self.boardView = nil;
   self.longPressRecognizer = nil;
   self.delegate = nil;
   [super dealloc];
@@ -111,6 +114,20 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardView:(BoardView*)boardView
+{
+  if (_boardView == boardView)
+    return;
+  if (_boardView && self.longPressRecognizer)
+    [_boardView removeGestureRecognizer:self.longPressRecognizer];
+  _boardView = boardView;
+  if (_boardView && self.longPressRecognizer)
+    [_boardView addGestureRecognizer:self.longPressRecognizer];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a dragging, or panning, gesture in the view's Go board
 /// area.
 // -----------------------------------------------------------------------------
@@ -141,14 +158,26 @@
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
 
-  CGPoint panningLocation = [gestureRecognizer locationInView:self.playView];
-  PlayViewIntersection crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
+  CGPoint panningLocation;
+  if (useTiling)
+    panningLocation = [gestureRecognizer locationInView:self.boardView];
+  else
+    panningLocation = [gestureRecognizer locationInView:self.playView];
+  PlayViewIntersection crossHairIntersection;
+  if (useTiling)
+    crossHairIntersection = [self.boardView crossHairIntersectionNear:panningLocation];
+  else
+    crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
 
   bool isLegalMove = false;
   enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
   if (! PlayViewIntersectionIsNullIntersection(crossHairIntersection))
   {
-    CGRect visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];
+    CGRect visibleRect;
+    if (useTiling)
+      visibleRect = self.boardView.bounds;
+    else
+      visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];
     // Don't use panningLocation for this check because the cross-hair might
     // be offset due to the user preference "stoneDistanceFromFingertip"
     bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
@@ -163,17 +192,28 @@
   {
     case UIGestureRecognizerStateBegan:
     {
-      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
+      if (useTiling)
+        [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      else
+        [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateChanged:
     {
-      [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      if (useTiling)
+        [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      else
+        [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateEnded:
     {
-      [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
+      if (useTiling)
+        [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      else
+        [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       if (isLegalMove)
       {
         DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
@@ -181,11 +221,15 @@
       }
       break;
     }
+    // Occurs, for instance, if an alert is displayed while a gesture is
+    // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
-      // Occurs, for instance, if an alert is displayed while a gesture is
-      // being handled, or if the gesture recognizer was disabled.
-      [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
+      if (useTiling)
+        [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      else
+        [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       break;
     }
     default:

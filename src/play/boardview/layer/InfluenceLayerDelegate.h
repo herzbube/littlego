@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,25 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "BoardViewLayerDelegateBase.h"
+
 // Forward declarations
-@class BoardView;
-@class PlayView;
+@class PlayViewModel;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the "Play" tab. Tapping is used to mark dead stones during
-/// scoring.
+/// @brief The InfluenceLayerDelegate class is responsible for drawing a
+/// rectangle on each intersection that indicates which player has more
+/// influence on that intersection. The size of the rectangle indicates the
+/// degree of influence the player has.
 // -----------------------------------------------------------------------------
-@interface TapGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface BVInfluenceLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 
-@property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) BoardView* boardView;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+      playViewModel:(PlayViewModel*)playViewModel;
 
 @end

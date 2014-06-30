@@ -42,6 +42,7 @@
 #import "../play/model/PlayViewMetrics.h"
 #import "../play/model/PlayViewModel.h"
 #import "../play/model/ScoringModel.h"
+#import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
 #import "../diagnostics/CrashReportingModel.h"
@@ -147,6 +148,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
   self.fileLogger = nil;
+  [BoardViewCGLayerCache releaseSharedCache];
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
   [ApplicationStateManager releaseSharedManager];

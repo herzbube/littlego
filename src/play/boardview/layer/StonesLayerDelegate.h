@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,16 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class BoardView;
-@class PlayView;
+// Project includes
+#import "BoardViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the "Play" tab. Tapping is used to mark dead stones during
-/// scoring.
+/// @brief The StonesLayerDelegate class is responsible for drawing stones on
+/// the Go board.
 // -----------------------------------------------------------------------------
-@interface TapGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface BVStonesLayerDelegate : BoardViewLayerDelegateBase
 {
 }
-
-@property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) BoardView* boardView;
 
 @end

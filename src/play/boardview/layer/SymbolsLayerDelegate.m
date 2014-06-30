@@ -17,7 +17,8 @@
 
 // Project includes
 #import "SymbolsLayerDelegate.h"
-#import "PlayViewDrawingHelper.h"
+#import "BoardViewCGLayerCache.h"
+#import "BoardViewDrawingHelper.h"
 #import "../../model/BoardPositionModel.h"
 #import "../../model/PlayViewMetrics.h"
 #import "../../model/PlayViewModel.h"
@@ -33,30 +34,28 @@
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface SymbolsLayerDelegate()
+@interface BVSymbolsLayerDelegate()
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* nextMoveShadow;
-@property(nonatomic, assign) CGLayerRef blackLastMoveLayer;
-@property(nonatomic, assign) CGLayerRef whiteLastMoveLayer;
 @end
 
 
-@implementation SymbolsLayerDelegate
+@implementation BVSymbolsLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SymbolsLayerDelegate object.
 ///
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithMainView:(UIView*)mainView
-                metrics:(PlayViewMetrics*)metrics
-          playViewModel:(PlayViewModel*)playViewModel
-     boardPositionModel:(BoardPositionModel*)boardPositionmodel
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(PlayViewMetrics*)metrics
+      playViewModel:(PlayViewModel*)playViewModel
+ boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
-  // Call designated initializer of superclass (PlayViewLayerDelegateBase)
-  self = [super initWithMainView:mainView metrics:metrics];
+  // Call designated initializer of superclass (BoardViewLayerDelegateBase)
+  self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
   _playViewModel = playViewModel;
@@ -67,8 +66,6 @@
   self.nextMoveShadow.shadowColor = [UIColor blackColor];
   self.nextMoveShadow.shadowBlurRadius = 5.0;
   self.nextMoveShadow.shadowOffset = CGSizeMake(1.0, 1.0);
-  _blackLastMoveLayer = NULL;
-  _whiteLastMoveLayer = NULL;
   return self;
 }
 
@@ -77,60 +74,52 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self releaseLayers];
+  self.playViewModel = nil;
+  self.boardPositionModel = nil;
+  self.paragraphStyle = nil;
+  self.nextMoveShadow = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Releases layers with "last move" symbols if they are currently
-/// allocated. Otherwise does nothing.
+/// @brief Invalidates layers with "last move" symbols.
 // -----------------------------------------------------------------------------
-- (void) releaseLayers
+- (void) invalidateLayers
 {
-  if (_blackLastMoveLayer)
-  {
-    CGLayerRelease(_blackLastMoveLayer);
-    _blackLastMoveLayer = NULL;
-  }
-  if (_whiteLastMoveLayer)
-  {
-    CGLayerRelease(_whiteLastMoveLayer);
-    _whiteLastMoveLayer = NULL;
-  }
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:BlackLastMoveLayerType];
+  [cache invalidateLayerOfType:WhiteLastMoveLayerType];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewLayerDelegate method.
+/// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
-- (void) notify:(enum PlayViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+- (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
   switch (event)
   {
-    case PVLDEventRectangleChanged:
+    case BVLDEventBoardGeometryChanged:
+    case BVLDEventBoardSizeChanged:
     {
-      self.layer.frame = self.playViewMetrics.rect;
-      [self releaseLayers];
+      [self invalidateLayers];
       self.dirty = true;
       break;
     }
-    case PVLDEventBoardSizeChanged:
-    {
-      [self releaseLayers];
-      self.dirty = true;
-      break;
-    }
-    case PVLDEventGoGameStarted:        // clear last move marker
-    case PVLDEventBoardPositionChanged:
+    case BVLDEventInvalidateContent:
+    case BVLDEventGoGameStarted:        // clear last move marker
+    case BVLDEventBoardPositionChanged:
     // This case covers the following scenario: Board position 0 is selected
     // and the user discards all board positions. In this scenario the event
-    // PVLDEventBoardPositionChanged - which usually covers the discard of board
+    // BVLDEventBoardPositionChanged - which usually covers the discard of board
     // positions - does NOT fire because the board position does NOT change.
-    case PVLDEventNumberOfBoardPositionsChanged:
-    case PVLDEventMarkLastMoveChanged:
-    case PVLDEventMoveNumbersPercentageChanged:
-    case PVLDEventScoringModeEnabled:   // temporarily disable symbols
-    case PVLDEventScoringModeDisabled:  // re-enable symbols
-    case PVLDEventMarkNextMoveChanged:
+    case BVLDEventNumberOfBoardPositionsChanged:
+    case BVLDEventMarkLastMoveChanged:
+    case BVLDEventMoveNumbersPercentageChanged:
+    // TODO xxx remove the next two cases; the layer is added/removed
+    // dynamically as a result of scoring becoming enabled/disabled
+    case BVLDEventScoringModeEnabled:   // temporarily disable symbols
+    case BVLDEventScoringModeDisabled:  // re-enable symbols
+    case BVLDEventMarkNextMoveChanged:
     {
       self.dirty = true;
       break;
@@ -151,16 +140,28 @@
   GoGame* game = [GoGame sharedGame];
   if (game.score.scoringEnabled)
     return;
-  DDLogVerbose(@"SymbolsLayerDelegate is drawing");
 
-  if (! _blackLastMoveLayer)
-    _blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
-  if (! _whiteLastMoveLayer)
-    _whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
+  if (! blackLastMoveLayer)
+  {
+    blackLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
+    [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
+    CGLayerRelease(blackLastMoveLayer);
+  }
+  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+  if (! whiteLastMoveLayer)
+  {
+    whiteLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
+    [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
+    CGLayerRelease(whiteLastMoveLayer);
+  }
 
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.playViewMetrics];
   if ([self shouldDisplayMoveNumbers])
   {
-    [self drawMoveNumbersInContext:context];
+    [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
   }
   else
   {
@@ -169,17 +170,23 @@
       GoMove* lastMove = game.boardPosition.currentMove;
       if (lastMove && GoMoveTypePlay == lastMove.type)
       {
+        CGLayerRef lastMoveLayer;
         if (lastMove.player.isBlack)
-          [PlayViewDrawingHelper drawLayer:_whiteLastMoveLayer withContext:context centeredAtPoint:lastMove.point withMetrics:self.playViewMetrics];
+          lastMoveLayer = whiteLastMoveLayer;
         else
-          [PlayViewDrawingHelper drawLayer:_blackLastMoveLayer withContext:context centeredAtPoint:lastMove.point withMetrics:self.playViewMetrics];
+          lastMoveLayer = blackLastMoveLayer;
+        [BoardViewDrawingHelper drawLayer:lastMoveLayer
+                              withContext:context
+                          centeredAtPoint:lastMove.point
+                           inTileWithRect:tileRect
+                              withMetrics:self.playViewMetrics];
       }
     }
   }
 
   if ([self shouldDisplayNextMoveLabel])
   {
-    [self drawNextMoveInContext:context];
+    [self drawNextMoveInContext:context inTileWithRect:tileRect];
   }
 }
 
@@ -210,11 +217,9 @@
 /// @brief Private helper for drawLayer:inContext:
 // -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
+                   inTileWithRect:(CGRect)tileRect
 {
-  UIGraphicsPushContext(context);
-
   UIFont* moveNumberFont = self.playViewMetrics.moveNumberFont;
-  DDLogVerbose(@"Drawing move numbers with font size %f", moveNumberFont.pointSize);
 
   NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
@@ -250,21 +255,21 @@
     NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
                                       NSForegroundColorAttributeName : textColor,
                                       NSParagraphStyleAttributeName : self.paragraphStyle };
-    [PlayViewDrawingHelper drawString:moveNumberText
-                          withContext:context
-                           attributes:textAttributes
-                       inRectWithSize:self.playViewMetrics.moveNumberMaximumSize
-                      centeredAtPoint:pointToBeNumbered
-                          withMetrics:self.playViewMetrics];
+    [BoardViewDrawingHelper drawString:moveNumberText
+                           withContext:context
+                            attributes:textAttributes
+                        inRectWithSize:self.playViewMetrics.moveNumberMaximumSize
+                       centeredAtPoint:pointToBeNumbered
+                        inTileWithRect:tileRect
+                           withMetrics:self.playViewMetrics];
   }
-
-  UIGraphicsPopContext();
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:
 // -----------------------------------------------------------------------------
 - (void) drawNextMoveInContext:(CGContextRef)context
+                inTileWithRect:(CGRect)tileRect
 {
   GoGame* game = [GoGame sharedGame];
   if (game.boardPosition.isLastPosition)
@@ -277,22 +282,18 @@
   if (GoMoveTypePlay != nextMove.type)
     return;
 
-  UIGraphicsPushContext(context);
-
   NSString* nextMoveLabelText = @"A";
   NSDictionary* textAttributes = @{ NSFontAttributeName : self.playViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
                                     NSParagraphStyleAttributeName : self.paragraphStyle,
                                     NSShadowAttributeName: self.nextMoveShadow };
-  [PlayViewDrawingHelper drawString:nextMoveLabelText
-                        withContext:context
-                         attributes:textAttributes
-                     inRectWithSize:self.playViewMetrics.nextMoveLabelMaximumSize
-                    centeredAtPoint:nextMove.point
-                        withMetrics:self.playViewMetrics];
-
-  UIGraphicsPopContext();
+  [BoardViewDrawingHelper drawString:nextMoveLabelText
+                         withContext:context
+                          attributes:textAttributes
+                      inRectWithSize:self.playViewMetrics.nextMoveLabelMaximumSize
+                     centeredAtPoint:nextMove.point
+                      inTileWithRect:tileRect
+                         withMetrics:self.playViewMetrics];
 }
-
 
 @end

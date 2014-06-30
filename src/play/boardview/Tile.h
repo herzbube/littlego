@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,18 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class BoardView;
-@class PlayView;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the "Play" tab. Tapping is used to mark dead stones during
-/// scoring.
+/// @brief The Tile protocol defines the interface that tile views displayed
+/// by TiledScrollView must implement.
+///
+/// The tile with row/column = 0/0 is in the upper-left corner.
 // -----------------------------------------------------------------------------
-@interface TapGestureController : NSObject <UIGestureRecognizerDelegate>
-{
-}
+@protocol Tile <NSObject>
+/// @brief Invalidates the content currently displayed by the tile.
+///
+/// The tile should redraw its content in response to this method being invoked.
+- (void) invalidateContent;
 
-@property(nonatomic, assign) PlayView* playView;
-@property(nonatomic, assign) BoardView* boardView;
-
+@property(nonatomic, assign) int row;
+@property(nonatomic, assign) int column;
 @end

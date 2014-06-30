@@ -66,7 +66,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayView object.
+/// @brief Deallocates memory allocated by this CoordinateLabelsView object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -111,14 +111,7 @@
     return;
   self.drawLayerWasDelayed = false;
 
-  // Disabling animations here is essential for a smooth GUI update after a zoom
-  // operation ends. If animations were enabled, setting the layer frames would
-  // trigger an animation that looks like a "bounce". For details see
-  // http://stackoverflow.com/questions/15370803/how-to-prevent-bounce-effect-when-a-custom-view-redraws-after-zooming
-  [CATransaction begin];
-  [CATransaction setDisableActions:YES];
   [self.layerDelegate drawLayer];
-  [CATransaction commit];
 }
 
 // -----------------------------------------------------------------------------
