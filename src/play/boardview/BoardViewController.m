@@ -537,23 +537,35 @@
       // which may change significantly when the board geometry changes (rect
       // and boardSize properties). Obviously, the displayCoordinates property
       // is als important.
-      if (self.viewDidLayoutSubviewsInProgress)
+      if ([NSThread currentThread] != [NSThread mainThread])
       {
-        // UIKit sometimes crashes if we add coordinate labels while a layouting
-        // cycle is in progress. The crash happens if 1) the app starts up and
-        // initially displays some other than the Play tab, then 2) the user
-        // switches to the play tab. At this moment viewDidLayoutSubviews is
-        // executed, it invokes updatePlayViewMetricsRect, which in turn
-        // triggers this KVO observer. If we now add coordinate labels, the app
-        // crashes. The exact reason for the crash is unknown, but probable
-        // causes are either adding subviews, or adding constraints, in the
-        // middle of a layouting cycle. The workaround is to add a bit of
-        // asynchrony.
-        [self performSelector:@selector(createOrDeallocCoordinateLabelsViews) withObject:nil afterDelay:0];
+        // Make sure that our handler executes on the main thread because it
+        // creates or deallocates views and generally calls thread-unsafe UIKit
+        // functions. A KVO notification can come in on a secondary thread when
+        // a game is loaded from the archive, or when a game is restored during
+        // app launch.
+        [self performSelectorOnMainThread:@selector(createOrDeallocCoordinateLabelsViews) withObject:nil waitUntilDone:NO];
       }
       else
       {
-        [self createOrDeallocCoordinateLabelsViews];
+        if (self.viewDidLayoutSubviewsInProgress)
+        {
+          // UIKit sometimes crashes if we add coordinate labels while a
+          // layouting cycle is in progress. The crash happens if 1) the app
+          // starts up and initially displays some other than the Play tab, then
+          // 2) the user switches to the play tab. At this moment
+          // viewDidLayoutSubviews is executed, it invokes
+          // updatePlayViewMetricsRect, which in turn triggers this KVO
+          // observer. If we now add coordinate labels, the app crashes. The
+          // exact reason for the crash is unknown, but probable causes are
+          // either adding subviews, or adding constraints, in the middle of a
+          // layouting cycle. The workaround is to add a bit of asynchrony.
+          [self performSelector:@selector(createOrDeallocCoordinateLabelsViews) withObject:nil afterDelay:0];
+        }
+        else
+        {
+          [self createOrDeallocCoordinateLabelsViews];
+        }
       }
     }
   }
