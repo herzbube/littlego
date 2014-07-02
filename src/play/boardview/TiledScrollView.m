@@ -134,10 +134,28 @@
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // REMINDERS
   // - layoutSubviews is constantly invoked during zooming and scrolling
-  // - While zoomed a transform is in effect on self.tileContainerView which
-  //   causes the frame of the container view and of its tile views to be
+  // - While zoomed/zooming a transform is in effect on self.tileContainerView
+  //   which causes the frame of the container view and of its tile views to be
   //   enlarged by the current zoom scale
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  if (self.zooming)
+  {
+    // While the user is zooming out, larger parts of the scroll view content
+    // become visible and more tiles are required to display the visible part.
+    // If the user zooms out to the minimum zoom scale, the full content becomes
+    // visible AT THE CURRENT RESOLUTION! This is the exact opposite of what we
+    // want, namely conserve memory. A relatively simple way to work around this
+    // is not to acquire additional tiles if the user is zooming out. Since we
+    // don't know ourselves at which zoom scale the zoom operation started, we
+    // ask the data source.
+    // TODO: The problem with this solution is that it looks very ugly because
+    // now no additional content becomes visible during zooming out. Try to
+    // find a solution that somehow draws content appropriate for the zoom scale
+    // but with fewer tiles.
+    if (self.zoomScale < [self.dataSource tiledScrollViewZoomScaleAtZoomStart:self])
+      return;
+  }
 
   // The bounds rectangle is the visible part of the (possibly zoomed) content
   // of the scroll view

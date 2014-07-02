@@ -247,6 +247,17 @@
   return tileView;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief TiledScrollViewDataSource protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tiledScrollViewZoomScaleAtZoomStart:(TiledScrollView*)tiledScrollView
+{
+  // When a zoom operation completes, this controllers always resets the scroll
+  // view's zoom scale to 1.0. This means that a zoom will always start at zoom
+  // scale 1.0.
+  return 1.0;
+}
+
 #pragma mark UIScrollViewDelegate overrides
 
 // -----------------------------------------------------------------------------

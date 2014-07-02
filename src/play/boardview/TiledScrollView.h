@@ -25,6 +25,7 @@
 // -----------------------------------------------------------------------------
 @protocol TiledScrollViewDataSource <NSObject>
 - (UIView*) tiledScrollView:(TiledScrollView*)tiledScrollView tileViewForRow:(int)row column:(int)column;
+- (CGFloat) tiledScrollViewZoomScaleAtZoomStart:(TiledScrollView*)tiledScrollView;
 @end
 
 
