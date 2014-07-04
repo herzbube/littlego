@@ -27,7 +27,7 @@
 #import "../../../go/GoVertex.h"
 
 
-@implementation BVGridLayerDelegate
+@implementation GridLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GridLayerDelegate object.
@@ -116,7 +116,7 @@
   CGLayerRef starPointLayer = [cache layerOfType:StarPointLayerType];
   if (! starPointLayer)
   {
-    starPointLayer = BVCreateStarPointLayer(context, self.playViewMetrics);
+    starPointLayer = CreateStarPointLayer(context, self.playViewMetrics);
     [cache setLayer:starPointLayer ofType:StarPointLayerType];
     CGLayerRelease(starPointLayer);
   }

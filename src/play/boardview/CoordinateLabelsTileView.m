@@ -39,7 +39,7 @@
 /// so we are playing it safe. Also, we guard against future implementation
 /// changes.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
-@property(nonatomic, retain) BVCoordinatesLayerDelegate* layerDelegate;
+@property(nonatomic, retain) CoordinatesLayerDelegate* layerDelegate;
 @property(nonatomic, assign) bool drawLayerWasDelayed;
 @end
 
@@ -96,9 +96,9 @@
 - (void) setupLayer
 {
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  self.layerDelegate = [[[BVCoordinatesLayerDelegate alloc] initWithTile:self
-                                                                 metrics:metrics
-                                                                    axis:self.coordinateLabelAxis] autorelease];
+  self.layerDelegate = [[[CoordinatesLayerDelegate alloc] initWithTile:self
+                                                               metrics:metrics
+                                                                  axis:self.coordinateLabelAxis] autorelease];
   [self.layer addSublayer:self.layerDelegate.layer];
 }
 

@@ -40,7 +40,7 @@
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef BVCreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics)
+CGLayerRef CreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -81,7 +81,7 @@ CGLayerRef BVCreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef BVCreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics)
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -132,7 +132,7 @@ CGLayerRef BVCreateStoneLayerWithImage(CGContextRef context, NSString* stoneImag
 ///
 /// @see CreateDeadStoneSymbolLayer().
 // -----------------------------------------------------------------------------
-CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics)
+CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -174,7 +174,7 @@ CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor,
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef BVCreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics)
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics)
 {
   // The symbol for marking a dead stone is an "x"; we draw this as the two
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by
@@ -218,7 +218,7 @@ CGLayerRef BVCreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePe
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics)
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;

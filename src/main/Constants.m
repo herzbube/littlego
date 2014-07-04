@@ -15,14 +15,12 @@
 // -----------------------------------------------------------------------------
 
 
-bool useTiling = true;
-
 // GUI constants
 const float gHalfPixel = 0.5;
 const float gDisabledViewAlpha = 0.439216f;
 const float gInfluenceColorAlphaBlack = 0.3;
 const float gInfluenceColorAlphaWhite = 0.6;
-const CFTimeInterval gPlayViewLongPressDelay = 0.1;
+const CFTimeInterval gGoBoardLongPressDelay = 0.1;
 const int indexOfMoreNavigationController = 0x7fffffff;
 const int defaultSelectedTabIndex = 0;
 const int arraySizeDefaultTabOrder = 9;

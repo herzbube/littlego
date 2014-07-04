@@ -50,13 +50,13 @@
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, assign) bool drawLayersWasDelayed;
 @property(nonatomic, retain) NSArray* layerDelegates;
-@property(nonatomic, assign) BVGridLayerDelegate* gridLayerDelegate;
-@property(nonatomic, assign) BVCrossHairLinesLayerDelegate* crossHairLinesLayerDelegate;
-@property(nonatomic, assign) BVStonesLayerDelegate* stonesLayerDelegate;
-@property(nonatomic, assign) BVCrossHairStoneLayerDelegate* crossHairStoneLayerDelegate;
-@property(nonatomic, assign) BVInfluenceLayerDelegate* influenceLayerDelegate;
-@property(nonatomic, assign) BVSymbolsLayerDelegate* symbolsLayerDelegate;
-@property(nonatomic, assign) BVTerritoryLayerDelegate* territoryLayerDelegate;
+@property(nonatomic, assign) GridLayerDelegate* gridLayerDelegate;
+@property(nonatomic, assign) CrossHairLinesLayerDelegate* crossHairLinesLayerDelegate;
+@property(nonatomic, assign) StonesLayerDelegate* stonesLayerDelegate;
+@property(nonatomic, assign) CrossHairStoneLayerDelegate* crossHairStoneLayerDelegate;
+@property(nonatomic, assign) InfluenceLayerDelegate* influenceLayerDelegate;
+@property(nonatomic, assign) SymbolsLayerDelegate* symbolsLayerDelegate;
+@property(nonatomic, assign) TerritoryLayerDelegate* territoryLayerDelegate;
 //@}
 @end
 
@@ -227,8 +227,8 @@
   if (self.gridLayerDelegate)
     return;
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics] autorelease];
+  self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithTile:self
+                                                            metrics:metrics] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -240,8 +240,8 @@
   if (self.stonesLayerDelegate)
     return;
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
-                                                                  metrics:metrics] autorelease];
+  self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithTile:self
+                                                                metrics:metrics] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -260,13 +260,13 @@
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     if (! self.crossHairLinesLayerDelegate)
     {
-      self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
-                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+      self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithTile:self
+                                                                                    metrics:appDelegate.playViewMetrics] autorelease];
     }
     if (! self.crossHairStoneLayerDelegate)
     {
-      self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
-                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+      self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithTile:self
+                                                                                    metrics:appDelegate.playViewMetrics] autorelease];
     }
   }
   else
@@ -294,9 +294,9 @@
     {
       if (self.influenceLayerDelegate)
         return;
-      self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
-                                                                            metrics:appDelegate.playViewMetrics
-                                                                      playViewModel:playViewModel] autorelease];
+      self.influenceLayerDelegate = [[[InfluenceLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                    playViewModel:playViewModel] autorelease];
     }
     else
     {
@@ -320,10 +320,10 @@
     if (self.symbolsLayerDelegate)
       return;
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
-                                                                      metrics:appDelegate.playViewMetrics
-                                                                playViewModel:appDelegate.playViewModel
-                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
+    self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
+                                                                    metrics:appDelegate.playViewMetrics
+                                                              playViewModel:appDelegate.playViewModel
+                                                         boardPositionModel:appDelegate.boardPositionModel] autorelease];
 
   }
 }
@@ -340,9 +340,9 @@
     if (self.territoryLayerDelegate)
       return;
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                     scoringModel:appDelegate.scoringModel] autorelease];
+    self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithTile:self
+                                                                        metrics:appDelegate.playViewMetrics
+                                                                   scoringModel:appDelegate.scoringModel] autorelease];
   }
   else
   {

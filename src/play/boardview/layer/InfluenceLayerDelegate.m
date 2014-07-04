@@ -30,7 +30,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for InfluenceLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVInfluenceLayerDelegate()
+@interface InfluenceLayerDelegate()
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
@@ -38,7 +38,7 @@
 @end
 
 
-@implementation BVInfluenceLayerDelegate
+@implementation InfluenceLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a InfluenceLayerDelegate object.

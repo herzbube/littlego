@@ -17,7 +17,6 @@
 
 /// @file
 
-extern bool useTiling;
 
 // -----------------------------------------------------------------------------
 /// @name GUI constants
@@ -36,11 +35,11 @@ extern const float gDisabledViewAlpha;
 extern const float gInfluenceColorAlphaBlack;
 /// @brief The alpha value used to draw white influence rectangles.
 extern const float gInfluenceColorAlphaWhite;
-/// @brief The long press gesture recognizer on the PlayView must use a small
+/// @brief The long press gesture recognizer on the Go board must use a small
 /// delay so as not to interfere with other gestures (notably the gestures used
 /// to scroll and zoom, and on the iPad the swipe gesture of the main
 /// UISplitViewController).
-extern const CFTimeInterval gPlayViewLongPressDelay;
+extern const CFTimeInterval gGoBoardLongPressDelay;
 /// @brief The index of the view controller that should be selected by default
 /// in the application's main tab bar controller.
 extern const int defaultSelectedTabIndex;

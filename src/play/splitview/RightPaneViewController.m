@@ -22,16 +22,13 @@
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
-#import "../playview/PlayView.h"
-#import "../playview/PlayViewController.h"
-#import "../playview/ScrollViewController.h"
+#import "../../ui/AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for RightPaneViewController.
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController()
-@property(nonatomic, retain) ScrollViewController* scrollViewController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @end
@@ -62,7 +59,6 @@
 - (void) dealloc
 {
   self.navigationBarController = nil;
-  self.scrollViewController = nil;
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
@@ -75,14 +71,10 @@
 - (void) setupChildControllers
 {
   self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
-  self.scrollViewController = [[[ScrollViewController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
-  if (useTiling)
-    self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  else
-    self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
+  self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
 
@@ -108,31 +100,6 @@
     [_navigationBarController didMoveToParentViewController:self];
     [navigationBarController retain];
     _navigationBarController = navigationBarController;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setScrollViewController:(ScrollViewController*)scrollViewController
-{
-  if (_scrollViewController == scrollViewController)
-    return;
-  if (_scrollViewController)
-  {
-    [_scrollViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_scrollViewController removeFromParentViewController];
-    [_scrollViewController release];
-    _scrollViewController = nil;
-  }
-  if (scrollViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:scrollViewController];
-    [scrollViewController didMoveToParentViewController:self];
-    [scrollViewController retain];
-    _scrollViewController = scrollViewController;
   }
 }
 
@@ -172,7 +139,6 @@
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
-  [self configureControllers];
 }
 
 #pragma mark - Private helpers for loadView
@@ -183,10 +149,7 @@
 - (void) setupViewHierarchy
 {
   [self.view addSubview:self.navigationBarController.view];
-  if (useTiling)
-    [self.view addSubview:self.boardViewController.view];
-  else
-    [self.view addSubview:self.scrollViewController.view];
+  [self.view addSubview:self.boardViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -194,51 +157,23 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  if (useTiling)
-    self.automaticallyAdjustsScrollViewInsets = NO;
+  self.automaticallyAdjustsScrollViewInsets = NO;
 
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.scrollViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSDictionary* viewsDictionary;
-  NSArray* visualFormats;
-  if (useTiling)
-  {
-    viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                       self.navigationBarController.view, @"navigationBarView",
-                       self.boardViewController.view, @"boardView",
-                       nil];
-    // Don't need to specify height value for navigationBarView because
-    // UINavigationBar specifies a height value in its intrinsic content size
-    visualFormats = [NSArray arrayWithObjects:
-                     @"H:|-0-[navigationBarView]-0-|",
-                     @"H:|-0-[boardView]-0-|",
-                     @"V:|-0-[navigationBarView]-0-[boardView]-0-|",
-                     nil];
-  }
-  else
-  {
-    viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                       self.navigationBarController.view, @"navigationBarView",
-                       self.scrollViewController.view, @"scrollViewControllerView",
-                       nil];
-    // Don't need to specify height value for navigationBarView because
-    // UINavigationBar specifies a height value in its intrinsic content size
-    visualFormats = [NSArray arrayWithObjects:
-                     @"H:|-0-[navigationBarView]-0-|",
-                     @"H:|-0-[scrollViewControllerView]-0-|",
-                     @"V:|-0-[navigationBarView]-0-[scrollViewControllerView]-0-|",
-                     nil];
-  }
-  for (NSString* visualFormat in visualFormats)
-  {
-    NSArray* constraint = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
-                                                                  options:0
-                                                                  metrics:nil
-                                                                    views:viewsDictionary];
-    [self.view addConstraints:constraint];
-  }
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.navigationBarController.view, @"navigationBarView",
+                                   self.boardViewController.view, @"boardView",
+                                   nil];
+  // Don't need to specify height value for navigationBarView because
+  // UINavigationBar specifies a height value in its intrinsic content size
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[navigationBarView]-0-|",
+                            @"H:|-0-[boardView]-0-|",
+                            @"V:|-0-[navigationBarView]-0-[boardView]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -249,16 +184,6 @@
   // Set a color (should be the same as the main window's) because we need to
   // paint over the parent split view background color.
   self.view.backgroundColor = [UIColor whiteColor];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
-// -----------------------------------------------------------------------------
-- (void) configureControllers
-{
-  // TODO xxx replace this with a notification to remove the direct coupling;
-  // also check if there are other couplings, e.g. in the iPad controller
-  self.navigationBarController.statusViewController.playView = self.scrollViewController.playViewController.playView;
 }
 
 @end

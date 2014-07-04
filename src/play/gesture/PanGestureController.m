@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 // Project includes
 #import "PanGestureController.h"
 #import "../boardview/BoardView.h"
-#import "../playview/PlayView.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -47,7 +46,6 @@
   self = [super init];
   if (! self)
     return nil;
-  self.playView = nil;
   self.boardView = nil;
   self.delegate = nil;
   [self setupLongPressGestureRecognizer];
@@ -63,7 +61,6 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  self.playView = nil;
   self.boardView = nil;
   self.longPressRecognizer = nil;
   self.delegate = nil;
@@ -79,7 +76,7 @@
   self.longPressRecognizer.delegate = self;
   CGFloat infiniteMovement = CGFLOAT_MAX;
   self.longPressRecognizer.allowableMovement = infiniteMovement;  // let the user pan as long as he wants
-  self.longPressRecognizer.minimumPressDuration = gPlayViewLongPressDelay;
+  self.longPressRecognizer.minimumPressDuration = gGoBoardLongPressDelay;
 }
 
 // -----------------------------------------------------------------------------
@@ -97,20 +94,6 @@
   [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setPlayView:(PlayView*)playView
-{
-  if (_playView == playView)
-    return;
-  if (_playView && self.longPressRecognizer)
-    [_playView removeGestureRecognizer:self.longPressRecognizer];
-  _playView = playView;
-  if (_playView && self.longPressRecognizer)
-    [_playView addGestureRecognizer:self.longPressRecognizer];
 }
 
 // -----------------------------------------------------------------------------
@@ -158,26 +141,14 @@
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
 
-  CGPoint panningLocation;
-  if (useTiling)
-    panningLocation = [gestureRecognizer locationInView:self.boardView];
-  else
-    panningLocation = [gestureRecognizer locationInView:self.playView];
-  PlayViewIntersection crossHairIntersection;
-  if (useTiling)
-    crossHairIntersection = [self.boardView crossHairIntersectionNear:panningLocation];
-  else
-    crossHairIntersection = [self.playView crossHairIntersectionNear:panningLocation];
+  CGPoint panningLocation = [gestureRecognizer locationInView:self.boardView];
+  PlayViewIntersection crossHairIntersection = [self.boardView crossHairIntersectionNear:panningLocation];
 
   bool isLegalMove = false;
   enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
   if (! PlayViewIntersectionIsNullIntersection(crossHairIntersection))
   {
-    CGRect visibleRect;
-    if (useTiling)
-      visibleRect = self.boardView.bounds;
-    else
-      visibleRect = [self.scrollView convertRect:self.scrollView.bounds toView:self.playView];
+    CGRect visibleRect = self.boardView.bounds;
     // Don't use panningLocation for this check because the cross-hair might
     // be offset due to the user preference "stoneDistanceFromFingertip"
     bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
@@ -193,27 +164,18 @@
     case UIGestureRecognizerStateBegan:
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
-      if (useTiling)
-        [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
-      else
-        [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateChanged:
     {
-      if (useTiling)
-        [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
-      else
-        [self.playView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       break;
     }
     case UIGestureRecognizerStateEnded:
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
-      if (useTiling)
-        [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      else
-        [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       if (isLegalMove)
       {
         DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
@@ -226,10 +188,7 @@
     case UIGestureRecognizerStateCancelled:
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
-      if (useTiling)
-        [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      else
-        [self.playView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       break;
     }
     default:

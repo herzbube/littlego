@@ -29,16 +29,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for BVStonesLayerDelegate.
+/// @brief Class extension with private properties for StonesLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVStonesLayerDelegate()
+@interface StonesLayerDelegate()
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
 @property(nonatomic, retain) NSMutableDictionary* drawingPoints;
 @end
 
 
-@implementation BVStonesLayerDelegate
+@implementation StonesLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a StonesLayerDelegate object.
@@ -128,14 +128,14 @@
   CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
   {
-    blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
     [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
     CGLayerRelease(blackStoneLayer);
   }
   CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
   {
-    whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
     [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayer);
   }

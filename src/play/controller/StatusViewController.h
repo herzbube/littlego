@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class PlayView;
-
-
 // -----------------------------------------------------------------------------
 /// @brief The StatusViewController class is responsible for displaying status
 /// information about the current game situation in a status view that is
@@ -35,7 +31,5 @@
 }
 
 - (void) setStatusViewSize:(CGSize)statusViewSize;
-
-@property(nonatomic, assign) PlayView* playView;
 
 @end

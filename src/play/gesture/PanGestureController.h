@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 @class BoardView;
 @class CommandBase;
 @class PanGestureController;
-@class PlayView;
 
 
 // -----------------------------------------------------------------------------
@@ -36,7 +35,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PanGestureController class is responsible for managing the pan
-/// gesture on the "Play" tab. Panning is used to place a stone on the board.
+/// gesture on the Go board. Panning is used to place a stone on the board.
 ///
 /// Despite its name, PanGestureController does not use UIPanGestureRecognizer
 /// for gesture recognition, because UIPanGestureRecognizer requires a
@@ -51,9 +50,7 @@
 {
 }
 
-@property(nonatomic, assign) PlayView* playView;
 @property(nonatomic, assign) BoardView* boardView;
-@property(nonatomic, assign) UIView* scrollView;
 @property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
 
 @end

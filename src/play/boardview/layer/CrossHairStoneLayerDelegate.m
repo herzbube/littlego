@@ -31,7 +31,7 @@
 /// @brief Class extension with private properties for
 /// CrossHairStoneLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVCrossHairStoneLayerDelegate()
+@interface CrossHairStoneLayerDelegate()
 /// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
 @property(nonatomic, assign) GoPoint* crossHairPoint;
 /// @brief Store drawing rectangle between notify:eventInfo:() and
@@ -42,7 +42,7 @@
 @end
 
 
-@implementation BVCrossHairStoneLayerDelegate
+@implementation CrossHairStoneLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CrossHairStoneLayerDelegate object.
@@ -175,21 +175,21 @@
   CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
   {
-    blackStoneLayer = BVCreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
     [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
     CGLayerRelease(blackStoneLayer);
   }
   CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
   {
-    whiteStoneLayer = BVCreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
     [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayer);
   }
   CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
   if (! crossHairStoneLayer)
   {
-    crossHairStoneLayer = BVCreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
+    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
     [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
     CGLayerRelease(crossHairStoneLayer);
   }

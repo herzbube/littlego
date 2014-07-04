@@ -23,7 +23,7 @@
 /// @brief The GridLayerDelegate class is responsible for drawing the line grid
 /// on the Go board.
 // -----------------------------------------------------------------------------
-@interface BVGridLayerDelegate : BoardViewLayerDelegateBase
+@interface GridLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

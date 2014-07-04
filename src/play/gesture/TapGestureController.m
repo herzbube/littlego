@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #import "TapGestureController.h"
 #import "../model/ScoringModel.h"
 #import "../boardview/BoardView.h"
-#import "../playview/PlayView.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -51,7 +50,6 @@
   self = [super init];
   if (! self)
     return nil;
-  self.playView = nil;
   self.boardView = nil;
   [self setupTapGestureRecognizer];
   [self setupNotificationResponders];
@@ -65,7 +63,6 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.playView = nil;
   self.boardView = nil;
   self.tapRecognizer = nil;
   [super dealloc];
@@ -96,20 +93,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setPlayView:(PlayView*)playView
-{
-  if (_playView == playView)
-    return;
-  if (_playView && self.tapRecognizer)
-    [_playView removeGestureRecognizer:self.tapRecognizer];
-  _playView = playView;
-  if (_playView && self.tapRecognizer)
-    [_playView addGestureRecognizer:self.tapRecognizer];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
 - (void) setBoardView:(BoardView*)boardView
 {
   if (_boardView == boardView)
@@ -129,17 +112,8 @@
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
-  PlayViewIntersection intersection;
-  if (useTiling)
-  {
-    CGPoint tappingLocation = [gestureRecognizer locationInView:self.boardView];
-    intersection = [self.boardView intersectionNear:tappingLocation];
-  }
-  else
-  {
-    CGPoint tappingLocation = [gestureRecognizer locationInView:self.playView];
-    intersection = [self.playView intersectionNear:tappingLocation];
-  }
+  CGPoint tappingLocation = [gestureRecognizer locationInView:self.boardView];
+  PlayViewIntersection intersection = [self.boardView intersectionNear:tappingLocation];
   if (PlayViewIntersectionIsNullIntersection(intersection))
     return;
   if (! [intersection.point hasStone])

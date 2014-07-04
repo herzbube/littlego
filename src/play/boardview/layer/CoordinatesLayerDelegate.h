@@ -24,7 +24,7 @@
 /// coordinate labels in a strip along the horizontal or vertical edge of the
 /// Go board.
 // -----------------------------------------------------------------------------
-@interface BVCoordinatesLayerDelegate : BoardViewLayerDelegateBase
+@interface CoordinatesLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

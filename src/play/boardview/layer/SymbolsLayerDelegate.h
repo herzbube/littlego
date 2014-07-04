@@ -27,7 +27,7 @@
 /// @brief The SymbolsLayerDelegate class is responsible for drawing symbols
 /// (e.g. last move).
 // -----------------------------------------------------------------------------
-@interface BVSymbolsLayerDelegate : BoardViewLayerDelegateBase
+@interface SymbolsLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

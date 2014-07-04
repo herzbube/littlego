@@ -30,7 +30,7 @@
 /// @brief Class extension with private properties for
 /// CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVCrossHairLinesLayerDelegate()
+@interface CrossHairLinesLayerDelegate()
 /// @brief Store drawing rectangles between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
 @property(nonatomic, retain) NSMutableArray* drawingRectangles;
@@ -39,7 +39,7 @@
 @end
 
 
-@implementation BVCrossHairLinesLayerDelegate
+@implementation CrossHairLinesLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CrossHairLinesLayerDelegate object.
@@ -115,8 +115,8 @@
         [[oldDrawingRectangles retain] autorelease];
         self.drawingRectangles = newDrawingRectangles;
 
-        CGRect oldDirtyRect = [BVCrossHairLinesLayerDelegate unionRectFromDrawingRectangles:oldDrawingRectangles];
-        CGRect newDirtyRect = [BVCrossHairLinesLayerDelegate unionRectFromDrawingRectangles:newDrawingRectangles];
+        CGRect oldDirtyRect = [CrossHairLinesLayerDelegate unionRectFromDrawingRectangles:oldDrawingRectangles];
+        CGRect newDirtyRect = [CrossHairLinesLayerDelegate unionRectFromDrawingRectangles:newDrawingRectangles];
         self.dirtyRect = CGRectUnion(oldDirtyRect, newDirtyRect);
         self.dirty = true;
       }

@@ -28,7 +28,7 @@
 /// influence on that intersection. The size of the rectangle indicates the
 /// degree of influence the player has.
 // -----------------------------------------------------------------------------
-@interface BVInfluenceLayerDelegate : BoardViewLayerDelegateBase
+@interface InfluenceLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

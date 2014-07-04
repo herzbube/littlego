@@ -24,7 +24,7 @@
 /// cross-hair that indicates to the user during stone placement where the
 /// stone would be placed.
 // -----------------------------------------------------------------------------
-@interface BVCrossHairStoneLayerDelegate : BoardViewLayerDelegateBase
+@interface CrossHairStoneLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

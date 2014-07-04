@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVSymbolsLayerDelegate()
+@interface SymbolsLayerDelegate()
 @property(nonatomic, assign) PlayViewModel* playViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
@@ -42,7 +42,7 @@
 @end
 
 
-@implementation BVSymbolsLayerDelegate
+@implementation SymbolsLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SymbolsLayerDelegate object.
@@ -150,14 +150,14 @@
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
   if (! blackLastMoveLayer)
   {
-    blackLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
+    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
     [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
     CGLayerRelease(blackLastMoveLayer);
   }
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
   if (! whiteLastMoveLayer)
   {
-    whiteLastMoveLayer = BVCreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
+    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
     [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
     CGLayerRelease(whiteLastMoveLayer);
   }

@@ -28,7 +28,7 @@
 /// @e stoneGroupState property. TerritoryLayerDelegate is drawing only while
 /// scoring is in progress.
 // -----------------------------------------------------------------------------
-@interface BVTerritoryLayerDelegate : BoardViewLayerDelegateBase
+@interface TerritoryLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

@@ -23,7 +23,7 @@
 /// @brief The StonesLayerDelegate class is responsible for drawing stones on
 /// the Go board.
 // -----------------------------------------------------------------------------
-@interface BVStonesLayerDelegate : BoardViewLayerDelegateBase
+@interface StonesLayerDelegate : BoardViewLayerDelegateBase
 {
 }
 

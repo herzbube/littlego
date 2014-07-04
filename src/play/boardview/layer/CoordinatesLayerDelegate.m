@@ -29,14 +29,14 @@
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for CoordinatesLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVCoordinatesLayerDelegate()
+@interface CoordinatesLayerDelegate()
 @property(nonatomic, retain) UIColor* textColor;
 @property(nonatomic, retain) NSShadow* shadow;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @end
 
 
-@implementation BVCoordinatesLayerDelegate
+@implementation CoordinatesLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CoordinatesLayerDelegate object.

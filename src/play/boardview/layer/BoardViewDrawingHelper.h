@@ -51,11 +51,11 @@ enum TerritoryLayerType
 /// method as conforming to Core Foundation's ownership policy naming
 /// conventions.
 //@{
-CGLayerRef BVCreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics);
-CGLayerRef BVCreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
-CGLayerRef BVCreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics);
-CGLayerRef BVCreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics);
-CGLayerRef BVCreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics);
+CGLayerRef CreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics);
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
+CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics);
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics);
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers

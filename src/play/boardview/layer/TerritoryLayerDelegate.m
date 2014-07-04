@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
-@interface BVTerritoryLayerDelegate()
+@interface TerritoryLayerDelegate()
 @property(nonatomic, retain) ScoringModel* scoringModel;
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
@@ -48,7 +48,7 @@
 @end
 
 
-@implementation BVTerritoryLayerDelegate
+@implementation TerritoryLayerDelegate
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TerritoryLayerDelegate object.
@@ -202,28 +202,28 @@
   CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
   if (! blackTerritoryLayer)
   {
-    blackTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
+    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
     [cache setLayer:blackTerritoryLayer ofType:BlackTerritoryLayerType];
     CGLayerRelease(blackTerritoryLayer);
   }
   CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
   if (! whiteTerritoryLayer)
   {
-    whiteTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.playViewMetrics);
+    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.playViewMetrics);
     [cache setLayer:whiteTerritoryLayer ofType:WhiteTerritoryLayerType];
     CGLayerRelease(whiteTerritoryLayer);
   }
   CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   if (! inconsistentFillColorTerritoryLayer)
   {
-    inconsistentFillColorTerritoryLayer = BVCreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.playViewMetrics);
+    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.playViewMetrics);
     [cache setLayer:inconsistentFillColorTerritoryLayer ofType:InconsistentFillColorTerritoryLayerType];
     CGLayerRelease(inconsistentFillColorTerritoryLayer);
   }
   CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
   if (! inconsistentDotSymbolTerritoryLayer)
   {
-    inconsistentDotSymbolTerritoryLayer = BVCreateTerritoryLayer(context,
+    inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context,
                                                                  TerritoryLayerTypeInconsistentDotSymbol,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolColor,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
@@ -234,21 +234,21 @@
   CGLayerRef deadStoneSymbolLayer = [cache layerOfType:DeadStoneSymbolLayerType];
   if (! deadStoneSymbolLayer)
   {
-    deadStoneSymbolLayer = BVCreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
+    deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
     [cache setLayer:deadStoneSymbolLayer ofType:DeadStoneSymbolLayerType];
     CGLayerRelease(deadStoneSymbolLayer);
   }
   CGLayerRef blackSekiStoneSymbolLayer = [cache layerOfType:BlackSekiStoneSymbolLayerType];
   if (! blackSekiStoneSymbolLayer)
   {
-    blackSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
+    blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
     [cache setLayer:blackSekiStoneSymbolLayer ofType:BlackSekiStoneSymbolLayerType];
     CGLayerRelease(blackSekiStoneSymbolLayer);
   }
   CGLayerRef whiteSekiStoneSymbolLayer = [cache layerOfType:WhiteSekiStoneSymbolLayerType];
   if (! whiteSekiStoneSymbolLayer)
   {
-    whiteSekiStoneSymbolLayer = BVCreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
+    whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
     [cache setLayer:whiteSekiStoneSymbolLayer ofType:WhiteSekiStoneSymbolLayerType];
     CGLayerRelease(whiteSekiStoneSymbolLayer);
   }

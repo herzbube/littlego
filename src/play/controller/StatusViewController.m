@@ -18,7 +18,6 @@
 // Project includes
 #import "StatusViewController.h"
 #import "../model/ScoringModel.h"
-#import "../playview/PlayView.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
@@ -62,7 +61,6 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  self.playView = nil;
   [self releaseObjects];
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
@@ -70,7 +68,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayView object.
+/// @brief Deallocates memory allocated by this StatusViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -199,20 +197,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setPlayView:(PlayView*)playView
-{
-  if (_playView == playView)
-    return;
-  if (_playView)
-    [_playView removeObserver:self forKeyPath:@"crossHairPoint"];
-  _playView = playView;
-  if (_playView)
-    [_playView addObserver:self forKeyPath:@"crossHairPoint" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Updates the status view with a new size.
 // -----------------------------------------------------------------------------
 - (void) setStatusViewSize:(CGSize)statusViewSize;
@@ -300,31 +284,32 @@
 
   NSString* statusText = @"";
 
-  if (self.playView.crossHairPoint)
+//  if (self.playView.crossHairPoint)
+  if (false)
   {
-    statusText = self.playView.crossHairPoint.vertex.string;
-    if (! self.playView.crossHairPointIsLegalMove)
-    {
-      enum GoMoveIsIllegalReason isIllegalReason = self.playView.crossHairPointIsIllegalReason;
-      switch (isIllegalReason)
-      {
-        case GoMoveIsIllegalReasonSuicide:
-        case GoMoveIsIllegalReasonSimpleKo:
-        case GoMoveIsIllegalReasonSuperko:
-        case GoMoveIsIllegalReasonUnknown:
-        {
-          NSString* isIllegalReason = [NSString stringWithMoveIsIllegalReason:self.playView.crossHairPointIsIllegalReason];
-          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
-          statusText = [statusText stringByAppendingString:isIllegalReason];
-          break;
-        }
-        default:
-        {
-          // No special message if intersection is occupied, that's too basic
-          break;
-        }
-      }
-    }
+//    statusText = self.playView.crossHairPoint.vertex.string;
+//    if (! self.playView.crossHairPointIsLegalMove)
+//    {
+//      enum GoMoveIsIllegalReason isIllegalReason = self.playView.crossHairPointIsIllegalReason;
+//      switch (isIllegalReason)
+//      {
+//        case GoMoveIsIllegalReasonSuicide:
+//        case GoMoveIsIllegalReasonSimpleKo:
+//        case GoMoveIsIllegalReasonSuperko:
+//        case GoMoveIsIllegalReasonUnknown:
+//        {
+//          NSString* isIllegalReason = [NSString stringWithMoveIsIllegalReason:self.playView.crossHairPointIsIllegalReason];
+//          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
+//          statusText = [statusText stringByAppendingString:isIllegalReason];
+//          break;
+//        }
+//        default:
+//        {
+//          // No special message if intersection is occupied, that's too basic
+//          break;
+//        }
+//      }
+//    }
   }
   else
   {
