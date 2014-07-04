@@ -672,7 +672,23 @@ enum ResetToDefaultsSectionItem
   // To prevent this from happening, we simply turn editing off if a new game
   // is created.
   if (self.tableView.editing)
-    [self setEditing:NO animated:YES];
+  {
+    // The notification may be posted on a secondary thread. Because UIKit is
+    // not thread-safe we must make sure that we invoke the UIKit method on the
+    // main thread.
+    [self performSelector:@selector(disableEditingOnMainThread)
+                 onThread:[NSThread mainThread]
+               withObject:nil
+            waitUntilDone:NO];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Is invoked in the context of the main thread.
+// -----------------------------------------------------------------------------
+- (void) disableEditingOnMainThread
+{
+  [self setEditing:NO animated:YES];
 }
 
 // -----------------------------------------------------------------------------
