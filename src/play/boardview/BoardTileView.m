@@ -88,7 +88,6 @@
   self.column = -1;
   self.notificationRespondersAreSetup = false;
   self.drawLayersWasDelayed = false;
-  [self setupLayers];
   return self;
 }
 
@@ -101,28 +100,14 @@
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate.layer removeFromSuperlayer];
   self.layerDelegates = nil;
-  [super dealloc];
-}
-
-#pragma mark - View setup
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
-// -----------------------------------------------------------------------------
-- (void) setupLayers
-{
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics] autorelease];
+  self.gridLayerDelegate = nil;
   self.crossHairLinesLayerDelegate = nil;
-  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
-                                                                  metrics:metrics] autorelease];
+  self.stonesLayerDelegate = nil;
   self.crossHairStoneLayerDelegate = nil;
-  [self createOrResetInfluenceLayer];
-  [self createOrResetSymbolsLayer];
-  [self createOrResetTerritoryLayer];
-
-  [self updateLayers];
+  self.influenceLayerDelegate = nil;
+  self.symbolsLayerDelegate = nil;
+  self.territoryLayerDelegate = nil;
+  [super dealloc];
 }
 
 #pragma mark - Setup/remove notification responders
@@ -207,6 +192,165 @@
 #pragma mark - Manage layers and layer delegates
 
 // -----------------------------------------------------------------------------
+/// @brief Sets up this BoardTileView with layers that match the current
+/// application state.
+///
+/// The process consists of these actions:
+/// - Layers that are required but do not exist are created
+/// - Layers that are not required but that exist are deallocated
+/// - Layers that are required and that already exist are kept as-is
+///
+/// Due to the last point, a caller may need to invalidate all layers' contents
+/// by invoking invalidateContent().
+///
+/// @note If this method is invoked two times in a row without any application
+/// state changes in between, the second invocation does not have any effect.
+// -----------------------------------------------------------------------------
+- (void) setupLayerDelegates
+{
+  [self setupGridLayerDelegate];
+  [self setupStonesLayerDelegate];
+  [self setupCrossHairLayerDelegatesLayersAreRequired:false];
+  [self setupInfluenceLayerDelegate];
+  [self setupSymbolsLayerDelegate];
+  [self setupTerritoryLayerDelegate];
+
+  [self updateLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the grid layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupGridLayerDelegate
+{
+  if (self.gridLayerDelegate)
+    return;
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  self.gridLayerDelegate = [[[BVGridLayerDelegate alloc] initWithTile:self
+                                                              metrics:metrics] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the stones layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupStonesLayerDelegate
+{
+  if (self.stonesLayerDelegate)
+    return;
+  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  self.stonesLayerDelegate = [[[BVStonesLayerDelegate alloc] initWithTile:self
+                                                                  metrics:metrics] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the cross-hair lines and cross-hair stone layer delegates, or
+/// resets them to nil, depending on the value of @a layersAreRequired.
+///
+/// Unlike the other layer setup methods, with this method the caller must
+/// provide the information whether or not the layers are required. The reason
+/// is that there is no application state holding object that provides the
+/// information.
+// -----------------------------------------------------------------------------
+- (void) setupCrossHairLayerDelegatesLayersAreRequired:(bool)layersAreRequired
+{
+  if (layersAreRequired)
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    if (! self.crossHairLinesLayerDelegate)
+    {
+      self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
+                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+    }
+    if (! self.crossHairStoneLayerDelegate)
+    {
+      self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
+                                                                                      metrics:appDelegate.playViewMetrics] autorelease];
+    }
+  }
+  else
+  {
+    self.crossHairLinesLayerDelegate = nil;
+    self.crossHairStoneLayerDelegate = nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the influence layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupInfluenceLayerDelegate
+{
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    self.influenceLayerDelegate = nil;
+  }
+  else
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    PlayViewModel* playViewModel = appDelegate.playViewModel;
+    if (playViewModel.displayPlayerInfluence)
+    {
+      if (self.influenceLayerDelegate)
+        return;
+      self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
+                                                                            metrics:appDelegate.playViewMetrics
+                                                                      playViewModel:playViewModel] autorelease];
+    }
+    else
+    {
+      self.influenceLayerDelegate = nil;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the symbols layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupSymbolsLayerDelegate
+{
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    self.symbolsLayerDelegate = nil;
+  }
+  else
+  {
+    if (self.symbolsLayerDelegate)
+      return;
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
+                                                                      metrics:appDelegate.playViewMetrics
+                                                                playViewModel:appDelegate.playViewModel
+                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
+
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the territory layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupTerritoryLayerDelegate
+{
+
+  if ([GoGame sharedGame].score.scoringEnabled)
+  {
+    if (self.territoryLayerDelegate)
+      return;
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
+                                                                          metrics:appDelegate.playViewMetrics
+                                                                     scoringModel:appDelegate.scoringModel] autorelease];
+  }
+  else
+  {
+    self.territoryLayerDelegate = nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the layers of this BoardTileView based on the layer delegates
 /// that currently exist.
 // -----------------------------------------------------------------------------
@@ -240,95 +384,6 @@
   // Replace the old array at the very end. The old array is now deallocated,
   // including any layer delegates that are no longer in newLayerDelegates
   self.layerDelegates = newLayerDelegates;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates the influence layer delegate, or resets it to nil, depending
-/// on the current application state.
-// -----------------------------------------------------------------------------
-- (void) createOrResetInfluenceLayer
-{
-  if ([GoGame sharedGame].score.scoringEnabled)
-  {
-    self.influenceLayerDelegate = nil;
-  }
-  else
-  {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    PlayViewModel* playViewModel = appDelegate.playViewModel;
-    if (playViewModel.displayPlayerInfluence)
-    {
-      self.influenceLayerDelegate = [[[BVInfluenceLayerDelegate alloc] initWithTile:self
-                                                                            metrics:appDelegate.playViewMetrics
-                                                                      playViewModel:playViewModel] autorelease];
-    }
-    else
-    {
-      self.influenceLayerDelegate = nil;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates the symbols layer delegate, or resets it to nil, depending
-/// on the current application state.
-// -----------------------------------------------------------------------------
-- (void) createOrResetSymbolsLayer
-{
-  if ([GoGame sharedGame].score.scoringEnabled)
-  {
-    self.symbolsLayerDelegate = nil;
-  }
-  else
-  {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.symbolsLayerDelegate = [[[BVSymbolsLayerDelegate alloc] initWithTile:self
-                                                                      metrics:appDelegate.playViewMetrics
-                                                                playViewModel:appDelegate.playViewModel
-                                                           boardPositionModel:appDelegate.boardPositionModel] autorelease];
-
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates the territory layer delegate, or resets it to nil, depending
-/// on the current application state.
-// -----------------------------------------------------------------------------
-- (void) createOrResetTerritoryLayer
-{
-
-  if ([GoGame sharedGame].score.scoringEnabled)
-  {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.territoryLayerDelegate = [[[BVTerritoryLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
-                                                                     scoringModel:appDelegate.scoringModel] autorelease];
-  }
-  else
-  {
-    self.territoryLayerDelegate = nil;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates the cross-hair layer delegates.
-// -----------------------------------------------------------------------------
-- (void) createCrossHairLayers
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  self.crossHairLinesLayerDelegate = [[[BVCrossHairLinesLayerDelegate alloc] initWithTile:self
-                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
-  self.crossHairStoneLayerDelegate = [[[BVCrossHairStoneLayerDelegate alloc] initWithTile:self
-                                                                                  metrics:appDelegate.playViewMetrics] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Resets the cross-hair layer delegates to nil.
-// -----------------------------------------------------------------------------
-- (void) resetCrossHairLayers
-{
-  self.crossHairLinesLayerDelegate = nil;
-  self.crossHairStoneLayerDelegate = nil;
 }
 
 #pragma mark - Handle delayed drawing
@@ -424,9 +479,9 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringEnabled:(NSNotification*)notification
 {
-  [self createOrResetInfluenceLayer];
-  [self createOrResetSymbolsLayer];
-  [self createOrResetTerritoryLayer];
+  [self setupInfluenceLayerDelegate];
+  [self setupSymbolsLayerDelegate];
+  [self setupTerritoryLayerDelegate];
   [self updateLayers];
   [self notifyLayerDelegates:BVLDEventScoringModeEnabled eventInfo:nil];
   [self delayedDrawLayers];
@@ -437,9 +492,9 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringDisabled:(NSNotification*)notification
 {
-  [self createOrResetInfluenceLayer];
-  [self createOrResetSymbolsLayer];
-  [self createOrResetTerritoryLayer];
+  [self setupInfluenceLayerDelegate];
+  [self setupSymbolsLayerDelegate];
+  [self setupTerritoryLayerDelegate];
   [self updateLayers];
   [self notifyLayerDelegates:BVLDEventScoringModeDisabled eventInfo:nil];
   [self delayedDrawLayers];
@@ -468,7 +523,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
-  [self createCrossHairLayers];
+  [self setupCrossHairLayerDelegatesLayersAreRequired:true];
   [self updateLayers];
 }
 
@@ -477,7 +532,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
-  [self resetCrossHairLayers];
+  [self setupCrossHairLayerDelegatesLayersAreRequired:false];
   [self updateLayers];
 }
 
@@ -557,7 +612,7 @@
     }
     else if ([keyPath isEqualToString:@"displayPlayerInfluence"])
     {
-      [self createOrResetInfluenceLayer];
+      [self setupInfluenceLayerDelegate];
       [self updateLayers];
     }
   }
@@ -583,20 +638,25 @@
 ///
 /// If this BoardTileView is added to a superview (i.e. @a newSuperview is not
 /// nil), this BoardTileView registers to receive notifications so that it can
-/// participate in drawing. It also invalidates the content in all of its
-/// layers so that they redraw in the next drawing cycle. This make sures that
-/// the tile view is drawing its content the first time after it is newly
-/// allocated, or after it is reused.
+/// participate in drawing. It also sets up all layers and invalidates their
+/// content so that they redraw in the next drawing cycle. This make sures that
+/// 1) the tile view is drawing its content the first time after it is newly
+/// allocated, or 2) re-drawing its content according to the current application
+/// state after it is reused.
 ///
 /// If this BoardTileView is removed from its superview (i.e. @a newSuperview is
 /// nil), this BoardTileView unregisters from all notifications so that it no
-/// longer takes part in the drawing process.
+/// longer takes part in the drawing process. Layers that currently exist are
+/// frozen.
 // -----------------------------------------------------------------------------
 - (void) willMoveToSuperview:(UIView*)newSuperview
 {
   if (newSuperview)
   {
     [self setupNotificationResponders];
+    // If the view is reused: Layers may have come and gone since the view was
+    // frozen
+    [self setupLayerDelegates];
     [self invalidateContent];
   }
   else
