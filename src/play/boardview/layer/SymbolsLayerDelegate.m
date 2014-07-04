@@ -74,6 +74,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // There are times when no SymbolsLayerDelegate instances are around to react
+  // to events that invalidate the cached CGLayers, so the cached CGLayers will
+  // inevitably become out-of-date. To prevent this, we invalidate the CGLayers
+  // *NOW*.
+  [self invalidateLayers];
   self.playViewModel = nil;
   self.boardPositionModel = nil;
   self.paragraphStyle = nil;

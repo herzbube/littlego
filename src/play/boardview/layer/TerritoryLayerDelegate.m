@@ -77,13 +77,17 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // There are times when no TerritoryLayerDelegate instances are around to
+  // react to events that invalidate the cached CGLayers, so the cached CGLayers
+  // will inevitably become out-of-date. To prevent this, we invalidate the
+  // CGLayers *NOW*.
+  [self invalidateLayers];
   self.scoringModel = nil;
   self.drawingPointsTerritory = nil;
   self.drawingPointsStoneGroupState = nil;
   self.territoryColorBlack = nil;
   self.territoryColorWhite = nil;
   self.territoryColorInconsistent = nil;
-  [self invalidateLayers];
   [super dealloc];
 }
 

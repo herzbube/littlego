@@ -67,6 +67,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // There are times when no CrossHairStoneLayerDelegate instances are around
+  // to react to events that invalidate the cached CGLayer, so the cached
+  // CGLayer will inevitably become out-of-date. To prevent this, we invalidate
+  // the CGLayer *NOW*.
+  [self invalidateLayer];
   self.crossHairPoint = nil;
   [super dealloc];
 }
@@ -74,11 +79,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Invalidates stone layers.
 // -----------------------------------------------------------------------------
-- (void) invalidateLayers
+- (void) invalidateLayer
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  [cache invalidateLayerOfType:BlackStoneLayerType];
-  [cache invalidateLayerOfType:WhiteStoneLayerType];
   [cache invalidateLayerOfType:CrossHairStoneLayerType];
 }
 
@@ -105,23 +108,6 @@
 {
   switch (event)
   {
-    case BVLDEventBoardGeometryChanged:
-    case BVLDEventBoardSizeChanged:
-    {
-      self.crossHairPoint = nil;
-      [self invalidateLayers];
-      [self invalidateDrawingRect];
-      [self invalidateDirtyRect];
-      self.dirty = true;
-      break;
-    }
-    case BVLDEventInvalidateContent:
-    {
-      [self invalidateDrawingRect];
-      [self invalidateDirtyRect];
-      self.dirty = true;
-      break;
-    }
     case BVLDEventCrossHairChanged:
     {
       // Assume that we won't draw the stone and reset the property
