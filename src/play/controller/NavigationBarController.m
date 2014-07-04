@@ -463,6 +463,9 @@
   {
     if ([ApplicationDelegate sharedDelegate].scoringModel.scoreWhenGameEnds)
     {
+      // Only trigger scoring if it makes sense to do so. It specifically does
+      // not make sense if a player resigned - that player has lost the game
+      // by his own explicit action, so we don't need to calculate a score.
       if (GoGameHasEndedReasonTwoPasses == game.reasonForGameHasEnded)
       {
         game.score.scoringEnabled = true;
