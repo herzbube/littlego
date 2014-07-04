@@ -93,7 +93,10 @@
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
-  self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
+  if (useTiling)
+    self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
+  else
+    self.scrollViewController.playViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
 

@@ -41,7 +41,6 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsLetterView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
-@property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;

@@ -18,6 +18,9 @@
 // Project includes
 #import "TiledScrollView.h"
 
+// Forward declarations
+@class PanGestureController;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardViewController class manages the scroll views that display
@@ -44,5 +47,7 @@
 @interface BoardViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
 {
 }
+
+@property(nonatomic, retain) PanGestureController* panGestureController;
 
 @end
