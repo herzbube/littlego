@@ -173,10 +173,17 @@
     [self uninitializeRegions];
     notificationName = goScoreScoringDisabled;
   }
+  // When a new game is started, scoring mode of the old game is disabled first.
+  // Because the process of starting a new game may run in a seconary thread,
+  // we must use waitUntilDone:YES here to guarantee that GoScoreScoringDisabled
+  // is delivered before the old game - and with it this GoScore object - are
+  // deallocated. In fact, we must guarantee that postNotificationOnMainThread:
+  // is invoked ***NOW***, otherwise this GoScore object may have been
+  // deallocated by the time the runtime is ready to execute the selector.
   [self performSelector:@selector(postNotificationOnMainThread:)
                onThread:[NSThread mainThread]
              withObject:notificationName
-          waitUntilDone:NO];
+          waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -330,7 +337,7 @@
   [self performSelector:@selector(postNotificationOnMainThread:)
                onThread:[NSThread mainThread]
              withObject:notificationName
-          waitUntilDone:NO];
+          waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------

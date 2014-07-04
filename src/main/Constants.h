@@ -375,15 +375,19 @@ extern NSString* gtpEngineIdleNotification;
 ///
 /// @note If this notification is sent during application startup, i.e. the
 /// first game is about to be created, the old GoGame object is nil.
+///
+/// @attention This notification may be delivered in a secondary thread.
 extern NSString* goGameWillCreate;
 /// @brief Is sent to indicate that a new GoGame object has been created. This
 /// notification is sent after the GoGame object and its dependent objects (e.g.
 /// GoBoard) have been fully configured.
 ///
 /// The new GoGame object is associated with the notification.
+///
+/// @attention This notification may be delivered in a secondary thread.
 extern NSString* goGameDidCreate;
 /// @brief Is sent to indicate that the GoGame state has changed in some way,
-/// i.e. the game has started or ended.
+/// i.e. the game has been paused or ended.
 ///
 /// The GoGame object is associated with the notification.
 extern NSString* goGameStateChanged;
@@ -437,6 +441,12 @@ extern NSString* gtpLogItemChanged;
 /// @brief Is sent to indicate that scoring mode has been enabled.
 extern NSString* goScoreScoringEnabled;
 /// @brief Is sent to indicate that scoring mode has been disabled.
+///
+/// Is sent before #goGameWillCreate in case a new game is started.
+///
+/// @attention The two notifications may be delivered on different threads:
+/// #goScoreScoringDisabled is always delivered in the main thread, but
+/// #goGameWillCreate may be delivered in a secondary thread.
 extern NSString* goScoreScoringDisabled;
 /// @brief Is sent to indicate that the calculation of a new score is about to
 /// start.
@@ -477,7 +487,7 @@ extern NSString* playersAndProfilesWillReset;
 /// @brief Is sent to indicate that players and profiles have been reset to
 /// their factory defaults. Is sent after #goGameDidCreate.
 extern NSString* playersAndProfilesDidReset;
-/// @brief Is sent to indicate that territory statistics in GoPoint object have
+/// @brief Is sent to indicate that territory statistics in GoPoint objects have
 /// been updated.
 extern NSString* territoryStatisticsChanged;
 /// @brief Is sent to indicate that the board view is about to display a
