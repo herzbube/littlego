@@ -416,8 +416,6 @@
   [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   [self notifyLayerDelegates:BVLDEventGoGameStarted eventInfo:nil];
-  // todo xxx we should not need that, but layer delegates still rely on it
-  [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 

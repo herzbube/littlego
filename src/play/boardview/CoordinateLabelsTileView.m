@@ -114,7 +114,6 @@
   self.notificationRespondersAreSetup = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
@@ -186,15 +185,6 @@
 }
 
 #pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameDidCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameDidCreate:(NSNotification*)notification
-{
-  [self.layerDelegate notify:BVLDEventGoGameStarted eventInfo:nil];
-  [self delayedDrawLayer];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
