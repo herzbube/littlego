@@ -434,8 +434,6 @@
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  // Disable scoring mode while the old GoGame is still around
-  oldGame.score.scoringEnabled = false;
 }
 
 // -----------------------------------------------------------------------------

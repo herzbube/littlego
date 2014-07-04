@@ -26,6 +26,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
 #import "../../player/Player.h"
 #import "../../player/PlayerModel.h"
@@ -95,9 +96,12 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
+  // Disable scoring mode while the old GoGame is still around
+  GoGame* oldGame = [GoGame sharedGame];
+  oldGame.score.scoringEnabled = false;
+
   // Send this while the old GoGame object is still around and fully functional
   // (the old game is nil if this happens during application startup)
-  GoGame* oldGame = [GoGame sharedGame];
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
   // Create the new GoGame object (unless a pre-fabricated object was supplied)
