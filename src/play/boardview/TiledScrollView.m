@@ -60,6 +60,7 @@
   self.indexOfFirstVisibleColumn = NSIntegerMax;
   self.indexOfLastVisibleRow = NSIntegerMin;
   self.indexOfLastVisibleColumn  = NSIntegerMin;
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
   return self;
 }
 
@@ -72,6 +73,18 @@
   self.reusableTiles = nil;
   self.tileContainerView = nil;
   [super dealloc];
+}
+
+#pragma mark - Memory management
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the system notification
+/// UIApplicationDidReceiveMemoryWarningNotification. Clears the queue of
+/// reusable tiles.
+// -----------------------------------------------------------------------------
+- (void) didReceiveMemoryWarning:(NSNotification*)notification
+{
+  [self.reusableTiles removeAllObjects];
 }
 
 #pragma mark - Public interface
