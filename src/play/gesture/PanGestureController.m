@@ -162,20 +162,33 @@
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
-    {
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
-      [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
-      break;
-    }
     case UIGestureRecognizerStateChanged:
     {
+      if (UIGestureRecognizerStateBegan == recognizerState)
+        [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
+
       [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
+      NSArray* crossHairInformation;
+      if (crossHairIntersection.point)
+      {
+        crossHairInformation = [[[NSArray alloc] initWithObjects:
+                                 crossHairIntersection.point,
+                                 [NSNumber numberWithBool:isLegalMove],
+                                 [NSNumber numberWithInt:illegalReason],
+                                 nil] autorelease];
+      }
+      else
+      {
+        crossHairInformation = [NSArray array];
+      }
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:crossHairInformation];
       break;
     }
     case UIGestureRecognizerStateEnded:
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
       if (isLegalMove)
       {
         DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
@@ -189,6 +202,7 @@
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
       break;
     }
     default:

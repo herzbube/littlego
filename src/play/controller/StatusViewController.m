@@ -42,6 +42,7 @@
 @property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
+@property(nonatomic, retain) NSArray* crossHairInformation;
 //@}
 @end
 
@@ -84,6 +85,7 @@
 {
   self.statusLabel = nil;
   self.activityIndicator = nil;
+  self.crossHairInformation = nil;
 }
 
 #pragma mark - UIViewController overrides
@@ -180,6 +182,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
+  [center addObserver:self selector:@selector(boardViewDidChangeCrossHair:) name:boardViewDidChangeCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
@@ -284,32 +287,33 @@
 
   NSString* statusText = @"";
 
-//  if (self.playView.crossHairPoint)
-  if (false)
+  if (self.crossHairInformation)
   {
-//    statusText = self.playView.crossHairPoint.vertex.string;
-//    if (! self.playView.crossHairPointIsLegalMove)
-//    {
-//      enum GoMoveIsIllegalReason isIllegalReason = self.playView.crossHairPointIsIllegalReason;
-//      switch (isIllegalReason)
-//      {
-//        case GoMoveIsIllegalReasonSuicide:
-//        case GoMoveIsIllegalReasonSimpleKo:
-//        case GoMoveIsIllegalReasonSuperko:
-//        case GoMoveIsIllegalReasonUnknown:
-//        {
-//          NSString* isIllegalReason = [NSString stringWithMoveIsIllegalReason:self.playView.crossHairPointIsIllegalReason];
-//          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
-//          statusText = [statusText stringByAppendingString:isIllegalReason];
-//          break;
-//        }
-//        default:
-//        {
-//          // No special message if intersection is occupied, that's too basic
-//          break;
-//        }
-//      }
-//    }
+    GoPoint* crossHairPoint = [self.crossHairInformation objectAtIndex:0];
+    statusText = crossHairPoint.vertex.string;
+    bool crossHairPointIsLegalMove = [[self.crossHairInformation objectAtIndex:1] boolValue];
+    if (! crossHairPointIsLegalMove)
+    {
+      enum GoMoveIsIllegalReason isIllegalReason = [[self.crossHairInformation objectAtIndex:2] intValue];
+      switch (isIllegalReason)
+      {
+        case GoMoveIsIllegalReasonSuicide:
+        case GoMoveIsIllegalReasonSimpleKo:
+        case GoMoveIsIllegalReasonSuperko:
+        case GoMoveIsIllegalReasonUnknown:
+        {
+          NSString* isIllegalReasonString = [NSString stringWithMoveIsIllegalReason:isIllegalReason];
+          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
+          statusText = [statusText stringByAppendingString:isIllegalReasonString];
+          break;
+        }
+        default:
+        {
+          // No special message if intersection is occupied, that's too basic
+          break;
+        }
+      }
+    }
   }
   else
   {
@@ -505,6 +509,20 @@
   self.activityIndicatorNeedsUpdate = true;
   // No label update here, the "scoring in progress..." message must remain
   // until goScoreCalculationEnds is received.
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewDidChangeCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewDidChangeCrossHair:(NSNotification*)notification
+{
+  NSArray* crossHairInformation = notification.object;
+  if (crossHairInformation.count > 0)
+    self.crossHairInformation = [NSArray arrayWithArray:crossHairInformation];
+  else
+    self.crossHairInformation = nil;
+  self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 

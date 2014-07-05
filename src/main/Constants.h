@@ -466,6 +466,47 @@ extern NSString* askGtpEngineForDeadStonesEnds;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Cross-hair related notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the board view is about to display a
+/// cross-hair in order to help the user place a stone.
+extern NSString* boardViewWillDisplayCrossHair;
+/// @brief Is sent to indicate that the board view is about to hide the
+/// cross-hair that is currently being displayed.
+extern NSString* boardViewWillHideCrossHair;
+/// @brief Is sent to indicate that the board view changed the cross-hair,
+/// typically to display it at a new intersection. Is sent after
+/// #boardViewWillDisplayCrossHair and after #boardViewWillHideCrossHair.
+///
+/// An NSArray object is associated with the notification that contains
+/// information about the new cross-hair location.
+///
+/// If the NSArray is empty this indicates that the cross-hair is currently not
+/// visible because the gesture that drives the cross-hair is currently outside
+/// of the board's boundaries. The NSArray is also empty if this is the final
+/// notification sent after boardViewWillHideCrossHair.
+///
+/// If the NSArray is not empty, this indicates that the cross-hair is currently
+/// visible. The NSArray in this case contains the following objects:
+/// - Object at index position 0: A GoPoint object that identifies the
+///   intersection at which the cross-hair is currently displayed.
+/// - Object at index position 1: An NSNumber that holds a boolean value,
+///   indicating whether a move that would place a stone at the cross-hair
+///   intersection would be legal or illegal.
+/// - Object at index position 2: An NSNumber that holds an int value that is
+///   actually a value from the enumeration #GoMoveIsIllegalReasonUnknown. If
+///   placing a stone at the cross-hair intersection would be legal the NSNumber
+///   holds the value #GoMoveIsIllegalReasonUnknown, otherwise it holds the
+///   actual reason why the move would be illegal.
+///
+/// Receivers of the notification must process the NSArray immediately because
+/// the NSArray may be deallocated, or its content changed, after the
+/// notification has been delivered.
+extern NSString* boardViewDidChangeCrossHair;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Other notifications
 // -----------------------------------------------------------------------------
 //@{
@@ -489,12 +530,6 @@ extern NSString* playersAndProfilesDidReset;
 /// @brief Is sent to indicate that territory statistics in GoPoint objects have
 /// been updated.
 extern NSString* territoryStatisticsChanged;
-/// @brief Is sent to indicate that the board view is about to display a
-/// cross-hair in order to help the user place a stone.
-extern NSString* boardViewWillDisplayCrossHair;
-/// @brief Is sent to indicate that the board view is about to hide the
-/// cross-hair that is currently being displayed.
-extern NSString* boardViewWillHideCrossHair;
 //@}
 
 // -----------------------------------------------------------------------------

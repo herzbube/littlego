@@ -77,6 +77,7 @@ NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 NSString* boardViewWillDisplayCrossHair = @"BoardViewWillDisplayCrossHair";
 NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
+NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
 
 // Play view settings default values
 const float iPhoneMaximumZoomScaleDefault = 2.5;

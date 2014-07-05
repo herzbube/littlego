@@ -237,7 +237,7 @@
     case GoMoveIsIllegalReasonSuperko:
       return @"Superko";
     default:
-      return @"Unknown";
+      return @"Unknown reason";
   }
 }
 
