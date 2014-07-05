@@ -366,7 +366,7 @@
     DDLogWarn(@"%@: Ignoring tap on game actions button", self);
     return;
   }
-  PlayViewActionSheetController* controller = [[PlayViewActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
+  GameActionsActionSheetController* controller = [[GameActionsActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
   [controller showActionSheetFromView:[ApplicationDelegate sharedDelegate].window];
 }
 
@@ -390,12 +390,12 @@
   self.gameInfoViewController = nil;
 }
 
-#pragma mark - PlayViewActionSheetDelegate overrides
+#pragma mark - GameActionsActionSheetDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewActionSheetDelegate protocol method.
+/// @brief GameActionsActionSheetDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller
+- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
 {
   [controller release];
 }

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayViewActionSheetController.h"
+#import "GameActionsActionSheetController.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -54,17 +54,17 @@ enum ActionSheetButton
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// PlayViewActionSheetController.
+/// GameActionsActionSheetController.
 // -----------------------------------------------------------------------------
-@interface PlayViewActionSheetController()
+@interface GameActionsActionSheetController()
 @property(nonatomic, retain) NSString* saveGameName;
 @end
 
 
-@implementation PlayViewActionSheetController
+@implementation GameActionsActionSheetController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayViewActionSheetController object.
+/// @brief Initializes a GameActionsActionSheetController object.
 ///
 /// @a aController refers to a view controller based on which modal view
 /// controllers can be displayed.
@@ -72,9 +72,10 @@ enum ActionSheetButton
 /// @a delegate is the delegate object that will be informed when this
 /// controller has finished its task.
 ///
-/// @note This is the designated initializer of PlayViewActionSheetController.
+/// @note This is the designated initializer of
+/// GameActionsActionSheetController.
 // -----------------------------------------------------------------------------
-- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<PlayViewActionSheetDelegate>)aDelegate
+- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<GameActionsActionSheetDelegate>)aDelegate
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -90,7 +91,7 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayViewActionSheetController
+/// @brief Deallocates memory allocated by this GameActionsActionSheetController
 /// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -245,7 +246,7 @@ enum ActionSheetButton
 {
   if (actionSheet.cancelButtonIndex == buttonIndex)
   {
-    [self.delegate playViewActionSheetControllerDidFinish:self];
+    [self.delegate gameActionsActionSheetControllerDidFinish:self];
     return;
   }
   id object = [self.buttonIndexes objectForKey:[NSNumber numberWithInt:buttonIndex]];
@@ -289,7 +290,7 @@ enum ActionSheetButton
   GoScore* score = [GoGame sharedGame].score;
   score.scoringEnabled = true;
   [score calculateWaitUntilDone:false];
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -327,7 +328,7 @@ enum ActionSheetButton
 - (void) updatePlayerInfluence
 {
   [[[[GenerateTerritoryStatisticsCommand alloc] init] autorelease] submit];
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -347,7 +348,7 @@ enum ActionSheetButton
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -368,7 +369,7 @@ enum ActionSheetButton
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -442,7 +443,7 @@ enum ActionSheetButton
     default:
       break;
   }
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -456,7 +457,7 @@ enum ActionSheetButton
     [[[[NewGameCommand alloc] init] autorelease] submit];
   }
   [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
-  [self.delegate playViewActionSheetControllerDidFinish:self];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -505,7 +506,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
 {
-  bool playViewActionSheetControllerDidFinish = true;
+  bool gameActionsActionSheetControllerDidFinish = true;
   if (! didCancel)
   {
     ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
@@ -523,7 +524,7 @@ enum ActionSheetButton
       // overwrite).
       self.saveGameName = editTextController.text;
       // We are not yet finished, user must still confirm/reject the overwrite
-      playViewActionSheetControllerDidFinish = false;
+      gameActionsActionSheetControllerDidFinish = false;
     }
     else
     {
@@ -531,8 +532,8 @@ enum ActionSheetButton
     }
   }
   [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
-  if (playViewActionSheetControllerDidFinish)
-    [self.delegate playViewActionSheetControllerDidFinish:self];
+  if (gameActionsActionSheetControllerDidFinish)
+    [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------

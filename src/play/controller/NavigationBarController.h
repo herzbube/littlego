@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameInfoViewController.h"
-#import "PlayViewActionSheetController.h"
+#import "GameActionsActionSheetController.h"
 
 // Forward declarations
 @class CommandBase;
@@ -55,7 +55,7 @@
 ///   controller into the navigation bar
 // -----------------------------------------------------------------------------
 @interface NavigationBarController : UIViewController <GameInfoViewControllerDelegate,
-                                                       PlayViewActionSheetDelegate,
+                                                       GameActionsActionSheetDelegate,
                                                        UIAlertViewDelegate,
                                                        UISplitViewControllerDelegate>
 {

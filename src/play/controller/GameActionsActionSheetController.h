@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,43 +20,43 @@
 #import "../../ui/EditTextController.h"
 
 // Forward declarations
-@class PlayViewActionSheetController;
+@class GameActionsActionSheetController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewActionSheetDelegate protocol must be implemented by the
-/// delegate of PlayViewActionSheetController.
+/// @brief The GameActionsActionSheetDelegate protocol must be implemented by
+/// the delegate of GameActionsActionSheetController.
 // -----------------------------------------------------------------------------
-@protocol PlayViewActionSheetDelegate
+@protocol GameActionsActionSheetDelegate
 /// @brief This method is invoked when the user has finished working with
 /// @a controller. The implementation is responsible for releasing
 /// @a controller.
-- (void) playViewActionSheetControllerDidFinish:(PlayViewActionSheetController*)controller;
+- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewActionSheetController class is responsible for managing
-/// an action sheet when the user taps the "Game Actions" button in the
+/// @brief The GameActionsActionSheetController class is responsible for
+/// managing an action sheet when the user taps the "Game Actions" button in the
 /// navigation bar on the Play tab.
 ///
-/// Tasks implementend by PlayViewActionSheetController are:
+/// Tasks implementend by GameActionsActionSheetController are:
 /// - Displaying the action sheet with buttons that are appropriate to the
 ///   current game state
 /// - Reacting to the user tapping on each action sheet button
 /// - Managing sub-controllers for views that need to be displayed as part of
 ///   handling the tap on an action sheet button
 // -----------------------------------------------------------------------------
-@interface PlayViewActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate, EditTextDelegate>
+@interface GameActionsActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate, EditTextDelegate>
 {
 }
 
-- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<PlayViewActionSheetDelegate>)aDelegate;
+- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<GameActionsActionSheetDelegate>)aDelegate;
 - (void) showActionSheetFromView:(UIView*)view;
 
 /// @brief This is the delegate that will be informed when
-/// PlayViewActionSheetController has finished its task.
-@property(nonatomic, assign) id<PlayViewActionSheetDelegate> delegate;
+/// GameActionsActionSheetController has finished its task.
+@property(nonatomic, assign) id<GameActionsActionSheetDelegate> delegate;
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.
 @property(nonatomic, assign) UIViewController* modalMaster;

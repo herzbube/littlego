@@ -94,7 +94,6 @@
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
-		CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
 		CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
 		CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
@@ -118,7 +117,6 @@
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
-		CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */; };
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD24962F14CCB51000C9D19F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD24962E14CCB51000C9D19F /* QuartzCore.framework */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
@@ -296,6 +294,8 @@
 		CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17141967FFD500271396 /* BoardViewMetrics.m */; };
 		CDAF17191968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
 		CDAF171A1968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
+		CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
+		CDAF171E196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
 		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
@@ -604,8 +604,6 @@
 		CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
 		CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
 		CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarController.m; sourceTree = "<group>"; };
-		CD1E9E5D171806FE00E1B7D1 /* PlayViewActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewActionSheetController.h; sourceTree = "<group>"; };
-		CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewActionSheetController.m; sourceTree = "<group>"; };
 		CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
 		CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
 		CD24962E14CCB51000C9D19F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -760,6 +758,8 @@
 		CDAF17141967FFD500271396 /* BoardViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewMetrics.m; sourceTree = "<group>"; };
 		CDAF17171968037700271396 /* BoardViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewModel.h; sourceTree = "<group>"; };
 		CDAF17181968037700271396 /* BoardViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewModel.m; sourceTree = "<group>"; };
+		CDAF171B196869E700271396 /* GameActionsActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionsActionSheetController.h; sourceTree = "<group>"; };
+		CDAF171C196869E700271396 /* GameActionsActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionsActionSheetController.m; sourceTree = "<group>"; };
 		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
 		CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TiledScrollView.m; sourceTree = "<group>"; };
 		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
@@ -1352,12 +1352,12 @@
 			children = (
 				CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */,
 				CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */,
+				CDAF171B196869E700271396 /* GameActionsActionSheetController.h */,
+				CDAF171C196869E700271396 /* GameActionsActionSheetController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
 				CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */,
 				CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */,
 				CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */,
-				CD1E9E5D171806FE00E1B7D1 /* PlayViewActionSheetController.h */,
-				CD1E9E5E171806FE00E1B7D1 /* PlayViewActionSheetController.m */,
 				CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */,
 				CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */,
 				CD1311CC17180D57006CE699 /* StatusViewController.h */,
@@ -2250,7 +2250,7 @@
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
-				CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */,
+				CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
@@ -2422,7 +2422,6 @@
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
-				CD1311CA17180B7A006CE699 /* PlayViewActionSheetController.m in Sources */,
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
@@ -2449,6 +2448,7 @@
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
+				CDAF171E196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
