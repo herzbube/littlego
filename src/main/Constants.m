@@ -79,7 +79,7 @@ NSString* boardViewWillDisplayCrossHair = @"BoardViewWillDisplayCrossHair";
 NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
 NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
 
-// Play view settings default values
+// Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScaleDefault = 2.5;
 const float iPadMaximumZoomScaleDefault = 2.0;
 const float iPhoneMaximumZoomScaleMaximum = 2.5;
@@ -212,7 +212,7 @@ NSString* iPadDeviceSuffix = @"~ipad";
 // User Defaults versioning
 NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
 NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
-// Play view settings
+// Display settings
 NSString* playViewKey = @"PlayView";
 NSString* markLastMoveKey = @"MarkLastMove";
 NSString* displayCoordinatesKey = @"DisplayCoordinates";

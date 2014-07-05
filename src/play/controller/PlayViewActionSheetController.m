@@ -34,7 +34,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates buttons that are displayed when the user taps the
-/// "Game Actions" button on the "Play" view.
+/// "Game Actions" button on the Play tab.
 ///
 /// The order in which buttons are enumerated also defines the order in which
 /// they appear in the UIActionSheet.
@@ -281,13 +281,13 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Score" action sheet button. Toggles
-/// scoring mode on play view.
+/// @brief Reacts to a tap gesture on the "Score" action sheet button. Enables
+/// scoring mode.
 // -----------------------------------------------------------------------------
 - (void) score
 {
   GoScore* score = [GoGame sharedGame].score;
-  score.scoringEnabled = ! score.scoringEnabled;
+  score.scoringEnabled = true;
   [score calculateWaitUntilDone:false];
   [self.delegate playViewActionSheetControllerDidFinish:self];
 }

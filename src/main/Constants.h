@@ -56,7 +56,8 @@ extern const int defaultTabOrder[];
 /// anywhere in Apple's documentation.
 extern const int indexOfMoreNavigationController;
 
-/// @brief How should Play view mark up inconcistent territory during scoring?
+/// @brief Enumerates the possible types of mark up to use for inconsistent
+/// territory during scoring.
 enum InconsistentTerritoryMarkupType
 {
   InconsistentTerritoryMarkupTypeDotSymbol,  ///< @brief Mark up territory using a dot symbol
@@ -533,7 +534,8 @@ extern NSString* territoryStatisticsChanged;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Play view settings default values
+/// @name Default values for properties that define how the Go board is
+/// displayed.
 // -----------------------------------------------------------------------------
 //@{
 extern const float iPhoneMaximumZoomScaleDefault;
@@ -543,12 +545,6 @@ extern const float iPadMaximumZoomScaleMaximum;
 extern const float stoneDistanceFromFingertipDefault;
 extern const float moveNumbersPercentageDefault;
 extern const bool displayPlayerInfluenceDefault;
-//@}
-
-// -----------------------------------------------------------------------------
-/// @name Board position settings default values
-// -----------------------------------------------------------------------------
-//@{
 extern const bool discardFutureMovesAlertDefault;
 extern const bool markNextMoveDefault;
 //@}
@@ -733,7 +729,7 @@ extern NSString* iPadDeviceSuffix;
 // User Defaults versioning
 extern NSString* userDefaultsVersionRegistrationDomainKey;
 extern NSString* userDefaultsVersionApplicationDomainKey;
-// Play view settings
+// Display settings
 extern NSString* playViewKey;
 extern NSString* markLastMoveKey;
 extern NSString* displayCoordinatesKey;

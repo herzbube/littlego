@@ -17,9 +17,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayTabController class represents the root view controller on
-/// the "Play" tab.
+/// the Play tab.
 ///
-/// The view hierarchy on the "Play" tab is laid out differently depending on
+/// The view hierarchy on the Play tab is laid out differently depending on
 /// the device that runs the application. Use the class method
 /// playTabController() to obtain a device-dependent controller object that
 /// knows how to set up the correct view hierarchy for the current device.

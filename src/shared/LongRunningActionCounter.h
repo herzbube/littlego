@@ -36,7 +36,7 @@
 /// outermost action ends.
 ///
 /// The typical example for a long-running action is loading a game from the
-/// archive. Without the concept of long-running actions, the entire PlayView
+/// archive. Without the concept of long-running actions, the entire Go board
 /// would need to be redrawn for each move in the archived game being replayed.
 ///
 ///

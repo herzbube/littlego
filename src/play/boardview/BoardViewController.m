@@ -191,10 +191,10 @@
 {
   self.viewDidLayoutSubviewsInProgress = true;
   // First prepare the new board geometry. This triggers a re-draw of all tiles.
-  [self updateBoardViewMetricsRect];
+  [self updateContentSizeInBoardViewMetrics];
   // Now prepare all scroll views with the new content size. The content size
   // is taken from the values in BoardViewMetrics.
-  [self updateContentSize];
+  [self updateContentSizeInScrollViews];
   self.viewDidLayoutSubviewsInProgress = false;
 }
 
@@ -318,7 +318,7 @@
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
   // Restore properties that were changed when the zoom scale was reset to 1.0
-  [self updateContentSize];
+  [self updateContentSizeInScrollViews];
   // todo xxx the content offset that we remembered above may no longer be
   // accurate because BoardViewMetrics may have made some adjustments to the
   // zoom scale. to fix this we either need to record the contentOffset in
@@ -466,9 +466,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 ///
-/// Updates the play view metrics rectangle, triggering a redraw in all tiles.
+/// Updates the BoardViewMetrics object's content size, triggering a redraw in
+/// all tiles.
 // -----------------------------------------------------------------------------
-- (void) updateBoardViewMetricsRect
+- (void) updateContentSizeInBoardViewMetrics
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGRect newBoardViewMetricsRect = CGRectZero;
@@ -484,7 +485,7 @@
 /// Updates the content size of all scroll views to match the current values in
 /// BoardViewMetrics.
 // -----------------------------------------------------------------------------
-- (void) updateContentSize
+- (void) updateContentSizeInScrollViews
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGSize contentSize = metrics.rect.size;
@@ -554,8 +555,8 @@
           // starts up and initially displays some other than the Play tab, then
           // 2) the user switches to the play tab. At this moment
           // viewDidLayoutSubviews is executed, it invokes
-          // updateBoardViewMetricsRect, which in turn triggers this KVO
-          // observer. If we now add coordinate labels, the app crashes. The
+          // updateContentSizeInBoardViewMetrics, which in turn triggers this
+          // KVO observer. If we now add coordinate labels, the app crashes. The
           // exact reason for the crash is unknown, but probable causes are
           // either adding subviews, or adding constraints, in the middle of a
           // layouting cycle. The workaround is to add a bit of asynchrony.

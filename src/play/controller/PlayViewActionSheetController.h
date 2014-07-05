@@ -38,7 +38,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The PlayViewActionSheetController class is responsible for managing
 /// an action sheet when the user taps the "Game Actions" button in the
-/// navigation bar on the "Play" tab.
+/// navigation bar on the Play tab.
 ///
 /// Tasks implementend by PlayViewActionSheetController are:
 /// - Displaying the action sheet with buttons that are appropriate to the

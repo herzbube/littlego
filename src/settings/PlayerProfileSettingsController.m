@@ -664,7 +664,7 @@ enum ResetToDefaultsSectionItem
   // - A game is currently running, with A and B playing
   // - The setting view enters editing mode; since C is not playing, its cell
   //   is marked as "deletable" (UITableViewCellEditingStyleDelete)
-  // - The user now switches away from the settings view to the play view,
+  // - The user now switches away from the settings view to the Play tab,
   //   where he deviously starts a new game with A and C playing
   // - The user comes back to the settings view, which is still in editing
   //   mode, with the cell for C still marked as deletable

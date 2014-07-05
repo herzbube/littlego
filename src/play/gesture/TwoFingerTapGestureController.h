@@ -17,8 +17,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The TwoFingerTapGestureController class is responsible for managing
-/// the two-finger-tap gesture on the "Play" tab. Two-finger-tapping is used to
-/// zoom out on the "Play" view.
+/// the two-finger-tap gesture on the Play tab. Two-finger-tapping is used to
+/// zoom out on the Go board.
 ///
 /// Every two-finger-tap performs a 50% zoom-out. Repeated two-finger-taps zoom
 /// out up to the minimum zoom scale. Once the minimum zoom scale has been

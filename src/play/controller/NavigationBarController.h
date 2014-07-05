@@ -43,7 +43,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The NavigationBarController class is responsible for managing the
-/// navigation bar above the Play view on the Play tab.
+/// navigation bar above the Go board on the Play tab.
 ///
 /// NavigationBarController is a container view controller. Its responsibilities
 /// include:

@@ -117,8 +117,8 @@
 /// @brief Model object that calculates locations and sizes of Go board elements
 /// as they are seen in the view hierarchy that displays the Go board.
 @property(nonatomic, retain) BoardViewMetrics* boardViewMetrics;
-/// @brief Model object that manages data related to the board position
-/// displayed on the Play view.
+/// @brief Model object that stores properties that define how the Go board
+/// displays board positions.
 @property(nonatomic, retain) BoardPositionModel* boardPositionModel;
 /// @brief Model object that stores attributes used for scoring.
 @property(nonatomic, retain) ScoringModel* scoringModel;

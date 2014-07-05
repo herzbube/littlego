@@ -31,7 +31,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The CurrentBoardPositionViewController class is responsible for
-/// managing the BoardPositionView on the "Play" tab that displays information
+/// managing the BoardPositionView on the Play tab that displays information
 /// about the current board position.
 ///
 /// CurrentBoardPositionViewController is a child view controller. It is used

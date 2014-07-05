@@ -41,7 +41,7 @@
   bool success = [self submitGtpCommand];
   if (! success)
     return false;
-  // Updates the Play view
+  // Updates the Go board
   [[NSNotificationCenter defaultCenter] postNotificationName:territoryStatisticsChanged object:nil];
   return true;
 }
@@ -69,7 +69,7 @@
   while (point)
   {
     // Zero = no influence = nothing will be drawn on that intersection. Without
-    // this initialization, the Play view would draw player influence with data
+    // this initialization, the Go board would draw player influence with data
     // from the last time that the display of player influence was enabled.
     point.territoryStatisticsScore = 0.0f;
     point = point.next;

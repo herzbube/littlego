@@ -30,10 +30,10 @@ NSString* displayPlayerInfluenceText = @"Display player influence";
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Play View" user preferences
+/// @brief Enumerates the sections presented in the "Display" user preferences
 /// table view.
 // -----------------------------------------------------------------------------
-enum PlayViewTableViewSection
+enum DisplayTableViewSection
 {
   ViewSection,
   DisplayMoveNumbersSection,

@@ -94,10 +94,10 @@ enum ActionType
 /// @a actionType is used to tweak the alert message so that contains a useful
 /// description of what the user tries to do.
 ///
-/// If the Play view currently displays the last board position of the game,
+/// If the Go board currently displays the last board position of the game,
 /// @a command is executed immediately.
 ///
-/// If the Play view displays a board position in the middle of the game, an
+/// If the Go board displays a board position in the middle of the game, an
 /// alert is shown that warns the user that discarding now will discard all
 /// future board positions. If the user confirms that this is OK, @a command is
 /// executed. If the user cancels the operation, @a command is not executed.

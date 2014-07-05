@@ -42,7 +42,7 @@ enum SettingsTableViewSection
 // -----------------------------------------------------------------------------
 enum ViewSettingsSectionItem
 {
-  PlayViewSettingsItem,
+  DisplaySettingsItem,
   BoardPositionSettingsItem,
   ScoringSettingsItem,
   MaxViewSettingsSectionItem
@@ -127,7 +127,7 @@ enum PlayersProfilesSectionItem
     {
       switch (indexPath.row)
       {
-        case PlayViewSettingsItem:
+        case DisplaySettingsItem:
         {
           cell.textLabel.text = @"Display";
           break;
@@ -192,7 +192,7 @@ enum PlayersProfilesSectionItem
     {
       switch (indexPath.row)
       {
-        case PlayViewSettingsItem:
+        case DisplaySettingsItem:
         {
           controller = [DisplaySettingsController controller];
           break;

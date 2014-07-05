@@ -32,7 +32,7 @@
 ///
 /// ToggleTerritoryStatisticsCommand also initializes the territory statistics
 /// in all GoPoint objects with the value zero and triggers a drawing update
-/// in PlayView.
+/// of the Go board.
 ///
 /// ToggleTerritoryStatisticsCommand is executed asynchronously (unless the
 /// executor is another asynchronous command). The reason is that

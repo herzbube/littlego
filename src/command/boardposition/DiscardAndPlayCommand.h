@@ -25,9 +25,9 @@
 // -----------------------------------------------------------------------------
 /// @brief The DiscardAndPlayCommand class is responsible for first discarding
 /// all board positions in the future of the board position currently displayed
-/// on the Play view, then playing a move.
+/// by the Go board, then playing a move.
 ///
-/// No board positions are discarded if the Play view already displays the last
+/// No board positions are discarded if the Go board already displays the last
 /// board position.
 ///
 /// After board positions are discarded, DiscardAndPlayCommand executes one of

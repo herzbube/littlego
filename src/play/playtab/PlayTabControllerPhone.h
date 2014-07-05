@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayTabControllerPhone class is the root view controller on the
-/// "Play" tab for the iPhone.
+/// Play tab for the iPhone.
 ///
 /// The PlayTabController class method playTabController() should be used to
 /// create a PlayTabControllerPhone instance.

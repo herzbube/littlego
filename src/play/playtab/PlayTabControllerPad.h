@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayTabControllerPad class is the root view controller on the
-/// "Play" tab for the iPad.
+/// Play tab for the iPad.
 ///
 /// The PlayTabController class method playTabController() should be used to
 /// create a PlayTabControllerPad instance.

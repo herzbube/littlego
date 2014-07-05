@@ -90,11 +90,11 @@ UI for application preferences from the application, though, and therefore
 chose to implement a dedicated Preferences view inside the application.
 
 
-About the "Play" tab
---------------------
-- The "Play" tab is the centerpiece of the entire application. It has a large
+About the Play tab
+------------------
+- The Play tab is the centerpiece of the entire application. It has a large
   number of UI elements, many of them interacting with each other, and some of
-  them are not visible all the time. To reduce complexity and keep the "Play"
+  them are not visible all the time. To reduce complexity and keep the Play
   tab in its entirety in a maintainable state, it is paramount to have many
   small model and controller classes with clearly assigned responsibilities.
 - Static design: PlayTabController is the tab's root view controller. There
@@ -118,7 +118,7 @@ About the "Play" tab
 
 UI design
 ---------
-As noted in "About the Play tab", the "Play" tab has a large number of UI
+As noted in "About the Play tab", the Play tab has a large number of UI
 elements, and these must somehow be fitted onto the small screeen estate
 available on the iPhone. Here I try to outline the thoughts that went into the
 iPhone UI design:

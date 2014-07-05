@@ -24,18 +24,32 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardViewMetrics class is a model class that provides coordinates
-/// and sizes of UI elements on the PlayView to clients that need them for
-/// drawing.
+/// @brief The BoardViewMetrics class is a model class that provides locations
+/// and sizes (i.e. "metrics") of Go board elements that can be used to draw
+/// those elements.
 ///
-/// If the frame of the Play view changes (e.g. when an interface orientation
-/// change occurs), someone must invoke updateWithRect:(). If the size of the
-/// Go board that is displayed by the Play view changes (e.g. when a new game
-/// is started), someone must invoke updateWithBoardSize:(). If the display of
-/// coordinate labels changes, someone must invoke
-/// updateWithDisplayCoordinates:().
+/// All metrics refer to an imaginary canvas that contains the entire Go board.
+/// The size of the canvas is determined by two things:
+/// - A base size that is equal to the frame size of the scroll view that
+///   displays the part of the Go board that is currently visible
+/// - The base size is multiplied by a scale factor that is equal to the zoom
+///   scale that is currently in effect.
 ///
-/// In reaction to either of these events, BoardViewMetrics re-calculates all
+/// Effectively, the canvas is equal to the content of the scroll view that
+/// displays the Go board. If the scroll view frame size changes (e.g. when an
+/// interface orientation change occurs), someone must invoke updateWithRect:().
+/// If the zoom scale changes, someone must invoke updateWithZoomScale:().
+///
+/// Additional properties that influence the metrics calculated by
+/// BoardViewMetrics are:
+/// - The size of the Go board (e.g. 7x7, 19x19). If the board size changes
+///   (e.g. when a new game is started), someone must invoke
+///   updateWithBoardSize:().
+/// - Whether or not coordinate labels should be displayed. If this changes
+///   (typically because the user preference changed), someone must invoke
+///   updateWithDisplayCoordinates:().
+///
+/// If any of these 4 updaters is invoked, BoardViewMetrics re-calculates all
 /// of its properties. Clients are expected to use KVO to notice any changes in
 /// self.rect, self.boardSize or self.displayCoordinates, and to respond to such
 /// changes by initiating the re-drawing of the appropriate parts of the Go
@@ -44,9 +58,9 @@
 ///
 /// @par Calculations
 ///
-/// The following schematic illustrates the composition of the view for a
-/// (theoretical) 4x4 board. Note that the view has rectangular dimensions,
-/// while the board is square and centered within the view rectangle.
+/// The following schematic illustrates the composition of the canvas for a
+/// (theoretical) 4x4 board. Note that the canvas has rectangular dimensions,
+/// while the actual board is square and centered within the canvas rectangle.
 ///
 /// @verbatim
 ///                                                      offsetForCenteringX
@@ -150,12 +164,12 @@
 /// @name Main properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief The rectangle that Play view layers must use as their frame.
+/// @brief The canvas rectangle.
 ///
 /// Clients that use KVO on this property will be triggered after
 /// BoardViewMetrics has updated its values to match the new rectangle.
 @property(nonatomic, assign) CGRect rect;
-/// @brief The size of the Go board that is drawn by Play view layers.
+/// @brief The size of the Go board.
 ///
 /// Clients that use KVO on this property will be triggered after
 /// BoardViewMetrics has updated its values to match the new board size.

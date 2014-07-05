@@ -39,7 +39,7 @@
 /// itself (e.g. komi, handicap).
 ///
 /// The board position in the current game's GoBoardPosition instance (i.e. the
-/// board position displayed by the Play view) is specially marked up.
+/// board position currently displayed by the Go board) is specially marked up.
 ///
 ///
 /// @par User interaction

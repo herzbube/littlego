@@ -107,9 +107,9 @@ stone-black.png, stone-white.png, stone-crosshair.png
   - When the images obtained in this way are drawn to the screen, they are
     scaled to different sizes for different boards and different devices.
     As a result the scaled version of an image sometimes is not properly
-    centered on an intersection. The Play view drawing routines compensate for
-    this with a translation of the CTM. The values used for translation have
-    been experimentally determined and are hardcoded.
+    centered on an intersection. The drawing routines compensate for this with
+    a translation of the CTM. The values used for translation have been
+    experimentally determined and are hardcoded.
 
 [1] https://github.com/justinweiss/dragongoclient
 

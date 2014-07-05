@@ -204,7 +204,7 @@
 /// appropriate KVO notifications are also generated.
 ///
 /// @note The following details are rather deep implementation notes made to
-/// understand the maybe not-so-obvious interaction between the Play view
+/// understand the maybe not-so-obvious interaction between the board view
 /// classes, GoMoveModel and GoBoardPosition. If any changes are made to this
 /// method, the scenarios described must be taken into account.
 ///
@@ -216,15 +216,14 @@
 /// - If the current board position refers to the previous-to-last move in
 ///   GoMoveModel, then the current board position is advanced to refer to the
 ///   last move in GoMoveModel. This covers the following "regular play"
-///   scenario: The Play view displays the most recent board position, a new
-///   move is made, the Play view should update itself to display the board
+///   scenario: The Go board displays the most recent board position, a new
+///   move is made, the Go board should update itself to display the board
 ///   position after the new move.
 /// - If the current board position refers to any other move in GoMoveModel,
 ///   nothing happens and the KVO notification is ignored. This covers the
 ///   scenarios where 1) a new move is made while viewing a board position in
 ///   the middle of the game; and 2) all moves after the current board position
 ///   are discarded.
-///
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {

@@ -113,7 +113,7 @@ Basic game play functionality
 - Place a stone. The computer player must immediately respond with a move, i.e.
   without a "computer is thinking" delay. This indicates that the opening book
   is present.
-- In the Play view settings, set the move numbers slider to its lowest value,
+- In the "Display" settings, set the move numbers slider to its lowest value,
   then switch back to the Play tab
 - The white stone is marked with the symbol for the last stone that was placed
 - The "discard" button has now become visible
@@ -518,14 +518,15 @@ Zooming/scrolling, coordinates and move number
   zoom scale as before
 - Touch two fingers. The board is zoomed out.
 - Pinch to zoom in. Zooming stops at a certain maximum.
-- In the Play view settings, reduce the maximum zoom slider to half position.
+- In the "Touch interaction" settings, reduce the maximum zoom slider to half
+  position.
 - Back on the Play tab, the board has zoomed out to match the new maximum zoom
 - Pinch to zoom out until the board is at its normal size
 - iPhone: Both move numbers and display coordinates are shown because we are
   now on a 9x9 board.
-- In the Play view settings, disable coordinate labels
+- In the "Display" settings, disable coordinate labels
 - Back on the Play tab, coordinate labels are now hidden
-- In the Play view settings, reduce the move numbers slider to half position
+- In the "Display" settings, reduce the move numbers slider to half position
 - Back on the Play tab, move numbers 41-80 are displayed, move numbers 1-40 are
   not displayed
 - Go to board position 40
@@ -537,7 +538,7 @@ Zooming/scrolling, coordinates and move number
 Player influence
 - Start a new computer vs. human game and make a few moves
 - Enable the user preference "Display player influence"
-- No player influence is displayed after you switch back to the "Play" tab
+- No player influence is displayed after you switch back to the Play tab
 - Tap the "Actions" button. The menu that pops up must contain an entry
   "Update player influence"
 - Select the menu entry
@@ -560,7 +561,7 @@ Player influence
 - Tap the "Actions" button. The menu that pops up must contain the
   "Update player influence" entry
 - Disable the user preference "Display player influence"
-- No player influence is displayed after you switch back to the "Play" tab
+- No player influence is displayed after you switch back to the Play tab
 - Tap the "Actions" button. The menu that pops up must not contain the
   "Update player influence" entry
 
@@ -663,7 +664,7 @@ Archive, document interaction
   correctly restored (handicap, komi, board size, pass and normal moves,
   resignation)
 - Every time a game is loaded, a progress bar must indicate the load status;
-  after the game is loaded the play view must be visible
+  after the game is loaded the Play tab must be visible
 - Use iTunes to upload a file that has the .sgf extension, but is not a game in
   .sgf format
 - Attempt to load a game from this file. An error message must be displayed that
@@ -809,19 +810,3 @@ Suspending the app
 - On startup a game is loaded, restoring the same game state that was used when
   the app was last active
 - Changed user preferences are also restored
-
-
-Diagnostics
-- GTP Features
-  - TODO
-- Crash report
-  - TODO
-- Send bug report
-  - TODO
-  - Special case: Play view screenshot after view was unloaded
-    - This case can only be tested in the simulator
-    - Load a game that has a few moves
-    - Switch to Diagnostics tab
-    - Generate a memory warning (in order to force unloading of the Play view)
-    - Generate diagnostics information file
-    - Check that the file contains a valid screenshot of the Play view

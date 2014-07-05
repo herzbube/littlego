@@ -265,12 +265,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a screenshot of the views visible on the "Play" tab and
+/// @brief Creates a screenshot of the views visible on the Play tab and
 /// saves that screenshot to file.
 // -----------------------------------------------------------------------------
 - (void) saveBoardScreenshot
 {
-  DDLogVerbose(@"%@: Making screen shot of Play view", [self shortDescription]);
+  DDLogVerbose(@"%@: Creating screen shot of Go board", [self shortDescription]);
 
   UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabView:TabTypePlay];
   UIImage* image = [UiUtilities captureView:tabView];

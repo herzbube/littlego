@@ -75,7 +75,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief PlayViewLayerDelegate method.
+/// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
