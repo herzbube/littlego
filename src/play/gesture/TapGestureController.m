@@ -113,8 +113,8 @@
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
   CGPoint tappingLocation = [gestureRecognizer locationInView:self.boardView];
-  PlayViewIntersection intersection = [self.boardView intersectionNear:tappingLocation];
-  if (PlayViewIntersectionIsNullIntersection(intersection))
+  BoardViewIntersection intersection = [self.boardView intersectionNear:tappingLocation];
+  if (BoardViewIntersectionIsNullIntersection(intersection))
     return;
   if (! [intersection.point hasStone])
     return;

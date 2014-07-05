@@ -111,9 +111,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a PlayViewIntersection object for the intersection that is
+/// @brief Returns a BoardViewIntersection object for the intersection that is
 /// closest to the view coordinates @a coordinates. Returns
-/// PlayViewIntersectionNull if there is no "closest" intersection.
+/// BoardViewIntersectionNull if there is no "closest" intersection.
 ///
 /// Determining "closest" works like this:
 /// - If the user has turned this on in the preferences, @a coordinates are
@@ -122,7 +122,7 @@
 /// - Otherwise the same rules as for PlayViewMetrics::intersectionNear:()
 ///   apply - see that method's documentation.
 // -----------------------------------------------------------------------------
-- (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates
+- (BoardViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates
 {
   PlayViewMetrics* playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   coordinates.y -= self.crossHairPointDistanceFromFinger;
@@ -155,13 +155,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a PlayViewIntersection object for the intersection that is
+/// @brief Returns a BoardViewIntersection object for the intersection that is
 /// closest to the view coordinates @a coordinates. Returns
-/// PlayViewIntersectionNull if there is no "closest" intersection.
+/// BoardViewIntersectionNull if there is no "closest" intersection.
 ///
 /// @see PlayViewMetrics::intersectionNear:() for details.
 // -----------------------------------------------------------------------------
-- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates
+- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates
 {
   PlayViewMetrics* playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
   return [playViewMetrics intersectionNear:coordinates];

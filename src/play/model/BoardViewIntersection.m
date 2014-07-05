@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,29 +16,29 @@
 
 
 // Project includes
-#import "PlayViewIntersection.h"
+#import "BoardViewIntersection.h"
 
 
-const PlayViewIntersection PlayViewIntersectionNull = { nil, { 0.0, 0.0 } };
+const BoardViewIntersection BoardViewIntersectionNull = { nil, { 0.0, 0.0 } };
 
 
-PlayViewIntersection PlayViewIntersectionMake(GoPoint* point, CGPoint coordinates)
+BoardViewIntersection BoardViewIntersectionMake(GoPoint* point, CGPoint coordinates)
 {
-  PlayViewIntersection intersection;
+  BoardViewIntersection intersection;
   intersection.point = point;
   intersection.coordinates = coordinates;
   return intersection;
 }
 
-bool PlayViewIntersectionEqualToIntersection(PlayViewIntersection intersection1, PlayViewIntersection intersection2)
+bool BoardViewIntersectionEqualToIntersection(BoardViewIntersection intersection1, BoardViewIntersection intersection2)
 {
   if (intersection1.point != intersection2.point)
     return false;
   return CGPointEqualToPoint(intersection1.coordinates, intersection2.coordinates);
 }
 
-bool PlayViewIntersectionIsNullIntersection(PlayViewIntersection intersection)
+bool BoardViewIntersectionIsNullIntersection(BoardViewIntersection intersection)
 {
-  return PlayViewIntersectionEqualToIntersection(intersection, PlayViewIntersectionNull);
+  return BoardViewIntersectionEqualToIntersection(intersection, BoardViewIntersectionNull);
 }
 

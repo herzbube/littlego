@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,26 +20,33 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewIntersection struct is a simple container that associates
-/// a GoPoint object with its corresponding view coordinates in PlayView.
+/// @brief The BoardViewIntersection struct is a simple container that
+/// associates a GoPoint object with the view coordinates of the intersection
+/// represented by the GoPoint object.
+///
+/// The coordinates are in the coordinate system of the canvas that represents
+/// the full Go board. This canvas is equal to the content of the scroll view
+/// that displays the part of the Go board that is currently visible. Location
+/// and sizes of board elements on the canvas are managed by the
+/// BoardViewMetrics class.
 // -----------------------------------------------------------------------------
-struct PlayViewIntersection
+struct BoardViewIntersection
 {
   GoPoint* point;
   CGPoint coordinates;
 };
-typedef struct PlayViewIntersection PlayViewIntersection;
+typedef struct BoardViewIntersection BoardViewIntersection;
 
 
 // -----------------------------------------------------------------------------
 /// @brief The "null" intersection - equivalent to
-/// PlayViewIntersectionMake(nil, CGPointZero)
+/// BoardViewIntersectionMake(nil, CGPointZero)
 // -----------------------------------------------------------------------------
-extern const PlayViewIntersection PlayViewIntersectionNull;
+extern const BoardViewIntersection BoardViewIntersectionNull;
 
 
 // Helper functions similar to those in CoreGraphics (e.g. CGPointMake)
-extern PlayViewIntersection PlayViewIntersectionMake(GoPoint* point, CGPoint coordinates);
-extern bool PlayViewIntersectionEqualToIntersection(PlayViewIntersection intersection1, PlayViewIntersection intersection2);
-extern bool PlayViewIntersectionIsNullIntersection(PlayViewIntersection intersection);
+extern BoardViewIntersection BoardViewIntersectionMake(GoPoint* point, CGPoint coordinates);
+extern bool BoardViewIntersectionEqualToIntersection(BoardViewIntersection intersection1, BoardViewIntersection intersection2);
+extern bool BoardViewIntersectionIsNullIntersection(BoardViewIntersection intersection);
 

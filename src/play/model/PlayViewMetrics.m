@@ -537,9 +537,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a PlayViewIntersection object for the intersection that is
+/// @brief Returns a BoardViewIntersection object for the intersection that is
 /// closest to the view coordinates @a coordinates. Returns
-/// PlayViewIntersectionNull if there is no "closest" intersection.
+/// BoardViewIntersectionNull if there is no "closest" intersection.
 ///
 /// Determining "closest" works like this:
 /// - The closest intersection is the one whose distance to @a coordinates is
@@ -551,7 +551,7 @@
 /// - If @a coordinates are a sufficient distance away from the Go board edges,
 ///   there is no "closest" intersection
 // -----------------------------------------------------------------------------
-- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates
+- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates
 {
   int halfPointDistance = floor(self.pointDistance / 2);
   bool coordinatesOutOfRange = false;
@@ -607,7 +607,7 @@
 
   // Snap to the nearest vertex, unless the coordinates were out of range
   if (coordinatesOutOfRange)
-    return PlayViewIntersectionNull;
+    return BoardViewIntersectionNull;
   else
   {
     coordinates.x = (self.topLeftPointX
@@ -617,12 +617,12 @@
     GoPoint* pointAtCoordinates = [self pointFromCoordinates:coordinates];
     if (pointAtCoordinates)
     {
-      return PlayViewIntersectionMake(pointAtCoordinates, coordinates);
+      return BoardViewIntersectionMake(pointAtCoordinates, coordinates);
     }
     else
     {
       DDLogError(@"Snap-to calculation failed");
-      return PlayViewIntersectionNull;
+      return BoardViewIntersectionNull;
     }
   }
 }

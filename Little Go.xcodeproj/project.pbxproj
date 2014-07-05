@@ -294,6 +294,8 @@
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
 		CDACF0B019041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */; };
 		CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */; };
+		CDAF17111967FAF100271396 /* BoardViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17101967FAF100271396 /* BoardViewIntersection.m */; };
+		CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17101967FAF100271396 /* BoardViewIntersection.m */; };
 		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
@@ -343,7 +345,6 @@
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
-		CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
 		CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* DisplaySettingsController.m */; };
@@ -471,7 +472,6 @@
 		CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
 		CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
-		CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */; };
 		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 /* End PBXBuildFile section */
 
@@ -758,6 +758,8 @@
 		CDAB5ED013E483DE00C4A4AA /* NewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameController.m; sourceTree = "<group>"; };
 		CDACF0AE19041C1200A0DAD7 /* AutoLayoutUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoLayoutUtility.h; sourceTree = "<group>"; };
 		CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoLayoutUtility.m; sourceTree = "<group>"; };
+		CDAF170F1967FAF100271396 /* BoardViewIntersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewIntersection.h; sourceTree = "<group>"; };
+		CDAF17101967FAF100271396 /* BoardViewIntersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewIntersection.m; sourceTree = "<group>"; };
 		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
 		CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TiledScrollView.m; sourceTree = "<group>"; };
 		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
@@ -831,8 +833,6 @@
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
 		CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaxMemoryController.h; sourceTree = "<group>"; };
 		CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaxMemoryController.m; sourceTree = "<group>"; };
-		CDDCD0A7173D111400359DE7 /* PlayViewIntersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewIntersection.h; sourceTree = "<group>"; };
-		CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewIntersection.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
 		CDDD525A1482DD9F0027476B /* ItemPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemPickerController.m; sourceTree = "<group>"; };
 		CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerProfileSettingsController.h; sourceTree = "<group>"; };
@@ -1293,7 +1293,6 @@
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CD1311BC17180AFC006CE699 /* model */,
 				CD3591DC1735A757000E2963 /* playtab */,
-				CD3591E31735A757000E2963 /* playview */,
 				CD05199216B1C09B002771F7 /* splitview */,
 			);
 			path = play;
@@ -1335,6 +1334,8 @@
 			children = (
 				CD3591D81735A711000E2963 /* BoardPositionModel.h */,
 				CD3591D91735A711000E2963 /* BoardPositionModel.m */,
+				CDAF170F1967FAF100271396 /* BoardViewIntersection.h */,
+				CDAF17101967FAF100271396 /* BoardViewIntersection.m */,
 				CD8A3A7B1937FA89003D4F4E /* PlayViewMetrics.h */,
 				CD8A3A7C1937FA89003D4F4E /* PlayViewMetrics.m */,
 				CD1311BD17180B45006CE699 /* PlayViewModel.h */,
@@ -1376,15 +1377,6 @@
 				CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */,
 			);
 			path = playtab;
-			sourceTree = "<group>";
-		};
-		CD3591E31735A757000E2963 /* playview */ = {
-			isa = PBXGroup;
-			children = (
-				CDDCD0A7173D111400359DE7 /* PlayViewIntersection.h */,
-				CDDCD0A8173D111500359DE7 /* PlayViewIntersection.m */,
-			);
-			path = playview;
 			sourceTree = "<group>";
 		};
 		CD3A0996169389A600ABDB5D /* gesture */ = {
@@ -2241,6 +2233,7 @@
 				CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */,
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
+				CDAF17111967FAF100271396 /* BoardViewIntersection.m in Sources */,
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
 				CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
@@ -2277,7 +2270,6 @@
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
-				CDDCD0A9173D111500359DE7 /* PlayViewIntersection.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
@@ -2317,6 +2309,7 @@
 				CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */,
 				CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */,
 				CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */,
+				CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */,
 				CD85B5AF1401C23D001715B8 /* GtpCommand.m in Sources */,
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
@@ -2448,7 +2441,6 @@
 				CD3592071735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
-				CDFE66AB173D17A5003D8776 /* PlayViewIntersection.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,

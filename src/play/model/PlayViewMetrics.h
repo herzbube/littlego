@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayViewIntersection.h"
+#import "BoardViewIntersection.h"
 
 // Forward declarations
 @class PlayViewModel;
@@ -140,7 +140,7 @@
 //@{
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point;
 - (GoPoint*) pointFromCoordinates:(CGPoint)coordinates;
-- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
+- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
 //@}
 
 

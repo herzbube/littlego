@@ -17,7 +17,7 @@
 
 // Project includes
 #import "TiledScrollView.h"
-#import "PlayViewIntersection.h"
+#import "BoardViewIntersection.h"
 
 // Forward declarations
 @class GoPoint;
@@ -31,11 +31,11 @@
 {
 }
 
-- (PlayViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
+- (BoardViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point
              isLegalMove:(bool)isLegalMove
          isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
-- (PlayViewIntersection) intersectionNear:(CGPoint)coordinates;
+- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
 
 /// @name Cross-hair point properties
 //@{
