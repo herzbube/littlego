@@ -40,7 +40,7 @@
 #import "../play/controller/SoundHandling.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../play/model/BoardViewMetrics.h"
-#import "../play/model/PlayViewModel.h"
+#import "../play/model/BoardViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../archive/ArchiveViewModel.h"
@@ -135,7 +135,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   self.boardViewMetrics = nil;
   self.boardPositionModel = nil;
   self.scoringModel = nil;
@@ -489,7 +489,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.theNewGameModel = [[[NewGameModel alloc] init] autorelease];
   self.playerModel = [[[PlayerModel alloc] init] autorelease];
   self.gtpEngineProfileModel = [[[GtpEngineProfileModel alloc] init] autorelease];
-  self.playViewModel = [[[PlayViewModel alloc] init] autorelease];
+  self.boardViewModel = [[[BoardViewModel alloc] init] autorelease];
   self.boardPositionModel = [[[BoardPositionModel alloc] init] autorelease];
   self.scoringModel = [[[ScoringModel alloc] init] autorelease];
   self.archiveViewModel = [[[ArchiveViewModel alloc] init] autorelease];
@@ -501,7 +501,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
-  [self.playViewModel readUserDefaults];
+  [self.boardViewModel readUserDefaults];
   [self.boardPositionModel readUserDefaults];
   [self.scoringModel readUserDefaults];
   [self.archiveViewModel readUserDefaults];
@@ -510,7 +510,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.crashReportingModel readUserDefaults];
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
-  // Is dependent on some user defaults in PlayViewModel
+  // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
 
@@ -533,7 +533,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.theNewGameModel writeUserDefaults];
   [self.playerModel writeUserDefaults];
   [self.gtpEngineProfileModel writeUserDefaults];
-  [self.playViewModel writeUserDefaults];
+  [self.boardViewModel writeUserDefaults];
   [self.boardPositionModel writeUserDefaults];
   [self.scoringModel writeUserDefaults];
   [self.archiveViewModel writeUserDefaults];

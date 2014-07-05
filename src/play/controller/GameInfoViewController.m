@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameInfoViewController.h"
-#import "../model/PlayViewModel.h"
+#import "../model/BoardViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -142,7 +142,7 @@ enum BoardPositionSectionItem
 @interface GameInfoViewController()
 @property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 /// @brief Is required so that KVO notification responders are not removed
 /// twice (e.g. the first time when #playersAndProfilesWillReset is received,
 /// the second time when GameInfoViewController is deallocated).
@@ -164,7 +164,7 @@ enum BoardPositionSectionItem
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
     controller.kvoNotificationRespondersAreInstalled = false;
   }
   return controller;
@@ -177,7 +177,7 @@ enum BoardPositionSectionItem
 {
   [self removeNotificationResponders];
   self.delegate = nil;
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   self.navigationBar = nil;
   self.tableView = nil;
   [super dealloc];
@@ -214,7 +214,7 @@ enum BoardPositionSectionItem
   [self.navigationBar pushNavigationItem:backItem animated:NO];
 
   UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
-  segmentedControl.selectedSegmentIndex = self.playViewModel.infoTypeLastSelected;
+  segmentedControl.selectedSegmentIndex = self.boardViewModel.infoTypeLastSelected;
   [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
   self.navigationItem.titleView = segmentedControl;
   [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
@@ -337,7 +337,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  switch (self.playViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
       return MaxSectionScoreInfoType;
@@ -356,7 +356,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (self.playViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
     {
@@ -404,7 +404,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
 {
-  switch (self.playViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.infoTypeLastSelected)
   {
     case GameInfoType:
     {
@@ -434,7 +434,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  switch (self.playViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
     {
@@ -479,7 +479,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  switch (self.playViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.infoTypeLastSelected)
   {
     case ScoreInfoType:
       return [self tableView:tableView scoreInfoTypeCellForRowAtIndexPath:indexPath];
@@ -893,7 +893,7 @@ enum BoardPositionSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  if (GameInfoType != self.playViewModel.infoTypeLastSelected)
+  if (GameInfoType != self.boardViewModel.infoTypeLastSelected)
     return;
   if (GameInfoSection != indexPath.section)
     return;
@@ -1245,7 +1245,7 @@ enum BoardPositionSectionItem
 - (void) infoTypeChanged:(id)sender
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
-  self.playViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
+  self.boardViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
   [self.tableView reloadData];
 }
 

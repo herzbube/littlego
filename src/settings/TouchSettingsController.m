@@ -18,7 +18,7 @@
 // Project includes
 #import "TouchSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/PlayViewModel.h"
+#import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
@@ -61,7 +61,7 @@ enum ZoomSectionItem
 /// @brief Class extension with private properties for TouchSettingsController.
 // -----------------------------------------------------------------------------
 @interface TouchSettingsController()
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 @end
 
 
@@ -79,7 +79,7 @@ enum ZoomSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   }
   return controller;
 }
@@ -89,7 +89,7 @@ enum ZoomSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   [super dealloc];
 }
 
@@ -170,7 +170,7 @@ enum ZoomSectionItem
           sliderCell.slider.minimumValue = 0;
           sliderCell.slider.maximumValue = (1.0
                                             * sliderValueFactorForStoneDistanceFromFingertip);
-          sliderCell.value = (self.playViewModel.stoneDistanceFromFingertip
+          sliderCell.value = (self.boardViewModel.stoneDistanceFromFingertip
                               * sliderValueFactorForStoneDistanceFromFingertip);
           break;
         }
@@ -201,7 +201,7 @@ enum ZoomSectionItem
             maximumZoomScaleMaximum = iPadMaximumZoomScaleMaximum;
           sliderCell.slider.maximumValue = (maximumZoomScaleMaximum
                                             * sliderValueFactorForMaximumZoomScale);
-          sliderCell.value = (self.playViewModel.maximumZoomScale
+          sliderCell.value = (self.boardViewModel.maximumZoomScale
                               * sliderValueFactorForMaximumZoomScale);
           break;
         }
@@ -282,7 +282,7 @@ enum ZoomSectionItem
 - (void) stoneDistanceFromFingertipDidChange:(id)sender
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.playViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
+  self.boardViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
 }
 
 // -----------------------------------------------------------------------------
@@ -291,7 +291,7 @@ enum ZoomSectionItem
 - (void) maxZoomScaleDidChange:(id)sender
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.playViewModel.maximumZoomScale = (1.0 * sliderCell.value / sliderValueFactorForMaximumZoomScale);
+  self.boardViewModel.maximumZoomScale = (1.0 * sliderCell.value / sliderValueFactorForMaximumZoomScale);
 }
 
 @end

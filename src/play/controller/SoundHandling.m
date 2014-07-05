@@ -17,7 +17,7 @@
 
 // Project includes
 #import "SoundHandling.h"
-#import "../model/PlayViewModel.h"
+#import "../model/BoardViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../go/GoGame.h"
 
@@ -29,7 +29,7 @@
 /// @brief Class extension with private properties for SoundHandling.
 // -----------------------------------------------------------------------------
 @interface SoundHandling()
-@property(nonatomic, assign) PlayViewModel* model;
+@property(nonatomic, assign) BoardViewModel* model;
 @property(nonatomic, assign) SystemSoundID playStoneSystemSound;
 @end
 
@@ -58,7 +58,7 @@
   CFRelease(playStoneURLRef);
 
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.model = [delegate playViewModel];
+  self.model = delegate.boardViewModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];

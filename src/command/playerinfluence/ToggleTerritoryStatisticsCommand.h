@@ -26,7 +26,7 @@
 /// collection of territory statistics. Command execution occurs synchronously.
 ///
 /// ToggleTerritoryStatisticsCommand looks up the current value of the
-/// "display player influence" property in PlayViewModel to find out whether
+/// "display player influence" property in BoardViewModel to find out whether
 /// statistics collection must be enabled or disabled. Statistics collection is
 /// enabled if the property is true, disabled if the property is false.
 ///

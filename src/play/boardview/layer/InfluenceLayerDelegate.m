@@ -19,7 +19,7 @@
 #import "InfluenceLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
-#import "../../model/PlayViewModel.h"
+#import "../../model/BoardViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -31,7 +31,7 @@
 /// @brief Class extension with private properties for InfluenceLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface InfluenceLayerDelegate()
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
 @property(nonatomic, retain) NSMutableDictionary* drawingPoints;
@@ -47,13 +47,13 @@
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
-      playViewModel:(PlayViewModel*)playViewModel
+     boardViewModel:(BoardViewModel*)boardViewModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
-  self.playViewModel = playViewModel;
+  self.boardViewModel = boardViewModel;
   self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   return self;
 }
@@ -63,7 +63,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   self.drawingPoints = nil;
   [super dealloc];
 }
@@ -244,7 +244,7 @@
 - (NSMutableDictionary*) calculateDrawingPoints
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
-  if (! self.playViewModel.displayPlayerInfluence)
+  if (! self.boardViewModel.displayPlayerInfluence)
     return drawingPoints;
   GoGame* game = [GoGame sharedGame];
   if (game.score.scoringEnabled)

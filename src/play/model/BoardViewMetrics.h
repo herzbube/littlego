@@ -19,7 +19,6 @@
 #import "BoardViewIntersection.h"
 
 // Forward declarations
-@class PlayViewModel;
 @class GoPoint;
 @class GoVertex;
 
@@ -167,10 +166,10 @@
 /// BoardViewMetrics has updated its values to match the new display coordinates
 /// value.
 ///
-/// @note PlayViewModel has a property of the same name, which is the master
+/// @note boardViewModel has a property of the same name, which is the master
 /// property on which BoardViewMetrics depends. For this reason, clients that
 /// require correct values from BoardViewMetrics must ***NOT*** use KVO on the
-/// PlayViewModel property.
+/// boardViewModel property.
 @property(nonatomic, assign) bool displayCoordinates;
 //@}
 

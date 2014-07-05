@@ -21,7 +21,7 @@
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardPositionModel.h"
 #import "../../model/BoardViewMetrics.h"
-#import "../../model/PlayViewModel.h"
+#import "../../model/BoardViewModel.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoMove.h"
@@ -35,7 +35,7 @@
 /// @brief Class extension with private properties for SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface SymbolsLayerDelegate()
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* nextMoveShadow;
@@ -51,14 +51,14 @@
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
-      playViewModel:(PlayViewModel*)playViewModel
+     boardViewModel:(BoardViewModel*)boardViewModel
  boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
-  _playViewModel = playViewModel;
+  _boardViewModel = boardViewModel;
   _boardPositionModel = boardPositionmodel;
   self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -79,7 +79,7 @@
   // inevitably become out-of-date. To prevent this, we invalidate the CGLayers
   // *NOW*.
   [self invalidateLayers];
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   self.boardPositionModel = nil;
   self.paragraphStyle = nil;
   self.nextMoveShadow = nil;
@@ -170,7 +170,7 @@
   }
   else
   {
-    if (self.playViewModel.markLastMove)
+    if (self.boardViewModel.markLastMove)
     {
       GoMove* lastMove = game.boardPosition.currentMove;
       if (lastMove && GoMoveTypePlay == lastMove.type)
@@ -202,7 +202,7 @@
 {
   if (! self.boardViewMetrics.moveNumberFont)
     return false;
-  else if (0.0 == self.playViewModel.moveNumbersPercentage)
+  else if (0.0 == self.boardViewModel.moveNumbersPercentage)
     return false;
   else
     return true;
@@ -232,7 +232,7 @@
   // Use CGFloat here to guarantee that at least 1 move number is displayed.
   // If we were using an integer type here, the result would be truncated,
   // which for very low numbers (e.g. 0.3) would result in 0 move numbers.
-  CGFloat numberOfMovesToBeNumbered = game.moveModel.numberOfMoves * self.playViewModel.moveNumbersPercentage;
+  CGFloat numberOfMovesToBeNumbered = game.moveModel.numberOfMoves * self.boardViewModel.moveNumbersPercentage;
   GoMove* moveToBeNumbered = game.boardPosition.currentMove;
   GoMove* lastMove = moveToBeNumbered;
   for (;
@@ -250,7 +250,7 @@
     [pointsAlreadyNumbered addObject:pointToBeNumbered];
 
     UIColor* textColor;
-    if (moveToBeNumbered == lastMove && self.playViewModel.markLastMove)
+    if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
       textColor = [UIColor redColor];
     else if (moveToBeNumbered.player.isBlack)
       textColor = [UIColor whiteColor];

@@ -19,7 +19,7 @@
 #import "DisplaySettingsController.h"
 #import "../command/playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/PlayViewModel.h"
+#import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../ui/UiUtilities.h"
@@ -75,7 +75,7 @@ enum DisplayPlayerInfluenceSectionItem
 /// DisplaySettingsController.
 // -----------------------------------------------------------------------------
 @interface DisplaySettingsController()
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 @end
 
 
@@ -93,7 +93,7 @@ enum DisplayPlayerInfluenceSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   }
   return controller;
 }
@@ -104,7 +104,7 @@ enum DisplayPlayerInfluenceSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   [super dealloc];
 }
 
@@ -185,7 +185,7 @@ enum DisplayPlayerInfluenceSectionItem
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Mark last move";
-          accessoryView.on = self.playViewModel.markLastMove;
+          accessoryView.on = self.boardViewModel.markLastMove;
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -194,7 +194,7 @@ enum DisplayPlayerInfluenceSectionItem
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Display coordinates";
-          accessoryView.on = self.playViewModel.displayCoordinates;
+          accessoryView.on = self.boardViewModel.displayCoordinates;
           [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -214,7 +214,7 @@ enum DisplayPlayerInfluenceSectionItem
           sliderCell.slider.minimumValue = 0;
           sliderCell.slider.maximumValue = (1.0
                                             * sliderValueFactorForMoveNumbersPercentage);
-          sliderCell.value = (self.playViewModel.moveNumbersPercentage
+          sliderCell.value = (self.boardViewModel.moveNumbersPercentage
                               * sliderValueFactorForMoveNumbersPercentage);
           break;
         }
@@ -228,7 +228,7 @@ enum DisplayPlayerInfluenceSectionItem
       cell.textLabel.text = displayPlayerInfluenceText;
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
-      accessoryView.on = self.playViewModel.displayPlayerInfluence;
+      accessoryView.on = self.boardViewModel.displayPlayerInfluence;
       [accessoryView addTarget:self action:@selector(toggleDisplayPlayerInfluence:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -298,7 +298,7 @@ enum DisplayPlayerInfluenceSectionItem
 - (void) toggleMarkLastMove:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.markLastMove = accessoryView.on;
+  self.boardViewModel.markLastMove = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------
@@ -308,7 +308,7 @@ enum DisplayPlayerInfluenceSectionItem
 - (void) toggleDisplayCoordinates:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.displayCoordinates = accessoryView.on;
+  self.boardViewModel.displayCoordinates = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------
@@ -317,7 +317,7 @@ enum DisplayPlayerInfluenceSectionItem
 - (void) moveNumbersPercentageDidChange:(id)sender
 {
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.playViewModel.moveNumbersPercentage = (1.0 * sliderCell.value / sliderValueFactorForMoveNumbersPercentage);
+  self.boardViewModel.moveNumbersPercentage = (1.0 * sliderCell.value / sliderValueFactorForMoveNumbersPercentage);
 }
 
 // -----------------------------------------------------------------------------
@@ -326,7 +326,7 @@ enum DisplayPlayerInfluenceSectionItem
 - (void) toggleDisplayPlayerInfluence:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.displayPlayerInfluence = accessoryView.on;
+  self.boardViewModel.displayPlayerInfluence = accessoryView.on;
   [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
 }
 

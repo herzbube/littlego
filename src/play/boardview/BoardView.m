@@ -19,7 +19,7 @@
 #import "BoardView.h"
 #import "BoardTileView.h"
 #import "../model/BoardViewMetrics.h"
-#import "../model/PlayViewModel.h"
+#import "../model/BoardViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 
 
@@ -50,8 +50,8 @@
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
   [self updateCrossHairPointDistanceFromFinger];
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  [playViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  [boardViewModel addObserver:self forKeyPath:@"stoneDistanceFromFingertip" options:0 context:NULL];
   return self;
 }
 
@@ -60,8 +60,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  [playViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  [boardViewModel removeObserver:self forKeyPath:@"stoneDistanceFromFingertip"];
   self.crossHairPoint = nil;
   [super dealloc];
 }
@@ -73,8 +73,8 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  if (object == playViewModel)
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  if (object == boardViewModel)
   {
     if ([keyPath isEqualToString:@"stoneDistanceFromFingertip"])
       [self updateCrossHairPointDistanceFromFinger];
@@ -95,8 +95,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateCrossHairPointDistanceFromFinger
 {
-  PlayViewModel* playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
-  if (0.0f == playViewModel.stoneDistanceFromFingertip)
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  if (0.0f == boardViewModel.stoneDistanceFromFingertip)
   {
     self.crossHairPointDistanceFromFinger = 0;
   }
@@ -106,7 +106,7 @@
     static const float numberOfFingertips = 3.0;
     self.crossHairPointDistanceFromFinger = (fingertipSizeInPoints
                                              * numberOfFingertips
-                                             * playViewModel.stoneDistanceFromFingertip);
+                                             * boardViewModel.stoneDistanceFromFingertip);
   }
 }
 

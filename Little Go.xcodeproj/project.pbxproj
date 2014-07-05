@@ -90,9 +90,7 @@
 		CD10881F13255A6100E83543 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
 		CD10882213255A6B00E83543 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
-		CD1311C117180B45006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
-		CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311BE17180B45006CE699 /* PlayViewModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
@@ -296,6 +294,8 @@
 		CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17101967FAF100271396 /* BoardViewIntersection.m */; };
 		CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17141967FFD500271396 /* BoardViewMetrics.m */; };
 		CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17141967FFD500271396 /* BoardViewMetrics.m */; };
+		CDAF17191968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
+		CDAF171A1968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
 		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
@@ -584,8 +584,6 @@
 		CD10882113255A6B00E83543 /* GoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayer.m; sourceTree = "<group>"; };
 		CD10882313255AA600E83543 /* GoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPoint.h; sourceTree = "<group>"; };
 		CD10882413255AA600E83543 /* GoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPoint.m; sourceTree = "<group>"; };
-		CD1311BD17180B45006CE699 /* PlayViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewModel.h; sourceTree = "<group>"; };
-		CD1311BE17180B45006CE699 /* PlayViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewModel.m; sourceTree = "<group>"; };
 		CD1311BF17180B45006CE699 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
 		CD1311C017180B45006CE699 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
 		CD1311CC17180D57006CE699 /* StatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusViewController.h; sourceTree = "<group>"; };
@@ -760,6 +758,8 @@
 		CDAF17101967FAF100271396 /* BoardViewIntersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewIntersection.m; sourceTree = "<group>"; };
 		CDAF17131967FFD500271396 /* BoardViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewMetrics.h; sourceTree = "<group>"; };
 		CDAF17141967FFD500271396 /* BoardViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewMetrics.m; sourceTree = "<group>"; };
+		CDAF17171968037700271396 /* BoardViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewModel.h; sourceTree = "<group>"; };
+		CDAF17181968037700271396 /* BoardViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewModel.m; sourceTree = "<group>"; };
 		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
 		CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TiledScrollView.m; sourceTree = "<group>"; };
 		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
@@ -1338,8 +1338,8 @@
 				CDAF17101967FAF100271396 /* BoardViewIntersection.m */,
 				CDAF17131967FFD500271396 /* BoardViewMetrics.h */,
 				CDAF17141967FFD500271396 /* BoardViewMetrics.m */,
-				CD1311BD17180B45006CE699 /* PlayViewModel.h */,
-				CD1311BE17180B45006CE699 /* PlayViewModel.m */,
+				CDAF17171968037700271396 /* BoardViewModel.h */,
+				CDAF17181968037700271396 /* BoardViewModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 			);
@@ -2196,6 +2196,7 @@
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				CDAF17191968037700271396 /* BoardViewModel.m in Sources */,
 				CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A364148C2C26004E1A0C /* Constants.m in Sources */,
 				CD00A365148C2C26004E1A0C /* DocumentViewController.m in Sources */,
@@ -2251,7 +2252,6 @@
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
 				CD1E9E67171806FE00E1B7D1 /* PlayViewActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
-				CD1311C117180B45006CE699 /* PlayViewModel.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
@@ -2362,6 +2362,7 @@
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CDAF171A1968037700271396 /* BoardViewModel.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E401643477900329154 /* BWQuincyManager.m in Sources */,
@@ -2415,7 +2416,6 @@
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
-				CD1311C317180B50006CE699 /* PlayViewModel.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,

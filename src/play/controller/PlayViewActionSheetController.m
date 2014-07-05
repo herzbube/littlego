@@ -27,7 +27,7 @@
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
 #import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
-#import "../../play/model/PlayViewModel.h"
+#import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
 
@@ -156,7 +156,7 @@ enum ActionSheetButton
       }
       case UpdatePlayerInfluenceButton:
       {
-        PlayViewModel* model = [ApplicationDelegate sharedDelegate].playViewModel;
+        BoardViewModel* model = [ApplicationDelegate sharedDelegate].boardViewModel;
         if (! model.displayPlayerInfluence)
           continue;
         if (game.score.scoringEnabled)

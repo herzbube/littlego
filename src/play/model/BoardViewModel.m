@@ -16,16 +16,16 @@
 
 
 // Project includes
-#import "PlayViewModel.h"
+#import "BoardViewModel.h"
 #import "../../utility/NSStringAdditions.h"
 
 
-@implementation PlayViewModel
+@implementation BoardViewModel
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayViewModel object with user defaults data.
+/// @brief Initializes a BoardViewModel object with user defaults data.
 ///
-/// @note This is the designated initializer of PlayViewModel.
+/// @note This is the designated initializer of BoardViewModel.
 // -----------------------------------------------------------------------------
 - (id) init
 {

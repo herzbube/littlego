@@ -18,7 +18,7 @@
 // Project includes
 #import "SoundSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/PlayViewModel.h"
+#import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -47,7 +47,7 @@ enum FeedbackSectionItem
 /// @brief Class extension with private properties for SoundSettingsController.
 // -----------------------------------------------------------------------------
 @interface SoundSettingsController()
-@property(nonatomic, assign) PlayViewModel* playViewModel;
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 @end
 
 
@@ -65,7 +65,7 @@ enum FeedbackSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.playViewModel = [ApplicationDelegate sharedDelegate].playViewModel;
+    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   }
   return controller;
 }
@@ -75,7 +75,7 @@ enum FeedbackSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.playViewModel = nil;
+  self.boardViewModel = nil;
   [super dealloc];
 }
 
@@ -147,12 +147,12 @@ enum FeedbackSectionItem
       {
         case PlaySoundItem:
           cell.textLabel.text = @"Play sound";
-          accessoryView.on = self.playViewModel.playSound;
+          accessoryView.on = self.boardViewModel.playSound;
           [accessoryView addTarget:self action:@selector(togglePlaySound:) forControlEvents:UIControlEventValueChanged];
           break;
         case VibrateItem:
           cell.textLabel.text = @"Vibrate";
-          accessoryView.on = self.playViewModel.vibrate;
+          accessoryView.on = self.boardViewModel.vibrate;
           [accessoryView addTarget:self action:@selector(toggleVibrate:) forControlEvents:UIControlEventValueChanged];
           break;
         default:
@@ -190,7 +190,7 @@ enum FeedbackSectionItem
 - (void) togglePlaySound:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.playSound = accessoryView.on;
+  self.boardViewModel.playSound = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------
@@ -200,7 +200,7 @@ enum FeedbackSectionItem
 - (void) toggleVibrate:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.playViewModel.vibrate = accessoryView.on;
+  self.boardViewModel.vibrate = accessoryView.on;
 }
 
 @end

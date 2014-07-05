@@ -20,7 +20,7 @@
 
 // Forward declarations
 @class BoardPositionModel;
-@class PlayViewModel;
+@class BoardViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -33,7 +33,7 @@
 
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
-      playViewModel:(PlayViewModel*)playViewModel
+     boardViewModel:(BoardViewModel*)boardViewModel
  boardPositionModel:(BoardPositionModel*)boardPositionmodel;
 
 @end

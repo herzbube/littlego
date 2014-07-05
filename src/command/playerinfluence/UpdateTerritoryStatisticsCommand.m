@@ -24,7 +24,7 @@
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
-#import "../../play/model/PlayViewModel.h"
+#import "../../play/model/BoardViewModel.h"
 
 
 @implementation UpdateTerritoryStatisticsCommand
@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  PlayViewModel* model = [ApplicationDelegate sharedDelegate].playViewModel;
+  BoardViewModel* model = [ApplicationDelegate sharedDelegate].boardViewModel;
   if (! model.displayPlayerInfluence)
   {
     DDLogVerbose(@"%@: Display of player influence is turned off, nothing to do.", [self shortDescription]);

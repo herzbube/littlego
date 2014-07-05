@@ -17,7 +17,7 @@
 
 // Project includes
 #import "BoardViewMetrics.h"
-#import "../model/PlayViewModel.h"
+#import "../model/BoardViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
@@ -132,7 +132,7 @@
   self.tileSize = CGSizeMake(128, 128);
   self.rect = CGRectZero;
   self.boardSize = GoBoardSizeUndefined;
-  self.displayCoordinates = [ApplicationDelegate sharedDelegate].playViewModel.displayCoordinates;
+  self.displayCoordinates = [ApplicationDelegate sharedDelegate].boardViewModel.displayCoordinates;
 }
 
 // -----------------------------------------------------------------------------
@@ -141,7 +141,7 @@
 - (void) setupNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [[ApplicationDelegate sharedDelegate].playViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [[ApplicationDelegate sharedDelegate].boardViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -150,7 +150,7 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[ApplicationDelegate sharedDelegate].playViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
+  [[ApplicationDelegate sharedDelegate].boardViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
 }
 
 // -----------------------------------------------------------------------------
@@ -416,7 +416,7 @@
     // Subtract an additional 1-2 points because we don't want to touch the
     // stone border. The square side length must be an odd number to prevent
     // anti-aliasing when the square is drawn (we assume that drawing occurs
-    // with playViewModel.normalLineWidth and that the line width is an odd
+    // with boardViewModel.normalLineWidth and that the line width is an odd
     // number (typically 1 point)).
     --stoneInnerSquareSideLength;
     if (stoneInnerSquareSideLength % 2 == 0)
@@ -643,7 +643,7 @@
 {
   if ([keyPath isEqualToString:@"displayCoordinates"])
   {
-    PlayViewModel* model = (PlayViewModel*)object;
+    BoardViewModel* model = (BoardViewModel*)object;
     [self updateWithDisplayCoordinates:model.displayCoordinates];
   }
 }

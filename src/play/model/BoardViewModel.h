@@ -16,10 +16,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewModel class provides user defaults data to its clients
+/// @brief The BoardViewModel class provides user defaults data to its clients
 /// related to normal play.
 // -----------------------------------------------------------------------------
-@interface PlayViewModel : NSObject
+@interface BoardViewModel : NSObject
 {
 }
 

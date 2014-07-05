@@ -26,7 +26,7 @@
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
 #import "../model/BoardViewMetrics.h"
-#import "../model/PlayViewModel.h"
+#import "../model/BoardViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
@@ -123,7 +123,7 @@
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  PlayViewModel* playViewModel = appDelegate.playViewModel;
+  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
@@ -142,9 +142,9 @@
   [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
-  [playViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
-  [playViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
-  [playViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
+  [boardViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
+  [boardViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
+  [boardViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
   [scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -166,7 +166,7 @@
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  PlayViewModel* playViewModel = appDelegate.playViewModel;
+  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
@@ -176,9 +176,9 @@
   [metrics removeObserver:self forKeyPath:@"rect"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
-  [playViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
-  [playViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [playViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
+  [boardViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
+  [boardViewModel removeObserver:self forKeyPath:@"markLastMove"];
+  [boardViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -289,14 +289,14 @@
   else
   {
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    PlayViewModel* playViewModel = appDelegate.playViewModel;
-    if (playViewModel.displayPlayerInfluence)
+    BoardViewModel* boardViewModel = appDelegate.boardViewModel;
+    if (boardViewModel.displayPlayerInfluence)
     {
       if (self.influenceLayerDelegate)
         return;
       self.influenceLayerDelegate = [[[InfluenceLayerDelegate alloc] initWithTile:self
                                                                           metrics:appDelegate.boardViewMetrics
-                                                                    playViewModel:playViewModel] autorelease];
+                                                                   boardViewModel:boardViewModel] autorelease];
     }
     else
     {
@@ -322,7 +322,7 @@
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
                                                                     metrics:appDelegate.boardViewMetrics
-                                                              playViewModel:appDelegate.playViewModel
+                                                             boardViewModel:appDelegate.boardViewModel
                                                          boardPositionModel:appDelegate.boardPositionModel] autorelease];
 
   }
@@ -554,7 +554,7 @@
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  PlayViewModel* playViewModel = appDelegate.playViewModel;
+  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
@@ -598,7 +598,7 @@
       [self delayedDrawLayers];
     }
   }
-  else if (object == playViewModel)
+  else if (object == boardViewModel)
   {
     if ([keyPath isEqualToString:@"markLastMove"])
     {
