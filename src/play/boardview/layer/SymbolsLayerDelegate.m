@@ -120,10 +120,6 @@
     case BVLDEventNumberOfBoardPositionsChanged:
     case BVLDEventMarkLastMoveChanged:
     case BVLDEventMoveNumbersPercentageChanged:
-    // TODO xxx remove the next two cases; the layer is added/removed
-    // dynamically as a result of scoring becoming enabled/disabled
-    case BVLDEventScoringModeEnabled:   // temporarily disable symbols
-    case BVLDEventScoringModeDisabled:  // re-enable symbols
     case BVLDEventMarkNextMoveChanged:
     {
       self.dirty = true;
