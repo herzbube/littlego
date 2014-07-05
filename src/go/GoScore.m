@@ -161,29 +161,16 @@
   if (_scoringEnabled == newState)
     return;
   _scoringEnabled = newState;
-  NSString* notificationName;
   if (newState)
   {
     [self initializeRegions];
     self.didAskGtpEngineForDeadStones = false;
-    notificationName = goScoreScoringEnabled;
   }
   else
   {
     [self uninitializeRegions];
-    notificationName = goScoreScoringDisabled;
   }
-  // When a new game is started, scoring mode of the old game is disabled first.
-  // Because the process of starting a new game may run in a seconary thread,
-  // we must use waitUntilDone:YES here to guarantee that GoScoreScoringDisabled
-  // is delivered before the old game - and with it this GoScore object - are
-  // deallocated. In fact, we must guarantee that postNotificationOnMainThread:
-  // is invoked ***NOW***, otherwise this GoScore object may have been
-  // deallocated by the time the runtime is ready to execute the selector.
-  [self performSelector:@selector(postNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:notificationName
-          waitUntilDone:YES];
+  [self postScoringModeNotification];
 }
 
 // -----------------------------------------------------------------------------
@@ -329,15 +316,7 @@
   if (_scoringInProgress == newValue)
     return;
   _scoringInProgress = newValue;
-  NSString* notificationName;
-  if (newValue)
-    notificationName = goScoreCalculationStarts;
-  else
-    notificationName = goScoreCalculationEnds;
-  [self performSelector:@selector(postNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:notificationName
-          waitUntilDone:YES];
+  [self postScoringInProgressNotification];
 }
 
 // -----------------------------------------------------------------------------
@@ -430,6 +409,55 @@
                withObject:askGtpEngineForDeadStonesEnds
             waitUntilDone:YES];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts either #goScoreScoringEnabled or #goScoreScoringDisabled to the
+/// global notification center, depending on whether scoring mode is currently
+/// enabled or disabled.
+///
+/// This method is part of the public API. It must not do anything else except
+/// posting the notification.
+// -----------------------------------------------------------------------------
+- (void) postScoringModeNotification
+{
+  NSString* notificationName;
+  if (self.scoringEnabled)
+    notificationName = goScoreScoringEnabled;
+  else
+    notificationName = goScoreScoringDisabled;
+  // When a new game is started, scoring mode of the old game is disabled first.
+  // Because the process of starting a new game may run in a seconary thread,
+  // we must use waitUntilDone:YES here to guarantee that GoScoreScoringDisabled
+  // is delivered before the old game - and with it this GoScore object - are
+  // deallocated. In fact, we must guarantee that postNotificationOnMainThread:
+  // is invoked ***NOW***, otherwise this GoScore object may have been
+  // deallocated by the time the runtime is ready to execute the selector.
+  [self performSelector:@selector(postNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:notificationName
+          waitUntilDone:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts either #goScoreCalculationStarts or #goScoreCalculationEnds to
+/// the global notification center, depending on whether a scoring operation is
+/// currently in progress.
+///
+/// This method is part of the public API. It must not do anything else except
+/// posting the notification.
+// -----------------------------------------------------------------------------
+- (void) postScoringInProgressNotification
+{
+  NSString* notificationName;
+  if (self.scoringInProgress)
+    notificationName = goScoreCalculationStarts;
+  else
+    notificationName = goScoreCalculationEnds;
+  [self performSelector:@selector(postNotificationOnMainThread:)
+               onThread:[NSThread mainThread]
+             withObject:notificationName
+          waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------

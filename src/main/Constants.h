@@ -454,9 +454,18 @@ extern NSString* goScoreScoringDisabled;
 /// The GoScore object is associated with the notification.
 extern NSString* goScoreCalculationStarts;
 /// @brief Is sent to indicate that a new score has been calculated and is
-/// available display.
+/// available for display. Is usually sent after #goScoreCalculationStarts, but
+/// there are occasions where #goScoreCalculationEnds is sent alone without a
+/// preceding #goScoreCalculationStarts.
 ///
 /// The GoScore object is associated with the notification.
+///
+/// @note The only known occasion where #goScoreCalculationEnds is sent alone
+/// without a preceding #goScoreCalculationStarts is during application launch,
+/// after a GoScore object is unarchived. In this scenario no one has initiated
+/// a score calculation, so #goScoreCalculationStarts is not sent, but the
+/// scoring information is available nonetheless, so #goScoreCalculationEnds
+/// must be sent.
 extern NSString* goScoreCalculationEnds;
 /// @brief Is sent to indicate that querying the GTP engine for an initial set
 /// of dead stones is about to start. Is sent after #goScoreCalculationStarts.

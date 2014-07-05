@@ -181,6 +181,8 @@
 - (NSString*) resultString;
 - (void) willChangeBoardPosition;
 - (void) didChangeBoardPosition;
+- (void) postScoringModeNotification;
+- (void) postScoringInProgressNotification;
 
 // -----------------------------------------------------------------------------
 /// @name General properties

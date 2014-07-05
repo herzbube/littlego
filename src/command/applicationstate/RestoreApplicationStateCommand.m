@@ -23,6 +23,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
+#import "../../go/GoScore.h"
 #import "../../go/GoZobristTable.h"
 #import "../../utility/PathUtilities.h"
 
@@ -102,6 +103,7 @@
       }
     }
   }
+
   // It is quite possible that the user suspended the app while the computer
   // was thinking (the "computer play" function makes this possible even in
   // human vs. human games) . We must reset that status here.
@@ -115,6 +117,20 @@
   // following command enables/disables statistics according to the current
   // user preference.
   [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
+
+  // Observers that were created before the game was unarchived do not yet know
+  // that scoring mode is enabled and that scoring information is available. We
+  // tell GoScore to let them know. Note that we need to send two notifications
+  // because some observers listen to one, some to the other notification, and
+  // some may react to both in a different way. The fact that we cause
+  // #goScoreCalculationEnds to be posted without a preceding
+  // #goScoreCalculationStarts is well-known and documented.
+  GoScore* unarchivedScore = unarchivedGame.score;
+  if (unarchivedScore.scoringEnabled)
+  {
+    [unarchivedScore postScoringModeNotification];
+    [unarchivedScore postScoringInProgressNotification];
+  }
 
   return true;
 }

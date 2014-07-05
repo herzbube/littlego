@@ -334,7 +334,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupTerritoryLayerDelegate
 {
-
   if ([GoGame sharedGame].score.scoringEnabled)
   {
     if (self.territoryLayerDelegate)
