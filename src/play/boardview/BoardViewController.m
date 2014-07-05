@@ -191,7 +191,8 @@
   [self updateContentSizeInBoardViewMetrics];
   // Now prepare all scroll views with the new content size. The content size
   // is taken from the values in BoardViewMetrics.
-  [self updateContentSizeInScrollViews];
+  [self updateContentSizeInMainScrollView];
+  [self updateContentSizeInCoordinateLabelsScrollViews];
   self.viewDidLayoutSubviewsInProgress = false;
 }
 
@@ -264,7 +265,7 @@
   // Coordinate label scroll views are not visible during zooming, so we don't
   // need to synchronize
   if (! scrollView.zooming)
-    [self synchronizeContentOffset];
+    [self updateContentOffsetInCoordinateLabelsScrollViews];
 }
 
 // -----------------------------------------------------------------------------
@@ -315,7 +316,8 @@
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
   // Restore properties that were changed when the zoom scale was reset to 1.0
-  [self updateContentSizeInScrollViews];
+  [self updateContentSizeInMainScrollView];
+  [self updateContentSizeInCoordinateLabelsScrollViews];
   // todo xxx the content offset that we remembered above may no longer be
   // accurate because BoardViewMetrics may have made some adjustments to the
   // zoom scale. to fix this we either need to record the contentOffset in
@@ -326,7 +328,7 @@
   // provide us with the adjusted scale (zoomScale is the absolute scale).
   scrollView.contentOffset = contentOffset;
 
-  [self synchronizeContentOffset];
+  [self updateContentOffsetInCoordinateLabelsScrollViews];
 
   // Show coordinate labels that were temporarily hidden when the zoom
   // operation started
@@ -356,6 +358,8 @@
     [self addCoordinateLabelsViewConstraints];
     [self configureCoordinateLabelsView:self.coordinateLabelsLetterView];
     [self configureCoordinateLabelsView:self.coordinateLabelsNumberView];
+    [self updateContentSizeInCoordinateLabelsScrollViews];
+    [self updateContentOffsetInCoordinateLabelsScrollViews];
   }
   else
   {
@@ -482,16 +486,29 @@
 /// Updates the content size of all scroll views to match the current values in
 /// BoardViewMetrics.
 // -----------------------------------------------------------------------------
-- (void) updateContentSizeInScrollViews
+- (void) updateContentSizeInMainScrollView
+{
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  CGSize contentSize = metrics.rect.size;
+  CGRect tileContainerViewFrame = CGRectZero;
+  tileContainerViewFrame.size = contentSize;
+
+  self.boardView.contentSize = contentSize;
+  self.boardView.tileContainerView.frame = tileContainerViewFrame;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// Updates the coordinate label scroll views's content size to match current
+/// values from BoardViewMetrics.
+// -----------------------------------------------------------------------------
+- (void) updateContentSizeInCoordinateLabelsScrollViews
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGSize contentSize = metrics.rect.size;
   CGSize tileSize = metrics.tileSize;
   CGRect tileContainerViewFrame = CGRectZero;
-
-  self.boardView.contentSize = contentSize;
-  tileContainerViewFrame.size = self.boardView.contentSize;
-  self.boardView.tileContainerView.frame = tileContainerViewFrame;
 
   self.coordinateLabelsLetterView.contentSize = CGSizeMake(contentSize.width, tileSize.height);
   tileContainerViewFrame.size = self.coordinateLabelsLetterView.contentSize;
@@ -505,9 +522,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 ///
-/// Synchronizes the coordinate label scroll views with the master scroll view.
+/// Synchronizes the coordinate label scroll views' content offset with the
+/// master scroll view.
 // -----------------------------------------------------------------------------
-- (void) synchronizeContentOffset
+- (void) updateContentOffsetInCoordinateLabelsScrollViews
 {
   CGPoint coordinateLabelsLetterViewContentOffset = self.coordinateLabelsLetterView.contentOffset;
   coordinateLabelsLetterViewContentOffset.x = self.boardView.contentOffset.x;
