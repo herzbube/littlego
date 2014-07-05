@@ -18,7 +18,7 @@
 // Project includes
 #import "CoordinateLabelsTileView.h"
 #import "layer/CoordinatesLayerDelegate.h"
-#import "../model/PlayViewMetrics.h"
+#import "../model/BoardViewMetrics.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -95,7 +95,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupLayer
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   self.layerDelegate = [[[CoordinatesLayerDelegate alloc] initWithTile:self
                                                                metrics:metrics
                                                                   axis:self.coordinateLabelAxis] autorelease];
@@ -115,7 +115,7 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
@@ -131,7 +131,7 @@
   self.notificationRespondersAreSetup = false;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"rect"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
@@ -202,7 +202,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   if (object == metrics)
   {
     if ([keyPath isEqualToString:@"rect"])
@@ -261,7 +261,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
+  return [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
 }
 
 @end

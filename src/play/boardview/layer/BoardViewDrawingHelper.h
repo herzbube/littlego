@@ -17,7 +17,7 @@
 
 // Forward declarations
 @class GoPoint;
-@class PlayViewMetrics;
+@class BoardViewMetrics;
 @protocol Tile;
 
 /// @brief Enumerates all possible layer types to mark up territory
@@ -51,11 +51,11 @@ enum TerritoryLayerType
 /// method as conforming to Core Foundation's ownership policy naming
 /// conventions.
 //@{
-CGLayerRef CreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics);
-CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics);
-CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics);
-CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics);
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics);
+CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics);
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
+CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, BoardViewMetrics* metrics);
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, BoardViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers
@@ -64,14 +64,14 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
        withContext:(CGContextRef)context
    centeredAtPoint:(GoPoint*)point
     inTileWithRect:(CGRect)tileRect
-       withMetrics:(PlayViewMetrics*)metrics;
+       withMetrics:(BoardViewMetrics*)metrics;
 
 + (void) drawString:(NSString*)string
         withContext:(CGContextRef)context
          attributes:(NSDictionary*)attributes
      inRectWithSize:(CGSize)size
     centeredAtPoint:(GoPoint*)point
-        withMetrics:(PlayViewMetrics*)metrics;
+        withMetrics:(BoardViewMetrics*)metrics;
 
 + (void) drawString:(NSString*)string
         withContext:(CGContextRef)context
@@ -79,21 +79,21 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
      inRectWithSize:(CGSize)size
     centeredAtPoint:(GoPoint*)point
      inTileWithRect:(CGRect)tileRect
-        withMetrics:(PlayViewMetrics*)metrics;
+        withMetrics:(BoardViewMetrics*)metrics;
 
 + (CGRect) canvasRectForTile:(id<Tile>)tile
-                     metrics:(PlayViewMetrics*)metrics;
+                     metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
-                             metrics:(PlayViewMetrics*)metrics;
+                             metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point
-                            metrics:(PlayViewMetrics*)metrics;
+                            metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForSize:(CGSize)size
              centeredAtPoint:(GoPoint*)point
-                     metrics:(PlayViewMetrics*)metrics;
+                     metrics:(BoardViewMetrics*)metrics;
 
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
-                         withMetrics:(PlayViewMetrics*)metrics;
+                         withMetrics:(BoardViewMetrics*)metrics;
 + (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
                       inTileWithRect:(CGRect)tileRect;
 //@}

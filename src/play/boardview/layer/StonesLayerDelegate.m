@@ -19,7 +19,7 @@
 #import "StonesLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
 #import "../../../go/GoGame.h"
@@ -45,7 +45,7 @@
 ///
 /// @note This is the designated initializer of StonesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -128,20 +128,20 @@
   CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
   {
-    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.boardViewMetrics);
     [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
     CGLayerRelease(blackStoneLayer);
   }
   CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
   {
-    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.boardViewMetrics);
     [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayer);
   }
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop){
     // Ignore stoneStateAsNumber, get the current values directly from the
@@ -158,7 +158,7 @@
                           withContext:context
                       centeredAtPoint:point
                        inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
+                          withMetrics:self.boardViewMetrics];
   }];
 }
 
@@ -179,7 +179,7 @@
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which
@@ -193,7 +193,7 @@
   while (point = [enumerator nextObject])
   {
     CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.playViewMetrics];
+                                                                 metrics:self.boardViewMetrics];
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
     NSNumber* stoneStateAsNumber = [[[NSNumber alloc] initWithInt:point.stoneState] autorelease];

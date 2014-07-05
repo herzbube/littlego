@@ -18,7 +18,7 @@
 // Project includes
 #import "BoardViewDrawingHelper.h"
 #import "../Tile.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../ui/UiUtilities.h"
@@ -40,7 +40,7 @@
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics)
+CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -81,7 +81,7 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, PlayViewMetrics* metrics)
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, PlayViewMetrics* metrics)
+CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -126,13 +126,13 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 // -----------------------------------------------------------------------------
 /// @brief Creates and returns a CGLayer object that is associated with graphics
 /// context @a context and contains the drawing operations to draw a symbol that
-/// fits into the "inner square" rectangle (cf. PlayViewMetrics property
+/// fits into the "inner square" rectangle (cf. BoardViewMetrics property
 /// @e stoneInnerSquareSize). The symbol uses the specified color
 /// @a symbolColor.
 ///
 /// @see CreateDeadStoneSymbolLayer().
 // -----------------------------------------------------------------------------
-CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, PlayViewMetrics* metrics)
+CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -165,8 +165,6 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
 /// context @a context and contains the drawing operations to draw a "dead
 /// stone" symbol.
 ///
-/// All sizes are taken from the current values in self.playViewMetrics.
-///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
@@ -174,7 +172,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, P
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, PlayViewMetrics* metrics)
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, BoardViewMetrics* metrics)
 {
   // The symbol for marking a dead stone is an "x"; we draw this as the two
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by
@@ -209,8 +207,6 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePerc
 /// context @a context and contains the drawing operations to markup territory
 /// of the specified type @a layerType.
 ///
-/// All sizes are taken from the current values in self.playViewMetrics.
-///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
@@ -218,7 +214,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePerc
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, PlayViewMetrics* metrics)
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -264,7 +260,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
        withContext:(CGContextRef)context
    centeredAtPoint:(GoPoint*)point
     inTileWithRect:(CGRect)tileRect
-       withMetrics:(PlayViewMetrics*)metrics
+       withMetrics:(BoardViewMetrics*)metrics
 {
   CGRect layerRect = [BoardViewDrawingHelper canvasRectForScaledLayer:layer
                                                       centeredAtPoint:point
@@ -286,7 +282,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
          attributes:(NSDictionary*)attributes
      inRectWithSize:(CGSize)size
     centeredAtPoint:(GoPoint*)point
-        withMetrics:(PlayViewMetrics*)metrics
+        withMetrics:(BoardViewMetrics*)metrics
 {
   // Create a save point that we can restore to before we leave this method
   CGContextSaveGState(context);
@@ -324,7 +320,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
      inRectWithSize:(CGSize)size
     centeredAtPoint:(GoPoint*)point
      inTileWithRect:(CGRect)tileRect
-        withMetrics:(PlayViewMetrics*)metrics
+        withMetrics:(BoardViewMetrics*)metrics
 {
   CGRect textRect = [BoardViewDrawingHelper canvasRectForSize:size
                                               centeredAtPoint:point
@@ -346,7 +342,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
 /// corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForTile:(id<Tile>)tile
-                     metrics:(PlayViewMetrics*)metrics
+                     metrics:(BoardViewMetrics*)metrics
 {
   CGRect canvasRect = CGRectZero;
   canvasRect.size = metrics.tileSize;
@@ -363,7 +359,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
 /// the upper-left corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
-                             metrics:(PlayViewMetrics*)metrics
+                             metrics:(BoardViewMetrics*)metrics
 {
   return [BoardViewDrawingHelper canvasRectForSize:metrics.pointCellSize
                                    centeredAtPoint:point
@@ -378,7 +374,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point
-                            metrics:(PlayViewMetrics*)metrics
+                            metrics:(BoardViewMetrics*)metrics
 {
   CGPoint pointCoordinates = [metrics coordinatesFromPoint:point];
 
@@ -396,7 +392,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
 // todo xxx document
 + (CGRect) canvasRectForSize:(CGSize)size
              centeredAtPoint:(GoPoint*)point
-                     metrics:(PlayViewMetrics*)metrics
+                     metrics:(BoardViewMetrics*)metrics
 {
   CGRect canvasRect = CGRectZero;
   canvasRect.size = size;
@@ -413,7 +409,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
 /// using @e metrics.contentScale.
 // -----------------------------------------------------------------------------
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
-                         withMetrics:(PlayViewMetrics*)metrics
+                         withMetrics:(BoardViewMetrics*)metrics
 {
   CGSize drawingSize = CGLayerGetSize(layer);
   drawingSize.width /= metrics.contentsScale;

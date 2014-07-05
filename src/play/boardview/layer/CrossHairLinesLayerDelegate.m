@@ -18,7 +18,7 @@
 // Project includes
 #import "CrossHairLinesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPlayer.h"
@@ -46,7 +46,7 @@
 ///
 /// @note This is the designated initializer of CrossHairLinesLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -152,7 +152,7 @@
 {
   // If we don't have any pre-calculated drawing rectangles we draw nothing
   // which results in an empty layer
-  CGContextSetFillColorWithColor(context, self.playViewMetrics.crossHairColor.CGColor);
+  CGContextSetFillColorWithColor(context, self.boardViewMetrics.crossHairColor.CGColor);
   for (NSValue* drawingRectValue in self.drawingRectangles)
   {
     CGRect drawingRect = [drawingRectValue CGRectValue];
@@ -178,10 +178,10 @@
     return drawingRectangles;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
-  CGPoint crossHairPointCoordinates = [self.playViewMetrics coordinatesFromPoint:crossHairPoint];
+                                                      metrics:self.boardViewMetrics];
+  CGPoint crossHairPointCoordinates = [self.boardViewMetrics coordinatesFromPoint:crossHairPoint];
 
-  for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
+  for (NSValue* lineRectValue in self.boardViewMetrics.lineRectangles)
   {
     CGRect lineRect = [lineRectValue CGRectValue];
     if (! CGRectContainsPoint(lineRect, crossHairPointCoordinates))

@@ -25,7 +25,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayViewMetrics class is a model class that provides coordinates
+/// @brief The BoardViewMetrics class is a model class that provides coordinates
 /// and sizes of UI elements on the PlayView to clients that need them for
 /// drawing.
 ///
@@ -36,7 +36,7 @@
 /// coordinate labels changes, someone must invoke
 /// updateWithDisplayCoordinates:().
 ///
-/// In reaction to either of these events, PlayViewMetrics re-calculates all
+/// In reaction to either of these events, BoardViewMetrics re-calculates all
 /// of its properties. Clients are expected to use KVO to notice any changes in
 /// self.rect, self.boardSize or self.displayCoordinates, and to respond to such
 /// changes by initiating the re-drawing of the appropriate parts of the Go
@@ -124,7 +124,7 @@
 /// are drawn with anti-aliasing, and others are not, things become mis-aligned
 /// (e.g. stones are not exactly centered on line intersections).
 // -----------------------------------------------------------------------------
-@interface PlayViewMetrics : NSObject
+@interface BoardViewMetrics : NSObject
 {
 }
 
@@ -154,22 +154,22 @@
 /// @brief The rectangle that Play view layers must use as their frame.
 ///
 /// Clients that use KVO on this property will be triggered after
-/// PlayViewMetrics has updated its values to match the new rectangle.
+/// BoardViewMetrics has updated its values to match the new rectangle.
 @property(nonatomic, assign) CGRect rect;
 /// @brief The size of the Go board that is drawn by Play view layers.
 ///
 /// Clients that use KVO on this property will be triggered after
-/// PlayViewMetrics has updated its values to match the new board size.
+/// BoardViewMetrics has updated its values to match the new board size.
 @property(nonatomic, assign) enum GoBoardSize boardSize;
 /// @brief True if coordinate labels are displayed, false if not.
 ///
 /// Clients that use KVO on this property will be triggered after
-/// PlayViewMetrics has updated its values to match the new display coordinates
+/// BoardViewMetrics has updated its values to match the new display coordinates
 /// value.
 ///
 /// @note PlayViewModel has a property of the same name, which is the master
-/// property on which PlayViewMetrics depends. For this reason, clients that
-/// require correct values from PlayViewMetrics must ***NOT*** use KVO on the
+/// property on which BoardViewMetrics depends. For this reason, clients that
+/// require correct values from BoardViewMetrics must ***NOT*** use KVO on the
 /// PlayViewModel property.
 @property(nonatomic, assign) bool displayCoordinates;
 //@}

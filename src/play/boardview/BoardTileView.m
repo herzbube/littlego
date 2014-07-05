@@ -25,7 +25,7 @@
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
-#import "../model/PlayViewMetrics.h"
+#import "../model/BoardViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -122,7 +122,7 @@
   self.notificationRespondersAreSetup = true;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  PlayViewMetrics* metrics = appDelegate.playViewMetrics;
+  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
@@ -165,7 +165,7 @@
   self.notificationRespondersAreSetup = false;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  PlayViewMetrics* metrics = appDelegate.playViewMetrics;
+  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
@@ -226,7 +226,7 @@
 {
   if (self.gridLayerDelegate)
     return;
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithTile:self
                                                             metrics:metrics] autorelease];
 }
@@ -239,7 +239,7 @@
 {
   if (self.stonesLayerDelegate)
     return;
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithTile:self
                                                                 metrics:metrics] autorelease];
 }
@@ -261,12 +261,12 @@
     if (! self.crossHairLinesLayerDelegate)
     {
       self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithTile:self
-                                                                                    metrics:appDelegate.playViewMetrics] autorelease];
+                                                                                    metrics:appDelegate.boardViewMetrics] autorelease];
     }
     if (! self.crossHairStoneLayerDelegate)
     {
       self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithTile:self
-                                                                                    metrics:appDelegate.playViewMetrics] autorelease];
+                                                                                    metrics:appDelegate.boardViewMetrics] autorelease];
     }
   }
   else
@@ -295,7 +295,7 @@
       if (self.influenceLayerDelegate)
         return;
       self.influenceLayerDelegate = [[[InfluenceLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.playViewMetrics
+                                                                          metrics:appDelegate.boardViewMetrics
                                                                     playViewModel:playViewModel] autorelease];
     }
     else
@@ -321,7 +321,7 @@
       return;
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
-                                                                    metrics:appDelegate.playViewMetrics
+                                                                    metrics:appDelegate.boardViewMetrics
                                                               playViewModel:appDelegate.playViewModel
                                                          boardPositionModel:appDelegate.boardPositionModel] autorelease];
 
@@ -341,7 +341,7 @@
       return;
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithTile:self
-                                                                        metrics:appDelegate.playViewMetrics
+                                                                        metrics:appDelegate.boardViewMetrics
                                                                    scoringModel:appDelegate.scoringModel] autorelease];
   }
   else
@@ -553,7 +553,7 @@
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  PlayViewMetrics* metrics = appDelegate.playViewMetrics;
+  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   PlayViewModel* playViewModel = appDelegate.playViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
@@ -673,7 +673,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
+  return [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
 }
 
 @end

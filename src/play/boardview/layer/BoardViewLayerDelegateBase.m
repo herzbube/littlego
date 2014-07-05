@@ -17,7 +17,7 @@
 
 // Project includes
 #import "BoardViewLayerDelegateBase.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 
 
 @implementation BoardViewLayerDelegateBase
@@ -35,7 +35,7 @@
 ///
 /// @note This is the designated initializer of BoardViewLayerDelegateBase.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -44,11 +44,11 @@
 
   self.layer = [CALayer layer];
   self.tile = tile;
-  self.playViewMetrics = metrics;
+  self.boardViewMetrics = metrics;
   self.dirty = false;
 
   CGRect layerFrame = CGRectZero;
-  layerFrame.size = self.playViewMetrics.tileSize;
+  layerFrame.size = self.boardViewMetrics.tileSize;
   self.layer.frame = layerFrame;
 
   self.layer.delegate = self;
@@ -73,7 +73,7 @@
 {
   self.layer = nil;
   self.tile = nil;
-  self.playViewMetrics = nil;
+  self.boardViewMetrics = nil;
   [super dealloc];
 }
 

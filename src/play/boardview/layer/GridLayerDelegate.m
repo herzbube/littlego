@@ -20,7 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../BoardTileView.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -34,7 +34,7 @@
 ///
 /// @note This is the designated initializer of GridLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -84,7 +84,7 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   [self drawGridLinesWithContext:context inTileRect:tileRect];
   [self drawStarPointsWithContext:context inTileRect:tileRect];
 }
@@ -94,7 +94,7 @@
 // -----------------------------------------------------------------------------
 - (void) drawGridLinesWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect
 {
-  for (NSValue* lineRectValue in self.playViewMetrics.lineRectangles)
+  for (NSValue* lineRectValue in self.boardViewMetrics.lineRectangles)
   {
     CGRect lineRect = [lineRectValue CGRectValue];
     CGRect drawingRect = CGRectIntersection(tileRect, lineRect);
@@ -102,7 +102,7 @@
       continue;
     drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
                                                      inTileWithRect:tileRect];
-    CGContextSetFillColorWithColor(context, self.playViewMetrics.lineColor.CGColor);
+    CGContextSetFillColorWithColor(context, self.boardViewMetrics.lineColor.CGColor);
     CGContextFillRect(context, drawingRect);
   }
 }
@@ -116,7 +116,7 @@
   CGLayerRef starPointLayer = [cache layerOfType:StarPointLayerType];
   if (! starPointLayer)
   {
-    starPointLayer = CreateStarPointLayer(context, self.playViewMetrics);
+    starPointLayer = CreateStarPointLayer(context, self.boardViewMetrics);
     [cache setLayer:starPointLayer ofType:StarPointLayerType];
     CGLayerRelease(starPointLayer);
   }
@@ -127,7 +127,7 @@
                           withContext:context
                       centeredAtPoint:starPoint
                        inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
+                          withMetrics:self.boardViewMetrics];
   }
 }
 

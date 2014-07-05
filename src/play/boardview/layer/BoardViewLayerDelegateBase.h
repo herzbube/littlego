@@ -19,7 +19,7 @@
 #import "BoardViewLayerDelegate.h"
 
 // Forward declarations
-@class PlayViewMetrics;
+@class BoardViewMetrics;
 
 
 // -----------------------------------------------------------------------------
@@ -51,7 +51,7 @@
 {
 }
 
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics;
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics;
 
 /// @name BoardViewLayerDelegate methods
 //@{
@@ -61,7 +61,7 @@
 
 /// @brief Object that provides the metrics for drawing elements on the Play
 /// view.
-@property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
+@property(nonatomic, retain) BoardViewMetrics* boardViewMetrics;
 /// @brief Concrete subclasses may set this flag to true if they wish for the
 /// layer to be redrawn during the next drawing cycle.
 ///

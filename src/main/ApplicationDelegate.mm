@@ -39,7 +39,7 @@
 #import "../player/PlayerModel.h"
 #import "../play/controller/SoundHandling.h"
 #import "../play/model/BoardPositionModel.h"
-#import "../play/model/PlayViewMetrics.h"
+#import "../play/model/BoardViewMetrics.h"
 #import "../play/model/PlayViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../play/boardview/layer/BoardViewCGLayerCache.h"
@@ -136,7 +136,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.playViewModel = nil;
-  self.playViewMetrics = nil;
+  self.boardViewMetrics = nil;
   self.boardPositionModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
@@ -511,7 +511,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
   // Is dependent on some user defaults in PlayViewModel
-  self.playViewMetrics = [[[PlayViewMetrics alloc] init] autorelease];
+  self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
 
 // -----------------------------------------------------------------------------

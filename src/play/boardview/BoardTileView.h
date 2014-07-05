@@ -28,7 +28,7 @@
 /// The Go board is split into rectangular sections called "tiles". Each
 /// instance of BoardTileView draws one tile. BoardTileView identifies the tile
 /// to draw by looking at the @e row and @e column properties defined by the
-/// Tile protocol. The tile size is defined by PlayViewMetrics, as well as the
+/// Tile protocol. The tile size is defined by BoardViewMetrics, as well as the
 /// sizes of the different board elements to draw.
 ///
 /// The view content is drawn in multiple CALayers that are stacked on top of

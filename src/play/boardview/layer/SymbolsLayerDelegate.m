@@ -20,7 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardPositionModel.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -50,7 +50,7 @@
 /// @note This is the designated initializer of SymbolsLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
       playViewModel:(PlayViewModel*)playViewModel
  boardPositionModel:(BoardPositionModel*)boardPositionmodel
 {
@@ -150,20 +150,20 @@
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
   if (! blackLastMoveLayer)
   {
-    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.playViewMetrics);
+    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.boardViewMetrics);
     [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
     CGLayerRelease(blackLastMoveLayer);
   }
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
   if (! whiteLastMoveLayer)
   {
-    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.playViewMetrics);
+    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.boardViewMetrics);
     [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
     CGLayerRelease(whiteLastMoveLayer);
   }
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   if ([self shouldDisplayMoveNumbers])
   {
     [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
@@ -184,7 +184,7 @@
                               withContext:context
                           centeredAtPoint:lastMove.point
                            inTileWithRect:tileRect
-                              withMetrics:self.playViewMetrics];
+                              withMetrics:self.boardViewMetrics];
       }
     }
   }
@@ -200,7 +200,7 @@
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayMoveNumbers
 {
-  if (! self.playViewMetrics.moveNumberFont)
+  if (! self.boardViewMetrics.moveNumberFont)
     return false;
   else if (0.0 == self.playViewModel.moveNumbersPercentage)
     return false;
@@ -213,7 +213,7 @@
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayNextMoveLabel
 {
-  if (! self.playViewMetrics.nextMoveLabelFont)
+  if (! self.boardViewMetrics.nextMoveLabelFont)
     return false;
   return self.boardPositionModel.markNextMove;
 }
@@ -224,7 +224,7 @@
 - (void) drawMoveNumbersInContext:(CGContextRef)context
                    inTileWithRect:(CGRect)tileRect
 {
-  UIFont* moveNumberFont = self.playViewMetrics.moveNumberFont;
+  UIFont* moveNumberFont = self.boardViewMetrics.moveNumberFont;
 
   NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
@@ -263,10 +263,10 @@
     [BoardViewDrawingHelper drawString:moveNumberText
                            withContext:context
                             attributes:textAttributes
-                        inRectWithSize:self.playViewMetrics.moveNumberMaximumSize
+                        inRectWithSize:self.boardViewMetrics.moveNumberMaximumSize
                        centeredAtPoint:pointToBeNumbered
                         inTileWithRect:tileRect
-                           withMetrics:self.playViewMetrics];
+                           withMetrics:self.boardViewMetrics];
   }
 }
 
@@ -288,17 +288,17 @@
     return;
 
   NSString* nextMoveLabelText = @"A";
-  NSDictionary* textAttributes = @{ NSFontAttributeName : self.playViewMetrics.nextMoveLabelFont,
+  NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
                                     NSParagraphStyleAttributeName : self.paragraphStyle,
                                     NSShadowAttributeName: self.nextMoveShadow };
   [BoardViewDrawingHelper drawString:nextMoveLabelText
                          withContext:context
                           attributes:textAttributes
-                      inRectWithSize:self.playViewMetrics.nextMoveLabelMaximumSize
+                      inRectWithSize:self.boardViewMetrics.nextMoveLabelMaximumSize
                      centeredAtPoint:nextMove.point
                       inTileWithRect:tileRect
-                         withMetrics:self.playViewMetrics];
+                         withMetrics:self.boardViewMetrics];
 }
 
 @end

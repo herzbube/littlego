@@ -18,7 +18,7 @@
 // Project includes
 #import "BoardView.h"
 #import "BoardTileView.h"
-#import "../model/PlayViewMetrics.h"
+#import "../model/BoardViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 
@@ -119,14 +119,14 @@
 /// - If the user has turned this on in the preferences, @a coordinates are
 ///   adjusted so that the intersection is not directly under the user's
 ///   fingertip
-/// - Otherwise the same rules as for PlayViewMetrics::intersectionNear:()
+/// - Otherwise the same rules as for BoardViewMetrics::intersectionNear:()
 ///   apply - see that method's documentation.
 // -----------------------------------------------------------------------------
 - (BoardViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates
 {
-  PlayViewMetrics* playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   coordinates.y -= self.crossHairPointDistanceFromFinger;
-  return [playViewMetrics intersectionNear:coordinates];
+  return [metrics intersectionNear:coordinates];
 }
 
 // -----------------------------------------------------------------------------
@@ -159,12 +159,12 @@
 /// closest to the view coordinates @a coordinates. Returns
 /// BoardViewIntersectionNull if there is no "closest" intersection.
 ///
-/// @see PlayViewMetrics::intersectionNear:() for details.
+/// @see BoardViewMetrics::intersectionNear:() for details.
 // -----------------------------------------------------------------------------
 - (BoardViewIntersection) intersectionNear:(CGPoint)coordinates
 {
-  PlayViewMetrics* playViewMetrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  return [playViewMetrics intersectionNear:coordinates];
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  return [metrics intersectionNear:coordinates];
 }
 
 @end

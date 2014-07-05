@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayViewMetrics.h"
+#import "BoardViewMetrics.h"
 #import "../model/PlayViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
@@ -28,21 +28,21 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayViewMetrics.
+/// @brief Class extension with private properties for BoardViewMetrics.
 // -----------------------------------------------------------------------------
-@interface PlayViewMetrics()
+@interface BoardViewMetrics()
 @property(nonatomic, retain) FontRange* moveNumberFontRange;
 @property(nonatomic, retain) FontRange* coordinateLabelFontRange;
 @property(nonatomic, retain) FontRange* nextMoveLabelFontRange;
 @end
 
 
-@implementation PlayViewMetrics
+@implementation BoardViewMetrics
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayViewMetrics object.
+/// @brief Initializes a BoardViewMetrics object.
 ///
-/// @note This is the designated initializer of PlayViewMetrics.
+/// @note This is the designated initializer of BoardViewMetrics.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -60,7 +60,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayViewMetrics object.
+/// @brief Deallocates memory allocated by this BoardViewMetrics object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -154,7 +154,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newRect.
 // -----------------------------------------------------------------------------
 - (void) updateWithRect:(CGRect)newRect
@@ -168,7 +168,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newBoardSize.
 // -----------------------------------------------------------------------------
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize
@@ -182,7 +182,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newDisplayCoordinates.
 // -----------------------------------------------------------------------------
 - (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates
@@ -214,7 +214,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the values stored by this PlayViewMetrics object based on
+/// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newRect, @a newBoardSize and @a newDisplayCoordinates.
 ///
 /// This is the internal backend for updateWithRect:(), updateWithBoardSize:()

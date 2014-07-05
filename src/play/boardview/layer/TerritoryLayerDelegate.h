@@ -33,7 +33,7 @@
 }
 
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
        scoringModel:(ScoringModel*)scoringModel;
 
 @end

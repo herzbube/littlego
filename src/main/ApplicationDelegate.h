@@ -26,7 +26,7 @@
 @class PlayerModel;
 @class GtpEngineProfileModel;
 @class PlayViewModel;
-@class PlayViewMetrics;
+@class BoardViewMetrics;
 @class BoardPositionModel;
 @class ScoringModel;
 @class SoundHandling;
@@ -113,9 +113,9 @@
 @property(nonatomic, retain) GtpEngineProfileModel* gtpEngineProfileModel;
 /// @brief Model object that stores attributes used to manage the Play view.
 @property(nonatomic, retain) PlayViewModel* playViewModel;
-/// @brief Model object that calculates view characteristics related to the Play
-/// view.
-@property(nonatomic, retain) PlayViewMetrics* playViewMetrics;
+/// @brief Model object that calculates locations and sizes of Go board elements
+/// as they are seen in the view hierarchy that displays the Go board.
+@property(nonatomic, retain) BoardViewMetrics* boardViewMetrics;
 /// @brief Model object that manages data related to the board position
 /// displayed on the Play view.
 @property(nonatomic, retain) BoardPositionModel* boardPositionModel;

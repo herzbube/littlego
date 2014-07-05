@@ -19,7 +19,7 @@
 #import "CoordinatesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
 #import "../BoardTileView.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
@@ -44,7 +44,7 @@
 /// @note This is the designated initializer of CoordinatesLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
                axis:(enum CoordinateLabelAxis)axis
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
@@ -102,12 +102,12 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  UIFont* coordinateLabelFont = self.playViewMetrics.coordinateLabelFont;
+  UIFont* coordinateLabelFont = self.boardViewMetrics.coordinateLabelFont;
   if (! coordinateLabelFont)
     return;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
 
   NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
                                     NSForegroundColorAttributeName : self.textColor,
@@ -115,21 +115,21 @@
                                     NSParagraphStyleAttributeName : self.paragraphStyle };
 
   CGRect coordinateLabelRect = CGRectZero;
-  coordinateLabelRect.size = self.playViewMetrics.coordinateLabelMaximumSize;
+  coordinateLabelRect.size = self.boardViewMetrics.coordinateLabelMaximumSize;
   if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
   {
-    coordinateLabelRect.origin.x = (self.playViewMetrics.topLeftPointX
-                                    - floor(self.playViewMetrics.coordinateLabelMaximumSize.width / 2));
-    coordinateLabelRect.origin.y = floor((self.playViewMetrics.coordinateLabelStripWidth
-                                          - self.playViewMetrics.coordinateLabelMaximumSize.height) / 2);
+    coordinateLabelRect.origin.x = (self.boardViewMetrics.topLeftPointX
+                                    - floor(self.boardViewMetrics.coordinateLabelMaximumSize.width / 2));
+    coordinateLabelRect.origin.y = floor((self.boardViewMetrics.coordinateLabelStripWidth
+                                          - self.boardViewMetrics.coordinateLabelMaximumSize.height) / 2);
   }
   else
   {
-    coordinateLabelRect.origin.x = floor((self.playViewMetrics.coordinateLabelStripWidth
-                                          - self.playViewMetrics.coordinateLabelMaximumSize.width) / 2);
-    coordinateLabelRect.origin.y = (self.playViewMetrics.topLeftPointY
-                                    + (self.playViewMetrics.numberOfCells * self.playViewMetrics.pointDistance)
-                                    - floor(self.playViewMetrics.coordinateLabelMaximumSize.height / 2));
+    coordinateLabelRect.origin.x = floor((self.boardViewMetrics.coordinateLabelStripWidth
+                                          - self.boardViewMetrics.coordinateLabelMaximumSize.width) / 2);
+    coordinateLabelRect.origin.y = (self.boardViewMetrics.topLeftPointY
+                                    + (self.boardViewMetrics.numberOfCells * self.boardViewMetrics.pointDistance)
+                                    - floor(self.boardViewMetrics.coordinateLabelMaximumSize.height / 2));
   }
 
   // NSString's drawInRect:withAttributes: is a UIKit drawing function. To make
@@ -155,12 +155,12 @@
     if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)
     {
       point = point.right;
-      coordinateLabelRect.origin.x += self.playViewMetrics.pointDistance;
+      coordinateLabelRect.origin.x += self.boardViewMetrics.pointDistance;
     }
     else
     {
       point = point.above;
-      coordinateLabelRect.origin.y -= self.playViewMetrics.pointDistance;
+      coordinateLabelRect.origin.y -= self.boardViewMetrics.pointDistance;
     }
   }
   UIGraphicsPopContext();  // balance UIGraphicsPushContext()
@@ -171,10 +171,10 @@
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayCoordinateLabels
 {
-  if (! self.playViewMetrics.coordinateLabelFont)
+  if (! self.boardViewMetrics.coordinateLabelFont)
     return false;
   else
-    return self.playViewMetrics.displayCoordinates;
+    return self.boardViewMetrics.displayCoordinates;
 }
 
 @end

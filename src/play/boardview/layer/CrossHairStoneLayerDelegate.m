@@ -19,7 +19,7 @@
 #import "CrossHairStoneLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPlayer.h"
@@ -49,7 +49,7 @@
 ///
 /// @note This is the designated initializer of CrossHairStoneLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(PlayViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -175,21 +175,21 @@
   CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayer)
   {
-    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.playViewMetrics);
+    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.boardViewMetrics);
     [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
     CGLayerRelease(blackStoneLayer);
   }
   CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayer)
   {
-    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.playViewMetrics);
+    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.boardViewMetrics);
     [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayer);
   }
   CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
   if (! crossHairStoneLayer)
   {
-    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.playViewMetrics);
+    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.boardViewMetrics);
     [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
     CGLayerRelease(crossHairStoneLayer);
   }
@@ -207,12 +207,12 @@
   }
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   [BoardViewDrawingHelper drawLayer:stoneLayer
                         withContext:context
                     centeredAtPoint:self.crossHairPoint
                      inTileWithRect:tileRect
-                        withMetrics:self.playViewMetrics];
+                        withMetrics:self.boardViewMetrics];
 }
 
 // -----------------------------------------------------------------------------
@@ -226,9 +226,9 @@
   if (! crossHairPoint)
     return CGRectZero;
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:crossHairPoint
-                                                               metrics:self.playViewMetrics];
+                                                               metrics:self.boardViewMetrics];
   CGRect drawingRect = CGRectIntersection(tileRect, stoneRect);
   if (CGRectIsNull(drawingRect))
   {

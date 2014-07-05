@@ -18,7 +18,7 @@
 // Project includes
 #import "InfluenceLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../model/PlayViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
@@ -46,7 +46,7 @@
 /// @note This is the designated initializer of InfluenceLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
       playViewModel:(PlayViewModel*)playViewModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
@@ -134,7 +134,7 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* influenceScoreAsNumber, BOOL* stop){
     GoPoint* point = [board pointAtVertex:vertexString];
@@ -160,7 +160,7 @@
   CGSize influenceSize = [self influenceSizeForScore:influenceScore];
   CGRect influenceRect = [BoardViewDrawingHelper canvasRectForSize:influenceSize
                                                    centeredAtPoint:point
-                                                           metrics:self.playViewMetrics];
+                                                           metrics:self.boardViewMetrics];
   CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:influenceRect
                                                           inTileWithRect:tileRect];
   [self drawInfluenceRectWithContext:context
@@ -173,7 +173,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) influenceSizeForScore:(float)influenceScore
 {
-  CGSize influenceSize = self.playViewMetrics.stoneInnerSquareSize;
+  CGSize influenceSize = self.boardViewMetrics.stoneInnerSquareSize;
   influenceSize.width *= influenceScore;
   influenceSize.height *= influenceScore;
   return influenceSize;
@@ -251,7 +251,7 @@
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which
   // points intersect with the tile, so we could fall back on a pre-filtered
@@ -263,7 +263,7 @@
   while (point = [enumerator nextObject])
   {
     CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.playViewMetrics];
+                                                                 metrics:self.boardViewMetrics];
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
     float influenceScore = fabsf(point.territoryStatisticsScore);

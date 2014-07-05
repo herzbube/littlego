@@ -24,7 +24,7 @@
 #import "../gesture/PanGestureController.h"
 #import "../gesture/TapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
-#import "../model/PlayViewMetrics.h"
+#import "../model/BoardViewMetrics.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
@@ -165,7 +165,7 @@
   self.boardView.minimumZoomScale = 1.0f;
   self.boardView.maximumZoomScale = 3.0f;
   self.boardView.dataSource = self;
-  self.boardView.tileSize = [ApplicationDelegate sharedDelegate].playViewMetrics.tileSize;
+  self.boardView.tileSize = [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,9 +191,9 @@
 {
   self.viewDidLayoutSubviewsInProgress = true;
   // First prepare the new board geometry. This triggers a re-draw of all tiles.
-  [self updatePlayViewMetricsRect];
+  [self updateBoardViewMetricsRect];
   // Now prepare all scroll views with the new content size. The content size
-  // is taken from the values in PlayViewMetrics.
+  // is taken from the values in BoardViewMetrics.
   [self updateContentSize];
   self.viewDidLayoutSubviewsInProgress = false;
 }
@@ -205,7 +205,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
@@ -216,7 +216,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"rect"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
@@ -298,9 +298,9 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   // todo xxx we should not use the scale parameter after this line, because
-  // playviewmetrics may have made some adjustments (snap-to, optimizing for
+  // BoardViewMetrics may have made some adjustments (snap-to, optimizing for
   // tile size, etc.)
   [metrics updateWithZoomScale:scale];
 
@@ -320,12 +320,12 @@
   // Restore properties that were changed when the zoom scale was reset to 1.0
   [self updateContentSize];
   // todo xxx the content offset that we remembered above may no longer be
-  // accurate because playViewmetrics may have made some adjustments to the
+  // accurate because BoardViewMetrics may have made some adjustments to the
   // zoom scale. to fix this we either need to record the contentOffset in
-  // playviewmetrics (so that the metrics can perform the adjustments on the
+  // BoardViewMetrics (so that the metrics can perform the adjustments on the
   // offset as well), or we need to adjust the content offset ourselves by
   // somehow calculating the difference between the original scale (scale
-  // parameter) and the adjusted scale. in that case playviewmetrics must
+  // parameter) and the adjusted scale. in that case BoardViewMetrics must
   // provide us with the adjusted scale (zoomScale is the absolute scale).
   scrollView.contentOffset = contentOffset;
 
@@ -377,7 +377,7 @@
 // -----------------------------------------------------------------------------
 - (bool) coordinateLabelsViewsShouldExist
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   if (! metrics.displayCoordinates)
     return false;
   return (metrics.coordinateLabelStripWidth > 0.0f);
@@ -421,7 +421,7 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) coordinateLabelsViewConstraints
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   return [NSArray arrayWithObjects:
           [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
           [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
@@ -440,7 +440,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureCoordinateLabelsView:(TiledScrollView*)coordinateLabelsView
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   coordinateLabelsView.backgroundColor = [UIColor clearColor];
   coordinateLabelsView.dataSource = self;
   coordinateLabelsView.tileSize = metrics.tileSize;
@@ -468,25 +468,25 @@
 ///
 /// Updates the play view metrics rectangle, triggering a redraw in all tiles.
 // -----------------------------------------------------------------------------
-- (void) updatePlayViewMetricsRect
+- (void) updateBoardViewMetricsRect
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
-  CGRect newPlayViewMetricsRect = CGRectZero;
-  newPlayViewMetricsRect.size = self.view.bounds.size;
-  newPlayViewMetricsRect.size.width *= metrics.zoomScale;
-  newPlayViewMetricsRect.size.height *= metrics.zoomScale;
-  [metrics updateWithRect:newPlayViewMetricsRect];
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  CGRect newBoardViewMetricsRect = CGRectZero;
+  newBoardViewMetricsRect.size = self.view.bounds.size;
+  newBoardViewMetricsRect.size.width *= metrics.zoomScale;
+  newBoardViewMetricsRect.size.height *= metrics.zoomScale;
+  [metrics updateWithRect:newBoardViewMetricsRect];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 ///
 /// Updates the content size of all scroll views to match the current values in
-/// PlayViewMetrics.
+/// BoardViewMetrics.
 // -----------------------------------------------------------------------------
 - (void) updateContentSize
 {
-  PlayViewMetrics* metrics = [ApplicationDelegate sharedDelegate].playViewMetrics;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGSize contentSize = metrics.rect.size;
   CGSize tileSize = metrics.tileSize;
   CGRect tileContainerViewFrame = CGRectZero;
@@ -526,7 +526,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [ApplicationDelegate sharedDelegate].playViewMetrics)
+  if (object == [ApplicationDelegate sharedDelegate].boardViewMetrics)
   {
     if ([keyPath isEqualToString:@"rect"] ||
         [keyPath isEqualToString:@"boardSize"] ||
@@ -554,7 +554,7 @@
           // starts up and initially displays some other than the Play tab, then
           // 2) the user switches to the play tab. At this moment
           // viewDidLayoutSubviews is executed, it invokes
-          // updatePlayViewMetricsRect, which in turn triggers this KVO
+          // updateBoardViewMetricsRect, which in turn triggers this KVO
           // observer. If we now add coordinate labels, the app crashes. The
           // exact reason for the crash is unknown, but probable causes are
           // either adding subviews, or adding constraints, in the middle of a

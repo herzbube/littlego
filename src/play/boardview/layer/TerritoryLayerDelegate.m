@@ -20,7 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../BoardTileView.h"
-#import "../../model/PlayViewMetrics.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardRegion.h"
@@ -56,7 +56,7 @@
 /// @note This is the designated initializer of TerritoryLayerDelegate.
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
        scoringModel:(ScoringModel*)scoringModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
@@ -180,7 +180,7 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   GoBoard* board = [GoGame sharedGame].board;
 
   // Make sure that layers are created before drawing methods that use them are
@@ -202,21 +202,21 @@
   CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
   if (! blackTerritoryLayer)
   {
-    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.playViewMetrics);
+    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.boardViewMetrics);
     [cache setLayer:blackTerritoryLayer ofType:BlackTerritoryLayerType];
     CGLayerRelease(blackTerritoryLayer);
   }
   CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
   if (! whiteTerritoryLayer)
   {
-    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.playViewMetrics);
+    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.boardViewMetrics);
     [cache setLayer:whiteTerritoryLayer ofType:WhiteTerritoryLayerType];
     CGLayerRelease(whiteTerritoryLayer);
   }
   CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   if (! inconsistentFillColorTerritoryLayer)
   {
-    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.playViewMetrics);
+    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.boardViewMetrics);
     [cache setLayer:inconsistentFillColorTerritoryLayer ofType:InconsistentFillColorTerritoryLayerType];
     CGLayerRelease(inconsistentFillColorTerritoryLayer);
   }
@@ -227,28 +227,28 @@
                                                                  TerritoryLayerTypeInconsistentDotSymbol,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolColor,
                                                                  self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
-                                                                 self.playViewMetrics);
+                                                                 self.boardViewMetrics);
     [cache setLayer:inconsistentDotSymbolTerritoryLayer ofType:InconsistentDotSymbolTerritoryLayerType];
     CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
   }
   CGLayerRef deadStoneSymbolLayer = [cache layerOfType:DeadStoneSymbolLayerType];
   if (! deadStoneSymbolLayer)
   {
-    deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.playViewMetrics);
+    deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.boardViewMetrics);
     [cache setLayer:deadStoneSymbolLayer ofType:DeadStoneSymbolLayerType];
     CGLayerRelease(deadStoneSymbolLayer);
   }
   CGLayerRef blackSekiStoneSymbolLayer = [cache layerOfType:BlackSekiStoneSymbolLayerType];
   if (! blackSekiStoneSymbolLayer)
   {
-    blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.playViewMetrics);
+    blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.boardViewMetrics);
     [cache setLayer:blackSekiStoneSymbolLayer ofType:BlackSekiStoneSymbolLayerType];
     CGLayerRelease(blackSekiStoneSymbolLayer);
   }
   CGLayerRef whiteSekiStoneSymbolLayer = [cache layerOfType:WhiteSekiStoneSymbolLayerType];
   if (! whiteSekiStoneSymbolLayer)
   {
-    whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.playViewMetrics);
+    whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.boardViewMetrics);
     [cache setLayer:whiteSekiStoneSymbolLayer ofType:WhiteSekiStoneSymbolLayerType];
     CGLayerRelease(whiteSekiStoneSymbolLayer);
   }
@@ -290,7 +290,7 @@
                           withContext:context
                       centeredAtPoint:point
                        inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
+                          withMetrics:self.boardViewMetrics];
   }];
 }
 
@@ -341,7 +341,7 @@
                           withContext:context
                       centeredAtPoint:point
                        inTileWithRect:tileRect
-                          withMetrics:self.playViewMetrics];
+                          withMetrics:self.boardViewMetrics];
   }];
 }
 
@@ -366,7 +366,7 @@
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
 
   // TODO: Currently we always iterate over all points. This could be
@@ -380,7 +380,7 @@
   while (point = [enumerator nextObject])
   {
     CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.playViewMetrics];
+                                                                 metrics:self.boardViewMetrics];
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
     enum GoColor territoryColor = point.region.territoryColor;
@@ -451,7 +451,7 @@
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.playViewMetrics];
+                                                      metrics:self.boardViewMetrics];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which
@@ -466,7 +466,7 @@
     if (! point.hasStone)
       continue;
     CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.playViewMetrics];
+                                                                 metrics:self.boardViewMetrics];
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
     enum GoStoneGroupState stoneGroupState = point.region.stoneGroupState;

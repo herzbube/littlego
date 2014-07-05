@@ -29,7 +29,7 @@
 }
 
 - (id) initWithTile:(id<Tile>)tile
-            metrics:(PlayViewMetrics*)metrics
+            metrics:(BoardViewMetrics*)metrics
                axis:(enum CoordinateLabelAxis)axis;
 
 /// @brief The axis that CoordinatesLayerDelegate is drawing.
