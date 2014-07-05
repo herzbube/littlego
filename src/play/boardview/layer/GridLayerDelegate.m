@@ -19,7 +19,6 @@
 #import "GridLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
-#import "../BoardTileView.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"

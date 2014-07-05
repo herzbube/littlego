@@ -19,7 +19,6 @@
 #import "TerritoryLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
-#import "../BoardTileView.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../model/ScoringModel.h"
 #import "../../../go/GoBoard.h"
@@ -28,7 +27,6 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
 #import "../../../go/GoVertex.h"
-#import "../../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------

@@ -25,11 +25,8 @@
 #import "../gesture/TapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardViewMetrics.h"
-#import "../../go/GoBoard.h"
-#import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------

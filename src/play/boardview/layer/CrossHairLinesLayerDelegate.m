@@ -19,11 +19,6 @@
 #import "CrossHairLinesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
-#import "../../../go/GoBoard.h"
-#import "../../../go/GoGame.h"
-#import "../../../go/GoPlayer.h"
-#import "../../../go/GoPoint.h"
-#import "../../../go/GoVertex.h"
 
 
 // -----------------------------------------------------------------------------

@@ -18,7 +18,6 @@
 // Project includes
 #import "CoordinatesLayerDelegate.h"
 #import "BoardViewDrawingHelper.h"
-#import "../BoardTileView.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
