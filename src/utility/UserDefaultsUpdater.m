@@ -48,6 +48,17 @@ NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
+
+NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
+NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
+NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColor";
+NSString* deadStoneSymbolPercentageKey = @"DeadStoneSymbolPercentage";
+NSString* inconsistentTerritoryDotSymbolColorKey = @"InconsistentTerritoryDotSymbolColor";
+NSString* inconsistentTerritoryDotSymbolPercentageKey = @"InconsistentTerritoryDotSymbolPercentage";
+NSString* inconsistentTerritoryFillColorKey = @"InconsistentTerritoryFillColor";
+NSString* inconsistentTerritoryFillColorAlphaKey = @"InconsistentTerritoryFillColorAlpha";
+NSString* blackSekiSymbolColorKey = @"BlackSekiSymbolColor";
+NSString* whiteSekiSymbolColorKey = @"WhiteSekiSymbolColor";
 //@}
 
 
@@ -583,6 +594,24 @@ NSString* crossHairColorKey = @"CrossHairColor";
     [playViewDictionaryUpgrade removeObjectForKey:stoneRadiusPercentageKey];
     [playViewDictionaryUpgrade removeObjectForKey:crossHairColorKey];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+  }
+
+  // Remove obsolete keys from "Scoring" dictionary
+  id scoringDictionary = [userDefaults objectForKey:scoringKey];
+  if (scoringDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* scoringDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:scoringDictionary];
+    [scoringDictionaryUpgrade removeObjectForKey:alphaTerritoryColorBlackKey];
+    [scoringDictionaryUpgrade removeObjectForKey:alphaTerritoryColorWhiteKey];
+    [scoringDictionaryUpgrade removeObjectForKey:deadStoneSymbolColorKey];
+    [scoringDictionaryUpgrade removeObjectForKey:deadStoneSymbolPercentageKey];
+    [scoringDictionaryUpgrade removeObjectForKey:inconsistentTerritoryDotSymbolColorKey];
+    [scoringDictionaryUpgrade removeObjectForKey:inconsistentTerritoryDotSymbolPercentageKey];
+    [scoringDictionaryUpgrade removeObjectForKey:inconsistentTerritoryFillColorKey];
+    [scoringDictionaryUpgrade removeObjectForKey:inconsistentTerritoryFillColorAlphaKey];
+    [scoringDictionaryUpgrade removeObjectForKey:blackSekiSymbolColorKey];
+    [scoringDictionaryUpgrade removeObjectForKey:whiteSekiSymbolColorKey];
+    [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
   }
 }
 

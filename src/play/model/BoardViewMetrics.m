@@ -25,6 +25,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/FontRange.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -69,9 +70,16 @@
   self.lineColor = nil;
   self.starPointColor = nil;
   self.crossHairColor = nil;
+  self.territoryColorBlack = nil;
+  self.territoryColorWhite = nil;
+  self.territoryColorInconsistent = nil;
   self.moveNumberFontRange = nil;
   self.coordinateLabelFontRange = nil;
   self.nextMoveLabelFontRange = nil;
+  self.deadStoneSymbolColor = nil;
+  self.inconsistentTerritoryDotSymbolColor = nil;
+  self.blackSekiSymbolColor = nil;
+  self.whiteSekiSymbolColor = nil;
   [super dealloc];
 }
 
@@ -94,6 +102,15 @@
     self.starPointRadius = 5;
   self.stoneRadiusPercentage = 0.9;
   self.crossHairColor = [UIColor blueColor];
+  self.territoryColorBlack = [UIColor colorWithWhite:0.0 alpha:0.35];
+  self.territoryColorWhite = [UIColor colorWithWhite:1.0 alpha:0.6];
+  self.territoryColorInconsistent = [[UIColor redColor] colorWithAlphaComponent:0.3];
+  self.deadStoneSymbolColor = [UIColor redColor];
+  self.deadStoneSymbolPercentage = 0.8;
+  self.inconsistentTerritoryDotSymbolColor = [UIColor redColor];
+  self.inconsistentTerritoryDotSymbolPercentage = 0.5;
+  self.blackSekiSymbolColor = [UIColor colorFromHexString:@"80c0f0"];
+  self.whiteSekiSymbolColor = [UIColor colorFromHexString:@"60b0e0"];
 }
 
 // -----------------------------------------------------------------------------

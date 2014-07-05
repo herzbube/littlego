@@ -280,30 +280,10 @@
 		<true/>
 		<key>MarkDeadStonesIntelligently</key>
 		<false/>
-		<key>AlphaTerritoryColorBlack</key>
-		<real>0.35</real>
-		<key>AlphaTerritoryColorWhite</key>
-		<real>0.6</real>
-		<key>DeadStoneSymbolColor</key>
-		<string>ff0000</string>
-		<key>DeadStoneSymbolPercentage</key>
-		<real>0.8</real>
 		<key>InconsistentTerritoryMarkupType</key>
 		<integer>0</integer>
-		<key>InconsistentTerritoryDotSymbolColor</key>
-		<string>ff0000</string>
-		<key>InconsistentTerritoryDotSymbolPercentage</key>
-		<real>0.5</real>
-		<key>InconsistentTerritoryFillColor</key>
-		<string>ff0000</string>
-		<key>InconsistentTerritoryFillColorAlpha</key>
-		<real>0.3</real>
 		<key>ScoreMarkMode</key>
 		<integer>0</integer>
-		<key>BlackSekiSymbolColor</key>
-		<string>80c0f0</string>
-		<key>WhiteSekiSymbolColor</key>
-		<string>60b0e0</string>
 	</dict>
 	<key>BoardPosition</key>
 	<dict>

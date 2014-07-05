@@ -42,9 +42,6 @@
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
 @property(nonatomic, retain) NSMutableDictionary* drawingPointsStoneGroupState;
-@property(nonatomic, retain) UIColor* territoryColorBlack;
-@property(nonatomic, retain) UIColor* territoryColorWhite;
-@property(nonatomic, retain) UIColor* territoryColorInconsistent;
 @end
 
 
@@ -66,9 +63,6 @@
   self.scoringModel = scoringModel;
   self.drawingPointsTerritory = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   self.drawingPointsStoneGroupState = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
-  self.territoryColorBlack = [UIColor colorWithWhite:0.0 alpha:scoringModel.alphaTerritoryColorBlack];
-  self.territoryColorWhite = [UIColor colorWithWhite:1.0 alpha:scoringModel.alphaTerritoryColorWhite];
-  self.territoryColorInconsistent = [scoringModel.inconsistentTerritoryFillColor colorWithAlphaComponent:scoringModel.inconsistentTerritoryFillColorAlpha];
   return self;
 }
 
@@ -85,9 +79,6 @@
   self.scoringModel = nil;
   self.drawingPointsTerritory = nil;
   self.drawingPointsStoneGroupState = nil;
-  self.territoryColorBlack = nil;
-  self.territoryColorWhite = nil;
-  self.territoryColorInconsistent = nil;
   [super dealloc];
 }
 
@@ -202,53 +193,49 @@
   CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
   if (! blackTerritoryLayer)
   {
-    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.territoryColorBlack, 0, self.boardViewMetrics);
+    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.boardViewMetrics);
     [cache setLayer:blackTerritoryLayer ofType:BlackTerritoryLayerType];
     CGLayerRelease(blackTerritoryLayer);
   }
   CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
   if (! whiteTerritoryLayer)
   {
-    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.territoryColorWhite, 0, self.boardViewMetrics);
+    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.boardViewMetrics);
     [cache setLayer:whiteTerritoryLayer ofType:WhiteTerritoryLayerType];
     CGLayerRelease(whiteTerritoryLayer);
   }
   CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   if (! inconsistentFillColorTerritoryLayer)
   {
-    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.territoryColorInconsistent, 0, self.boardViewMetrics);
+    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.boardViewMetrics);
     [cache setLayer:inconsistentFillColorTerritoryLayer ofType:InconsistentFillColorTerritoryLayerType];
     CGLayerRelease(inconsistentFillColorTerritoryLayer);
   }
   CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
   if (! inconsistentDotSymbolTerritoryLayer)
   {
-    inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context,
-                                                                 TerritoryLayerTypeInconsistentDotSymbol,
-                                                                 self.scoringModel.inconsistentTerritoryDotSymbolColor,
-                                                                 self.scoringModel.inconsistentTerritoryDotSymbolPercentage,
-                                                                 self.boardViewMetrics);
+    inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentDotSymbol, self.boardViewMetrics);
     [cache setLayer:inconsistentDotSymbolTerritoryLayer ofType:InconsistentDotSymbolTerritoryLayerType];
     CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
   }
   CGLayerRef deadStoneSymbolLayer = [cache layerOfType:DeadStoneSymbolLayerType];
   if (! deadStoneSymbolLayer)
   {
-    deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self.scoringModel.deadStoneSymbolPercentage, self.scoringModel.deadStoneSymbolColor, self.boardViewMetrics);
+    deadStoneSymbolLayer = CreateDeadStoneSymbolLayer(context, self.boardViewMetrics);
     [cache setLayer:deadStoneSymbolLayer ofType:DeadStoneSymbolLayerType];
     CGLayerRelease(deadStoneSymbolLayer);
   }
   CGLayerRef blackSekiStoneSymbolLayer = [cache layerOfType:BlackSekiStoneSymbolLayerType];
   if (! blackSekiStoneSymbolLayer)
   {
-    blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.blackSekiSymbolColor, self.boardViewMetrics);
+    blackSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.blackSekiSymbolColor, self.boardViewMetrics);
     [cache setLayer:blackSekiStoneSymbolLayer ofType:BlackSekiStoneSymbolLayerType];
     CGLayerRelease(blackSekiStoneSymbolLayer);
   }
   CGLayerRef whiteSekiStoneSymbolLayer = [cache layerOfType:WhiteSekiStoneSymbolLayerType];
   if (! whiteSekiStoneSymbolLayer)
   {
-    whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.scoringModel.whiteSekiSymbolColor, self.boardViewMetrics);
+    whiteSekiStoneSymbolLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.whiteSekiSymbolColor, self.boardViewMetrics);
     [cache setLayer:whiteSekiStoneSymbolLayer ofType:WhiteSekiStoneSymbolLayerType];
     CGLayerRelease(whiteSekiStoneSymbolLayer);
   }

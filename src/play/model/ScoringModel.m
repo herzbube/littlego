@@ -17,7 +17,6 @@
 
 // Project includes
 #import "ScoringModel.h"
-#import "../../utility/UIColorAdditions.h"
 
 
 @implementation ScoringModel
@@ -36,32 +35,9 @@
   self.scoreWhenGameEnds = true;
   self.askGtpEngineForDeadStones = false;
   self.markDeadStonesIntelligently = false;
-  self.alphaTerritoryColorBlack = 0.3;
-  self.alphaTerritoryColorWhite = 0.3;
-  self.deadStoneSymbolColor = [UIColor redColor];
-  self.deadStoneSymbolPercentage = 0.8;
   self.inconsistentTerritoryMarkupType = InconsistentTerritoryMarkupTypeDotSymbol;
-  self.inconsistentTerritoryDotSymbolColor = [UIColor redColor];
-  self.inconsistentTerritoryDotSymbolPercentage = 0.5;
-  self.inconsistentTerritoryFillColor = [UIColor redColor];
-  self.inconsistentTerritoryFillColorAlpha = 0.3;
   self.scoreMarkMode = GoScoreMarkModeDead;
-  self.blackSekiSymbolColor = [UIColor redColor];
-  self.whiteSekiSymbolColor = [UIColor redColor];
   return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ScoringModel object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  self.deadStoneSymbolColor = nil;
-  self.inconsistentTerritoryDotSymbolColor = nil;
-  self.inconsistentTerritoryFillColor = nil;
-  self.blackSekiSymbolColor = nil;
-  self.whiteSekiSymbolColor = nil;
-  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -74,18 +50,8 @@
   self.scoreWhenGameEnds = [[dictionary valueForKey:scoreWhenGameEndsKey] boolValue];
   self.askGtpEngineForDeadStones = [[dictionary valueForKey:askGtpEngineForDeadStonesKey] boolValue];
   self.markDeadStonesIntelligently = [[dictionary valueForKey:markDeadStonesIntelligentlyKey] boolValue];
-  self.alphaTerritoryColorBlack = [[dictionary valueForKey:alphaTerritoryColorBlackKey] floatValue];
-  self.alphaTerritoryColorWhite = [[dictionary valueForKey:alphaTerritoryColorWhiteKey] floatValue];
-  self.deadStoneSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:deadStoneSymbolColorKey]];
-  self.deadStoneSymbolPercentage = [[dictionary valueForKey:deadStoneSymbolPercentageKey] floatValue];
   self.inconsistentTerritoryMarkupType = [[dictionary valueForKey:inconsistentTerritoryMarkupTypeKey] intValue];
-  self.inconsistentTerritoryDotSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:inconsistentTerritoryDotSymbolColorKey]];
-  self.inconsistentTerritoryDotSymbolPercentage = [[dictionary valueForKey:inconsistentTerritoryDotSymbolPercentageKey] floatValue];
-  self.inconsistentTerritoryFillColor = [UIColor colorFromHexString:[dictionary valueForKey:inconsistentTerritoryFillColorKey]];
-  self.inconsistentTerritoryFillColorAlpha = [[dictionary valueForKey:inconsistentTerritoryFillColorAlphaKey] floatValue];
   self.scoreMarkMode = [[dictionary valueForKey:scoreMarkModeKey] intValue];
-  self.blackSekiSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:blackSekiSymbolColorKey]];
-  self.whiteSekiSymbolColor = [UIColor colorFromHexString:[dictionary valueForKey:whiteSekiSymbolColorKey]];
 }
 
 // -----------------------------------------------------------------------------
@@ -102,18 +68,8 @@
   [dictionary setValue:[NSNumber numberWithBool:self.scoreWhenGameEnds] forKey:scoreWhenGameEndsKey];
   [dictionary setValue:[NSNumber numberWithBool:self.askGtpEngineForDeadStones] forKey:askGtpEngineForDeadStonesKey];
   [dictionary setValue:[NSNumber numberWithBool:self.markDeadStonesIntelligently] forKey:markDeadStonesIntelligentlyKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorBlack] forKey:alphaTerritoryColorBlackKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.alphaTerritoryColorWhite] forKey:alphaTerritoryColorWhiteKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.deadStoneSymbolColor] forKey:deadStoneSymbolColorKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.deadStoneSymbolPercentage] forKey:deadStoneSymbolPercentageKey];
   [dictionary setValue:[NSNumber numberWithInt:self.inconsistentTerritoryMarkupType] forKey:inconsistentTerritoryMarkupTypeKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.inconsistentTerritoryDotSymbolColor] forKey:inconsistentTerritoryDotSymbolColorKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryDotSymbolPercentage] forKey:inconsistentTerritoryDotSymbolPercentageKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.inconsistentTerritoryFillColor] forKey:inconsistentTerritoryFillColorKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.inconsistentTerritoryFillColorAlpha] forKey:inconsistentTerritoryFillColorAlphaKey];
   [dictionary setValue:[NSNumber numberWithInt:self.scoreMarkMode] forKey:scoreMarkModeKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.blackSekiSymbolColor] forKey:blackSekiSymbolColorKey];
-  [dictionary setValue:[UIColor hexStringFromUIColor:self.whiteSekiSymbolColor] forKey:whiteSekiSymbolColorKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:scoringKey];
 }

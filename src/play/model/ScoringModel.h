@@ -30,17 +30,7 @@
 @property(nonatomic, assign) bool scoreWhenGameEnds;
 @property(nonatomic, assign) bool askGtpEngineForDeadStones;
 @property(nonatomic, assign) bool markDeadStonesIntelligently;
-@property(nonatomic, assign) float alphaTerritoryColorBlack;
-@property(nonatomic, assign) float alphaTerritoryColorWhite;
-@property(nonatomic, retain) UIColor* deadStoneSymbolColor;
-@property(nonatomic, assign) float deadStoneSymbolPercentage;
 @property(nonatomic, assign) enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType;
-@property(nonatomic, retain) UIColor* inconsistentTerritoryDotSymbolColor;
-@property(nonatomic, assign) float inconsistentTerritoryDotSymbolPercentage;
-@property(nonatomic, retain) UIColor* inconsistentTerritoryFillColor;
-@property(nonatomic, assign) float inconsistentTerritoryFillColorAlpha;
 @property(nonatomic, assign) enum GoScoreMarkMode scoreMarkMode;
-@property(nonatomic, retain) UIColor* blackSekiSymbolColor;
-@property(nonatomic, retain) UIColor* whiteSekiSymbolColor;
 
 @end

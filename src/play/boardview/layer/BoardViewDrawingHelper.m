@@ -172,7 +172,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, BoardViewMetrics* metrics)
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* metrics)
 {
   // The symbol for marking a dead stone is an "x"; we draw this as the two
   // diagonals of a Go stone's "inner square". We make the diagonals shorter by
@@ -180,7 +180,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePerc
   CGSize layerSize = metrics.stoneInnerSquareSize;
   layerSize.width *= metrics.contentsScale;
   layerSize.height *= metrics.contentsScale;
-  CGFloat inset = floor(layerSize.width * (1.0 - symbolSizePercentage));
+  CGFloat inset = floor(layerSize.width * (1.0 - metrics.deadStoneSymbolPercentage));
   layerSize.width -= inset * metrics.contentsScale;
   layerSize.height -= inset * metrics.contentsScale;
 
@@ -195,7 +195,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePerc
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.width);
   CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
-  CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
+  CGContextSetStrokeColorWithColor(layerContext, metrics.deadStoneSymbolColor.CGColor);
   CGContextSetLineWidth(layerContext, metrics.normalLineWidth);
   CGContextStrokePath(layerContext);
 
@@ -214,7 +214,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePerc
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, BoardViewMetrics* metrics)
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -224,7 +224,26 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  CGContextSetFillColorWithColor(layerContext, territoryColor.CGColor);
+  UIColor* fillColor;
+  switch (layerType)
+  {
+    case TerritoryLayerTypeBlack:
+      fillColor = metrics.territoryColorBlack;
+      break;
+    case TerritoryLayerTypeWhite:
+      fillColor = metrics.territoryColorWhite;
+      break;
+    case TerritoryLayerTypeInconsistentFillColor:
+      fillColor = metrics.territoryColorInconsistent;
+      break;
+    case TerritoryLayerTypeInconsistentDotSymbol:
+      fillColor = metrics.inconsistentTerritoryDotSymbolColor;
+      break;
+    default:
+      CGLayerRelease(layer);
+      return NULL;
+  }
+  CGContextSetFillColorWithColor(layerContext, fillColor.CGColor);
   if (TerritoryLayerTypeInconsistentDotSymbol == layerType)
   {
     CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
@@ -234,7 +253,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
     CGContextAddArc(layerContext,
                     layerCenter.x,
                     layerCenter.y,
-                    metrics.stoneRadius * symbolSizePercentage * metrics.contentsScale,
+                    metrics.stoneRadius * metrics.inconsistentTerritoryDotSymbolPercentage * metrics.contentsScale,
                     startRadius,
                     endRadius,
                     clockwise);

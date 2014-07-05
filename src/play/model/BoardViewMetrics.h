@@ -348,6 +348,15 @@
 @property(nonatomic, assign) int starPointRadius;
 @property(nonatomic, assign) float stoneRadiusPercentage;
 @property(nonatomic, retain) UIColor* crossHairColor;
+@property(nonatomic, retain) UIColor* territoryColorBlack;
+@property(nonatomic, retain) UIColor* territoryColorWhite;
+@property(nonatomic, retain) UIColor* territoryColorInconsistent;
+@property(nonatomic, retain) UIColor* deadStoneSymbolColor;
+@property(nonatomic, assign) float deadStoneSymbolPercentage;
+@property(nonatomic, retain) UIColor* inconsistentTerritoryDotSymbolColor;
+@property(nonatomic, assign) float inconsistentTerritoryDotSymbolPercentage;
+@property(nonatomic, retain) UIColor* blackSekiSymbolColor;
+@property(nonatomic, retain) UIColor* whiteSekiSymbolColor;
 //@}
 
 @end

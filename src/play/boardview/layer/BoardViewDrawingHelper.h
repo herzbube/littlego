@@ -54,8 +54,8 @@ enum TerritoryLayerType
 CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics);
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);
-CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, float symbolSizePercentage, UIColor* symbolColor, BoardViewMetrics* metrics);
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, UIColor* territoryColor, float symbolSizePercentage, BoardViewMetrics* metrics);
+CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* metrics);
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, BoardViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers
