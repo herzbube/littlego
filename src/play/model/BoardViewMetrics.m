@@ -131,8 +131,13 @@
   // it is much better to not display the labels and give the unused space to
   // the grid (on the iPhone and on a 19x19 board, every pixel counts!).
   int minimumFontSize = 8;
-  // The maximum could be larger
-  int maximumFontSize = 20;
+  // The maximum can be any size that still looks good. On the iPad we allow
+  // a larger maximum font size because we have more space available.
+  int maximumFontSize;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    maximumFontSize = 30;
+  else
+    maximumFontSize = 40;
 
   NSString* widestMoveNumber = @"388";
   self.moveNumberFontRange = [[[FontRange alloc] initWithText:widestMoveNumber
@@ -354,13 +359,19 @@
     self.topLeftBoardCornerX = offsetForCenteringX + rectWidthFraction;
     self.topLeftBoardCornerY = offsetForCenteringY + rectHeightFraction;
 
+    // The coordinate label strip can be smaller than self.cellWidth (because a
+    // coordinate label at most contains 2 characters, whereas a cell must
+    // accomodate a stone and a 3-character move number inside), but it must
+    // still be fairly large so that the coordinate label is not too small.
+    // 2/3 is an experimentally determined factor that matches the maximum font
+    // sizes defined elsewhere. In an earlier implementation, we used the factor
+    // 1/2, but then we also used much smaller font sizes.
+    static const CGFloat coordinateLabelStripWidthFactor = 2.0f / 3.0f;
     if (newDisplayCoordinates)
     {
       // The coordinate labels' font size will be selected so that labels fit
-      // into the width of the strip that we calculate here. The following
-      // simple calculation assumes that to look good, the width of the strip
-      // should be about (self.cellWidth / 2). Because we do not yet have
-      // self.cellWidth we need to approximate.
+      // into the width of the strip that we calculate here. Because we do not
+      // yet have self.cellWidth we need to approximate.
       // TODO: The current calculation is too simple and gives us a strip that
       // is wider than necessary, i.e. it will take away more space from
       // self.cellWidth than necessary. A more intelligent approach should find
@@ -370,7 +381,9 @@
       // great if no font could be found anymore and thus no coordinate labels
       // would be drawn. An algorithm that achieves such a balance would
       // probably need to find its solution in multiple iterations.
-      self.coordinateLabelStripWidth = floor(self.boardSideLength / newBoardSize / 2);
+      self.coordinateLabelStripWidth = floor(self.boardSideLength
+                                             / newBoardSize
+                                             * coordinateLabelStripWidthFactor);
 
       // We want coordinate labels to be drawn with an inset: It just doesn't
       // look good if a coordinate label is drawn right at the screen edge or
@@ -379,7 +392,7 @@
       // If there is sufficient space the inset can grow beyond the minimum.
       // We use a percentage so that the inset grows with the available drawing
       // area. The percentage chosen here is an arbitrary value.
-      static const CGFloat coordinateLabelInsetPercentage = 0.05;
+      static CGFloat coordinateLabelInsetPercentage = 0.10;
       self.coordinateLabelInset = floor(self.coordinateLabelStripWidth * coordinateLabelInsetPercentage);
       if (self.coordinateLabelInset < coordinateLabelInsetMinimum)
         self.coordinateLabelInset = coordinateLabelInsetMinimum;
@@ -527,7 +540,15 @@
     bool success = [self.moveNumberFontRange queryForWidth:self.stoneInnerSquareSize.width
                                                       font:&_moveNumberFont
                                                   textSize:&_moveNumberMaximumSize];
-    if (! success)
+    if (success)
+    {
+      // We tone down the coordinate label font because it looks very bad if
+      // coordinate label become much larger than move numbers.
+      CGFloat maximumCoordinateLabelFontSize = floorf(self.moveNumberFont.pointSize / coordinateLabelStripWidthFactor);
+      if (self.coordinateLabelFont.pointSize > maximumCoordinateLabelFontSize)
+        self.coordinateLabelFont = [self.coordinateLabelFont fontWithSize:maximumCoordinateLabelFontSize];
+    }
+    else
     {
       self.moveNumberFont = nil;
       self.moveNumberMaximumSize = CGSizeZero;
