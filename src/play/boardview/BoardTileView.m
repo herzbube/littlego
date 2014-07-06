@@ -139,7 +139,7 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
-  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
@@ -173,7 +173,7 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center removeObserver:self];
   [boardPositionModel removeObserver:self forKeyPath:@"markNextMove"];
-  [metrics removeObserver:self forKeyPath:@"rect"];
+  [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
   [boardViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
@@ -578,7 +578,7 @@
   }
   else if (object == metrics)
   {
-    if ([keyPath isEqualToString:@"rect"])
+    if ([keyPath isEqualToString:@"canvasSize"])
     {
       [self notifyLayerDelegates:BVLDEventBoardGeometryChanged eventInfo:nil];
       [self delayedDrawLayers];

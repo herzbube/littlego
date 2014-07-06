@@ -56,7 +56,9 @@
   [self setupMainProperties];
   [self setupNotificationResponders];
   // Remaining properties are initialized by this updater
-  [self updateWithRect:self.rect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
+  [self updateWithCanvasSize:self.canvasSize
+                   boardSize:self.boardSize
+          displayCoordinates:self.displayCoordinates];
   return self;
 }
 
@@ -89,6 +91,7 @@
 - (void) setupStaticProperties
 {
   self.contentsScale = [UIScreen mainScreen].scale;
+  self.tileSize = CGSizeMake(128, 128);
   self.lineColor = [UIColor blackColor];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     self.boundingLineWidth = 2;
@@ -145,9 +148,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupMainProperties
 {
-  self.zoomScale = 1.0f;
-  self.tileSize = CGSizeMake(128, 128);
-  self.rect = CGRectZero;
+  self.baseSize = CGSizeZero;
+  self.absoluteZoomScale = 1.0f;
+  self.canvasSize = CGSizeMake(self.baseSize.width * self.absoluteZoomScale,
+                               self.baseSize.height * self.absoluteZoomScale);
   self.boardSize = GoBoardSizeUndefined;
   self.displayCoordinates = [ApplicationDelegate sharedDelegate].boardViewModel.displayCoordinates;
 }
@@ -172,27 +176,70 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
-/// @a newRect.
+/// @a newBaseSize.
+///
+/// The new canvas size will be the new base size multiplied by the current
+/// absolute zoom scale.
 // -----------------------------------------------------------------------------
-- (void) updateWithRect:(CGRect)newRect
+- (void) updateWithBaseSize:(CGSize)newBaseSize
 {
-  if (CGRectEqualToRect(newRect, self.rect))
+  if (CGSizeEqualToSize(newBaseSize, self.baseSize))
     return;
-  [self updateWithRect:newRect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
+  CGSize newCanvasSize = CGSizeMake(newBaseSize.width * self.absoluteZoomScale,
+                                    newBaseSize.height * self.absoluteZoomScale);
+  [self updateWithCanvasSize:newCanvasSize
+                   boardSize:self.boardSize
+          displayCoordinates:self.displayCoordinates];
   // Update properties only after everything has been re-calculated so that KVO
   // observers get the new values
-  self.rect = newRect;
+  self.baseSize = newBaseSize;
+  self.canvasSize = newCanvasSize;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this BoardViewMetrics object based on
+/// @a newRelativeZoomScale.
+///
+/// BoardViewMetrics uses an absolute zoom scale for its calculations. This zoom
+/// scale is also available as the public property @e absoluteZoomScale. The
+/// zoom scale specified here is a @e relative zoom scale that is multiplied
+/// with the current absolute zoom to get the new absolute zoom scale.
+///
+/// Example: The current absolute zoom scale is 2.0, i.e. the canvas size is
+/// double the size of the base size. A new relative zoom scale of 1.5 results
+/// in the new absolute zoom scale 2.0 * 1.5 = 3.0, i.e. the canvas size will
+/// be triple the size of the base size.
+// -----------------------------------------------------------------------------
+- (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale
+{
+  if (1.0f == newRelativeZoomScale)
+    return;
+  CGFloat newAbsoluteZoomScale = self.absoluteZoomScale * newRelativeZoomScale;
+  CGSize newCanvasSize = CGSizeMake(self.baseSize.width * newAbsoluteZoomScale,
+                                    self.baseSize.height * newAbsoluteZoomScale);
+  [self updateWithCanvasSize:newCanvasSize
+                   boardSize:self.boardSize
+          displayCoordinates:self.displayCoordinates];
+  // Update properties only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.absoluteZoomScale = newAbsoluteZoomScale;
+  self.canvasSize = newCanvasSize;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newBoardSize.
+///
+/// Invoking this updater does not change the canvas size, but it changes the
+/// locations and sizes of all board elements on the canvas.
 // -----------------------------------------------------------------------------
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize
 {
   if (self.boardSize == newBoardSize)
     return;
-  [self updateWithRect:self.rect boardSize:newBoardSize displayCoordinates:self.displayCoordinates];
+  [self updateWithCanvasSize:self.canvasSize
+                   boardSize:newBoardSize
+          displayCoordinates:self.displayCoordinates];
   // Update properties only after everything has been re-calculated so that KVO
   // observers get the new values
   self.boardSize = newBoardSize;
@@ -201,47 +248,35 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newDisplayCoordinates.
+///
+/// Invoking this updater does not change the canvas size, but it changes the
+/// locations and sizes of all board elements on the canvas.
 // -----------------------------------------------------------------------------
 - (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates
 {
   if (self.displayCoordinates == newDisplayCoordinates)
     return;
-  [self updateWithRect:self.rect boardSize:self.boardSize displayCoordinates:newDisplayCoordinates];
+  [self updateWithCanvasSize:self.canvasSize
+                   boardSize:self.boardSize
+          displayCoordinates:newDisplayCoordinates];
   // Update properties only after everything has been re-calculated so that KVO
   // observers get the new values
   self.displayCoordinates = newDisplayCoordinates;
 }
 
-// todo xxx document
-- (void) updateWithZoomScale:(CGFloat)newZoomScale
-{
-  if (1.0f == newZoomScale)
-    return;
-  CGRect newRect = self.rect;
-  newRect.size.width *= newZoomScale;
-  newRect.size.height *= newZoomScale;
-  [self updateWithRect:newRect boardSize:self.boardSize displayCoordinates:self.displayCoordinates];
-  // Update properties only after everything has been re-calculated so that KVO
-  // observers get the new values
-  self.rect = newRect;
-  // todo xxx also document that self.zoomScale is the absolute zoom scale,
-  // while newZoomScale is a relative zoomscale
-  self.zoomScale *= newZoomScale;
-
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
-/// @a newRect, @a newBoardSize and @a newDisplayCoordinates.
+/// @a newCanvasSize, @a newBoardSize and @a newDisplayCoordinates.
 ///
-/// This is the internal backend for updateWithRect:(), updateWithBoardSize:()
-/// and updateWithDisplayCoordinates:().
+/// This is the internal backend for the various public updater methods.
 // -----------------------------------------------------------------------------
-- (void) updateWithRect:(CGRect)newRect boardSize:(enum GoBoardSize)newBoardSize displayCoordinates:(bool)newDisplayCoordinates
+- (void) updateWithCanvasSize:(CGSize)newCanvasSize
+                    boardSize:(enum GoBoardSize)newBoardSize
+           displayCoordinates:(bool)newDisplayCoordinates
 {
   // ----------------------------------------------------------------------
-  // All calculations in this method must use newRect, newBoardSize and
-  // newDisplayCoordinates. The corresponding properties self.rect,
+  // All calculations in this method must use newCanvasSize, newBoardSize and
+  // newDisplayCoordinates. The corresponding properties self.newCanvasSize,
   // self.boardSize and self.displayCoordinates must not be used because, due
   // to the way how this update method is invoked, at least one of these
   // properties is guaranteed to be not up-to-date.
@@ -250,18 +285,18 @@
   // The rect is rectangular, but the Go board is square. Examine the rect
   // orientation and use the smaller dimension of the rect as the base for
   // the Go board's side length.
-  self.portrait = newRect.size.height >= newRect.size.width;
+  self.portrait = newCanvasSize.height >= newCanvasSize.width;
   int offsetForCenteringX = 0;
   int offsetForCenteringY = 0;
   if (self.portrait)
   {
-    self.boardSideLength = floor(newRect.size.width);
-    offsetForCenteringY += floor((newRect.size.height - self.boardSideLength) / 2);
+    self.boardSideLength = floor(newCanvasSize.width);
+    offsetForCenteringY += floor((newCanvasSize.height - self.boardSideLength) / 2);
   }
   else
   {
-    self.boardSideLength = floor(newRect.size.height);
-    offsetForCenteringX += floor((newRect.size.width - self.boardSideLength) / 2);
+    self.boardSideLength = floor(newCanvasSize.height);
+    offsetForCenteringX += floor((newCanvasSize.width - self.boardSideLength) / 2);
   }
 
   if (GoBoardSizeUndefined == newBoardSize)
@@ -293,8 +328,8 @@
     // When the board is zoomed, the rect usually has a size with fractions.
     // We need the fraction part so that we can make corrections to coordinates
     // that prevent anti-aliasing.
-    CGFloat rectWidthFraction = newRect.size.width - floor(newRect.size.width);
-    CGFloat rectHeightFraction = newRect.size.height - floor(newRect.size.height);
+    CGFloat rectWidthFraction = newCanvasSize.width - floor(newCanvasSize.width);
+    CGFloat rectHeightFraction = newCanvasSize.height - floor(newCanvasSize.height);
     // All coordinate calculations are based on topLeftBoardCorner, so if we
     // correct this coordinate, the correction will propagate appropriately.
     // TODO Find out why exactly the fractions need to be added and not
@@ -517,8 +552,8 @@
 ///
 /// @overload This overload does not use self.boardSize, so it can be called at
 /// those times when the property does not (yet) have its correct value. This
-/// is specifically useful while updateWithRect:boardSize:displayCoordinates:()
-/// is still running.
+/// is specifically useful while
+/// updateWithCanvasSize:boardSize:displayCoordinates:() is still running.
 // -----------------------------------------------------------------------------
 - (CGPoint) coordinatesFromPoint:(GoPoint*)point withBoardSize:(enum GoBoardSize)boardSize
 {
@@ -669,10 +704,12 @@
 /// @brief Calculates a list of rectangles that together make up all grid lines
 /// on the board.
 ///
-/// This is a private helper for updateWithRect:boardSize:displayCoordinates:().
-/// The implementation of this helper must not use any of the main properties
-/// (self.rect, self.boardSize or self.displayCoordinates) for its calculations
-/// because these properties do not yet have the correct values.
+/// This is a private helper for
+/// updateWithCanvasSize:boardSize:displayCoordinates:(). The implementation of
+/// this helper must not use any of the main properties (self.baseSize,
+/// self.absoluteZoomScale, self.canvasSize, self.boardSize or
+/// self.displayCoordinates) for its calculations because these properties do
+/// not yet have the correct values.
 // -----------------------------------------------------------------------------
 - (NSArray*) calculateLineRectanglesWithBoardSize:(enum GoBoardSize)newBoardSize
 {

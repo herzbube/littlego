@@ -188,7 +188,7 @@
 {
   self.viewDidLayoutSubviewsInProgress = true;
   // First prepare the new board geometry. This triggers a re-draw of all tiles.
-  [self updateContentSizeInBoardViewMetrics];
+  [self updateBaseSizeInBoardViewMetrics];
   // Now prepare all scroll views with the new content size. The content size
   // is taken from the values in BoardViewMetrics.
   [self updateContentSizeInMainScrollView];
@@ -204,7 +204,7 @@
 - (void) setupNotificationResponders
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
@@ -215,7 +215,7 @@
 - (void) removeNotificationResponders
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  [metrics removeObserver:self forKeyPath:@"rect"];
+  [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
 }
@@ -300,7 +300,7 @@
   // todo xxx we should not use the scale parameter after this line, because
   // BoardViewMetrics may have made some adjustments (snap-to, optimizing for
   // tile size, etc.)
-  [metrics updateWithZoomScale:scale];
+  [metrics updateWithRelativeZoomScale:scale];
 
   // Remember content offset so that we can re-apply it after we reset the zoom
   // scale to 1.0. Note: The content size will be recalculated.
@@ -470,14 +470,10 @@
 /// Updates the BoardViewMetrics object's content size, triggering a redraw in
 /// all tiles.
 // -----------------------------------------------------------------------------
-- (void) updateContentSizeInBoardViewMetrics
+- (void) updateBaseSizeInBoardViewMetrics
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  CGRect newBoardViewMetricsRect = CGRectZero;
-  newBoardViewMetricsRect.size = self.view.bounds.size;
-  newBoardViewMetricsRect.size.width *= metrics.zoomScale;
-  newBoardViewMetricsRect.size.height *= metrics.zoomScale;
-  [metrics updateWithRect:newBoardViewMetricsRect];
+  [metrics updateWithBaseSize:self.view.bounds.size];
 }
 
 // -----------------------------------------------------------------------------
@@ -489,7 +485,7 @@
 - (void) updateContentSizeInMainScrollView
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  CGSize contentSize = metrics.rect.size;
+  CGSize contentSize = metrics.canvasSize;
   CGRect tileContainerViewFrame = CGRectZero;
   tileContainerViewFrame.size = contentSize;
 
@@ -506,7 +502,7 @@
 - (void) updateContentSizeInCoordinateLabelsScrollViews
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  CGSize contentSize = metrics.rect.size;
+  CGSize contentSize = metrics.canvasSize;
   CGSize tileSize = metrics.tileSize;
   CGRect tileContainerViewFrame = CGRectZero;
 
@@ -544,7 +540,7 @@
 {
   if (object == [ApplicationDelegate sharedDelegate].boardViewMetrics)
   {
-    if ([keyPath isEqualToString:@"rect"] ||
+    if ([keyPath isEqualToString:@"canvasSize"] ||
         [keyPath isEqualToString:@"boardSize"] ||
         [keyPath isEqualToString:@"displayCoordinates"])
     {
@@ -570,7 +566,7 @@
           // starts up and initially displays some other than the Play tab, then
           // 2) the user switches to the play tab. At this moment
           // viewDidLayoutSubviews is executed, it invokes
-          // updateContentSizeInBoardViewMetrics, which in turn triggers this
+          // updateBaseSizeInBoardViewMetrics, which in turn triggers this
           // KVO observer. If we now add coordinate labels, the app crashes. The
           // exact reason for the crash is unknown, but probable causes are
           // either adding subviews, or adding constraints, in the middle of a

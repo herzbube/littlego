@@ -116,7 +116,7 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  [metrics addObserver:self forKeyPath:@"rect" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
@@ -132,7 +132,7 @@
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  [metrics removeObserver:self forKeyPath:@"rect"];
+  [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
 }
@@ -205,7 +205,7 @@
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   if (object == metrics)
   {
-    if ([keyPath isEqualToString:@"rect"])
+    if ([keyPath isEqualToString:@"canvasSize"])
     {
       [self.layerDelegate notify:BVLDEventBoardGeometryChanged eventInfo:nil];
       [self delayedDrawLayer];

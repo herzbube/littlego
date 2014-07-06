@@ -30,15 +30,16 @@
 ///
 /// All metrics refer to an imaginary canvas that contains the entire Go board.
 /// The size of the canvas is determined by two things:
-/// - A base size that is equal to the frame size of the scroll view that
+/// - A base size that is equal to the bounds size of the scroll view that
 ///   displays the part of the Go board that is currently visible
 /// - The base size is multiplied by a scale factor that is equal to the zoom
 ///   scale that is currently in effect.
 ///
 /// Effectively, the canvas is equal to the content of the scroll view that
 /// displays the Go board. If the scroll view frame size changes (e.g. when an
-/// interface orientation change occurs), someone must invoke updateWithRect:().
-/// If the zoom scale changes, someone must invoke updateWithZoomScale:().
+/// interface orientation change occurs), someone must invoke
+/// updateWithBaseSize:(). If the zoom scale changes, someone must invoke
+/// updateWithRelativeZoomScale:().
 ///
 /// Additional properties that influence the metrics calculated by
 /// BoardViewMetrics are:
@@ -51,9 +52,9 @@
 ///
 /// If any of these 4 updaters is invoked, BoardViewMetrics re-calculates all
 /// of its properties. Clients are expected to use KVO to notice any changes in
-/// self.rect, self.boardSize or self.displayCoordinates, and to respond to such
-/// changes by initiating the re-drawing of the appropriate parts of the Go
-/// board.
+/// self.canvasSize, self.boardSize or self.displayCoordinates, and to respond
+/// to such changes by initiating the re-drawing of the appropriate parts of the
+/// Go board.
 ///
 ///
 /// @par Calculations
@@ -143,10 +144,10 @@
 
 /// @name Updaters
 //@{
-- (void) updateWithRect:(CGRect)newRect;
+- (void) updateWithBaseSize:(CGSize)newBaseSize;
+- (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale;
 - (void) updateWithBoardSize:(enum GoBoardSize)newBoardSize;
 - (void) updateWithDisplayCoordinates:(bool)newDisplayCoordinates;
-- (void) updateWithZoomScale:(CGFloat)newZoomScale;
 //@}
 
 /// @name Calculators
@@ -157,18 +158,16 @@
 //@}
 
 
-@property(nonatomic, assign) CGFloat zoomScale;
-@property(nonatomic, assign) CGSize tileSize;
-
 // -----------------------------------------------------------------------------
 /// @name Main properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief The canvas rectangle.
+/// @brief The canvas size. This is a calculated property that depends on the
+/// @e baseSize and @e absoluteZoomScale properties.
 ///
 /// Clients that use KVO on this property will be triggered after
-/// BoardViewMetrics has updated its values to match the new rectangle.
-@property(nonatomic, assign) CGRect rect;
+/// BoardViewMetrics has updated its values to match the new size.
+@property(nonatomic, assign) CGSize canvasSize;
 /// @brief The size of the Go board.
 ///
 /// Clients that use KVO on this property will be triggered after
@@ -185,6 +184,14 @@
 /// require correct values from BoardViewMetrics must ***NOT*** use KVO on the
 /// boardViewModel property.
 @property(nonatomic, assign) bool displayCoordinates;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Properties that @e canvasSize depends on
+// -----------------------------------------------------------------------------
+//@{
+@property(nonatomic, assign) CGSize baseSize;
+@property(nonatomic, assign) CGFloat absoluteZoomScale;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -341,6 +348,7 @@
 /// care of scaling up the rectangle. As a result, the CGLayer is drawn into a
 /// rectangle that matches the CGLayer size.
 @property(nonatomic, assign) CGFloat contentsScale;
+@property(nonatomic, assign) CGSize tileSize;
 @property(nonatomic, retain) UIColor* lineColor;
 @property(nonatomic, assign) int boundingLineWidth;
 @property(nonatomic, assign) int normalLineWidth;
