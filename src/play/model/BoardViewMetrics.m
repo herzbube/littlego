@@ -92,6 +92,8 @@
 {
   self.contentsScale = [UIScreen mainScreen].scale;
   self.tileSize = CGSizeMake(128, 128);
+  self.minimumAbsoluteZoomScale = 1.0f;
+  self.maximumAbsoluteZoomScale = 3.0f;
   self.lineColor = [UIColor blackColor];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     self.boundingLineWidth = 2;
@@ -209,12 +211,22 @@
 /// double the size of the base size. A new relative zoom scale of 1.5 results
 /// in the new absolute zoom scale 2.0 * 1.5 = 3.0, i.e. the canvas size will
 /// be triple the size of the base size.
+///
+/// @attention This method may make adjustments so that the final absolute
+/// zoom scale can be different from the result of the multiplication described
+/// above. For instance, if rounding errors would cause the absolute zoom scale
+/// to fall outside of the minimum/maximum range, an adjustment is made so that
+/// the absolute zoom scale hits the range boundary.
 // -----------------------------------------------------------------------------
 - (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale
 {
   if (1.0f == newRelativeZoomScale)
     return;
   CGFloat newAbsoluteZoomScale = self.absoluteZoomScale * newRelativeZoomScale;
+  if (newAbsoluteZoomScale < self.minimumAbsoluteZoomScale)
+    newAbsoluteZoomScale = self.minimumAbsoluteZoomScale;
+  else if (newAbsoluteZoomScale > self.maximumAbsoluteZoomScale)
+    newAbsoluteZoomScale = self.maximumAbsoluteZoomScale;
   CGSize newCanvasSize = CGSizeMake(self.baseSize.width * newAbsoluteZoomScale,
                                     self.baseSize.height * newAbsoluteZoomScale);
   [self updateWithCanvasSize:newCanvasSize

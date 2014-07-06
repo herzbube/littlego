@@ -145,6 +145,8 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+
   // The background image is quite large, so we don't use UIImage namedImage:()
   // because that method caches the image in the background. We don't need
   // caching because we only load the image once, so not using namedImage:()
@@ -159,10 +161,10 @@
   // TODO xxx should this really be YES? the no-tiling implementation used NO
   self.boardView.bouncesZoom = YES;
   self.boardView.delegate = self;
-  self.boardView.minimumZoomScale = 1.0f;
-  self.boardView.maximumZoomScale = 3.0f;
+  self.boardView.minimumZoomScale = metrics.minimumAbsoluteZoomScale;
+  self.boardView.maximumZoomScale = metrics.maximumAbsoluteZoomScale;
   self.boardView.dataSource = self;
-  self.boardView.tileSize = [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
+  self.boardView.tileSize = metrics.tileSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -294,13 +296,17 @@
 // -----------------------------------------------------------------------------
 /// @brief UIScrollViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(float)scale
+- (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(CGFloat)scale
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  // todo xxx we should not use the scale parameter after this line, because
-  // BoardViewMetrics may have made some adjustments (snap-to, optimizing for
-  // tile size, etc.)
+  CGFloat oldAbsoluteZoomScale = metrics.absoluteZoomScale;
   [metrics updateWithRelativeZoomScale:scale];
+
+  // updateWithRelativeZoomScale:() may have adjusted the absolute zoom scale
+  // in a way that makes the original value of the scale parameter obsolete.
+  // We therefore calculate a new, correct value.
+  CGFloat newAbsoluteZoomScale = metrics.absoluteZoomScale;
+  scale = newAbsoluteZoomScale / oldAbsoluteZoomScale;
 
   // Remember content offset so that we can re-apply it after we reset the zoom
   // scale to 1.0. Note: The content size will be recalculated.

@@ -349,6 +349,8 @@
 /// rectangle that matches the CGLayer size.
 @property(nonatomic, assign) CGFloat contentsScale;
 @property(nonatomic, assign) CGSize tileSize;
+@property(nonatomic, assign) CGFloat minimumAbsoluteZoomScale;
+@property(nonatomic, assign) CGFloat maximumAbsoluteZoomScale;
 @property(nonatomic, retain) UIColor* lineColor;
 @property(nonatomic, assign) int boundingLineWidth;
 @property(nonatomic, assign) int normalLineWidth;
