@@ -235,8 +235,12 @@
   if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
   [self updateAllData];
-  [self updateCurrentBoardPosition];
+  // Update number of items before current board position because
+  // updateCurrentBoardPosition() will try to clear the "current" flag of the
+  // previous board position view, but that board position might have been
+  // discarded.
   [self updateNumberOfItems];
+  [self updateCurrentBoardPosition];
   [self updateTappingEnabled];
 }
 
