@@ -39,10 +39,6 @@
   self.moveNumbersPercentage = 0.0;
   self.playSound = false;
   self.vibrate = false;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    self.maximumZoomScale = iPhoneMaximumZoomScaleMaximum;
-  else
-    self.maximumZoomScale = iPadMaximumZoomScaleMaximum;
   self.stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
   self.infoTypeLastSelected = ScoreInfoType;
   return self;
@@ -61,7 +57,6 @@
   self.moveNumbersPercentage = [[dictionary valueForKey:moveNumbersPercentageKey] floatValue];
   self.playSound = [[dictionary valueForKey:playSoundKey] boolValue];
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
-  self.maximumZoomScale = [[dictionary valueForKey:[maximumZoomScaleKey stringByAppendingDeviceSuffix]] floatValue];
   self.stoneDistanceFromFingertip = [[dictionary valueForKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]] floatValue];
   self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
 }
@@ -87,7 +82,6 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.moveNumbersPercentage] forKey:moveNumbersPercentageKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playSound] forKey:playSoundKey];
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
-  [dictionary setValue:[NSNumber numberWithFloat:self.maximumZoomScale] forKey:[maximumZoomScaleKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneDistanceFromFingertip] forKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed

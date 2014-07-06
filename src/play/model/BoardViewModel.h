@@ -34,7 +34,6 @@
 @property(nonatomic, assign) float moveNumbersPercentage;
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
-@property(nonatomic, assign) float maximumZoomScale;
 /// @brief How far from the fingertip should the cross-hair point be displayed
 /// when placing stones on the Play tab.
 ///

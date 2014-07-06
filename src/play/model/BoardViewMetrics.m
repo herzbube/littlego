@@ -93,7 +93,10 @@
   self.contentsScale = [UIScreen mainScreen].scale;
   self.tileSize = CGSizeMake(128, 128);
   self.minimumAbsoluteZoomScale = 1.0f;
-  self.maximumAbsoluteZoomScale = 3.0f;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    self.maximumAbsoluteZoomScale = iPhoneMaximumZoomScale;
+  else
+    self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
   self.lineColor = [UIColor blackColor];
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     self.boundingLineWidth = 2;

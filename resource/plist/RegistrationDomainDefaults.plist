@@ -20,10 +20,6 @@
 		<false/>
 		<key>Vibrate</key>
 		<false/>
-		<key>MaximumZoomScale~iphone</key>
-		<real>2.5</real>
-		<key>MaximumZoomScale~ipad</key>
-		<real>2</real>
 		<key>StoneDistanceFromFingertip~iphone</key>
 		<real>1</real>
 		<key>StoneDistanceFromFingertip~ipad</key>

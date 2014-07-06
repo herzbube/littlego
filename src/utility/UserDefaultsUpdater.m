@@ -48,7 +48,6 @@ NSString* starPointColorKey = @"StarPointColor";
 NSString* starPointRadiusKey = @"StarPointRadius";
 NSString* stoneRadiusPercentageKey = @"StoneRadiusPercentage";
 NSString* crossHairColorKey = @"CrossHairColor";
-
 NSString* alphaTerritoryColorBlackKey = @"AlphaTerritoryColorBlack";
 NSString* alphaTerritoryColorWhiteKey = @"AlphaTerritoryColorWhite";
 NSString* deadStoneSymbolColorKey = @"DeadStoneSymbolColor";
@@ -59,6 +58,7 @@ NSString* inconsistentTerritoryFillColorKey = @"InconsistentTerritoryFillColor";
 NSString* inconsistentTerritoryFillColorAlphaKey = @"InconsistentTerritoryFillColorAlpha";
 NSString* blackSekiSymbolColorKey = @"BlackSekiSymbolColor";
 NSString* whiteSekiSymbolColorKey = @"WhiteSekiSymbolColor";
+NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 //@}
 
 
@@ -593,6 +593,7 @@ NSString* whiteSekiSymbolColorKey = @"WhiteSekiSymbolColor";
     [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:starPointRadiusKey fromDictionary:playViewDictionaryUpgrade];
     [playViewDictionaryUpgrade removeObjectForKey:stoneRadiusPercentageKey];
     [playViewDictionaryUpgrade removeObjectForKey:crossHairColorKey];
+    [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:maximumZoomScaleKey fromDictionary:playViewDictionaryUpgrade];
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
