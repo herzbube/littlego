@@ -121,6 +121,10 @@
     case BVLDEventMarkLastMoveChanged:
     case BVLDEventMoveNumbersPercentageChanged:
     case BVLDEventMarkNextMoveChanged:
+    // The layer is added dynamically as a result of scoring becoming disabled.
+    // This is the only event we get after being added, so we react to it to
+    // trigger a redraw.
+    case BVLDEventScoringModeDisabled:
     {
       self.dirty = true;
       break;
