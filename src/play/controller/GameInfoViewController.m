@@ -27,7 +27,6 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
-#import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
@@ -35,7 +34,6 @@
 #import "../../utility/NSStringAdditions.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
-#import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -140,7 +138,6 @@ enum BoardPositionSectionItem
 /// GameInfoViewController.
 // -----------------------------------------------------------------------------
 @interface GameInfoViewController()
-@property(nonatomic, assign) UINavigationBar* navigationBar;
 @property(nonatomic, assign) UITableView* tableView;
 @property(nonatomic, assign) BoardViewModel* boardViewModel;
 /// @brief Is required so that KVO notification responders are not removed
@@ -155,19 +152,20 @@ enum BoardPositionSectionItem
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor.
+/// @brief Initializes a GameInfoViewController object.
+///
+/// @note This is the designated initializer of GameInfoViewController.
 // -----------------------------------------------------------------------------
-+ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate
+- (id) init
 {
-  GameInfoViewController* controller = [[GameInfoViewController alloc] initWithNibName:nil bundle:nil];
-  if (controller)
-  {
-    [controller autorelease];
-    controller.delegate = delegate;
-    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
-    controller.kvoNotificationRespondersAreInstalled = false;
-  }
-  return controller;
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
+  if (! self)
+    return nil;
+  self.tableView = nil;
+  self.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  self.kvoNotificationRespondersAreInstalled = false;
+  return self;
 }
 
 // -----------------------------------------------------------------------------
@@ -176,10 +174,8 @@ enum BoardPositionSectionItem
 - (void) dealloc
 {
   [self removeNotificationResponders];
-  self.delegate = nil;
-  self.boardViewModel = nil;
-  self.navigationBar = nil;
   self.tableView = nil;
+  self.boardViewModel = nil;
   [super dealloc];
 }
 
@@ -206,18 +202,10 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBar
 {
-  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.navigationBar];
-  self.navigationBar.delegate = self;
-
-  UINavigationItem* backItem = [[[UINavigationItem alloc] initWithTitle:@"Back"] autorelease];
-  [self.navigationBar pushNavigationItem:backItem animated:NO];
-
   UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
   segmentedControl.selectedSegmentIndex = self.boardViewModel.infoTypeLastSelected;
   [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
   self.navigationItem.titleView = segmentedControl;
-  [self.navigationBar pushNavigationItem:self.navigationItem animated:NO];
 }
 
 // -----------------------------------------------------------------------------
@@ -237,19 +225,8 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.navigationBar, @"navigationBar",
-                                   self.tableView, @"tableView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[navigationBar]-0-|",
-                            @"H:|-0-[tableView]-0-|",
-                            [NSString stringWithFormat:@"V:|-%d-[navigationBar]-0-[tableView]-0-|", [UiElementMetrics statusBarHeight]],
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
 }
 
 // -----------------------------------------------------------------------------
@@ -312,22 +289,6 @@ enum BoardPositionSectionItem
   GoGame* game = [GoGame sharedGame];
   [game.playerBlack.player removeObserver:self forKeyPath:@"name"];
   [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
-}
-
-#pragma mark - UINavigationBarDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UINavigationBarDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (BOOL) navigationBar:(UINavigationBar*)navigationBar shouldPopItem:(UINavigationItem*)item
-{
-  // If we were overriding navigationBar:didPopItem:(), the item would already
-  // have been popped with an animation, and our own dismissal would be
-  // animated separately. This looks ugly. The solution is to override
-  // navigationBar:shouldPopItem:() and trigger our own dismissal now so that
-  // the two animations take place together.
-  [self.delegate gameInfoViewControllerDidFinish:self];
-  return YES;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -1135,10 +1096,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
 {
-  // Dismiss the Info view when a new game is about to be started. This
-  // typically occurs when a saved game is loaded from the archive.
-  [self navigationBar:nil shouldPopItem:nil];
-  // Also unregister ourselves as observer while the old game configuration that
+  // Unregister ourselves as observer while the old game configuration that
   // we used for registering is still around. For instance, the new game might
   // use different players or a different profile, so if we were waiting with
   // unregistering until dealloc (at which time the new game has already been

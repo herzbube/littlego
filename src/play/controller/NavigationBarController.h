@@ -16,7 +16,6 @@
 
 
 // Project includes
-#import "GameInfoViewController.h"
 #import "GameActionsActionSheetController.h"
 
 // Forward declarations
@@ -54,7 +53,7 @@
 /// - Integrate the status view provided by the StatusViewController child view
 ///   controller into the navigation bar
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : UIViewController <GameInfoViewControllerDelegate,
+@interface NavigationBarController : UIViewController <UINavigationControllerDelegate,
                                                        GameActionsActionSheetDelegate,
                                                        UIAlertViewDelegate,
                                                        UISplitViewControllerDelegate>

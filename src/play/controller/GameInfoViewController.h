@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,44 +20,17 @@
 #import "../../settings/EditPlayerController.h"
 #import "../../ui/TableViewGridCell.h"
 
-// Forward declarations
-@class GameInfoViewController;
-
-
-// -----------------------------------------------------------------------------
-/// @brief The GameInfoViewControllerDelegate protocol must be implemented by
-/// the delegate of GameInfoViewController.
-// -----------------------------------------------------------------------------
-@protocol GameInfoViewControllerDelegate
-/// @brief This method is invoked when the user has finished working with
-/// @a controller. The implementation is responsible for dismissing the
-/// modal @a controller.
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller;
-@end
-
 
 // -----------------------------------------------------------------------------
 /// @brief The GameInfoViewController class is responsible for managing user
 /// interaction on the "Game Info" view.
-///
-/// GameInfoViewController expects to be configured with a delegate that
-/// can be informed when the user wants to dismiss the "Game Info" view. For
-/// this to work, the delegate must implement the protocol
-/// GameInfoViewControllerDelegate.
 // -----------------------------------------------------------------------------
-@interface GameInfoViewController : UIViewController <UINavigationBarDelegate,
-                                                      UITableViewDelegate,
+@interface GameInfoViewController : UIViewController <UITableViewDelegate,
                                                       UITableViewDataSource,
                                                       TableViewGridCellDelegate,
                                                       EditGtpEngineProfileDelegate,
                                                       EditPlayerDelegate>
 {
 }
-
-+ (GameInfoViewController*) controllerWithDelegate:(id<GameInfoViewControllerDelegate>)delegate;
-
-/// @brief This is the delegate that will be informed when the user wants to
-/// dismiss the "Game Info" view.
-@property(nonatomic, assign) id<GameInfoViewControllerDelegate> delegate;
 
 @end

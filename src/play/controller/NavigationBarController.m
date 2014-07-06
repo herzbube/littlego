@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NavigationBarController.h"
+#import "GameInfoViewController.h"
 #import "StatusViewController.h"
 #import "../model/ScoringModel.h"
 #import "../../main/ApplicationDelegate.h"
@@ -37,7 +38,7 @@
 // -----------------------------------------------------------------------------
 @interface NavigationBarController()
 @property(nonatomic, retain) UINavigationBar* navigationBar;
-@property(nonatomic, retain) GameInfoViewController* gameInfoViewController;
+@property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool statusViewSizeNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
@@ -168,6 +169,10 @@
   self.navigationBarNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
+
+  // We need to be the Play tab navigation controller's delegate so that we
+  // can properly push/pop the "Game Info" view controller
+  self.navigationController.delegate = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -351,7 +356,10 @@
   GoScore* score = [GoGame sharedGame].score;
   if (! score.scoringEnabled)
     [score calculateWaitUntilDone:true];
-  self.gameInfoViewController = [GameInfoViewController controllerWithDelegate:self];
+  self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
+  // We are the navigation controller's delegate. When
+  // self.gameInfoViewController is pushed/popped we show the navigation
+  // controller's navigation bar.
   [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
 }
 
@@ -379,15 +387,32 @@
   [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this controller reacts
 }
 
-#pragma mark - GameInfoViewControllerDelegate overrides
+#pragma mark - UINavigationControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief GameInfoViewControllerDelegate protocol method.
+/// @brief UINavigationControllerDelegate protocol method.
+///
+/// We are the delegate of the navigation controller on the Play tab. Here we
+/// make sure to show/hide the navigation bar when the "Game Info" view
+/// controller is pushed/popped.
+///
+/// @note One interaction that is not obvious is that if the user taps on the
+/// "Play" tab bar icon, the navigation controller will pop the "Game Info" view
+/// controller!
 // -----------------------------------------------------------------------------
-- (void) gameInfoViewControllerDidFinish:(GameInfoViewController*)controller
+- (void) navigationController:(UINavigationController*)navigationController
+       willShowViewController:(UIViewController*)viewController
+                     animated:(BOOL)animated
 {
-  [self.navigationController popViewControllerAnimated:YES];
-  self.gameInfoViewController = nil;
+  if (viewController == self.gameInfoViewController)
+  {
+    self.navigationController.navigationBarHidden = NO;
+  }
+  else
+  {
+    self.navigationController.navigationBarHidden = YES;
+    self.gameInfoViewController = nil;
+  }
 }
 
 #pragma mark - GameActionsActionSheetDelegate overrides
@@ -430,6 +455,10 @@
 // -----------------------------------------------------------------------------
 - (void) goGameWillCreate:(NSNotification*)notification
 {
+  // Dismiss the "Game Info" view when a new game is about to be started. This
+  // typically occurs when a saved game is loaded from the archive.
+  if (self.gameInfoViewController)
+    [self.navigationController popViewControllerAnimated:YES];
   GoGame* oldGame = [notification object];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
