@@ -1033,12 +1033,13 @@
         }
       }
     }
+  }
 
-    int numberOfHandicapStones = self.game.handicapPoints.count;
-    if (numberOfHandicapStones > 0)
-    {
-      self.handicapCompensationWhite = numberOfHandicapStones;
-    }
+  // Handicap
+  int numberOfHandicapStones = self.game.handicapPoints.count;
+  if (numberOfHandicapStones > 0)
+  {
+    self.handicapCompensationWhite = numberOfHandicapStones;
   }
 
   // Total score
