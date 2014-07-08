@@ -50,7 +50,7 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary* dictionary = [userDefaults dictionaryForKey:playViewKey];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:boardViewKey];
   self.markLastMove = [[dictionary valueForKey:markLastMoveKey] boolValue];
   self.displayCoordinates = [[dictionary valueForKey:displayCoordinatesKey] boolValue];
   self.displayPlayerInfluence = [[dictionary valueForKey:displayPlayerInfluenceKey] boolValue];
@@ -71,7 +71,7 @@
   // can simply overwrite the old with the new values and don't have to care
   // about creating device-specific keys that we don't use on this device.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:playViewKey]];
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithDictionary:[userDefaults dictionaryForKey:boardViewKey]];
   // setValue:forKey:() allows for nil values, so we use that instead of
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
@@ -86,7 +86,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
-  [userDefaults setObject:dictionary forKey:playViewKey];
+  [userDefaults setObject:dictionary forKey:boardViewKey];
 }
 
 @end

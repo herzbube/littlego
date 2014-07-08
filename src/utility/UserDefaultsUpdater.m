@@ -39,6 +39,7 @@ NSString* boardPositionLastViewedKey = @"BoardPositionLastViewed";
 NSString* boardOuterMarginPercentageKey = @"BoardOuterMarginPercentage";
 const float stoneDistanceFromFingertipMaximum = 4.0;
 const float maximumZoomScaleDefault = 3.0;
+NSString* playViewKey = @"PlayView";
 NSString* backgroundColorKey = @"BackgroundColor";
 NSString* boardColorKey = @"BoardColor";
 NSString* lineColorKey = @"LineColor";
@@ -345,7 +346,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
   [dictionary setValue:[NSNumber numberWithInt:-1] forKey:boardPositionLastViewedKey];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 
-  // Add new keys to "play view" dictionary
+  // Add new keys to "PlayView" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
@@ -371,7 +372,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
-  // Add new keys to / remove unused key from "new game" dictionary
+  // Add new keys to / remove unused key from "NewGame" dictionary
   id newGameDictionary = [userDefaults objectForKey:newGameKey];
   if (newGameDictionary)  // is nil if the key is not present
   {
@@ -391,7 +392,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
   }
 
-  // Add new key to "scoring" dictionary
+  // Add new key to "Scoring" dictionary
   id scoringDictionary = [userDefaults objectForKey:scoringKey];
   if (scoringDictionary)  // is nil if the key is not present
   {
@@ -409,7 +410,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  // Add new keys to / change existing keys in "play view" dictionary
+  // Add new keys to / change existing keys in "PlayView" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
@@ -441,7 +442,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
-  // Remove unused key from "board position" dictionary
+  // Remove unused key from "BoardPosition" dictionary
   id boardPositionDictionary = [userDefaults objectForKey:boardPositionKey];
   if (boardPositionDictionary)  // is nil if the key is not present
   {
@@ -491,7 +492,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
 
-  // Add new key to "board position" dictionary
+  // Add new key to "BoardPosition" dictionary
   id boardPositionDictionary = [userDefaults objectForKey:boardPositionKey];
   if (boardPositionDictionary)  // is nil if the key is not present
   {
@@ -513,7 +514,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  // Add new key to "Play view" dictionary
+  // Add new key to "PlayView" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
@@ -536,7 +537,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
   }
 
-  // Add new key to "New game" dictionary
+  // Add new key to "NewGame" dictionary
   id newGameDictionary = [userDefaults objectForKey:newGameKey];
   if (newGameDictionary)  // is nil if the key is not present
   {
@@ -579,7 +580,8 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  // Remove obsolete keys from "Play view" dictionary
+  // Remove obsolete keys from "PlayView" dictionary, and rename "PlayView"
+  // to "BoardView" dictionary
   id playViewDictionary = [userDefaults objectForKey:playViewKey];
   if (playViewDictionary)  // is nil if the key is not present
   {
@@ -594,7 +596,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [playViewDictionaryUpgrade removeObjectForKey:stoneRadiusPercentageKey];
     [playViewDictionaryUpgrade removeObjectForKey:crossHairColorKey];
     [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:maximumZoomScaleKey fromDictionary:playViewDictionaryUpgrade];
-    [userDefaults setObject:playViewDictionaryUpgrade forKey:playViewKey];
+    [userDefaults setObject:playViewDictionaryUpgrade forKey:boardViewKey];
   }
 
   // Remove obsolete keys from "Scoring" dictionary

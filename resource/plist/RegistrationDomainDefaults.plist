@@ -6,7 +6,7 @@
 	<integer>9</integer>
 	<key>LoggingEnabled</key>
 	<false/>
-	<key>PlayView</key>
+	<key>BoardView</key>
 	<dict>
 		<key>MarkLastMove</key>
 		<true/>

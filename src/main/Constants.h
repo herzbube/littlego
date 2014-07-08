@@ -736,8 +736,8 @@ extern NSString* iPadDeviceSuffix;
 // User Defaults versioning
 extern NSString* userDefaultsVersionRegistrationDomainKey;
 extern NSString* userDefaultsVersionApplicationDomainKey;
-// Display settings
-extern NSString* playViewKey;
+// Board view settings
+extern NSString* boardViewKey;
 extern NSString* markLastMoveKey;
 extern NSString* displayCoordinatesKey;
 extern NSString* displayPlayerInfluenceKey;

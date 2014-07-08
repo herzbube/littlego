@@ -210,8 +210,8 @@ NSString* iPadDeviceSuffix = @"~ipad";
 // User Defaults versioning
 NSString* userDefaultsVersionRegistrationDomainKey = @"UserDefaultsVersionRegistrationDomain";
 NSString* userDefaultsVersionApplicationDomainKey = @"UserDefaultsVersionApplicationDomain";
-// Display settings
-NSString* playViewKey = @"PlayView";
+// Board view settings
+NSString* boardViewKey = @"BoardView";
 NSString* markLastMoveKey = @"MarkLastMove";
 NSString* displayCoordinatesKey = @"DisplayCoordinates";
 NSString* displayPlayerInfluenceKey = @"DisplayPlayerInfluence";
