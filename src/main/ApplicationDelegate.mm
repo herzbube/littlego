@@ -132,11 +132,12 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.documentInteractionURL = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;
+  // Observes BoardViewModel, so must be deallocated first
+  self.boardViewMetrics = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
   self.gtpEngineProfileModel = nil;
   self.boardViewModel = nil;
-  self.boardViewMetrics = nil;
   self.boardPositionModel = nil;
   self.scoringModel = nil;
   self.soundHandling = nil;
