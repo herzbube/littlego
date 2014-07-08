@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@
 {
   enum GoBoardSize expectedBoardSize = GoBoardSize19;
   [self checkBoardState:m_game.board expectedBoardSize:expectedBoardSize];
-  STAssertNotNil(m_game.board.zobristTable, nil);
+  XCTAssertNotNil(m_game.board.zobristTable);
 }
 
 // -----------------------------------------------------------------------------
@@ -62,9 +62,9 @@
   GoBoard* board = [GoBoard boardWithSize:expectedBoardSize];
   [self checkBoardState:board expectedBoardSize:expectedBoardSize];
 
-  STAssertThrowsSpecificNamed([GoBoard boardWithSize:GoBoardSizeUndefined],
+  XCTAssertThrowsSpecificNamed([GoBoard boardWithSize:GoBoardSizeUndefined],
                               NSException, NSInvalidArgumentException, @"GoBoardSizeUndefined");
-  STAssertThrowsSpecificNamed([GoBoard boardWithSize:(enum GoBoardSize)42],
+  XCTAssertThrowsSpecificNamed([GoBoard boardWithSize:(enum GoBoardSize)42],
                               NSException, NSInvalidArgumentException, @"evil cast");
 }
 
@@ -79,9 +79,9 @@
   static NSString* expectedBoardSizeStrings[arraySize] = {@"7", @"9", @"11", @"13", @"15", @"17", @"19", @"Undefined"};
 
   for (int index = 0; index < arraySize; ++index)
-    STAssertTrue([expectedBoardSizeStrings[index] isEqualToString:[GoBoard stringForSize:boardSizes[index]]], expectedBoardSizeStrings[index]);
+    XCTAssertTrue([expectedBoardSizeStrings[index] isEqualToString:[GoBoard stringForSize:boardSizes[index]]], @"%@", expectedBoardSizeStrings[index]);
 
-  STAssertThrowsSpecificNamed([GoBoard stringForSize:(enum GoBoardSize)42],
+  XCTAssertThrowsSpecificNamed([GoBoard stringForSize:(enum GoBoardSize)42],
                               NSException, NSInvalidArgumentException, @"evil cast");
 }
 
@@ -102,7 +102,7 @@
     if (numberOfPoints > expectedNumberOfPoints)
       break;
   }
-  STAssertEquals(expectedNumberOfPoints, numberOfPoints, nil);
+  XCTAssertEqual(expectedNumberOfPoints, numberOfPoints);
 }
 
 // -----------------------------------------------------------------------------
@@ -115,30 +115,30 @@
 
   // A few valid vertexes
   point = [board pointAtVertex:@"A1"];
-  STAssertNotNil(point, @"A1");
+  XCTAssertNotNil(point, @"A1");
   point = [board pointAtVertex:@"F7"];
-  STAssertNotNil(point, @"F7");
+  XCTAssertNotNil(point, @"F7");
   point = [board pointAtVertex:@"R13"];
-  STAssertNotNil(point, @"R13");
+  XCTAssertNotNil(point, @"R13");
   point = [board pointAtVertex:@"T19"];
-  STAssertNotNil(point, @"T19");
+  XCTAssertNotNil(point, @"T19");
 
   // A lower-case string must also work
   point = [board pointAtVertex:@"c3"];
-  STAssertNotNil(point, @"c3");
+  XCTAssertNotNil(point, @"c3");
 
   // A few invalid vertexes
-  STAssertThrowsSpecificNamed([board pointAtVertex:@"I4"],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"I4"],
                               NSException, NSRangeException, @"letter I used for vertex");
-  STAssertThrowsSpecificNamed([board pointAtVertex:@"U1"],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"U1"],
                               NSException, NSRangeException, @"letter U used for vertex");
-  STAssertThrowsSpecificNamed([board pointAtVertex:@"A0"],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"A0"],
                               NSException, NSRangeException, @"number 0 used for vertex");
-  STAssertThrowsSpecificNamed([board pointAtVertex:nil],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:nil],
                               NSException, NSInvalidArgumentException, @"nil used for vertex");
-  STAssertThrowsSpecificNamed([board pointAtVertex:@""],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:@""],
                               NSException, NSInvalidArgumentException, @"empty string used for vertex");
-  STAssertThrowsSpecificNamed([board pointAtVertex:@"foobar"],
+  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"foobar"],
                               NSException, NSInvalidArgumentException, @"malformed string used for vertex");
 }
 
@@ -149,7 +149,7 @@
 {
   int expectedBoardSize = 19;
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardSize, board.size, nil);
+  XCTAssertEqual(expectedBoardSize, board.size);
 
   enum GoBoardDirection direction = GoBoardDirectionLeft;
   for (; direction <= GoBoardDirectionPrevious; ++direction)
@@ -183,11 +183,11 @@
         initialVertex = @"T19";
         break;
       default:
-        STFail(nil);
+        XCTFail();
         return;
     }
     GoPoint* point = [board pointAtVertex:initialVertex];
-    STAssertNotNil(point, initialVertex);
+    XCTAssertNotNil(point, @"%@", initialVertex);
     int numberOfPoints = 1;
     while (true)
     {
@@ -198,7 +198,7 @@
       if (numberOfPoints > expectedNumberOfPoints)
         break;
     }
-    STAssertEquals(expectedNumberOfPoints, numberOfPoints, initialVertex);
+    XCTAssertEqual(expectedNumberOfPoints, numberOfPoints, @"%@", initialVertex);
   }
 }
 
@@ -212,8 +212,8 @@
   // Star points are mostly a GUI feature, so we don't do more than a few
   // rudimentary tests here
   NSArray* starPoints = m_game.board.starPoints;
-  STAssertNotNil(starPoints, nil);
-  STAssertEquals(expectedNumberOfStarPoints, starPoints.count, nil);
+  XCTAssertNotNil(starPoints);
+  XCTAssertEqual(expectedNumberOfStarPoints, starPoints.count);
 }
 
 // -----------------------------------------------------------------------------
@@ -224,8 +224,8 @@
   NSUInteger expectedNumberOfRegions = 1;
 
   NSArray* regions = m_game.board.regions;
-  STAssertNotNil(regions, nil);
-  STAssertEquals(expectedNumberOfRegions, regions.count, nil);
+  XCTAssertNotNil(regions);
+  XCTAssertEqual(expectedNumberOfRegions, regions.count);
 
   NewGameModel* newGameModel = m_delegate.theNewGameModel;
   newGameModel.boardSize = GoBoardSize9;
@@ -233,7 +233,7 @@
   expectedNumberOfRegions = 1 + newGameModel.handicap;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 }
 
 // -----------------------------------------------------------------------------
@@ -244,8 +244,8 @@
 {
   int expectedNumberOfPoints = pow(expectedBoardSize, 2);
 
-  STAssertNotNil(board, nil);
-  STAssertEquals(expectedBoardSize, board.size, nil);
+  XCTAssertNotNil(board);
+  XCTAssertEqual(expectedBoardSize, board.size);
 
   int numberOfPoints = 0;
   NSEnumerator* enumerator = [board pointEnumerator];
@@ -256,7 +256,7 @@
     if (numberOfPoints > expectedNumberOfPoints)
       break;
   }
-  STAssertEquals(expectedNumberOfPoints, numberOfPoints, nil);
+  XCTAssertEqual(expectedNumberOfPoints, numberOfPoints);
 }
 
 @end

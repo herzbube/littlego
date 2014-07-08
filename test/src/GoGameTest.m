@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@
 // -----------------------------------------------------------------------------
 - (void) testSharedGame
 {
-  STAssertEquals(m_game, [GoGame sharedGame], nil);
+  XCTAssertEqual(m_game, [GoGame sharedGame]);
 }
 
 // -----------------------------------------------------------------------------
@@ -48,21 +48,21 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  STAssertEquals(GoGameTypeHumanVsHuman, m_game.type, @"game type test failed");
-  STAssertNotNil(m_game.board, nil);
+  XCTAssertEqual(GoGameTypeHumanVsHuman, m_game.type, @"game type test failed");
+  XCTAssertNotNil(m_game.board);
   NSUInteger handicapCount = 0;
-  STAssertEquals(m_game.handicapPoints.count, handicapCount, nil);
-  STAssertEquals(m_game.komi, gDefaultKomiAreaScoring, nil);
-  STAssertNotNil(m_game.playerBlack, nil);
-  STAssertNotNil(m_game.playerWhite, nil);
-  STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
-  STAssertNil(m_game.firstMove, nil);
-  STAssertNil(m_game.lastMove, nil);
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
-  STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
-  STAssertFalse(m_game.isComputerThinking, nil);
-  STAssertEquals(GoGameComputerIsThinkingReasonIsNotThinking, m_game.reasonForComputerIsThinking, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.komi, gDefaultKomiAreaScoring);
+  XCTAssertNotNil(m_game.playerBlack);
+  XCTAssertNotNil(m_game.playerWhite);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
+  XCTAssertNil(m_game.firstMove);
+  XCTAssertNil(m_game.lastMove);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  XCTAssertFalse(m_game.isComputerThinking);
+  XCTAssertEqual(GoGameComputerIsThinkingReasonIsNotThinking, m_game.reasonForComputerIsThinking);
+  XCTAssertFalse(m_game.document.isDirty);
 }
 
 // -----------------------------------------------------------------------------
@@ -70,7 +70,7 @@
 // -----------------------------------------------------------------------------
 - (void) testType
 {
-  STAssertEquals(GoGameTypeHumanVsHuman, m_game.type, nil);
+  XCTAssertEqual(GoGameTypeHumanVsHuman, m_game.type);
   // Nothing else that we can test for the moment
 }
 
@@ -79,12 +79,12 @@
 // -----------------------------------------------------------------------------
 - (void) testBoard
 {
-  STAssertNotNil(m_game.board, nil);
+  XCTAssertNotNil(m_game.board);
   // The only test that currently comes to mind is whether we can replace an
   // already existing GoBoard instance
   GoBoard* board = [GoBoard boardWithSize:GoBoardSize7];
   m_game.board = board;
-  STAssertEquals(board, m_game.board, nil);
+  XCTAssertEqual(board, m_game.board);
 }
 
 // -----------------------------------------------------------------------------
@@ -93,12 +93,12 @@
 - (void) testHandicapPoints
 {
   NSUInteger handicapCount = 0;
-  STAssertEquals(m_game.handicapPoints.count, handicapCount, nil);
+  XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
 
   NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
   [handicapPoints setArray:[GoUtilities pointsForHandicap:5 inGame:m_game]];
   for (GoPoint* point in handicapPoints)
-    STAssertEquals(GoColorNone, point.stoneState, nil);
+    XCTAssertEqual(GoColorNone, point.stoneState);
   // Setting the handicap points changes the GoPoint's stoneState
   m_game.handicapPoints = handicapPoints;
   // Changing handicapPoints now must not have any influence on the game's
@@ -108,7 +108,7 @@
   // will succeed. If GoGame didn't make a copy, A1 will be in the list, but its
   // stoneState will still be GoColorNone, thus causing our test to fail.
   for (GoPoint* point in m_game.handicapPoints)
-    STAssertEquals(GoColorBlack, point.stoneState, nil);
+    XCTAssertEqual(GoColorBlack, point.stoneState);
   [handicapPoints removeObject:[m_game.board pointAtVertex:@"A1"]];
 
   // Must be possible to 1) set an empty array, and 2) change a previously set
@@ -116,18 +116,18 @@
   m_game.handicapPoints = [NSArray array];
   // GoPoint object's that were previously set must have their stoneState reset
   for (GoPoint* point in handicapPoints)
-    STAssertEquals(GoColorNone, point.stoneState, nil);
+    XCTAssertEqual(GoColorNone, point.stoneState);
 
-  STAssertThrowsSpecificNamed(m_game.handicapPoints = nil,
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = nil,
                               NSException, NSInvalidArgumentException, @"point list is nil");
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  STAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                               NSException, NSInternalInconsistencyException, @"handicap set after first move");
   // Can set handicap if there are no moves
   [m_game.moveModel discardLastMove];
   m_game.handicapPoints = handicapPoints;
   [m_game resign];
-  STAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                               NSException, NSInternalInconsistencyException, @"handicap set after game has ended");
   // Can set handicap if game has not ended
   [m_game revertStateFromEndedToInProgress];
@@ -139,19 +139,19 @@
 // -----------------------------------------------------------------------------
 - (void) testCurrentPlayer
 {
-  STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
   m_game.handicapPoints = [GoUtilities pointsForHandicap:2 inGame:m_game];
-  STAssertEquals(m_game.currentPlayer, m_game.playerWhite, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
   m_game.handicapPoints = [NSArray array];
-  STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  STAssertEquals(m_game.currentPlayer, m_game.playerWhite, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
-  STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
   [m_game.moveModel discardLastMove];
-  STAssertEquals(m_game.currentPlayer, m_game.playerWhite, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
   [m_game.moveModel discardLastMove];
-  STAssertEquals(m_game.currentPlayer, m_game.playerBlack, nil);
+  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
 }
 
 // -----------------------------------------------------------------------------
@@ -159,11 +159,11 @@
 // -----------------------------------------------------------------------------
 - (void) testFirstMove
 {
-  STAssertNil(m_game.firstMove, nil);
+  XCTAssertNil(m_game.firstMove);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  STAssertNotNil(m_game.firstMove, nil);
+  XCTAssertNotNil(m_game.firstMove);
   [m_game.moveModel discardLastMove];
-  STAssertNil(m_game.firstMove, nil);
+  XCTAssertNil(m_game.firstMove);
   // More detailed checks in testLastMove()
 }
 
@@ -172,31 +172,31 @@
 // -----------------------------------------------------------------------------
 - (void) testLastMove
 {
-  STAssertNil(m_game.lastMove, nil);
+  XCTAssertNil(m_game.lastMove);
 
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   GoMove* move1 = m_game.lastMove;
-  STAssertNotNil(move1, nil);
-  STAssertEquals(m_game.firstMove, move1, nil);
-  STAssertNil(move1.previous, nil);
-  STAssertNil(move1.next, nil);
+  XCTAssertNotNil(move1);
+  XCTAssertEqual(m_game.firstMove, move1);
+  XCTAssertNil(move1.previous);
+  XCTAssertNil(move1.next);
 
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   GoMove* move2 = m_game.lastMove;
-  STAssertNotNil(move2, nil);
-  STAssertTrue(m_game.firstMove != move2, nil);
-  STAssertNil(move1.previous, nil);
-  STAssertEquals(move2, move1.next, nil);
-  STAssertEquals(move1, move2.previous, nil);
-  STAssertNil(move2.next, nil);
+  XCTAssertNotNil(move2);
+  XCTAssertTrue(m_game.firstMove != move2);
+  XCTAssertNil(move1.previous);
+  XCTAssertEqual(move2, move1.next);
+  XCTAssertEqual(move1, move2.previous);
+  XCTAssertNil(move2.next);
 
   [m_game.moveModel discardLastMove];
-  STAssertEquals(move1, m_game.firstMove, nil);
-  STAssertEquals(move1, m_game.lastMove, nil);
+  XCTAssertEqual(move1, m_game.firstMove);
+  XCTAssertEqual(move1, m_game.lastMove);
 
   [m_game.moveModel discardLastMove];
-  STAssertNil(m_game.firstMove, nil);
-  STAssertNil(m_game.lastMove, nil);
+  XCTAssertNil(m_game.firstMove);
+  XCTAssertNil(m_game.lastMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -204,18 +204,18 @@
 // -----------------------------------------------------------------------------
 - (void) testState
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   // There's no point in setting the state property directly because the
   // implementation does not check for correctness of the state machine, so
   // instead we manipulate the state indirectly by invoking other methods
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game.moveModel discardLastMove];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game resign];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
 }
 
 // -----------------------------------------------------------------------------
@@ -223,18 +223,18 @@
 // -----------------------------------------------------------------------------
 - (void) testReasonForGameHasEnded
 {
-  STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game resign];
-  STAssertEquals(GoGameHasEndedReasonResigned, m_game.reasonForGameHasEnded, nil);
+  XCTAssertEqual(GoGameHasEndedReasonResigned, m_game.reasonForGameHasEnded);
 
   // Cannot undo a "resign", and we don't want to fiddle with game state, so
   // we must create a new game
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
-  STAssertEquals(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded, nil);
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
-  STAssertEquals(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded, nil);
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
 }
 
 // -----------------------------------------------------------------------------
@@ -242,42 +242,42 @@
 // -----------------------------------------------------------------------------
 - (void) testPlay
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse(m_game.document.isDirty);
 
   GoPoint* point1 = [m_game.board pointAtVertex:@"T19"];
   [m_game play:point1];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   GoMove* move1 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePlay, move1.type, nil);
-  STAssertEquals(m_game.playerBlack, move1.player, nil);
-  STAssertEquals(point1, move1.point, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoMoveTypePlay, move1.type);
+  XCTAssertEqual(m_game.playerBlack, move1.player);
+  XCTAssertEqual(point1, move1.point);
+  XCTAssertTrue(m_game.document.isDirty);
 
   GoPoint* point2 = [m_game.board pointAtVertex:@"S19"];
   [m_game play:point2];
   GoMove* move2 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePlay, move2.type, nil);
-  STAssertEquals(m_game.playerWhite, move2.player, nil);
-  STAssertEquals(point2, move2.point, nil);
+  XCTAssertEqual(GoMoveTypePlay, move2.type);
+  XCTAssertEqual(m_game.playerWhite, move2.player);
+  XCTAssertEqual(point2, move2.point);
 
   [m_game pass];
 
   GoPoint* point3 = [m_game.board pointAtVertex:@"T18"];
   [m_game play:point3];
   GoMove* move3 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePlay, move3.type, nil);
-  STAssertEquals(m_game.playerWhite, move3.player, nil);
-  STAssertEquals(point3, move3.point, nil);
+  XCTAssertEqual(GoMoveTypePlay, move3.type);
+  XCTAssertEqual(m_game.playerWhite, move3.player);
+  XCTAssertEqual(point3, move3.point);
   NSUInteger expectedNumberOfCapturedStones = 1;
-  STAssertEquals(expectedNumberOfCapturedStones, move3.capturedStones.count, nil);
+  XCTAssertEqual(expectedNumberOfCapturedStones, move3.capturedStones.count);
 
-  STAssertThrowsSpecificNamed([m_game play:nil],
+  XCTAssertThrowsSpecificNamed([m_game play:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
-  STAssertThrowsSpecificNamed([m_game play:point1],
+  XCTAssertThrowsSpecificNamed([m_game play:point1],
                               NSException, NSInvalidArgumentException, @"point is not legal");
   [m_game resign];
-  STAssertThrowsSpecificNamed([m_game play:[m_game.board pointAtVertex:@"B1"]],
+  XCTAssertThrowsSpecificNamed([m_game play:[m_game.board pointAtVertex:@"B1"]],
                               NSException, NSInternalInconsistencyException, @"play after game end");
 }
 
@@ -286,35 +286,35 @@
 // -----------------------------------------------------------------------------
 - (void) testPass
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse(m_game.document.isDirty);
 
   // Can start game with a pass
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   GoMove* move1 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePass, move1.type, nil);
-  STAssertEquals(m_game.playerBlack, move1.player, nil);
-  STAssertNil(move1.point, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoMoveTypePass, move1.type);
+  XCTAssertEqual(m_game.playerBlack, move1.player);
+  XCTAssertNil(move1.point);
+  XCTAssertTrue(m_game.document.isDirty);
 
   [m_game play:[m_game.board pointAtVertex:@"B13"]];
 
   [m_game pass];
   GoMove* move2 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePass, move2.type, nil);
-  STAssertEquals(m_game.playerBlack, move2.player, nil);
-  STAssertNil(move2.point, nil);
+  XCTAssertEqual(GoMoveTypePass, move2.type);
+  XCTAssertEqual(m_game.playerBlack, move2.player);
+  XCTAssertNil(move2.point);
 
   // End the game with two passes in a row
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   GoMove* move3 = m_game.lastMove;
-  STAssertEquals(GoMoveTypePass, move3.type, nil);
-  STAssertEquals(m_game.playerWhite, move3.player, nil);
-  STAssertNil(move3.point, nil);
+  XCTAssertEqual(GoMoveTypePass, move3.type);
+  XCTAssertEqual(m_game.playerWhite, move3.player);
+  XCTAssertNil(move3.point);
 
-  STAssertThrowsSpecificNamed([m_game pass],
+  XCTAssertThrowsSpecificNamed([m_game pass],
                               NSException, NSInternalInconsistencyException, @"pass after game end");
 }
 
@@ -323,16 +323,16 @@
 // -----------------------------------------------------------------------------
 - (void) testResign
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse(m_game.document.isDirty);
 
   // Can start game with resign
   [m_game resign];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertTrue(m_game.document.isDirty);
   // Resign in other situations already tested
 
-  STAssertThrowsSpecificNamed([m_game resign],
+  XCTAssertThrowsSpecificNamed([m_game resign],
                               NSException, NSInternalInconsistencyException, @"resign after game end");
 }
 
@@ -342,11 +342,11 @@
 - (void) testPause
 {
   [m_game pass];
-  STAssertThrowsSpecificNamed([m_game pause],
+  XCTAssertThrowsSpecificNamed([m_game pause],
                               NSException, NSInternalInconsistencyException, @"no computer vs. computer game");
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertThrowsSpecificNamed([m_game pause],
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertThrowsSpecificNamed([m_game pause],
                               NSException, NSInternalInconsistencyException, @"pause after game end");
   
   // Currently no more tests possible because we can't simulate
@@ -358,15 +358,15 @@
 // -----------------------------------------------------------------------------
 - (void) testContinue
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertThrowsSpecificNamed([m_game continue],
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertThrowsSpecificNamed([m_game continue],
                               NSException, NSInternalInconsistencyException, @"continue before game start");
   [m_game pass];
-  STAssertThrowsSpecificNamed([m_game continue],
+  XCTAssertThrowsSpecificNamed([m_game continue],
                               NSException, NSInternalInconsistencyException, @"no computer vs. computer game");
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertThrowsSpecificNamed([m_game continue],
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertThrowsSpecificNamed([m_game continue],
                               NSException, NSInternalInconsistencyException, @"continue after game end");
 
   // Currently no more tests possible because we can't simulate
@@ -382,20 +382,20 @@
 
   // Unoccupied point is legal for both players
   GoPoint* point1 = [m_game.board pointAtVertex:@"T1"];
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
   [m_game pass];
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
 
   // Play it with black
   [m_game.moveModel discardLastMove];
   [m_game play:point1];
 
   // Point occupied by black is not legal for either player
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied);
   [m_game pass];
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied);
 
   // Play stone with white
   [m_game.moveModel discardLastMove];
@@ -403,22 +403,22 @@
   [m_game play:point2];
 
   // Point occupied by white is not legal for either player
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied);
   [m_game pass];
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied);
 
   // Play capturing stone stone with white
   GoPoint* point3 = [m_game.board pointAtVertex:@"T2"];
   [m_game play:point3];
 
   // Original point not legal for black, is suicide
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuicide, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuicide);
   // But legal for white, just a fill
   [m_game pass];
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
 
   // Counter-attack by black to create Ko situation
   [m_game.moveModel discardLastMove];
@@ -430,12 +430,12 @@
   [m_game pass];
 
   // Original point now legal for black, is no longer suicide
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
   [m_game play:point1];
 
   // Not legal for white because of Ko
-  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSimpleKo, nil);
+  XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
 
   // White passes, black plays somewhere else
   [m_game pass];
@@ -443,11 +443,11 @@
   [m_game play:point6];
 
   // Again legal for white because Ko has gone
-  STAssertTrue([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
   [m_game play:point2];
   // Not legal for black, again because of Ko
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSimpleKo, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
 
   // Black passes, white connects
   [m_game pass];
@@ -465,10 +465,10 @@
   [m_game play:point7];
   // Is legal for black, captures C1
   GoPoint* point8 = [m_game.board pointAtVertex:@"B1"];
-  STAssertTrue([m_game isLegalMove:point8 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point8 isIllegalReason:&illegalReason]);
   [m_game play:point8];
   // Is legal for white, captures back A1 and B1 (no Ko!)
-  STAssertTrue([m_game isLegalMove:point7 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point7 isIllegalReason:&illegalReason]);
   [m_game play:point7];
 
   // Setup situation that resembles Ko, but is not, because it's not a
@@ -490,10 +490,10 @@
   [m_game play:[m_game.board pointAtVertex:@"R18"]];
   // Is legal for black, recaptures white stone on R18
   GoPoint* point9 = [m_game.board pointAtVertex:@"S18"];
-  STAssertTrue([m_game isLegalMove:point9 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point9 isIllegalReason:&illegalReason]);
   [m_game play:point9];
 
-  STAssertThrowsSpecificNamed([m_game isLegalMove:nil isIllegalReason:&illegalReason],
+  XCTAssertThrowsSpecificNamed([m_game isLegalMove:nil isIllegalReason:&illegalReason],
                               NSException, NSInvalidArgumentException, @"point is nil");
 }
 
@@ -511,15 +511,15 @@
   m_game = m_delegate.game;
   [self playUntilAlmostPositionalSuperko];
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [self playUntilAlmostSituationalSuperko];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
+  XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
 }
 
 // -----------------------------------------------------------------------------
@@ -537,14 +537,14 @@
   [self playUntilAlmostPositionalSuperko];
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
   // Positional superko does not trigger situational superko
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [self playUntilAlmostSituationalSuperko];
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
-  STAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason], nil);
-  STAssertEquals(illegalReason, GoMoveIsIllegalReasonSuperko, nil);
+  XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
 }
 
 // -----------------------------------------------------------------------------
@@ -595,15 +595,15 @@
 // -----------------------------------------------------------------------------
 - (void) testIsComputerPlayersTurn
 {
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse([m_game isComputerPlayersTurn], nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse([m_game isComputerPlayersTurn]);
   [m_game pass];
-  STAssertFalse([m_game isComputerPlayersTurn], nil);
+  XCTAssertFalse([m_game isComputerPlayersTurn]);
   [m_game.moveModel discardLastMove];
-  STAssertFalse([m_game isComputerPlayersTurn], nil);
+  XCTAssertFalse([m_game isComputerPlayersTurn]);
   [m_game pass];
   [m_game pass];
-  STAssertFalse([m_game isComputerPlayersTurn], nil);
+  XCTAssertFalse([m_game isComputerPlayersTurn]);
 
   // Currently no more tests possible because we can't simulate
   // computer vs. human games
@@ -614,31 +614,31 @@
 // -----------------------------------------------------------------------------
 - (void) testRevertStateFromEndedToInProgress
 {
-  STAssertEquals(GoGameTypeHumanVsHuman, m_game.type, nil);
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameTypeHumanVsHuman, m_game.type);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game pass];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
   [m_game revertStateFromEndedToInProgress];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse(m_game.document.isDirty);
 
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertFalse(m_game.document.isDirty);
   [m_game resign];
-  STAssertEquals(GoGameStateGameHasEnded, m_game.state, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
   [m_game revertStateFromEndedToInProgress];
-  STAssertEquals(GoGameStateGameHasStarted, m_game.state, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertTrue(m_game.document.isDirty);
 
-  STAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress],
+  XCTAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress],
                               NSException, NSInternalInconsistencyException, @"game already reverted");
 
   // Currently no more tests possible because we can't simulate
@@ -677,18 +677,18 @@
 
   // Play the connecting stone
   [m_game play:point5];
-  STAssertEquals(GoColorBlack, point5.stoneState, nil);
+  XCTAssertEqual(GoColorBlack, point5.stoneState);
   NSUInteger expectedNumberOfRegionsWhenMerged = 3;
-  STAssertEquals(expectedNumberOfRegionsWhenMerged, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegionsWhenMerged, m_game.board.regions.count);
   GoBoardRegion* mergedRegion = point1.region;
   GoBoardRegion* mainRegion = pointInMainRegion.region;
-  STAssertTrue(mergedRegion == point2.region, nil);
-  STAssertTrue(mergedRegion == point3.region, nil);
-  STAssertTrue(mergedRegion == point4.region, nil);
-  STAssertTrue(mergedRegion == point5.region, nil);
-  STAssertTrue(mergedRegion != mainRegion, nil);
+  XCTAssertTrue(mergedRegion == point2.region);
+  XCTAssertTrue(mergedRegion == point3.region);
+  XCTAssertTrue(mergedRegion == point4.region);
+  XCTAssertTrue(mergedRegion == point5.region);
+  XCTAssertTrue(mergedRegion != mainRegion);
   int expectedSizeOfRegionWhenMerged = 5;
-  STAssertEquals(expectedSizeOfRegionWhenMerged, [mergedRegion size], nil);
+  XCTAssertEqual(expectedSizeOfRegionWhenMerged, [mergedRegion size]);
 
   // Remove the connecting stone
   GoMove* lastMove = m_game.lastMove;
@@ -710,40 +710,40 @@
   GoPoint* point5 = [m_game.board pointAtVertex:@"B2"];
   GoPoint* pointInMainRegion = [m_game.board pointAtVertex:@"A3"];
 
-  STAssertEquals(GoColorBlack, point1.stoneState, failureDescription);
-  STAssertEquals(GoColorBlack, point2.stoneState, failureDescription);
-  STAssertEquals(GoColorBlack, point3.stoneState, failureDescription);
-  STAssertEquals(GoColorBlack, point4.stoneState, failureDescription);
-  STAssertEquals(GoColorNone, point5.stoneState, failureDescription);
+  XCTAssertEqual(GoColorBlack, point1.stoneState, @"%@", failureDescription);
+  XCTAssertEqual(GoColorBlack, point2.stoneState, @"%@", failureDescription);
+  XCTAssertEqual(GoColorBlack, point3.stoneState, @"%@", failureDescription);
+  XCTAssertEqual(GoColorBlack, point4.stoneState, @"%@", failureDescription);
+  XCTAssertEqual(GoColorNone, point5.stoneState, @"%@", failureDescription);
   NSUInteger expectedNumberOfRegionsWhenFragmented = 7;
-  STAssertEquals(expectedNumberOfRegionsWhenFragmented, m_game.board.regions.count, failureDescription);
+  XCTAssertEqual(expectedNumberOfRegionsWhenFragmented, m_game.board.regions.count, @"%@", failureDescription);
   GoBoardRegion* point1Region = point1.region;
   GoBoardRegion* point2Region = point2.region;
   GoBoardRegion* point3Region = point3.region;
   GoBoardRegion* point4Region = point4.region;
   GoBoardRegion* point5Region = point5.region;
   GoBoardRegion* mainRegion = pointInMainRegion.region;
-  STAssertTrue(point1Region != point2Region, failureDescription);
-  STAssertTrue(point1Region != point3Region, failureDescription);
-  STAssertTrue(point1Region != point4Region, failureDescription);
-  STAssertTrue(point1Region != point5Region, failureDescription);
-  STAssertTrue(point1Region != mainRegion, failureDescription);
-  STAssertTrue(point2Region != point3Region, failureDescription);
-  STAssertTrue(point2Region != point4Region, failureDescription);
-  STAssertTrue(point2Region != point5Region, failureDescription);
-  STAssertTrue(point2Region != mainRegion, failureDescription);
-  STAssertTrue(point3Region != point4Region, failureDescription);
-  STAssertTrue(point3Region != point5Region, failureDescription);
-  STAssertTrue(point3Region != mainRegion, failureDescription);
-  STAssertTrue(point4Region != point5Region, failureDescription);
-  STAssertTrue(point4Region != mainRegion, failureDescription);
-  STAssertTrue(point5Region != mainRegion, failureDescription);
+  XCTAssertTrue(point1Region != point2Region, @"%@", failureDescription);
+  XCTAssertTrue(point1Region != point3Region, @"%@", failureDescription);
+  XCTAssertTrue(point1Region != point4Region, @"%@", failureDescription);
+  XCTAssertTrue(point1Region != point5Region, @"%@", failureDescription);
+  XCTAssertTrue(point1Region != mainRegion, @"%@", failureDescription);
+  XCTAssertTrue(point2Region != point3Region, @"%@", failureDescription);
+  XCTAssertTrue(point2Region != point4Region, @"%@", failureDescription);
+  XCTAssertTrue(point2Region != point5Region, @"%@", failureDescription);
+  XCTAssertTrue(point2Region != mainRegion, @"%@", failureDescription);
+  XCTAssertTrue(point3Region != point4Region, @"%@", failureDescription);
+  XCTAssertTrue(point3Region != point5Region, @"%@", failureDescription);
+  XCTAssertTrue(point3Region != mainRegion, @"%@", failureDescription);
+  XCTAssertTrue(point4Region != point5Region, @"%@", failureDescription);
+  XCTAssertTrue(point4Region != mainRegion, @"%@", failureDescription);
+  XCTAssertTrue(point5Region != mainRegion, @"%@", failureDescription);
   int expectedSizeOfRegionsWhenFragmented = 1;
-  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point1Region size], failureDescription);
-  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point2Region size], failureDescription);
-  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point3Region size], failureDescription);
-  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point4Region size], failureDescription);
-  STAssertEquals(expectedSizeOfRegionsWhenFragmented, [point5Region size], failureDescription);
+  XCTAssertEqual(expectedSizeOfRegionsWhenFragmented, [point1Region size], @"%@", failureDescription);
+  XCTAssertEqual(expectedSizeOfRegionsWhenFragmented, [point2Region size], @"%@", failureDescription);
+  XCTAssertEqual(expectedSizeOfRegionsWhenFragmented, [point3Region size], @"%@", failureDescription);
+  XCTAssertEqual(expectedSizeOfRegionsWhenFragmented, [point4Region size], @"%@", failureDescription);
+  XCTAssertEqual(expectedSizeOfRegionsWhenFragmented, [point5Region size], @"%@", failureDescription);
 }
 
 // -----------------------------------------------------------------------------
@@ -761,7 +761,7 @@
   // Black captures a single white stone that was played in the previous move
   GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
   enum GoMoveIsIllegalReason illegalReason;
-  STAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason], nil);
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
   [m_game play:point1];
 }
 

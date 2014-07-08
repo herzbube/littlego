@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  STAssertNotNil(m_game.playerBlack, nil);
-  STAssertNotNil(m_game.playerBlack.player, nil);
-  STAssertTrue(m_game.playerBlack.isBlack, nil);
-  STAssertTrue([m_game.playerBlack.colorString isEqualToString:@"B"], nil);
-  STAssertNotNil(m_game.playerWhite, nil);
-  STAssertNotNil(m_game.playerWhite.player, nil);
-  STAssertFalse(m_game.playerWhite.isBlack, nil);
-  STAssertTrue([m_game.playerWhite.colorString isEqualToString:@"W"], nil);
+  XCTAssertNotNil(m_game.playerBlack);
+  XCTAssertNotNil(m_game.playerBlack.player);
+  XCTAssertTrue(m_game.playerBlack.isBlack);
+  XCTAssertTrue([m_game.playerBlack.colorString isEqualToString:@"B"]);
+  XCTAssertNotNil(m_game.playerWhite);
+  XCTAssertNotNil(m_game.playerWhite.player);
+  XCTAssertFalse(m_game.playerWhite.isBlack);
+  XCTAssertTrue([m_game.playerWhite.colorString isEqualToString:@"W"]);
 }
 
 // -----------------------------------------------------------------------------
@@ -51,18 +51,18 @@
 - (void) testDefaultBlackWhitePlayer
 {
   GoPlayer* defaultBlackPlayer = [GoPlayer defaultBlackPlayer];
-  STAssertNotNil(defaultBlackPlayer, nil);
-  STAssertTrue(m_game.playerBlack != defaultBlackPlayer, nil);
-  STAssertEquals(m_game.playerBlack.player, defaultBlackPlayer.player, nil);
-  STAssertTrue(defaultBlackPlayer.isBlack, nil);
-  STAssertTrue([defaultBlackPlayer.colorString isEqualToString:@"B"], nil);
+  XCTAssertNotNil(defaultBlackPlayer);
+  XCTAssertTrue(m_game.playerBlack != defaultBlackPlayer);
+  XCTAssertEqual(m_game.playerBlack.player, defaultBlackPlayer.player);
+  XCTAssertTrue(defaultBlackPlayer.isBlack);
+  XCTAssertTrue([defaultBlackPlayer.colorString isEqualToString:@"B"]);
 
   GoPlayer* defaultWhitePlayer = [GoPlayer defaultWhitePlayer];
-  STAssertNotNil(defaultWhitePlayer, nil);
-  STAssertTrue(m_game.playerWhite != defaultWhitePlayer, nil);
-  STAssertEquals(m_game.playerWhite.player, defaultWhitePlayer.player, nil);
-  STAssertFalse(defaultWhitePlayer.isBlack, nil);
-  STAssertTrue([defaultWhitePlayer.colorString isEqualToString:@"W"], nil);
+  XCTAssertNotNil(defaultWhitePlayer);
+  XCTAssertTrue(m_game.playerWhite != defaultWhitePlayer);
+  XCTAssertEqual(m_game.playerWhite.player, defaultWhitePlayer.player);
+  XCTAssertFalse(defaultWhitePlayer.isBlack);
+  XCTAssertTrue([defaultWhitePlayer.colorString isEqualToString:@"W"]);
 }
 
 // -----------------------------------------------------------------------------
@@ -77,9 +77,9 @@
   newGameModel.humanBlackPlayerUUID = @"invalid_black";
   newGameModel.humanWhitePlayerUUID = @"invalid_white";
   GoPlayer* defaultBlackPlayer = [GoPlayer defaultBlackPlayer];
-  STAssertNil(defaultBlackPlayer, nil);
+  XCTAssertNil(defaultBlackPlayer);
   GoPlayer* defaultWhitePlayer = [GoPlayer defaultWhitePlayer];
-  STAssertNil(defaultWhitePlayer, nil);
+  XCTAssertNil(defaultWhitePlayer);
 }
 
 // -----------------------------------------------------------------------------
@@ -91,22 +91,22 @@
   Player* player = [[[Player alloc] init] autorelease];
 
   GoPlayer* blackPlayer = [GoPlayer blackPlayer:player];
-  STAssertNotNil(blackPlayer, nil);
-  STAssertTrue(m_game.playerBlack != blackPlayer, nil);
-  STAssertEquals(player, blackPlayer.player, nil);
-  STAssertTrue(blackPlayer.isBlack, nil);
-  STAssertTrue([blackPlayer.colorString isEqualToString:@"B"], nil);
+  XCTAssertNotNil(blackPlayer);
+  XCTAssertTrue(m_game.playerBlack != blackPlayer);
+  XCTAssertEqual(player, blackPlayer.player);
+  XCTAssertTrue(blackPlayer.isBlack);
+  XCTAssertTrue([blackPlayer.colorString isEqualToString:@"B"]);
 
   GoPlayer* whitePlayer = [GoPlayer whitePlayer:player];
-  STAssertNotNil(whitePlayer, nil);
-  STAssertTrue(m_game.playerWhite != whitePlayer, nil);
-  STAssertEquals(player, whitePlayer.player, nil);
-  STAssertFalse(whitePlayer.isBlack, nil);
-  STAssertTrue([whitePlayer.colorString isEqualToString:@"W"], nil);
+  XCTAssertNotNil(whitePlayer);
+  XCTAssertTrue(m_game.playerWhite != whitePlayer);
+  XCTAssertEqual(player, whitePlayer.player);
+  XCTAssertFalse(whitePlayer.isBlack);
+  XCTAssertTrue([whitePlayer.colorString isEqualToString:@"W"]);
 
-  STAssertThrowsSpecificNamed([GoPlayer blackPlayer:nil],
+  XCTAssertThrowsSpecificNamed([GoPlayer blackPlayer:nil],
                               NSException, NSInvalidArgumentException, @"test 1");
-  STAssertThrowsSpecificNamed([GoPlayer whitePlayer:nil],
+  XCTAssertThrowsSpecificNamed([GoPlayer whitePlayer:nil],
                               NSException, NSInvalidArgumentException, @"test 2");
 }
 

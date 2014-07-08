@@ -15,24 +15,16 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <XCTest/XCTest.h>
-
-
 // -----------------------------------------------------------------------------
-/// @brief The GoVertexTest class contains unit tests that exercise the
-/// GoVertex class.
+/// @brief Helper struct to bind the numeric compounds of a GoVertex together.
+///
+/// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoVertexTest : XCTestCase
+struct GoVertexNumeric
 {
-}
+  int x;   ///< @brief Horizontal axis compound of the vertex.
+  int y;   ///< @brief Vertical axis compound of the vertex.
+};
 
-- (void) testVertexFromNumeric;
-- (void) testVertexFromString;
-- (void) testIsEqualToVertex;
-- (void) testUnusedLetterI;
-- (void) testLowerCaseString;
-- (void) testBorderCases;
-- (void) testIllegalInputValues;
-
-@end
+// Helper functions
+extern bool GoVertexNumericEqualToVertex(struct GoVertexNumeric vertex1, struct GoVertexNumeric vertex2);

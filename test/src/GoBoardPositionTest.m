@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@
 - (void) testInitialState
 {
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertEquals(boardPosition.currentBoardPosition, 0, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 1, nil);
-  STAssertTrue(boardPosition.isFirstPosition, nil);
-  STAssertTrue(boardPosition.isLastPosition, nil);
-  STAssertNil(boardPosition.currentMove, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
-  STAssertFalse(boardPosition.isComputerPlayersTurn, nil);
+  XCTAssertNotNil(boardPosition);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
+  XCTAssertTrue(boardPosition.isFirstPosition);
+  XCTAssertTrue(boardPosition.isLastPosition);
+  XCTAssertNil(boardPosition.currentMove);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack);
+  XCTAssertFalse(boardPosition.isComputerPlayersTurn);
 }
 
 // -----------------------------------------------------------------------------
@@ -64,8 +64,8 @@
   m_game.handicapPoints = [GoUtilities pointsForHandicap:5 inGame:m_game];
 
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerWhite , nil);
+  XCTAssertNotNil(boardPosition);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite);
 }
 
 // -----------------------------------------------------------------------------
@@ -75,27 +75,27 @@
 - (void) testStateAfterPlay
 {
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertEquals(boardPosition.currentBoardPosition, 0, nil);
+  XCTAssertNotNil(boardPosition);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
   // Playing a move automatically advances the board position
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  STAssertEquals(boardPosition.currentBoardPosition, 1, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 2, nil);
-  STAssertFalse(boardPosition.isFirstPosition, nil);
-  STAssertTrue(boardPosition.isLastPosition, nil);
-  STAssertNotNil(boardPosition.currentMove, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerWhite , nil);
-  STAssertFalse(boardPosition.isComputerPlayersTurn, nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertTrue(boardPosition.isLastPosition);
+  XCTAssertNotNil(boardPosition.currentMove);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite );
+  XCTAssertFalse(boardPosition.isComputerPlayersTurn);
   // Position is also advanced for passing
   [m_game pass];
-  STAssertEquals(boardPosition.currentBoardPosition, 2, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
   // Resigning is not a move, so no
   [m_game resign];
-  STAssertEquals(boardPosition.currentBoardPosition, 2, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
 }
 
 // -----------------------------------------------------------------------------
@@ -105,36 +105,36 @@
 {
   // Setup
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertEquals(boardPosition.currentBoardPosition, 0, nil);
+  XCTAssertNotNil(boardPosition);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game pass];
-  STAssertEquals(boardPosition.currentBoardPosition, 2, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertFalse(boardPosition.isFirstPosition, nil);
-  STAssertTrue(boardPosition.isLastPosition, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertTrue(boardPosition.isLastPosition);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
   // Backward, just one position
   boardPosition.currentBoardPosition--;
-  STAssertEquals(boardPosition.currentBoardPosition, 1, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertFalse(boardPosition.isFirstPosition, nil);
-  STAssertFalse(boardPosition.isLastPosition, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerWhite , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite );
   // Backward, to the special position zero
   boardPosition.currentBoardPosition--;
-  STAssertEquals(boardPosition.currentBoardPosition, 0, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertTrue(boardPosition.isFirstPosition, nil);
-  STAssertFalse(boardPosition.isLastPosition, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertTrue(boardPosition.isFirstPosition);
+  XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
   // Forward, more than one position, to the last position
   boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
-  STAssertEquals(boardPosition.currentBoardPosition, 2, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
-  STAssertFalse(boardPosition.isFirstPosition, nil);
-  STAssertTrue(boardPosition.isLastPosition, nil);
-  STAssertEquals(boardPosition.currentPlayer, m_game.playerBlack , nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertTrue(boardPosition.isLastPosition);
+  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack);
 }
 
 // -----------------------------------------------------------------------------
@@ -144,8 +144,8 @@
 - (void) testOutOfBoundsPositionNegative
 {
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = -1,
+  XCTAssertNotNil(boardPosition);
+  XCTAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = -1,
                               NSException, NSRangeException, @"negative board position");
 }
 
@@ -156,8 +156,8 @@
 - (void) testOutOfBoundsPositionTooHigh
 {
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = boardPosition.numberOfBoardPositions,
+  XCTAssertNotNil(boardPosition);
+  XCTAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = boardPosition.numberOfBoardPositions,
                               NSException, NSRangeException, @"board position too high");
 }
 
@@ -169,20 +169,20 @@
 {
   // Setup
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  STAssertNotNil(boardPosition, nil);
-  STAssertEquals(boardPosition.currentBoardPosition, 0, nil);
+  XCTAssertNotNil(boardPosition);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game pass];
-  STAssertEquals(boardPosition.currentBoardPosition, 2, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 3, nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
 
   // Discarding automatically adjusts the board position
   GoMoveModel* moveModel = m_game.moveModel;
-  STAssertNotNil(moveModel, nil);
-  STAssertEquals(moveModel.numberOfMoves, 2, nil);
+  XCTAssertNotNil(moveModel);
+  XCTAssertEqual(moveModel.numberOfMoves, 2);
   [moveModel discardMovesFromIndex:1];
-  STAssertEquals(boardPosition.currentBoardPosition, 1, nil);
-  STAssertEquals(boardPosition.numberOfBoardPositions, 2, nil);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
 }
 
 // -----------------------------------------------------------------------------
@@ -198,36 +198,36 @@
   [m_game play:point1];
   [m_game play:point2];
   [m_game play:point3];  // captures W on A1
-  STAssertEquals(GoColorBlack, point1.stoneState, nil);
-  STAssertEquals(GoColorNone, point2.stoneState, nil);
-  STAssertEquals(GoColorBlack, point3.stoneState, nil);
+  XCTAssertEqual(GoColorBlack, point1.stoneState);
+  XCTAssertEqual(GoColorNone, point2.stoneState);
+  XCTAssertEqual(GoColorBlack, point3.stoneState);
   expectedNumberOfRegions = 4;
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 
   // Take back capturing move
   GoBoardPosition* boardPosition = m_game.boardPosition;
   boardPosition.currentBoardPosition--;
-  STAssertEquals(GoColorBlack, point1.stoneState, nil);
-  STAssertEquals(GoColorWhite, point2.stoneState, nil);
-  STAssertEquals(GoColorNone, point3.stoneState, nil);
+  XCTAssertEqual(GoColorBlack, point1.stoneState);
+  XCTAssertEqual(GoColorWhite, point2.stoneState);
+  XCTAssertEqual(GoColorNone, point3.stoneState);
   expectedNumberOfRegions = 3;
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 
   // Go back to the beginning of the game
   boardPosition.currentBoardPosition = 0;
-  STAssertEquals(GoColorNone, point1.stoneState, nil);
-  STAssertEquals(GoColorNone, point2.stoneState, nil);
-  STAssertEquals(GoColorNone, point3.stoneState, nil);
+  XCTAssertEqual(GoColorNone, point1.stoneState);
+  XCTAssertEqual(GoColorNone, point2.stoneState);
+  XCTAssertEqual(GoColorNone, point3.stoneState);
   expectedNumberOfRegions = 1;
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 
   // Forward again to the last board position
   boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
-  STAssertEquals(GoColorBlack, point1.stoneState, nil);
-  STAssertEquals(GoColorNone, point2.stoneState, nil);
-  STAssertEquals(GoColorBlack, point3.stoneState, nil);
+  XCTAssertEqual(GoColorBlack, point1.stoneState);
+  XCTAssertEqual(GoColorNone, point2.stoneState);
+  XCTAssertEqual(GoColorBlack, point3.stoneState);
   expectedNumberOfRegions = 4;
-  STAssertEquals(expectedNumberOfRegions, m_game.board.regions.count, nil);
+  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 }
 
 // -----------------------------------------------------------------------------
@@ -246,8 +246,8 @@
   [m_game pass];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  STAssertEquals(0, self.receiveIndexOfNumberOfBoardPositionsNotification, nil);
-  STAssertEquals(1, self.receiveIndexOfCurrentBoardPositionNotification, nil);
+  XCTAssertEqual(0, self.receiveIndexOfNumberOfBoardPositionsNotification);
+  XCTAssertEqual(1, self.receiveIndexOfCurrentBoardPositionNotification);
 }
 
 // -----------------------------------------------------------------------------

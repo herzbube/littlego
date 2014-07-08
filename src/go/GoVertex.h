@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
-// -----------------------------------------------------------------------------
-/// @brief Helper struct to bind the numeric compounds of a GoVertex together.
-///
-/// @ingroup go
-// -----------------------------------------------------------------------------
-struct GoVertexNumeric
-{
-  int x;   ///< @brief Horizontal axis compound of the vertex.
-  int y;   ///< @brief Vertical axis compound of the vertex.
-};
+// Project includes
+#import "GoVertexNumeric.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief The GoVertex class stores the coordinates that uniquely identify the

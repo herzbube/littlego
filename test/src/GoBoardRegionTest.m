@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,23 +38,23 @@
   NSUInteger expectedNumberOfPoints = expectedRegionSize;
 
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardSize, board.size, nil);
+  XCTAssertEqual(expectedBoardSize, board.size);
   GoPoint* pointA1 = [board pointAtVertex:@"A1"];
-  STAssertNotNil(pointA1, nil);
+  XCTAssertNotNil(pointA1);
   GoBoardRegion* region = pointA1.region;
-  STAssertNotNil(region, nil);
+  XCTAssertNotNil(region);
 
-  STAssertEquals(expectedRegionSize, [region size], nil);
-  STAssertFalse([region isStoneGroup], nil);
-  STAssertNotNil(region.points, nil);
-  STAssertEquals(expectedNumberOfPoints, region.points.count, nil);
+  XCTAssertEqual(expectedRegionSize, [region size]);
+  XCTAssertFalse([region isStoneGroup]);
+  XCTAssertNotNil(region.points);
+  XCTAssertEqual(expectedNumberOfPoints, region.points.count);
 
   // All points must have a region, and it must be the same as the one for A1
   NSEnumerator* enumerator = [board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
   {
-    STAssertEquals(region, point.region, nil);
+    XCTAssertEqual(region, point.region);
   }
 }
 
@@ -67,16 +67,16 @@
   NSUInteger expectedNumberOfAdjacentRegions = 0;
 
   GoBoardRegion* region = [GoBoardRegion region];
-  STAssertNotNil(region.points, nil);
-  STAssertEquals(expectedPointsCount, region.points.count, nil);
-  STAssertEquals(0, [region size], nil);
-  STAssertFalse([region isStoneGroup], nil);
-  STAssertEquals(GoColorNone, [region color], nil);
-  STAssertThrowsSpecificNamed([region liberties],
+  XCTAssertNotNil(region.points);
+  XCTAssertEqual(expectedPointsCount, region.points.count);
+  XCTAssertEqual(0, [region size]);
+  XCTAssertFalse([region isStoneGroup]);
+  XCTAssertEqual(GoColorNone, [region color]);
+  XCTAssertThrowsSpecificNamed([region liberties],
                               NSException, NSInternalInconsistencyException, @"region is not a stone group");
-  STAssertNotNil([region adjacentRegions], nil);
-  STAssertEquals(expectedNumberOfAdjacentRegions, [region adjacentRegions].count, nil);
-  STAssertFalse(region.scoringMode, nil);
+  XCTAssertNotNil([region adjacentRegions]);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, [region adjacentRegions].count);
+  XCTAssertFalse(region.scoringMode);
 }
 
 // -----------------------------------------------------------------------------
@@ -89,19 +89,19 @@
   GoBoardRegion* mainRegion = point.region;
   int expectedBoardSize = 19;
   int expectedMainRegionSize = pow(expectedBoardSize, 2);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
 
   int expectedRegionSize = 1;
   expectedMainRegionSize -= expectedRegionSize;
 
   GoBoardRegion* region = [GoBoardRegion regionWithPoint:point];
-  STAssertNotNil(region.points, nil);
-  STAssertEquals(expectedRegionSize, [region size], nil);
-  STAssertEquals(region, point.region, nil);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertTrue(mainRegion != point.region, nil);
+  XCTAssertNotNil(region.points);
+  XCTAssertEqual(expectedRegionSize, [region size]);
+  XCTAssertEqual(region, point.region);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
+  XCTAssertTrue(mainRegion != point.region);
 
-  STAssertThrowsSpecificNamed([GoBoardRegion regionWithPoint:nil],
+  XCTAssertThrowsSpecificNamed([GoBoardRegion regionWithPoint:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
 }
 
@@ -117,33 +117,33 @@
   GoBoardRegion* mainRegion = point1.region;
   int expectedBoardSize = 19;
   int expectedMainRegionSize = pow(expectedBoardSize, 2);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
   NSUInteger expectedPointsCount = 0;
 
   GoBoardRegion* region = [GoBoardRegion region];
-  STAssertNotNil(region.points, nil);
-  STAssertEquals(expectedPointsCount, region.points.count, nil);
-  STAssertEquals(0, [region size], nil);
-  STAssertTrue(point1.region != region, nil);
-  STAssertTrue(point2.region != region, nil);
-  STAssertTrue(point3.region != region, nil);
-  STAssertTrue(point1.region == mainRegion, nil);
-  STAssertTrue(point2.region == mainRegion, nil);
-  STAssertTrue(point3.region == mainRegion, nil);
+  XCTAssertNotNil(region.points);
+  XCTAssertEqual(expectedPointsCount, region.points.count);
+  XCTAssertEqual(0, [region size]);
+  XCTAssertTrue(point1.region != region);
+  XCTAssertTrue(point2.region != region);
+  XCTAssertTrue(point3.region != region);
+  XCTAssertTrue(point1.region == mainRegion);
+  XCTAssertTrue(point2.region == mainRegion);
+  XCTAssertTrue(point3.region == mainRegion);
 
   // Add first point
   expectedPointsCount = 1;
   [region addPoint:point1];
-  STAssertEquals(expectedPointsCount, region.points.count, nil);
-  STAssertEquals(1, [region size], nil);
-  STAssertTrue(point1.region == region, nil);
+  XCTAssertEqual(expectedPointsCount, region.points.count);
+  XCTAssertEqual(1, [region size]);
+  XCTAssertTrue(point1.region == region);
 
   // Add second point that is a direct neighbour
   expectedPointsCount = 2;
   [region addPoint:point2];
-  STAssertEquals(expectedPointsCount, region.points.count, nil);
-  STAssertEquals(2, [region size], nil);
-  STAssertTrue(point2.region == region, nil);
+  XCTAssertEqual(expectedPointsCount, region.points.count);
+  XCTAssertEqual(2, [region size]);
+  XCTAssertTrue(point2.region == region);
 
 
   // Add third point that is NOT a direct neighbour, and whose region reference
@@ -151,14 +151,14 @@
   expectedPointsCount = 3;
   point3.region = nil;
   [region addPoint:point3];
-  STAssertEquals(expectedPointsCount, region.points.count, nil);
-  STAssertEquals(3, [region size], nil);
-  STAssertTrue(point3.region == region, nil);
+  XCTAssertEqual(expectedPointsCount, region.points.count);
+  XCTAssertEqual(3, [region size]);
+  XCTAssertTrue(point3.region == region);
 
-  STAssertThrowsSpecificNamed([region addPoint:nil],
+  XCTAssertThrowsSpecificNamed([region addPoint:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
   // Add point that has already been added with addPoint:()
-  STAssertThrowsSpecificNamed([region addPoint:point3],
+  XCTAssertThrowsSpecificNamed([region addPoint:point3],
                               NSException, NSInvalidArgumentException, @"point has already been added");
   // Add point that has NOT been added with addPoint:(), but whose region
   // reference we sneakily changed behind the back of GoBoardRegion (we do this
@@ -166,15 +166,15 @@
   // something that should be done in production code).
   GoPoint* point4 = [board pointAtVertex:@"L11"];
   point4.region = region;
-  STAssertThrowsSpecificNamed([region addPoint:point3],
+  XCTAssertThrowsSpecificNamed([region addPoint:point3],
                               NSException, NSInvalidArgumentException, @"region reference already updated");
   // Add points with different stoneState property values
   GoPoint* point5 = [board pointAtVertex:@"N7"];
   point5.stoneState = GoColorBlack;
-  STAssertThrowsSpecificNamed([region addPoint:point5],
+  XCTAssertThrowsSpecificNamed([region addPoint:point5],
                               NSException, NSInvalidArgumentException, @"stone state does not match 1");
   point5.stoneState = GoColorWhite;
-  STAssertThrowsSpecificNamed([region addPoint:point5],
+  XCTAssertThrowsSpecificNamed([region addPoint:point5],
                               NSException, NSInvalidArgumentException, @"stone state does not match 2");
 }
 
@@ -189,26 +189,26 @@
   int expectedBoardSize = 19;
   int expectedMainRegionSize = pow(expectedBoardSize, 2);
   NSUInteger expectedMainRegionPointsCount = expectedMainRegionSize;
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertEquals(expectedMainRegionPointsCount, mainRegion.points.count, nil);
-  STAssertTrue(point1.region == mainRegion, nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
+  XCTAssertEqual(expectedMainRegionPointsCount, mainRegion.points.count);
+  XCTAssertTrue(point1.region == mainRegion);
 
   expectedMainRegionSize -= 1;
   expectedMainRegionPointsCount -= 1;
   [mainRegion removePoint:point1];
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertEquals(expectedMainRegionPointsCount, mainRegion.points.count, nil);
-  STAssertNil(point1.region, nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
+  XCTAssertEqual(expectedMainRegionPointsCount, mainRegion.points.count);
+  XCTAssertNil(point1.region);
 
-  STAssertThrowsSpecificNamed([mainRegion removePoint:nil],
+  XCTAssertThrowsSpecificNamed([mainRegion removePoint:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
   // Remove point that has already been removed with removePoint:()
-  STAssertThrowsSpecificNamed([mainRegion removePoint:point1],
+  XCTAssertThrowsSpecificNamed([mainRegion removePoint:point1],
                               NSException, NSInvalidArgumentException, @"point has already been removed");
   // Remove point that has already been removed by adding it to another region
   GoPoint* point2 = [board pointAtVertex:@"B12"];
   GoBoardRegion* region = [GoBoardRegion regionWithPoint:point2];
-  STAssertThrowsSpecificNamed([mainRegion removePoint:point2],
+  XCTAssertThrowsSpecificNamed([mainRegion removePoint:point2],
                               NSException, NSInvalidArgumentException, @"point has already been moved");
   // Remove point that has NOT been removed with removePoint:(), but whose
   // region reference we sneakily changed behind the back of GoBoardRegion (we
@@ -216,7 +216,7 @@
   // something that should be done in production code).
   GoPoint* point3 = [board pointAtVertex:@"K4"];
   point3.region = nil;
-  STAssertThrowsSpecificNamed([region removePoint:point3],
+  XCTAssertThrowsSpecificNamed([region removePoint:point3],
                               NSException, NSInvalidArgumentException, @"region reference already updated");
 }
 
@@ -231,52 +231,52 @@
   GoBoardRegion* mainRegion = point1.region;
   int expectedBoardSize = 19;
   int expectedMainRegionSize = pow(expectedBoardSize, 2);
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
 
   expectedMainRegionSize -= 2;
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
   GoBoardRegion* region2 = [GoBoardRegion regionWithPoint:point2];
   GoBoardRegion* regionEmpty = [GoBoardRegion region];
-  STAssertEquals(expectedMainRegionSize, [mainRegion size], nil);
-  STAssertEquals(1, [region1 size], nil);
-  STAssertEquals(1, [region2 size], nil);
-  STAssertEquals(0, [regionEmpty size], nil);
-  STAssertTrue(point1.region == region1, nil);
-  STAssertTrue(point2.region == region2, nil);
+  XCTAssertEqual(expectedMainRegionSize, [mainRegion size]);
+  XCTAssertEqual(1, [region1 size]);
+  XCTAssertEqual(1, [region2 size]);
+  XCTAssertEqual(0, [regionEmpty size]);
+  XCTAssertTrue(point1.region == region1);
+  XCTAssertTrue(point2.region == region2);
 
   // Move region2 points to region1
   [region1 joinRegion:region2];
-  STAssertEquals(2, [region1 size], nil);
-  STAssertEquals(0, [region2 size], nil);
-  STAssertTrue(point1.region == region1, nil);
-  STAssertTrue(point2.region == region1, nil);
+  XCTAssertEqual(2, [region1 size]);
+  XCTAssertEqual(0, [region2 size]);
+  XCTAssertTrue(point1.region == region1);
+  XCTAssertTrue(point2.region == region1);
 
   // Joining an empty region is possible, although it does nothing
   [region1 joinRegion:regionEmpty];
-  STAssertEquals(2, [region1 size], nil);
+  XCTAssertEqual(2, [region1 size]);
 
   // Joining an empty region with another empty region is silly but possible
   [region2 joinRegion:regionEmpty];
 
   // Moving points into an empty region
   [region2 joinRegion:region1];
-  STAssertEquals(0, [region1 size], nil);
-  STAssertEquals(2, [region2 size], nil);
-  STAssertTrue(point1.region == region2, nil);
-  STAssertTrue(point2.region == region2, nil);
+  XCTAssertEqual(0, [region1 size]);
+  XCTAssertEqual(2, [region2 size]);
+  XCTAssertTrue(point1.region == region2);
+  XCTAssertTrue(point2.region == region2);
 
-  STAssertThrowsSpecificNamed([region2 joinRegion:nil],
+  XCTAssertThrowsSpecificNamed([region2 joinRegion:nil],
                               NSException, NSInvalidArgumentException, @"region is nil");
-  STAssertThrowsSpecificNamed([region2 joinRegion:region2],
+  XCTAssertThrowsSpecificNamed([region2 joinRegion:region2],
                               NSException, NSInvalidArgumentException, @"join with itself");
   // Join regions whose points have different stoneState property values
   GoPoint* point3 = [board pointAtVertex:@"C5"];
   point3.stoneState = GoColorBlack;
   [region1 addPoint:point3];
-  STAssertThrowsSpecificNamed([region2 joinRegion:region1],
+  XCTAssertThrowsSpecificNamed([region2 joinRegion:region1],
                               NSException, NSInvalidArgumentException, @"stone state does not match 1");
   point3.stoneState = GoColorWhite;
-  STAssertThrowsSpecificNamed([region2 joinRegion:region1],
+  XCTAssertThrowsSpecificNamed([region2 joinRegion:region1],
                               NSException, NSInvalidArgumentException, @"stone state does not match 1");
 }
 
@@ -289,17 +289,17 @@
   GoPoint* point1 = [board pointAtVertex:@"K10"];
   GoBoardRegion* mainRegion = point1.region;
 
-  STAssertFalse([mainRegion isStoneGroup], nil);
+  XCTAssertFalse([mainRegion isStoneGroup]);
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
-  STAssertFalse([region1 isStoneGroup], nil);
+  XCTAssertFalse([region1 isStoneGroup]);
   point1.stoneState = GoColorBlack;
-  STAssertTrue([region1 isStoneGroup], nil);
+  XCTAssertTrue([region1 isStoneGroup]);
   point1.stoneState = GoColorNone;
-  STAssertFalse([region1 isStoneGroup], nil);
+  XCTAssertFalse([region1 isStoneGroup]);
   point1.stoneState = GoColorWhite;
-  STAssertTrue([region1 isStoneGroup], nil);
+  XCTAssertTrue([region1 isStoneGroup]);
   GoBoardRegion* regionEmpty = [GoBoardRegion region];
-  STAssertFalse([regionEmpty isStoneGroup], nil);
+  XCTAssertFalse([regionEmpty isStoneGroup]);
 
   // We don't test nasty things like regions that contain points with different
   // stone states because isStoneGroup() won't catch those 
@@ -314,17 +314,17 @@
   GoPoint* point1 = [board pointAtVertex:@"K10"];
   GoBoardRegion* mainRegion = point1.region;
 
-  STAssertEquals(GoColorNone, [mainRegion color], nil);
+  XCTAssertEqual(GoColorNone, [mainRegion color]);
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
-  STAssertEquals(GoColorNone, [region1 color], nil);
+  XCTAssertEqual(GoColorNone, [region1 color]);
   point1.stoneState = GoColorBlack;
-  STAssertEquals(GoColorBlack, [region1 color], nil);
+  XCTAssertEqual(GoColorBlack, [region1 color]);
   point1.stoneState = GoColorNone;
-  STAssertEquals(GoColorNone, [region1 color], nil);
+  XCTAssertEqual(GoColorNone, [region1 color]);
   point1.stoneState = GoColorWhite;
-  STAssertEquals(GoColorWhite, [region1 color], nil);
+  XCTAssertEqual(GoColorWhite, [region1 color]);
   GoBoardRegion* regionEmpty = [GoBoardRegion region];
-  STAssertEquals(GoColorNone, [regionEmpty color], nil);
+  XCTAssertEqual(GoColorNone, [regionEmpty color]);
 
   // We don't test nasty things like regions that contain points with different
   // stone states because color() won't catch those 
@@ -348,34 +348,34 @@
   // Build up black's formation stone by stone
   point1.stoneState = GoColorBlack;
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
-  STAssertEquals(2, [region1 liberties], nil);
+  XCTAssertEqual(2, [region1 liberties]);
   point2.stoneState = GoColorBlack;
   [region1 addPoint:point2];
-  STAssertEquals(3, [region1 liberties], nil);
+  XCTAssertEqual(3, [region1 liberties]);
   point3.stoneState = GoColorBlack;
   [region1 addPoint:point3];
-  STAssertEquals(4, [region1 liberties], nil);
+  XCTAssertEqual(4, [region1 liberties]);
   point4.stoneState = GoColorBlack;
   [region1 addPoint:point4];
-  STAssertEquals(6, [region1 liberties], nil);
+  XCTAssertEqual(6, [region1 liberties]);
   point5.stoneState = GoColorBlack;
   [region1 addPoint:point5];
-  STAssertEquals(6, [region1 liberties], nil);
+  XCTAssertEqual(6, [region1 liberties]);
 
   // White places an adjacent stone
   point6.stoneState = GoColorWhite;
   GoBoardRegion* region2 = [GoBoardRegion regionWithPoint:point6];
-  STAssertEquals(2, [region2 liberties], nil);
-  STAssertEquals(5, [region1 liberties], nil);
+  XCTAssertEqual(2, [region2 liberties]);
+  XCTAssertEqual(5, [region1 liberties]);
 
   // White fills an eye - this is suicide but at this level there are no checks
   // that prevent this
   point7.stoneState = GoColorWhite;
   GoBoardRegion* region3 = [GoBoardRegion regionWithPoint:point7];
-  STAssertEquals(0, [region3 liberties], nil);
-  STAssertEquals(4, [region1 liberties], nil);
+  XCTAssertEqual(0, [region3 liberties]);
+  XCTAssertEqual(4, [region1 liberties]);
 
-  STAssertThrowsSpecificNamed([mainRegion liberties],
+  XCTAssertThrowsSpecificNamed([mainRegion liberties],
                               NSException, NSInternalInconsistencyException, @"region is no stone group");
 }
 
@@ -392,38 +392,38 @@
 
   NSUInteger expectedNumberOfAdjacentRegions = 0;
   NSArray* adjacentRegions = [mainRegion adjacentRegions];
-  STAssertNotNil(adjacentRegions, nil);
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
+  XCTAssertNotNil(adjacentRegions);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
 
   expectedNumberOfAdjacentRegions = 1;
   point1.stoneState = GoColorWhite;
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
   adjacentRegions = [region1 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
-  STAssertTrue([adjacentRegions containsObject:mainRegion], nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
+  XCTAssertTrue([adjacentRegions containsObject:mainRegion]);
 
   expectedNumberOfAdjacentRegions = 2;
   point2.stoneState = GoColorWhite;
   GoBoardRegion* region2 = [GoBoardRegion regionWithPoint:point2];
   GoBoardRegion* region3 = point3.region;
-  STAssertNotNil(region3, nil);
-  STAssertTrue(region3 != mainRegion, nil);
-  STAssertTrue(region3 != region1, nil);
-  STAssertTrue(region3 != region2, nil);
+  XCTAssertNotNil(region3);
+  XCTAssertTrue(region3 != mainRegion);
+  XCTAssertTrue(region3 != region1);
+  XCTAssertTrue(region3 != region2);
   adjacentRegions = [region2 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
-  STAssertTrue([adjacentRegions containsObject:mainRegion], nil);
-  STAssertTrue([adjacentRegions containsObject:region3], nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
+  XCTAssertTrue([adjacentRegions containsObject:mainRegion]);
+  XCTAssertTrue([adjacentRegions containsObject:region3]);
 
   adjacentRegions = [region1 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
-  STAssertTrue([adjacentRegions containsObject:mainRegion], nil);
-  STAssertTrue([adjacentRegions containsObject:region3], nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
+  XCTAssertTrue([adjacentRegions containsObject:mainRegion]);
+  XCTAssertTrue([adjacentRegions containsObject:region3]);
 
   adjacentRegions = [region3 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
-  STAssertTrue([adjacentRegions containsObject:region1], nil);
-  STAssertTrue([adjacentRegions containsObject:region2], nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
+  XCTAssertTrue([adjacentRegions containsObject:region1]);
+  XCTAssertTrue([adjacentRegions containsObject:region2]);
 
   // Removing the point makes its region empty; an empty region should simply
   // have no adjacent regions.
@@ -431,13 +431,13 @@
   [region1 removePoint:point1];
   expectedNumberOfAdjacentRegions = 0;
   adjacentRegions = [region1 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
 
   // Removing the point above did cause regions to be joinend, so region 2
   // still has two adjacent regions
   expectedNumberOfAdjacentRegions = 2;
   adjacentRegions = [region2 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
 
   // point1 is still "in limbo" - it does not have a region reference, and
   // there is no region that has it as a member. So here the adjacent regions
@@ -448,7 +448,7 @@
   // this and treat this as an error.
   expectedNumberOfAdjacentRegions = 1;
   adjacentRegions = [region3 adjacentRegions];
-  STAssertEquals(expectedNumberOfAdjacentRegions, adjacentRegions.count, nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, adjacentRegions.count);
 }
 
 // -----------------------------------------------------------------------------
@@ -466,16 +466,16 @@
   point1.stoneState = GoColorWhite;
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
   region1.scoringMode = true;
-  STAssertEquals(1, [region1 size], nil);
-  STAssertTrue([region1 isStoneGroup], nil);
-  STAssertEquals(GoColorWhite, [region1 color], nil);
-  STAssertEquals(4, [region1 liberties], nil);
-  STAssertEquals(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count, nil);
+  XCTAssertEqual(1, [region1 size]);
+  XCTAssertTrue([region1 isStoneGroup]);
+  XCTAssertEqual(GoColorWhite, [region1 color]);
+  XCTAssertEqual(4, [region1 liberties]);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count);
 
   // Changes number of adjacent regions
   point2.stoneState = GoColorWhite;
   GoBoardRegion* region2 = [GoBoardRegion regionWithPoint:point2];
-  STAssertEquals(1, [region2 size], nil);
+  XCTAssertEqual(1, [region2 size]);
   // Changes size, color and isStoneGroup, in addition liberties should now
   // throw an exception
   point1.stoneState = GoColorNone;
@@ -484,22 +484,22 @@
 
   // Now check: Everything must still be the same, and we don't want an
   // exception
-  STAssertEquals(1, [region1 size], nil);
-  STAssertTrue([region1 isStoneGroup], nil);
-  STAssertEquals(GoColorWhite, [region1 color], nil);
-  STAssertNoThrow([region1 liberties], nil);
-  STAssertEquals(4, [region1 liberties], nil);
-  STAssertEquals(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count, nil);
+  XCTAssertEqual(1, [region1 size]);
+  XCTAssertTrue([region1 isStoneGroup]);
+  XCTAssertEqual(GoColorWhite, [region1 color]);
+  XCTAssertNoThrow([region1 liberties]);
+  XCTAssertEqual(4, [region1 liberties]);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count);
 
   // Turning off scoring mode gets us the updated values
   expectedNumberOfAdjacentRegions = 2;
   region1.scoringMode = false;
-  STAssertEquals(2, [region1 size], nil);
-  STAssertFalse([region1 isStoneGroup], nil);
-  STAssertEquals(GoColorNone, [region1 color], nil);
-  STAssertThrowsSpecificNamed([region1 liberties],
+  XCTAssertEqual(2, [region1 size]);
+  XCTAssertFalse([region1 isStoneGroup]);
+  XCTAssertEqual(GoColorNone, [region1 color]);
+  XCTAssertThrowsSpecificNamed([region1 liberties],
                               NSException, NSInternalInconsistencyException, @"region is no stone group");
-  STAssertEquals(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count, nil);
+  XCTAssertEqual(expectedNumberOfAdjacentRegions, [region1 adjacentRegions].count);
 }
 
 // -----------------------------------------------------------------------------
@@ -525,8 +525,8 @@
   point2.stoneState = GoColorBlack;
   GoBoardRegion* region1 = [GoBoardRegion regionWithPoint:point1];
   GoBoardRegion* region2 = [GoBoardRegion regionWithPoint:point2];
-  STAssertEquals(region1, point1.region, nil);
-  STAssertEquals(region2, point2.region, nil);
+  XCTAssertEqual(region1, point1.region);
+  XCTAssertEqual(region2, point2.region);
   [pool drain];
 
   // Test 1: Excercise GoBoardRegion::addPoint:(). This causes region1 to be
@@ -544,7 +544,7 @@
   // to make sure that no uncontrolled autorelease messages are interfering
   // with the remainder of test execution.
   pool = [[NSAutoreleasePool alloc] init];
-  STAssertEquals(region2, point1.region, nil);
+  XCTAssertEqual(region2, point1.region);
   [pool drain];
 
   // Test 2: Excercise GoBoardRegion::regionWithPoint:(). This causes region3
@@ -556,8 +556,8 @@
   GoBoardRegion* region5 = [GoBoardRegion regionWithPoint:point2];
   [pool drain];
   pool = [[NSAutoreleasePool alloc] init];
-  STAssertEquals(region4, point1.region, nil);
-  STAssertEquals(region5, point2.region, nil);
+  XCTAssertEqual(region4, point1.region);
+  XCTAssertEqual(region5, point2.region);
   [pool drain];
 
   // Test 3: Excercise GoBoardRegion::removePoint:(). This causes region4 to be
@@ -566,9 +566,9 @@
   [region4 removePoint:point1];
   [pool drain];
   pool = [[NSAutoreleasePool alloc] init];
-  STAssertNil(point1.region, nil);
+  XCTAssertNil(point1.region);
   GoBoardRegion* region6 = [GoBoardRegion regionWithPoint:point1];
-  STAssertEquals(region6, point1.region, nil);
+  XCTAssertEqual(region6, point1.region);
   [pool drain];
 
   // Test 4: Excercise GoBoardRegion::joinRegion:(). This causes region5 to be
@@ -577,8 +577,8 @@
   [region6 joinRegion:region5];
   [pool drain];
   pool = [[NSAutoreleasePool alloc] init];
-  STAssertEquals(region6, point1.region, nil);
-  STAssertEquals(region6, point2.region, nil);
+  XCTAssertEqual(region6, point1.region);
+  XCTAssertEqual(region6, point2.region);
   [pool drain];
 }
 

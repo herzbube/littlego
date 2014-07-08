@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +15,15 @@
 // -----------------------------------------------------------------------------
 
 
-// System includes
-#import <XCTest/XCTest.h>
+// Project includes
+#import "GoVertexNumeric.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief The GoVertexTest class contains unit tests that exercise the
-/// GoVertex class.
-// -----------------------------------------------------------------------------
-@interface GoVertexTest : XCTestCase
+bool GoVertexNumericEqualToVertex(struct GoVertexNumeric vertex1, struct GoVertexNumeric vertex2)
 {
+  if (vertex1.x != vertex2.x)
+    return false;
+  if (vertex1.y != vertex2.y)
+    return false;
+  return true;
 }
-
-- (void) testVertexFromNumeric;
-- (void) testVertexFromString;
-- (void) testIsEqualToVertex;
-- (void) testUnusedLetterI;
-- (void) testLowerCaseString;
-- (void) testBorderCases;
-- (void) testIllegalInputValues;
-
-@end

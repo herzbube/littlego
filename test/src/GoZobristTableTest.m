@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  STAssertNotNil(m_game.board.zobristTable, nil);
+  XCTAssertNotNil(m_game.board.zobristTable);
 }
 
 // -----------------------------------------------------------------------------
@@ -47,12 +47,12 @@
   long long hashForEmptyBoard = 0;
 
   long long hash = [zobristTable hashForBoard:board];
-  STAssertEquals(hash, hashForEmptyBoard, nil);
+  XCTAssertEqual(hash, hashForEmptyBoard);
 
   GoPoint* point = [board pointAtVertex:@"B2"];
   [m_game play:point];
   hash = [zobristTable hashForBoard:board];
-  STAssertTrue(hash != hashForEmptyBoard, nil);
+  XCTAssertTrue(hash != hashForEmptyBoard);
 }
 
 // -----------------------------------------------------------------------------
@@ -66,19 +66,19 @@
 
   [m_game play:[board pointAtVertex:@"B2"]];
   long long hashForFirstMove = [zobristTable hashForMove:m_game.lastMove];
-  STAssertTrue(hashForFirstMove != hashForEmptyBoard, nil);
+  XCTAssertTrue(hashForFirstMove != hashForEmptyBoard);
 
   [m_game play:[board pointAtVertex:@"Q14"]];
   long long hashForSecondMove = [zobristTable hashForMove:m_game.lastMove];
-  STAssertTrue(hashForSecondMove != hashForEmptyBoard, nil);
-  STAssertTrue(hashForFirstMove != hashForSecondMove, nil);
+  XCTAssertTrue(hashForSecondMove != hashForEmptyBoard);
+  XCTAssertTrue(hashForFirstMove != hashForSecondMove);
 
   // Test that hash for first move did not change
   long long hash = [zobristTable hashForMove:m_game.firstMove];
-  STAssertEquals(hashForFirstMove, hash, nil);
+  XCTAssertEqual(hashForFirstMove, hash);
 
   // Test that we cannot pass a nil object
-  STAssertThrowsSpecificNamed([zobristTable hashForMove:nil],
+  XCTAssertThrowsSpecificNamed([zobristTable hashForMove:nil],
                               NSException, NSGenericException, @"move is nil");
 }
 
@@ -96,20 +96,20 @@
   [m_game play:point.above];
   [m_game pass];
   GoMove* passMove = m_game.lastMove;
-  STAssertEquals(passMove.type, GoMoveTypePass, nil);
+  XCTAssertEqual(passMove.type, GoMoveTypePass);
   [m_game play:point.right];
   GoMove* lastMove = m_game.lastMove;
-  STAssertEquals(lastMove.type, GoMoveTypePlay, nil);
-  STAssertNotNil(lastMove.capturedStones, nil);
-  STAssertTrue(lastMove.capturedStones.count > 0, nil);
+  XCTAssertEqual(lastMove.type, GoMoveTypePlay);
+  XCTAssertNotNil(lastMove.capturedStones);
+  XCTAssertTrue(lastMove.capturedStones.count > 0);
 
   long long hashForStone = [zobristTable hashForStonePlayedBy:lastMove.player
                                                       atPoint:lastMove.point
                                               capturingStones:lastMove.capturedStones
                                                     afterMove:passMove];
   long long hashForMove = [zobristTable hashForMove:lastMove];
-  STAssertEquals(hashForStone, hashForMove, nil);
-  STAssertEquals(hashForStone, lastMove.zobristHash, nil);
+  XCTAssertEqual(hashForStone, hashForMove);
+  XCTAssertEqual(hashForStone, lastMove.zobristHash);
 }
 
 // -----------------------------------------------------------------------------
@@ -130,7 +130,7 @@
 
   long long hashForBoard = [zobristTable hashForBoard:board];
   long long hashForLastMove = [zobristTable hashForMove:m_game.lastMove];
-  STAssertEquals(hashForBoard, hashForLastMove, nil);
+  XCTAssertEqual(hashForBoard, hashForLastMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -144,12 +144,12 @@
 
   [m_game play:[board pointAtVertex:@"B2"]];
   long long hashForFirstMove = [zobristTable hashForMove:m_game.lastMove];
-  STAssertTrue(hashForFirstMove != hashForEmptyBoard, nil);
+  XCTAssertTrue(hashForFirstMove != hashForEmptyBoard);
 
   [m_game pass];
   long long hashForSecondMove = [zobristTable hashForMove:m_game.lastMove];
-  STAssertTrue(hashForSecondMove != hashForEmptyBoard, nil);
-  STAssertEquals(hashForFirstMove, hashForSecondMove, nil);
+  XCTAssertTrue(hashForSecondMove != hashForEmptyBoard);
+  XCTAssertEqual(hashForFirstMove, hashForSecondMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -165,17 +165,17 @@
   GoPoint* point = [board pointAtVertex:@"B2"];
   [m_game play:point];
   long long hashForFirstMove = [zobristTable hashForBoard:board];
-  STAssertTrue(hashForFirstMove != hashForEmptyBoard, nil);
+  XCTAssertTrue(hashForFirstMove != hashForEmptyBoard);
   [m_game play:point.right];
   long long hashForSecondMove = [zobristTable hashForBoard:board];
-  STAssertTrue(hashForSecondMove != hashForEmptyBoard, nil);
-  STAssertTrue(hashForFirstMove != hashForSecondMove, nil);
+  XCTAssertTrue(hashForSecondMove != hashForEmptyBoard);
+  XCTAssertTrue(hashForFirstMove != hashForSecondMove);
   [m_game.lastMove undo];
   long long hash = [zobristTable hashForBoard:board];
-  STAssertEquals(hashForFirstMove, hash, nil);
+  XCTAssertEqual(hashForFirstMove, hash);
   [m_game.lastMove doIt];
   hash = [zobristTable hashForBoard:board];
-  STAssertEquals(hashForSecondMove, hash, nil);
+  XCTAssertEqual(hashForSecondMove, hash);
 }
 
 @end

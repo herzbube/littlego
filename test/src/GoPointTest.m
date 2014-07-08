@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,23 +43,23 @@
 
   GoBoard* board = m_game.board;
   GoPoint* point = [board pointAtVertex:stringVertex];
-  STAssertNotNil(point, nil);
-  STAssertFalse([point hasStone], nil);
-  STAssertFalse([point blackStone], nil);
-  STAssertEquals(expectedLiberties, [point liberties], nil);
-  STAssertTrue([point isEqualToPoint:point], nil);
-  STAssertTrue([point.vertex.string isEqualToString:stringVertex], nil);
-  STAssertEquals(board, point.board, nil);
-  STAssertNotNil(point.left, nil);
-  STAssertNotNil(point.right, nil);
-  STAssertNotNil(point.above, nil);
-  STAssertNotNil(point.below, nil);
-  STAssertEquals(expectedNumberOfNeighbours, point.neighbours.count, nil);
-  STAssertNotNil(point.next, nil);
-  STAssertNotNil(point.previous, nil);
-  STAssertFalse(point.isStarPoint, nil);
-  STAssertEquals(expectedStoneState, point.stoneState, nil);
-  STAssertNotNil(point.region, nil);
+  XCTAssertNotNil(point);
+  XCTAssertFalse([point hasStone]);
+  XCTAssertFalse([point blackStone]);
+  XCTAssertEqual(expectedLiberties, [point liberties]);
+  XCTAssertTrue([point isEqualToPoint:point]);
+  XCTAssertTrue([point.vertex.string isEqualToString:stringVertex]);
+  XCTAssertEqual(board, point.board);
+  XCTAssertNotNil(point.left);
+  XCTAssertNotNil(point.right);
+  XCTAssertNotNil(point.above);
+  XCTAssertNotNil(point.below);
+  XCTAssertEqual(expectedNumberOfNeighbours, point.neighbours.count);
+  XCTAssertNotNil(point.next);
+  XCTAssertNotNil(point.previous);
+  XCTAssertFalse(point.isStarPoint);
+  XCTAssertEqual(expectedStoneState, point.stoneState);
+  XCTAssertNotNil(point.region);
 }
 
 // -----------------------------------------------------------------------------
@@ -72,14 +72,14 @@
   GoBoard* board = m_game.board;
 
   GoPoint* point = [GoPoint pointAtVertex:vertex onBoard:board];
-  STAssertNotNil(point, nil);
-  STAssertEquals(board, point.board, nil);
-  STAssertTrue([stringVertex isEqualToString:point.vertex.string], nil);
+  XCTAssertNotNil(point);
+  XCTAssertEqual(board, point.board);
+  XCTAssertTrue([stringVertex isEqualToString:point.vertex.string]);
   // Don't test any more attributes, testInitialState() already checked those
 
-  STAssertThrowsSpecificNamed([GoPoint pointAtVertex:vertex onBoard:nil],
+  XCTAssertThrowsSpecificNamed([GoPoint pointAtVertex:vertex onBoard:nil],
                               NSException, NSInvalidArgumentException, @"test 1");
-  STAssertThrowsSpecificNamed([GoPoint pointAtVertex:nil onBoard:board],
+  XCTAssertThrowsSpecificNamed([GoPoint pointAtVertex:nil onBoard:board],
                               NSException, NSInvalidArgumentException, @"test 2");
 }
 
@@ -92,7 +92,7 @@
 {
   int expectedBoardSize = 19;
   GoBoard* board = m_game.board;
-  STAssertEquals(expectedBoardSize, board.size, nil);
+  XCTAssertEqual(expectedBoardSize, board.size);
 
   NSString* stringVertexCorner = @"T1";  // a corner that is not the first or last point
   NSString* stringVertexEdge = @"A16";
@@ -110,32 +110,32 @@
   NSUInteger expectedNumberOfNeighboursCenter = 4;
   int expectedNumberOfPointsOnBoard = pow(expectedBoardSize, 2);
 
-  STAssertEquals(expectedNumberOfNeighboursCorner, pointCorner.neighbours.count, nil);
-  STAssertNotNil(pointCorner.left, nil);
-  STAssertNil(pointCorner.right, nil);
-  STAssertNotNil(pointCorner.above, nil);
-  STAssertNil(pointCorner.below, nil);
-  STAssertNotNil(pointCorner.next, nil);
-  STAssertNotNil(pointCorner.previous, nil);
+  XCTAssertEqual(expectedNumberOfNeighboursCorner, pointCorner.neighbours.count);
+  XCTAssertNotNil(pointCorner.left);
+  XCTAssertNil(pointCorner.right);
+  XCTAssertNotNil(pointCorner.above);
+  XCTAssertNil(pointCorner.below);
+  XCTAssertNotNil(pointCorner.next);
+  XCTAssertNotNil(pointCorner.previous);
 
-  STAssertEquals(expectedNumberOfNeighboursEdge, pointEdge.neighbours.count, nil);
-  STAssertNil(pointEdge.left, nil);
-  STAssertNotNil(pointEdge.right, nil);
-  STAssertNotNil(pointEdge.above, nil);
-  STAssertNotNil(pointEdge.below, nil);
-  STAssertNotNil(pointEdge.next, nil);
-  STAssertNotNil(pointEdge.previous, nil);
+  XCTAssertEqual(expectedNumberOfNeighboursEdge, pointEdge.neighbours.count);
+  XCTAssertNil(pointEdge.left);
+  XCTAssertNotNil(pointEdge.right);
+  XCTAssertNotNil(pointEdge.above);
+  XCTAssertNotNil(pointEdge.below);
+  XCTAssertNotNil(pointEdge.next);
+  XCTAssertNotNil(pointEdge.previous);
 
-  STAssertEquals(expectedNumberOfNeighboursCenter, pointCenter.neighbours.count, nil);
-  STAssertNotNil(pointCenter.left, nil);
-  STAssertNotNil(pointCenter.right, nil);
-  STAssertNotNil(pointCenter.above, nil);
-  STAssertNotNil(pointCenter.below, nil);
-  STAssertNotNil(pointCenter.next, nil);
-  STAssertNotNil(pointCenter.previous, nil);
+  XCTAssertEqual(expectedNumberOfNeighboursCenter, pointCenter.neighbours.count);
+  XCTAssertNotNil(pointCenter.left);
+  XCTAssertNotNil(pointCenter.right);
+  XCTAssertNotNil(pointCenter.above);
+  XCTAssertNotNil(pointCenter.below);
+  XCTAssertNotNil(pointCenter.next);
+  XCTAssertNotNil(pointCenter.previous);
 
-  STAssertEquals(expectedNumberOfNeighboursCorner, pointFirst.neighbours.count, nil);
-  STAssertNil(pointFirst.previous, nil);
+  XCTAssertEqual(expectedNumberOfNeighboursCorner, pointFirst.neighbours.count);
+  XCTAssertNil(pointFirst.previous);
   GoPoint* pointNext = pointFirst;
   int numberOfPointsNext = 1;
   while (true)
@@ -147,10 +147,10 @@
     if (numberOfPointsNext > expectedNumberOfPointsOnBoard)
       break;
   }
-  STAssertEquals(expectedNumberOfPointsOnBoard, numberOfPointsNext, nil);
+  XCTAssertEqual(expectedNumberOfPointsOnBoard, numberOfPointsNext);
 
-  STAssertEquals(expectedNumberOfNeighboursCorner, pointLast.neighbours.count, nil);
-  STAssertNil(pointLast.next, nil);
+  XCTAssertEqual(expectedNumberOfNeighboursCorner, pointLast.neighbours.count);
+  XCTAssertNil(pointLast.next);
   GoPoint* pointPrevious = pointLast;
   int numberOfPointsPrevious = 1;
   while (true)
@@ -162,7 +162,7 @@
     if (numberOfPointsPrevious > expectedNumberOfPointsOnBoard)
       break;
   }
-  STAssertEquals(expectedNumberOfPointsOnBoard, numberOfPointsPrevious, nil);
+  XCTAssertEqual(expectedNumberOfPointsOnBoard, numberOfPointsPrevious);
 }
 
 // -----------------------------------------------------------------------------
@@ -180,7 +180,7 @@
       ++numberOfStarPoints;
     point = point.next;
   }
-  STAssertEquals(expectedNumberOfStarPoints, numberOfStarPoints, nil);
+  XCTAssertEqual(expectedNumberOfStarPoints, numberOfStarPoints);
 }
 
 // -----------------------------------------------------------------------------
@@ -190,24 +190,24 @@
 - (void) testStoneState
 {
   GoPoint* point = [m_game.board pointAtVertex:@"F15"];
-  STAssertEquals(GoColorNone, point.stoneState, nil);
-  STAssertFalse([point hasStone], nil);
-  STAssertFalse([point blackStone], nil);
+  XCTAssertEqual(GoColorNone, point.stoneState);
+  XCTAssertFalse([point hasStone]);
+  XCTAssertFalse([point blackStone]);
 
   point.stoneState = GoColorBlack;
-  STAssertEquals(GoColorBlack, point.stoneState, nil);
-  STAssertTrue([point hasStone], nil);
-  STAssertTrue([point blackStone], nil);
+  XCTAssertEqual(GoColorBlack, point.stoneState);
+  XCTAssertTrue([point hasStone]);
+  XCTAssertTrue([point blackStone]);
 
   point.stoneState = GoColorWhite;
-  STAssertEquals(GoColorWhite, point.stoneState, nil);
-  STAssertTrue([point hasStone], nil);
-  STAssertFalse([point blackStone], nil);
+  XCTAssertEqual(GoColorWhite, point.stoneState);
+  XCTAssertTrue([point hasStone]);
+  XCTAssertFalse([point blackStone]);
 
   point.stoneState = GoColorNone;
-  STAssertEquals(GoColorNone, point.stoneState, nil);
-  STAssertFalse([point hasStone], nil);
-  STAssertFalse([point blackStone], nil);
+  XCTAssertEqual(GoColorNone, point.stoneState);
+  XCTAssertFalse([point hasStone]);
+  XCTAssertFalse([point blackStone]);
 }
 
 // -----------------------------------------------------------------------------
@@ -231,31 +231,31 @@
   int expectedNumberOfLibertiesStoneGroupAttacked = 5;
   int expectedNumberOfLibertiesAttacker = 3;
 
-  STAssertEquals(expectedNumberOfLibertiesCorner, [pointCorner liberties], nil);
-  STAssertEquals(expectedNumberOfLibertiesEdge, [pointEdge liberties], nil);
-  STAssertEquals(expectedNumberOfLibertiesCenter, [pointCenter liberties], nil);
+  XCTAssertEqual(expectedNumberOfLibertiesCorner, [pointCorner liberties]);
+  XCTAssertEqual(expectedNumberOfLibertiesEdge, [pointEdge liberties]);
+  XCTAssertEqual(expectedNumberOfLibertiesCenter, [pointCenter liberties]);
 
   // Place a stone
   pointCenter.stoneState = GoColorBlack;
   [GoUtilities movePointToNewRegion:pointCenter];
-  STAssertEquals(expectedNumberOfLibertiesCenter, [pointCenter liberties], nil);
+  XCTAssertEqual(expectedNumberOfLibertiesCenter, [pointCenter liberties]);
   for (GoPoint* pointNeighbour in pointCenter.neighbours)
-    STAssertEquals(expectedNumberOfLibertiesNeighbour, [pointNeighbour liberties], nil);
+    XCTAssertEqual(expectedNumberOfLibertiesNeighbour, [pointNeighbour liberties]);
 
   // Add stone to group
   GoPoint* nextPoint = pointCenter.next;
   nextPoint.stoneState = GoColorBlack;
   [GoUtilities movePointToNewRegion:nextPoint];
-  STAssertEquals(expectedNumberOfLibertiesStoneGroup, [pointCenter liberties], nil);
-  STAssertEquals(expectedNumberOfLibertiesStoneGroup, [nextPoint liberties], nil);
+  XCTAssertEqual(expectedNumberOfLibertiesStoneGroup, [pointCenter liberties]);
+  XCTAssertEqual(expectedNumberOfLibertiesStoneGroup, [nextPoint liberties]);
 
   // Attack
   GoPoint* pointAttacker = pointCenter.previous;
   pointAttacker.stoneState = GoColorWhite;
   [GoUtilities movePointToNewRegion:pointAttacker];
-  STAssertEquals(expectedNumberOfLibertiesStoneGroupAttacked, [pointCenter liberties], nil);
-  STAssertEquals(expectedNumberOfLibertiesStoneGroupAttacked, [nextPoint liberties], nil);
-  STAssertEquals(expectedNumberOfLibertiesAttacker, [pointAttacker liberties], nil);
+  XCTAssertEqual(expectedNumberOfLibertiesStoneGroupAttacked, [pointCenter liberties]);
+  XCTAssertEqual(expectedNumberOfLibertiesStoneGroupAttacked, [nextPoint liberties]);
+  XCTAssertEqual(expectedNumberOfLibertiesAttacker, [pointAttacker liberties]);
 }
 
 // -----------------------------------------------------------------------------
@@ -268,13 +268,13 @@
   GoBoard* board = m_game.board;
   GoPoint* pointFromBoard = [board pointAtVertex:stringVertex];
 
-  STAssertTrue([pointFromBoard isEqualToPoint:pointFromBoard], nil);
-  STAssertFalse([pointFromBoard isEqualToPoint:pointFromBoard.next], nil);
+  XCTAssertTrue([pointFromBoard isEqualToPoint:pointFromBoard]);
+  XCTAssertFalse([pointFromBoard isEqualToPoint:pointFromBoard.next]);
 
   GoPoint* point = [GoPoint pointAtVertex:vertex onBoard:board];
-  STAssertNotNil(point, nil);
-  STAssertFalse(pointFromBoard == point, nil);
-  STAssertTrue([pointFromBoard isEqualToPoint:point], nil);
+  XCTAssertNotNil(point);
+  XCTAssertFalse(pointFromBoard == point);
+  XCTAssertTrue([pointFromBoard isEqualToPoint:point]);
 }
 
 // -----------------------------------------------------------------------------
@@ -291,7 +291,7 @@
                          expectedNumberOfRegionsBlack:0
                          expectedNumberOfRegionsWhite:0];
   NSArray* neighbourRegionsEmpty = [point neighbourRegionsWithColor:GoColorNone];
-  STAssertEqualObjects(mainRegion, [neighbourRegionsEmpty objectAtIndex:0], nil);
+  XCTAssertEqualObjects(mainRegion, [neighbourRegionsEmpty objectAtIndex:0]);
   [m_game play:point.left];
   [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
                          expectedNumberOfRegionsEmpty:1
@@ -328,14 +328,14 @@
                          expectedNumberOfRegionsBlack:1
                          expectedNumberOfRegionsWhite:0];
   NSArray* neighbourRegionsBlack = [point neighbourRegionsWithColor:GoColorBlack];
-  STAssertEqualObjects(point.region, [neighbourRegionsBlack objectAtIndex:0], nil);
+  XCTAssertEqualObjects(point.region, [neighbourRegionsBlack objectAtIndex:0]);
   point = point.right.right.below;
   [self verifyExpectedNumberOfNeighbourRegionsOfPoint:point
                          expectedNumberOfRegionsEmpty:1
                          expectedNumberOfRegionsBlack:0
                          expectedNumberOfRegionsWhite:1];
   NSArray* neighbourRegionsWhite = [point neighbourRegionsWithColor:GoColorWhite];
-  STAssertEqualObjects(point.region, [neighbourRegionsWhite objectAtIndex:0], nil);
+  XCTAssertEqualObjects(point.region, [neighbourRegionsWhite objectAtIndex:0]);
 
 }
 
@@ -348,11 +348,11 @@
                           expectedNumberOfRegionsWhite:(NSUInteger)expectedNumberOfRegionsWhite
 {
   NSArray* neighbourRegionsEmpty = [point neighbourRegionsWithColor:GoColorNone];
-  STAssertEquals(neighbourRegionsEmpty.count, expectedNumberOfRegionsEmpty, nil);
+  XCTAssertEqual(neighbourRegionsEmpty.count, expectedNumberOfRegionsEmpty);
   NSArray* neighbourRegionsBlack = [point neighbourRegionsWithColor:GoColorBlack];
-  STAssertEquals(neighbourRegionsBlack.count, expectedNumberOfRegionsBlack, nil);
+  XCTAssertEqual(neighbourRegionsBlack.count, expectedNumberOfRegionsBlack);
   NSArray* neighbourRegionsWhite = [point neighbourRegionsWithColor:GoColorWhite];
-  STAssertEquals(neighbourRegionsWhite.count, expectedNumberOfRegionsWhite, nil);
+  XCTAssertEqual(neighbourRegionsWhite.count, expectedNumberOfRegionsWhite);
 }
 
 @end

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,10 +37,10 @@
 - (void) testInitialState
 {
   GoMoveModel* moveModel = m_game.moveModel;
-  STAssertNotNil(moveModel, nil);
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
-  STAssertNil(moveModel.firstMove, nil);
-  STAssertNil(moveModel.lastMove, nil);
+  XCTAssertNotNil(moveModel);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
+  XCTAssertNil(moveModel.firstMove);
+  XCTAssertNil(moveModel.lastMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -51,13 +51,13 @@
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   move1.point = [m_game.board pointAtVertex:@"A1"];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
+  XCTAssertFalse(m_game.document.isDirty);
   [moveModel appendMove:move1];
-  STAssertEquals(moveModel.numberOfMoves, 1, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 1);
+  XCTAssertTrue(m_game.document.isDirty);
 
-  STAssertThrowsSpecificNamed([moveModel appendMove:nil],
+  XCTAssertThrowsSpecificNamed([moveModel appendMove:nil],
                               NSException, NSInvalidArgumentException, @"appendMove with nil object");
 }
 
@@ -70,21 +70,21 @@
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   move1.point = [m_game.board pointAtVertex:@"A1"];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
   [moveModel appendMove:move1];
-  STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 1);
   [moveModel appendMove:move2];
-  STAssertEquals(moveModel.numberOfMoves, 2, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 2);
+  XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
 
   [moveModel discardLastMove];
-  STAssertEquals(moveModel.numberOfMoves, 1, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 1);
+  XCTAssertTrue(m_game.document.isDirty);
   [moveModel discardLastMove];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
 
-  STAssertThrowsSpecificNamed([moveModel discardLastMove],
+  XCTAssertThrowsSpecificNamed([moveModel discardLastMove],
                               NSException, NSRangeException, @"discardLastMove with no moves");
 }
 
@@ -101,24 +101,24 @@
   [moveModel appendMove:move1];
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
-  STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 3);
+  XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
 
-  STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:3],
+  XCTAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:3],
                               NSException, NSRangeException, @"discardMovesFromIndex with index too high");
-  STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:-1],
+  XCTAssertEqual(moveModel.numberOfMoves, 3);
+  XCTAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:-1],
                               NSException, NSRangeException, @"discardMovesFromIndex with negative index");
-  STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  STAssertFalse(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 3);
+  XCTAssertFalse(m_game.document.isDirty);
   [moveModel discardMovesFromIndex:1];  // discard >1 moves
-  STAssertEquals(moveModel.numberOfMoves, 1, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 1);
+  XCTAssertTrue(m_game.document.isDirty);
   [moveModel discardMovesFromIndex:0];  // discard single move
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
 
-  STAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:0],
+  XCTAssertThrowsSpecificNamed([moveModel discardMovesFromIndex:0],
                               NSException, NSRangeException, @"discardMovesFromIndex when model has no moves");
 }
 
@@ -135,15 +135,15 @@
   [moveModel appendMove:move1];
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
-  STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 3);
+  XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
 
   [moveModel discardAllMoves];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
-  STAssertTrue(m_game.document.isDirty, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
+  XCTAssertTrue(m_game.document.isDirty);
 
-  STAssertThrowsSpecificNamed([moveModel discardAllMoves],
+  XCTAssertThrowsSpecificNamed([moveModel discardAllMoves],
                               NSException, NSRangeException, @"discardAllMoves with no moves");
 }
 
@@ -159,17 +159,17 @@
   [moveModel appendMove:move1];
   [moveModel appendMove:move2];
   [moveModel appendMove:move3];
-  STAssertEquals(moveModel.numberOfMoves, 3, nil);
-  STAssertEquals(move1, [moveModel moveAtIndex:0], nil);
-  STAssertEquals(move2, [moveModel moveAtIndex:1], nil);
-  STAssertEquals(move3, [moveModel moveAtIndex:2], nil);
-  STAssertThrowsSpecificNamed([moveModel moveAtIndex:3],
+  XCTAssertEqual(moveModel.numberOfMoves, 3);
+  XCTAssertEqual(move1, [moveModel moveAtIndex:0]);
+  XCTAssertEqual(move2, [moveModel moveAtIndex:1]);
+  XCTAssertEqual(move3, [moveModel moveAtIndex:2]);
+  XCTAssertThrowsSpecificNamed([moveModel moveAtIndex:3],
                               NSException, NSRangeException, @"moveAtIndex when model has moves");
-  STAssertThrowsSpecificNamed([moveModel moveAtIndex:-1],
+  XCTAssertThrowsSpecificNamed([moveModel moveAtIndex:-1],
                               NSException, NSRangeException, @"moveAtIndex with negative index");
   [moveModel discardAllMoves];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
-  STAssertThrowsSpecificNamed([moveModel moveAtIndex:0],
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
+  XCTAssertThrowsSpecificNamed([moveModel moveAtIndex:0],
                               NSException, NSRangeException, @"moveAtIndex when model has no moves");
 }
 
@@ -179,12 +179,12 @@
 - (void) testNumberOfMoves
 {
   GoMoveModel* moveModel = m_game.moveModel;
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
   GoMove* move1 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
   [moveModel appendMove:move1];
-  STAssertEquals(moveModel.numberOfMoves, 1, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 1);
   [moveModel discardAllMoves];
-  STAssertEquals(moveModel.numberOfMoves, 0, nil);
+  XCTAssertEqual(moveModel.numberOfMoves, 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -195,15 +195,15 @@
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
-  STAssertNil(moveModel.firstMove, nil);
+  XCTAssertNil(moveModel.firstMove);
   [moveModel appendMove:move1];
-  STAssertEquals(move1, moveModel.firstMove, nil);
+  XCTAssertEqual(move1, moveModel.firstMove);
   [moveModel appendMove:move2];
-  STAssertEquals(move1, moveModel.firstMove, nil);
+  XCTAssertEqual(move1, moveModel.firstMove);
   [moveModel discardLastMove];
-  STAssertEquals(move1, moveModel.firstMove, nil);
+  XCTAssertEqual(move1, moveModel.firstMove);
   [moveModel discardAllMoves];
-  STAssertNil(moveModel.firstMove, nil);
+  XCTAssertNil(moveModel.firstMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -214,13 +214,13 @@
   GoMoveModel* moveModel = m_game.moveModel;
   GoMove* move1 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
-  STAssertNil(moveModel.lastMove, nil);
+  XCTAssertNil(moveModel.lastMove);
   [moveModel appendMove:move1];
-  STAssertEquals(move1, moveModel.lastMove, nil);
+  XCTAssertEqual(move1, moveModel.lastMove);
   [moveModel appendMove:move2];
-  STAssertEquals(move2, moveModel.lastMove, nil);
+  XCTAssertEqual(move2, moveModel.lastMove);
   [moveModel discardAllMoves];
-  STAssertNil(moveModel.firstMove, nil);
+  XCTAssertNil(moveModel.firstMove);
 }
 
 @end

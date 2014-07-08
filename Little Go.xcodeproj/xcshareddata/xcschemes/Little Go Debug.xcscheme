@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CDA595AE1401383E00B250D8"
-               BuildableName = "Unit tests.octest"
+               BuildableName = "Unit tests.xctest"
                BlueprintName = "Unit tests"
                ReferencedContainer = "container:Little Go.xcodeproj">
             </BuildableReference>
@@ -47,7 +47,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CDA595AE1401383E00B250D8"
-               BuildableName = "Unit tests.octest"
+               BuildableName = "Unit tests.xctest"
                BlueprintName = "Unit tests"
                ReferencedContainer = "container:Little Go.xcodeproj">
             </BuildableReference>

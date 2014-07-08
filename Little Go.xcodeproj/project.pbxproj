@@ -296,6 +296,9 @@
 		CDAF171A1968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
 		CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
 		CDAF171E196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
+		CDAF1720196C912400271396 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDAF171F196C912400271396 /* XCTest.framework */; };
+		CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1722196CA81900271396 /* GoVertexNumeric.m */; };
+		CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1722196CA81900271396 /* GoVertexNumeric.m */; };
 		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
 		CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
@@ -722,7 +725,7 @@
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD96A47C16CC3568000C2792 /* LaunchImage-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LaunchImage-568h@2x.png"; sourceTree = "<group>"; };
 		CD96A47E16CD6FD4000C2792 /* GoBoardPositionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPositionTest.h; sourceTree = "<group>"; };
-		CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPositionTest.m; sourceTree = "<group>"; };
+		CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardPositionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		CD99EC6114B10746007B3B67 /* GoPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPointTest.h; sourceTree = "<group>"; };
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
@@ -739,7 +742,7 @@
 		CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewindtostart@2x.png"; sourceTree = "<group>"; };
 		CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionSettingsController.h; sourceTree = "<group>"; };
 		CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionSettingsController.m; sourceTree = "<group>"; };
-		CDA595AF1401383E00B250D8 /* Unit tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDA595AF1401383E00B250D8 /* Unit tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDA596111401741800B250D8 /* GoVertexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertexTest.h; sourceTree = "<group>"; };
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
 		CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveTest.h; sourceTree = "<group>"; };
@@ -760,6 +763,9 @@
 		CDAF17181968037700271396 /* BoardViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewModel.m; sourceTree = "<group>"; };
 		CDAF171B196869E700271396 /* GameActionsActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionsActionSheetController.h; sourceTree = "<group>"; };
 		CDAF171C196869E700271396 /* GameActionsActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionsActionSheetController.m; sourceTree = "<group>"; };
+		CDAF171F196C912400271396 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		CDAF1721196CA81900271396 /* GoVertexNumeric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertexNumeric.h; sourceTree = "<group>"; };
+		CDAF1722196CA81900271396 /* GoVertexNumeric.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexNumeric.m; sourceTree = "<group>"; };
 		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
 		CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TiledScrollView.m; sourceTree = "<group>"; };
 		CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordinateLabelsTileView.h; sourceTree = "<group>"; };
@@ -939,11 +945,11 @@
 		CDF341D0172D609400AEFB20 /* SaveApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveApplicationStateCommand.m; sourceTree = "<group>"; };
 		CDF43D031402BF2A007F44A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDF43D9B1402E970007F44A4 /* BaseTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTestCase.h; sourceTree = "<group>"; };
-		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTestCase.m; sourceTree = "<group>"; };
+		CDF43D9C1402E970007F44A4 /* BaseTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BaseTestCase.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		CDF43DAD1402EC83007F44A4 /* GoBoardTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardTest.h; sourceTree = "<group>"; };
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
-		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardRegionTest.m; sourceTree = "<group>"; };
+		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardRegionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAndPlayCommand.h; sourceTree = "<group>"; };
 		CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAndPlayCommand.m; sourceTree = "<group>"; };
 		CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background@2x~ipad.png"; sourceTree = "<group>"; };
@@ -1002,6 +1008,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDAF1720196C912400271396 /* XCTest.framework in Frameworks */,
 				CD931EE41684E4C7002E1262 /* MessageUI.framework in Frameworks */,
 				CD85B5D21401C3AC001715B8 /* AudioToolbox.framework in Frameworks */,
 				CD85B5FA1401CC04001715B8 /* CoreGraphics.framework in Frameworks */,
@@ -1019,7 +1026,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* Little Go.app */,
-				CDA595AF1401383E00B250D8 /* Unit tests.octest */,
+				CDA595AF1401383E00B250D8 /* Unit tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1051,6 +1058,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CDAF171F196C912400271396 /* XCTest.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765070DF74369002DB57D /* CoreGraphics.framework */,
@@ -1243,6 +1251,8 @@
 				CD05AB951425169500214BBE /* GoUtilities.m */,
 				CDBB0399133573CC007C1C3E /* GoVertex.h */,
 				CDBB039A133573CC007C1C3E /* GoVertex.m */,
+				CDAF1721196CA81900271396 /* GoVertexNumeric.h */,
+				CDAF1722196CA81900271396 /* GoVertexNumeric.m */,
 				CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */,
 				CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */,
 			);
@@ -1945,7 +1955,7 @@
 			);
 			name = "Unit tests";
 			productName = "Unit tests";
-			productReference = CDA595AF1401383E00B250D8 /* Unit tests.octest */;
+			productReference = CDA595AF1401383E00B250D8 /* Unit tests.xctest */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -2185,6 +2195,7 @@
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
+				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
@@ -2389,6 +2400,7 @@
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
+				CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
 				CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */,
@@ -2654,6 +2666,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2677,7 +2690,7 @@
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
-				WRAPPER_EXTENSION = octest;
+				WRAPPER_EXTENSION = xctest;
 				ZERO_LINK = NO;
 			};
 			name = Distribute_AppStore;
@@ -2690,6 +2703,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2715,7 +2729,7 @@
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
-				WRAPPER_EXTENSION = octest;
+				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
 		};
@@ -2727,6 +2741,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2750,7 +2765,7 @@
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
-				WRAPPER_EXTENSION = octest;
+				WRAPPER_EXTENSION = xctest;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2763,6 +2778,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -2786,7 +2802,7 @@
 				);
 				PRODUCT_NAME = "Unit tests";
 				TEST_AFTER_BUILD = YES;
-				WRAPPER_EXTENSION = octest;
+				WRAPPER_EXTENSION = xctest;
 			};
 			name = Distribute_AdHoc;
 		};

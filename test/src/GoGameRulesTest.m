@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  STAssertNotNil(m_game.rules, nil);
-  STAssertEquals(m_game.rules.koRule, GoKoRuleSimple, nil);
-  STAssertEquals(m_game.rules.scoringSystem, GoScoringSystemAreaScoring, nil);
+  XCTAssertNotNil(m_game.rules);
+  XCTAssertEqual(m_game.rules.koRule, GoKoRuleSimple);
+  XCTAssertEqual(m_game.rules.scoringSystem, GoScoringSystemAreaScoring);
 }
 
 // -----------------------------------------------------------------------------
@@ -50,8 +50,8 @@
   newGameModel.scoringSystem = GoScoringSystemTerritoryScoring;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
-  STAssertEquals(m_game.rules.koRule, GoKoRuleSuperkoPositional, nil);
-  STAssertEquals(m_game.rules.scoringSystem, GoScoringSystemTerritoryScoring, nil);
+  XCTAssertEqual(m_game.rules.koRule, GoKoRuleSuperkoPositional);
+  XCTAssertEqual(m_game.rules.scoringSystem, GoScoringSystemTerritoryScoring);
 }
 
 @end
