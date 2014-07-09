@@ -828,15 +828,6 @@
           lineRect.origin.x += self.boundingLineStrokeOffset;
         // 5. Adjust vertical line position
         lineRect.origin.y -= self.lineStartOffset;
-        // Shift all vertical lines 1 point to the right. This is what I call
-        // "the mystery point" - I couldn't come up with a satisfactory
-        // explanation why this is needed even after hours of geometric drawings
-        // and manual calculations. Very unsatisfactory :-(
-        // TODO xxx It appears that this is no longer necessary. If this is
-        // true, then close the corresponding GitHub issue. The reason probably
-        // is connected with the CTM rotation that we did in the old drawing
-        // mechanism.
-        //lineRect.origin.x += 1;
       }
 
       [lineRectangles addObject:[NSValue valueWithCGRect:lineRect]];
