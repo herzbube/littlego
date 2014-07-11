@@ -19,7 +19,6 @@
 #import "BoardTileView.h"
 #import "layer/CoordinatesLayerDelegate.h"
 #import "layer/CrossHairLinesLayerDelegate.h"
-#import "layer/CrossHairStoneLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
@@ -53,7 +52,6 @@
 @property(nonatomic, assign) GridLayerDelegate* gridLayerDelegate;
 @property(nonatomic, assign) CrossHairLinesLayerDelegate* crossHairLinesLayerDelegate;
 @property(nonatomic, assign) StonesLayerDelegate* stonesLayerDelegate;
-@property(nonatomic, assign) CrossHairStoneLayerDelegate* crossHairStoneLayerDelegate;
 @property(nonatomic, assign) InfluenceLayerDelegate* influenceLayerDelegate;
 @property(nonatomic, assign) SymbolsLayerDelegate* symbolsLayerDelegate;
 @property(nonatomic, assign) TerritoryLayerDelegate* territoryLayerDelegate;
@@ -103,7 +101,6 @@
   self.gridLayerDelegate = nil;
   self.crossHairLinesLayerDelegate = nil;
   self.stonesLayerDelegate = nil;
-  self.crossHairStoneLayerDelegate = nil;
   self.influenceLayerDelegate = nil;
   self.symbolsLayerDelegate = nil;
   self.territoryLayerDelegate = nil;
@@ -210,7 +207,7 @@
 {
   [self setupGridLayerDelegate];
   [self setupStonesLayerDelegate];
-  [self setupCrossHairLayerDelegatesLayersAreRequired:false];
+  [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self setupInfluenceLayerDelegate];
   [self setupSymbolsLayerDelegate];
   [self setupTerritoryLayerDelegate];
@@ -245,17 +242,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the cross-hair lines and cross-hair stone layer delegates, or
-/// resets them to nil, depending on the value of @a layersAreRequired.
+/// @brief Creates the cross-hair lines layer delegate, or resets it to nil,
+/// depending on the value of @a layerIsRequired.
 ///
 /// Unlike the other layer setup methods, with this method the caller must
-/// provide the information whether or not the layers are required. The reason
+/// provide the information whether or not the layer is required. The reason
 /// is that there is no application state holding object that provides the
 /// information.
 // -----------------------------------------------------------------------------
-- (void) setupCrossHairLayerDelegatesLayersAreRequired:(bool)layersAreRequired
+- (void) setupCrossHairLinesLayerDelegateIsRequired:(bool)layerIsRequired
 {
-  if (layersAreRequired)
+  if (layerIsRequired)
   {
     ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     if (! self.crossHairLinesLayerDelegate)
@@ -263,16 +260,10 @@
       self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithTile:self
                                                                                     metrics:appDelegate.boardViewMetrics] autorelease];
     }
-    if (! self.crossHairStoneLayerDelegate)
-    {
-      self.crossHairStoneLayerDelegate = [[[CrossHairStoneLayerDelegate alloc] initWithTile:self
-                                                                                    metrics:appDelegate.boardViewMetrics] autorelease];
-    }
   }
   else
   {
     self.crossHairLinesLayerDelegate = nil;
-    self.crossHairStoneLayerDelegate = nil;
   }
 }
 
@@ -364,8 +355,6 @@
   if (self.crossHairLinesLayerDelegate)
     [newLayerDelegates addObject:self.crossHairLinesLayerDelegate];
   [newLayerDelegates addObject:self.stonesLayerDelegate];
-  if (self.crossHairStoneLayerDelegate)
-    [newLayerDelegates addObject:self.crossHairStoneLayerDelegate];
   if (self.influenceLayerDelegate)
     [newLayerDelegates addObject:self.influenceLayerDelegate];
   if (self.symbolsLayerDelegate)
@@ -522,7 +511,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
-  [self setupCrossHairLayerDelegatesLayersAreRequired:true];
+  [self setupCrossHairLinesLayerDelegateIsRequired:true];
   [self updateLayers];
 }
 
@@ -531,7 +520,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
-  [self setupCrossHairLayerDelegatesLayersAreRequired:false];
+  [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self updateLayers];
 }
 

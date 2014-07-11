@@ -20,7 +20,9 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../../go/GoBoard.h"
+#import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 
@@ -32,6 +34,22 @@
 /// @brief Store list of points to draw between notify:eventInfo:() and
 /// drawLayer:inContext:(), and also between drawing cycles.
 @property(nonatomic, retain) NSMutableDictionary* drawingPoints;
+/// @brief Refers to the GoPoint object that marks the current focus of the
+/// cross-hair (even if the point is not on this tile).
+@property(nonatomic, assign) GoPoint* currentCrossHairPoint;
+/// @brief Refers to the GoPoint object that previously marked the focus of the
+/// cross-hair (even if the point is not on this tile).
+@property(nonatomic, assign) GoPoint* previousCrossHairPoint;
+/// @brief The rectangle for drawing @e currentCrossHairPoint. Is CGRectZero
+/// if the cross-hair point is not on this tile.
+@property(nonatomic, assign) CGRect drawingRectForCrossHairPoint;
+/// @brief The dirty rect calculated by notify:eventInfo:() that later needs to
+/// be used by drawLayer(). Used only when drawing is required because of a
+/// cross-hair change.
+@property(nonatomic, assign) CGRect dirtyRectForCrossHairPoint;
+/// @brief Is true if only either @e currentCrossHairPoint or
+/// @e previousCrossHairPoint needs to be drawn.
+@property(nonatomic, assign) bool drawCrossHairPointsOnly;
 @end
 
 
@@ -49,6 +67,11 @@
   if (! self)
     return nil;
   self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
+  self.currentCrossHairPoint = nil;
+  self.previousCrossHairPoint = nil;
+  self.drawingRectForCrossHairPoint = CGRectZero;
+  self.dirtyRectForCrossHairPoint = CGRectZero;
+  self.drawCrossHairPointsOnly = false;
   return self;
 }
 
@@ -58,6 +81,8 @@
 - (void) dealloc
 {
   self.drawingPoints = nil;
+  self.currentCrossHairPoint = nil;
+  self.previousCrossHairPoint = nil;
   [super dealloc];
 }
 
@@ -69,6 +94,23 @@
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   [cache invalidateLayerOfType:BlackStoneLayerType];
   [cache invalidateLayerOfType:WhiteStoneLayerType];
+  [cache invalidateLayerOfType:CrossHairStoneLayerType];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the drawing rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDrawingRectForCrossHairPoint
+{
+  self.drawingRectForCrossHairPoint = CGRectZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the dirty rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyRectForCrossHairPoint
+{
+  self.dirtyRectForCrossHairPoint = CGRectZero;
 }
 
 // -----------------------------------------------------------------------------
@@ -82,6 +124,10 @@
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
+      self.currentCrossHairPoint = nil;
+      self.previousCrossHairPoint = nil;
+      [self invalidateDirtyRectForCrossHairPoint];
+      self.drawCrossHairPointsOnly = false;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -89,12 +135,20 @@
     case BVLDEventGoGameStarted:  // place handicap stones
     case BVLDEventInvalidateContent:
     {
+      self.currentCrossHairPoint = nil;
+      self.previousCrossHairPoint = nil;
+      [self invalidateDirtyRectForCrossHairPoint];
+      self.drawCrossHairPointsOnly = false;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardPositionChanged:
     {
+      self.currentCrossHairPoint = nil;
+      self.previousCrossHairPoint = nil;
+      [self invalidateDirtyRectForCrossHairPoint];
+      self.drawCrossHairPointsOnly = false;
       NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
       NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
       // The dictionary must contain the intersection state so that the
@@ -109,10 +163,69 @@
       }
       break;
     }
+    case BVLDEventCrossHairChanged:
+    {
+      // Assume that the event is not going to trigger a redraw
+      self.previousCrossHairPoint = self.currentCrossHairPoint;
+      self.currentCrossHairPoint = eventInfo;
+      if (self.previousCrossHairPoint == self.currentCrossHairPoint)
+        break;
+      CGRect oldDrawingRect = self.drawingRectForCrossHairPoint;
+      CGRect newDrawingRect = [self calculateDrawingRectangleForCrossHairPoint:self.currentCrossHairPoint];
+      // We need to compare the drawing rectangles, not the cross-hair points.
+      // The points may have changed, but if BOTH the old and the new point are
+      // not on this tile, the old and the new drawing rectangle have NOT
+      // changed - which is exactly what we want.
+      if (CGRectEqualToRect(oldDrawingRect, newDrawingRect))
+        break;
+      // Ok, so we need to redraw something
+      self.drawingRectForCrossHairPoint = newDrawingRect;
+      self.dirty = true;
+      if (CGRectIsEmpty(newDrawingRect))
+      {
+        // The cross-hair stone is no longer visible on this tile (we don't
+        // care if moved to a different tile, or if it is gone entirely), so
+        // we need to clear the stone from the previous drawing cycle
+        self.dirtyRectForCrossHairPoint = oldDrawingRect;
+        self.drawCrossHairPointsOnly = true;
+      }
+      else if (CGRectIsEmpty(oldDrawingRect))
+      {
+        // The cross-hair stone was not visible on this tile in the previous
+        // drawing cycle, but now it is
+        self.dirtyRectForCrossHairPoint = newDrawingRect;
+        self.drawCrossHairPointsOnly = true;
+      }
+      else
+      {
+        // The cross-hair stone was and still is visible on this tile
+        self.dirtyRectForCrossHairPoint = CGRectUnion(oldDrawingRect, newDrawingRect);
+        // The union of two rectangles forces us to draw more than just one
+        // intersection
+        self.drawCrossHairPointsOnly = false;
+      }
+      break;
+    }
     default:
     {
       break;
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief BoardViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) drawLayer
+{
+  if (self.dirty)
+  {
+    self.dirty = false;
+    if (CGRectIsEmpty(self.dirtyRectForCrossHairPoint))
+      [self.layer setNeedsDisplay];
+    else
+      [self.layer setNeedsDisplayInRect:self.dirtyRectForCrossHairPoint];
+    [self invalidateDirtyRectForCrossHairPoint];
   }
 }
 
@@ -136,26 +249,64 @@
     [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayer);
   }
+  CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
+  if (! crossHairStoneLayer)
+  {
+    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.boardViewMetrics);
+    [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
+    CGLayerRelease(crossHairStoneLayer);
+  }
 
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.boardViewMetrics];
-  GoBoard* board = [GoGame sharedGame].board;
-  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop){
-    // Ignore stoneStateAsNumber, get the current values directly from the
-    // GoPoint object
-    GoPoint* point = [board pointAtVertex:vertexString];
-    if (! point.hasStone)
-      return;
-    CGLayerRef stoneLayer;
-    if (point.blackStone)
-      stoneLayer = blackStoneLayer;
-    else
-      stoneLayer = whiteStoneLayer;
-    [BoardViewDrawingHelper drawLayer:stoneLayer
-                          withContext:context
-                      centeredAtPoint:point
-                       inTileWithRect:tileRect
-                          withMetrics:self.boardViewMetrics];
+
+  [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop)
+   {
+     // Ignore stoneStateAsNumber, get the current values directly from the
+     // GoPoint object
+     GoPoint* point = [board pointAtVertex:vertexString];
+
+     if (self.drawCrossHairPointsOnly)
+     {
+       // Only draw the point if it is either the previous or the current
+       // cross-hair point. We can't tell if we need to draw one or the other,
+       // so we draw both.
+       if (point != self.currentCrossHairPoint && point != self.previousCrossHairPoint)
+         return;
+     }
+
+     CGLayerRef stoneLayer;
+     if (point == self.currentCrossHairPoint)
+     {
+       if (self.currentCrossHairPoint.hasStone)
+       {
+         stoneLayer = crossHairStoneLayer;
+       }
+       else
+       {
+         GoBoardPosition* boardPosition = game.boardPosition;
+         if (boardPosition.currentPlayer.isBlack)
+           stoneLayer = blackStoneLayer;
+         else
+           stoneLayer = whiteStoneLayer;
+       }
+     }
+     else
+     {
+       if (! point.hasStone)
+         return;
+       if (point.blackStone)
+         stoneLayer = blackStoneLayer;
+       else
+         stoneLayer = whiteStoneLayer;
+     }
+     [BoardViewDrawingHelper drawLayer:stoneLayer
+                           withContext:context
+                       centeredAtPoint:point
+                        inTileWithRect:tileRect
+                           withMetrics:self.boardViewMetrics];
   }];
 }
 
@@ -198,6 +349,33 @@
   }
 
   return drawingPoints;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle in which to draw the stone centered the specified
+/// cross-hair point.
+///
+/// Returns CGRectZero if the stone is not located on this tile.
+// -----------------------------------------------------------------------------
+- (CGRect) calculateDrawingRectangleForCrossHairPoint:(GoPoint*)crossHairPoint
+{
+  if (! crossHairPoint)
+    return CGRectZero;
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.boardViewMetrics];
+  CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:crossHairPoint
+                                                               metrics:self.boardViewMetrics];
+  CGRect drawingRectForCrossHairPoint = CGRectIntersection(tileRect, stoneRect);
+  if (CGRectIsNull(drawingRectForCrossHairPoint))
+  {
+    drawingRectForCrossHairPoint = CGRectZero;
+  }
+  else
+  {
+    drawingRectForCrossHairPoint = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForCrossHairPoint
+                                                                      inTileWithRect:tileRect];
+  }
+  return drawingRectForCrossHairPoint;
 }
 
 @end

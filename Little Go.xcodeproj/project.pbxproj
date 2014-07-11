@@ -411,8 +411,6 @@
 		CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
 		CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */; };
 		CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */; };
-		CDEE1A1F19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1C19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m */; };
-		CDEE1A2019464B7C00DF2389 /* CrossHairStoneLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1C19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -925,8 +923,6 @@
 		CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A1919464B7C00DF2389 /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
-		CDEE1A1B19464B7C00DF2389 /* CrossHairStoneLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairStoneLayerDelegate.h; sourceTree = "<group>"; };
-		CDEE1A1C19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairStoneLayerDelegate.m; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
 		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
@@ -1823,8 +1819,6 @@
 				CDEE1A0A1946081000DF2389 /* CoordinatesLayerDelegate.m */,
 				CDEE1A1919464B7C00DF2389 /* CrossHairLinesLayerDelegate.h */,
 				CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */,
-				CDEE1A1B19464B7C00DF2389 /* CrossHairStoneLayerDelegate.h */,
-				CDEE1A1C19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m */,
 				CDEE19EF19433EAC00DF2389 /* GridLayerDelegate.h */,
 				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
 				CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */,
@@ -2189,7 +2183,6 @@
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
 				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
-				CDEE1A1F19464B7C00DF2389 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
@@ -2437,7 +2430,6 @@
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
-				CDEE1A2019464B7C00DF2389 /* CrossHairStoneLayerDelegate.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
