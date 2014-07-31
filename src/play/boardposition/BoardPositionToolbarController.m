@@ -26,7 +26,6 @@
 #import "../../go/GoScore.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/UIElementMetrics.h"
 
 // Enums
 enum NavigationDirection
@@ -201,7 +200,7 @@ enum NavigationDirection
   UIBarButtonItem* navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                               target:nil
                                                                                               action:nil] autorelease];
-  navigationBarButtonSpacer.width = [UiElementMetrics toolbarSpacing];
+  navigationBarButtonSpacer.width = [AutoLayoutUtility horizontalSpacingSiblings];
 
   enum NavigationDirection direction = NavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
@@ -241,7 +240,7 @@ enum NavigationDirection
   self.boardPositionListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.currentBoardPositionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  int toolbarPaddingHorizontal = [UiElementMetrics toolbarPaddingHorizontal];
+  int toolbarPaddingHorizontal = [AutoLayoutUtility horizontalSpacingSiblings];
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.boardPositionListViewController.view, @"boardPositionListView",
                                    self.currentBoardPositionViewController.view, @"currentBoardPositionView",

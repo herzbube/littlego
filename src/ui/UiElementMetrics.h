@@ -48,37 +48,15 @@
 + (int) screenWidthLandscape;
 + (CGRect) applicationFrame;
 + (int) statusBarHeight;
-+ (int) navigationBarHeight;
-+ (int) toolbarHeight;
-+ (int) tabBarHeight;
 + (int) spacingHorizontal;
-+ (int) spacingVertical;
-+ (int) labelHeight;
-+ (int) sliderHeight;
 + (int) switchWidth;
-+ (int) textFieldHeight;
-+ (int) activityIndicatorWidthAndHeight;
-+ (int) viewMarginHorizontal;
-+ (int) viewMarginVertical;
-+ (int) tableViewMarginVertical;
 + (int) tableViewCellWidth;
-+ (int) tableViewCellHeight:(bool)topOrBottomCell;
 + (int) tableViewCellMarginHorizontal;
 + (int) tableViewCellContentViewWidth;
 + (int) tableViewCellContentViewHeight;
 + (int) tableViewCellContentViewAvailableWidth;
-+ (int) tableViewCellContentViewAvailableHeight;
 + (int) tableViewCellContentDistanceFromEdgeHorizontal;
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
-+ (int) englishKeyboardHeight;
-+ (int) toolbarPaddingHorizontal;
-+ (int) toolbarPaddingVertical;
-+ (int) toolbarSpacing;
-+ (int) toolbarCustomViewItemPaddingHorizontal;
-+ (int) splitViewLeftPaneWidth;
-+ (int) splitViewRightPaneWidth;
-+ (int) splitViewDividerWidth;
-+ (int) splitViewHeight;
 
 @end
