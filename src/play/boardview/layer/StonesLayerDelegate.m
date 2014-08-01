@@ -24,6 +24,7 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
+#import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
 
 
@@ -31,15 +32,11 @@
 /// @brief Class extension with private properties for StonesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface StonesLayerDelegate()
-/// @brief Store list of points to draw between notify:eventInfo:() and
-/// drawLayer:inContext:(), and also between drawing cycles.
+/// @brief List of points whose intersections are located on this tile.
 @property(nonatomic, retain) NSMutableDictionary* drawingPoints;
 /// @brief Refers to the GoPoint object that marks the current focus of the
 /// cross-hair (even if the point is not on this tile).
 @property(nonatomic, assign) GoPoint* currentCrossHairPoint;
-/// @brief Refers to the GoPoint object that previously marked the focus of the
-/// cross-hair (even if the point is not on this tile).
-@property(nonatomic, assign) GoPoint* previousCrossHairPoint;
 /// @brief The rectangle for drawing @e currentCrossHairPoint. Is CGRectZero
 /// if the cross-hair point is not on this tile.
 @property(nonatomic, assign) CGRect drawingRectForCrossHairPoint;
@@ -47,9 +44,11 @@
 /// be used by drawLayer(). Used only when drawing is required because of a
 /// cross-hair change.
 @property(nonatomic, assign) CGRect dirtyRectForCrossHairPoint;
-/// @brief Is true if only either @e currentCrossHairPoint or
-/// @e previousCrossHairPoint needs to be drawn.
-@property(nonatomic, assign) bool drawCrossHairPointsOnly;
+/// @brief The list of GoPoint objects whose intersections are within
+/// @e dirtyRectForCrossHairPoint. Calculated by notify:eventInfo:() and later
+/// used by drawLayer:inContext:(). Is nil if drawing is not triggered because
+/// of a cross-hair change.
+@property(nonatomic, retain) NSArray* dirtyPointsForCrossHairPoint;
 @end
 
 
@@ -68,10 +67,9 @@
     return nil;
   self.drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   self.currentCrossHairPoint = nil;
-  self.previousCrossHairPoint = nil;
   self.drawingRectForCrossHairPoint = CGRectZero;
   self.dirtyRectForCrossHairPoint = CGRectZero;
-  self.drawCrossHairPointsOnly = false;
+  self.dirtyPointsForCrossHairPoint = nil;
   return self;
 }
 
@@ -82,7 +80,7 @@
 {
   self.drawingPoints = nil;
   self.currentCrossHairPoint = nil;
-  self.previousCrossHairPoint = nil;
+  self.dirtyPointsForCrossHairPoint = nil;
   [super dealloc];
 }
 
@@ -125,9 +123,8 @@
     {
       [self invalidateLayers];
       self.currentCrossHairPoint = nil;
-      self.previousCrossHairPoint = nil;
       [self invalidateDirtyRectForCrossHairPoint];
-      self.drawCrossHairPointsOnly = false;
+      self.dirtyPointsForCrossHairPoint = nil;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -136,9 +133,8 @@
     case BVLDEventInvalidateContent:
     {
       self.currentCrossHairPoint = nil;
-      self.previousCrossHairPoint = nil;
       [self invalidateDirtyRectForCrossHairPoint];
-      self.drawCrossHairPointsOnly = false;
+      self.dirtyPointsForCrossHairPoint = nil;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -146,9 +142,8 @@
     case BVLDEventBoardPositionChanged:
     {
       self.currentCrossHairPoint = nil;
-      self.previousCrossHairPoint = nil;
       [self invalidateDirtyRectForCrossHairPoint];
-      self.drawCrossHairPointsOnly = false;
+      self.dirtyPointsForCrossHairPoint = nil;
       NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
       NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
       // The dictionary must contain the intersection state so that the
@@ -165,10 +160,9 @@
     }
     case BVLDEventCrossHairChanged:
     {
-      // Assume that the event is not going to trigger a redraw
-      self.previousCrossHairPoint = self.currentCrossHairPoint;
+      GoPoint* previousCrossHairPoint = self.currentCrossHairPoint;
       self.currentCrossHairPoint = eventInfo;
-      if (self.previousCrossHairPoint == self.currentCrossHairPoint)
+      if (previousCrossHairPoint == self.currentCrossHairPoint)
         break;
       CGRect oldDrawingRect = self.drawingRectForCrossHairPoint;
       CGRect newDrawingRect = [self calculateDrawingRectangleForCrossHairPoint:self.currentCrossHairPoint];
@@ -187,22 +181,22 @@
         // care if moved to a different tile, or if it is gone entirely), so
         // we need to clear the stone from the previous drawing cycle
         self.dirtyRectForCrossHairPoint = oldDrawingRect;
-        self.drawCrossHairPointsOnly = true;
+        self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:previousCrossHairPoint];
       }
       else if (CGRectIsEmpty(oldDrawingRect))
       {
         // The cross-hair stone was not visible on this tile in the previous
         // drawing cycle, but now it is
         self.dirtyRectForCrossHairPoint = newDrawingRect;
-        self.drawCrossHairPointsOnly = true;
+        self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:self.currentCrossHairPoint];
       }
       else
       {
         // The cross-hair stone was and still is visible on this tile
         self.dirtyRectForCrossHairPoint = CGRectUnion(oldDrawingRect, newDrawingRect);
-        // The union of two rectangles forces us to draw more than just one
-        // intersection
-        self.drawCrossHairPointsOnly = false;
+        self.dirtyPointsForCrossHairPoint = [GoUtilities pointsInRectangleDelimitedByCornerPoint:previousCrossHairPoint
+                                                                             oppositeCornerPoint:self.currentCrossHairPoint
+                                                                                          inGame:[GoGame sharedGame]];
       }
       break;
     }
@@ -268,12 +262,13 @@
      // GoPoint object
      GoPoint* point = [board pointAtVertex:vertexString];
 
-     if (self.drawCrossHairPointsOnly)
+     // If self.dirtyPointsForCrossHairPoint is set it acts as a filter: We
+     // don't want to draw more points than those that are within the clipping
+     // path that was set up when our implementation of drawLayer() invoked
+     // setNeedsDisplayInRect:().
+     if (self.dirtyPointsForCrossHairPoint)
      {
-       // Only draw the point if it is either the previous or the current
-       // cross-hair point. We can't tell if we need to draw one or the other,
-       // so we draw both.
-       if (point != self.currentCrossHairPoint && point != self.previousCrossHairPoint)
+       if (! [self.dirtyPointsForCrossHairPoint containsObject:point])
          return;
      }
 

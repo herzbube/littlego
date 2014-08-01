@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -294,6 +294,62 @@
     return game.playerWhite;
   else
     return game.playerBlack;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an (unordered) list of GoPoint objects whose intersections
+/// are located in the rectangle delimited by @a pointA and @a pointB. The
+/// points that are returned are taken from the GoBoard instance associated with
+/// @a game.
+// -----------------------------------------------------------------------------
++ (NSArray*) pointsInRectangleDelimitedByCornerPoint:(GoPoint*)pointA
+                                 oppositeCornerPoint:(GoPoint*)pointB
+                                              inGame:(GoGame*)game
+{
+  if (! pointA || ! pointB)
+  {
+    NSString* errorMessage = @"Either one or both of the delimiting GoPoint objects not specified";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  GoBoard* board = game.board;
+  if (! board)
+  {
+    NSString* errorMessage = @"No GoBoard object associated with specified GoGame";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  struct GoVertexNumeric numericVertexA = pointA.vertex.numeric;
+  struct GoVertexNumeric numericVertexB = pointB.vertex.numeric;
+  struct GoVertexNumeric numericVertexBottomLeft;
+  numericVertexBottomLeft.x = MIN(numericVertexA.x, numericVertexB.x);
+  numericVertexBottomLeft.y = MIN(numericVertexA.y, numericVertexB.y);
+  struct GoVertexNumeric numericVertexTopRight;
+  numericVertexTopRight.x = MAX(numericVertexA.x, numericVertexB.x);
+  numericVertexTopRight.y = MAX(numericVertexA.y, numericVertexB.y);
+
+  NSMutableArray* pointsInRectangle = [NSMutableArray arrayWithCapacity:0];
+  struct GoVertexNumeric numericVertexIteration = numericVertexBottomLeft;
+  while (numericVertexIteration.y <= numericVertexTopRight.y)
+  {
+    while (numericVertexIteration.x <= numericVertexTopRight.x)
+    {
+      GoVertex* vertexIteration = [GoVertex vertexFromNumeric:numericVertexIteration];
+      GoPoint* point = [board pointAtVertex:vertexIteration.string];
+      [pointsInRectangle addObject:point];
+      numericVertexIteration.x++;
+    }
+    numericVertexIteration.x = numericVertexBottomLeft.x;
+    numericVertexIteration.y++;
+  }
+  return pointsInRectangle;
 }
 
 @end
