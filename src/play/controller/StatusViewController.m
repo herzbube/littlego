@@ -155,7 +155,8 @@
                                    self.activityIndicator, @"activityIndicator",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[statusLabel]-0-[activityIndicator]-0-|",
+                            // Default spacing is not sufficient, use experimentally determined custom spacing
+                            @"H:|-0-[statusLabel]-15-[activityIndicator]-0-|",
                             @"V:|-0-[statusLabel]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
