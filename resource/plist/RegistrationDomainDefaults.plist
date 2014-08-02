@@ -196,9 +196,9 @@
 			<key>UUID</key>
 			<string>1051CE0D-D8BA-405C-A93D-7AA140683D11</string>
 			<key>Name</key>
-			<string>iPhone 4S</string>
+			<string>Strong</string>
 			<key>Description</key>
-			<string>This profile uses maximum playing strength, plus it makes use of the 2 processor cores and the increased memory of the iPhone 4S.</string>
+			<string>This profile uses maximum playing strength, doubles the memory used by the default profile, and makes use of a second processor core.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>64</integer>
 			<key>FuegoThreadCount</key>

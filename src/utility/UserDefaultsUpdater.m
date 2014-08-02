@@ -616,6 +616,31 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     [scoringDictionaryUpgrade removeObjectForKey:whiteSekiSymbolColorKey];
     [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
   }
+
+  id profileListArray = [userDefaults objectForKey:gtpEngineProfileListKey];
+  if (profileListArray)  // is nil if the key is not present
+  {
+    NSMutableArray* profileListArrayUpgrade = [NSMutableArray array];
+    for (NSDictionary* profileDictionary in profileListArray)
+    {
+      NSMutableDictionary* profileDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:profileDictionary];
+      NSString* uuid = [profileDictionaryUpgrade valueForKey:gtpEngineProfileUUIDKey];
+      if ([uuid isEqualToString:@"1051CE0D-D8BA-405C-A93D-7AA140683D11"])
+      {
+        NSString* name = [profileDictionaryUpgrade valueForKey:gtpEngineProfileNameKey];
+        // If the profile name is the same as the one we deployed, we assume
+        // that the user did not change any values and that we can update name
+        // and description
+        if ([name isEqualToString:@"iPhone 4S"])
+        {
+          [profileDictionaryUpgrade setValue:@"Strong" forKey:gtpEngineProfileNameKey];
+          [profileDictionaryUpgrade setValue:@"This profile uses maximum playing strength, doubles the memory used by the default profile, and makes use of a second processor core." forKey:gtpEngineProfileDescriptionKey];
+        }
+      }
+      [profileListArrayUpgrade addObject:profileDictionaryUpgrade];
+    }
+    [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
+  }
 }
 
 // -----------------------------------------------------------------------------
