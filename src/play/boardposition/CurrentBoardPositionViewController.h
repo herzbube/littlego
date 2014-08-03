@@ -41,7 +41,9 @@
 /// - Tell the current board position view to update itself when the current
 ///   board position changes.
 /// - Detect a tap gesture on the current board position view. The actual
-///   handling is delegated.
+///   handling of the gesture is delegated to the
+///   CurrentBoardPositionViewControllerDelegate object that previously must
+///   have been set.
 // -----------------------------------------------------------------------------
 @interface CurrentBoardPositionViewController : UIViewController <UIGestureRecognizerDelegate>
 {

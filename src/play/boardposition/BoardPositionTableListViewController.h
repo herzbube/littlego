@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
 /// list of all board positions on the Play tab.
 ///
 /// BoardPositionTableListViewController is a child view controller. It is used
-/// on the iPad only. There it replaces the iPhone-only subcontrollers
-/// BoardPositionListViewController and CurrentBoarPositionViewController.
+/// on the iPad only where it replaces the iPhone-only subcontrollers
+/// BoardPositionListViewController and CurrentBoardPositionViewController.
 ///
 /// BoardPositionTableListViewController replicates a lot of the user
 /// interaction and update policies described in the class documentation of

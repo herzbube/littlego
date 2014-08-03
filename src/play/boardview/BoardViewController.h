@@ -32,8 +32,6 @@
 /// - Synchronize zooming and scrolling properties of scroll views that contain
 ///   coordinate label views with the corresponding properties of the main
 ///   scroll view
-/// - Monitor the maximum zoom scale user preference and apply the new value
-///   to all scroll views
 /// - Resize scroll views when a view layout change occurs outside of zooming
 ///   (typically when the device changes orientation). See the documentation of
 ///   viewWillLayoutSubviews() for details.

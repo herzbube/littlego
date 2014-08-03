@@ -16,9 +16,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionView class is intended to be displayed as a subview
-/// of the scrollable board position list view on the Play tab. It represents a
-/// board position and shows information about that board position.
+/// @brief The BoardPositionView class shows information about a board position.
 ///
 /// BoardPositionView is used on the iPhone only.
 ///

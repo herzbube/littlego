@@ -52,7 +52,7 @@
 /// position.
 ///
 ///
-/// @par Content and scroll position updates
+/// @par Number of board positions changes
 ///
 /// The content of the board position list view is updated whenever the number
 /// of board positions changes in the game's GoBoardPosition instance. Usually
@@ -63,6 +63,9 @@
 /// the next view update displays the last board position of the game (this
 /// simple solution is possible because only board positions towards the end of
 /// the game can be discarded).
+///
+///
+/// @par Current board position chanages
 ///
 /// The scroll position of the move list view is updated in response to a change
 /// of the current board position in the game's GoBoardPosition instance. The
