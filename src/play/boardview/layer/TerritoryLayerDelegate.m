@@ -191,28 +191,28 @@
   CGLayerRef blackTerritoryLayer = [cache layerOfType:BlackTerritoryLayerType];
   if (! blackTerritoryLayer)
   {
-    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeBlack, self.boardViewMetrics);
+    blackTerritoryLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleBlack, self.boardViewMetrics);
     [cache setLayer:blackTerritoryLayer ofType:BlackTerritoryLayerType];
     CGLayerRelease(blackTerritoryLayer);
   }
   CGLayerRef whiteTerritoryLayer = [cache layerOfType:WhiteTerritoryLayerType];
   if (! whiteTerritoryLayer)
   {
-    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeWhite, self.boardViewMetrics);
+    whiteTerritoryLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleWhite, self.boardViewMetrics);
     [cache setLayer:whiteTerritoryLayer ofType:WhiteTerritoryLayerType];
     CGLayerRelease(whiteTerritoryLayer);
   }
   CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   if (! inconsistentFillColorTerritoryLayer)
   {
-    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentFillColor, self.boardViewMetrics);
+    inconsistentFillColorTerritoryLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleInconsistentFillColor, self.boardViewMetrics);
     [cache setLayer:inconsistentFillColorTerritoryLayer ofType:InconsistentFillColorTerritoryLayerType];
     CGLayerRelease(inconsistentFillColorTerritoryLayer);
   }
   CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
   if (! inconsistentDotSymbolTerritoryLayer)
   {
-    inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context, TerritoryLayerTypeInconsistentDotSymbol, self.boardViewMetrics);
+    inconsistentDotSymbolTerritoryLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleInconsistentDotSymbol, self.boardViewMetrics);
     [cache setLayer:inconsistentDotSymbolTerritoryLayer ofType:InconsistentDotSymbolTerritoryLayerType];
     CGLayerRelease(inconsistentDotSymbolTerritoryLayer);
   }
@@ -250,21 +250,21 @@
   CGLayerRef inconsistentFillColorTerritoryLayer = [cache layerOfType:InconsistentFillColorTerritoryLayerType];
   CGLayerRef inconsistentDotSymbolTerritoryLayer = [cache layerOfType:InconsistentDotSymbolTerritoryLayerType];
 
-  [self.drawingPointsTerritory enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryLayerTypeAsNumber, BOOL* stop){
-    enum TerritoryLayerType territoryLayerType = [territoryLayerTypeAsNumber intValue];
+  [self.drawingPointsTerritory enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* territoryMarkupStyleAsNumber, BOOL* stop){
+    enum TerritoryMarkupStyle territoryMarkupStyle = [territoryMarkupStyleAsNumber intValue];
     CGLayerRef layerToDraw = 0;
-    switch (territoryLayerType)
+    switch (territoryMarkupStyle)
     {
-      case TerritoryLayerTypeBlack:
+      case TerritoryMarkupStyleBlack:
         layerToDraw = blackTerritoryLayer;
         break;
-      case TerritoryLayerTypeWhite:
+      case TerritoryMarkupStyleWhite:
         layerToDraw = whiteTerritoryLayer;
         break;
-      case TerritoryLayerTypeInconsistentFillColor:
+      case TerritoryMarkupStyleInconsistentFillColor:
         layerToDraw = inconsistentFillColorTerritoryLayer;
         break;
-      case TerritoryLayerTypeInconsistentDotSymbol:
+      case TerritoryMarkupStyleInconsistentDotSymbol:
         layerToDraw = inconsistentDotSymbolTerritoryLayer;
         break;
       default:
@@ -339,8 +339,8 @@
 /// The vertex string can be used to get the GoPoint object that corresponds to
 /// the intersection.
 ///
-/// Dictionary values are NSNumber objects that store a TerritoryLayerType enum
-/// value. The value identifies the layer that needs to be drawn at the
+/// Dictionary values are NSNumber objects that store a TerritoryMarkupStyle
+/// enum value. The value identifies the layer that needs to be drawn at the
 /// intersection.
 // -----------------------------------------------------------------------------
 - (NSMutableDictionary*) calculateDrawingPointsTerritory
@@ -369,17 +369,17 @@
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
     enum GoColor territoryColor = point.region.territoryColor;
-    enum TerritoryLayerType territoryLayerType;
+    enum TerritoryMarkupStyle territoryMarkupStyle;
     switch (territoryColor)
     {
       case GoColorBlack:
       {
-        territoryLayerType = TerritoryLayerTypeBlack;
+        territoryMarkupStyle = TerritoryMarkupStyleBlack;
         break;
       }
       case GoColorWhite:
       {
-        territoryLayerType = TerritoryLayerTypeWhite;
+        territoryMarkupStyle = TerritoryMarkupStyleWhite;
         break;
       }
       case GoColorNone:
@@ -391,10 +391,10 @@
           case InconsistentTerritoryMarkupTypeNeutral:
             continue;  // territory is inconsistent, but user does not want markup
           case InconsistentTerritoryMarkupTypeDotSymbol:
-            territoryLayerType = TerritoryLayerTypeInconsistentDotSymbol;
+            territoryMarkupStyle = TerritoryMarkupStyleInconsistentDotSymbol;
             break;
           case InconsistentTerritoryMarkupTypeFillColor:
-            territoryLayerType = TerritoryLayerTypeInconsistentFillColor;
+            territoryMarkupStyle = TerritoryMarkupStyleInconsistentFillColor;
             break;
           default:
             DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
@@ -409,8 +409,8 @@
       }
     }
 
-    NSNumber* territoryLayerTypeAsNumber = [[[NSNumber alloc] initWithInt:territoryLayerType] autorelease];
-    [drawingPoints setObject:territoryLayerTypeAsNumber forKey:point.vertex.string];
+    NSNumber* territoryMarkupStyleAsNumber = [[[NSNumber alloc] initWithInt:territoryMarkupStyle] autorelease];
+    [drawingPoints setObject:territoryMarkupStyleAsNumber forKey:point.vertex.string];
   }
 
   return drawingPoints;

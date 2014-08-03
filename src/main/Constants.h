@@ -144,6 +144,15 @@ enum CoordinateLabelAxis
   ///@ brief The axis that displays numbers. This is the vertical axis.
   CoordinateLabelAxisNumber
 };
+
+/// @brief Enumerates all possible styles how to mark up territory.
+enum TerritoryMarkupStyle
+{
+  TerritoryMarkupStyleBlack,
+  TerritoryMarkupStyleWhite,
+  TerritoryMarkupStyleInconsistentFillColor,
+  TerritoryMarkupStyleInconsistentDotSymbol
+};
 //@}
 
 // -----------------------------------------------------------------------------

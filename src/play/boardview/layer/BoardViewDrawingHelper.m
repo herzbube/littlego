@@ -205,7 +205,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
 // -----------------------------------------------------------------------------
 /// @brief Creates and returns a CGLayer object that is associated with graphics
 /// context @a context and contains the drawing operations to markup territory
-/// of the specified type @a layerType.
+/// in the specified style @a territoryMarkupStyle.
 ///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
@@ -214,7 +214,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, BoardViewMetrics* metrics)
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle territoryMarkupStyle, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -225,18 +225,18 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   UIColor* fillColor;
-  switch (layerType)
+  switch (territoryMarkupStyle)
   {
-    case TerritoryLayerTypeBlack:
+    case TerritoryMarkupStyleBlack:
       fillColor = metrics.territoryColorBlack;
       break;
-    case TerritoryLayerTypeWhite:
+    case TerritoryMarkupStyleWhite:
       fillColor = metrics.territoryColorWhite;
       break;
-    case TerritoryLayerTypeInconsistentFillColor:
+    case TerritoryMarkupStyleInconsistentFillColor:
       fillColor = metrics.territoryColorInconsistent;
       break;
-    case TerritoryLayerTypeInconsistentDotSymbol:
+    case TerritoryMarkupStyleInconsistentDotSymbol:
       fillColor = metrics.inconsistentTerritoryDotSymbolColor;
       break;
     default:
@@ -244,7 +244,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType la
       return NULL;
   }
   CGContextSetFillColorWithColor(layerContext, fillColor.CGColor);
-  if (TerritoryLayerTypeInconsistentDotSymbol == layerType)
+  if (TerritoryMarkupStyleInconsistentDotSymbol == territoryMarkupStyle)
   {
     CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
     const int startRadius = [UiUtilities radians:0];

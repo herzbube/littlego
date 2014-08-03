@@ -20,17 +20,6 @@
 @class BoardViewMetrics;
 @protocol Tile;
 
-/// @brief Enumerates all possible layer types to mark up territory
-// todo xxx move this enum somewhere else. also rename the enum to something
-// like TerritoryMarkupStyle
-enum TerritoryLayerType
-{
-  TerritoryLayerTypeBlack,
-  TerritoryLayerTypeWhite,
-  TerritoryLayerTypeInconsistentFillColor,
-  TerritoryLayerTypeInconsistentDotSymbol
-};
-
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardViewDrawingHelper class provides a few drawing helper
@@ -55,7 +44,7 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);
 CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* metrics);
-CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryLayerType layerType, BoardViewMetrics* metrics);
+CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle territoryMarkupStyle, BoardViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers
