@@ -408,7 +408,11 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   return canvasRect;
 }
 
-// todo xxx document
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle of size @a size that is centered on the "canvas",
+/// i.e. the area covered by the entire board view, on the coordinates of the
+/// intersection @a point. The origin is in the upper-left corner.
+// -----------------------------------------------------------------------------
 + (CGRect) canvasRectForSize:(CGSize)size
              centeredAtPoint:(GoPoint*)point
                      metrics:(BoardViewMetrics*)metrics
@@ -439,7 +443,12 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   return drawingRect;
 }
 
-// todo xxx document
+// -----------------------------------------------------------------------------
+/// @brief Translates the origin of @a canvasRect (a rectangle on the "canvas",
+/// i.e. the area covered by the entire board view) into the coordinate system
+/// of the tile described by @a tileRect (the rectangle on the "canvas" occupied
+/// by the tile). The origin is in the upper-left corner.
+// -----------------------------------------------------------------------------
 + (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
                       inTileWithRect:(CGRect)tileRect
 {

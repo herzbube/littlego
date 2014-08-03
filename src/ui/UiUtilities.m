@@ -139,44 +139,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a new UITableView with style @a tableViewStyle, configures
-/// @a viewController with the newly created table view, and configures the
-/// table view to use the controller as delegate and data source (if the
-/// controller adopts the appropriate protocols).
-///
-/// This method is useful for controllers that do not want to load their view
-/// from a .nib file. It is intended to be called from a controller's
-/// loadView().
-///
-/// This method does not invoke reloadData() on the newly created table view.
-/// If this method is invoked from the controller's loadView(), and the
-/// controller is a UITableViewController, the UITableViewController
-/// implementation will automatically trigger data loading. In all other cases,
-/// it is the controller's responsibility to trigger data loading at the
-/// appropriate time.
-// -----------------------------------------------------------------------------
-+ (void) createTableViewWithStyle:(UITableViewStyle)tableViewStyle forController:(UIViewController*)viewController
-{
-  // TODO xxx replace by createTableViewWithStyle:withDelegateAndDataSource
-  // the new method uses auto layout and does not set a VC's view property
-
-  UITableView* tableView = [[UITableView alloc] initWithFrame:[UiElementMetrics applicationFrame]
-                                                        style:tableViewStyle];
-
-  // Connect controller with view
-  // Note: If viewController is a UITableViewController, setting this property
-  // automatically sets the controller's tableView property
-  viewController.view = tableView;
-  [tableView release];
-
-  // Connect view with controller
-  if ([viewController conformsToProtocol:@protocol(UITableViewDelegate)])
-    tableView.delegate = (id<UITableViewDelegate>)viewController;
-  if ([viewController conformsToProtocol:@protocol(UITableViewDataSource)])
-    tableView.dataSource = (id<UITableViewDataSource>)viewController;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Creates a new UITableView with style @a tableViewStyle, and
 /// configures the table view to use the supplied object both as delegate and
 /// data source.

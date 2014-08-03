@@ -47,8 +47,6 @@ enum BoardViewLayerDelegateEvent
   /// @brief The event info object that accompanies this event type is a GoPoint
   /// object that identifies the location of the cross-hair center.
   BVLDEventCrossHairChanged,
-  // TODO xxx remove the next two enums; layers are added/removed
-  // dynamically as a result of scoring becoming enabled/disabled
   BVLDEventScoringModeEnabled,
   BVLDEventScoringModeDisabled,
   BVLDEventScoreCalculationEnds,

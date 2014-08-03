@@ -158,8 +158,6 @@
   self.view.backgroundColor = [UIColor colorWithPatternImage:image];
 
   self.boardView.backgroundColor = [UIColor clearColor];
-  // TODO xxx should this really be YES? the no-tiling implementation used NO
-  self.boardView.bouncesZoom = YES;
   self.boardView.delegate = self;
   self.boardView.minimumZoomScale = metrics.minimumAbsoluteZoomScale;
   self.boardView.maximumZoomScale = metrics.maximumAbsoluteZoomScale;
@@ -324,13 +322,13 @@
   // Restore properties that were changed when the zoom scale was reset to 1.0
   [self updateContentSizeInMainScrollView];
   [self updateContentSizeInCoordinateLabelsScrollViews];
-  // todo xxx the content offset that we remembered above may no longer be
+  // TODO The content offset that we remembered above may no longer be
   // accurate because BoardViewMetrics may have made some adjustments to the
-  // zoom scale. to fix this we either need to record the contentOffset in
+  // zoom scale. To fix this we either need to record the contentOffset in
   // BoardViewMetrics (so that the metrics can perform the adjustments on the
   // offset as well), or we need to adjust the content offset ourselves by
   // somehow calculating the difference between the original scale (scale
-  // parameter) and the adjusted scale. in that case BoardViewMetrics must
+  // parameter) and the adjusted scale. In that case BoardViewMetrics must
   // provide us with the adjusted scale (zoomScale is the absolute scale).
   scrollView.contentOffset = contentOffset;
 
