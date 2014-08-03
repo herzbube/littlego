@@ -252,7 +252,7 @@ enum GoBoardDirection
   GoBoardDirectionRight,    ///< @brief Used for navigating to the right neighbour of a GoPoint.
   GoBoardDirectionUp,       ///< @brief Used for navigating to the neighbour that is above a GoPoint.
   GoBoardDirectionDown,     ///< @brief Used for navigating to the neighbour that is below a GoPoint.
-  GoBoardDirectionNext,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is Q19.
+  GoBoardDirectionNext,     ///< @brief Used for iterating all GoPoints. The first point is always A1, on a 19x19 board the last point is T19.
   GoBoardDirectionPrevious  ///< @brief Same as #GoBoardDirectionNext, but for iterating backwards.
 };
 
@@ -269,6 +269,15 @@ enum GoBoardSize
   GoBoardSizeMin = GoBoardSize7,
   GoBoardSizeMax = GoBoardSize19,
   GoBoardSizeUndefined = 0
+};
+
+/// @brief Enumerates the 4 corners of the Go board.
+enum GoBoardCorner
+{
+  GoBoardCornerBottomLeft,   ///< @brief Always A1 on all board sizes
+  GoBoardCornerBottomRight,  ///< @brief T1 on a 19x19 board
+  GoBoardCornerTopLeft,      ///< @brief A19 on a 19x19 board
+  GoBoardCornerTopRight      ///< @brief T19 on a 19x19 board
 };
 
 /// @brief Enumerates the possible ko rules.

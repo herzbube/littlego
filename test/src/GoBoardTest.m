@@ -21,6 +21,8 @@
 // Application includes
 #import <go/GoGame.h>
 #import <go/GoBoard.h>
+#import <go/GoPoint.h>
+#import <go/GoVertex.h>
 #import <main/ApplicationDelegate.h>
 #import <newGame/NewGameModel.h>
 #import <command/game/NewGameCommand.h>
@@ -200,6 +202,31 @@
     }
     XCTAssertEqual(expectedNumberOfPoints, numberOfPoints, @"%@", initialVertex);
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the pointAtCorner:() method.
+// -----------------------------------------------------------------------------
+- (void) testPointAtCorner
+{
+  GoBoard* board = m_game.board;
+  GoPoint* point;
+
+  point = [board pointAtCorner:GoBoardCornerBottomLeft];
+  XCTAssertNotNil(point);
+  XCTAssert([@"A1" isEqualToString:point.vertex.string]);
+  point = [board pointAtCorner:GoBoardCornerBottomRight];
+  XCTAssertNotNil(point);
+  XCTAssert([@"T1" isEqualToString:point.vertex.string]);
+  point = [board pointAtCorner:GoBoardCornerTopLeft];
+  XCTAssertNotNil(point);
+  XCTAssert([@"A19" isEqualToString:point.vertex.string]);
+  point = [board pointAtCorner:GoBoardCornerTopRight];
+  XCTAssertNotNil(point);
+  XCTAssert([@"T19" isEqualToString:point.vertex.string]);
+
+  XCTAssertThrowsSpecificNamed([board pointAtCorner:(enum GoBoardCorner)42],
+                               NSException, NSInvalidArgumentException, @"evil cast");
 }
 
 // -----------------------------------------------------------------------------

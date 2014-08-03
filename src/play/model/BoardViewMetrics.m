@@ -750,7 +750,7 @@
 - (NSArray*) calculateLineRectanglesWithBoardSize:(enum GoBoardSize)newBoardSize
 {
   NSMutableArray* lineRectangles = [[[NSMutableArray alloc] initWithCapacity:0] autorelease];
-  GoPoint* topLeftPoint = [[GoGame sharedGame].board topLeftPoint];
+  GoPoint* topLeftPoint = [[GoGame sharedGame].board pointAtCorner:GoBoardCornerTopLeft];
 
   for (int lineDirection = 0; lineDirection < 2; ++lineDirection)
   {

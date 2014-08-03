@@ -369,20 +369,41 @@
   return [self pointAtVertex:vertex.string];
 }
 
-- (GoPoint*) topLeftPoint
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object located at the corner of the board
+/// defined by @a corner.
+// -----------------------------------------------------------------------------
+- (GoPoint*) pointAtCorner:(enum GoBoardCorner)corner
 {
   struct GoVertexNumeric numericVertex;
-  numericVertex.x = 1;
-  numericVertex.y = _size;
-  GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
-  return [self pointAtVertex:vertex.string];
-}
-
-- (GoPoint*) bottomRightPoint
-{
-  struct GoVertexNumeric numericVertex;
-  numericVertex.x = _size;
-  numericVertex.y = 1;
+  switch (corner)
+  {
+    case GoBoardCornerBottomLeft:
+      numericVertex.x = 1;
+      numericVertex.y = 1;
+      break;
+    case GoBoardCornerBottomRight:
+      numericVertex.x = _size;
+      numericVertex.y = 1;
+      break;
+    case GoBoardCornerTopLeft:
+      numericVertex.x = 1;
+      numericVertex.y = _size;
+      break;
+    case GoBoardCornerTopRight:
+      numericVertex.x = _size;
+      numericVertex.y = _size;
+      break;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid board cornder %d", corner];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
   GoVertex* vertex = [GoVertex vertexFromNumeric:numericVertex];
   return [self pointAtVertex:vertex.string];
 }

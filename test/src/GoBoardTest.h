@@ -34,6 +34,7 @@
 - (void) testPointEnumerator;
 - (void) testPointAtVertex;
 - (void) testNeighbourOfInDirection;
+- (void) testPointAtCorner;
 - (void) testStarPoints;
 - (void) testRegions;
 
