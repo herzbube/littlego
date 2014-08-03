@@ -91,3 +91,39 @@ Design note for code that needs to work with files
 - If the current working directory must indeed be changed, it should be changed
   back to the original location after the desired purpose has been achieved
 
+
+Drawing the Go board
+--------------------
+Drawing the Go board is a relatively complex mechanism that consists of two
+main parts:
+- Tiling
+- Layering
+
+Tiling
+- The Go board can be freely zoomed in (up to a maximum zoom scale) and out.
+  Once the board is zoomed in, the visible part can be scrolled.
+- To prevent excessive memory usage when the board is zoomed in, the board is
+  split into rectangular sections called "tiles" (cf. the Tile protocol).
+- Only those tiles that are currently visible are actually drawn (cf. the
+  BoardTileView class).
+- When the user scrolls, old tiles that are no longer visible are discarded and
+  new tiles that have become visible are newly drawn. This CPU intensive process
+  is managed by the BoardView class. To reduce CPU usage somewhat, BoardView
+  reuses tile views instead of deallocating and recreating them. Usability tests
+  have also shown that scrolling is noticeably smoother with tile reuse.
+- Memory and CPU usage are opposing forces, and the tile size is the main
+  balancing factor between these forces. Currently the app uses a hard-coded
+  tile size that has been experimentally determined to strike an acceptable
+  balance (details can be found in the "Research" document). Future versions of
+  the app might use dynamically calculated tile sizes for optimized performance
+  on different devices.
+
+Layering
+- The content of a tile is drawn in multiple CALayers that are stacked on top of
+  each other.
+- Separating the drawing of different board elements into different layers has
+  the advantage that when an event occurs only those layers, or layer parts,
+  that are actually affected by the event need to be redrawn. The drawback, of
+  course, is that additional memory is required.
+- To counteract memory usage, layers are dynamically added and removed depending
+  on application events that require certain board elements to be displayed.

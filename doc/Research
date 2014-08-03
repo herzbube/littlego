@@ -812,8 +812,8 @@ GTP commands involved in scoring
 [2] https://sourceforge.net/apps/trac/fuego/attachment/wiki/JapaneseRules/%5Bfuego-devel%5D%20Supported%20Go%20rules.txt
 
 
-Redesigning the drawing mechanism in PlayView
----------------------------------------------
+Redesigning the drawing mechanism in PlayView (v0.8)
+----------------------------------------------------
 During development of version 0.8 I decided to revise the implementation of how
 the PlayView class is drawing the Go board. The rationale for this is that the
 current implementation is extremely simple and brute force: Whenever an update
@@ -1050,6 +1050,274 @@ Conclusions
   on/off the background image, i.e. without having to recompile the app.
 
 [1] http://en.wikipedia.org/wiki/List_of_iOS_devices
+
+
+Redesigning the drawing mechanism to use tiling (v1.1.0)
+--------------------------------------------------------
+With zooming and scrolling, there are two conflicting forces:
+- CPU usage
+- Memory usage
+
+CPU usage                Memory usage
+   |----------------------------|
+                       ^
+        ^              Target state
+        Current state
+
+Current state
+- Memory usage is as bad as it can get: After a zoom operation the maximum
+  amount of memory is used.
+- CPU usage, however, is almost optimal: After a zoom operation the entire
+  scrollable content is rendered exactly once. In a subsequent scrolling
+  operation, the system only needs to display the visible part of the
+  pre-rendered bitmap.
+- One flaw in regard to CPU usage is that if only a small thing changes about
+  a layer, the entire layer needs to be rendered again - even if the change
+  occurs outside of the currently visible area
+- On the other hand, a layer that does not change never needs to be rendered
+  again
+
+The other extreme
+- We could try to render exactly that part of the board that is currently
+  visible
+- Memory usage would be optimal in this scenario
+- CPU usage, however, would be as bad is can get: The entire visible area would
+  need to be rendered again after every scrolling operation - even if the user
+  were to scroll only 1 pixel
+
+Target state
+- We aim at a target state that is at neither end of the scale, but somewhere
+  in between: Tiling.
+- Smaller tile sizes require less memory because there is not much rendered
+  content that is outside of the currently visible area. In return, CPU usage
+  increases because the system continually needs to render many small tiles
+  when a scrolling operation occurs.
+- In a first implementation, we use only a single hard-coded tile size that we
+  experimtenally determine to strike a good balance. Later implementations can
+  then try to calculate a dynamic tile size that is optimized for the device.
+
+Tile reuse
+- When a tile is no longer displayed, its view is not deallocated but placed
+  into an internal reuse queue
+- When a new tile needs to be displayed, the tiling implementation first tries
+  to take a view from the queue before it allocates a new view instance
+- This reuse mechanism sacrifices a bit of memory for more stable performance
+  during scrolling. Measurements taken with the "Activity Monitor" on an iPad 2,
+  with full zoom and wild scrolling
+  - With tile reuse, CPU usage is between 57-73%
+  - Without tile reuse, CPU usage is between 65-82%; this does not look like
+    much, but the average CPU usage is higher, and scrolling is noticeably less
+    smooth.
+- The reason for these effects is not clear, but since the additional memory
+  usage is rather small, tile reuse is an absolute must
+
+
+Memory usage after adding tiling
+--------------------------------
+Test setup
+- Release build, iOS SDK 7.1
+- Empty 19x19 board
+- GTP engine not initialized
+- Tile size = 128x128
+- NSZombieEnabled = NO
+- Device: iPhone 4S (retina display, running iOS 7.1.3)
+- The metrics that were measured are "Resident size" and "Dirty size" in the
+  "VM Tracker" instrument.
+- The "Resident size" value is the one that the system is looking at when it
+  needs to determine whether to terminate the app.
+- The "Dirty size" value is interesting because this is the part of the
+  "Resident size" memory that can't be evicted without terminating the app.
+- The "VM Tracker" instrument is set up together with the "Allocations"
+  instrument through the "Allocations" template. The "Allocations"
+  instrument adds a 32 MB chunk of "Performance tool data", so for more
+  realistic numbers all measured values should be reduced by 32.
+
+
+               | No Tiling |                        With Tiling                        | Action
+               |           +-----------------------------------------------------------+
+               |           | No             Cross-hair     Layer merge +    Coordinate |
+               |           | optimization   optimization   dynamic layers   labels     |
+---------------+-----------+-----------------------------------------------------------+---------------------------------
+Resident size  | 112.93 MB | 122.63 MB      121.18 MB      111.16 MB                   | After application launch, empty 19x19 board
+Dirty size     |  56.10 MB |  67.09 MB       67.10 MB       53.37 MB                   |
+Resident size  |           |                130.80 MB      122.18 MB                   | Panning around the board
+Dirty size     |           |                 76.58 MB       63.39 MB                   |
+Resident size  | 168.75 MB | 124.99 MB      141.47 MB      116.73 MB                   | After zooming in to the maximum zoom scale (3.0)
+Dirty size     | 129.84 MB |  75.50 MB       81.12 MB       58.96 MB                   |
+Resident size  | 202.08 MB | 135.09 MB      142.54 MB      124.47 MB                   | While panning around the zoomed part of the board
+Dirty size     | 169.55 MB |  88.03 MB       88.18 MB       66.69 MB                   |
+Resident size  | 162.64 MB | 122.90 MB      130.36 MB      111.64 MB                   | After cancelling the gesture and waiting a few seconds
+Dirty size     | 130.00 MB |  75.84 MB       75.98 MB       53.81 MB                   |
+Resident size  |           |                               141.21 MB                   | Scrolling around the zoomed board
+Dirty size     |           |                                83.33 MB                   |
+                                                        
+
+Some observations
+- With tiling, no optimization
+  - Memory usage rises only a little when zooming (resident memory ca. 2%,
+    or less than 2.5 MB)
+  - When panning, memory usage rises more (resident memory ca. 8%, or
+    slightly more than 10 MB), but still significantly less than the
+    no-tiling implementation
+- No tiling
+  - Memory usage rises massively when zooming (resident memory almost 50%,
+    or 56 MB)
+  - When panning, memory usage rises not as much as for the initial zoom,
+    but still significantly (resident memory another 20%, or 33 MB)
+- "No tiling" vs. "With tiling, no optimization"
+  - At the peak, the tiling implementation uses about 67% of the resident
+    memory of the no-tiling implementation
+  - If we compare the "dirty size" instead of the "resident size" metric,
+    then the impact of tiling becomes even more drastic. At the peak, the
+    tiling implementation uses only about 52% of the memory of the
+    no-tiling implementation. In terms of growth, tiling memory grows about
+    31% while no-tiling grows a whopping 202%.
+- "No tiling" vs. "With tiling, layer merge + dynamic layers"
+  - Peak resident memory: Tiling implementation uses 62% of the resident
+    memory of the no-tiling implementation
+  - Peak dirty memory: Tiling implementation uses 40% of the dirty memory
+    of the no-tiling implementation. Tiling memory grows about 25%.
+- With tiling, no optimization: Not yet clear is why this requires more
+  memory after application launch, i.e. while not zoomed in
+  - A theory was that tiling generates a certain overhead because some
+    tiles at the right and bottom edge of the board are unnecessarily large
+  - The attempt at proving this theory was inconclusive, though
+  - I tried to reduce the tile size so that the overhead also reduces
+  - This did not fully work, though: With smaller tile sizes the initial
+    "resident size" grew instead of becoming smaller (ca. 124 MB instead of
+    122 MB, both for 64x64 and 32x32 tile sizes)
+  - The "dirty size" value, though, improved (ca. 66.5 MB instead of
+     67 MB, again for both 64x64 and 32x32 tile sizes)
+  - Still, the difference to the no-tiling implementation is too large
+    for it to come only from the pixel overhead at the right and bottom
+    edge of the board. So this mystery has not been solved yet.
+
+Some observations regarding Instruments
+- I don't use the "Activity Monitor" instrument anymore because I don't
+  understand the meaning of its measured values. Originally I tried to look
+  at the "Real Mem" value, but this value is ridiculously low, so despite
+  its name it certainly does not represent what I am interested in.
+- I also don't use the "Allocations" instrument for this measurement,
+  because the "Live Bytes" value is also extremely low. If an object is
+  allocated, it may hold a reference to a much larger chunk of memory that
+  is not accounted for by "Live Bytes", but is only visible in the
+  "VM Tracker" instrument in the "Resident size" value.
+
+Some observations that I made at one point using the "Allocations"
+instrument when looking at the stones layer on an iPad 2nd generation
+(i.e. non-Retina display):
+- 128x128 tile size
+  - 36 layer instances
+  - 1 layer = 68 KB
+  - 36 layers = 2448 KB = 2.39 MB
+  - layer size = 16'384 pixel
+- 256x256 tile size
+  - 9 layer instances
+  - 1 layer = 260 KB
+  - 9 layers = 2340 KB = 2.29 MB
+  - layer size = 65'536 pixel
+- Layer overhead
+  - 49'152 pixel more than the 128x128 tile
+  - 192 KB more than the 128x128 tile
+  - 49'152 pixel = 192 KB = 196'608 Bytes
+  - 1 pixel = 4 Bytes
+  - 65'536 pixel * 4 Bytes = 262'144 Bytes = 256 KB
+  - Overhead per layer = 260 KB - 256 KB = 4 KB
+
+
+CPU usage with tiling
+---------------------
+Test setup
+- Release build, iOS SDK 7.1
+- Empty 19x19 board
+- GTP engine not initialized
+- Tile size = 128x128
+- NSZombieEnabled = NO
+- Devices, all running iOS 7.1.3.
+  - iPhone 4S (retina display)
+  - iPad 2nd generation (normal display, portrait)
+- The metric that was measured is "Total Load" of the system in the
+  "Activity Monitor" instrument.
+
+
+Sample 1: Initial tiling implementation without any optimizations
+
+                iPhone 4S     iPad 2nd generation     Action
+-----------------------------------------------------------------------------------------------------------
+Total Load      63%           -                       During application launch, empty 19x19 board
+Total Load      58-100%       -                       Panning around the board
+Total Load      50%           -                       Zooming in to the maximum zoom scale (3.0)
+Total Load      83-94%        -                       Panning around the zoomed part of the board
+Total Load      50-96%        -                       Scrolling around the zoomed board
+Total Load      63-81%        -                       Zooming out to the minimum zoom scale (1.0)
+
+Sample 2: After optimizing cross-hair line + stone layers so that only those tiles are drawn that actually change
+
+                iPhone 4S     iPad 2nd generation     Action
+-----------------------------------------------------------------------------------------------------------
+Total Load      63%           -                       During application launch, empty 19x19 board
+Total Load      58-65%        -                       Panning around the board
+Total Load      41%           -                       Zooming in to the maximum zoom scale (3.0)
+Total Load      55-70%        -                       Panning around the zoomed part of the board
+Total Load      55-77%        -                       Scrolling around the zoomed board
+Total Load      44-98%        -                       Zooming out to the minimum zoom scale (1.0)
+
+Sample 3: After optimizing by merging layers + dynamically turning layers on/off
+
+                iPhone 4S     iPad 2nd generation     Action
+-----------------------------------------------------------------------------------------------------------
+Total Load      79%           -                       During application launch, empty 19x19 board
+Total Load      62-72%        -                       Panning around the board
+Total Load      34%           -                       Zooming in to the maximum zoom scale (3.0)
+Total Load      53-57%        -                       Panning around the zoomed part of the board
+Total Load      47-55%        -                       Scrolling around the zoomed board
+Total Load      66-81%        -                       Zooming out to the minimum zoom scale (1.0)
+
+
+Memory usage on iPad 2 with different tile sizes
+------------------------------------------------
+Test setup
+- Release build, iOS SDK 7.1
+- Empty 19x19 board (9x9 in the first measurement)
+- GTP engine not initialized
+- Coordinate labels + influence enabled
+- NSZombieEnabled = NO
+- Device: iPad 2 (no retina display, running iOS 7.1.3)
+
+
+               | 9x9 board |            19x19 boards           |
+               | 128 x 128 | 128 x 128   256 x 256    64 x 64  | Action
+---------------+-----------+-----------------------------------+---------------------------------
+Resident size  | 112.94 MB | 107.37 MB   108.68 MB   109.14 MB | After application launch, empty 19x19 board
+Dirty size     |  54.20 MB |  54.29 MB    54.44 MB    54.36 MB |
+Resident size  | 117.29 MB | 116.89 MB   119.50 MB   115.23 MB | Panning around the board
+Dirty size     |  63.28 MB |  65.59 MB    67.45 MB    62.23 MB |
+Resident size  | 109.27 MB | 110.19 MB   111.93 MB   109.73 MB | After zooming in to the maximum zoom scale (3.0)
+Dirty size     |  56.75 MB |  58.91 MB    59.90 MB    58.37 MB |
+Resident size  | 119.66 MB | 122.12 MB   126.05 MB   120.05 MB | While panning around the zoomed part of the board
+Dirty size     |  67.13 MB |  70.83 MB    74.06 MB    68.64 MB |
+Resident size  | 107.68 MB | 107.79 MB   110.19 MB   103.88 MB | After cancelling the gesture and waiting a few seconds
+Dirty size     |  55.15 MB |  56.50 MB    58.19 MB    56.97 MB |
+Resident size  | 127.04 MB | 123.53 MB   133.04 MB   115.84 MB | Scrolling around the zoomed board
+Dirty size     |  74.53 MB |  72.27 MB    81.04 MB    68.62 MB |
+
+Observations
+- Smaller tile size = generally lower memory consumption
+- 9x9 vs. 19x19 board: Difficult to say what the difference is
+- Smaller tiles = generally higher CPU% / lower fps rate
+  - 64x64
+    - Zoomed out = 28-29 fps
+    - Zoomed in = 21-24 fps
+  - 128x128
+    - Zoomed out = 54-59 fps
+    - Zoomed in = 33-42 fps
+  - 256x256
+    - Zoomed out = 57-60 fps
+    - Zoomed in = 40-48 fps
+  - Measurements made with Core Animation instrument while panning
+  - At 64x64 the low fps frate is noticeable, the CPU is almost constantly
+    at 100%
+- For iPad 2, 128x128 tile size seems a good medium value
 
 
 Application launch times when restoring from NSCoding archive

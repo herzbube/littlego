@@ -61,6 +61,33 @@ Thread architecture
   notifies clients of command submission and response receipt.
 
 
+Multithreading vs. UI updates
+-----------------------------
+CommandProcessor supports execution of commands in a secondary thread so that
+a progress view can be displayed for long-running actions. Notable long-running
+actions are
+- Application startup
+- Load a game from the archive
+- Navigate between board positions
+
+Clients often need to react to events that occur during a long-running action.
+Such events are usually communicated via notifications, but a client may also
+use KVO to observe a model for property value changes. Regardless of the way how
+a client is notified, the notification happens in the CommandProcessor secondary
+thread context. It is, however, the client's responsibility to make sure that
+any UI updates happen in the main thread. This is required because UIKit is
+generally not thread-safe.
+
+A common way how clients achieve this is by listening to the notifications
+longRunningActionStarts and longRunningActionEnds, which are posted when a
+long-running action begins and ends. While the long-running action is still in
+progress, a client queues up any UI updates. Then, when the action ends, the
+client performs all queued UI updates in a row. This works well because
+longRunningActionEnds is guaranteed to be delivered in the main thread context.
+
+For additional details see the LongRunningActionCounter class.
+
+
 GTP command sequence
 --------------------
 Even though responses for GTP commands are received asynchronously, the commands
@@ -119,7 +146,7 @@ About the Play tab
 UI design
 ---------
 As noted in "About the Play tab", the Play tab has a large number of UI
-elements, and these must somehow be fitted onto the small screeen estate
+elements, and these must somehow be fitted into the small screeen estate
 available on the iPhone. Here I try to outline the thoughts that went into the
 iPhone UI design:
 - The Go board view
@@ -161,8 +188,6 @@ iPhone UI design:
     Previous versions of the app had the status view situated in a single line
     below the board view, but this was redesigned because it took away some of
     the already precious space from the board view.
-  - The status line uses a very small font to make room for the list of board
-    positions.
 - The activity indicator
   - An activity indicator is needed to let the user know when the Go engine
     is busy so that he knows why some UI elements are disabled.
@@ -171,13 +196,43 @@ iPhone UI design:
     this works surprisingly well, because whenever the activity indicator
     becomes visible it trades space with one or more other buttons that become
     hidden in its stead.
+- The board position toolbar
+  - There is room for another toolbar because the Go board cannot occupy all the
+    vertical space that is available
+  - All UI elements that are somehow related to board positions are located in
+    this toolbar - this neatly separates board position functions from game
+    playing functions
+  - Toolbar space is limited, so not all UI elements can be displayed at the
+    same time
+  - Because the board position view is the only UI element that is always
+    visible, it is made interactive so that the user can tap it to switch
+    between the other alternating UI elements. Making the board position view
+    interactive is a neat little trick that saves the screen estate for yet
+    another button. The question remains whether the user realizes that the
+    board position view is tappable. I hope so, because after all the view is
+    located in a toolbar, and toolbars usually contain interactive UI elements.
+- The board position view
+  - A small view is required that displays information about the board position
+    that the user is currently viewing
+  - The view must be visible at all times so that the user does not get lost
+  - As mentioned above, the board position view is interactive: Tapping it
+    switches between a set of buttons that are used to navigate between board
+    positions, and the list of board positions
+- Buttons to navigate between board positions
+  - Buttons to jump back/forward one position are used to navigate short
+    distances
+  - Buttons to jump to the beginning/end of the game are used to navigate far
+    distances
+  - Previous versions of the app also had buttons to jump back/forward 10
+    positions; these 2 buttons were eliminated because with the update to iOS 7
+    I needed new icons with a flat look, and I was unable to find a set of 6
+    distinct looking icons; all the icons that I experimented with resulted in
+    an ugly-looking, jumbled mass of arrows :-(
 - The list of board positions
   - This view exists because the toolbar buttons to go back/forward one board
     position make it hard to access board positions that are far away from
     the current board position.
   - A freely scrollable view is more sexy than one that uses paging.
-  - Due to size constraints, the additional navigation buttons displayed on
-    the iPad do not exist on the iPhone.
 
 
 Exceptions
@@ -228,3 +283,4 @@ So how does the strategy work in detail?
 
 The implementation for all of this can be found in ApplicationStateManager and
 MainTabBarController.
+
