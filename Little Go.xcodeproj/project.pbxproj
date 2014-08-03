@@ -2058,7 +2058,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/opt/local/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
+			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/usr/local/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
