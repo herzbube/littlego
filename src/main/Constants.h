@@ -202,7 +202,6 @@ enum GoGameHasEndedReason
   GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
   GoGameHasEndedReasonTwoPasses,     ///< @brief The game ended due to two consecutive pass moves.
   GoGameHasEndedReasonResigned,      ///< @brief The game ended due to one of the players resigning.
-  GoGameHasEndedReasonNoStonesLeft,  ///< @brief The game ended due to both players running out of stones.
   GoGameHasEndedReasonTimeExceeded   ///< @brief The game ended due to one of the players having no time left.
 };
 
