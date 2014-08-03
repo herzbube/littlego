@@ -137,7 +137,7 @@ const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 
 // Bug reports constants
-const int bugReportFormatVersion = 4;
+const int bugReportFormatVersion = 5;
 NSString* bugReportDiagnosticsInformationFileName = @"littlego-bugreport.zip";
 NSString* bugReportDiagnosticsInformationFileMimeType = @"application/zip";
 NSString* bugReportInfoFileName = @"bugreport-info.plist";
