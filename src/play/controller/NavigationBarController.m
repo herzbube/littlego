@@ -939,7 +939,20 @@
   }
   else
   {
-    enabled = YES;
+    // It is important that the Game Info view cannot be displayed if the
+    // computer is still thinking. Reason: When the computer has finished
+    // thinking, some piece of game state will change. GameInfoViewController,
+    // however, is not equipped to update its information dynamically. At best,
+    // the Game Info view will display outdated information. At worst, the app
+    // will crash - an actual case was issue #226, where the app crashed because
+    // - The game ended while the Game Info view was visible
+    // - GameInfoViewController reloaded some table view rows in reaction to
+    //   user input on the Game Info view
+    // - An unrelated table view section suddenly had a different number of
+    //   rows (because the game had ended), causing UITableView to throw an
+    //   exception
+    if (! game.computerThinks)
+      enabled = YES;
   }
   self.gameInfoButton.enabled = enabled;
 }
