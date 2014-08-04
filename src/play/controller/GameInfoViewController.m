@@ -247,7 +247,8 @@ enum BoardPositionSectionItem
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(playersAndProfilesWillReset:) name:playersAndProfilesWillReset object:nil];
-  [self setupKVONotificationResponders];
+  if (GameInfoType == self.boardViewModel.infoTypeLastSelected)
+    [self setupKVONotificationResponders];
 }
 
 // -----------------------------------------------------------------------------
@@ -1205,7 +1206,10 @@ enum BoardPositionSectionItem
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
   self.boardViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
   [self.tableView reloadData];
+  if (GameInfoType == self.boardViewModel.infoTypeLastSelected)
+    [self setupKVONotificationResponders];
+  else
+    [self removeKVONotificationResponders];
 }
-
 
 @end
