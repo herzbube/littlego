@@ -56,6 +56,14 @@ enum GameAttributesSectionItem
 };
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for ViewGameController.
+// -----------------------------------------------------------------------------
+@interface ViewGameController()
+@property(nonatomic, retain) UIBarButtonItem* loadButton;
+@end
+
+
 @implementation ViewGameController
 
 // -----------------------------------------------------------------------------
@@ -81,9 +89,9 @@ enum GameAttributesSectionItem
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.game removeObserver:self forKeyPath:@"fileDate"];
-
   self.game = nil;
   self.model = nil;
+  self.loadButton = nil;
   [super dealloc];
 }
 
@@ -96,15 +104,15 @@ enum GameAttributesSectionItem
   [super viewDidLoad];
 
   self.navigationItem.title = @"View Game";
-  UIBarButtonItem* loadButton = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
-                                                                  style:UIBarButtonItemStylePlain
-                                                                 target:self
-                                                                 action:@selector(loadGame)] autorelease];
+  self.loadButton = [[[UIBarButtonItem alloc] initWithTitle:@"Load"
+                                                      style:UIBarButtonItemStylePlain
+                                                     target:self
+                                                     action:@selector(loadGame)] autorelease];
   UIBarButtonItem* actionButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                  target:self
                                                                                  action:@selector(action:)] autorelease];
   actionButton.style = UIBarButtonItemStyleBordered;
-  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:actionButton, loadButton, nil];
+  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:actionButton, self.loadButton, nil];
   [self updateLoadButtonState];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -367,7 +375,7 @@ enum GameAttributesSectionItem
       break;
     }
   }
-  self.navigationItem.rightBarButtonItem.enabled = enableButton;
+  self.loadButton.enabled = enableButton;
 }
 
 // -----------------------------------------------------------------------------
