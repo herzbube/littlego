@@ -387,32 +387,27 @@
   if (! self.numberOfItemsNeedsUpdate)
     return;
   self.numberOfItemsNeedsUpdate = false;
-  int oldNumberOfBoardPositions = [self.boardPositionListTableView numberOfRowsInSection:0];
-  int newNumberOfBoardPositions = [GoGame sharedGame].boardPosition.numberOfBoardPositions;
-  if (oldNumberOfBoardPositions == newNumberOfBoardPositions)
-    return;
-  else if (newNumberOfBoardPositions > oldNumberOfBoardPositions)
-  {
-    NSMutableArray* indexPaths = [NSMutableArray array];
-    for (int boardPositionToInsert = oldNumberOfBoardPositions; boardPositionToInsert < newNumberOfBoardPositions; ++boardPositionToInsert)
-    {
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:boardPositionToInsert inSection:0];
-      [indexPaths addObject:indexPath];
-    }
-    [self.boardPositionListTableView insertRowsAtIndexPaths:indexPaths
-                                           withRowAnimation:UITableViewRowAnimationTop];
-  }
-  else if (newNumberOfBoardPositions < oldNumberOfBoardPositions)
-  {
-    NSMutableArray* indexPaths = [NSMutableArray array];
-    for (int boardPositionToInsert = newNumberOfBoardPositions; boardPositionToInsert < oldNumberOfBoardPositions; ++boardPositionToInsert)
-    {
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:boardPositionToInsert inSection:0];
-      [indexPaths addObject:indexPath];
-    }
-    [self.boardPositionListTableView deleteRowsAtIndexPaths:indexPaths
-                                           withRowAnimation:UITableViewRowAnimationBottom];
-  }
+  // We only know that the number of board positions has changed since the last
+  // update, but we don't know exactly what has changed. Because we don't know
+  // exactly what has changed, it is impossible to delete rows from UITableView,
+  // or insert rows into UITableView without making assumptions. For instance:
+  // - User discards 1 board position, then creates a new board position by
+  //   playing a move. In this scenario, due to our delayed update scheme, two
+  //   changes to the number of board positions are coalesced into a single
+  //   update. When the update is finally performed, it appears as if the number
+  //   of board positions has not actually changed (1 position was discarded,
+  //   1 was added).
+  // - User discards 2 board positions, then creates a new board position by
+  //   playing a move. Again, 2 changes are coalesced into one update so that
+  //   when the update is finally performed it appears as if one new board
+  //   position was added (2 positions were discarded, 1 was added).
+  //
+  // We don't want to make assumptions about such scenarios, because future
+  // changes to command implementations are bound to break them. The simplest
+  // solution is to reload the entire table view. We rely on UITableView
+  // performing smooth UI updates so that no flickering occurs for cells whose
+  // content has not actually changed.
+  [self.boardPositionListTableView reloadData];
 }
 
 // -----------------------------------------------------------------------------
