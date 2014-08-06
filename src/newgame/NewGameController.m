@@ -418,9 +418,19 @@ enum GameRulesSectionItem
 - (UITableViewCell*) createCellForTableView:(UITableView*)tableView forRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell;
-  if (PlayersSection == indexPath.section && GoGameTypeComputerVsHuman == self.theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
+  if (PlayersSection == indexPath.section)
   {
-    cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+    if (GoGameTypeComputerVsHuman == self.theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+    }
+    else
+    {
+      // Use a non-standard cell identifier because cells with player names can
+      // have a non-standard text color for the detail text label
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView reusableCellIdentifier:@"PlayerCell"];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
   }
   else
   {
@@ -963,6 +973,7 @@ enum GameRulesSectionItem
   if (player)
   {
     cell.detailTextLabel.text = player.name;
+    cell.detailTextLabel.textColor = [UIColor grayColor];
   }
   else
   {
